@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for site in A B C D E F
+do
+    osascript -e "tell app \"Terminal\"
+        do script \"cd `pwd`; ./example-site $site $*\"
+    end tell"
+done

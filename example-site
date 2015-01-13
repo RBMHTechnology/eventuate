@@ -1,0 +1,56 @@
+#!/bin/sh
+
+EXAMPLE_CONF=site-$1.conf
+EXAMPLE_MAIN=com.rbmhtechnology.example.OrderExample
+
+if [ -n "$2" ]
+then
+    if [ $2 = "java" ]
+    then
+        EXAMPLE_MAIN=com.rbmhtechnology.example.japi.OrderExample
+    fi
+fi
+
+IVY_CACHE=$HOME/.ivy2/cache
+
+java -cp \
+./target/scala-2.11/test-classes:\
+./target/scala-2.11/classes:\
+$IVY_CACHE/org.scala-lang/scala-library/jars/scala-library-2.11.4.jar:\
+$IVY_CACHE/com.google.protobuf/protobuf-java/jars/protobuf-java-2.5.0.jar:\
+$IVY_CACHE/com.google.protobuf/protobuf-java/bundles/protobuf-java-2.5.0.jar:\
+$IVY_CACHE/com.typesafe.akka/akka-remote_2.11/jars/akka-remote_2.11-2.3.8.jar:\
+$IVY_CACHE/com.typesafe.akka/akka-actor_2.11/jars/akka-actor_2.11-2.3.8.jar:\
+$IVY_CACHE/com.typesafe/config/jars/config-1.2.1.jar:\
+$IVY_CACHE/com.typesafe/config/bundles/config-1.2.1.jar:\
+$IVY_CACHE/io.netty/netty/jars/netty-3.8.0.Final.jar:\
+$IVY_CACHE/io.netty/netty/bundles/netty-3.8.0.Final.jar:\
+$IVY_CACHE/org.uncommons.maths/uncommons-maths/jars/uncommons-maths-1.2.2a.jar:\
+$IVY_CACHE/commons-io/commons-io/jars/commons-io-2.4.jar:\
+$IVY_CACHE/org.fusesource.leveldbjni/leveldbjni-all/jars/leveldbjni-all-1.7.jar:\
+$IVY_CACHE/org.fusesource.leveldbjni/leveldbjni-all/bundles/leveldbjni-all-1.7.jar:\
+$IVY_CACHE/org.fusesource.leveldbjni/leveldbjni/jars/leveldbjni-1.7.jar:\
+$IVY_CACHE/org.fusesource.hawtjni/hawtjni-runtime/jars/hawtjni-runtime-1.8.jar:\
+$IVY_CACHE/org.iq80.leveldb/leveldb-api/jars/leveldb-api-0.5.jar:\
+$IVY_CACHE/org.fusesource.leveldbjni/leveldbjni-osx/jars/leveldbjni-osx-1.5.jar:\
+$IVY_CACHE/org.fusesource.leveldbjni/leveldbjni-linux32/jars/leveldbjni-linux32-1.5.jar:\
+$IVY_CACHE/org.fusesource.leveldbjni/leveldbjni-linux64/jars/leveldbjni-linux64-1.5.jar:\
+$IVY_CACHE/org.fusesource.leveldbjni/leveldbjni-win32/jars/leveldbjni-win32-1.5.jar:\
+$IVY_CACHE/org.fusesource.leveldbjni/leveldbjni-win64/jars/leveldbjni-win64-1.5.jar:\
+$IVY_CACHE/org.scalaz/scalaz-core_2.11/jars/scalaz-core_2.11-7.1.0.jar:\
+$IVY_CACHE/org.scalaz/scalaz-core_2.11/bundles/scalaz-core_2.11-7.1.0.jar:\
+$IVY_CACHE/org.scala-lang.modules/scala-parser-combinators_2.11/jars/scala-parser-combinators_2.11-1.0.2.jar:\
+$IVY_CACHE/org.scala-lang.modules/scala-parser-combinators_2.11/bundles/scala-parser-combinators_2.11-1.0.2.jar:\
+$IVY_CACHE/org.scala-lang.modules/scala-xml_2.11/jars/scala-xml_2.11-1.0.2.jar:\
+$IVY_CACHE/org.scala-lang.modules/scala-xml_2.11/bundles/scala-xml_2.11-1.0.2.jar:\
+$IVY_CACHE/com.typesafe.akka/akka-testkit_2.11/jars/akka-testkit_2.11-2.3.8.jar:\
+$IVY_CACHE/org.functionaljava/functionaljava/jars/functionaljava-4.2-beta-1.jar:\
+$IVY_CACHE/org.functionaljava/functionaljava-java8/jars/functionaljava-java8-4.2-beta-1.jar:\
+$IVY_CACHE/org.scalatest/scalatest_2.11/jars/scalatest_2.11-2.1.4.jar:\
+$IVY_CACHE/org.scala-lang/scala-reflect/jars/scala-reflect-2.11.0.jar \
+$EXAMPLE_MAIN $EXAMPLE_CONF
+
+# ------------------------------------------------------------------
+# Alternative: use this if dependencies should be obtained from sbt
+# ------------------------------------------------------------------
+#sbt "test:runMain $EXAMPLE_MAIN $EXAMPLE_CONF"

@@ -1,0 +1,127 @@
+/*
+ * Copyright (C) 2015 Red Bull Media House GmbH - all rights reserved.
+ */
+
+package com.rbmhtechnology.example.japi;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.regex.*;
+
+import akka.actor.ActorRef;
+import akka.actor.AbstractActor;
+import akka.actor.ActorSystem;
+import akka.actor.Props;
+import akka.japi.pf.ReceiveBuilder;
+
+import com.rbmhtechnology.eventuate.ReplicationEndpoint;
+import com.rbmhtechnology.eventuate.VersionedObjects.*;
+import com.rbmhtechnology.eventuate.log.LeveldbEventLog;
+import com.typesafe.config.ConfigFactory;
+
+import com.rbmhtechnology.example.japi.OrderManager.*;
+import com.rbmhtechnology.example.japi.OrderView.*;
+
+public class OrderExample extends AbstractActor {
+    private static Pattern pExit    = Pattern.compile("^exit\\s*");
+    private static Pattern pState   = Pattern.compile("^state\\s*");
+    private static Pattern pCount   = Pattern.compile("^count\\s+(\\w+)\\s*");
+    private static Pattern pCreate  = Pattern.compile("^create\\s+(\\w+)\\s*");
+    private static Pattern pCancel  = Pattern.compile("^cancel\\s+(\\w+)\\s*");
+    private static Pattern pAdd     = Pattern.compile("^add\\s+(\\w+)\\s+(\\w+)\\s*");
+    private static Pattern pRemove  = Pattern.compile("^remove\\s+(\\w+)\\s+(\\w+)\\s*");
+    private static Pattern pResolve = Pattern.compile("^resolve\\s+(\\w+)\\s+(\\d+)\\s*");
+
+    private ActorRef manager;
+    private ActorRef view;
+
+    private BufferedReader reader;
+
+    public OrderExample(ActorRef manager, ActorRef view) {
+        this.manager = manager;
+        this.view = view;
+
+        this.reader = new BufferedReader(new InputStreamReader(System.in));
+
+        receive(ReceiveBuilder
+                .match(GetStateSuccess.class, r -> {
+                    r.getState().values().stream().forEach(OrderManager::printOrder);
+                    prompt();
+                })
+                .match(GetUpdateCountSuccess.class, r -> {
+                    System.out.println("[" + r.getOrderId() + "]" + " update count = " + r.getCount());
+                    prompt();
+                })
+                .match(CommandFailure.class, r -> r.getCause() instanceof ConflictDetectedException, r -> {
+                    ConflictDetectedException cause = (ConflictDetectedException)r.getCause();
+                    System.out.println(cause.getMessage() + ", select one of the following versions to resolve conflict");
+                    OrderManager.printOrder(cause.getVersions());
+                    prompt();
+                })
+                .match(CommandFailure.class, r -> {
+                    System.out.println(r.getCause().getMessage());
+                    prompt();
+                })
+                .match(CommandSuccess.class, r -> prompt())
+                .match(String.class, cmd -> process(cmd)).build());
+    }
+
+    private void prompt() throws IOException {
+        String line = reader.readLine();
+        if (line != null)
+            self().tell(line, null);
+    }
+
+    private void process(String cmd) throws IOException {
+        // okay, a bit eager, but anyway ...
+        Matcher mExit    = pExit.matcher(cmd);
+        Matcher mState   = pState.matcher(cmd);
+        Matcher mCount   = pCount.matcher(cmd);
+        Matcher mCreate  = pCreate.matcher(cmd);
+        Matcher mCancel  = pCancel.matcher(cmd);
+        Matcher mAdd     = pAdd.matcher(cmd);
+        Matcher mRemove  = pRemove.matcher(cmd);
+        Matcher mResolve = pResolve.matcher(cmd);
+
+        if (mExit.matches()) {
+            getContext().system().shutdown();
+        } else if (mState.matches()) {
+            manager.tell(GetState.instance, self());
+        } else if (mCount.matches()) {
+            view.tell(new GetUpdateCount(mCount.group(1)), self());
+        } else if (mCreate.matches()) {
+            manager.tell(new CreateOrder(mCreate.group(1)), self());
+        } else if (mCancel.matches()) {
+            manager.tell(new CancelOrder(mCancel.group(1)), self());
+        } else if (mAdd.matches()) {
+            manager.tell(new AddOrderItem(mAdd.group(1), mAdd.group(2)), self());
+        } else if (mRemove.matches()) {
+            manager.tell(new RemoveOrderItem(mRemove.group(1), mRemove.group(2)), self());
+        } else if (mResolve.matches()) {
+            manager.tell(new Resolve(mResolve.group(1), Integer.parseInt(mResolve.group(2)), ""), self());
+        } else {
+            System.out.println("unknown command: " + cmd);
+            prompt();
+        }
+    }
+
+    @Override
+    public void preStart() throws Exception {
+        prompt();
+    }
+
+    @Override
+    public void postStop() throws Exception {
+        reader.close();
+    }
+
+    public static void main(String[] args) {
+        ActorSystem system = ActorSystem.create("site", ConfigFactory.load(args[0]));
+        ReplicationEndpoint endpoint = ReplicationEndpoint.create(system, id -> LeveldbEventLog.props(id, "log-java"));
+
+        ActorRef manager = system.actorOf(Props.create(OrderManager.class, endpoint.id(), endpoint.log()));
+        ActorRef view = system.actorOf(Props.create(OrderView.class, endpoint.id() + "-view", endpoint.log()));
+        ActorRef driver = system.actorOf(Props.create(OrderExample.class, manager, view));
+    }
+}
