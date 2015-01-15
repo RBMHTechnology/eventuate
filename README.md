@@ -8,7 +8,8 @@ Eventuate is an implementation of the concepts and system model described in [Ev
 Community
 ---------
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/RBMHTechnology/eventuate?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+- [User mailing list](https://groups.google.com/forum/#!forum/eventuate)
+- [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/RBMHTechnology/eventuate?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 Dependencies
 ------------
