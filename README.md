@@ -3,6 +3,8 @@
 Eventuate
 =========
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/RBMHTechnology/eventuate?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Eventuate is an implementation of the concepts and system model described in [Event Sourcing at Global Scale](http://krasserm.github.io/2015/01/13/event-sourcing-at-global-scale). The project has proof-of-concept status and will gradually evolve into a production-ready toolkit for event sourcing at global scale. API and implementation may significantly change. The re-usable parts of the prototype are contained in package `com.rbmhtechnology.eventuate`, the example application in package `com.rbmhtechnology.example` (Scala version) and package `com.rbmhtechnology.example.japi` (Java version). The following sections give a (still incomplete) overview of the prototype features and instructions for running the example application. 
 
 Dependencies
