@@ -5,6 +5,23 @@ Eventuate
 
 Eventuate is an implementation of the concepts and system model described in [Event Sourcing at Global Scale](http://krasserm.github.io/2015/01/13/event-sourcing-at-global-scale). The project has proof-of-concept status and will gradually evolve into a production-ready toolkit for event sourcing at global scale. API and implementation may significantly change. The re-usable parts of the prototype are contained in package `com.rbmhtechnology.eventuate`, the example application in package `com.rbmhtechnology.example` (Scala version) and package `com.rbmhtechnology.example.japi` (Java version). The following sections give a (still incomplete) overview of the prototype features and instructions for running the example application. 
 
+Dependencies
+------------
+
+### Sbt
+
+    resolvers += "OJO Snapshots" at "https://oss.jfrog.org/oss-snapshot-local"
+
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate" % "0.1-SNAPSHOT"
+
+### Maven
+
+...
+
+### Gradle 
+
+...
+
 Sites
 -----
 
