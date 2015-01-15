@@ -21,11 +21,17 @@ Dependencies
 
 ### Maven
 
-...
+    <repository>
+        <id>ojo-snapshots</id>
+        <name>OJO Snapshots</name>
+        <url>https://oss.jfrog.org/oss-snapshot-local</url>
+    </repository>
 
-### Gradle 
-
-...
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate_2.11</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </dependency>
 
 Sites
 -----
