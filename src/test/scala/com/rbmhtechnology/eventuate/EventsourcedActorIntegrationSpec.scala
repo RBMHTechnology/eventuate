@@ -19,7 +19,7 @@ object EventsourcedActorIntegrationSpec {
 
   case class Cmd(payloads: String*)
 
-  class TestActor(val processId: String, val log: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class TestActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     override def onCommand = {
       case "reply-success" => persist("okay") {
         case Success(r) => sender() ! r
@@ -45,7 +45,7 @@ object EventsourcedActorIntegrationSpec {
     }
   }
   
-  class AccActor(val processId: String, val log: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class AccActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     var acc: Vector[String] = Vector.empty
 
     override def onCommand = {
@@ -60,7 +60,7 @@ object EventsourcedActorIntegrationSpec {
     }
   }
 
-  class DeliveryActor(val processId: String, val log: ActorRef, probe: ActorRef) extends EventsourcedActor with Delivery {
+  class DeliveryActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor with Delivery {
     override def onCommand = {
       case "boom" => throw boom
       case "end" => probe ! "end"
@@ -75,7 +75,7 @@ object EventsourcedActorIntegrationSpec {
     }
   }
 
-  class DelayActor(val processId: String, val log: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class DelayActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     override def sync: Boolean = false
 
     override def onCommand = {
@@ -88,7 +88,7 @@ object EventsourcedActorIntegrationSpec {
     }
   }
 
-  class ConditionalActor(val processId: String, val log: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class ConditionalActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     override def sync: Boolean = false
 
     override def onCommand = {
@@ -101,7 +101,7 @@ object EventsourcedActorIntegrationSpec {
     }
   }
 
-  class ConditionalView(val log: ActorRef, probe: ActorRef) extends EventsourcedView {
+  class ConditionalView(val eventLog: ActorRef, probe: ActorRef) extends EventsourcedView {
     override def onCommand = {
       case other => probe ! other
     }

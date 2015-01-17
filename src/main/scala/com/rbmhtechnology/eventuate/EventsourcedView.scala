@@ -40,10 +40,10 @@ trait EventsourcedView extends Eventsourced with ConditionalCommands with Stash 
   final def receive = initiating
 
   override def preStart(): Unit =
-    log ! Replay(1, self, instanceId)
+    eventLog ! Replay(1, self, instanceId)
 }
 
 /**
  * Java API.
  */
-abstract class AbstractEventsourcedView(val processId: String, val log: ActorRef) extends AbstractEventsourced with EventsourcedView
+abstract class AbstractEventsourcedView(val processId: String, val eventLog: ActorRef) extends AbstractEventsourced with EventsourcedView

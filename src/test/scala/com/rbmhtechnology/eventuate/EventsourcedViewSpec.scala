@@ -16,7 +16,7 @@ object EventsourcedViewSpec {
      val logProbe: ActorRef,
      val dstProbe: ActorRef) extends EventsourcedView {
 
-    val log = logProbe
+    val eventLog = logProbe
 
     override def onCommand: Receive = {
       case "boom" => throw boom

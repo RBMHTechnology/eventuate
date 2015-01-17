@@ -50,12 +50,12 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Stash
     writeRequests.nonEmpty
 
   private def delay(): Unit = {
-    log forward Delay(delayRequests, self, instanceId)
+    eventLog forward Delay(delayRequests, self, instanceId)
     delayRequests = Vector.empty
   }
 
   private def write(): Unit = {
-    log forward Write(writeRequests, self, instanceId)
+    eventLog forward Write(writeRequests, self, instanceId)
     writeRequests = Vector.empty
   }
 
@@ -129,7 +129,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Stash
 
   override def preStart(): Unit = {
     clock = VectorClock(processId)
-    log ! Replay(1, self, instanceId)
+    eventLog ! Replay(1, self, instanceId)
   }
 }
 
@@ -138,7 +138,7 @@ class DelayException(msg: String) extends RuntimeException(msg)
 /**
  * Java API.
  */
-abstract class AbstractEventsourcedActor(val processId: String, val log: ActorRef) extends AbstractEventsourced with EventsourcedActor with Delivery {
+abstract class AbstractEventsourcedActor(val processId: String, val eventLog: ActorRef) extends AbstractEventsourced with EventsourcedActor with Delivery {
   def persist[A](event: A, handler: BiConsumer[A, Throwable]): Unit = persist[A](event) {
     case Success(a) => handler.accept(a, null)
     case Failure(e) => handler.accept(null.asInstanceOf[A], e)

@@ -51,7 +51,7 @@ object OrderManager {
   }
 }
 
-class OrderManager(id: String, val log: ActorRef) extends EventsourcedActor {
+class OrderManager(id: String, val eventLog: ActorRef) extends EventsourcedActor {
   import OrderManager._
 
   val processId = id

@@ -28,7 +28,7 @@ object EventsourcedActorSpec {
       override val sync: Boolean) extends EventsourcedActor {
 
     val processId = EventsourcedActorSpec.processIdA
-    val log = logProbe
+    val eventLog = logProbe
 
     override def onCommand: Receive = {
       case "boom" => throw boom

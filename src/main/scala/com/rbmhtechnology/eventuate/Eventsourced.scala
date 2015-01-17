@@ -25,7 +25,7 @@ trait Eventsourced extends Actor {
 
   val instanceId: Int = instanceIdCounter.getAndIncrement()
 
-  def log: ActorRef
+  def eventLog: ActorRef
   def onCommand: Receive
   def onEvent: Receive
 

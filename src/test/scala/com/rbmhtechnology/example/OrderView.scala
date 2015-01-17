@@ -13,7 +13,7 @@ object OrderView {
   case class GetUpdateCountSuccess(orderId: String, count: Int)
 }
 
-class OrderView(id: String, val log: ActorRef) extends EventsourcedView {
+class OrderView(id: String, val eventLog: ActorRef) extends EventsourcedView {
   import OrderManager._
   import OrderView._
 
