@@ -28,7 +28,7 @@ import ReplicationEndpoint.InstanceId
 object ReplicationProtocol {
   case object TransferDue
 
-  case class Connect(exclusion: String, instanceId: InstanceId)
+  case class Connect(filter: ReplicationFilter, instanceId: InstanceId)
   case class ConnectAccepted(sourceLogId: String, replicationServer: ActorRef, instanceId: InstanceId)
   case class ConnectRequested(instanceId: InstanceId)
   case object ConnectionRenewal
@@ -44,10 +44,10 @@ object ReplicationProtocol {
   case class ReplicateFailure(cause: Throwable)
   case class ReplicateSuccess(num: Int)
 
-  case class Updated(sourceLogId: String)
+  case class Updated(events: Seq[DurableEvent])
 }
 
-class ReplicationServer(sourceLog: ActorRef, exclusion: String, remoteInstanceId: InstanceId) extends Actor {
+class ReplicationServer(sourceLog: ActorRef, filter: ReplicationFilter, remoteInstanceId: InstanceId) extends Actor {
   import ReplicationProtocol._
   import EventLogProtocol._
 
@@ -59,10 +59,10 @@ class ReplicationServer(sourceLog: ActorRef, exclusion: String, remoteInstanceId
   // ----------------------------------------------------------
 
   val idle: Receive = {
-    case Updated(sourceLogId) if sourceLogId != exclusion =>
+    case Updated(events) if events.exists(filter.apply) =>
       replicationClient.foreach(_ ! TransferDue)
     case Transfer(fromSequenceNr, max, correlationId) =>
-      sourceLog ! Read(fromSequenceNr, max, exclusion)
+      sourceLog ! Read(fromSequenceNr, max, filter)
       replicationClient = Some(sender())
       context.become(transferring(correlationId))
   }
@@ -153,7 +153,7 @@ class ReplicationClient(sourceLogId: String, targetLog: ActorRef, replicationSer
   }
 }
 
-class ReplicationClientConnector(host: String, port: Int, exclusion: String, targetLog: ActorRef, localInstanceId: InstanceId) extends Actor {
+class ReplicationClientConnector(host: String, port: Int, filter: ReplicationFilter, targetLog: ActorRef, localInstanceId: InstanceId) extends Actor with ActorLogging {
   import ReplicationProtocol._
 
   val selection = context.actorSelection(s"akka.tcp://site@${host}:${port}/user/${ReplicationServerConnector.name}")
@@ -162,7 +162,7 @@ class ReplicationClientConnector(host: String, port: Int, exclusion: String, tar
     case ReceiveTimeout =>
       selection ! Identify(1)
     case ActorIdentity(1, Some(connector)) =>
-      connector ! Connect(exclusion, localInstanceId)
+      connector ! Connect(filter, localInstanceId)
       context.setReceiveTimeout(Duration.Undefined)
       context.become(connected)
   }
@@ -170,7 +170,7 @@ class ReplicationClientConnector(host: String, port: Int, exclusion: String, tar
   val connected: Receive = {
     case ConnectAccepted(sourceLogId, replicationServer, remoteInstanceId) =>
       context.actorOf(Props(new ReplicationClient(sourceLogId, targetLog, replicationServer, remoteInstanceId)))
-      println(s"Opened replication connection to ${host}:${port}")
+      log.info(s"Opened replication connection to ${host}:${port}")
     case ConnectionRenewal =>
       context.setReceiveTimeout(1.seconds)
       context.become(connecting)
@@ -190,8 +190,8 @@ class ReplicationServerConnector(sourceLogId: String, sourceLog: ActorRef, local
   import ReplicationProtocol._
 
   def receive = {
-    case Connect(exclusion, remoteInstanceId) =>
-      val server = context.actorOf(Props(new ReplicationServer(sourceLog, exclusion, remoteInstanceId)))
+    case Connect(filter, remoteInstanceId) =>
+      val server = context.actorOf(Props(new ReplicationServer(sourceLog, filter, remoteInstanceId)))
       sender() ! ConnectAccepted(sourceLogId, server, localInstanceId)
       context.system.eventStream.publish(ConnectRequested(remoteInstanceId))
   }

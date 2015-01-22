@@ -73,7 +73,7 @@ import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.log.LeveldbEventLog
 
 val system = ActorSystem("site")
-val endpoint = new ReplicationEndpoint(system, logId => LeveldbEventLog.props(logId))
+val endpoint = ReplicationEndpoint(system, logId => LeveldbEventLog.props(logId))
 ```
 
 A replication endpoint and the `log.connections` configuration on each site implement the replicated event log. Please note that the current implementation doesn't allow cycles in the replication network to preserve the happens-before relationship (= potential causal relationship) of events. This is a limitation that will be removed in later versions (which will be able re-order events based on their vector timestamps). 

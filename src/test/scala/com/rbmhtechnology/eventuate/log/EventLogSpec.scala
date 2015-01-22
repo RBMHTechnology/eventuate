@@ -22,6 +22,9 @@ object EventLogSpec {
   val processIdC = "C"
   val remoteLogId = "R1"
 
+  val remoteLogIdFilter = SourceLogIdExclusionFilter(remoteLogId)
+  val undefinedLogIdFilter = SourceLogIdExclusionFilter(UndefinedLogId)
+
   def event(payload: Any, timestamp: VectorTime, processId: String): DurableEvent =
     DurableEvent(payload, timestamp, processId, UndefinedLogId, UndefinedLogId, UndefinedSequenceNr, UndefinedSequenceNr)
 
@@ -80,7 +83,7 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     requestorProbe.expectMsg(WriteSuccess(generatedEvents(0), 0))
     requestorProbe.expectMsg(WriteSuccess(generatedEvents(1), 0))
     requestorProbe.expectMsg(WriteSuccess(generatedEvents(2), 0))
-    notificationProbe.expectMsg(Updated(logId))
+    notificationProbe.expectMsg(Updated(generatedEvents))
   }
 
   def replicateEvents(offset: Long, remoteLogId: String = remoteLogId): Unit = {
@@ -96,7 +99,7 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
 
     log.tell(Replicate(events), replicatorProbe.ref)
     replicatorProbe.expectMsg(ReplicateSuccess(events.length))
-    notificationProbe.expectMsg(Updated(remoteLogId))
+    notificationProbe.expectMsg(Updated(replicatedEvents))
   }
 
   "A LeveldbEventLog" must {
@@ -167,42 +170,42 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     }
     "batch-read local events" in {
       generateEvents()
-      log.tell(Read(1, Int.MaxValue, UndefinedLogId), requestorProbe.ref)
+      log.tell(Read(1, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
       requestorProbe.expectMsg(ReadSuccess(generatedEvents))
     }
     "batch-read local and replicated events" in {
       generateEvents()
       replicateEvents(offset = 3)
-      log.tell(Read(1, Int.MaxValue, UndefinedLogId), requestorProbe.ref)
+      log.tell(Read(1, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
       requestorProbe.expectMsg(ReadSuccess(generatedEvents ++ replicatedEvents))
     }
     "batch-read events with a batch size limit" in {
       generateEvents()
-      log.tell(Read(1, 2, UndefinedLogId), requestorProbe.ref)
+      log.tell(Read(1, 2, undefinedLogIdFilter), requestorProbe.ref)
       requestorProbe.expectMsg(ReadSuccess(generatedEvents.take(2)))
-      log.tell(Read(1, 0, UndefinedLogId), requestorProbe.ref)
+      log.tell(Read(1, 0, undefinedLogIdFilter), requestorProbe.ref)
       requestorProbe.expectMsg(ReadSuccess(Nil))
     }
     "batch-read events from a custom position" in {
       generateEvents()
-      log.tell(Read(2, Int.MaxValue, UndefinedLogId), requestorProbe.ref)
+      log.tell(Read(2, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
       requestorProbe.expectMsg(ReadSuccess(generatedEvents.drop(1)))
     }
     "batch-read events from a custom position with a batch size limit" in {
       generateEvents()
-      log.tell(Read(2, 1, UndefinedLogId), requestorProbe.ref)
+      log.tell(Read(2, 1, undefinedLogIdFilter), requestorProbe.ref)
       requestorProbe.expectMsg(ReadSuccess(generatedEvents.drop(1).take(1)))
     }
     "batch-read events with exclusion" in {
       generateEvents()
       replicateEvents(offset = 3)
-      log.tell(Read(1, Int.MaxValue, logId), requestorProbe.ref)
+      log.tell(Read(1, Int.MaxValue, SourceLogIdExclusionFilter(logId)), requestorProbe.ref)
       requestorProbe.expectMsg(ReadSuccess(replicatedEvents))
-      log.tell(Read(1, Int.MaxValue, remoteLogId), requestorProbe.ref)
+      log.tell(Read(1, Int.MaxValue, SourceLogIdExclusionFilter(remoteLogId)), requestorProbe.ref)
       requestorProbe.expectMsg(ReadSuccess(generatedEvents))
     }
     "reply with a failure message if batch-read fails" in {
-      log.tell(Read(-1, Int.MaxValue, UndefinedLogId), requestorProbe.ref)
+      log.tell(Read(-1, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
       requestorProbe.expectMsg(ReadFailure(boom))
     }
     "recover the current sequence number on (re)start" in {

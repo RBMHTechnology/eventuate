@@ -17,7 +17,7 @@ import akka.serialization.SerializationExtension
 import org.iq80.leveldb._
 import org.fusesource.leveldbjni.JniDBFactory.factory
 
-import com.rbmhtechnology.eventuate.DurableEvent
+import com.rbmhtechnology.eventuate.{ReplicationFilter, DurableEvent}
 import com.rbmhtechnology.eventuate.EventLogProtocol._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 
@@ -49,9 +49,9 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
         case Success(_) => requestor ! ReplaySuccess(iid)
         case Failure(e) => requestor ! ReplayFailure(e, iid)
       }
-    case Read(from, max, exclusion) =>
+    case Read(from, max, filter) =>
       val sdr = sender()
-      Future(read(from, max, exclusion)) onComplete {
+      Future(read(from, max, filter)) onComplete {
         case Success(events) => sdr ! ReadSuccess(events)
         case Failure(cause)  => sdr ! ReadFailure(cause)
       }
@@ -74,7 +74,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
             requestor forward WriteSuccess(event, iid)
             registered.foreach(r => if (r != requestor) r ! Written(event))
           }
-          context.system.eventStream.publish(Updated(id))
+          context.system.eventStream.publish(Updated(updated))
       }
     case Replicate(events) =>
       val updated = events.map { event =>
@@ -91,7 +91,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
         case Success(_) =>
           updated.foreach { event => registered.foreach(_ ! Written(event)) }
           updated.lastOption.foreach { event => writeReplicationProgress(event.sourceLogId, event.sourceLogSequenceNr) }
-          updated.map(_.sourceLogId).toSet[String].foreach { id => context.system.eventStream.publish(Updated(id)) }
+          context.system.eventStream.publish(Updated(updated))
           sender() ! ReplicateSuccess(events.size)
       }
     case Terminated(requestor) =>
@@ -106,14 +106,14 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
     }
   }
 
-  def read(from: Long, max: Int, exclusion: String): Seq[DurableEvent] = withIterator { iter =>
+  def read(from: Long, max: Int, filter: ReplicationFilter): Seq[DurableEvent] = withIterator { iter =>
     @annotation.tailrec
     def go(events: Vector[DurableEvent], num: Int): Vector[DurableEvent] = if (iter.hasNext && num > 0) {
       val nextEntry = iter.next()
       val nextKey = eventKey(nextEntry.getKey)
       if (nextKey != eventKeyEnd) {
         val nextEvt = event(nextEntry.getValue)
-        if (nextEvt.sourceLogId == exclusion) go(events, num)
+        if (!filter(nextEvt)) go(events, num)
         else go(events :+ event(nextEntry.getValue), num - 1)
       } else events
     } else events

@@ -28,8 +28,8 @@ object EventLogSupport {
     override def replay(from: Long)(f: (DurableEvent) => Unit): Unit =
       if (from == -1L) throw boom else super.replay(from)(f)
 
-    override def read(from: Long, max: Int, exclusion: String): Seq[DurableEvent] =
-      if (from == -1L) throw boom else super.read(from, max, exclusion)
+    override def read(from: Long, max: Int, filter: ReplicationFilter): Seq[DurableEvent] =
+      if (from == -1L) throw boom else super.read(from, max, filter)
 
     override def write(events: Seq[DurableEvent]): Unit = events match {
       case es if es.map(_.payload).contains("boom") => throw boom

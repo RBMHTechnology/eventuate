@@ -9,7 +9,7 @@ import akka.actor._
 import scala.collection.immutable.Seq
 
 object EventLogProtocol {
-  case class Read(from: Long, max: Int, exclusion: String)
+  case class Read(from: Long, max: Int, filter: ReplicationFilter)
   case class ReadSuccess(events: Seq[DurableEvent])
   case class ReadFailure(cause: Throwable)
 
