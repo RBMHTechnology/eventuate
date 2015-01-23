@@ -10,7 +10,7 @@ import scala.collection.immutable.Seq
 
 object EventLogProtocol {
   case class Read(from: Long, max: Int, filter: ReplicationFilter)
-  case class ReadSuccess(events: Seq[DurableEvent])
+  case class ReadSuccess(events: Seq[DurableEvent], last: Long)
   case class ReadFailure(cause: Throwable)
 
   case class Delay(commands: Seq[Any], requestor: ActorRef, instanceId: Int)

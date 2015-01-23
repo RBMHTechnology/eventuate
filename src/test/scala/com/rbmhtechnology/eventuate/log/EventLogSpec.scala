@@ -4,6 +4,8 @@
 
 package com.rbmhtechnology.eventuate.log
 
+import scala.collection.immutable.Seq
+
 import akka.actor._
 import akka.testkit.{TestProbe, TestKit}
 
@@ -97,9 +99,15 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
       DurableEvent("j", timestampAB(0, 8), processIdB, remoteLogId, logId, 8, 2 + offset),
       DurableEvent("k", timestampAB(0, 9), processIdB, remoteLogId, logId, 9, 3 + offset))
 
-    log.tell(Replicate(events), replicatorProbe.ref)
+    log.tell(Replicate(events, remoteLogId, 9), replicatorProbe.ref)
     replicatorProbe.expectMsg(ReplicateSuccess(events.length))
     notificationProbe.expectMsg(Updated(replicatedEvents))
+  }
+
+  def replicateNone(lastReadSourceLogSequenceNr: Long, remoteLogId: String = remoteLogId): Unit = {
+    log.tell(Replicate(Seq(), remoteLogId, lastReadSourceLogSequenceNr), replicatorProbe.ref)
+    replicatorProbe.expectMsg(ReplicateSuccess(0))
+    notificationProbe.expectMsg(Updated(Seq()))
   }
 
   "A LeveldbEventLog" must {
@@ -139,12 +147,25 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
       log.tell(GetReplicationProgress(remoteLogId), requestorProbe.ref)
       requestorProbe.expectMsg(GetReplicationProgressSuccess(9))
     }
+    "update the replication progress map if last read sequence nr > last replicated sequence nr" in {
+      log.tell(GetReplicationProgress(remoteLogId), requestorProbe.ref)
+      requestorProbe.expectMsg(GetReplicationProgressSuccess(0))
+      replicateNone(19)
+      log.tell(GetReplicationProgress(remoteLogId), requestorProbe.ref)
+      requestorProbe.expectMsg(GetReplicationProgressSuccess(19))
+    }
+    "no update the replication progress map if last read sequence nr <= last replicated sequence nr" in {
+      replicateNone(19)
+      replicateNone(17)
+      log.tell(GetReplicationProgress(remoteLogId), requestorProbe.ref)
+      requestorProbe.expectMsg(GetReplicationProgressSuccess(19))
+    }
     "reply with a failure message if replication fails" in {
       val events: Vector[DurableEvent] = Vector(
         DurableEvent("boom", timestampAB(0, 7), processIdB, remoteLogId, remoteLogId, 7, 7),
         DurableEvent("okay", timestampAB(0, 8), processIdB, remoteLogId, remoteLogId, 8, 8))
 
-      log.tell(Replicate(events), replicatorProbe.ref)
+      log.tell(Replicate(events, remoteLogId, 8), replicatorProbe.ref)
       replicatorProbe.expectMsg(ReplicateFailure(boom))
     }
     "replay events from scratch" in {
@@ -171,38 +192,38 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     "batch-read local events" in {
       generateEvents()
       log.tell(Read(1, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(generatedEvents))
+      requestorProbe.expectMsg(ReadSuccess(generatedEvents, 3))
     }
     "batch-read local and replicated events" in {
       generateEvents()
       replicateEvents(offset = 3)
       log.tell(Read(1, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(generatedEvents ++ replicatedEvents))
+      requestorProbe.expectMsg(ReadSuccess(generatedEvents ++ replicatedEvents, 6))
     }
     "batch-read events with a batch size limit" in {
       generateEvents()
       log.tell(Read(1, 2, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(generatedEvents.take(2)))
+      requestorProbe.expectMsg(ReadSuccess(generatedEvents.take(2), 2))
       log.tell(Read(1, 0, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(Nil))
+      requestorProbe.expectMsg(ReadSuccess(Nil, 0))
     }
     "batch-read events from a custom position" in {
       generateEvents()
       log.tell(Read(2, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(generatedEvents.drop(1)))
+      requestorProbe.expectMsg(ReadSuccess(generatedEvents.drop(1), 3))
     }
     "batch-read events from a custom position with a batch size limit" in {
       generateEvents()
       log.tell(Read(2, 1, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(generatedEvents.drop(1).take(1)))
+      requestorProbe.expectMsg(ReadSuccess(generatedEvents.drop(1).take(1), 2))
     }
     "batch-read events with exclusion" in {
       generateEvents()
       replicateEvents(offset = 3)
       log.tell(Read(1, Int.MaxValue, SourceLogIdExclusionFilter(logId)), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(replicatedEvents))
+      requestorProbe.expectMsg(ReadSuccess(replicatedEvents, 6))
       log.tell(Read(1, Int.MaxValue, SourceLogIdExclusionFilter(remoteLogId)), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(generatedEvents))
+      requestorProbe.expectMsg(ReadSuccess(generatedEvents, 6))
     }
     "reply with a failure message if batch-read fails" in {
       log.tell(Read(-1, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)

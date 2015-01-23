@@ -34,13 +34,13 @@ object ReplicationProtocol {
   case object ConnectionRenewal
 
   case class Transfer(fromSequenceNr: Long, max: Int, correlationId: Int)
-  case class TransferSuccess(events: Seq[DurableEvent], correlationId: Int)
+  case class TransferSuccess(events: Seq[DurableEvent], lastSourceLogSequenceNrRead: Long, correlationId: Int)
   case class TransferFailure(cause: Throwable, correlationId: Int)
 
   case class GetLastSourceLogSequenceNrReplicated(sourceLogId: String)
   case class GetLastSourceLogSequenceNrReplicatedSuccess(sourceLogId: String, sourceLogSequenceNr: Long)
 
-  case class Replicate(events: Seq[DurableEvent])
+  case class Replicate(events: Seq[DurableEvent], sourceLogId: String, lastSourceLogSequenceNrRead: Long)
   case class ReplicateFailure(cause: Throwable)
   case class ReplicateSuccess(num: Int)
 
@@ -68,8 +68,8 @@ class ReplicationServer(sourceLog: ActorRef, filter: ReplicationFilter, remoteIn
   }
 
   def transferring(correlationId: Int): Receive = {
-    case ReadSuccess(events) =>
-      replicationClient.foreach(_ ! TransferSuccess(events, correlationId))
+    case ReadSuccess(events, lastSourceLogSequenceNrRead) =>
+      replicationClient.foreach(_ ! TransferSuccess(events, lastSourceLogSequenceNrRead, correlationId))
       context.become(idle)
     case ReadFailure(cause) =>
       replicationClient.foreach(_ ! TransferFailure(cause, correlationId))
@@ -120,8 +120,8 @@ class ReplicationClient(sourceLogId: String, targetLog: ActorRef, replicationSer
   def replicating(correlationId: Int): Receive = {
     case GetLastSourceLogSequenceNrReplicatedSuccess(sourceLogId, sourceLogSequenceNr) =>
       replicationServer ! Transfer(sourceLogSequenceNr + 1, batchSize, correlationId)
-    case TransferSuccess(events, `correlationId`) =>
-      targetLog ! Replicate(events)
+    case TransferSuccess(events, lastSourceLogSequenceNrRead, `correlationId`) =>
+      targetLog ! Replicate(events, sourceLogId, lastSourceLogSequenceNrRead)
     case TransferFailure(cause, `correlationId`) =>
       // TODO: log cause
       context.become(idle)

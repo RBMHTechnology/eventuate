@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils
 import org.scalatest._
 
 import com.rbmhtechnology.eventuate._
+import com.rbmhtechnology.eventuate.log.LeveldbEventLog.ReadResult
 
 object EventLogSupport {
   case object GetSequenceNr
@@ -28,7 +29,7 @@ object EventLogSupport {
     override def replay(from: Long)(f: (DurableEvent) => Unit): Unit =
       if (from == -1L) throw boom else super.replay(from)(f)
 
-    override def read(from: Long, max: Int, filter: ReplicationFilter): Seq[DurableEvent] =
+    override def read(from: Long, max: Int, filter: ReplicationFilter): ReadResult =
       if (from == -1L) throw boom else super.read(from, max, filter)
 
     override def write(events: Seq[DurableEvent]): Unit = events match {

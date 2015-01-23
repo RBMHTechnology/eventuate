@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2015 Red Bull Media House GmbH - all rights reserved.
+ */
+
 package com.rbmhtechnology.eventuate
 
 import org.scalatest._

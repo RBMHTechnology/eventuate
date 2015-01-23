@@ -52,7 +52,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
     case Read(from, max, filter) =>
       val sdr = sender()
       Future(read(from, max, filter)) onComplete {
-        case Success(events) => sdr ! ReadSuccess(events)
+        case Success(result) => sdr ! ReadSuccess(result.events, result.to)
         case Failure(cause)  => sdr ! ReadFailure(cause)
       }
     case Delay(commands, requestor, iid) =>
@@ -76,7 +76,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
           }
           context.system.eventStream.publish(Updated(updated))
       }
-    case Replicate(events) =>
+    case Replicate(events, sourceLogId, lastSourceLogSequenceNrRead) =>
       val updated = events.map { event =>
         val snr = nextSequenceNr()
         event.copy(
@@ -89,8 +89,11 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
         case Failure(e) =>
           sender() ! ReplicateFailure(e)
         case Success(_) =>
+          val lastSourceLogSequenceNrReplicated = readReplicationProgress(sourceLogId)
+          if (lastSourceLogSequenceNrRead > lastSourceLogSequenceNrReplicated) {
+            writeReplicationProgress(sourceLogId, lastSourceLogSequenceNrRead)
+          }
           updated.foreach { event => registered.foreach(_ ! Written(event)) }
-          updated.lastOption.foreach { event => writeReplicationProgress(event.sourceLogId, event.sourceLogSequenceNr) }
           context.system.eventStream.publish(Updated(updated))
           sender() ! ReplicateSuccess(events.size)
       }
@@ -106,22 +109,26 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
     }
   }
 
-  def read(from: Long, max: Int, filter: ReplicationFilter): Seq[DurableEvent] = withIterator { iter =>
+  def read(from: Long, max: Int, filter: ReplicationFilter): ReadResult = withIterator { iter =>
+    val first = if (from < 1L) 1L else from
+    var last = first - 1
     @annotation.tailrec
     def go(events: Vector[DurableEvent], num: Int): Vector[DurableEvent] = if (iter.hasNext && num > 0) {
       val nextEntry = iter.next()
       val nextKey = eventKey(nextEntry.getKey)
       if (nextKey != eventKeyEnd) {
         val nextEvt = event(nextEntry.getValue)
+        last = nextKey
         if (!filter(nextEvt)) go(events, num)
         else go(events :+ event(nextEntry.getValue), num - 1)
       } else events
     } else events
-    iter.seek(eventKeyBytes(if (from < 1L) 1L else from))
-    go(Vector.empty, max)
+    iter.seek(eventKeyBytes(first))
+    ReadResult(go(Vector.empty, max), last)
   }
 
   def replay(from: Long)(f: DurableEvent => Unit): Unit = withIterator { iter =>
+    val first = if (from < 1L) 1L else from
     @annotation.tailrec
     def go(): Unit = if (iter.hasNext) {
       val nextEntry = iter.next()
@@ -131,7 +138,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
         go()
       }
     }
-    iter.seek(eventKeyBytes(if (from < 1L) 1L else from))
+    iter.seek(eventKeyBytes(first))
     go()
   }
 
@@ -187,6 +194,8 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
 }
 
 object LeveldbEventLog {
+  case class ReadResult(events: Seq[DurableEvent], to: Long)
+
   val counterKey: Long = 0L
   val counterKeyBytes: Array[Byte] =
     longBytes(counterKey)
