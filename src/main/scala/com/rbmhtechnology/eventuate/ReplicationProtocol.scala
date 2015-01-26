@@ -39,6 +39,7 @@ object ReplicationProtocol {
 
   case class GetLastSourceLogSequenceNrReplicated(sourceLogId: String)
   case class GetLastSourceLogSequenceNrReplicatedSuccess(sourceLogId: String, sourceLogSequenceNr: Long)
+  case class GetLastSourceLogSequenceNrReplicatedFailure(cause: Throwable)
 
   case class Replicate(events: Seq[DurableEvent], sourceLogId: String, lastSourceLogSequenceNrRead: Long)
   case class ReplicateFailure(cause: Throwable)
@@ -120,6 +121,9 @@ class ReplicationClient(sourceLogId: String, targetLog: ActorRef, replicationSer
   def replicating(correlationId: Int): Receive = {
     case GetLastSourceLogSequenceNrReplicatedSuccess(sourceLogId, sourceLogSequenceNr) =>
       replicationServer ! Transfer(sourceLogSequenceNr + 1, batchSize, correlationId)
+    case GetLastSourceLogSequenceNrReplicatedFailure(cause) =>
+      // TODO: log cause
+      context.become(idle)
     case TransferSuccess(events, lastSourceLogSequenceNrRead, `correlationId`) =>
       targetLog ! Replicate(events, sourceLogId, lastSourceLogSequenceNrRead)
     case TransferFailure(cause, `correlationId`) =>

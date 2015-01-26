@@ -154,7 +154,7 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
       log.tell(GetReplicationProgress(remoteLogId), requestorProbe.ref)
       requestorProbe.expectMsg(GetReplicationProgressSuccess(19))
     }
-    "no update the replication progress map if last read sequence nr <= last replicated sequence nr" in {
+    "not update the replication progress map if last read sequence nr <= last replicated sequence nr" in {
       replicateNone(19)
       replicateNone(17)
       log.tell(GetReplicationProgress(remoteLogId), requestorProbe.ref)

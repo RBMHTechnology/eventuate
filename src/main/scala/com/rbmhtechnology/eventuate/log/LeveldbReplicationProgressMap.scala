@@ -8,7 +8,7 @@ import java.nio.ByteBuffer
 
 import akka.actor.Actor
 
-import org.iq80.leveldb.DBIterator
+import org.iq80.leveldb.{WriteBatch, DBIterator}
 
 trait LeveldbReplicationProgressMap extends Actor { this: LeveldbEventLog with LeveldbNumericIdentifierMap =>
   import LeveldbReplicationProgressMap._
@@ -16,10 +16,13 @@ trait LeveldbReplicationProgressMap extends Actor { this: LeveldbEventLog with L
 
   private var rpMap: Map[Int, Long] = Map.empty
 
-  def writeReplicationProgress(logId: String, logSnr: Long): Unit = {
+  def writeReplicationProgress(logId: String, logSnr: Long): Unit =
+    withBatch(writeReplicationProgress(logId, logSnr, _))
+
+  def writeReplicationProgress(logId: String, logSnr: Long, batch: WriteBatch): Unit = {
     val nid = numericId(logId)
     rpMap = rpMap + (nid -> logSnr)
-    leveldb.put(rpKeyBytes(nid), longBytes(logSnr))
+    batch.put(rpKeyBytes(nid), longBytes(logSnr))
   }
 
   def readReplicationProgress(logId: String): Long = rpMap.get(numericId(logId)) match {

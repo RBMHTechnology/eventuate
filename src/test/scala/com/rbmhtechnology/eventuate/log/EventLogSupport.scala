@@ -12,6 +12,7 @@ import akka.actor._
 import akka.testkit.TestKit
 
 import org.apache.commons.io.FileUtils
+import org.iq80.leveldb.WriteBatch
 import org.scalatest._
 
 import com.rbmhtechnology.eventuate._
@@ -32,9 +33,9 @@ object EventLogSupport {
     override def read(from: Long, max: Int, filter: ReplicationFilter): ReadResult =
       if (from == -1L) throw boom else super.read(from, max, filter)
 
-    override def write(events: Seq[DurableEvent]): Unit = events match {
+    override def write(events: Seq[DurableEvent], batch: WriteBatch): Unit = events match {
       case es if es.map(_.payload).contains("boom") => throw boom
-      case _ => super.write(events)
+      case _ => super.write(events, batch)
     }
 
     override def unhandled(message: Any): Unit = message match {

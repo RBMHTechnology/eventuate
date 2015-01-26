@@ -42,7 +42,10 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
 
   final def receive = {
     case GetLastSourceLogSequenceNrReplicated(sourceLogId) =>
-      sender() ! GetLastSourceLogSequenceNrReplicatedSuccess(sourceLogId, readReplicationProgress(sourceLogId))
+      Try(readReplicationProgress(sourceLogId)) match {
+        case Success(r) => sender() ! GetLastSourceLogSequenceNrReplicatedSuccess(sourceLogId, r)
+        case Failure(e) => sender() ! GetLastSourceLogSequenceNrReplicatedFailure(e)
+      }
     case Replay(from, requestor, iid) =>
       registered = registered + context.watch(requestor)
       Future(replay(from)(event => requestor ! Replaying(event, iid))) onComplete {
@@ -85,28 +88,40 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
           sourceLogSequenceNr = event.targetLogSequenceNr,
           targetLogSequenceNr = snr)
       }
-      Try(write(updated)) match {
-        case Failure(e) =>
-          sender() ! ReplicateFailure(e)
-        case Success(_) =>
-          val lastSourceLogSequenceNrReplicated = readReplicationProgress(sourceLogId)
+      Try(readReplicationProgress(sourceLogId)) match {
+        case Failure(e) => sender() ! ReplicateFailure(e)
+        case Success(lastSourceLogSequenceNrReplicated) =>
           if (lastSourceLogSequenceNrRead > lastSourceLogSequenceNrReplicated) {
-            writeReplicationProgress(sourceLogId, lastSourceLogSequenceNrRead)
+            Try {
+              withBatch { batch =>
+                // atomic write of events and replication progress
+                writeReplicationProgress(sourceLogId, lastSourceLogSequenceNrRead, batch)
+                write(updated, batch)
+              }
+            } match {
+              case Failure(e) => sender() ! ReplicateFailure(e)
+              case Success(_) =>
+                updated.foreach { event => registered.foreach(_ ! Written(event))}
+                context.system.eventStream.publish(Updated(updated))
+                sender() ! ReplicateSuccess(events.size)
+            }
+          } else {
+            // duplicate detected
+            context.system.eventStream.publish(Updated(Seq()))
+            sender() ! ReplicateSuccess(0)
           }
-          updated.foreach { event => registered.foreach(_ ! Written(event)) }
-          context.system.eventStream.publish(Updated(updated))
-          sender() ! ReplicateSuccess(events.size)
       }
     case Terminated(requestor) =>
       registered = registered - requestor
   }
 
-  def write(events: Seq[DurableEvent]): Unit = withBatch { batch =>
-    events.foreach { event =>
-      val snr = event.sequenceNr
-      batch.put(counterKeyBytes, longBytes(snr))
-      batch.put(eventKeyBytes(snr), eventBytes(event))
-    }
+  def write(events: Seq[DurableEvent]): Unit =
+    withBatch(write(events, _))
+
+  def write(events: Seq[DurableEvent], batch: WriteBatch): Unit = events.foreach { event =>
+    val snr = event.sequenceNr
+    batch.put(counterKeyBytes, longBytes(snr))
+    batch.put(eventKeyBytes(snr), eventBytes(event))
   }
 
   def read(from: Long, max: Int, filter: ReplicationFilter): ReadResult = withIterator { iter =>
