@@ -193,18 +193,35 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
       dstProbe.expectMsg(("c", timestampAB(3, 2), timestampAB(0, 2), 3))
       dstProbe.expectMsg(("d", timestampAB(4, 3), timestampAB(0, 3), 4))
     }
-    "update the vector clock even if event is not handled during recovery" in {
-      val actor = unrecoveredActor()
-      actor ! Replaying(eventA("a", 1, timestampAB(1, 0)), instanceId)
-      actor ! Replaying(eventB("x", 2, timestampAB(0, 1)), instanceId)
-      actor ! Replaying(eventA("c", 3, timestampAB(2, 0)), instanceId)
-      actor ! ReplaySuccess(instanceId)
-      dstProbe.expectMsg(("a", timestampAB(1, 0), timestampAB(1, 0), 1))
-      dstProbe.expectMsg(("c", timestampAB(3, 1), timestampAB(2, 0), 3))
-    }
   }
 
   "An EventsourcedActor" when {
+    "receiving unhandled events during replay" must {
+      "not update the vector clock if the event has been emitted by another actor" in {
+        val actor = unrecoveredActor()
+        actor ! Replaying(eventA("a", 1, timestampAB(1, 0)), instanceId)
+        actor ! Replaying(eventB("x", 2, timestampAB(0, 1)), instanceId)
+        actor ! Replaying(eventA("c", 3, timestampAB(2, 0)), instanceId)
+        actor ! ReplaySuccess(instanceId)
+        dstProbe.expectMsg(("a", timestampAB(1, 0), timestampAB(1, 0), 1))
+        dstProbe.expectMsg(("c", timestampAB(2, 0), timestampAB(2, 0), 3))
+      }
+      "only update the vector clock's local time if the event has been emitted by itself" in {
+        val actor = unrecoveredActor()
+        actor ! Replaying(eventA("a", 1, timestampAB(1, 0)), instanceId)
+        actor ! Replaying(eventA("x", 3, timestampAB(3, 2)), instanceId)
+        // The event log ensures that timestamp (0,1) will never come after
+        // (2,2) but we use it here for testing vector clock updates ...
+        actor ! Replaying(eventB("c", 4, timestampAB(0, 1)), instanceId)
+        actor ! ReplaySuccess(instanceId)
+        dstProbe.expectMsg(("a", timestampAB(1, 0), timestampAB(1, 0), 1))
+        dstProbe.expectMsg(("c", timestampAB(4, 1), timestampAB(0, 1), 4))
+      }
+    }
+  }
+
+
+    "An EventsourcedActor" when {
     "in sync mode" must {
       "stash further commands while persistence is in progress" in {
         val actor = recoveredActor(sync = true)

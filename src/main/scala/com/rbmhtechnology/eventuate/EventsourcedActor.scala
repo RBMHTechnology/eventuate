@@ -59,9 +59,23 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Stash
     writeRequests = Vector.empty
   }
 
+  private def onDurableEvent(event: DurableEvent): Unit = {
+    if (onEvent.isDefinedAt(event.payload)) {
+      clock = clock.update(event.timestamp)
+      onLastConsumed(event)
+      onEvent(event.payload)
+    } else if (event.processId == processId) {
+      // Event not handled but it has been previously emitted by this
+      // actor. So we need to recover local time, otherwise, we could
+      // end up in the past after recovery ....
+      clock = clock.merge(event.timestamp.localCopy(processId))
+    } else {
+      // Ignore unhandled event that has been emitted by another actor.
+    }
+  }
+
   private val initiating: Receive = {
     case Replaying(event, iid) => if (iid == instanceId) {
-      clock = clock.update(event.timestamp)
       onDurableEvent(event)
     }
     case ReplaySuccess(iid) => if (iid == instanceId) {
@@ -102,7 +116,6 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Stash
       }
     }
     case Written(event) => if (event.sequenceNr > lastSequenceNr) {
-      clock = clock.update(event.timestamp)
       onDurableEvent(event)
       conditionChanged(lastTimestamp)
     }

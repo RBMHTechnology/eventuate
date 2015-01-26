@@ -110,6 +110,24 @@ object EventsourcedActorIntegrationSpec {
       case "a" =>
     }
   }
+
+  case class CollabCmd(to: String)
+  case class CollabEvt(to: String, from: String)
+
+  class CollabActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+    var initiated = false
+
+    override def onCommand = {
+      case CollabCmd(to) =>
+        persist(CollabEvt(to, processId))(_ => ())
+        initiated = true
+    }
+
+    override def onEvent = {
+      case evt @ CollabEvt(`processId`, from) =>
+        if (initiated) probe ! lastTimestamp else self ! CollabCmd(from)
+    }
+  }
 }
 
 import EventsourcedActorIntegrationSpec._
@@ -207,6 +225,25 @@ class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test", confi
       probe.expectMsg("a")
       probe.expectMsg("b")
       probe.expectMsg("a")
+    }
+  }
+
+  "An EventsourcedActor's vector clock size" must {
+    "scale with the number of its collaboration partners" in {
+      val probeAB = TestProbe()
+      val probeCD = TestProbe()
+
+      val actorA = system.actorOf(Props(new CollabActor("A", log, probeAB.ref)))
+      val actorC = system.actorOf(Props(new CollabActor("C", log, probeCD.ref)))
+
+      val actorB = system.actorOf(Props(new CollabActor("B", log, system.deadLetters)))
+      val actorD = system.actorOf(Props(new CollabActor("D", log, system.deadLetters)))
+
+      actorA ! CollabCmd("B")
+      actorC ! CollabCmd("D")
+
+      probeAB.expectMsg(VectorTime("A" -> 1, "B" -> 2))
+      probeCD.expectMsg(VectorTime("C" -> 1, "D" -> 2))
     }
   }
 

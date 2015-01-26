@@ -9,6 +9,12 @@ import akka.actor._
 trait EventsourcedView extends Eventsourced with ConditionalCommands with Stash {
   import EventLogProtocol._
 
+  private def onDurableEvent(event: DurableEvent): Unit =
+    if (onEvent.isDefinedAt(event.payload)) {
+      onLastConsumed(event)
+      onEvent(event.payload)
+    }
+
   private val initiating: Receive = {
     case Replaying(event, iid) => if (iid == instanceId) {
       onDurableEvent(event)

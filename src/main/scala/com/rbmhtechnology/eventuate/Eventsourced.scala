@@ -10,9 +10,6 @@ import akka.actor._
 
 object Eventsourced {
   val instanceIdCounter = new AtomicInteger(0)
-  val ignoreBehaviour: Actor.Receive = {
-    case _ => ()
-  }
 }
 
 trait Eventsourced extends Actor {
@@ -48,11 +45,6 @@ trait Eventsourced extends Actor {
     _lastSequenceNr = d.sequenceNr
     _lastTimestamp = d.timestamp
     _lastProcessId = d.processId
-  }
-
-  def onDurableEvent(d: DurableEvent): Unit = {
-    onLastConsumed(d)
-    onEvent.applyOrElse(d.payload, ignoreBehaviour)
   }
 }
 

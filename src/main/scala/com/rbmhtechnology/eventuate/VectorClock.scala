@@ -11,10 +11,10 @@ import Scalaz._
 
 case class VectorClock(processId: String, currentTime: VectorTime = VectorTime()) {
   /**
-   * Returns local time of `processId`.
+   * Returns the local time of `processId` recorded in this clock.
    */
   def currentLocalTime(): Long =
-    currentTime.value.withDefaultValue(0L).apply(processId)
+    currentTime.localTime(processId)
 
   /**
    * Updated current time from `t` (tick and merge).
@@ -39,6 +39,20 @@ case class VectorClock(processId: String, currentTime: VectorTime = VectorTime()
  * Vector time, represented as process id -> logical time map.
  */
 case class VectorTime(value: Map[String, Long] = Map.empty) {
+  /**
+   * Returns the local time of `processId`.
+   */
+  def localTime(processId: String): Long =
+    value.getOrElse(processId, 0L)
+
+  /**
+   * Returns the local time of `processId` represented as vector time.
+   */
+  def localCopy(processId: String): VectorTime = value.get(processId) match {
+    case Some(t) => VectorTime(processId -> t)
+    case None    => VectorTime()
+  }
+
   /**
    * Increases local time of specified `processId` by `1L`.
    */
