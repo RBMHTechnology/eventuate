@@ -59,11 +59,12 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Stash
     writeRequests = Vector.empty
   }
 
-  private def onDurableEvent(event: DurableEvent): Unit = {
+  private def onDurableEvent(event: DurableEvent, handled: DurableEvent => Unit = _ => ()): Unit = {
     if (onEvent.isDefinedAt(event.payload)) {
       clock = clock.update(event.timestamp)
       onLastConsumed(event)
       onEvent(event.payload)
+      handled(event)
     } else if (event.processId == processId) {
       // Event not handled but it has been previously emitted by this
       // actor. So we need to recover local time, otherwise, we could
@@ -115,10 +116,8 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Stash
         unstashAll()
       }
     }
-    case Written(event) => if (event.sequenceNr > lastSequenceNr) {
-      onDurableEvent(event)
-      conditionChanged(lastTimestamp)
-    }
+    case Written(event) => if (event.sequenceNr > lastSequenceNr)
+      onDurableEvent(event, e => conditionChanged(e.timestamp))
     case ConditionalCommand(condition, cmd) =>
       conditionalSend(condition, cmd)
     case cmd =>

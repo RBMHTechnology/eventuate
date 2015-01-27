@@ -92,8 +92,9 @@ object EventsourcedActorIntegrationSpec {
     override def sync: Boolean = false
 
     override def onCommand = {
-      case "persist" => persist("a")(r => probe ! r.get)
-      case other => probe ! other
+      case "persist"      => persist("a")(r => probe ! r.get)
+      case "persist-mute" => persist("a")(_ => ())
+      case other          => probe ! other
     }
 
     override def onEvent = {
@@ -253,15 +254,11 @@ class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test", confi
       val act1Props = Props(new ConditionalActor("1", log, probe.ref))
       val act2Props = Props(new ConditionalActor("2", log, probe.ref))
 
-      val view = system.actorOf(viewProps)
-      val act1 = system.actorOf(act1Props)
-      val act2 = system.actorOf(act2Props)
+      val view = system.actorOf(viewProps, "view")
+      val act1 = system.actorOf(act1Props, "act1")
+      val act2 = system.actorOf(act2Props, "act2")
 
       val condition = VectorTime("1" -> 3L)
-
-      act1 ! "persist"
-
-      probe.expectMsg("a")
 
       view ! ConditionalCommand(condition, "delayed")
       act1 ! ConditionalCommand(condition, "delayed-1")
@@ -269,6 +266,7 @@ class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test", confi
 
       act1 ! "persist"
       act1 ! "persist"
+      act1 ! "persist-mute"
 
       probe.expectMsg("a")
       probe.expectMsg("a")

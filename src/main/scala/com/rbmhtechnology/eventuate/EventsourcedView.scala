@@ -9,10 +9,11 @@ import akka.actor._
 trait EventsourcedView extends Eventsourced with ConditionalCommands with Stash {
   import EventLogProtocol._
 
-  private def onDurableEvent(event: DurableEvent): Unit =
+  private def onDurableEvent(event: DurableEvent, handled: DurableEvent => Unit = _ => ()): Unit =
     if (onEvent.isDefinedAt(event.payload)) {
       onLastConsumed(event)
       onEvent(event.payload)
+      handled(event)
     }
 
   private val initiating: Receive = {
@@ -33,10 +34,8 @@ trait EventsourcedView extends Eventsourced with ConditionalCommands with Stash 
   }
 
   private val initiated: Receive = {
-    case Written(event) => if (event.sequenceNr > lastSequenceNr) {
-      onDurableEvent(event)
-      conditionChanged(event.timestamp)
-    }
+    case Written(event) => if (event.sequenceNr > lastSequenceNr)
+      onDurableEvent(event, e => conditionChanged(e.timestamp))
     case ConditionalCommand(condition, cmd) =>
       conditionalSend(condition, cmd)
     case cmd =>
