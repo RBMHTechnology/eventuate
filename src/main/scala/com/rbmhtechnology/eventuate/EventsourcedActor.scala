@@ -13,11 +13,13 @@ import akka.actor._
 trait EventsourcedActor extends Eventsourced with ConditionalCommands with Stash {
   import EventLogProtocol._
 
+  type Handler[A] = Try[A] => Unit
+
   private var clock: VectorClock = _
   private var delayRequests: Vector[Any] = Vector.empty
   private var delayHandlers: Vector[Any => Unit] = Vector.empty
   private var writeRequests: Vector[DurableEvent] = Vector.empty
-  private var writeHandlers: Vector[Try[Any] => Unit] = Vector.empty
+  private var writeHandlers: Vector[Handler[Any]] = Vector.empty
   private var writing: Boolean = false
 
   def processId: String
@@ -29,14 +31,44 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Stash
     delayHandlers = delayHandlers :+ handler.asInstanceOf[Any => Unit]
   }
 
-  final def persist[A](event: A)(handler: Try[A] => Unit): Unit =
+  /**
+   * Persists a sequence of `events` and asynchronously calls `handler` with the persist
+   * results. The `handler` is called for each event in the sequence a during a separate
+   * message dispatch by this actor, hence, it is safe to modify internal state within
+   * `handler`. The `onLast` handler is additionally called for the last event in the
+   * sequence.
+   */
+  final def persistN[A](events: Seq[A], onLast: Handler[A] = (_: Try[A]) => ())(handler: Handler[A]): Unit = events match {
+    case Seq()   =>
+    case es :+ e =>
+      es.foreach { event =>
+        persist(event)(handler)
+      }
+      persist(e) { r =>
+        handler(r)
+        onLast(r)
+      }
+  }
+
+  /**
+   * Persists a single `event` and asynchronously calls `handler` with the persist result.
+   * The `handler` is called a during separate message dispatch by this actor, hence, it
+   * is safe to modify internal state within `handler`.
+   */
+  final def persist[A](event: A)(handler: Handler[A]): Unit =
     persistWithLocalTime(_ => event)(handler)
 
-  final def persistWithLocalTime[A](f: Long => A)(handler: Try[A] => Unit): A = {
+  /**
+   * Persists a single event returned by  `f` and asynchronously calls  `handler` with the
+   * persist result. The input parameter to `f` is the current local time. The `handler` is
+   * called a during separate message dispatch by this actor, hence, it is safe to modify
+   * internal state within `handler`.
+   */
+  final def persistWithLocalTime[A](f: Long => A)(handler: Handler[A]): A = {
     clock = clock.tick()
-    val event: A = f(clock.currentLocalTime())
-    writeRequests = writeRequests :+ DurableEvent(event, clock.currentTime, processId)
-    writeHandlers = writeHandlers :+ handler.asInstanceOf[Any => Unit]
+    val event = f(clock.currentLocalTime())
+    writeRequests = writeRequests :+ DurableEvent(event, clock.currentTime, processId = processId)
+    writeHandlers = writeHandlers :+ handler.asInstanceOf[Try[Any] => Unit]
     event
   }
 

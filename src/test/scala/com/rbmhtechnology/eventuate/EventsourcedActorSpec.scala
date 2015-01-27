@@ -36,6 +36,9 @@ object EventsourcedActorSpec {
       case "test-handler-order" =>
         persist("a")(r => dstProbe ! ((s"${r.get}-1", currentTime, lastTimestamp, lastSequenceNr)))
         persist("b")(r => dstProbe ! ((s"${r.get}-2", currentTime, lastTimestamp, lastSequenceNr)))
+      case "test-multi-persist" =>
+        val handler = (r: Try[String]) => dstProbe ! ((r.get, currentTime, lastTimestamp, lastSequenceNr))
+        persistN(Seq("a", "b", "c"), handler)(handler)
       case CmdDelayed(p) =>
         delay(p)(p => dstProbe ! ((p, currentTime, lastTimestamp, lastSequenceNr)))
       case Cmd(p, num) => 1 to num foreach { i =>
@@ -342,6 +345,21 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         actor ! WriteSuccess(write.events(1).copy(targetLogSequenceNr = 2L), instanceId)
         dstProbe.expectMsg(("a-1", timestampA(2), timestampA(1), 1))
         dstProbe.expectMsg(("b-2", timestampA(2), timestampA(2), 2))
+      }
+      "additionally invoke onLast handler for multi-persist" in {
+        val actor = recoveredActor(sync = true)
+        actor ! "test-multi-persist"
+        val write = logProbe.expectMsgClass(classOf[Write])
+        write.events(0).payload should be("a")
+        write.events(1).payload should be("b")
+        write.events(2).payload should be("c")
+        actor ! WriteSuccess(write.events(0).copy(targetLogSequenceNr = 1L), instanceId)
+        actor ! WriteSuccess(write.events(1).copy(targetLogSequenceNr = 2L), instanceId)
+        actor ! WriteSuccess(write.events(2).copy(targetLogSequenceNr = 3L), instanceId)
+        dstProbe.expectMsg(("a", timestampA(3), timestampA(1), 1))
+        dstProbe.expectMsg(("b", timestampA(3), timestampA(2), 2))
+        dstProbe.expectMsg(("c", timestampA(3), timestampA(3), 3))
+        dstProbe.expectMsg(("c", timestampA(3), timestampA(3), 3))
       }
       "report failed writes to persist handler" in {
         val actor = recoveredActor(sync = true)
