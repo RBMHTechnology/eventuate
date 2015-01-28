@@ -134,7 +134,7 @@ class ReplicationProtocolIntegrationSpec extends WordSpec with Matchers with Bef
     }
     "immediately attempt next batch if last replicated batch had maximum size" in {
       val nodeA = register(new ReplicationNode("A", 2552, List(localConnection(2553))))
-      val nodeB = register(new ReplicationNode("C", 2553, List(localConnection(2552))))
+      val nodeB = register(new ReplicationNode("B", 2553, List(localConnection(2552))))
 
       val probeB = new TestProbe(nodeB.system)
 
@@ -145,6 +145,44 @@ class ReplicationProtocolIntegrationSpec extends WordSpec with Matchers with Bef
 
       1 to num foreach { i => actorA ! s"a${i}" }
       1 to num foreach { i => probeB.expectMsg(s"a${i}") }
+    }
+    "detect replication server availability" in {
+      import ReplicationEndpoint._
+
+      val nodeA = register(new ReplicationNode("A", 2552, List(localConnection(2553))))
+      val nodeB = register(new ReplicationNode("B", 2553, List(localConnection(2552))))
+
+      val probeA = new TestProbe(nodeA.system)
+      val probeB = new TestProbe(nodeB.system)
+
+      nodeA.system.eventStream.subscribe(probeA.ref, classOf[Available])
+      nodeB.system.eventStream.subscribe(probeB.ref, classOf[Available])
+
+      probeA.expectMsg(Available("B"))
+      probeB.expectMsg(Available("A"))
+    }
+    "detect replication server unavailability" in {
+      import ReplicationEndpoint._
+
+      val nodeA = register(new ReplicationNode("A", 2552, List(localConnection(2553))))
+      val nodeB1 = register(new ReplicationNode("B", 2553, List(localConnection(2552))))
+
+      val probeAvailable1 = new TestProbe(nodeA.system)
+      val probeAvailable2 = new TestProbe(nodeA.system)
+      val probeUnavailable = new TestProbe(nodeA.system)
+
+      nodeA.system.eventStream.subscribe(probeAvailable1.ref, classOf[Available])
+      nodeA.system.eventStream.subscribe(probeUnavailable.ref, classOf[Unavailable])
+
+      probeAvailable1.expectMsg(Available("B"))
+      nodeB1.shutdown()
+      probeUnavailable.expectMsg(Unavailable("B"))
+
+      // start replication node B again
+      register(new ReplicationNode("B", 2553, List(localConnection(2552))))
+
+      nodeA.system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
+      probeAvailable2.expectMsg(Available("B"))
     }
   }
 }

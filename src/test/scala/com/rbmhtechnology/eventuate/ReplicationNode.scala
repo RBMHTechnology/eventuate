@@ -38,7 +38,8 @@ class ReplicationNode(logId: String, port: Int, connections: Seq[ReplicationConn
       |log.leveldb.dir = target/logs-system-${logId}
       |
       |log.replication.transfer-batch-size = 3
-      |log.replication.transfer-retry-interval = 3s
+      |log.replication.transfer-retry-interval = 1s
+      |log.replication.failure-detection-limit = 3s
     """.stripMargin)
 
   val system: ActorSystem =

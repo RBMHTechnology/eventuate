@@ -28,11 +28,30 @@ case class ReplicationConnection(host: String, port: Int, filter: Option[Replica
 object ReplicationEndpoint {
   case class Address(host: String, port: Int)
 
-  case class InstanceId(sid: String, uid: Long) {
+  /**
+   * Identifies a [[ReplicationEndpoint]] instance.
+   *
+   * @param uid Globally unique endpoint id.
+   * @param iid Instance specific endpoint id. Unique within scope of `uid`.
+   */
+  case class InstanceId(uid: String, iid: Long) {
+
+    /**
+     * Returns `true` if `id` is a new instance (= incarnation) `this`.
+     */
     def newIncarnationOf(id: InstanceId): Boolean =
-      sid == id.sid && uid != id.uid
+      uid == id.uid && iid != id.iid
   }
 
+  /**
+   * Published to the actor system's event stream if a remote endpoint is available.
+   */
+  case class Available(endpointId: String)
+
+  /**
+   * Published to the actor system's event stream if a remote endpoint is unavailable.
+   */
+  case class Unavailable(endpointId: String)
 
   private object Address {
     def unapply(s: String): Option[(String, Int)] = {
@@ -51,8 +70,8 @@ object ReplicationEndpoint {
   /**
    * Java API.
    */
-  def create(system: ActorSystem, factory: JFunction[String, Props]) =
-    apply(system, id => factory.apply(id))
+  def create(system: ActorSystem, logFactory: JFunction[String, Props]) =
+    apply(system, id => logFactory.apply(id))
 }
 
 class ReplicationEndpoint(system: ActorSystem, logFactory: String => Props, connections: Seq[ReplicationConnection]) {

@@ -110,10 +110,12 @@ class ReplicationServer(sourceLog: ActorRef, filter: ReplicationFilter, remoteIn
 }
 
 class ReplicationClient(sourceLogId: String, targetLog: ActorRef, replicationServer: ActorRef, remoteInstanceId: InstanceId) extends Actor {
+  import ReplicationServerFailureDetector._
   import ReplicationProtocol._
 
   val config = context.system.settings.config.getConfig("log.replication")
   val batchSize = config.getInt("transfer-batch-size")
+  val failureDetector = context.actorOf(Props(new ReplicationServerFailureDetector(remoteInstanceId)))
 
   var correlationId = 0
 
@@ -128,7 +130,11 @@ class ReplicationClient(sourceLogId: String, targetLog: ActorRef, replicationSer
   // ----------------------------------------------------------
 
   val idle: Receive = {
-    case TransferDue | ReceiveTimeout =>
+    case TransferDue =>
+      targetLog ! GetLastSourceLogSequenceNrReplicated(sourceLogId)
+      context.become(replicating(nextCorrelationId()))
+      failureDetector ! Tick
+    case ReceiveTimeout =>
       targetLog ! GetLastSourceLogSequenceNrReplicated(sourceLogId)
       context.become(replicating(nextCorrelationId()))
   }
@@ -141,9 +147,11 @@ class ReplicationClient(sourceLogId: String, targetLog: ActorRef, replicationSer
       context.become(idle)
     case TransferSuccess(events, lastSourceLogSequenceNrRead, `correlationId`) =>
       targetLog ! Replicate(events, sourceLogId, lastSourceLogSequenceNrRead)
+      failureDetector ! Tick
     case TransferFailure(cause, `correlationId`) =>
       // TODO: log cause
       context.become(idle)
+      failureDetector ! Tick
     case ReplicateSuccess(num, lastSourceLogSequenceNrReplicated) if num >= batchSize =>
       replicationServer ! Transfer(lastSourceLogSequenceNrReplicated + 1, batchSize, correlationId)
     case ReplicateSuccess(_, _) =>
@@ -217,4 +225,32 @@ class ReplicationServerConnector(sourceLogId: String, sourceLog: ActorRef, local
       sender() ! ConnectAccepted(sourceLogId, server, localInstanceId)
       context.system.eventStream.publish(ConnectRequested(remoteInstanceId))
   }
+}
+
+class ReplicationServerFailureDetector(remoteInstanceId: InstanceId) extends Actor {
+  import ReplicationServerFailureDetector._
+  import ReplicationEndpoint._
+
+  val config = context.system.settings.config.getConfig("log.replication")
+  val limit = config.getDuration("failure-detection-limit", TimeUnit.MILLISECONDS)
+
+  var lastTick: Long = 0L
+
+  context.setReceiveTimeout(limit.millis)
+
+  def receive = {
+    case Tick =>
+      val currentTime = System.currentTimeMillis
+      val lastInterval =  currentTime - lastTick
+      if (lastInterval >= limit) {
+        context.system.eventStream.publish(Available(remoteInstanceId.uid))
+        lastTick = currentTime
+      }
+    case ReceiveTimeout =>
+      context.system.eventStream.publish(Unavailable(remoteInstanceId.uid))
+  }
+}
+
+object ReplicationServerFailureDetector {
+  case object Tick
 }

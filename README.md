@@ -78,6 +78,58 @@ val endpoint = ReplicationEndpoint(system, logId => LeveldbEventLog.props(logId)
 
 A replication endpoint and the `log.connections` configuration on each site implement the replicated event log. Please note that the current implementation doesn't allow cycles in the replication network to preserve the happens-before relationship (= potential causal relationship) of events. This is a limitation that will be removed in later versions (which will be able re-order events based on their vector timestamps). 
 
+### Advanced configuration
+
+As already shown in section [Sites](#sites), replication connections (connecting to remote replication endpoints) can be configured with the `log.connections` configuration key. Alternatively, applications can also set up replication connections programmatically:
+
+```scala
+val connections = Seq(
+  ReplicationConnection("127.0.0.1", 2552),
+  ReplicationConnection("127.0.0.1", 2553),
+  ReplicationConnection("127.0.0.1", 2555))
+  
+val localEndpoint = new ReplicationEndpoint(system, id => LeveldbEventLog.props(id), connections)
+```
+
+A `ReplicationConnection` connects a local replication endpoint to a remote replication endpoint. The connection is unidirectional and events are replicated from the remote endpoint to the local endpoint. For bi-directional replication, the remote endpoint must additionally set up a replication connection in the other direction.  
+
+A `ReplicationConnection` can also specify a `ReplicationFilter`. Only events that pass the filter are actually replicated. Replication filters are configured on the local endpoint but applied on the remote endpoint. Hence, they must be serializable. In the following example, only events of type `String` that start with `"foo"` will be replicated from the remote to the local endpoint:
+
+```scala
+class MyFilter extends ReplicationFilter {
+  override def apply(event: DurableEvent): Boolean = event.payload match {
+    case s: String if s.startsWith("foo") => true
+    case _ => false
+  }
+}
+
+val connections = Seq(
+  ReplicationConnection("localhost", 2553, Some(new MyFilter)))
+
+val localEndpoint = new ReplicationEndpoint(system, id => LeveldbEventLog.props(id), connections)
+```
+
+### Failure detection
+
+Replication connections have a built-in failure detector that publishes 
+
+- `Available(endpointId: String)` messages to the actor system's event stream if the remote replication endpoint is available and
+- `Unavailable(endpointId: String)` messages to the actor system's event stream if the remote replication endpoint is unavailable
+  
+Both messages are defined in object `ReplicationEndpoint`. Their `endpointId` parameter is set the to the remote endpoint id. The failure detector can be configured with the `log.replication.failure-detection-limit` configuration key. For example,
+
+    log.replication.failure-detection-limit = 100s 
+    
+instructs the failure detector to publish an `Unavailable` message if there is no heartbeat from the remote endpoint within 100 seconds. `Available` and `Unavailable` messages are published periodically at intervals of `log.replication.failure-detection-limit`.
+
+### Testing
+
+For testing purposes, a local event log can also be instantiated without a replication endpoint:
+  
+```scala
+val log = system.actorOf(LeveldbEventLog.props("my-log-id"))
+```
+
 Event-sourced actors
 --------------------
 
