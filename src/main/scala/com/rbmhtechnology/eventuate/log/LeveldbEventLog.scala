@@ -115,12 +115,12 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
               case Success(_) =>
                 updated.foreach { event => registered.foreach(_ ! Written(event))}
                 context.system.eventStream.publish(Updated(updated))
-                sender() ! ReplicateSuccess(events.size)
+                sender() ! ReplicateSuccess(events.size, lastSourceLogSequenceNrRead)
             }
           } else {
             // duplicate detected
             context.system.eventStream.publish(Updated(Seq()))
-            sender() ! ReplicateSuccess(0)
+            sender() ! ReplicateSuccess(0, lastSourceLogSequenceNrReplicated)
           }
       }
     case Terminated(requestor) =>

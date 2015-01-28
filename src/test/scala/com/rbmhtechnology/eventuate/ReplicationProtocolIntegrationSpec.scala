@@ -111,7 +111,7 @@ class ReplicationProtocolIntegrationSpec extends WordSpec with Matchers with Bef
       assertPartialOrderOnAllReplicas("b1", "b2", "b3")
       assertPartialOrderOnAllReplicas("c1", "c2", "c3")
     }
-    "replicate all events based on filter criteria" in {
+    "replicate events based on filter criteria" in {
       val nodeA = register(new ReplicationNode("A", 2552, List(localConnection(2553, Some(new PayloadEqualityFilter("b2"))))))
       val nodeB = register(new ReplicationNode("B", 2553, List(localConnection(2552, Some(new PayloadEqualityFilter("a2"))))))
 
@@ -131,6 +131,20 @@ class ReplicationProtocolIntegrationSpec extends WordSpec with Matchers with Bef
 
       val eventsA = probeA.expectMsgAllOf("a1", "a2", "a3", "b2")
       val eventsB = probeB.expectMsgAllOf("b1", "b2", "b3", "a2")
+    }
+    "immediately attempt next batch if last replicated batch had maximum size" in {
+      val nodeA = register(new ReplicationNode("A", 2552, List(localConnection(2553))))
+      val nodeB = register(new ReplicationNode("C", 2553, List(localConnection(2552))))
+
+      val probeB = new TestProbe(nodeB.system)
+
+      val actorA = nodeA.system.actorOf(Props(new TestActor1("pa", nodeA.log, nodeA.system.deadLetters)))
+      val actorB = nodeB.system.actorOf(Props(new TestActor1("pb", nodeB.log, probeB.ref)))
+
+      val num = 100
+
+      1 to num foreach { i => actorA ! s"a${i}" }
+      1 to num foreach { i => probeB.expectMsg(s"a${i}") }
     }
   }
 }

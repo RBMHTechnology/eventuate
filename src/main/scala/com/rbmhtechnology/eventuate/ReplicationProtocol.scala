@@ -16,6 +16,8 @@
 
 package com.rbmhtechnology.eventuate
 
+import java.util.concurrent.TimeUnit
+
 import akka.actor._
 
 import scala.collection.immutable.Seq
@@ -55,7 +57,7 @@ object ReplicationProtocol {
 
   case class Replicate(events: Seq[DurableEvent], sourceLogId: String, lastSourceLogSequenceNrRead: Long)
   case class ReplicateFailure(cause: Throwable)
-  case class ReplicateSuccess(num: Int)
+  case class ReplicateSuccess(num: Int, lastSourceLogSequenceNrReplicated: Long)
 
   case class Updated(events: Seq[DurableEvent])
 }
@@ -110,11 +112,12 @@ class ReplicationServer(sourceLog: ActorRef, filter: ReplicationFilter, remoteIn
 class ReplicationClient(sourceLogId: String, targetLog: ActorRef, replicationServer: ActorRef, remoteInstanceId: InstanceId) extends Actor {
   import ReplicationProtocol._
 
-  context.setReceiveTimeout(5.seconds)
+  val config = context.system.settings.config.getConfig("log.replication")
+  val batchSize = config.getInt("transfer-batch-size")
 
-  val batchSize = 20
   var correlationId = 0
 
+  context.setReceiveTimeout(config.getDuration("transfer-retry-interval", TimeUnit.MILLISECONDS).millis)
   context.system.eventStream.subscribe(self, classOf[ConnectRequested])
 
   // ----------------------------------------------------------
@@ -131,8 +134,8 @@ class ReplicationClient(sourceLogId: String, targetLog: ActorRef, replicationSer
   }
 
   def replicating(correlationId: Int): Receive = {
-    case GetLastSourceLogSequenceNrReplicatedSuccess(sourceLogId, sourceLogSequenceNr) =>
-      replicationServer ! Transfer(sourceLogSequenceNr + 1, batchSize, correlationId)
+    case GetLastSourceLogSequenceNrReplicatedSuccess(sourceLogId, lastSourceLogSequenceNrReplicated) =>
+      replicationServer ! Transfer(lastSourceLogSequenceNrReplicated + 1, batchSize, correlationId)
     case GetLastSourceLogSequenceNrReplicatedFailure(cause) =>
       // TODO: log cause
       context.become(idle)
@@ -141,8 +144,9 @@ class ReplicationClient(sourceLogId: String, targetLog: ActorRef, replicationSer
     case TransferFailure(cause, `correlationId`) =>
       // TODO: log cause
       context.become(idle)
-    case ReplicateSuccess(num) =>
-      // TODO: trigger TransferDue if num > 0 (?)
+    case ReplicateSuccess(num, lastSourceLogSequenceNrReplicated) if num >= batchSize =>
+      replicationServer ! Transfer(lastSourceLogSequenceNrReplicated + 1, batchSize, correlationId)
+    case ReplicateSuccess(_, _) =>
       context.become(idle)
     case ReplicateFailure(cause) =>
       // TODO: log cause
@@ -172,6 +176,8 @@ class ReplicationClient(sourceLogId: String, targetLog: ActorRef, replicationSer
 class ReplicationClientConnector(host: String, port: Int, filter: ReplicationFilter, targetLog: ActorRef, localInstanceId: InstanceId) extends Actor with ActorLogging {
   import ReplicationProtocol._
 
+  val config = context.system.settings.config.getConfig("log.replication")
+  val retry = config.getDuration("connect-retry-interval", TimeUnit.MILLISECONDS).millis
   val selection = context.actorSelection(s"akka.tcp://site@${host}:${port}/user/${ReplicationServerConnector.name}")
 
   val connecting: Receive = {
@@ -188,14 +194,14 @@ class ReplicationClientConnector(host: String, port: Int, filter: ReplicationFil
       context.actorOf(Props(new ReplicationClient(sourceLogId, targetLog, replicationServer, remoteInstanceId)))
       log.info(s"Opened replication connection to ${host}:${port}")
     case ConnectionRenewal =>
-      context.setReceiveTimeout(1.seconds)
+      context.setReceiveTimeout(retry)
       context.become(connecting)
   }
 
   def receive = connecting
 
   override def preStart(): Unit =
-    context.setReceiveTimeout(1.seconds)
+    context.setReceiveTimeout(retry)
 }
 
 object ReplicationServerConnector {

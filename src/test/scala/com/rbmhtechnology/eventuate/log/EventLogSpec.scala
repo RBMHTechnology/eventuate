@@ -112,13 +112,13 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
       DurableEvent("k", timestampAB(0, 9), processIdB, remoteLogId, logId, 9, 3 + offset))
 
     log.tell(Replicate(events, remoteLogId, 9), replicatorProbe.ref)
-    replicatorProbe.expectMsg(ReplicateSuccess(events.length))
+    replicatorProbe.expectMsg(ReplicateSuccess(events.length, 9))
     notificationProbe.expectMsg(Updated(replicatedEvents))
   }
 
-  def replicateNone(lastReadSourceLogSequenceNr: Long, remoteLogId: String = remoteLogId): Unit = {
-    log.tell(Replicate(Seq(), remoteLogId, lastReadSourceLogSequenceNr), replicatorProbe.ref)
-    replicatorProbe.expectMsg(ReplicateSuccess(0))
+  def replicateNone(lastSourceLogSequenceNrRead: Long, expectedLastSourceLogSequenceNrReplicated: Long, remoteLogId: String = remoteLogId): Unit = {
+    log.tell(Replicate(Seq(), remoteLogId, lastSourceLogSequenceNrRead), replicatorProbe.ref)
+    replicatorProbe.expectMsg(ReplicateSuccess(0, expectedLastSourceLogSequenceNrReplicated))
     notificationProbe.expectMsg(Updated(Seq()))
   }
 
@@ -162,13 +162,13 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     "update the replication progress map if last read sequence nr > last replicated sequence nr" in {
       log.tell(GetReplicationProgress(remoteLogId), requestorProbe.ref)
       requestorProbe.expectMsg(GetReplicationProgressSuccess(0))
-      replicateNone(19)
+      replicateNone(19, 19)
       log.tell(GetReplicationProgress(remoteLogId), requestorProbe.ref)
       requestorProbe.expectMsg(GetReplicationProgressSuccess(19))
     }
     "not update the replication progress map if last read sequence nr <= last replicated sequence nr" in {
-      replicateNone(19)
-      replicateNone(17)
+      replicateNone(19, 19)
+      replicateNone(17, 19)
       log.tell(GetReplicationProgress(remoteLogId), requestorProbe.ref)
       requestorProbe.expectMsg(GetReplicationProgressSuccess(19))
     }
