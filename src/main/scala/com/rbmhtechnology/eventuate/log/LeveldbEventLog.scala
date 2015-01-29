@@ -84,6 +84,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
       Try(write(updated)) match {
         case Failure(e) =>
           updated.foreach { event => requestor forward WriteFailure(event, e, iid) }
+          // TODO: reset sequence number (?)
         case Success(_) =>
           updated.foreach { event =>
             requestor forward WriteSuccess(event, iid)
@@ -92,18 +93,18 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
           context.system.eventStream.publish(Updated(updated))
       }
     case Replicate(events, sourceLogId, lastSourceLogSequenceNrRead) =>
-      val updated = events.map { event =>
-        val snr = nextSequenceNr()
-        event.copy(
-          sourceLogId = event.targetLogId,
-          targetLogId = id,
-          sourceLogSequenceNr = event.targetLogSequenceNr,
-          targetLogSequenceNr = snr)
-      }
       Try(readReplicationProgress(sourceLogId)) match {
         case Failure(e) => sender() ! ReplicateFailure(e)
         case Success(lastSourceLogSequenceNrReplicated) =>
           if (lastSourceLogSequenceNrRead > lastSourceLogSequenceNrReplicated) {
+            val updated = events.map { event =>
+              val snr = nextSequenceNr()
+              event.copy(
+                sourceLogId = event.targetLogId,
+                targetLogId = id,
+                sourceLogSequenceNr = event.targetLogSequenceNr,
+                targetLogSequenceNr = snr)
+            }
             Try {
               withBatch { batch =>
                 // atomic write of events and replication progress
@@ -111,7 +112,9 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
                 write(updated, batch)
               }
             } match {
-              case Failure(e) => sender() ! ReplicateFailure(e)
+              case Failure(e) =>
+                sender() ! ReplicateFailure(e)
+                // TODO: reset sequence number (?)
               case Success(_) =>
                 updated.foreach { event => registered.foreach(_ ! Written(event))}
                 context.system.eventStream.publish(Updated(updated))

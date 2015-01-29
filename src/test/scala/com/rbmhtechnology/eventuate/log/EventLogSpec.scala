@@ -122,7 +122,7 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     notificationProbe.expectMsg(Updated(Seq()))
   }
 
-  "A LeveldbEventLog" must {
+  "An event log" must {
     "write local events and send them to the requestor" in {
       generateEvents()
     }
@@ -171,6 +171,42 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
       replicateNone(17, 19)
       log.tell(GetReplicationProgress(remoteLogId), requestorProbe.ref)
       requestorProbe.expectMsg(GetReplicationProgressSuccess(19))
+    }
+    "support idempotent replication processing" in {
+      val collaborator = registerCollaborator()
+
+      val events: Vector[DurableEvent] = Vector(
+        DurableEvent("i", timestampAB(0, 7), processIdB, remoteLogId, remoteLogId, 7, 7),
+        DurableEvent("j", timestampAB(0, 8), processIdB, remoteLogId, remoteLogId, 8, 8),
+        DurableEvent("k", timestampAB(0, 9), processIdB, remoteLogId, remoteLogId, 9, 9))
+
+      val replicatedEvents = Vector(
+        DurableEvent("i", timestampAB(0, 7), processIdB, remoteLogId, logId, 7, 1),
+        DurableEvent("j", timestampAB(0, 8), processIdB, remoteLogId, logId, 8, 2),
+        DurableEvent("k", timestampAB(0, 9), processIdB, remoteLogId, logId, 9, 3))
+
+      // replicate first two events
+      log.tell(Replicate(events.take(2), remoteLogId, 8), replicatorProbe.ref)
+
+      replicatorProbe.expectMsg(ReplicateSuccess(2, 8))
+      notificationProbe.expectMsg(Updated(replicatedEvents.take(2)))
+
+      collaborator.expectMsg(Written(replicatedEvents(0)))
+      collaborator.expectMsg(Written(replicatedEvents(1)))
+
+      // replicate first two events again (= duplicate)
+      log.tell(Replicate(events.take(2), remoteLogId, 8), replicatorProbe.ref)
+
+      replicatorProbe.expectMsg(ReplicateSuccess(0, 8))
+      notificationProbe.expectMsg(Updated(Seq()))
+
+      // replicate remaining events
+      log.tell(Replicate(events.drop(2), remoteLogId, 9), replicatorProbe.ref)
+
+      replicatorProbe.expectMsg(ReplicateSuccess(1, 9))
+      notificationProbe.expectMsg(Updated(replicatedEvents.drop(2)))
+
+      collaborator.expectMsg(Written(replicatedEvents(2)))
     }
     "reply with a failure message if replication fails" in {
       val events: Vector[DurableEvent] = Vector(
