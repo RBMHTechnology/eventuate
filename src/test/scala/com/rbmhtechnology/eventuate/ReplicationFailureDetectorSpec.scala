@@ -25,13 +25,13 @@ import org.scalatest._
 
 import ReplicationEndpoint._
 import ReplicationServerFailureDetector._
-import ReplicationServerFailureDetectorSpec._
+import ReplicationFailureDetectorSpec._
 
-object ReplicationServerFailureDetectorSpec {
+object ReplicationFailureDetectorSpec {
   val config = ConfigFactory.parseString("log.replication.failure-detection-limit = 1s")
 }
 
-class ReplicationServerFailureDetectorSpec extends TestKit(ActorSystem("test", config)) with WordSpecLike with Matchers with BeforeAndAfterEach with BeforeAndAfterAll {
+class ReplicationFailureDetectorSpec extends TestKit(ActorSystem("test", config)) with WordSpecLike with Matchers with BeforeAndAfterEach with BeforeAndAfterAll {
   var failureDetector: ActorRef = _
 
   override def beforeEach(): Unit = {
@@ -46,7 +46,7 @@ class ReplicationServerFailureDetectorSpec extends TestKit(ActorSystem("test", c
     TestKit.shutdownActorSystem(system)
   }
 
-  "A replication server failure detector" must {
+  "A replication failure detector" must {
     "publish availability events to the actor system's event stream" in {
       val probe = TestProbe()
 
