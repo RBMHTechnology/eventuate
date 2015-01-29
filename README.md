@@ -48,16 +48,16 @@ The [example application](#example-application) has 6 sites (A - F), each runnin
 Each site must configure
 
 - a hostname and port for Akka Remoting (`akka.remote.netty.tcp.hostname` and `akka.remote.netty.tcp.port`)
-- an id for the local event log copy (`log.id` which is equal to the site id)
-- a list of replication connections to other sites (`log.connections`)
+- the id of the local replication endpoint (`endpoint.id` which is equal to the site id)
+- a list of replication connections to other sites (`endpoint.connections`)
 
 For example, this is the configuration of site C:
   
     akka.remote.netty.tcp.hostname = "127.0.0.1"
     akka.remote.netty.tcp.port=2554
   
-    log.id = "C"
-    log.connections = ["127.0.0.1:2552", "127.0.0.1:2553", "127.0.0.1:2555"]
+    endpoint.id = "C"
+    endpoint.connections = ["127.0.0.1:2552", "127.0.0.1:2553", "127.0.0.1:2555"]
 
 Later versions will support the automated setup of replication connections when a site joins or leaves a replication network.
 
@@ -73,10 +73,16 @@ import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.log.LeveldbEventLog
 
 val system = ActorSystem("site")
-val endpoint = ReplicationEndpoint(system, logId => LeveldbEventLog.props(logId))
+val endpoint = ReplicationEndpoint(logId => LeveldbEventLog.props(logId))(system)
 ```
 
-A replication endpoint and the `log.connections` configuration on each site implement the replicated event log. Please note that the current implementation doesn't allow cycles in the replication network to preserve the happens-before relationship (= potential causal relationship) of events. This is a limitation that will be removed in later versions (which will be able re-order events based on their vector timestamps). 
+The log actor can be obtained with
+
+```scala
+val log: ActorRef = endpoint.logs("default")
+```
+
+A replication endpoint and its configuration (`endpoint.id` and `endpoint.connections`) on each site implement the replicated event log. Please note that the current implementation doesn't allow cycles in the replication network to preserve the happens-before relationship (= potential causal relationship) of events. This is a limitation that will be removed in later versions (which will be able re-order events based on their vector timestamps). 
 
 ### Advanced configuration
 
@@ -88,7 +94,7 @@ val connections = Seq(
   ReplicationConnection("127.0.0.1", 2553),
   ReplicationConnection("127.0.0.1", 2555))
   
-val localEndpoint = new ReplicationEndpoint(system, id => LeveldbEventLog.props(id), connections)
+val localEndpoint = ReplicationEndpoint(id => LeveldbEventLog.props(id), connections)(system)
 ```
 
 A `ReplicationConnection` connects a local replication endpoint to a remote replication endpoint. The connection is unidirectional and events are replicated from the remote endpoint to the local endpoint. For bi-directional replication, the remote endpoint must additionally set up a replication connection in the other direction.  
@@ -106,15 +112,40 @@ class MyFilter extends ReplicationFilter {
 val connections = Seq(
   ReplicationConnection("localhost", 2553, Some(new MyFilter)))
 
-val localEndpoint = new ReplicationEndpoint(system, id => LeveldbEventLog.props(id), connections)
+val localEndpoint = ReplicationEndpoint(id => LeveldbEventLog.props(id), connections)(system)
+```
+
+### Multiple logs
+
+A replication endpoint can also maintain and replicate multiple logs. Each log represents a partition and event causality is preserved only within a partition. The following example creates a replication endpoint with id `ep1` and two logs with names `log1` and `log2`: 
+
+```scala
+val logNames = Set("log1", "log2")
+val localEndpoint = new ReplicationEndpoint("ep1", logNames, id => LeveldbEventLog.props(id), connections)(system)
+```
+
+Only logs with matching names across endpoints are actually replicated. Log actors can be obtained with
+
+```scala
+val log1: ActorRef = localEndpoint.logs("log1")
+val log2: ActorRef = localEndpoint.logs("log2")
+```
+
+Replication connections may also specify replication filters for each log name individually, as shown in the following example:
+
+```scala
+val connections = Seq(
+  ReplicationConnection("127.0.0.1", 2552, Map("log1" -> new MyFilter1, "log2" -> new MyFilter2)),
+  ReplicationConnection("127.0.0.1", 2553, Map("log1" -> new MyFilter3, "log2" -> new MyFilter4)),
+  ReplicationConnection("127.0.0.1", 2555))
 ```
 
 ### Failure detection
 
 Replication connections have a built-in failure detector that publishes 
 
-- `Available(endpointId: String)` messages to the actor system's event stream if the remote replication endpoint is available and
-- `Unavailable(endpointId: String)` messages to the actor system's event stream if the remote replication endpoint is unavailable
+- `Available(endpointId: String, logName: String)` messages to the actor system's event stream if the remote replication endpoint is available and
+- `Unavailable(endpointId: String, logName: String)` messages to the actor system's event stream if the remote replication endpoint is unavailable
   
 Both messages are defined in object `ReplicationEndpoint`. Their `endpointId` parameter is set the to the remote endpoint id. The failure detector can be configured with the `log.replication.failure-detection-limit` configuration key. For example,
 

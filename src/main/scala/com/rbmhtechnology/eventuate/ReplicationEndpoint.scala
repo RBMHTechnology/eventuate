@@ -23,10 +23,20 @@ import scala.collection.immutable.Seq
 
 import akka.actor._
 
-case class ReplicationConnection(host: String, port: Int, filter: Option[ReplicationFilter] = None)
+object ReplicationConnection {
+  def apply(host: String, port: Int, filter: Option[ReplicationFilter]): ReplicationConnection = filter match {
+    case Some(f) => new ReplicationConnection(host, port, Map(ReplicationEndpoint.DefaultLogName -> f))
+    case None    => new ReplicationConnection(host, port)
+  }
+}
+
+case class ReplicationConnection(host: String, port: Int, filters: Map[String, ReplicationFilter] = Map.empty)
 
 object ReplicationEndpoint {
-  case class Address(host: String, port: Int)
+  /**
+   * Default log name that is used if application doesn't specify names.
+   */
+  val DefaultLogName: String = "default"
 
   /**
    * Identifies a [[ReplicationEndpoint]] instance.
@@ -37,22 +47,25 @@ object ReplicationEndpoint {
   case class InstanceId(uid: String, iid: Long) {
 
     /**
-     * Returns `true` if `id` is a new instance (= incarnation) `this`.
+     * Returns `true` if `this` is a new instance (= incarnation) `id`.
      */
     def newIncarnationOf(id: InstanceId): Boolean =
       uid == id.uid && iid != id.iid
   }
 
   /**
-   * Published to the actor system's event stream if a remote endpoint is available.
+   * Published to the actor system's event stream if a remote log is available.
    */
-  case class Available(endpointId: String)
+  case class Available(endpointId: String, logName: String)
 
   /**
-   * Published to the actor system's event stream if a remote endpoint is unavailable.
+   * Published to the actor system's event stream if a remote log is unavailable.
    */
-  case class Unavailable(endpointId: String)
+  case class Unavailable(endpointId: String, logName: String)
 
+  /**
+   * Matches a string of format "<hostname>:<port>".
+   */
   private object Address {
     def unapply(s: String): Option[(String, Int)] = {
       val hp = s.split(":")
@@ -60,37 +73,51 @@ object ReplicationEndpoint {
     }
   }
 
-  def apply(system: ActorSystem, logFactory: String => Props): ReplicationEndpoint = {
-    val connections = system.settings.config.getStringList("log.connections").asScala.toList.map {
+  def apply(logFactory: String => Props)(implicit system: ActorSystem): ReplicationEndpoint = {
+    val config = system.settings.config
+    val connections = config.getStringList("endpoint.connections").asScala.toList.map {
       case Address(host, port) => ReplicationConnection(host, port)
     }
-    new ReplicationEndpoint(system, logFactory, connections)
+    apply(logFactory, connections)
+  }
+
+  def apply(logFactory: String => Props, connections: Seq[ReplicationConnection])(implicit system: ActorSystem): ReplicationEndpoint = {
+    val config = system.settings.config
+    val endpointId = config.getString("endpoint.id")
+    new ReplicationEndpoint(endpointId, Set(DefaultLogName), logFactory, connections)(system)
   }
 
   /**
    * Java API.
    */
-  def create(system: ActorSystem, logFactory: JFunction[String, Props]) =
-    apply(system, id => logFactory.apply(id))
+  def create(logFactory: JFunction[String, Props], system: ActorSystem) =
+    apply(id => logFactory.apply(id))(system)
 }
 
-class ReplicationEndpoint(system: ActorSystem, logFactory: String => Props, connections: Seq[ReplicationConnection]) {
+class ReplicationEndpoint(val id: String, logNames: Set[String], logFactory: String => Props, connections: Seq[ReplicationConnection])(implicit system: ActorSystem) {
   import ReplicationEndpoint._
 
-  val config = system.settings.config
+  val instanceId: InstanceId =
+    InstanceId(id, System.currentTimeMillis)
 
-  val id: String = config.getString("log.id")
-  val instanceId: InstanceId = InstanceId(id, System.currentTimeMillis)
+  val logs: Map[String, ActorRef] =
+    logNames.map(logName => logName -> system.actorOf(logFactory(logId(logName)))).toMap
 
-  val log: ActorRef = system.actorOf(logFactory(id))
-  val connector = system.actorOf(Props(new ReplicationServerConnector(id, log, instanceId)), ReplicationServerConnector.name)
+  val connector: ActorRef =
+    system.actorOf(Props(new ReplicationServerConnector(logs, logId, instanceId)), ReplicationServerConnector.name)
+
+  def logId(logName: String): String =
+    s"${id}-${logName}"
 
   connections.foreach {
-    case ReplicationConnection(host, port, filter) =>
-      val cf = filter match {
-        case Some(f) => SourceLogIdExclusionFilter(id).compose(f)
-        case None    => SourceLogIdExclusionFilter(id)
+    case ReplicationConnection(host, port, filters) =>
+      var cfs = filters
+      logNames.foreach { logName =>
+        cfs.get(logName) match {
+          case Some(f) => cfs += (logName -> SourceLogIdExclusionFilter(logId(logName)).compose(f))
+          case None    => cfs += (logName -> SourceLogIdExclusionFilter(logId(logName)))
+        }
       }
-      system.actorOf(Props(new ReplicationClientConnector(host, port, cf, log, instanceId)))
+      system.actorOf(Props(new ReplicationClientConnector(host, port, logs, cfs, instanceId)))
   }
 }

@@ -25,28 +25,15 @@ import scala.concurrent.duration._
 
 import ReplicationEndpoint.InstanceId
 
-// -----------------------------------------------------------------------------------------
-//  A simple, fault-tolerant event replication protocol between sites (replicated actors).
-//
-//  An uni-directional replication link operates a replication server on the source site
-//  and a replication client on the (remote) target site:
-//
-//  source site -> replication server --(remote)--> replication client -> target site
-//
-//  A replication client replicates events by pulling them from the replication server
-//  (in batches). A replication server notifies a client when new events are available
-//  for pulling. A bi-directional replication link between two sites is composed of two
-//  uni-directional replication links.
-// -----------------------------------------------------------------------------------------
-
 object ReplicationProtocol {
-  case object TransferDue
+  case class ClientInfo(logName: String, filter: ReplicationFilter)
+  case class ServerInfo(logName: String, logId: String, server: ActorRef)
 
-  case class Connect(filter: ReplicationFilter, instanceId: InstanceId)
-  case class ConnectAccepted(sourceLogId: String, replicationServer: ActorRef, instanceId: InstanceId)
+  case class Connect(clientInfos: Seq[ClientInfo], instanceId: InstanceId)
+  case class ConnectAccepted(serverInfos: Seq[ServerInfo], instanceId: InstanceId)
   case class ConnectRequested(instanceId: InstanceId)
-  case object ConnectionRenewal
 
+  case object TransferDue
   case class Transfer(fromSequenceNr: Long, max: Int, correlationId: Int)
   case class TransferSuccess(events: Seq[DurableEvent], lastSourceLogSequenceNrRead: Long, correlationId: Int)
   case class TransferFailure(cause: Throwable, correlationId: Int)
@@ -62,16 +49,18 @@ object ReplicationProtocol {
   case class Updated(events: Seq[DurableEvent])
 }
 
-class ReplicationServer(sourceLog: ActorRef, filter: ReplicationFilter, remoteInstanceId: InstanceId) extends Actor {
+class ReplicationServer(sourceLog: ActorRef, filter: ReplicationFilter) extends Actor {
   import ReplicationProtocol._
   import EventLogProtocol._
 
   var replicationClient: Option[ActorRef] = None
 
-  // ----------------------------------------------------------
-  //  TODO: handle missing responses to commands
-  //  - Read
-  // ----------------------------------------------------------
+  //
+  // TODO: reliability improvements
+  //
+  // - response timeout for communication with source log
+  //   (low prio, local communication at the moment)
+  //
 
   val idle: Receive = {
     case Updated(events) if events.exists(filter.apply) =>
@@ -89,15 +78,9 @@ class ReplicationServer(sourceLog: ActorRef, filter: ReplicationFilter, remoteIn
     case ReadFailure(cause) =>
       replicationClient.foreach(_ ! TransferFailure(cause, correlationId))
       context.become(idle)
-    case removeMe =>
   }
 
   def receive = idle
-
-  override def unhandled(message: Any): Unit = message match {
-    case ConnectRequested(rid) if rid.newIncarnationOf(remoteInstanceId) => context.stop(self)
-    case other => super.unhandled(other)
-  }
 
   override def preStart(): Unit = {
     context.system.eventStream.subscribe(self, classOf[ConnectRequested])
@@ -109,25 +92,25 @@ class ReplicationServer(sourceLog: ActorRef, filter: ReplicationFilter, remoteIn
   }
 }
 
-class ReplicationClient(sourceLogId: String, targetLog: ActorRef, replicationServer: ActorRef, remoteInstanceId: InstanceId) extends Actor {
+class ReplicationClient(logName: String, sourceLogId: String, targetLog: ActorRef, replicationServer: ActorRef, remoteInstanceId: InstanceId) extends Actor {
   import ReplicationServerFailureDetector._
   import ReplicationProtocol._
 
   val config = context.system.settings.config.getConfig("log.replication")
   val batchSize = config.getInt("transfer-batch-size")
-  val failureDetector = context.actorOf(Props(new ReplicationServerFailureDetector(remoteInstanceId)))
 
+  val failureDetector = context.actorOf(Props(new ReplicationServerFailureDetector(remoteInstanceId, logName)))
   var correlationId = 0
 
   context.setReceiveTimeout(config.getDuration("transfer-retry-interval", TimeUnit.MILLISECONDS).millis)
   context.system.eventStream.subscribe(self, classOf[ConnectRequested])
 
-  // ----------------------------------------------------------
-  //  TODO: handle missing responses to commands
-  //  - GetLastSourceLogSequenceNrReplicated
-  //  - Replicate
-  //  - Transfer (?)
-  // ----------------------------------------------------------
+  //
+  // TODO: reliability improvements
+  //
+  // - response timeout for communication with target log
+  //   (low prio, local communication at the moment)
+  //
 
   val idle: Receive = {
     case TransferDue =>
@@ -167,9 +150,9 @@ class ReplicationClient(sourceLogId: String, targetLog: ActorRef, replicationSer
 
   override def unhandled(message: Any): Unit = message match {
     case ConnectRequested(rid) if rid.newIncarnationOf(remoteInstanceId) =>
-      context.parent ! ConnectionRenewal
       context.stop(self)
-    case other => super.unhandled(other)
+    case other =>
+      super.unhandled(other)
   }
 
   override def preStart(): Unit =
@@ -181,32 +164,46 @@ class ReplicationClient(sourceLogId: String, targetLog: ActorRef, replicationSer
   }
 }
 
-class ReplicationClientConnector(host: String, port: Int, filter: ReplicationFilter, targetLog: ActorRef, localInstanceId: InstanceId) extends Actor with ActorLogging {
+class ReplicationClientConnector(host: String, port: Int, targetLogs: Map[String, ActorRef], filters: Map[String, ReplicationFilter], localInstanceId: InstanceId) extends Actor with ActorLogging {
   import ReplicationProtocol._
 
   val config = context.system.settings.config.getConfig("log.replication")
   val retry = config.getDuration("connect-retry-interval", TimeUnit.MILLISECONDS).millis
   val selection = context.actorSelection(s"akka.tcp://site@${host}:${port}/user/${ReplicationServerConnector.name}")
 
-  val connecting: Receive = {
+  context.system.eventStream.subscribe(self, classOf[ConnectRequested])
+
+  val identifying: Receive = {
     case ReceiveTimeout =>
       selection ! Identify(1)
     case ActorIdentity(1, Some(connector)) =>
-      connector ! Connect(filter, localInstanceId)
-      context.setReceiveTimeout(Duration.Undefined)
-      context.become(connected)
-  }
-
-  val connected: Receive = {
-    case ConnectAccepted(sourceLogId, replicationServer, remoteInstanceId) =>
-      context.actorOf(Props(new ReplicationClient(sourceLogId, targetLog, replicationServer, remoteInstanceId)))
-      log.info(s"Opened replication connection to ${host}:${port}")
-    case ConnectionRenewal =>
-      context.setReceiveTimeout(retry)
+      val clientInfos = filters.map {
+        case (logName, filter) => ClientInfo(logName, filter)
+      }
+      connector ! Connect(clientInfos.toList, localInstanceId)
       context.become(connecting)
   }
 
-  def receive = connecting
+  val connecting: Receive = {
+    case ReceiveTimeout =>
+      context.become(identifying)
+    case ConnectAccepted(serverInfos, rid) =>
+      serverInfos.foreach {
+        case ServerInfo(logName, sourceLogId, server) =>
+          context.actorOf(Props(new ReplicationClient(logName, sourceLogId, targetLogs(logName), server, rid)))
+      }
+      context.setReceiveTimeout(Duration.Undefined)
+      context.become(connected(rid))
+      log.info(s"Opened replication connection to ${host}:${port}")
+  }
+
+  def connected(remoteInstanceId: InstanceId): Receive = {
+    case ConnectRequested(rid) if rid.newIncarnationOf(remoteInstanceId) =>
+      context.setReceiveTimeout(retry)
+      context.become(identifying)
+  }
+
+  def receive = identifying
 
   override def preStart(): Unit =
     context.setReceiveTimeout(retry)
@@ -216,18 +213,39 @@ object ReplicationServerConnector {
   val name: String = "connector"
 }
 
-class ReplicationServerConnector(sourceLogId: String, sourceLog: ActorRef, localInstanceId: InstanceId) extends Actor {
+class ReplicationServerConnector(sourceLogs: Map[String, ActorRef], sourceLogId: String => String, localInstanceId: InstanceId) extends Actor {
   import ReplicationProtocol._
 
+  var currentServerInfos: Map[InstanceId, Seq[ServerInfo]] = Map.empty
+
   def receive = {
-    case Connect(filter, remoteInstanceId) =>
-      val server = context.actorOf(Props(new ReplicationServer(sourceLog, filter, remoteInstanceId)))
-      sender() ! ConnectAccepted(sourceLogId, server, localInstanceId)
-      context.system.eventStream.publish(ConnectRequested(remoteInstanceId))
+    case Connect(clientInfos, remoteInstanceId) if currentServerInfos.contains(remoteInstanceId) =>
+      // this is a duplicate from the client. Just return the existing server infos
+      sender() ! ConnectAccepted(currentServerInfos(remoteInstanceId), localInstanceId)
+    case Connect(clientInfos, rid) =>
+      currentServerInfos.find {
+        case (remoteInstanceId, _) => rid.newIncarnationOf(remoteInstanceId)
+      }.foreach {
+        case (remoteInstanceId, serverInfos) =>
+          currentServerInfos -= remoteInstanceId
+          serverInfos.foreach(info => context.stop(info.server))
+      }
+      val serverInfos = clientInfos.collect {
+        case ClientInfo(logName, filter) if sourceLogs.contains(logName) =>
+          val server = context.actorOf(Props(new ReplicationServer(sourceLogs(logName), filter)))
+          ServerInfo(logName, sourceLogId(logName), server)
+      }
+      sender() ! ConnectAccepted(serverInfos, localInstanceId)
+      currentServerInfos += (rid -> serverInfos)
+      context.system.eventStream.publish(ConnectRequested(rid))
   }
 }
 
-class ReplicationServerFailureDetector(remoteInstanceId: InstanceId) extends Actor {
+object ReplicationServerFailureDetector {
+  case object Tick
+}
+
+class ReplicationServerFailureDetector(remoteInstanceId: InstanceId, logName: String) extends Actor {
   import ReplicationServerFailureDetector._
   import ReplicationEndpoint._
 
@@ -243,14 +261,10 @@ class ReplicationServerFailureDetector(remoteInstanceId: InstanceId) extends Act
       val currentTime = System.currentTimeMillis
       val lastInterval =  currentTime - lastTick
       if (lastInterval >= limit) {
-        context.system.eventStream.publish(Available(remoteInstanceId.uid))
+        context.system.eventStream.publish(Available(remoteInstanceId.uid, logName))
         lastTick = currentTime
       }
     case ReceiveTimeout =>
-      context.system.eventStream.publish(Unavailable(remoteInstanceId.uid))
+      context.system.eventStream.publish(Unavailable(remoteInstanceId.uid, logName))
   }
-}
-
-object ReplicationServerFailureDetector {
-  case object Tick
 }

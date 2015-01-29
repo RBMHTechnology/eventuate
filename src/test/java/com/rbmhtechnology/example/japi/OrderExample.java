@@ -130,10 +130,10 @@ public class OrderExample extends AbstractActor {
 
     public static void main(String[] args) {
         ActorSystem system = ActorSystem.create("site", ConfigFactory.load(args[0]));
-        ReplicationEndpoint endpoint = ReplicationEndpoint.create(system, id -> LeveldbEventLog.props(id, "log-java"));
+        ReplicationEndpoint endpoint = ReplicationEndpoint.create(id -> LeveldbEventLog.props(id, "java"), system);
 
-        ActorRef manager = system.actorOf(Props.create(OrderManager.class, endpoint.id(), endpoint.log()));
-        ActorRef view = system.actorOf(Props.create(OrderView.class, endpoint.id() + "-view", endpoint.log()));
+        ActorRef manager = system.actorOf(Props.create(OrderManager.class, endpoint.id(), endpoint.logs().apply(ReplicationEndpoint.DefaultLogName())));
+        ActorRef view = system.actorOf(Props.create(OrderView.class, endpoint.id() + "-view", endpoint.logs().apply(ReplicationEndpoint.DefaultLogName())));
         ActorRef driver = system.actorOf(Props.create(OrderExample.class, manager, view));
     }
 }

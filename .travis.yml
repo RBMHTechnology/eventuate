@@ -3,8 +3,5 @@ scala:
   - "2.11.4"
 jdk:
   - oraclejdk8
-branches:
-  except:
-    - /^wip-.*$/
 after_success:
   - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && sbt publish
