@@ -31,7 +31,7 @@ object ReplicationSpec {
     }
   }
 
-  class TestActor1(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class ReplicatedActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     def onCommand = {
       case s: String => persist(s) {
         case Success(e) => onEvent(e)
@@ -79,9 +79,9 @@ class ReplicationSpec extends WordSpec with Matchers with BeforeAndAfterEach {
       val probeB = new TestProbe(nodeB.system)
       val probeC = new TestProbe(nodeC.system)
 
-      val actorA = nodeA.system.actorOf(Props(new TestActor1("pa", nodeA.logs("L1"), probeA.ref)))
-      val actorB = nodeB.system.actorOf(Props(new TestActor1("pb", nodeB.logs("L1"), probeB.ref)))
-      val actorC = nodeB.system.actorOf(Props(new TestActor1("pc", nodeC.logs("L1"), probeC.ref)))
+      val actorA = nodeA.system.actorOf(Props(new ReplicatedActor("pa", nodeA.logs("L1"), probeA.ref)))
+      val actorB = nodeB.system.actorOf(Props(new ReplicatedActor("pb", nodeB.logs("L1"), probeB.ref)))
+      val actorC = nodeB.system.actorOf(Props(new ReplicatedActor("pc", nodeC.logs("L1"), probeC.ref)))
 
       actorA ! "a1"
       actorA ! "a2"
@@ -118,8 +118,8 @@ class ReplicationSpec extends WordSpec with Matchers with BeforeAndAfterEach {
       val probeA = new TestProbe(nodeA.system)
       val probeB = new TestProbe(nodeB.system)
 
-      val actorA = nodeA.system.actorOf(Props(new TestActor1("pa", nodeA.logs("L1"), probeA.ref)))
-      val actorB = nodeB.system.actorOf(Props(new TestActor1("pb", nodeB.logs("L1"), probeB.ref)))
+      val actorA = nodeA.system.actorOf(Props(new ReplicatedActor("pa", nodeA.logs("L1"), probeA.ref)))
+      val actorB = nodeB.system.actorOf(Props(new ReplicatedActor("pb", nodeB.logs("L1"), probeB.ref)))
 
       actorA ! "a1"
       actorA ! "a2"
@@ -138,8 +138,8 @@ class ReplicationSpec extends WordSpec with Matchers with BeforeAndAfterEach {
 
       val probeB = new TestProbe(nodeB.system)
 
-      val actorA = nodeA.system.actorOf(Props(new TestActor1("pa", nodeA.logs("L1"), nodeA.system.deadLetters)))
-      val actorB = nodeB.system.actorOf(Props(new TestActor1("pb", nodeB.logs("L1"), probeB.ref)))
+      val actorA = nodeA.system.actorOf(Props(new ReplicatedActor("pa", nodeA.logs("L1"), nodeA.system.deadLetters)))
+      val actorB = nodeB.system.actorOf(Props(new ReplicatedActor("pb", nodeB.logs("L1"), probeB.ref)))
 
       val num = 100
 
@@ -195,10 +195,10 @@ class ReplicationSpec extends WordSpec with Matchers with BeforeAndAfterEach {
       val probeBL1 = new TestProbe(nodeB.system)
       val probeBL2 = new TestProbe(nodeB.system)
 
-      val actorAL1 = nodeA.system.actorOf(Props(new TestActor1("pa1", nodeA.logs("L1"), probeAL1.ref)))
-      val actorAL2 = nodeA.system.actorOf(Props(new TestActor1("pa2", nodeA.logs("L2"), probeAL2.ref)))
-      val actorBL1 = nodeB.system.actorOf(Props(new TestActor1("pb1", nodeB.logs("L1"), probeBL1.ref)))
-      val actorBL2 = nodeB.system.actorOf(Props(new TestActor1("pb2", nodeB.logs("L2"), probeBL2.ref)))
+      val actorAL1 = nodeA.system.actorOf(Props(new ReplicatedActor("pa1", nodeA.logs("L1"), probeAL1.ref)))
+      val actorAL2 = nodeA.system.actorOf(Props(new ReplicatedActor("pa2", nodeA.logs("L2"), probeAL2.ref)))
+      val actorBL1 = nodeB.system.actorOf(Props(new ReplicatedActor("pb1", nodeB.logs("L1"), probeBL1.ref)))
+      val actorBL2 = nodeB.system.actorOf(Props(new ReplicatedActor("pb2", nodeB.logs("L2"), probeBL2.ref)))
 
       actorAL1 ! "a"
       actorBL1 ! "b"
@@ -224,10 +224,10 @@ class ReplicationSpec extends WordSpec with Matchers with BeforeAndAfterEach {
       val probeBL2 = new TestProbe(nodeB.system)
       val probeBL3 = new TestProbe(nodeB.system)
 
-      val actorAL1 = nodeA.system.actorOf(Props(new TestActor1("pa1", nodeA.logs("L1"), probeAL1.ref)))
-      val actorAL2 = nodeA.system.actorOf(Props(new TestActor1("pa2", nodeA.logs("L2"), probeAL2.ref)))
-      val actorBL2 = nodeB.system.actorOf(Props(new TestActor1("pb2", nodeB.logs("L2"), probeBL2.ref)))
-      val actorBL3 = nodeB.system.actorOf(Props(new TestActor1("pb3", nodeB.logs("L3"), probeBL3.ref)))
+      val actorAL1 = nodeA.system.actorOf(Props(new ReplicatedActor("pa1", nodeA.logs("L1"), probeAL1.ref)))
+      val actorAL2 = nodeA.system.actorOf(Props(new ReplicatedActor("pa2", nodeA.logs("L2"), probeAL2.ref)))
+      val actorBL2 = nodeB.system.actorOf(Props(new ReplicatedActor("pb2", nodeB.logs("L2"), probeBL2.ref)))
+      val actorBL3 = nodeB.system.actorOf(Props(new ReplicatedActor("pb3", nodeB.logs("L3"), probeBL3.ref)))
 
       actorAL1 ! "a"
       actorAL2 ! "b"

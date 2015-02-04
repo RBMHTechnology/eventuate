@@ -24,13 +24,16 @@ import scala.collection.immutable.Seq
 import akka.actor._
 
 object ReplicationConnection {
+  def apply(host: String, port: Int, filters: Map[String, ReplicationFilter]): ReplicationConnection =
+    new ReplicationConnection(host, port, filters = filters)
+
   def apply(host: String, port: Int, filter: Option[ReplicationFilter]): ReplicationConnection = filter match {
-    case Some(f) => new ReplicationConnection(host, port, Map(ReplicationEndpoint.DefaultLogName -> f))
+    case Some(f) => new ReplicationConnection(host, port, filters = Map(ReplicationEndpoint.DefaultLogName -> f))
     case None    => new ReplicationConnection(host, port)
   }
 }
 
-case class ReplicationConnection(host: String, port: Int, filters: Map[String, ReplicationFilter] = Map.empty)
+case class ReplicationConnection(host: String, port: Int, protocol: String = "akka.tcp", name: String = "site", filters: Map[String, ReplicationFilter] = Map.empty)
 
 object ReplicationEndpoint {
   /**
@@ -110,7 +113,7 @@ class ReplicationEndpoint(val id: String, logNames: Set[String], logFactory: Str
     s"${id}-${logName}"
 
   connections.foreach {
-    case ReplicationConnection(host, port, filters) =>
+    case ReplicationConnection(host, port, protocol, name, filters) =>
       var cfs = filters
       logNames.foreach { logName =>
         cfs.get(logName) match {
@@ -118,6 +121,6 @@ class ReplicationEndpoint(val id: String, logNames: Set[String], logFactory: Str
           case None    => cfs += (logName -> SourceLogIdExclusionFilter(logId(logName)))
         }
       }
-      system.actorOf(Props(new ReplicationClientConnector(host, port, logs, cfs, instanceId)))
+      system.actorOf(Props(new ReplicationClientConnector(host, port, protocol, name, logs, cfs, instanceId)))
   }
 }

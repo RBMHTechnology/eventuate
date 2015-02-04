@@ -6,6 +6,8 @@ version := "0.1-SNAPSHOT"
 
 scalaVersion := "2.11.4"
 
+val akkaVersion = "2.3.9"
+
 scalacOptions ++= Seq(
   "-feature",
   "-unchecked",
@@ -15,14 +17,15 @@ scalacOptions ++= Seq(
 
 connectInput in run := true
 
-fork in Test := true
-
 parallelExecution in Test := false
+
+fork in Test := true
 
 libraryDependencies ++= Seq(
   "com.google.protobuf"              % "protobuf-java"                 % "2.5.0",
-  "com.typesafe.akka"               %% "akka-remote"                   % "2.3.8",
-  "com.typesafe.akka"               %% "akka-testkit"                  % "2.3.8"      % "test",
+  "com.typesafe.akka"               %% "akka-remote"                   % akkaVersion,
+  "com.typesafe.akka"               %% "akka-testkit"                  % akkaVersion  % "test",
+  "com.typesafe.akka"               %% "akka-multi-node-testkit"       % akkaVersion  % "test",
   "commons-io"                       % "commons-io"                    % "2.4",
   "org.functionaljava"               % "functionaljava"                % "4.2-beta-1" % "test",
   "org.functionaljava"               % "functionaljava-java8"          % "4.2-beta-1" % "test",
@@ -30,6 +33,10 @@ libraryDependencies ++= Seq(
   "org.scalatest"                   %% "scalatest"                     % "2.1.4"      % "test",
   "org.scalaz"                      %% "scalaz-core"                   % "7.1.0"
 )
+
+// ----------------------------------------------------------------------
+//  Publishing
+// ----------------------------------------------------------------------
 
 credentials += Credentials(
   "Artifactory Realm",
@@ -47,3 +54,38 @@ publishTo := {
 }
 
 publishMavenStyle := true
+
+// ----------------------------------------------------------------------
+//  Multi-JVM testing
+// ----------------------------------------------------------------------
+
+import com.typesafe.sbt.SbtMultiJvm
+import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
+
+evictionWarningOptions in update := EvictionWarningOptions.default
+  .withWarnTransitiveEvictions(false)
+  .withWarnDirectEvictions(false)
+  .withWarnScalaVersionEviction(false)
+
+lazy val eventuate = Project (
+  "eventuate",
+  file("."),
+  settings = Defaults.defaultSettings ++ multiJvmSettings,
+  configurations = Configurations.default :+ MultiJvm
+)
+
+lazy val multiJvmSettings = SbtMultiJvm.multiJvmSettings ++ Seq(
+  compile in MultiJvm <<= (compile in MultiJvm) triggeredBy (compile in Test),
+  parallelExecution in Test := false,
+  executeTests in Test <<=
+    ((executeTests in Test), (executeTests in MultiJvm)) map {
+      case ((testResults), (multiJvmResults)) =>
+        val overall =
+          if (testResults.overall.id < multiJvmResults.overall.id) multiJvmResults.overall
+          else testResults.overall
+        Tests.Output(overall,
+          testResults.events ++ multiJvmResults.events,
+          testResults.summaries ++ multiJvmResults.summaries)
+    }
+)
+

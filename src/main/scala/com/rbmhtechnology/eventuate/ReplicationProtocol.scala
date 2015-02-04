@@ -164,12 +164,24 @@ class ReplicationClient(logName: String, sourceLogId: String, targetLog: ActorRe
   }
 }
 
-class ReplicationClientConnector(host: String, port: Int, targetLogs: Map[String, ActorRef], filters: Map[String, ReplicationFilter], localInstanceId: InstanceId) extends Actor with ActorLogging {
+/**
+ * Sends connection requests to a server connector and creates [[ReplicationClient]]s
+ * that read events from [[ReplicationServer]]s and write them to target logs.
+ *
+ * @param host host where the remote server connector is running.
+ * @param port port where the remote server connector is listening.
+ * @param protocol protocol supported by the remote [[ActorSystem]].
+ * @param name name of the [[ActorSystem]] that runs the remote server connector.
+ * @param targetLogs target logs indexed by log name.
+ * @param filters replication filters indexed by log name.
+ * @param localInstanceId local instance id of this connector.
+ */
+class ReplicationClientConnector(host: String, port: Int, protocol: String, name: String, targetLogs: Map[String, ActorRef], filters: Map[String, ReplicationFilter], localInstanceId: InstanceId) extends Actor with ActorLogging {
   import ReplicationProtocol._
 
   val config = context.system.settings.config.getConfig("log.replication")
   val retry = config.getDuration("connect-retry-interval", TimeUnit.MILLISECONDS).millis
-  val selection = context.actorSelection(s"akka.tcp://site@${host}:${port}/user/${ReplicationServerConnector.name}")
+  val selection = context.actorSelection(s"${protocol}://${name}@${host}:${port}/user/${ReplicationServerConnector.name}")
 
   context.system.eventStream.subscribe(self, classOf[ConnectRequested])
 
@@ -213,6 +225,14 @@ object ReplicationServerConnector {
   val name: String = "connector"
 }
 
+/**
+ * Receives connection requests from client connectors and creates [[ReplicationServer]]s
+ * that read events from source logs.
+ *
+ * @param sourceLogs source logs indexed by log name.
+ * @param sourceLogId function that maps source log names to source log ids.
+ * @param localInstanceId local instance id of this connector.
+ */
 class ReplicationServerConnector(sourceLogs: Map[String, ActorRef], sourceLogId: String => String, localInstanceId: InstanceId) extends Actor {
   import ReplicationProtocol._
 
