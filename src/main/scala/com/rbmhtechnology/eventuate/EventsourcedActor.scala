@@ -22,7 +22,7 @@ import scala.util._
 
 import akka.actor._
 
-trait EventsourcedActor extends Eventsourced with ConditionalCommands with Stash {
+trait EventsourcedActor extends Eventsourced with ConditionalCommands with ExtendedStash {
   import EventLogProtocol._
 
   type Handler[A] = Try[A] => Unit
@@ -148,7 +148,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Stash
       writeHandlers = writeHandlers.tail
       if (sync && writeHandlers.isEmpty) {
         writing = false
-        unstashAll()
+        unstash()
       }
     }
     case WriteFailure(event, cause, iid) => if (iid == instanceId) {
@@ -157,7 +157,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Stash
       writeHandlers = writeHandlers.tail
       if (sync && writeHandlers.isEmpty) {
         writing = false
-        unstashAll()
+        unstash()
       }
     }
     case Written(event) => if (event.sequenceNr > lastSequenceNr)

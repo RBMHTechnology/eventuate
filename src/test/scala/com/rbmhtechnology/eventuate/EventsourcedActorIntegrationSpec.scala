@@ -31,7 +31,7 @@ object EventsourcedActorIntegrationSpec {
 
   case class Cmd(payloads: String*)
 
-  class TestActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class SampleActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     override def onCommand = {
       case "reply-success" => persist("okay") {
         case Success(r) => sender() ! r
@@ -146,8 +146,6 @@ object EventsourcedActorIntegrationSpec {
 import EventsourcedActorIntegrationSpec._
 
 class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test", config)) with WordSpecLike with Matchers with EventLogSupport {
-  import EventsourcedActorIntegrationSpec._
-
   var probe: TestProbe = _
 
   override def beforeEach(): Unit = {
@@ -157,17 +155,17 @@ class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test", confi
   
   "An EventsourcedActor" can {
     "preserve the command sender when invoking the persist handler on success" in {
-      val actor = system.actorOf(Props(new TestActor("1", log, probe.ref)))
+      val actor = system.actorOf(Props(new SampleActor("1", log, probe.ref)))
       actor.tell("reply-success", probe.ref)
       probe.expectMsg("okay")
     }
     "preserve the command sender when invoking the persist handler on failure" in {
-      val actor = system.actorOf(Props(new TestActor("1", log, probe.ref)))
+      val actor = system.actorOf(Props(new SampleActor("1", log, probe.ref)))
       actor.tell("reply-failure", probe.ref)
       probe.expectMsg("boom")
     }
     "persist multiple events per command as atomic batch" in {
-      val actor = system.actorOf(Props(new TestActor("1", log, probe.ref)))
+      val actor = system.actorOf(Props(new SampleActor("1", log, probe.ref)))
       actor.tell(Cmd("a", "boom", "c"), probe.ref)
       probe.expectMsg("boom")
       probe.expectMsg("boom")
