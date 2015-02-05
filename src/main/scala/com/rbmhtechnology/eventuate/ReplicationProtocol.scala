@@ -170,13 +170,12 @@ class ReplicationClient(logName: String, sourceLogId: String, targetLog: ActorRe
  *
  * @param host host where the remote server connector is running.
  * @param port port where the remote server connector is listening.
- * @param protocol protocol supported by the remote [[ActorSystem]].
  * @param name name of the [[ActorSystem]] that runs the remote server connector.
  * @param targetLogs target logs indexed by log name.
  * @param filters replication filters indexed by log name.
  * @param localInstanceId local instance id of this connector.
  */
-class ReplicationClientConnector(host: String, port: Int, protocol: String, name: String, targetLogs: Map[String, ActorRef], filters: Map[String, ReplicationFilter], localInstanceId: InstanceId) extends Actor with ActorLogging {
+class ReplicationClientConnector(host: String, port: Int, name: String, targetLogs: Map[String, ActorRef], filters: Map[String, ReplicationFilter], localInstanceId: InstanceId) extends Actor with ActorLogging {
   import ReplicationProtocol._
 
   val config = context.system.settings.config.getConfig("log.replication")
@@ -184,6 +183,11 @@ class ReplicationClientConnector(host: String, port: Int, protocol: String, name
   val selection = context.actorSelection(s"${protocol}://${name}@${host}:${port}/user/${ReplicationServerConnector.name}")
 
   context.system.eventStream.subscribe(self, classOf[ConnectRequested])
+
+  def protocol = context.system match {
+    case sys: ExtendedActorSystem => sys.provider.getDefaultAddress.protocol
+    case sys                      => "akka.tcp"
+  }
 
   val identifying: Receive = {
     case ReceiveTimeout =>

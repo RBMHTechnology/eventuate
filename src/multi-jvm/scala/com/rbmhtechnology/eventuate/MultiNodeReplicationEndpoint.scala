@@ -41,7 +41,7 @@ trait MultiNodeReplicationEndpoint extends BeforeAndAfterAll { this: MultiNodeSp
 
   implicit class RichAddress(address: Address) {
     def toReplicationConnection: ReplicationConnection =
-      ReplicationConnection(address.host.get, address.port.get, address.protocol, address.system)
+      ReplicationConnection(address.host.get, address.port.get, address.system)
   }
 
   override def afterAll(): Unit = {

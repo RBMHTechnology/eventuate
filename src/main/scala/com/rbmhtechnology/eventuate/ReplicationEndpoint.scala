@@ -33,7 +33,7 @@ object ReplicationConnection {
   }
 }
 
-case class ReplicationConnection(host: String, port: Int, protocol: String = "akka.tcp", name: String = "site", filters: Map[String, ReplicationFilter] = Map.empty)
+case class ReplicationConnection(host: String, port: Int, name: String = "site", filters: Map[String, ReplicationFilter] = Map.empty)
 
 object ReplicationEndpoint {
   /**
@@ -113,7 +113,7 @@ class ReplicationEndpoint(val id: String, logNames: Set[String], logFactory: Str
     s"${id}-${logName}"
 
   connections.foreach {
-    case ReplicationConnection(host, port, protocol, name, filters) =>
+    case ReplicationConnection(host, port, name, filters) =>
       var cfs = filters
       logNames.foreach { logName =>
         cfs.get(logName) match {
@@ -121,6 +121,6 @@ class ReplicationEndpoint(val id: String, logNames: Set[String], logFactory: Str
           case None    => cfs += (logName -> SourceLogIdExclusionFilter(logId(logName)))
         }
       }
-      system.actorOf(Props(new ReplicationClientConnector(host, port, protocol, name, logs, cfs, instanceId)))
+      system.actorOf(Props(new ReplicationClientConnector(host, port, name, logs, cfs, instanceId)))
   }
 }
