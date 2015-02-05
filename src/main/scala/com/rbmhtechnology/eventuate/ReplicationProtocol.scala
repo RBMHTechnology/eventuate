@@ -135,7 +135,7 @@ class ReplicationClient(logName: String, sourceLogId: String, targetLog: ActorRe
       // TODO: log cause
       context.become(idle)
       failureDetector ! Tick
-    case ReplicateSuccess(num, lastSourceLogSequenceNrReplicated) if num >= batchSize =>
+    case ReplicateSuccess(num, lastSourceLogSequenceNrReplicated) if num > 0 =>
       replicationServer ! Transfer(lastSourceLogSequenceNrReplicated + 1, batchSize, correlationId)
     case ReplicateSuccess(_, _) =>
       context.become(idle)
