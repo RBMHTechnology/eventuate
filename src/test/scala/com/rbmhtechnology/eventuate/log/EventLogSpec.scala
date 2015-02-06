@@ -93,7 +93,7 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
       DurableEvent("b", timestampAB(2, 0), processIdA, logId, logId, 2, 2),
       DurableEvent("c", timestampAB(3, 0), processIdA, logId, logId, 3, 3))
 
-    log ! Write(events, requestorProbe.ref, 0)
+    log ! Write(events, system.deadLetters, requestorProbe.ref, 0)
     requestorProbe.expectMsg(WriteSuccess(generatedEvents(0), 0))
     requestorProbe.expectMsg(WriteSuccess(generatedEvents(1), 0))
     requestorProbe.expectMsg(WriteSuccess(generatedEvents(2), 0))
@@ -138,7 +138,7 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
         event("boom", timestampAB(1, 0), processIdA),
         event("okay", timestampAB(2, 0), processIdA))
 
-      log ! Write(events, requestorProbe.ref, 0)
+      log ! Write(events, system.deadLetters, requestorProbe.ref, 0)
       requestorProbe.expectMsg(WriteFailure(DurableEvent("boom", timestampAB(1, 0), processIdA, logId, logId, 1, 1), boom, 0))
       requestorProbe.expectMsg(WriteFailure(DurableEvent("okay", timestampAB(2, 0), processIdA, logId, logId, 2, 2), boom, 0))
     }

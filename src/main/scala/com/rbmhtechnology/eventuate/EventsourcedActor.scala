@@ -94,12 +94,12 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Exten
     writeRequests.nonEmpty
 
   private def delay(): Unit = {
-    eventLog forward Delay(delayRequests, self, instanceId)
+    eventLog ! Delay(delayRequests, sender(), self, instanceId)
     delayRequests = Vector.empty
   }
 
   private def write(): Unit = {
-    eventLog forward Write(writeRequests, self, instanceId)
+    eventLog ! Write(writeRequests, sender(), self, instanceId)
     writeRequests = Vector.empty
   }
 
@@ -137,6 +137,14 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Exten
   }
 
   private val initiated: Receive = {
+
+    //
+    // TODO: reliability improvements
+    //
+    // - response timeout for communication with log
+    //   (low prio, local communication at the moment)
+    //
+
     case DelaySuccess(command, iid) => if (iid == instanceId) {
       delayHandlers.head(command)
       delayHandlers = delayHandlers.tail

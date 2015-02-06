@@ -25,10 +25,13 @@ object EventLogProtocol {
   case class ReadSuccess(events: Seq[DurableEvent], last: Long)
   case class ReadFailure(cause: Throwable)
 
-  case class Delay(commands: Seq[Any], requestor: ActorRef, instanceId: Int)
+  case class Delay(commands: Seq[Any], commandsSender: ActorRef, requestor: ActorRef, instanceId: Int)
   case class DelaySuccess(command: Any, instanceId: Int)
 
-  case class Write(events: Seq[DurableEvent], requestor: ActorRef, instanceId: Int)
+  case class WriteN(writes: Seq[Write])
+  case object WriteNComplete
+
+  case class Write(events: Seq[DurableEvent], eventsSender: ActorRef, requestor: ActorRef, instanceId: Int)
   case class WriteSuccess(event: DurableEvent, instanceId: Int)
   case class WriteFailure(event: DurableEvent, cause: Throwable, instanceId: Int)
   case class Written(event: DurableEvent)

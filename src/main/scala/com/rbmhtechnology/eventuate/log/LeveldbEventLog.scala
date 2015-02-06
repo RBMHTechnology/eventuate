@@ -70,26 +70,31 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
         case Success(result) => sdr ! ReadSuccess(result.events, result.to)
         case Failure(cause)  => sdr ! ReadFailure(cause)
       }
-    case Delay(commands, requestor, iid) =>
-      commands.foreach(cmd => requestor ! DelaySuccess(cmd, iid))
-    case Write(events, requestor, iid) =>
-      val updated = events.map { event =>
-        val snr = nextSequenceNr()
-        event.copy(
-          sourceLogId = id,
-          targetLogId = id,
-          sourceLogSequenceNr = snr,
-          targetLogSequenceNr = snr)
+    case Delay(commands, commandsSender, requestor, iid) =>
+      commands.foreach(cmd => requestor.tell(DelaySuccess(cmd, iid), commandsSender))
+    case WriteN(writes) =>
+      val updated = writes.map(w => w.copy(events = prepareWrite(w.events)))
+      val result = Try(withBatch(batch => updated.foreach(w => write(w.events, batch))))
+      sender() ! WriteNComplete // notify batch layer that write completed
+      result match {
+        case Failure(e) => updated.foreach {
+          case Write(events, eventsSender, requestor, iid) =>
+            replyFailure(events, eventsSender, requestor, iid, e)
+        }
+        case Success(_) => updated.foreach {
+          case Write(events, eventsSender, requestor, iid) =>
+            replySuccess(events, eventsSender, requestor, iid)
+            context.system.eventStream.publish(Updated(events))
+        }
       }
-      Try(write(updated)) match {
+    case Write(events, eventsSender, requestor, iid) =>
+      val updated = prepareWrite(events)
+      val result = Try(write(updated))
+      result match {
         case Failure(e) =>
-          updated.foreach { event => requestor forward WriteFailure(event, e, iid) }
-          // TODO: reset sequence number (?)
+          replyFailure(updated, eventsSender, requestor, iid, e)
         case Success(_) =>
-          updated.foreach { event =>
-            requestor forward WriteSuccess(event, iid)
-            registered.foreach(r => if (r != requestor) r ! Written(event))
-          }
+          replySuccess(updated, eventsSender, requestor, iid)
           context.system.eventStream.publish(Updated(updated))
       }
     case Replicate(events, sourceLogId, lastSourceLogSequenceNrRead) =>
@@ -97,24 +102,17 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
         case Failure(e) => sender() ! ReplicateFailure(e)
         case Success(lastSourceLogSequenceNrReplicated) =>
           if (lastSourceLogSequenceNrRead > lastSourceLogSequenceNrReplicated) {
-            val updated = events.map { event =>
-              val snr = nextSequenceNr()
-              event.copy(
-                sourceLogId = event.targetLogId,
-                targetLogId = id,
-                sourceLogSequenceNr = event.targetLogSequenceNr,
-                targetLogSequenceNr = snr)
-            }
-            Try {
+            val updated = prepareReplicate(events)
+            val result = Try {
               withBatch { batch =>
                 // atomic write of events and replication progress
                 writeReplicationProgress(sourceLogId, lastSourceLogSequenceNrRead, batch)
                 write(updated, batch)
               }
-            } match {
+            }
+            result match {
               case Failure(e) =>
                 sender() ! ReplicateFailure(e)
-                // TODO: reset sequence number (?)
               case Success(_) =>
                 updated.foreach { event => registered.foreach(_ ! Written(event))}
                 context.system.eventStream.publish(Updated(updated))
@@ -128,6 +126,41 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
       }
     case Terminated(requestor) =>
       registered = registered - requestor
+  }
+
+  def replySuccess(events: Seq[DurableEvent], eventsSender: ActorRef, requestor: ActorRef, instanceId: Int): Unit = {
+    events.foreach { event =>
+      requestor.tell(WriteSuccess(event, instanceId), eventsSender)
+      registered.foreach(r => if (r != requestor) r ! Written(event))
+    }
+  }
+
+  def replyFailure(events: Seq[DurableEvent], eventsSender: ActorRef, requestor: ActorRef, instanceId: Int, cause: Throwable): Unit = {
+    events.foreach { event =>
+      requestor.tell(WriteFailure(event, cause, instanceId), eventsSender)
+    }
+  }
+
+  def prepareWrite(events: Seq[DurableEvent]): Seq[DurableEvent] = {
+    events.map { event =>
+      val snr = nextSequenceNr()
+      event.copy(
+        sourceLogId = id,
+        targetLogId = id,
+        sourceLogSequenceNr = snr,
+        targetLogSequenceNr = snr)
+    }
+  }
+
+  def prepareReplicate(events: Seq[DurableEvent]): Seq[DurableEvent] = {
+    events.map { event =>
+      val snr = nextSequenceNr()
+      event.copy(
+        sourceLogId = event.targetLogId,
+        targetLogId = id,
+        sourceLogSequenceNr = event.targetLogSequenceNr,
+        targetLogSequenceNr = snr)
+    }
   }
 
   def write(events: Seq[DurableEvent]): Unit =
@@ -246,6 +279,8 @@ object LeveldbEventLog {
   def longFromBytes(a: Array[Byte]): Long =
     ByteBuffer.wrap(a).getLong
 
-  def props(id: String, prefix: String = "log"): Props =
-    Props(classOf[LeveldbEventLog], id, prefix).withDispatcher("log.leveldb.write-dispatcher")
+  def props(id: String, prefix: String = "log", batching: Boolean = true): Props = {
+    val logProps = Props(new LeveldbEventLog(id, prefix)).withDispatcher("log.leveldb.write-dispatcher")
+    if (batching) Props(new BatchingLayer(logProps)) else logProps
+  }
 }

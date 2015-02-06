@@ -30,7 +30,7 @@ import org.scalatest._
 object EventsourcedActorThroughputSpec {
   val config = ConfigFactory.parseString("log.leveldb.dir = target/test")
 
-  class ThroughputTestActor(val processId: String, val eventLog: ActorRef, override val sync: Boolean, probe: ActorRef) extends EventsourcedActor {
+  class Writer1(val processId: String, val eventLog: ActorRef, override val sync: Boolean, probe: ActorRef) extends EventsourcedActor {
     var startTime: Long = 0L
     var stopTime: Long = 0L
     var num: Int = 0
@@ -54,6 +54,40 @@ object EventsourcedActorThroughputSpec {
         num += 1
     }
   }
+
+  class Writer2(val processId: String, val eventLog: ActorRef, collector: ActorRef) extends EventsourcedActor {
+    def onCommand = {
+      case s: String =>
+        persist(s) {
+          case Success(e) => collector ! e
+          case Failure(e) => throw e
+        }
+    }
+
+    def onEvent = {
+      case "ignore" =>
+    }
+  }
+
+  class Collector(expectedReceives: Int, probe: ActorRef) extends Actor {
+    var startTime: Long = 0L
+    var stopTime: Long = 0L
+    var num: Int = 0
+
+    def receive = {
+      case "stats" =>
+        probe ! s"${(1000.0 * 1000 * 1000 * num) / (stopTime - startTime) } events/sec"
+      case s: String if num == 0 =>
+        startTime = System.nanoTime()
+        num += 1
+      case s: String =>
+        num += 1
+        if (num == expectedReceives) {
+          stopTime = System.nanoTime()
+          probe ! num
+        }
+    }
+  }
 }
 
 import EventsourcedActorThroughputSpec._
@@ -66,7 +100,7 @@ class EventsourcedActorThroughputSpec extends TestKit(ActorSystem("test", config
     probe = TestProbe()
   }
 
-  val num = 10000
+  val num = 1000
   val timeout = 60.seconds
   val events = (1 to num).map(i => s"e-${i}")
 
@@ -81,14 +115,42 @@ class EventsourcedActorThroughputSpec extends TestKit(ActorSystem("test", config
 
   }
 
-
-  "An EventsourcedActor" should {
-    "have some reasonable write throughput (actor sync = true)" in {
-      run(system.actorOf(Props(new ThroughputTestActor("p", log, sync = true, probe.ref))))
+  "An EventsourcedActor" when {
+    "configured with sync = true" should {
+      "have some acceptable write throughput (batching layer has no effect)" in {
+        run(system.actorOf(Props(new Writer1("p", log, sync = true, probe.ref))))
+      }
     }
+  }
 
-    "have some reasonable write throughput (actor sync = false)" in {
-      run(system.actorOf(Props(new ThroughputTestActor("p", log, sync = false, probe.ref))))
+  "An EventsourcedActor" when {
+    "configured with sync = false" should {
+      "have some acceptable write throughput (batching layer has some effect)" in {
+        run(system.actorOf(Props(new Writer1("p", log, sync = false, probe.ref))))
+      }
+    }
+  }
+
+  "Several EventsourcedActors" when {
+    "configured with sync = true" should {
+      "have some reasonable overall write throughput (batching layer has some effects)" in {
+        val probe = TestProbe()
+
+        val numActors = 10
+        val numWrites = numActors * num
+
+        val collector = system.actorOf(Props(new Collector(numWrites, probe.ref)))
+        val actors = 1 to numActors map { i => system.actorOf(Props(new Writer2(s"p-${i}", log, collector))) }
+
+        for {
+          e <- events
+          a <- actors
+        } { a ! e }
+
+        probe.expectMsg(timeout, numWrites)
+        collector ! "stats"
+        println(probe.receiveOne(timeout))
+      }
     }
   }
 }

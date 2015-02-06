@@ -96,7 +96,7 @@ trait EventLogSupport extends BeforeAndAfterAll with BeforeAndAfterEach { this: 
     _logCtr.toString
 
   def logProps(logId: String): Props =
-    Props(new TestEventLog(logId))
+    Props(new BatchingLayer(Props(new TestEventLog(logId)).withDispatcher("log.leveldb.write-dispatcher")))
 
   def system: ActorSystem
 }
