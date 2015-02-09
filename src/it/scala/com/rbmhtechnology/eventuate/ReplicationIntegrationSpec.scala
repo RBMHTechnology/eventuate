@@ -24,7 +24,7 @@ import akka.testkit.TestProbe
 
 import org.scalatest._
 
-object ReplicationSpec {
+object ReplicationIntegrationSpec {
   class PayloadEqualityFilter(payload: String) extends ReplicationFilter {
     override def apply(event: DurableEvent): Boolean = {
       event.payload == payload
@@ -48,8 +48,8 @@ object ReplicationSpec {
     ReplicationConnection("127.0.0.1", port, filters)
 }
 
-class ReplicationSpec extends WordSpec with Matchers with BeforeAndAfterEach {
-  import ReplicationSpec._
+class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAfterEach {
+  import ReplicationIntegrationSpec._
 
   var nodes: List[ReplicationNode] = Nil
 

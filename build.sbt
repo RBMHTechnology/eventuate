@@ -24,13 +24,13 @@ fork in Test := true
 libraryDependencies ++= Seq(
   "com.google.protobuf"              % "protobuf-java"                 % "2.5.0",
   "com.typesafe.akka"               %% "akka-remote"                   % akkaVersion,
-  "com.typesafe.akka"               %% "akka-testkit"                  % akkaVersion  % "test",
+  "com.typesafe.akka"               %% "akka-testkit"                  % akkaVersion  % "test,it",
   "com.typesafe.akka"               %% "akka-multi-node-testkit"       % akkaVersion  % "test",
   "commons-io"                       % "commons-io"                    % "2.4",
   "org.functionaljava"               % "functionaljava"                % "4.2-beta-1" % "test",
-  "org.functionaljava"               % "functionaljava-java8"          % "4.2-beta-1" % "test",
+  "org.functionaljava"               % "functionaljava-java8"          % "4.2-beta-1" % "test,it",
   "org.fusesource.leveldbjni"        % "leveldbjni-all"                % "1.7",
-  "org.scalatest"                   %% "scalatest"                     % "2.1.4"      % "test",
+  "org.scalatest"                   %% "scalatest"                     % "2.1.4"      % "test,it",
   "org.scalaz"                      %% "scalaz-core"                   % "7.1.0"
 )
 
@@ -56,7 +56,7 @@ publishTo := {
 publishMavenStyle := true
 
 // ----------------------------------------------------------------------
-//  Multi-JVM testing
+//  Integration and Multi-JVM testing
 // ----------------------------------------------------------------------
 
 import com.typesafe.sbt.SbtMultiJvm
@@ -67,11 +67,17 @@ evictionWarningOptions in update := EvictionWarningOptions.default
   .withWarnDirectEvictions(false)
   .withWarnScalaVersionEviction(false)
 
-lazy val eventuate = Project (
-  "eventuate",
-  file("."),
-  settings = Defaults.defaultSettings ++ multiJvmSettings,
-  configurations = Configurations.default :+ MultiJvm
+lazy val root = (project in file("."))
+  .configs(IntegrationTest)
+  .settings(itSettings: _*)
+  .configs(MultiJvm)
+  .settings(multiJvmSettings: _*)
+
+lazy val itSettings = Defaults.itSettings ++ Seq(
+  compile in IntegrationTest <<= (compile in IntegrationTest) triggeredBy (compile in Test),
+  test in IntegrationTest <<= (test in IntegrationTest) triggeredBy (test in Test),
+  parallelExecution in IntegrationTest := false,
+  fork in IntegrationTest := true
 )
 
 lazy val multiJvmSettings = SbtMultiJvm.multiJvmSettings ++ Seq(
