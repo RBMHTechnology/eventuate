@@ -242,6 +242,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         val actor = recoveredActor(sync = true)
         actor ! Cmd("a", 2)
         actor ! Ping(1)
+        actor ! Ping(2)
         val write = logProbe.expectMsgClass(classOf[Write])
         write.events(0).payload should be("a-1")
         write.events(1).payload should be("a-2")
@@ -252,6 +253,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         dstProbe.expectMsg(("a-1", timestampA(2), timestampA(1), 1))
         dstProbe.expectMsg(("a-2", timestampA(2), timestampA(2), 2))
         dstProbe.expectMsg(Pong(1))
+        dstProbe.expectMsg(Pong(2))
       }
       "process further commands if persist is aborted by exception in persist handler" in {
         val actor = recoveredActor(sync = true)

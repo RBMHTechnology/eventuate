@@ -185,7 +185,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Exten
 
         if (dPending) delay()
         if (wPending) write()
-        if (wPending && sync) writing = true
+        if (wPending && sync) writing = true else if (sync) unstash()
       }
   }
 
