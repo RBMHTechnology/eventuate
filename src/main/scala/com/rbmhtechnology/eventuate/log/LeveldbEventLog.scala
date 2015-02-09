@@ -38,11 +38,14 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
 
   val serialization = SerializationExtension(context.system)
 
+  val leveldbConfig = context.system.settings.config.getConfig("log.leveldb")
+  val leveldbRootDir = leveldbConfig.getString("dir")
+  val leveldbFsync = leveldbConfig.getBoolean("fsync")
+
   val leveldbOptions = new Options().createIfMissing(true)
-  val leveldbWriteOptions = new WriteOptions().sync(true).snapshot(false)
+  val leveldbWriteOptions = new WriteOptions().sync(leveldbFsync).snapshot(false)
   def leveldbReadOptions = new ReadOptions().verifyChecksums(false)
 
-  val leveldbRootDir = context.system.settings.config.getString("log.leveldb.dir")
   val leveldbDir = new File(leveldbRootDir, s"${prefix}-${id}")
   var leveldb = factory.open(leveldbDir, leveldbOptions)
 
