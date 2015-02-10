@@ -119,7 +119,6 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
   def replicateNone(lastSourceLogSequenceNrRead: Long, expectedLastSourceLogSequenceNrReplicated: Long, remoteLogId: String = remoteLogId): Unit = {
     log.tell(Replicate(Seq(), remoteLogId, lastSourceLogSequenceNrRead), replicatorProbe.ref)
     replicatorProbe.expectMsg(ReplicateSuccess(0, expectedLastSourceLogSequenceNrReplicated))
-    notificationProbe.expectMsg(Updated(Seq()))
   }
 
   "An event log" must {
@@ -198,7 +197,6 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
       log.tell(Replicate(events.take(2), remoteLogId, 8), replicatorProbe.ref)
 
       replicatorProbe.expectMsg(ReplicateSuccess(0, 8))
-      notificationProbe.expectMsg(Updated(Seq()))
 
       // replicate remaining events
       log.tell(Replicate(events.drop(2), remoteLogId, 9), replicatorProbe.ref)

@@ -37,6 +37,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
   import LeveldbEventLog._
 
   val serialization = SerializationExtension(context.system)
+  val eventStream = context.system.eventStream
 
   val leveldbConfig = context.system.settings.config.getConfig("log.leveldb")
   val leveldbRootDir = leveldbConfig.getString("dir")
@@ -80,15 +81,17 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
       val result = Try(withBatch(batch => updated.foreach(w => write(w.events, batch))))
       sender() ! WriteNComplete // notify batch layer that write completed
       result match {
-        case Failure(e) => updated.foreach {
-          case Write(events, eventsSender, requestor, iid) =>
-            replyFailure(events, eventsSender, requestor, iid, e)
-        }
-        case Success(_) => updated.foreach {
-          case Write(events, eventsSender, requestor, iid) =>
-            replySuccess(events, eventsSender, requestor, iid)
-            context.system.eventStream.publish(Updated(events))
-        }
+        case Failure(e) =>
+          updated.foreach {
+            case Write(events, eventsSender, requestor, iid) =>
+              replyFailure(events, eventsSender, requestor, iid, e)
+          }
+        case Success(_) =>
+          updated.foreach {
+            case Write(events, eventsSender, requestor, iid) =>
+              replySuccess(events, eventsSender, requestor, iid)
+          }
+          publishUpdateNotification(updated.flatMap(_.events))
       }
     case Write(events, eventsSender, requestor, iid) =>
       val updated = prepareWrite(events)
@@ -98,7 +101,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
           replyFailure(updated, eventsSender, requestor, iid, e)
         case Success(_) =>
           replySuccess(updated, eventsSender, requestor, iid)
-          context.system.eventStream.publish(Updated(updated))
+          publishUpdateNotification(updated)
       }
     case Replicate(events, sourceLogId, lastSourceLogSequenceNrRead) =>
       Try(readReplicationProgress(sourceLogId)) match {
@@ -118,17 +121,19 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
                 sender() ! ReplicateFailure(e)
               case Success(_) =>
                 updated.foreach { event => registered.foreach(_ ! Written(event))}
-                context.system.eventStream.publish(Updated(updated))
                 sender() ! ReplicateSuccess(events.size, lastSourceLogSequenceNrRead)
+                publishUpdateNotification(updated)
             }
           } else {
-            // duplicate detected
-            context.system.eventStream.publish(Updated(Seq()))
             sender() ! ReplicateSuccess(0, lastSourceLogSequenceNrReplicated)
           }
       }
     case Terminated(requestor) =>
       registered = registered - requestor
+  }
+
+  def publishUpdateNotification(update: Seq[DurableEvent] = Seq()): Unit = {
+    if (update.nonEmpty) eventStream.publish(Updated(update))
   }
 
   def replySuccess(events: Seq[DurableEvent], eventsSender: ActorRef, requestor: ActorRef, instanceId: Int): Unit = {
