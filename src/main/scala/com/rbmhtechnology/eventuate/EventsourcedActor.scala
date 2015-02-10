@@ -22,7 +22,7 @@ import scala.util._
 
 import akka.actor._
 
-trait EventsourcedActor extends Eventsourced with ConditionalCommands with ExtendedStash {
+trait EventsourcedActor extends Eventsourced with ConditionalCommands with InternalStash {
   import EventLogProtocol._
 
   type Handler[A] = Try[A] => Unit
@@ -127,13 +127,13 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Exten
       context.become(initiated)
       conditionChanged(lastTimestamp)
       onRecoverySuccess()
-      unstashAll()
+      internalUnstashAll()
     }
     case ReplayFailure(cause, iid) => if (iid == instanceId) {
       context.stop(self)
     }
     case other =>
-      stash()
+      internalStash()
   }
 
   private val initiated: Receive = {
@@ -156,7 +156,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Exten
       writeHandlers = writeHandlers.tail
       if (sync && writeHandlers.isEmpty) {
         writing = false
-        unstash()
+        internalUnstash()
       }
     }
     case WriteFailure(event, cause, iid) => if (iid == instanceId) {
@@ -165,7 +165,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Exten
       writeHandlers = writeHandlers.tail
       if (sync && writeHandlers.isEmpty) {
         writing = false
-        unstash()
+        internalUnstash()
       }
     }
     case Written(event) => if (event.sequenceNr > lastSequenceNr)
@@ -173,7 +173,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Exten
     case ConditionalCommand(condition, cmd) =>
       conditionalSend(condition, cmd)
     case cmd =>
-      if (writing) stash() else {
+      if (writing) internalStash() else {
         onCommand(cmd)
 
         val dPending = delayPending
@@ -185,7 +185,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Exten
 
         if (dPending) delay()
         if (wPending) write()
-        if (wPending && sync) writing = true else if (sync) unstash()
+        if (wPending && sync) writing = true else if (sync) internalUnstash()
       }
   }
 

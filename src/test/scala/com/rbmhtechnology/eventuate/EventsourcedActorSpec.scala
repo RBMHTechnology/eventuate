@@ -68,6 +68,43 @@ object EventsourcedActorSpec {
     }
   }
 
+  class TestStashingActor(
+      val logProbe: ActorRef,
+      val dstProbe: ActorRef,
+      val errProbe: ActorRef,
+      override val sync: Boolean) extends EventsourcedActor {
+
+    val processId = EventsourcedActorSpec.processIdA
+    val eventLog = logProbe
+
+    var stashing = false
+
+    override def onCommand: Receive = {
+      case "boom" =>
+        throw boom
+      case "stash-on" =>
+        stashing = true
+      case "stash-off" =>
+        stashing = false
+      case "unstash" =>
+        unstashAll()
+      case Ping(i) if stashing =>
+        stash()
+      case Ping(i) =>
+        dstProbe ! Pong(i)
+      case Cmd(p, num) => 1 to num foreach { i =>
+        persist(s"${p}-${i}") {
+          case Success(evt) => dstProbe ! evt
+          case Failure(err) => errProbe ! err
+        }
+      }
+    }
+
+    override def onEvent: Receive = {
+      case evt => dstProbe ! evt
+    }
+  }
+
   def eventA(payload: Any, sequenceNr: Long, timestamp: VectorTime): DurableEvent =
     DurableEvent(payload, timestamp, processIdA, logId, logId, sequenceNr, sequenceNr)
 
@@ -108,6 +145,18 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
     logProbe.expectMsg(Replay(1, actor, instanceId))
     actor ! ReplaySuccess(instanceId)
     actor
+  }
+
+  def stashingActor(sync: Boolean = true): ActorRef = {
+    val actor = system.actorOf(Props(new TestStashingActor(logProbe.ref, dstProbe.ref, errProbe.ref, sync)))
+    logProbe.expectMsg(Replay(1, actor, instanceId))
+    actor ! ReplaySuccess(instanceId)
+    actor
+  }
+
+  def processWrite(actor: ActorRef, snr: Long): Unit = {
+    val write = logProbe.expectMsgClass(classOf[Write])
+    actor ! WriteSuccess(write.events(0).copy(targetLogSequenceNr = snr), instanceId)
   }
 
   "An EventsourcedActor" must {
@@ -275,6 +324,66 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         dstProbe.expectMsg(("a-2", timestampA(2), timestampA(2), 2))
         dstProbe.expectMsg(("b-1", timestampA(4), timestampA(3), 3))
         dstProbe.expectMsg(("b-2", timestampA(4), timestampA(4), 4))
+      }
+      "support user stash operations" in {
+        val actor = stashingActor(sync = true)
+
+        actor ! Cmd("a", 1)
+        actor ! "stash-on"
+        actor ! Ping(1)
+        actor ! "stash-off"
+        actor ! Ping(2)
+
+        processWrite(actor, 1)
+
+        actor ! Cmd("b", 1)
+        actor ! "unstash"
+
+        processWrite(actor, 1)
+
+        dstProbe.expectMsg("a-1")
+        dstProbe.expectMsg(Pong(2))
+        dstProbe.expectMsg("b-1")
+        dstProbe.expectMsg(Pong(1))
+
+        actor ! Cmd("c", 1)
+        actor ! "stash-on"
+        actor ! Ping(3)
+        actor ! "stash-off"
+        actor ! Ping(4)
+
+        processWrite(actor, 3)
+
+        actor ! "unstash"
+        actor ! Cmd("d", 1)
+
+        processWrite(actor, 4)
+
+        dstProbe.expectMsg("c-1")
+        dstProbe.expectMsg(Pong(4))
+        dstProbe.expectMsg(Pong(3))
+        dstProbe.expectMsg("d-1")
+      }
+      "support user stash operations under failure conditions" in {
+        val actor = stashingActor(sync = true)
+
+        actor ! Cmd("a", 1)
+        actor ! "stash-on"
+        actor ! Ping(1)
+        actor ! "stash-off"
+        actor ! "boom"
+        actor ! Ping(2)
+
+        processWrite(actor, 1)
+        dstProbe.expectMsg("a-1")
+
+        logProbe.expectMsg(Replay(1, actor, instanceId + 1))
+        actor ! Replaying(eventA("a-1", 1, timestampAB(1, 0)), instanceId + 1)
+        actor ! ReplaySuccess(instanceId + 1)
+
+        dstProbe.expectMsg("a-1")
+        dstProbe.expectMsg(Pong(1))
+        dstProbe.expectMsg(Pong(2))
       }
     }
     "in async mode" must {

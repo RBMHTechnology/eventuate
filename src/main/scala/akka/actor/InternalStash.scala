@@ -16,7 +16,21 @@
 
 package akka.actor
 
-trait ExtendedStash extends Stash {
-  override def unstash(): Unit =
-    super.unstash()
+trait InternalStash extends Stash with StashFactory {
+  private val theStash: StashSupport = createStash()
+
+  def internalStash(): Unit =
+    theStash.stash()
+
+  def internalUnstash(): Unit =
+    theStash.unstash()
+
+  def internalUnstashAll(): Unit =
+    theStash.unstashAll()
+
+  override def preRestart(reason: Throwable, message: Option[Any]): Unit =
+    try internalUnstashAll() finally super.preRestart(reason, message)
+
+  override def postStop(): Unit =
+    try internalUnstashAll() finally super.postStop()
 }
