@@ -160,4 +160,3 @@ object VectorTime {
     }
   }
 }
-
