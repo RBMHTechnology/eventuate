@@ -84,13 +84,13 @@ class OrderManager(id: String, val eventLog: ActorRef) extends EventsourcedActor
 
   override val onEvent: Receive = {
     case e: OrderCreated =>
-      orders.handleCreated(e, lastTimestamp, lastSequenceNr)
+      orders.handleCreated(e, lastVectorTimestamp, lastSequenceNr)
       if (!recovering) printOrder(orders.versions(e.orderId))
     case e: OrderEvent =>
-      orders.handleUpdated(e, lastTimestamp, lastSequenceNr)
+      orders.handleUpdated(e, lastVectorTimestamp, lastSequenceNr)
       if (!recovering) printOrder(orders.versions(e.orderId))
     case e: Resolved =>
-      orders.handleResolved(e, lastTimestamp, lastSequenceNr)
+      orders.handleResolved(e, lastVectorTimestamp, lastSequenceNr)
       if (!recovering) printOrder(orders.versions(e.id))
   }
 

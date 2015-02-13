@@ -46,25 +46,25 @@ object EventsourcedActorSpec {
       case "boom" => throw boom
       case Ping(i) => dstProbe ! Pong(i)
       case "test-handler-order" =>
-        persist("a")(r => dstProbe ! ((s"${r.get}-1", currentTime, lastTimestamp, lastSequenceNr)))
-        persist("b")(r => dstProbe ! ((s"${r.get}-2", currentTime, lastTimestamp, lastSequenceNr)))
+        persist("a")(r => dstProbe ! ((s"${r.get}-1", currentTime, lastVectorTimestamp, lastSequenceNr)))
+        persist("b")(r => dstProbe ! ((s"${r.get}-2", currentTime, lastVectorTimestamp, lastSequenceNr)))
       case "test-multi-persist" =>
-        val handler = (r: Try[String]) => dstProbe ! ((r.get, currentTime, lastTimestamp, lastSequenceNr))
+        val handler = (r: Try[String]) => dstProbe ! ((r.get, currentTime, lastVectorTimestamp, lastSequenceNr))
         persistN(Seq("a", "b", "c"), handler)(handler)
       case CmdDelayed(p) =>
-        delay(p)(p => dstProbe ! ((p, currentTime, lastTimestamp, lastSequenceNr)))
+        delay(p)(p => dstProbe ! ((p, currentTime, lastVectorTimestamp, lastSequenceNr)))
       case Cmd(p, num) => 1 to num foreach { i =>
         persist(s"${p}-${i}") {
           case Success("boom") => throw boom
-          case Success(evt) => dstProbe ! ((evt, currentTime, lastTimestamp, lastSequenceNr))
-          case Failure(err) => errProbe ! ((err, currentTime, lastTimestamp, lastSequenceNr))
+          case Success(evt) => dstProbe ! ((evt, currentTime, lastVectorTimestamp, lastSequenceNr))
+          case Failure(err) => errProbe ! ((err, currentTime, lastVectorTimestamp, lastSequenceNr))
         }
       }
     }
 
     override def onEvent: Receive = {
       case "boom" => throw boom
-      case evt if evt != "x" => dstProbe ! ((evt, currentTime, lastTimestamp, lastSequenceNr))
+      case evt if evt != "x" => dstProbe ! ((evt, currentTime, lastVectorTimestamp, lastSequenceNr))
     }
   }
 
@@ -106,10 +106,10 @@ object EventsourcedActorSpec {
   }
 
   def eventA(payload: Any, sequenceNr: Long, timestamp: VectorTime): DurableEvent =
-    DurableEvent(payload, timestamp, processIdA, logId, logId, sequenceNr, sequenceNr)
+    DurableEvent(payload, 0L, timestamp, processIdA, logId, logId, sequenceNr, sequenceNr)
 
   def eventB(payload: Any, sequenceNr: Long, timestamp: VectorTime): DurableEvent =
-    DurableEvent(payload, timestamp, processIdB, logId, logId, sequenceNr, sequenceNr)
+    DurableEvent(payload, 0L, timestamp, processIdB, logId, logId, sequenceNr, sequenceNr)
 
   def timestampA(timeA: Long): VectorTime =
     VectorTime(processIdA -> timeA)
@@ -295,8 +295,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         val write = logProbe.expectMsgClass(classOf[Write])
         write.events(0).payload should be("a-1")
         write.events(1).payload should be("a-2")
-        write.events(0).timestamp should be(timestampA(1))
-        write.events(1).timestamp should be(timestampA(2))
+        write.events(0).vectorTimestamp should be(timestampA(1))
+        write.events(1).vectorTimestamp should be(timestampA(2))
         actor ! WriteSuccess(write.events(0).copy(targetLogSequenceNr = 1L), instanceId)
         actor ! WriteSuccess(write.events(1).copy(targetLogSequenceNr = 2L), instanceId)
         dstProbe.expectMsg(("a-1", timestampA(2), timestampA(1), 1))
@@ -394,8 +394,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         val write = logProbe.expectMsgClass(classOf[Write])
         write.events(0).payload should be("a-1")
         write.events(1).payload should be("a-2")
-        write.events(0).timestamp should be(timestampA(1))
-        write.events(1).timestamp should be(timestampA(2))
+        write.events(0).vectorTimestamp should be(timestampA(1))
+        write.events(1).vectorTimestamp should be(timestampA(2))
         actor ! WriteSuccess(write.events(0).copy(targetLogSequenceNr = 1L), instanceId)
         actor ! WriteSuccess(write.events(1).copy(targetLogSequenceNr = 2L), instanceId)
         dstProbe.expectMsg(Pong(1))
@@ -447,8 +447,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         val write = logProbe.expectMsgClass(classOf[Write])
         write.events(0).payload should be("a-1")
         write.events(1).payload should be("a-2")
-        write.events(0).timestamp should be(timestampA(1))
-        write.events(1).timestamp should be(timestampA(2))
+        write.events(0).vectorTimestamp should be(timestampA(1))
+        write.events(1).vectorTimestamp should be(timestampA(2))
         actor ! Written(eventB("b-1", 1, timestampAB(0, 1)))
         actor ! Written(eventB("b-2", 2, timestampAB(0, 2)))
         actor ! WriteSuccess(write.events(0).copy(targetLogSequenceNr = 3L), instanceId)
@@ -500,6 +500,16 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         val write = logProbe.expectMsgClass(classOf[Write])
         write.events(0).payload should be("a-1")
         write.events(1).payload should be("a-2")
+      }
+      "timestamp events with the current system time" in {
+        val now = System.currentTimeMillis
+        val actor = recoveredActor(sync = true)
+        actor ! Ping(1)
+        actor ! Cmd("a", 2)
+        val write = logProbe.expectMsgClass(classOf[Write])
+        write.events(0).systemTimestamp should be >= now
+        write.events(1).systemTimestamp should be >= now
+
       }
     }
   }

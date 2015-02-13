@@ -37,7 +37,7 @@ object EventsourcedViewSpec {
 
     override def onEvent: Receive = {
       case "boom" => throw boom
-      case evt => dstProbe ! ((evt, lastTimestamp, lastSequenceNr))
+      case evt => dstProbe ! ((evt, lastVectorTimestamp, lastSequenceNr))
     }
   }
 }

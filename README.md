@@ -197,7 +197,7 @@ class MyEA(val log: ActorRef, val processId: String) extends EventsourcedActor {
   }
 
   def onEvent: Receive = {
-    case evt: String => println(s"[${processId}] event = ${evt} (event timestamp = ${lastTimestamp})")
+    case evt: String => println(s"[${processId}] event = ${evt} (event timestamp = ${lastVectorTimestamp})")
   }
 }
 ```
@@ -258,7 +258,7 @@ From a CQRS perspective,
 Vector timestamps
 -----------------
 
-The vector timestamp of an event can be obtained with `lastTimestamp` during event processing. Vector timestamps, for example, can be attached as version vectors to current state and compared to timestamps of new events in order to determine whether previous state updates happened-before or are concurrent to the current event.
+The vector timestamp of an event can be obtained with `lastVectorTimestamp` during event processing. Vector timestamps, for example, can be attached as version vectors to current state and compared to timestamps of new events in order to determine whether previous state updates happened-before or are concurrent to the current event.
 
 ```scala
 class MyEA(val log: ActorRef, val processId: String) extends EventsourcedActor {
@@ -273,11 +273,11 @@ class MyEA(val log: ActorRef, val processId: String) extends EventsourcedActor {
   }
 
   def onEvent: Receive = {
-    case evt: String if updateTimestamp < lastTimestamp =>
+    case evt: String if updateTimestamp < lastVectorTimestamp =>
       // all previous state updates happened-before current event
       updateState(evt)
-      updateTimestamp = lastTimestamp
-    case evt: String if updateTimestamp conc lastTimestamp =>
+      updateTimestamp = lastVectorTimestamp
+    case evt: String if updateTimestamp conc lastVectorTimestamp =>
       // one or more previous state updates are concurrent to current event
       // TODO: track concurrent versions ... 
   }
@@ -305,7 +305,7 @@ class MyEA(val log: ActorRef, val processId: String) extends EventsourcedActor {
   var versionedState: ConcurrentVersions[Vector[String], String] = ConcurrentVersions(Vector(), (s, a) => s :+ a)
 
   def updateState(event: String): Unit = {
-    versionedState = versionedState.update(event, lastTimestamp, lastProcessId)
+    versionedState = versionedState.update(event, lastVectorTimestamp, lastProcessId)
     if (versionedState.conflict) {
       // TODO: either automated conflict resolution immediately or interactive conflict resolution later ...
     }
@@ -341,7 +341,7 @@ class MyEA(val log: ActorRef, val processId: String) extends EventsourcedActor {
   var versionedState: ConcurrentVersions[Vector[String], String] = ConcurrentVersions(Vector(), (s, a) => s :+ a)
 
   def updateState(event: String): Unit = {
-    versionedState = versionedState.update(event, lastTimestamp, lastProcessId)
+    versionedState = versionedState.update(event, lastVectorTimestamp, lastProcessId)
     if (versionedState.conflict) {
       // conflicting versions, sorted by processIds of EAs that emitted the concurrent update events
       val conflictingVersions: Seq[Versioned[Vector[String]]] = versionedState.all.sortBy(_.processId)
@@ -430,7 +430,7 @@ Conditional commands are commands that have a vector timestamp attached as condi
 case class ConditionalCommand(condition: VectorTime, cmd: Any)
 ```
 
-Their processing is delayed until an EA's or EV's `lastTimestamp` is greater than or equal (`>=`) the specified `condition`. Hence, conditional commands can help to achieve read-your-write consistency across EAs and EVs (and even across sites), for example.   
+Their processing is delayed until an EA's or EV's `lastVectorTimestamp` is greater than or equal (`>=`) the specified `condition`. Hence, conditional commands can help to achieve read-your-write consistency across EAs and EVs (and even across sites), for example.   
 
 Example application
 -------------------

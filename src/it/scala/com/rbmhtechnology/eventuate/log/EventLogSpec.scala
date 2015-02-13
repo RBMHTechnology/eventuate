@@ -40,7 +40,7 @@ object EventLogSpec {
   val undefinedLogIdFilter = SourceLogIdExclusionFilter(UndefinedLogId)
 
   def event(payload: Any, timestamp: VectorTime, processId: String): DurableEvent =
-    DurableEvent(payload, timestamp, processId, UndefinedLogId, UndefinedLogId, UndefinedSequenceNr, UndefinedSequenceNr)
+    DurableEvent(payload, 0L, timestamp, processId, UndefinedLogId, UndefinedLogId, UndefinedSequenceNr, UndefinedSequenceNr)
 
   def timestampA(timeA: Long): VectorTime =
     VectorTime(processIdA -> timeA)
@@ -89,9 +89,9 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
       event("c", timestampAB(3, 0), processIdA))
 
     generatedEvents = Vector(
-      DurableEvent("a", timestampAB(1, 0), processIdA, logId, logId, 1, 1),
-      DurableEvent("b", timestampAB(2, 0), processIdA, logId, logId, 2, 2),
-      DurableEvent("c", timestampAB(3, 0), processIdA, logId, logId, 3, 3))
+      DurableEvent("a", 0L, timestampAB(1, 0), processIdA, logId, logId, 1, 1),
+      DurableEvent("b", 0L, timestampAB(2, 0), processIdA, logId, logId, 2, 2),
+      DurableEvent("c", 0L, timestampAB(3, 0), processIdA, logId, logId, 3, 3))
 
     log ! Write(events, system.deadLetters, requestorProbe.ref, 0)
     requestorProbe.expectMsg(WriteSuccess(generatedEvents(0), 0))
@@ -102,14 +102,14 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
 
   def replicateEvents(offset: Long, remoteLogId: String = remoteLogId): Unit = {
     val events: Vector[DurableEvent] = Vector(
-      DurableEvent("i", timestampAB(0, 7), processIdB, remoteLogId, remoteLogId, 7, 7),
-      DurableEvent("j", timestampAB(0, 8), processIdB, remoteLogId, remoteLogId, 8, 8),
-      DurableEvent("k", timestampAB(0, 9), processIdB, remoteLogId, remoteLogId, 9, 9))
+      DurableEvent("i", 0L, timestampAB(0, 7), processIdB, remoteLogId, remoteLogId, 7, 7),
+      DurableEvent("j", 0L, timestampAB(0, 8), processIdB, remoteLogId, remoteLogId, 8, 8),
+      DurableEvent("k", 0L, timestampAB(0, 9), processIdB, remoteLogId, remoteLogId, 9, 9))
 
     replicatedEvents = Vector(
-      DurableEvent("i", timestampAB(0, 7), processIdB, remoteLogId, logId, 7, 1 + offset),
-      DurableEvent("j", timestampAB(0, 8), processIdB, remoteLogId, logId, 8, 2 + offset),
-      DurableEvent("k", timestampAB(0, 9), processIdB, remoteLogId, logId, 9, 3 + offset))
+      DurableEvent("i", 0L, timestampAB(0, 7), processIdB, remoteLogId, logId, 7, 1 + offset),
+      DurableEvent("j", 0L, timestampAB(0, 8), processIdB, remoteLogId, logId, 8, 2 + offset),
+      DurableEvent("k", 0L, timestampAB(0, 9), processIdB, remoteLogId, logId, 9, 3 + offset))
 
     log.tell(Replicate(events, remoteLogId, 9), replicatorProbe.ref)
     replicatorProbe.expectMsg(ReplicateSuccess(events.length, 9))
@@ -138,8 +138,8 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
         event("okay", timestampAB(2, 0), processIdA))
 
       log ! Write(events, system.deadLetters, requestorProbe.ref, 0)
-      requestorProbe.expectMsg(WriteFailure(DurableEvent("boom", timestampAB(1, 0), processIdA, logId, logId, 1, 1), boom, 0))
-      requestorProbe.expectMsg(WriteFailure(DurableEvent("okay", timestampAB(2, 0), processIdA, logId, logId, 2, 2), boom, 0))
+      requestorProbe.expectMsg(WriteFailure(DurableEvent("boom", 0L, timestampAB(1, 0), processIdA, logId, logId, 1, 1), boom, 0))
+      requestorProbe.expectMsg(WriteFailure(DurableEvent("okay", 0L, timestampAB(2, 0), processIdA, logId, logId, 2, 2), boom, 0))
     }
     "write replicated events" in {
       replicateEvents(offset = 0)
@@ -175,14 +175,14 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
       val collaborator = registerCollaborator()
 
       val events: Vector[DurableEvent] = Vector(
-        DurableEvent("i", timestampAB(0, 7), processIdB, remoteLogId, remoteLogId, 7, 7),
-        DurableEvent("j", timestampAB(0, 8), processIdB, remoteLogId, remoteLogId, 8, 8),
-        DurableEvent("k", timestampAB(0, 9), processIdB, remoteLogId, remoteLogId, 9, 9))
+        DurableEvent("i", 0L, timestampAB(0, 7), processIdB, remoteLogId, remoteLogId, 7, 7),
+        DurableEvent("j", 0L, timestampAB(0, 8), processIdB, remoteLogId, remoteLogId, 8, 8),
+        DurableEvent("k", 0L, timestampAB(0, 9), processIdB, remoteLogId, remoteLogId, 9, 9))
 
       val replicatedEvents = Vector(
-        DurableEvent("i", timestampAB(0, 7), processIdB, remoteLogId, logId, 7, 1),
-        DurableEvent("j", timestampAB(0, 8), processIdB, remoteLogId, logId, 8, 2),
-        DurableEvent("k", timestampAB(0, 9), processIdB, remoteLogId, logId, 9, 3))
+        DurableEvent("i", 0L, timestampAB(0, 7), processIdB, remoteLogId, logId, 7, 1),
+        DurableEvent("j", 0L, timestampAB(0, 8), processIdB, remoteLogId, logId, 8, 2),
+        DurableEvent("k", 0L, timestampAB(0, 9), processIdB, remoteLogId, logId, 9, 3))
 
       // replicate first two events
       log.tell(Replicate(events.take(2), remoteLogId, 8), replicatorProbe.ref)
@@ -208,8 +208,8 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     }
     "reply with a failure message if replication fails" in {
       val events: Vector[DurableEvent] = Vector(
-        DurableEvent("boom", timestampAB(0, 7), processIdB, remoteLogId, remoteLogId, 7, 7),
-        DurableEvent("okay", timestampAB(0, 8), processIdB, remoteLogId, remoteLogId, 8, 8))
+        DurableEvent("boom", 0L, timestampAB(0, 7), processIdB, remoteLogId, remoteLogId, 7, 7),
+        DurableEvent("okay", 0L, timestampAB(0, 8), processIdB, remoteLogId, remoteLogId, 8, 8))
 
       log.tell(Replicate(events, remoteLogId, 8), replicatorProbe.ref)
       replicatorProbe.expectMsg(ReplicateFailure(boom))

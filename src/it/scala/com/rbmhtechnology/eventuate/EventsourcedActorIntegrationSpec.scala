@@ -138,7 +138,7 @@ object EventsourcedActorIntegrationSpec {
 
     override def onEvent = {
       case evt @ CollabEvt(`processId`, from) =>
-        if (initiated) probe ! lastTimestamp else self ! CollabCmd(from)
+        if (initiated) probe ! lastVectorTimestamp else self ! CollabCmd(from)
     }
   }
 }

@@ -28,7 +28,8 @@ trait Eventsourced extends Actor {
   import Eventsourced._
 
   private var _lastSequenceNr: Long = 0L
-  private var _lastTimestamp: VectorTime = VectorTime()
+  private var _lastSystemTimestamp: Long = 0L
+  private var _lastVectorTimestamp: VectorTime = VectorTime()
   private var _lastProcessId: String = ""
   private var _recovering: Boolean = true
 
@@ -41,8 +42,11 @@ trait Eventsourced extends Actor {
   def lastSequenceNr: Long =
     _lastSequenceNr
 
-  def lastTimestamp: VectorTime =
-    _lastTimestamp
+  def lastSystemTimestamp: Long =
+    _lastSystemTimestamp
+
+  def lastVectorTimestamp: VectorTime =
+    _lastVectorTimestamp
 
   def lastProcessId: String =
     _lastProcessId
@@ -55,7 +59,8 @@ trait Eventsourced extends Actor {
 
   def onLastConsumed(d: DurableEvent): Unit = {
     _lastSequenceNr = d.sequenceNr
-    _lastTimestamp = d.timestamp
+    _lastSystemTimestamp = d.systemTimestamp
+    _lastVectorTimestamp = d.vectorTimestamp
     _lastProcessId = d.processId
   }
 }

@@ -30,7 +30,7 @@ object ReplicationFilterSpec {
     new TestFilter(prefix)
 
   def event(payload: String): DurableEvent =
-    DurableEvent(payload, VectorTime(), "")
+    DurableEvent(payload, 0L, VectorTime(), "")
 }
 
 class ReplicationFilterSpec extends WordSpec with Matchers {

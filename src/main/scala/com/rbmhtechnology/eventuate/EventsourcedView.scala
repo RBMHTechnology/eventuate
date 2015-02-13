@@ -34,7 +34,7 @@ trait EventsourcedView extends Eventsourced with ConditionalCommands with Stash 
     }
     case ReplaySuccess(iid) => if (iid == instanceId) {
       context.become(initiated)
-      conditionChanged(lastTimestamp)
+      conditionChanged(lastVectorTimestamp)
       onRecoverySuccess()
       unstashAll()
     }
@@ -47,7 +47,7 @@ trait EventsourcedView extends Eventsourced with ConditionalCommands with Stash 
 
   private val initiated: Receive = {
     case Written(event) => if (event.sequenceNr > lastSequenceNr)
-      onDurableEvent(event, e => conditionChanged(e.timestamp))
+      onDurableEvent(event, e => conditionChanged(e.vectorTimestamp))
     case ConditionalCommand(condition, cmd) =>
       conditionalSend(condition, cmd)
     case cmd =>

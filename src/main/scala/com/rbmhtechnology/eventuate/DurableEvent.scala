@@ -20,7 +20,8 @@ import DurableEvent._
 
 case class DurableEvent(
   payload: Any,
-  timestamp: VectorTime,
+  systemTimestamp: Long,
+  vectorTimestamp: VectorTime,
   processId: String,
   sourceLogId: String = UndefinedLogId,
   targetLogId: String = UndefinedLogId,

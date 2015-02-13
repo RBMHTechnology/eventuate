@@ -79,7 +79,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
   final def persistWithLocalTime[A](f: Long => A)(handler: Handler[A]): A = {
     clock = clock.tick()
     val event = f(clock.currentLocalTime())
-    writeRequests = writeRequests :+ DurableEvent(event, clock.currentTime, processId = processId)
+    writeRequests = writeRequests :+ DurableEvent(event, System.currentTimeMillis, clock.currentTime, processId = processId)
     writeHandlers = writeHandlers :+ handler.asInstanceOf[Try[Any] => Unit]
     event
   }
@@ -105,7 +105,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
 
   private def onDurableEvent(event: DurableEvent, handled: DurableEvent => Unit = _ => ()): Unit = {
     if (onEvent.isDefinedAt(event.payload)) {
-      clock = clock.update(event.timestamp)
+      clock = clock.update(event.vectorTimestamp)
       onLastConsumed(event)
       onEvent(event.payload)
       handled(event)
@@ -113,7 +113,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
       // Event not handled but it has been previously emitted by this
       // actor. So we need to recover local time, otherwise, we could
       // end up in the past after recovery ....
-      clock = clock.merge(event.timestamp.localCopy(processId))
+      clock = clock.merge(event.vectorTimestamp.localCopy(processId))
     } else {
       // Ignore unhandled event that has been emitted by another actor.
     }
@@ -125,7 +125,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
     }
     case ReplaySuccess(iid) => if (iid == instanceId) {
       context.become(initiated)
-      conditionChanged(lastTimestamp)
+      conditionChanged(lastVectorTimestamp)
       onRecoverySuccess()
       internalUnstashAll()
     }
@@ -151,7 +151,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
     }
     case WriteSuccess(event, iid) => if (iid == instanceId) {
       onLastConsumed(event)
-      conditionChanged(lastTimestamp)
+      conditionChanged(lastVectorTimestamp)
       writeHandlers.head(Success(event.payload))
       writeHandlers = writeHandlers.tail
       if (sync && writeHandlers.isEmpty) {
@@ -169,7 +169,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
       }
     }
     case Written(event) => if (event.sequenceNr > lastSequenceNr)
-      onDurableEvent(event, e => conditionChanged(e.timestamp))
+      onDurableEvent(event, e => conditionChanged(e.vectorTimestamp))
     case ConditionalCommand(condition, cmd) =>
       conditionalSend(condition, cmd)
     case cmd =>

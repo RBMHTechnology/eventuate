@@ -70,15 +70,15 @@ public class OrderManager extends AbstractEventsourcedActor {
 
         onReceiveEvent(ReceiveBuilder
                 .match(OrderCreated.class, e -> {
-                    orders.handleCreated(e, lastTimestamp(), lastSequenceNr());
+                    orders.handleCreated(e, lastVectorTimestamp(), lastSequenceNr());
                     if (!recovering()) printOrder(orders.getVersions(e.getOrderId()));
                 })
                 .match(OrderEvent.class, e -> {
-                    orders.handleUpdated(e, lastTimestamp(), lastSequenceNr());
+                    orders.handleUpdated(e, lastVectorTimestamp(), lastSequenceNr());
                     if (!recovering()) printOrder(orders.getVersions(e.getOrderId()));
                 })
                 .match(Resolved.class, e -> {
-                    orders.handleResolved(e, lastTimestamp(), lastSequenceNr());
+                    orders.handleResolved(e, lastVectorTimestamp(), lastSequenceNr());
                     if (!recovering()) printOrder(orders.getVersions(e.id()));
                 })
                 .build());
