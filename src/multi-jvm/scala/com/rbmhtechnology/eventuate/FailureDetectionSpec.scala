@@ -73,12 +73,10 @@ class FailureDetectionSpec extends MultiNodeSpec(FailureDetectionConfig) with Mu
 
         enterBarrier("broken")
         probeUnavailable.expectMsg(Unavailable(nodeB.name, DefaultLogName))
-
-        // partition healing
-        testConductor.passThrough(nodeA, nodeB, Direction.Both).await
         system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
 
-        enterBarrier("healed")
+        enterBarrier("repair")
+        testConductor.passThrough(nodeA, nodeB, Direction.Both).await
         probeAvailable2.expectMsg(Available(nodeB.name, DefaultLogName))
       }
 
@@ -90,7 +88,7 @@ class FailureDetectionSpec extends MultiNodeSpec(FailureDetectionConfig) with Mu
         probeUnavailable.expectMsg(Unavailable(nodeA.name, DefaultLogName))
         system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
 
-        enterBarrier("healed")
+        enterBarrier("repair")
         probeAvailable2.expectMsg(Available(nodeA.name, DefaultLogName))
       }
 
