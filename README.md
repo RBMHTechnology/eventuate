@@ -37,7 +37,7 @@ Dependencies
 Sites
 -----
 
-The [example application](#example-application) has 6 sites (A - F), each running in a separate process on localhost. By changing the configuration, sites can also be distributed on multiple hosts. Sites A - F are connected via bi-directional, asynchronous event replication connections as shown in the following figure.  
+Sites share a replicated event log. For instance, the [example application](#example-application) has 6 sites (A - F), each running in a separate process on localhost. By changing the configuration, sites can also be distributed on multiple hosts. Sites A - F are connected via bi-directional, asynchronous event replication connections as shown in the following figure.  
   
     A        E
      \      /    
@@ -365,6 +365,11 @@ class MyEA(val log: ActorRef, val processId: String) extends EventsourcedActor {
 In the example above, the version created from the event with the lower emitter `processId` is selected to be the winner. The selected version is identified by its version vector (`winnerVersion`) and passed as argument to `versionedState.update` during conflict resolution. Using emitter `processId`s for choosing a winner is just one example how conflicts can be resolved. Others could compare conflicting versions directly to make a decision. It is only important that the conflict resolution result does not depend on the order of conflicting events so that all application state replicas converge to the same value. 
 
 Interactive conflict resolution does not resolve conflicts immediately but requests the user to select a winner version. In this case, the selected version must be stored as `Resolved` event in the event log (see example application code for details). Furthermore, interactive conflict resolution requires global agreement to avoid concurrent conflict resolutions. This can be achieved by static rules (for example, only the initial creator of a domain object may resolve conflicts for that object) or by global coordination, if needed. Global coordination can work well if conflicts do not occur frequently.
+
+Commutative replicated data types
+---------------------------------
+
+Eventuate also provides an implementation of commutative replicated data types (CmRDTs or operation-based CRDTs) as described in the article [Implementing operation-based CRDTs in Scala](https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/).  
 
 Sending messages
 ----------------
