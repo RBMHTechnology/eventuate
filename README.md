@@ -3,7 +3,39 @@
 Eventuate
 =========
 
-Eventuate is an implementation of the concepts and system model described in [Event Sourcing at Global Scale](http://krasserm.github.io/2015/01/13/event-sourcing-at-global-scale). The project has proof-of-concept status and will gradually evolve into a production-ready toolkit for event sourcing at global scale. API and implementation may significantly change. The re-usable parts of the prototype are contained in package `com.rbmhtechnology.eventuate`, the example application in package `com.rbmhtechnology.example` (Scala version) and package `com.rbmhtechnology.example.japi` (Java version). The following sections give a (still incomplete) overview of the prototype features and instructions for running the example application. 
+Introduction
+------------
+
+Eventuate is a toolkit for building distributed, highly-available and partition-tolerant event-sourced applications. It is written in Scala and built on top of [Akka](http://akka.io/), a toolkit for building highly concurrent, distributed, and resilient message-driven applications on the JVM.
+
+[Event sourcing](http://martinfowler.com/eaaDev/EventSourcing.html) captures all changes to application state as a sequence of events. These events are persisted in an event log and can be replayed to recover application state. Events are immutable facts that are only ever appended to a log which allows for very high transaction rates and efficient replication.
+
+Eventuate supports replication of application state through asynchronous event replication between multiple _locations_. These can be geographically distinct locations, nodes within a data center or even processes on the same node, for example. Locations consume replicated events to re-construct application state locally. Eventuate allows multiple locations to concurrently update replicated state (master-master setup) and supports pre-defined or custom conflict resolution strategies in case of conflicting updates. This is known as operation-based [optimistic replication](http://en.wikipedia.org/wiki/Optimistic_replication) where operations are represented by application-defined events.
+
+Individual locations remain available for local writes even in the presence of network partitions. Events that have been captured locally during a network partition are replicated later when the partition heals. Storing events locally and replicating them later can also be useful for distributed applications deployed on temporarily connected devices, for example.
+
+At the core of Eventuate is a replicated event log. Events captured at a location are stored locally and replicated asynchronously to other locations based on a replication protocol that preserves the [causal ordering](http://krasserm.github.io/2015/01/13/event-sourcing-at-global-scale/#event-log) of events where causality is tracked with [vector clocks](http://en.wikipedia.org/wiki/Vector_clock). For any two events, applications can determine if they have a causal relationship or if they are concurrent by comparing their vector timestamps. This is important to achieve eventual consistency of replicated application state. An event log can also be partitioned for scaling writes.
+
+Storage technologies at individual locations are pluggable (SPI not public yet). A location deployed on a mobile device, for example, will probably choose to write events to the local filesystem whereas a location deployed in a data center could choose to write events to an [Apache Kafka](http://kafka.apache.org/) cluster. Event replication across locations is independent of the storage technologies used at individual locations, so that distributed applications with hybrid event stores are possible.
+
+To model application state, any custom data types can be used. Applications just need to ensure that projecting events from a causally ordered event stream onto these data types yield a consistent result. This may involve detection of conflicts from concurrent events, selecting one of the conflicting versions as the winner or even merging them. Conflict resolution can be automated or interactive. Eventuate also provides implementations of [operation-based CRDTs](https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/), specially-designed data structures used to achieve [strong eventual consistency](http://en.wikipedia.org/wiki/Eventual_consistency#Strong_eventual_consistency).
+
+Eventuate’s approach to optimistic replication and eventual consistency is nothing new. It is implemented in many distributed database systems that choose AP from [CAP](http://en.wikipedia.org/wiki/CAP_theorem). These database systems internally maintain a transaction log that is replicated to re-construct state at different replicas. Besides offering a programming model for storing state changes instead of current state, Eventuate also differs from these database systems in the following ways:
+
+- The transaction log is exposed to applications as event log. Although many distributed database systems provide change feeds, these deliver rather technical events (DocumentCreated, DocumentUpdated, ... for example) compared to domain-specific events in an event log with clear semantics in the application domain (CustomerRelocated, PaymentDelayed, ...). Change feeds with domain-specific events can have significant advantages for building custom read models in [CQRS](http://martinfowler.com/bliki/CQRS.html) or for application integration where semantic integration is often a major challenge.
+
+- Application state can be any application-defined data type together with an event projection function to update and recover state from an event stream. To recover application state at a particular location, the event stream can be deterministically replayed from a local event log. For application state that can be updated at multiple locations, Eventuate provides utilities to track concurrent versions which can be used as input for automated or interactive conflict resolution.
+
+Articles
+--------
+
+- [Event sourcing at global scale](https://krasserm.github.io/2015/01/13/event-sourcing-at-global-scale/)
+- [Implementing operation-based CRDTs in Scala](https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/)
+
+Status
+------
+
+The project has _early access_ status and will gradually evolve into a production-ready toolkit over the next months. Documentation in the following sections is also work in progress.
 
 Community
 ---------
@@ -34,10 +66,10 @@ Dependencies
         <version>0.1-SNAPSHOT</version>
     </dependency>
 
-Sites
------
+Locations
+---------
 
-Sites share a replicated event log. For instance, the [example application](#example-application) has 6 sites (A - F), each running in a separate process on localhost. By changing the configuration, sites can also be distributed on multiple hosts. Sites A - F are connected via bi-directional, asynchronous event replication connections as shown in the following figure.  
+Locations share a replicated event log. For instance, the [example application](#example-application) has 6 locations (A - F), each represented by a separate process on localhost. By changing the configuration, locations can also be distributed on multiple hosts. Locations A - F are connected via bi-directional, asynchronous event replication connections as shown in the following figure.  
   
     A        E
      \      /    
@@ -45,13 +77,13 @@ Sites share a replicated event log. For instance, the [example application](#exa
      /      \
     B        F
 
-Each site must configure
+Each location must configure
 
 - a hostname and port for Akka Remoting (`akka.remote.netty.tcp.hostname` and `akka.remote.netty.tcp.port`)
-- the id of the local replication endpoint (`endpoint.id` which is equal to the site id)
-- a list of replication connections to other sites (`endpoint.connections`)
+- the id of the local replication endpoint (`endpoint.id` which is equal to the location id)
+- a list of replication connections to other locations (`endpoint.connections`)
 
-For example, this is the configuration of site C:
+For example, this is the configuration of location C:
   
     akka.remote.netty.tcp.hostname = "127.0.0.1"
     akka.remote.netty.tcp.port=2554
@@ -59,12 +91,12 @@ For example, this is the configuration of site C:
     endpoint.id = "C"
     endpoint.connections = ["127.0.0.1:2552", "127.0.0.1:2553", "127.0.0.1:2555"]
 
-Later versions will support the automated setup of replication connections when a site joins or leaves a replication network.
+Later versions will support the automated setup of replication connections when a location joins or leaves a replication network.
 
 Event log
 ---------
 
-The replicated event log implementation of the prototype is backed by a LevelDB instance on each site. A site-local event log exposes a replication endpoint that is used by the inter-site replication protocol for replicating events. A site-local event log and its replication endpoint can be instantiated as follows:
+The replicated event log implementation of the prototype is backed by a LevelDB instance at each location i.e. each location has its own local event log. A local event log exposes a replication endpoint that is used by the inter-location replication protocol for replicating events. A local event log and its replication endpoint can be instantiated as follows:
   
 ```scala
 import akka.actor._
@@ -82,11 +114,11 @@ The log actor can be obtained with
 val log: ActorRef = endpoint.logs("default")
 ```
 
-A replication endpoint and its configuration (`endpoint.id` and `endpoint.connections`) on each site implement the replicated event log. Please note that the current implementation doesn't allow cycles in the replication network to preserve the happens-before relationship (= potential causal relationship) of events. This is a limitation that will be removed in later versions (which will be able re-order events based on their vector timestamps). 
+Replication endpoints and their configuration (`endpoint.id` and `endpoint.connections`) at all locations implement the replicated event log. Please note that the current implementation doesn't allow cycles in the replication network to preserve the happens-before relationship (= potential causal relationship) of events. This is a limitation that will be removed in later versions (which will be able re-order events based on their vector timestamps). 
 
 ### Advanced configuration
 
-As already shown in section [Sites](#sites), replication connections (connecting to remote replication endpoints) can be configured with the `log.connections` configuration key. Alternatively, applications can also set up replication connections programmatically:
+As already shown in section [Locations](#locations), replication connections (connecting to remote replication endpoints) can be configured with the `log.connections` configuration key. Alternatively, applications can also set up replication connections programmatically:
 
 ```scala
 val connections = Seq(
@@ -181,11 +213,11 @@ class MyEA(override val log: ActorRef, override val processId: String) extends E
 }
 ```
 
-Similar to akka-persistence, commands are processed by a command handler (`onCommand`), events are processed by an event handler (`onEvent`) and events are written to the event log with the `persist` method whose signature is `persist[A](event: A)(handler: Try[A] => Unit)`. An EA must also implement `log` which is the event log that the EA shares with other EAs. The event log `ActorRef` of a site can be obtained from the replication endpoint with `endpoint.log`. 
+Similar to akka-persistence, commands are processed by a command handler (`onCommand`), events are processed by an event handler (`onEvent`) and events are written to the event log with the `persist` method whose signature is `persist[A](event: A)(handler: Try[A] => Unit)`. An EA must also implement `log` which is the event log that the EA shares with other EAs. The event log `ActorRef` of a location can be obtained from the replication endpoint with `endpoint.log`. 
 
 The `processId` of an EA must be globally unique as it contributes to vector clocks. In the current implementation, each EA instance maintains its own vector clock, as it represents a light-weight process that exchanges events with other EA instances via a shared distributed `log`. Therefore, vector clock sizes linearly grow with the number of EA instances. Future versions will provide means to limit vector clock sizes, for example, by partitioning EAs in the event space or by grouping several EAs into the same "process", so that the system can scale to a large number of EAs.  
 
-An EA does not only receive events persisted by itself but also those persisted by other EAs (located on the same site or on other sites) as long as they share a replicated `log` and can process those in its event handler. With the following definition of `MyEA`
+An EA does not only receive events persisted by itself but also those persisted by other EAs (at the same or other locations) as long as they share a replicated `log` and can process those in its event handler. With the following definition of `MyEA`
 
 ```scala
 class MyEA(val log: ActorRef, val processId: String) extends EventsourcedActor {
@@ -435,7 +467,7 @@ Conditional commands are commands that have a vector timestamp attached as condi
 case class ConditionalCommand(condition: VectorTime, cmd: Any)
 ```
 
-Their processing is delayed until an EA's or EV's `lastVectorTimestamp` is greater than or equal (`>=`) the specified `condition`. Hence, conditional commands can help to achieve read-your-write consistency across EAs and EVs (and even across sites), for example.   
+Their processing is delayed until an EA's or EV's `lastVectorTimestamp` is greater than or equal (`>=`) the specified `condition`. Hence, conditional commands can help to achieve read-your-write consistency across EAs and EVs (and even across locations), for example.   
 
 Example application
 -------------------
@@ -454,11 +486,11 @@ The `Order` domain object is defined as follows:
  }
 ```
 
-Order creation and updates are tracked as events in the replicated event log and replicated order state is maintained by `OrderManager` actors on all sites.
+Order creation and updates are tracked as events in the replicated event log and replicated order state is maintained by `OrderManager` actors at all locations.
 
 ### Replication
 
-As already mentioned, order events are replicated across sites A - F (all [running](#running) on `localhost`).
+As already mentioned, order events are replicated across locations A - F (all [running](#running) on `localhost`).
 
     A        E
      \      /    
@@ -466,7 +498,7 @@ As already mentioned, order events are replicated across sites A - F (all [runni
      /      \
     B        F
 
-Every site can create and update update orders, even under presence of network partitions. In the example application, network partitions can be created by shutting down sites. For example, when shutting down site `C`, partitions `A`, `B` and `E-D-F` are created. 
+Each location can create and update update orders, even under presence of network partitions. In the example application, network partitions can be created by shutting down locations. For example, when shutting down location `C`, partitions `A`, `B` and `E-D-F` are created. 
 
 Concurrent updates to orders with different `id`s do not conflict, concurrent updates to the same order are considered as conflict and must be resolved by the user before further updates to that order are possible.    
 
@@ -481,27 +513,27 @@ The example application has a simple command-line interface to create and update
 
 If a conflict from a concurrent update occurred, the conflict must be resolved by selecting one of the conflicting versions:
 
-- `resolve <order-id> <index>` resolves a conflict by selecting a version `index`. Only the site that initially created the order object can resolve the conflict (static rule for distributed agreement).  
+- `resolve <order-id> <index>` resolves a conflict by selecting a version `index`. Only the location that initially created the order object can resolve the conflict (static rule for distributed agreement).  
 
 Other commands are:
 
 - `count <order-id>` prints the number of updates to an order (incl. creation). Update counts are maintained by a separate view that subscribes to order events. 
-- `state` prints the current state (= all orders) on a site (which may differ across sites during network partitions).
-- `exit` stops a site and the replication links to and from that site.
+- `state` prints the current state (= all orders) on at a location (which may differ at other locations during network partitions).
+- `exit` stops a location and the replication links to and from that location.
 
 Update results from user commands and replicated events are written to `stdout`. Update results from replayed events are not shown.
 
 ### Running
 
-Before you continue, install [sbt](http://www.scala-sbt.org/) and run `sbt test` from the project's root (needs to be done only once). Then, open 6 terminal windows (representing sites A - F) and run
+Before you continue, install [sbt](http://www.scala-sbt.org/) and run `sbt test` from the project's root (needs to be done only once). Then, open 6 terminal windows (representing locations A - F) and run
 
-- `example-site A` for starting site A
-- `example-site B` for starting site B
-- `example-site C` for starting site C
-- `example-site D` for starting site D
-- `example-site E` for starting site E
-- `example-site F` for starting site F
+- `example-site A` for starting location A
+- `example-site B` for starting location B
+- `example-site C` for starting location C
+- `example-site D` for starting location D
+- `example-site E` for starting location E
+- `example-site F` for starting location F
 
 Alternatively, run `example` which opens these terminal windows automatically (works only on Mac OS X at the moment). For running the Java version of the example application, run `example-site` or `example` with `java` as additional argument. 
 
-Create and update some orders and see how changes are replicated across sites. To make concurrent updates to an order, for example, enter `exit` on site `C`, and add different items to that order on sites `A` and `F`. When starting site `C` again, both updates propagate to all other sites which are then displayed as conflict. Resolve the conflict with the `resolve` command.  
+Create and update some orders and see how changes are replicated across locations. To make concurrent updates to an order, for example, enter `exit` at location `C`, and add different items to that order at locations `A` and `F`. When starting location `C` again, both updates propagate to all other locations which are then displayed as conflict. Resolve the conflict with the `resolve` command.  
