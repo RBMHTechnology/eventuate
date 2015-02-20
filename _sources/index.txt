@@ -2,8 +2,6 @@
 Content
 =======
 
-Test 1
-
 .. toctree::
    :maxdepth: 2
 
