@@ -8,6 +8,8 @@ scalaVersion := "2.11.4"
 
 val akkaVersion = "2.3.9"
 
+scalacOptions in (Compile, doc) := List("-skip-packages", "akka")
+
 scalacOptions ++= Seq(
   "-feature",
   "-unchecked",
@@ -33,6 +35,20 @@ libraryDependencies ++= Seq(
   "org.scalatest"                   %% "scalatest"                     % "2.1.4"      % "test,it",
   "org.scalaz"                      %% "scalaz-core"                   % "7.1.0"
 )
+
+// ----------------------------------------------------------------------
+//  Documentation
+// ----------------------------------------------------------------------
+
+site.settings
+
+site.sphinxSupport()
+
+site.includeScaladoc()
+
+ghpages.settings
+
+git.remoteRepo := "git@github.com:RBMHTechnology/eventuate.git"
 
 // ----------------------------------------------------------------------
 //  Publishing
