@@ -132,7 +132,7 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
       val eventsA = probeA.expectMsgAllOf("a1", "a2", "a3", "b2")
       val eventsB = probeB.expectMsgAllOf("b1", "b2", "b3", "a2")
     }
-    "immediately attempt next batch if last replicated batch had maximum size" in {
+    "immediately attempt next batch if last replicated batch was not empty" in {
       val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, List(localConnection(2553))))
       val nodeB = register(new ReplicationNode("B", Set("L1"), 2553, List(localConnection(2552))))
 
