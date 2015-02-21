@@ -40,6 +40,8 @@ libraryDependencies ++= Seq(
 //  Documentation
 // ----------------------------------------------------------------------
 
+import com.typesafe.sbt.site.SphinxSupport.Sphinx
+
 site.settings
 
 site.sphinxSupport()
@@ -49,6 +51,8 @@ site.includeScaladoc()
 ghpages.settings
 
 git.remoteRepo := "git@github.com:RBMHTechnology/eventuate.git"
+
+unmanagedSourceDirectories in Test <<= sourceDirectory in Sphinx apply { _ ** "code" get }
 
 // ----------------------------------------------------------------------
 //  Publishing
