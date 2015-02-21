@@ -8,6 +8,9 @@ Here are the `API docs`_.
 
 Text 1
 
+.. includecode:: code/com/rbmhtechnology/eventuate/doc/Example.scala
+   :snippet: hello
+
 ----------
 Subtitle A
 ----------
