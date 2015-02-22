@@ -106,7 +106,7 @@ trait CRDTService[A, B] {
   def ops: CRDTServiceOps[A, B]
 
   /**
-   * Starts this service.
+   * Starts the CRDT service.
    */
   def start()(implicit system: ActorSystem): Unit = if (worker.isEmpty) {
     this.system = Some(system)
@@ -114,7 +114,7 @@ trait CRDTService[A, B] {
   }
 
   /**
-   * Starts this service.
+   * Stops the CRDT service.
    */
   def stop(): Unit = for {
     s <- system
