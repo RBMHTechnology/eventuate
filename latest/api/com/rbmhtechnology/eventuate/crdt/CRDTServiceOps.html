@@ -400,6 +400,26 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps#precondition" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="precondition:Boolean"></a>
+      <a id="precondition:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">precondition</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTServiceOps@precondition:Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Must return <code>true</code> if CRDT checks preconditions.</p><div class="fullcomment"><div class="comment cmt"><p>Must return <code>true</code> if CRDT checks preconditions. Should be overridden to return
+<code>false</code> if CRDT does not check preconditions, as this will significantly increase
+write throughput.
+</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps#prepare" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="prepare(crdt:A,operation:Any):Option[Any]"></a>
       <a id="prepare(A,Any):Option[Any]"></a>
