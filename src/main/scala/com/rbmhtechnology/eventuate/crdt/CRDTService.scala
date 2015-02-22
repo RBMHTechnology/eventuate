@@ -46,6 +46,13 @@ trait CRDTServiceOps[A, B] {
   def value(crdt: A): B
 
   /**
+   * Must return `true` if CRDT checks preconditions. Should be overridden to return
+   * `false` if CRDT does not check preconditions, as this will significantly increase
+   * write throughput.
+   */
+  def precondition: Boolean = true
+
+  /**
    * Update phase 1 ("atSource"). Prepares an operation for phase 2.
    */
   def prepare(crdt: A, operation: Any): Option[Any] = Some(operation)
@@ -146,6 +153,9 @@ trait CRDTService[A, B] {
   private class CRDTActor(val eventLog: ActorRef, val processId: String) extends EventsourcedActor {
     var crdts: Map[String, A] = Map.empty.withDefault(_ => ops.zero)
     val crdtClassName = ops.zero.getClass.getSimpleName
+
+    override def sync: Boolean =
+      ops.precondition
 
     override def onCommand: Receive = {
       case GetValue(id) =>

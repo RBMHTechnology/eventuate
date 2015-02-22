@@ -38,6 +38,9 @@ object Counter {
     override def value(crdt: Counter[A]): A =
       crdt.value
 
+    override def precondition: Boolean =
+      false
+
     override def update(crdt: Counter[A], operation: Any, vectorTimestamp: VectorTime, systemTimestamp: Long): Counter[A] = operation match {
       case UpdateOp(delta) => crdt.update(delta.asInstanceOf[A])
     }
