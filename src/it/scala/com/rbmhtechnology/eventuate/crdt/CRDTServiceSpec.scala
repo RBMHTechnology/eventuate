@@ -30,6 +30,12 @@ class CRDTServiceSpec  extends TestKit(ActorSystem("test", config)) with WordSpe
       service.value("a").await should be(1)
       service.value("b").await should be(2)
     }
+    "ignore events from CRDT services of different type" in {
+      val service1 = new CounterService[Int]("a", log)
+      val service2 = new MVRegisterService[Int]("a", log)
+      service1.update("a", 1).await should be(1)
+      service2.set("a", 1).await should be(Set(1))
+    }
   }
 
   "A CounterService" must {

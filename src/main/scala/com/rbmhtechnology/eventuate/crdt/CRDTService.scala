@@ -60,10 +60,11 @@ object CRDTService {
   /**
    * Persistent event with update operation.
    *
+   * @param name simple name of CRDT class.
    * @param id id of CRDT instance.
    * @param operation update operation.
    */
-  case class ValueUpdated(id: String, operation: Any)
+  case class ValueUpdated(name: String, id: String, operation: Any)
 }
 
 /**
@@ -144,6 +145,7 @@ trait CRDTService[A, B] {
 
   private class CRDTActor(val eventLog: ActorRef, val processId: String) extends EventsourcedActor {
     var crdts: Map[String, A] = Map.empty.withDefault(_ => ops.zero)
+    val crdtClassName = ops.zero.getClass.getSimpleName
 
     override def onCommand: Receive = {
       case GetValue(id) =>
@@ -153,7 +155,7 @@ trait CRDTService[A, B] {
           case None =>
             sender() ! UpdateValueReply(id, ops.value(crdts(id)))
           case Some(op) =>
-            persist(ValueUpdated(id, op)) {
+            persist(ValueUpdated(crdtClassName, id, op)) {
               case Success(evt) =>
                 onEvent(evt)
                 sender() ! UpdateValueReply(id, ops.value(crdts(id)))
@@ -164,7 +166,7 @@ trait CRDTService[A, B] {
     }
 
     override def onEvent: Receive = {
-      case ValueUpdated(id, operation) =>
+      case ValueUpdated(`crdtClassName`, id, operation) =>
         val crdt = crdts.get(id) match {
           case Some(crdt) => crdt
           case None       => ops.zero
