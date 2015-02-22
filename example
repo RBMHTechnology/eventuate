@@ -1,8 +1,16 @@
-#!/bin/bash
+#!/bin/sh
 
 for site in A B C D E F
 do
-    osascript -e "tell app \"Terminal\"
-        do script \"cd `pwd`; ./example-site $site $*\"
-    end tell"
+    if command -v osascript >/dev/null 2>&1; then
+        osascript -e "tell app \"Terminal\"
+            do script \"cd `pwd`; ./example-site $site $*\"
+        end tell"
+    else
+        if command -v xterm >/dev/null 2>&1; then
+            xterm -title $site -e "./example-site $site $*" &
+        else
+            echo "Neiter osascript nor xterm were found";
+        fi
+    fi
 done
