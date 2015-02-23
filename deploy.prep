@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -ev
+
+git config --global user.name "Travis build"
+git config --global user.email "krasserm@googlemail.com"
+openssl aes-256-cbc -K $encrypted_f0f220afbce8_key -iv $encrypted_f0f220afbce8_iv -in deploy.enc -out deploy -d
+chmod 600 deploy
