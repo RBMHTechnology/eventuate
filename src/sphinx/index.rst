@@ -1,8 +1,14 @@
-=======
-Content
-=======
+=========
+Eventuate
+=========
+
+**Please note:** The project has **early access** status and will gradually evolve into a production-ready toolkit during the next months.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   a
+   introduction
+   architecture
+   ref-guide
+   dev-guide
+   appendix
