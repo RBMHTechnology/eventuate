@@ -534,6 +534,6 @@ Before you continue, install [sbt](http://www.scala-sbt.org/) and run `sbt test`
 - `example-site E` for starting location E
 - `example-site F` for starting location F
 
-Alternatively, run `example` which opens these terminal windows automatically (works only on Mac OS X at the moment). For running the Java version of the example application, run `example-site` or `example` with `java` as additional argument. 
+Alternatively, run `example` which opens these terminal windows automatically. For running the Java version of the example application, run `example-site` or `example` with `java` as additional argument. 
 
 Create and update some orders and see how changes are replicated across locations. To make concurrent updates to an order, for example, enter `exit` at location `C`, and add different items to that order at locations `A` and `F`. When starting location `C` again, both updates propagate to all other locations which are then displayed as conflict. Resolve the conflict with the `resolve` command.  
