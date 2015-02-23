@@ -1,8 +1,9 @@
-=======
-Content
-=======
+=========
+Eventuate
+=========
 
 .. toctree::
    :maxdepth: 2
 
-   a
+   introduction
+   architecture

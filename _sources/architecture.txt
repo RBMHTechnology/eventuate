@@ -1,0 +1,103 @@
+.. _architecture:
+
+------------
+Architecture
+------------
+
+Event logs
+----------
+
+Eventuate applications use event logs to store application-defined events. An event log is replicated across *locations* where each location has its own copy of events in a local event log. Replication occurs asynchronously along *replication connections* between *replication endpoints*.
+
+.. figure:: images/architecture-1.png
+   :figwidth: 70%
+
+   Fig. 1. An event log, replicated across locations A, B and C.
+
+Events within a local log are totally ordered and event replay is deterministic i.e. events are always replayed in the same order. The total order of events at different locations however is likely to differ, as events can be written concurrently by these locations. The strongest ordering guarantee that can be given across locations is `causal ordering`_ [#]_ which is tracked with `vector clocks`_. Causal ordering is guaranteed to be consistent with total ordering in local event logs. 
+
+A replication endpoint can also manage more than one local event log. Local logs have unique names per replication endpoint and event replication only occurs between logs of same name. Logs with different names are isolated from each other. Also, their distribution across locations may differ, as shown in the following figure.
+
+.. figure:: images/architecture-2.png
+   :figwidth: 70%
+
+   Fig. 2. Three replicated event logs. Log X (blue) is replicated across locations A, B and C. Log Y (red) is replicated across locations A and B and log Z (green) is replicated across locations A and C.
+
+Event storage backends at individual locations are pluggable. A location that requires strong durability should use a storage backend that is (synchronously) replicated within that location, others may use a more lightweight, non-replicated storage backend in case of weaker durability requirements.
+
+Event replication across locations is reliable. If any of the locations crashes or the network partitions, replication automatically resumes when crashed locations recover and/or the partition heals. Failure detectors inform applications about (un)availability of other locations. Replication endpoints ensure that no duplicates are ever written at target locations.
+
+Replication connections can also be configured with replication filters, so that only events matching one or more filter predicates are replicated. 
+
+Event-sourced actors
+--------------------
+
+Event-sourced actors produce events to and consume events from an event log. During *command processing* they usually validate external commands against internal state and, if validation succeeds, write one or more events to their event log. During *event processing* they consume events they have written and update internal state by handling these events. This is the main idea behind `event sourcing`_. When used in context of a `CQRS`_ architecture, they implement the command-side (C).
+
+.. figure:: images/architecture-3.png
+   :figwidth: 70%
+
+   Fig. 3. An event-sourced actor, producing events to and consuming events from an event log.
+
+In addition to handling their own events, event-sourced actors can also handle events written by other event-sourced actors to the same event log. This enables `event collaboration`_ between actors. A special form of event collaboration is state replication where actors with the same behavior consume the same events at different locations to re-construct state. Another example of event collaboration is a distributed business process where actors with different behavior collaborate by exchanging events to achieve a common goal.
+
+.. figure:: images/architecture-4.png
+   :figwidth: 70%
+
+   Fig. 4. Event-sourced actor collaboration. Two event-sourced actors exchanging events on a shared, distributed event log.
+
+Event-sourced actors may also interact with external services by sending commands and processing replies. Command sending can have at-most-once or at-least-once delivery semantics, depending on reliability requirements. Replies from external services are usually processed like external commands which may result in further events to be persisted. This way, external services can be included into a reliable, event-driven business process driven by event-sourced actors.
+
+.. figure:: images/architecture-5.png
+   :figwidth: 70%
+
+   Fig. 5. External service integration.
+
+From a functional perspective, there’s no difference if event-sourced actor collaborate on the same local event log or on a distributed log. This is especially useful for testing purposes as it doesn’t require to setup a distributed log.
+
+Event-sourced views
+-------------------
+
+Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. When used in context of a `CQRS`_ architecture, they implement the query-side (Q). 
+
+Event-sourced processors
+------------------------
+
+An event-sourced processor consumes events from one event log, processes them with application-defined behavior (stateless or stateful) and produces processed events to another event log. Event-sourced processors can be used as gateways between otherwise partitioned event logs. They are not implemented yet.
+
+Vector clocks
+-------------
+
+In the current system model, an event-sourced actor represents a lightweight “process” with its own consistency boundary. After having consumed an event e :sub:`i`, events e :sub:`i+1`, e :sub:`i+2`, ..., e :sub:`i+n`, generated by that actor, causally depend on e :sub:`i`. To track causality, each event-sourced actor maintains a vector clock which is used to timestamp written events. For any two events, applications can therefore determine if they are causally related or if they are concurrent by comparing their vector timestamps. 
+
+Only events that are actually handled by an event-sourced actor contribute to its vector clock. This allows to keep vector clock sizes small, even if a large number of event-sourced actors is used. For example, if an application follows a one-\ aggregate_-per-actor design, vector clock sizes scale only with the (small) number of locations rather than the (large) number of aggregates.
+
+CRDT services
+-------------
+
+Eventuate implements operation-based CRDTs (commutative replicated data types or CmRDTs) which can be accessed via `CRDT services`_. CRDT services ... (TODO: what is their function and advantage ...) and free applications from dealing with low-level details such as event-sourced actors and update operation events. New CmRDT types can be developed and integrated with the CRDT development framework.
+
+Batching
+--------
+
+Eventuate heavily relies on batching to optimize read and write throughput. Batching is used in the following places:
+
+...
+
+Adapters
+--------
+
+...
+
+.. _CQRS: http://martinfowler.com/bliki/CQRS.html
+.. _CRDT services: https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/
+
+.. _vector clocks: http://en.wikipedia.org/wiki/Vector_clock
+.. _causal ordering: http://krasserm.github.io/2015/01/13/event-sourcing-at-global-scale/#event-log
+.. _event sourcing: http://martinfowler.com/eaaDev/EventSourcing.html
+.. _event collaboration: http://martinfowler.com/eaaDev/EventCollaboration.html
+.. _aggregate: http://martinfowler.com/bliki/DDD_Aggregate.html
+
+.. [#] In the linked article, the term *site* is synonymous with *location*.
+
+

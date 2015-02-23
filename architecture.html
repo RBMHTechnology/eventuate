@@ -1,0 +1,241 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Architecture &mdash; Eventuate</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Eventuate" href="index.html"/>
+        <link rel="prev" title="Introduction" href="introduction.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> Eventuate</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#event-logs">Event logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-sourced-actors">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-sourced-processors">Event-sourced processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#vector-clocks">Vector clocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#crdt-services">CRDT services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#batching">Batching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adapters">Adapters</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Eventuate</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Architecture</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/architecture.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="architecture">
+<span id="id1"></span><h1>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="event-logs">
+<h2>Event logs<a class="headerlink" href="#event-logs" title="Permalink to this headline">¶</a></h2>
+<p>Eventuate applications use event logs to store application-defined events. An event log is replicated across <em>locations</em> where each location has its own copy of events in a local event log. Replication occurs asynchronously along <em>replication connections</em> between <em>replication endpoints</em>.</p>
+<div class="figure" id="id6" style="width: 70%">
+<img alt="_images/architecture-1.png" src="_images/architecture-1.png" />
+<p class="caption"><span class="caption-text">Fig. 1. An event log, replicated across locations A, B and C.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+<p>Events within a local log are totally ordered and event replay is deterministic i.e. events are always replayed in the same order. The total order of events at different locations however is likely to differ, as events can be written concurrently by these locations. The strongest ordering guarantee that can be given across locations is <a class="reference external" href="http://krasserm.github.io/2015/01/13/event-sourcing-at-global-scale/#event-log">causal ordering</a> <a class="footnote-reference" href="#id5" id="id2">[1]</a> which is tracked with <a class="reference external" href="http://en.wikipedia.org/wiki/Vector_clock">vector clocks</a>. Causal ordering is guaranteed to be consistent with total ordering in local event logs.</p>
+<p>A replication endpoint can also manage more than one local event log. Local logs have unique names per replication endpoint and event replication only occurs between logs of same name. Logs with different names are isolated from each other. Also, their distribution across locations may differ, as shown in the following figure.</p>
+<div class="figure" id="id7" style="width: 70%">
+<img alt="_images/architecture-2.png" src="_images/architecture-2.png" />
+<p class="caption"><span class="caption-text">Fig. 2. Three replicated event logs. Log X (blue) is replicated across locations A, B and C. Log Y (red) is replicated across locations A and B and log Z (green) is replicated across locations A and C.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<p>Event storage backends at individual locations are pluggable. A location that requires strong durability should use a storage backend that is (synchronously) replicated within that location, others may use a more lightweight, non-replicated storage backend in case of weaker durability requirements.</p>
+<p>Event replication across locations is reliable. If any of the locations crashes or the network partitions, replication automatically resumes when crashed locations recover and/or the partition heals. Failure detectors inform applications about (un)availability of other locations. Replication endpoints ensure that no duplicates are ever written at target locations.</p>
+<p>Replication connections can also be configured with replication filters, so that only events matching one or more filter predicates are replicated.</p>
+</div>
+<div class="section" id="event-sourced-actors">
+<h2>Event-sourced actors<a class="headerlink" href="#event-sourced-actors" title="Permalink to this headline">¶</a></h2>
+<p>Event-sourced actors produce events to and consume events from an event log. During <em>command processing</em> they usually validate external commands against internal state and, if validation succeeds, write one or more events to their event log. During <em>event processing</em> they consume events they have written and update internal state by handling these events. This is the main idea behind <a class="reference external" href="http://martinfowler.com/eaaDev/EventSourcing.html">event sourcing</a>. When used in context of a <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> architecture, they implement the command-side (C).</p>
+<div class="figure" id="id8" style="width: 70%">
+<img alt="_images/architecture-3.png" src="_images/architecture-3.png" />
+<p class="caption"><span class="caption-text">Fig. 3. An event-sourced actor, producing events to and consuming events from an event log.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+<p>In addition to handling their own events, event-sourced actors can also handle events written by other event-sourced actors to the same event log. This enables <a class="reference external" href="http://martinfowler.com/eaaDev/EventCollaboration.html">event collaboration</a> between actors. A special form of event collaboration is state replication where actors with the same behavior consume the same events at different locations to re-construct state. Another example of event collaboration is a distributed business process where actors with different behavior collaborate by exchanging events to achieve a common goal.</p>
+<div class="figure" id="id9" style="width: 70%">
+<img alt="_images/architecture-4.png" src="_images/architecture-4.png" />
+<p class="caption"><span class="caption-text">Fig. 4. Event-sourced actor collaboration. Two event-sourced actors exchanging events on a shared, distributed event log.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+<p>Event-sourced actors may also interact with external services by sending commands and processing replies. Command sending can have at-most-once or at-least-once delivery semantics, depending on reliability requirements. Replies from external services are usually processed like external commands which may result in further events to be persisted. This way, external services can be included into a reliable, event-driven business process driven by event-sourced actors.</p>
+<div class="figure" id="id10" style="width: 70%">
+<img alt="_images/architecture-5.png" src="_images/architecture-5.png" />
+<p class="caption"><span class="caption-text">Fig. 5. External service integration.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+<p>From a functional perspective, there’s no difference if event-sourced actor collaborate on the same local event log or on a distributed log. This is especially useful for testing purposes as it doesn’t require to setup a distributed log.</p>
+</div>
+<div class="section" id="event-sourced-views">
+<h2>Event-sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h2>
+<p>Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. When used in context of a <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> architecture, they implement the query-side (Q).</p>
+</div>
+<div class="section" id="event-sourced-processors">
+<h2>Event-sourced processors<a class="headerlink" href="#event-sourced-processors" title="Permalink to this headline">¶</a></h2>
+<p>An event-sourced processor consumes events from one event log, processes them with application-defined behavior (stateless or stateful) and produces processed events to another event log. Event-sourced processors can be used as gateways between otherwise partitioned event logs. They are not implemented yet.</p>
+</div>
+<div class="section" id="vector-clocks">
+<h2>Vector clocks<a class="headerlink" href="#vector-clocks" title="Permalink to this headline">¶</a></h2>
+<p>In the current system model, an event-sourced actor represents a lightweight “process” with its own consistency boundary. After having consumed an event e <sub>i</sub>, events e <sub>i+1</sub>, e <sub>i+2</sub>, ..., e <sub>i+n</sub>, generated by that actor, causally depend on e <sub>i</sub>. To track causality, each event-sourced actor maintains a vector clock which is used to timestamp written events. For any two events, applications can therefore determine if they are causally related or if they are concurrent by comparing their vector timestamps.</p>
+<p>Only events that are actually handled by an event-sourced actor contribute to its vector clock. This allows to keep vector clock sizes small, even if a large number of event-sourced actors is used. For example, if an application follows a one-<a class="reference external" href="http://martinfowler.com/bliki/DDD_Aggregate.html">aggregate</a>-per-actor design, vector clock sizes scale only with the (small) number of locations rather than the (large) number of aggregates.</p>
+</div>
+<div class="section" id="crdt-services">
+<h2>CRDT services<a class="headerlink" href="#crdt-services" title="Permalink to this headline">¶</a></h2>
+<p>Eventuate implements operation-based CRDTs (commutative replicated data types or CmRDTs) which can be accessed via <a class="reference external" href="https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/">CRDT services</a>. CRDT services ... (TODO: what is their function and advantage ...) and free applications from dealing with low-level details such as event-sourced actors and update operation events. New CmRDT types can be developed and integrated with the CRDT development framework.</p>
+</div>
+<div class="section" id="batching">
+<h2>Batching<a class="headerlink" href="#batching" title="Permalink to this headline">¶</a></h2>
+<p>Eventuate heavily relies on batching to optimize read and write throughput. Batching is used in the following places:</p>
+<p>...</p>
+</div>
+<div class="section" id="adapters">
+<h2>Adapters<a class="headerlink" href="#adapters" title="Permalink to this headline">¶</a></h2>
+<p>...</p>
+<table class="docutils footnote" frame="void" id="id5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>In the linked article, the term <em>site</em> is synonymous with <em>location</em>.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="introduction.html" class="btn btn-neutral" title="Introduction"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015 Red Bull Media House.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1-SNAPSHOT',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
