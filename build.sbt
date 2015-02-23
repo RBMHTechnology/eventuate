@@ -52,7 +52,7 @@ ghpages.settings
 
 git.remoteRepo := "git@github.com:RBMHTechnology/eventuate.git"
 
-unmanagedSourceDirectories in Test <<= sourceDirectory in Sphinx apply { _ ** "code" get }
+unmanagedSourceDirectories in Test += baseDirectory.value / "src" / "sphinx"/ "code"
 
 // ----------------------------------------------------------------------
 //  Publishing
