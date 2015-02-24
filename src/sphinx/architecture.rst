@@ -36,7 +36,7 @@ Replication connections can be configured with replication filters, so that only
 Event-sourced actors
 --------------------
 
-Event-sourced actors produce events to and consume events from an event log. During *command processing* they usually validate external commands against internal state and, if validation succeeds, write one or more events to their event log. During *event processing* they consume events they have written and update internal state by handling these events. This is the main idea behind `event sourcing`_. When used in context of a `CQRS`_ architecture, event-sourced actors usually implement the command-side (C).
+Event-sourced actors produce events to and consume events from an event log. During *command processing* they usually validate external commands against internal state and, if validation succeeds, write one or more events to their event log. During *event processing* they consume events they have written and update internal state by handling these events. This is the basic idea behind `event sourcing`_. When used in context of a `CQRS`_ architecture, event-sourced actors usually implement the command-side (C).
 
 .. figure:: images/architecture-3.png
    :figwidth: 70%
@@ -47,7 +47,7 @@ Event-sourced actors produce events to and consume events from an event log. Dur
 
 When an event-sourced actor is re-started, internal state is recovered by replaying events from its local event log. Since events in a local event log are totally ordered, event replay at a given location is deterministic. Event replay can also be started from a snapshot of internal state which is an optimization to reduce recovery times.
 
-In addition to handling their own events, event-sourced actors can also handle events written by other event-sourced actors to the same event log. This enables `event collaboration`_ between actors (:ref:`arch-fig4`). A special form of event collaboration is state replication where actors of the same type consume the same events at different locations to re-construct state. Another example of event collaboration is a distributed business process where actors of different type collaborate by exchanging events to achieve a common goal.
+In addition to consuming their own events, event-sourced actors can also consume events produced by other event-sourced actors to the same event log. This enables `event collaboration`_ between actors (:ref:`arch-fig4`). A special form of event collaboration is state replication where actors of the same type consume the same events at different locations to re-construct state. Another example of event collaboration is a distributed business process where actors of different type collaborate by exchanging events to achieve a common goal.
 
 .. _arch-fig4:
 
@@ -67,7 +67,7 @@ Event-sourced actors may also interact with external services by sending command
 
    External service integration.
 
-From a functional perspective, there’s no difference if event-sourced actors exchange events over a local event log or over a distributed event log. This is especially useful for testing purposes as it doesn’t require to setup a distributed log.
+From a functional perspective, there’s no difference whether event-sourced actors exchange events over a local event log or over a distributed event log. This is also useful for testing purposes as it doesn’t require to setup a distributed log.
 
 Event-sourced views
 -------------------
