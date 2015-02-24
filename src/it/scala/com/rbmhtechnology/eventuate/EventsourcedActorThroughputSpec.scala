@@ -30,7 +30,7 @@ import org.scalatest._
 object EventsourcedActorThroughputSpec {
   val config = ConfigFactory.parseString("log.leveldb.dir = target/test")
 
-  class Writer1(val processId: String, val eventLog: ActorRef, override val sync: Boolean, probe: ActorRef) extends EventsourcedActor {
+  class Writer1(val processId: String, val eventLog: ActorRef, override val stateSync: Boolean, probe: ActorRef) extends EventsourcedActor {
     var startTime: Long = 0L
     var stopTime: Long = 0L
     var num: Int = 0
@@ -116,23 +116,23 @@ class EventsourcedActorThroughputSpec extends TestKit(ActorSystem("test", config
   }
 
   "An EventsourcedActor" when {
-    "configured with sync = true" should {
+    "configured with stateSync = true" should {
       "have some acceptable write throughput (batching layer has no effect)" in {
-        run(system.actorOf(Props(new Writer1("p", log, sync = true, probe.ref))))
+        run(system.actorOf(Props(new Writer1("p", log, stateSync = true, probe.ref))))
       }
     }
   }
 
   "An EventsourcedActor" when {
-    "configured with sync = false" should {
+    "configured with stateSync = false" should {
       "have some acceptable write throughput (batching layer has some effect)" in {
-        run(system.actorOf(Props(new Writer1("p", log, sync = false, probe.ref))))
+        run(system.actorOf(Props(new Writer1("p", log, stateSync = false, probe.ref))))
       }
     }
   }
 
   "Several EventsourcedActors" when {
-    "configured with sync = true" should {
+    "configured with stateSync = true" should {
       "have some reasonable overall write throughput (batching layer has some effects)" in {
         val probe = TestProbe()
 

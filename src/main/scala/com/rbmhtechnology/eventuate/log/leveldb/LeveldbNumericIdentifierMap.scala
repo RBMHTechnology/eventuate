@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.eventuate.log
+package com.rbmhtechnology.eventuate.log.leveldb
 
 import java.nio.ByteBuffer
 
@@ -61,7 +61,7 @@ trait LeveldbNumericIdentifierMap extends Actor { this: LeveldbEventLog =>
   }
 }
 
-object LeveldbNumericIdentifierMap {
+private object LeveldbNumericIdentifierMap {
   val idKeyEnd: Int = Int.MaxValue
   val idKeyEndBytes: Array[Byte] = {
     val bb = ByteBuffer.allocate(12)

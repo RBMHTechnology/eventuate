@@ -18,9 +18,15 @@ package com.rbmhtechnology.eventuate
 
 import akka.actor._
 
+/**
+ * A conditional command is a command (`cmd`) to an [[Eventsourced]] actor whose
+ * delivery is delayed until the actor's `lastVectorTimestamp` becomes greater than
+ * or equal the `condition` timestamp. If the condition is met, `cmd` is delivered
+ * to the actor's command handler.
+ */
 case class ConditionalCommand(condition: VectorTime, cmd: Any)
 
-trait ConditionalCommands extends Actor {
+private[eventuate] trait ConditionalCommands extends Actor {
   import ConditionalCommands._
 
   // TODO: consider starting command manager with context.system.actorOf
@@ -29,10 +35,16 @@ trait ConditionalCommands extends Actor {
   // - command manager must then receive condition changes during replay too
   private val commandManager = context.actorOf(Props(new CommandManager(self)))
 
-  def conditionalSend(condition: VectorTime, cmd: Any): Unit =
+  /**
+   * Internal API.
+   */
+  private[eventuate] def conditionalSend(condition: VectorTime, cmd: Any): Unit =
     commandManager ! Command(condition, cmd, sender())
 
-  def conditionChanged(condition: VectorTime): Unit =
+  /**
+   * Internal API.
+   */
+  private[eventuate] def conditionChanged(condition: VectorTime): Unit =
     commandManager ! condition
 }
 

@@ -37,7 +37,7 @@ object EventsourcedActorSpec {
       val logProbe: ActorRef,
       val dstProbe: ActorRef,
       val errProbe: ActorRef,
-      override val sync: Boolean) extends EventsourcedActor {
+      override val stateSync: Boolean) extends EventsourcedActor {
 
     val processId = EventsourcedActorSpec.processIdA
     val eventLog = logProbe
@@ -72,7 +72,7 @@ object EventsourcedActorSpec {
       val logProbe: ActorRef,
       val dstProbe: ActorRef,
       val errProbe: ActorRef,
-      override val sync: Boolean) extends EventsourcedActor {
+      override val stateSync: Boolean) extends EventsourcedActor {
 
     val processId = EventsourcedActorSpec.processIdA
     val eventLog = logProbe
@@ -120,7 +120,7 @@ object EventsourcedActorSpec {
 
 class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
   import EventsourcedActorSpec._
-  import EventLogProtocol._
+  import EventsourcingProtocol._
 
   var instanceId: Int = _
   var logProbe: TestProbe = _
@@ -140,15 +140,15 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
   def unrecoveredActor(sync: Boolean = true): ActorRef =
     system.actorOf(Props(new TestEventsourcedActor(logProbe.ref, dstProbe.ref, errProbe.ref, sync)))
 
-  def recoveredActor(sync: Boolean = true): ActorRef = {
-    val actor = unrecoveredActor(sync)
+  def recoveredActor(stateSync: Boolean = true): ActorRef = {
+    val actor = unrecoveredActor(stateSync)
     logProbe.expectMsg(Replay(1, actor, instanceId))
     actor ! ReplaySuccess(instanceId)
     actor
   }
 
-  def stashingActor(sync: Boolean = true): ActorRef = {
-    val actor = system.actorOf(Props(new TestStashingActor(logProbe.ref, dstProbe.ref, errProbe.ref, sync)))
+  def stashingActor(stateSync: Boolean = true): ActorRef = {
+    val actor = system.actorOf(Props(new TestStashingActor(logProbe.ref, dstProbe.ref, errProbe.ref, stateSync)))
     logProbe.expectMsg(Replay(1, actor, instanceId))
     actor ! ReplaySuccess(instanceId)
     actor
@@ -286,9 +286,9 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
 
 
     "An EventsourcedActor" when {
-    "in sync mode" must {
+    "in stateSync = true mode" must {
       "stash further commands while persistence is in progress" in {
-        val actor = recoveredActor(sync = true)
+        val actor = recoveredActor(stateSync = true)
         actor ! Cmd("a", 2)
         actor ! Ping(1)
         actor ! Ping(2)
@@ -305,7 +305,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         dstProbe.expectMsg(Pong(2))
       }
       "process further commands if persist is aborted by exception in persist handler" in {
-        val actor = recoveredActor(sync = true)
+        val actor = recoveredActor(stateSync = true)
         actor ! Cmd("a", 2)
         actor ! Cmd("b", 2)
         val write1 = logProbe.expectMsgClass(classOf[Write])
@@ -326,7 +326,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         dstProbe.expectMsg(("b-2", timestampA(4), timestampA(4), 4))
       }
       "support user stash operations" in {
-        val actor = stashingActor(sync = true)
+        val actor = stashingActor(stateSync = true)
 
         actor ! Cmd("a", 1)
         actor ! "stash-on"
@@ -365,7 +365,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         dstProbe.expectMsg("d-1")
       }
       "support user stash operations under failure conditions" in {
-        val actor = stashingActor(sync = true)
+        val actor = stashingActor(stateSync = true)
 
         actor ! Cmd("a", 1)
         actor ! "stash-on"
@@ -386,9 +386,9 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         dstProbe.expectMsg(Pong(2))
       }
     }
-    "in async mode" must {
+    "in stateSync = false mode" must {
       "process further commands while persistence is in progress" in {
-        val actor = recoveredActor(sync = false)
+        val actor = recoveredActor(stateSync = false)
         actor ! Cmd("a", 2)
         actor ! Ping(1)
         val write = logProbe.expectMsgClass(classOf[Write])
@@ -403,7 +403,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         dstProbe.expectMsg(("a-2", timestampA(2), timestampA(2), 2))
       }
       "process further commands if persist is aborted by exception in command handler" in {
-        val actor = recoveredActor(sync = false)
+        val actor = recoveredActor(stateSync = false)
         actor ! Cmd("a", 2)
         actor ! "boom"
         actor ! Cmd("b", 2)
@@ -425,7 +425,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         dstProbe.expectMsg(("b-2", timestampA(4), timestampA(4), 4))
       }
       "delay commands relative to events" in {
-        val actor = recoveredActor(sync = false)
+        val actor = recoveredActor(stateSync = false)
         actor ! Cmd("a")
         actor ! CmdDelayed("b")
         actor ! Cmd("c")
@@ -433,7 +433,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         val delay = logProbe.expectMsgClass(classOf[Delay])
         val write2 = logProbe.expectMsgClass(classOf[Write])
         actor ! WriteSuccess(write1.events(0).copy(targetLogSequenceNr = 1L), instanceId)
-        actor ! DelaySuccess(delay.commands(0), instanceId)
+        actor ! DelayComplete(delay.commands(0), instanceId)
         actor ! WriteSuccess(write2.events(0).copy(targetLogSequenceNr = 2L), instanceId)
         dstProbe.expectMsg(("a-1", timestampA(2), timestampA(1), 1))
         dstProbe.expectMsg(("b", timestampA(2), timestampA(1), 1))
@@ -442,7 +442,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
     }
     "in any mode" must {
       "handle foreign events while persistence is in progress" in {
-        val actor = recoveredActor(sync = true)
+        val actor = recoveredActor(stateSync = true)
         actor ! Cmd("a", 2)
         val write = logProbe.expectMsgClass(classOf[Write])
         write.events(0).payload should be("a-1")
@@ -459,7 +459,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         dstProbe.expectMsg(("a-2", timestampAB(4, 2), timestampA(2), 4))
       }
       "invoke persist handler in correct order" in {
-        val actor = recoveredActor(sync = true)
+        val actor = recoveredActor(stateSync = true)
         actor ! "test-handler-order"
         val write = logProbe.expectMsgClass(classOf[Write])
         write.events(0).payload should be("a")
@@ -470,7 +470,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         dstProbe.expectMsg(("b-2", timestampA(2), timestampA(2), 2))
       }
       "additionally invoke onLast handler for multi-persist" in {
-        val actor = recoveredActor(sync = true)
+        val actor = recoveredActor(stateSync = true)
         actor ! "test-multi-persist"
         val write = logProbe.expectMsgClass(classOf[Write])
         write.events(0).payload should be("a")
@@ -485,7 +485,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         dstProbe.expectMsg(("c", timestampA(3), timestampA(3), 3))
       }
       "report failed writes to persist handler" in {
-        val actor = recoveredActor(sync = true)
+        val actor = recoveredActor(stateSync = true)
         actor ! Cmd("a", 2)
         val write = logProbe.expectMsgClass(classOf[Write])
         actor ! WriteFailure(write.events(0).copy(targetLogSequenceNr = 1L), boom, instanceId)
@@ -494,7 +494,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         errProbe.expectMsg((boom, timestampA(2), timestampA(2), 2))
       }
       "not send empty write commands to log" in {
-        val actor = recoveredActor(sync = true)
+        val actor = recoveredActor(stateSync = true)
         actor ! Ping(1)
         actor ! Cmd("a", 2)
         val write = logProbe.expectMsgClass(classOf[Write])
@@ -503,7 +503,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
       }
       "timestamp events with the current system time" in {
         val now = System.currentTimeMillis
-        val actor = recoveredActor(sync = true)
+        val actor = recoveredActor(stateSync = true)
         actor ! Ping(1)
         actor ! Cmd("a", 2)
         val write = logProbe.expectMsgClass(classOf[Write])

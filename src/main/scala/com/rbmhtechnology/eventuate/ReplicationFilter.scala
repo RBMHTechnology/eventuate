@@ -22,15 +22,28 @@ import scala.collection.immutable.Seq
  * Serializable and composable replication filter.
  */
 trait ReplicationFilter extends Serializable {
+  /**
+   * Evaluates this filter on the given `event`.
+   */
   def apply(event: DurableEvent): Boolean
 
-  def compose(filter: ReplicationFilter): ReplicationFilter = this match {
-    case f @ CompositeFilter(filters) => f.copy(filter +: filters)
-    case _ => CompositeFilter(Seq(filter, this))
+  /**
+   * Returns a composed replication filter that represents a logical AND of
+   * this filter and the given `filter`.
+   */
+  def and(filter: ReplicationFilter): ReplicationFilter = this match {
+    case f @ AndFilter(filters) => f.copy(filter +: filters)
+    case _ => AndFilter(Seq(filter, this))
   }
 }
 
-case class CompositeFilter(filters: Seq[ReplicationFilter]) extends ReplicationFilter {
+/**
+ * Serializable logical AND of given `filters`.
+ */
+private[eventuate] case class AndFilter(filters: Seq[ReplicationFilter]) extends ReplicationFilter {
+  /**
+   * Evaluates to `true` if all `filters` evaluate to `true`, `false` otherwise.
+   */
   def apply(event: DurableEvent): Boolean = {
     @annotation.tailrec
     def go(filters: Seq[ReplicationFilter]): Boolean = filters match {
@@ -41,7 +54,13 @@ case class CompositeFilter(filters: Seq[ReplicationFilter]) extends ReplicationF
   }
 }
 
-case class SourceLogIdExclusionFilter(sourceLogId: String) extends ReplicationFilter {
+/**
+ * Default replication filter.
+ */
+private[eventuate] case class SourceLogIdExclusionFilter(sourceLogId: String) extends ReplicationFilter {
+  /**
+   * Evaluates to `true` if `event.sourceLogId` does not equal `sourceLogId`.
+   */
   def apply(event: DurableEvent): Boolean =
     event.sourceLogId != sourceLogId
 }

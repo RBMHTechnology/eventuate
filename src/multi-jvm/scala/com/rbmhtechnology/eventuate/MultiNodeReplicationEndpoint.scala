@@ -24,7 +24,7 @@ import akka.remote.testkit.MultiNodeSpec
 import org.apache.commons.io.FileUtils
 import org.scalatest.BeforeAndAfterAll
 
-import com.rbmhtechnology.eventuate.log.LeveldbEventLog
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
 
 import scala.collection.immutable.Seq
 

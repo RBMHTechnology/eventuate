@@ -22,10 +22,27 @@ import com.rbmhtechnology.eventuate._
 
 import scala.concurrent.Future
 
+/**
+ * Replicated MV-Register. Has several [[Versioned]] values assigned in case of concurrent assignments,
+ * otherwise, a single [[Versioned]] value. Concurrent assignments can be reduced to a single assignment
+ * by assigning a [[Versioned]] value with a timestamp that is greater than those of the currently assigned
+ * [[Versioned]] values.
+ *
+ * @param versionedValues Assigned, versioned values. Initially empty.
+ * @tparam A MV-Register value type.
+ *
+ * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]]
+ */
 case class MVRegister[A](versionedValues: Set[Versioned[A]] = Set.empty[Versioned[A]]) {
   def value: Set[A] =
     versionedValues.map(_.value)
 
+  /**
+   * Assigns a [[Versioned]] value from `v` and `timestamp` and returns an updated MV-Register.
+   *
+   * @param v assigned value.
+   * @param timestamp assignment timestamp.
+   */
   def set(v: A, timestamp: VectorTime): MVRegister[A] = {
     val (vvs, updated) = versionedValues.foldLeft((Set.empty[Versioned[A]], false)) {
       case ((acc, updated), vv) if timestamp > vv.version =>
@@ -60,15 +77,15 @@ object MVRegister {
 /**
  * Replicated [[MVRegister]] CRDT service.
  *
- * @param processId unique process id of this service replica.
- * @param log event log
- * @tparam A [[MVRegister]] value type
+ * @param processId Unique process id of this service replica.
+ * @param log Event log.
+ * @tparam A [[MVRegister]] value type.
  */
 class MVRegisterService[A](val processId: String, val log: ActorRef)(implicit system: ActorSystem, val ops: CRDTServiceOps[MVRegister[A], Set[A]])
   extends CRDTService[MVRegister[A], Set[A]] {
 
   /**
-   * Updates the MV-Register identified by `id` with specified `value` and returns the updated MV-Register value.
+   * Assigns a `value` to the MV-Register identified by `id` and returns the updated MV-Register value.
    */
   def set(id: String, value: A): Future[Set[A]] =
     op(id, SetOp(value))

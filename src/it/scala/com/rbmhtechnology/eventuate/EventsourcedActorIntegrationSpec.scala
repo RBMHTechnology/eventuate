@@ -72,7 +72,7 @@ object EventsourcedActorIntegrationSpec {
     }
   }
 
-  class DeliveryActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor with Delivery {
+  class ConfirmedDeliveryActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor with ConfirmedDelivery {
     override def onCommand = {
       case "boom" => throw boom
       case "end" => probe ! "end"
@@ -88,7 +88,7 @@ object EventsourcedActorIntegrationSpec {
   }
 
   class DelayActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
-    override def sync: Boolean = false
+    override def stateSync: Boolean = false
 
     override def onCommand = {
       case "persist" => persist("a")(r => probe ! r.get)
@@ -101,7 +101,7 @@ object EventsourcedActorIntegrationSpec {
   }
 
   class ConditionalActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
-    override def sync: Boolean = false
+    override def stateSync: Boolean = false
 
     override def onCommand = {
       case "persist"      => persist("a")(r => probe ! r.get)
@@ -208,7 +208,7 @@ class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test", confi
       r1 should be(r3)
     }
     "produce commands to other actors (at-most-once)" in {
-      val actor = system.actorOf(Props(new DeliveryActor("1", log, probe.ref)))
+      val actor = system.actorOf(Props(new ConfirmedDeliveryActor("1", log, probe.ref)))
       actor ! "cmd-1"
       probe.expectMsg("out-1")
       actor ! "boom"
@@ -216,7 +216,7 @@ class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test", confi
       probe.expectMsg("end")
     }
     "produce commands to other actors (at-least-once)" in {
-      val actor = system.actorOf(Props(new DeliveryActor("1", log, probe.ref)))
+      val actor = system.actorOf(Props(new ConfirmedDeliveryActor("1", log, probe.ref)))
       actor ! "cmd-2"
       probe.expectMsg("out-2")
       actor ! "boom"

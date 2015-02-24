@@ -113,12 +113,12 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
         .add(1, vectorTime(0, 1))
         .value should be(Set(1))
     }
-    "prepare a remove-set if it contains the specified entry" in {
+    "prepare a remove-set if it contains the given entry" in {
       orSet
         .add(1, vectorTime(1, 0))
         .prepareRemove(1) should be(Set(vectorTime(1, 0)))
     }
-    "not prepare a remove-set if it doesn't contain the specified entry" in {
+    "not prepare a remove-set if it doesn't contain the given entry" in {
       orSet.prepareRemove(1) should be('empty)
     }
   }

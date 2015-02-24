@@ -18,10 +18,22 @@ package com.rbmhtechnology.eventuate.log
 
 import akka.actor._
 
-import com.rbmhtechnology.eventuate.EventLogProtocol._
+import com.rbmhtechnology.eventuate.EventsourcingProtocol
+import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 
-class BatchingLayer(eventLogProps: Props) extends Actor {
-  val batchSizeLimit = context.system.settings.config.getInt("log.write-batch-size")
+/**
+ * An event log wrapper that batches [[EventsourcingProtocol.Write]] commands. Batched write commands are
+ * sent as [[EventsourcingProtocol.WriteN]] batch to the wrapped event log.
+ *
+ * Batch sizes dynamically increase up to a configurable maximum under increasing load. The maximum batch
+ * size can be configured with `log.write-batch-size-max`. If there is no current write operation in progress,
+ * a new `Write` command is served immediately (as `WriteN` batch of size 1), keeping latency at a minimum.
+ *
+ * @param eventLogProps configuration object of the wrapped event log actor. The wrapped event log actor is
+ *                      created as child actor of this wrapper.
+ */
+class BatchingEventLog(eventLogProps: Props) extends Actor {
+  val batchSizeLimit = context.system.settings.config.getInt("log.write-batch-size-max")
   val eventLog = context.actorOf(eventLogProps)
 
   var batch: Vector[Write] = Vector.empty

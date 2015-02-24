@@ -26,32 +26,64 @@ import scala.concurrent.duration._
 import ReplicationEndpoint.InstanceId
 
 object ReplicationProtocol {
-  case class ClientInfo(logName: String, filter: ReplicationFilter)
-  case class ServerInfo(logName: String, logId: String, server: ActorRef)
+  private[eventuate] case class ClientInfo(logName: String, filter: ReplicationFilter)
+  private[eventuate] case class ServerInfo(logName: String, logId: String, server: ActorRef)
 
-  case class Connect(clientInfos: Seq[ClientInfo], instanceId: InstanceId)
-  case class ConnectAccepted(serverInfos: Seq[ServerInfo], instanceId: InstanceId)
-  case class ConnectRequested(instanceId: InstanceId)
+  private[eventuate] case class Connect(clientInfos: Seq[ClientInfo], instanceId: InstanceId)
+  private[eventuate] case class ConnectAccepted(serverInfos: Seq[ServerInfo], instanceId: InstanceId)
+  private[eventuate] case class ConnectRequested(instanceId: InstanceId)
 
-  case object TransferDue
-  case class Transfer(fromSequenceNr: Long, max: Int, correlationId: Int)
-  case class TransferSuccess(events: Seq[DurableEvent], lastSourceLogSequenceNrRead: Long, correlationId: Int)
-  case class TransferFailure(cause: Throwable, correlationId: Int)
+  private[eventuate] case object TransferDue
+  private[eventuate] case class Transfer(fromSequenceNr: Long, max: Int, correlationId: Int)
+  private[eventuate] case class TransferSuccess(events: Seq[DurableEvent], lastSourceLogSequenceNrStored: Long, correlationId: Int)
+  private[eventuate] case class TransferFailure(cause: Throwable, correlationId: Int)
 
-  case class GetLastSourceLogSequenceNrReplicated(sourceLogId: String)
-  case class GetLastSourceLogSequenceNrReplicatedSuccess(sourceLogId: String, sourceLogSequenceNr: Long)
-  case class GetLastSourceLogSequenceNrReplicatedFailure(cause: Throwable)
+  /**
+   * Requests from a target log the last read position in the given source log.
+   */
+  case class GetLastSourceLogReadPosition(sourceLogId: String)
 
+  /**
+   * Success reply after a [[GetLastSourceLogReadPosition]].
+   */
+  case class GetLastSourceLogReadPositionSuccess(sourceLogId: String, lastSourceLogSequenceNrStored: Long)
+
+  /**
+   * Failure reply after a [[GetLastSourceLogReadPosition]].
+   */
+  case class GetLastSourceLogReadPositionFailure(cause: Throwable)
+
+  /**
+   * Instructs a target log to store replicated `events` from the source log identified by
+   * `sourceLogId` along with the last read position in the source log (`lastSourceLogSequenceNrRead`).
+   */
   case class Replicate(events: Seq[DurableEvent], sourceLogId: String, lastSourceLogSequenceNrRead: Long)
-  case class ReplicateFailure(cause: Throwable)
-  case class ReplicateSuccess(num: Int, lastSourceLogSequenceNrReplicated: Long)
 
+  /**
+   * Success reply after a [[Replicate]].
+   *
+   * @param num Number of events actually replicated.
+   * @param lastSourceLogSequenceNrStored Last source log read position stored in the target log.
+   */
+  case class ReplicateSuccess(num: Int, lastSourceLogSequenceNrStored: Long)
+
+  /**
+   * Failure reply after a [[Replicate]].
+   */
+  case class ReplicateFailure(cause: Throwable)
+
+  /**
+   * published by event logs to the actor system's event stream whenever new events have been written,
+   * either by replication or by event-sourced actors.
+   *
+   * @param events Written events.
+   */
   case class Updated(events: Seq[DurableEvent])
 }
 
-class ReplicationServer(sourceLog: ActorRef, filter: ReplicationFilter) extends Actor {
+private class ReplicationServer(sourceLog: ActorRef, filter: ReplicationFilter) extends Actor {
   import ReplicationProtocol._
-  import EventLogProtocol._
+  import EventsourcingProtocol._
 
   var replicationClient: Option[ActorRef] = None
 
@@ -92,12 +124,12 @@ class ReplicationServer(sourceLog: ActorRef, filter: ReplicationFilter) extends 
   }
 }
 
-class ReplicationClient(logName: String, sourceLogId: String, targetLog: ActorRef, replicationServer: ActorRef, remoteInstanceId: InstanceId) extends Actor {
+private class ReplicationClient(logName: String, sourceLogId: String, targetLog: ActorRef, replicationServer: ActorRef, remoteInstanceId: InstanceId) extends Actor {
   import ReplicationServerFailureDetector._
   import ReplicationProtocol._
 
   val config = context.system.settings.config.getConfig("log.replication")
-  val batchSize = config.getInt("transfer-batch-size")
+  val batchSize = config.getInt("transfer-batch-size-max")
 
   val failureDetector = context.actorOf(Props(new ReplicationServerFailureDetector(remoteInstanceId, logName)))
   var correlationId = 0
@@ -114,29 +146,29 @@ class ReplicationClient(logName: String, sourceLogId: String, targetLog: ActorRe
 
   val idle: Receive = {
     case TransferDue =>
-      targetLog ! GetLastSourceLogSequenceNrReplicated(sourceLogId)
+      targetLog ! GetLastSourceLogReadPosition(sourceLogId)
       context.become(replicating(nextCorrelationId()))
-      failureDetector ! Tick
+      failureDetector ! Ping
     case ReceiveTimeout =>
-      targetLog ! GetLastSourceLogSequenceNrReplicated(sourceLogId)
+      targetLog ! GetLastSourceLogReadPosition(sourceLogId)
       context.become(replicating(nextCorrelationId()))
   }
 
   def replicating(correlationId: Int): Receive = {
-    case GetLastSourceLogSequenceNrReplicatedSuccess(sourceLogId, lastSourceLogSequenceNrReplicated) =>
-      replicationServer ! Transfer(lastSourceLogSequenceNrReplicated + 1, batchSize, correlationId)
-    case GetLastSourceLogSequenceNrReplicatedFailure(cause) =>
+    case GetLastSourceLogReadPositionSuccess(sourceLogId, lastSourceLogSequenceNrStored) =>
+      replicationServer ! Transfer(lastSourceLogSequenceNrStored + 1, batchSize, correlationId)
+    case GetLastSourceLogReadPositionFailure(cause) =>
       // TODO: log cause
       context.become(idle)
     case TransferSuccess(events, lastSourceLogSequenceNrRead, `correlationId`) =>
       targetLog ! Replicate(events, sourceLogId, lastSourceLogSequenceNrRead)
-      failureDetector ! Tick
+      failureDetector ! Ping
     case TransferFailure(cause, `correlationId`) =>
       // TODO: log cause
       context.become(idle)
-      failureDetector ! Tick
-    case ReplicateSuccess(num, lastSourceLogSequenceNrReplicated) if num > 0 =>
-      replicationServer ! Transfer(lastSourceLogSequenceNrReplicated + 1, batchSize, correlationId)
+      failureDetector ! Ping
+    case ReplicateSuccess(num, lastSourceLogSequenceNrStored) if num > 0 =>
+      replicationServer ! Transfer(lastSourceLogSequenceNrStored + 1, batchSize, correlationId)
     case ReplicateSuccess(_, _) =>
       context.become(idle)
     case ReplicateFailure(cause) =>
@@ -175,7 +207,7 @@ class ReplicationClient(logName: String, sourceLogId: String, targetLog: ActorRe
  * @param filters replication filters indexed by log name.
  * @param localInstanceId local instance id of this connector.
  */
-class ReplicationClientConnector(host: String, port: Int, name: String, targetLogs: Map[String, ActorRef], filters: Map[String, ReplicationFilter], localInstanceId: InstanceId) extends Actor with ActorLogging {
+private[eventuate] class ReplicationClientConnector(host: String, port: Int, name: String, targetLogs: Map[String, ActorRef], filters: Map[String, ReplicationFilter], localInstanceId: InstanceId) extends Actor with ActorLogging {
   import ReplicationProtocol._
 
   val config = context.system.settings.config.getConfig("log.replication")
@@ -225,7 +257,7 @@ class ReplicationClientConnector(host: String, port: Int, name: String, targetLo
     context.setReceiveTimeout(retry)
 }
 
-object ReplicationServerConnector {
+private[eventuate] object ReplicationServerConnector {
   val name: String = "connector"
 }
 
@@ -237,7 +269,7 @@ object ReplicationServerConnector {
  * @param sourceLogId function that maps source log names to source log ids.
  * @param localInstanceId local instance id of this connector.
  */
-class ReplicationServerConnector(sourceLogs: Map[String, ActorRef], sourceLogId: String => String, localInstanceId: InstanceId) extends Actor {
+private[eventuate] class ReplicationServerConnector(sourceLogs: Map[String, ActorRef], sourceLogId: String => String, localInstanceId: InstanceId) extends Actor {
   import ReplicationProtocol._
 
   var currentServerInfos: Map[InstanceId, Seq[ServerInfo]] = Map.empty
@@ -265,11 +297,11 @@ class ReplicationServerConnector(sourceLogs: Map[String, ActorRef], sourceLogId:
   }
 }
 
-object ReplicationServerFailureDetector {
-  case object Tick
+private[eventuate] object ReplicationServerFailureDetector {
+  case object Ping
 }
 
-class ReplicationServerFailureDetector(remoteInstanceId: InstanceId, logName: String) extends Actor {
+private[eventuate] class ReplicationServerFailureDetector(remoteInstanceId: InstanceId, logName: String) extends Actor {
   import ReplicationServerFailureDetector._
   import ReplicationEndpoint._
 
@@ -281,7 +313,7 @@ class ReplicationServerFailureDetector(remoteInstanceId: InstanceId, logName: St
   context.setReceiveTimeout(limit.millis)
 
   def receive = {
-    case Tick =>
+    case Ping =>
       val currentTime = System.currentTimeMillis
       val lastInterval =  currentTime - lastTick
       if (lastInterval >= limit) {

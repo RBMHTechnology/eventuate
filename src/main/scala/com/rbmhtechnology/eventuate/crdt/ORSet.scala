@@ -22,16 +22,36 @@ import com.rbmhtechnology.eventuate._
 
 import scala.concurrent.Future
 
+/**
+ * Replicated OR-Set. In case of a concurrent `add` and `remove`, `add` has precedence.
+ *
+ * @param versionedEntries [[Versioned]] entries.
+ * @tparam A Entry value type.
+ *
+ * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]]
+ */
 case class ORSet[A](versionedEntries: Set[Versioned[A]] = Set.empty[Versioned[A]]) {
+  /**
+   * Returns all entries, masking duplicates of different version.
+   */
   def value: Set[A] =
     versionedEntries.map(_.value)
 
+  /**
+   * Adds a [[Versioned]] entry from `entry` and `timestamp` and returns an updated OR-Set.
+   */
   def add(entry: A, timestamp: VectorTime): ORSet[A] =
     copy(versionedEntries = versionedEntries + Versioned(entry, timestamp))
 
+  /**
+   * Collects all timestamps of given `entry`.
+   */
   def prepareRemove(entry: A): Set[VectorTime] =
     versionedEntries.collect { case Versioned(`entry`, timestamp, _) => timestamp }
 
+  /**
+   * Removes [[Versioned]] entries matching `entry` and `timestamps` and returns an updated OR-Set.
+   */
   def remove(entry: A, timestamps: Set[VectorTime]): ORSet[A] =
     copy(versionedEntries = versionedEntries -- timestamps.map(t => Versioned(entry, t)))
 }
@@ -78,13 +98,13 @@ class ORSetService[A](val processId: String, val log: ActorRef)(implicit system:
   extends CRDTService[ORSet[A], Set[A]] {
 
   /**
-   * Adds `entry` to this OR-Set identified by `id` and returns the updated OR-Set value.
+   * Adds `entry` to the OR-Set identified by `id` and returns the updated entry set.
    */
   def add(id: String, entry: A): Future[Set[A]] =
     op(id, AddOp(entry))
 
   /**
-   * Removes `entry` from this OR-Set identified by `id` and returns the updated OR-Set value.
+   * Removes `entry` from the OR-Set identified by `id` and returns the updated entry set.
    */
   def remove(id: String, entry: A): Future[Set[A]] =
     op(id, RemoveOp(entry))

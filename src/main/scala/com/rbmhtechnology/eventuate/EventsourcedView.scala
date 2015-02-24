@@ -18,8 +18,12 @@ package com.rbmhtechnology.eventuate
 
 import akka.actor._
 
+/**
+ * An [[Eventsourced]] actor that can only consumes events from its event log. Commands
+ * sent to this actor during recovery are delayed until recovery completes.
+ */
 trait EventsourcedView extends Eventsourced with ConditionalCommands with Stash {
-  import EventLogProtocol._
+  import EventsourcingProtocol._
 
   private def onDurableEvent(event: DurableEvent, handled: DurableEvent => Unit = _ => ()): Unit =
     if (onEvent.isDefinedAt(event.payload)) {
@@ -56,11 +60,16 @@ trait EventsourcedView extends Eventsourced with ConditionalCommands with Stash 
 
   final def receive = initiating
 
+  /**
+   * Initiates recovery by sending a [[EventsourcingProtocol.Replay]] request to the event log.
+   */
   override def preStart(): Unit =
     eventLog ! Replay(1, self, instanceId)
 }
 
 /**
  * Java API.
+ *
+ * @see [[EventsourcedView]]
  */
 abstract class AbstractEventsourcedView(val processId: String, val eventLog: ActorRef) extends AbstractEventsourced with EventsourcedView

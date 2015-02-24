@@ -52,7 +52,7 @@ object EventLogSpec {
 import EventLogSpec._
 
 class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLike with Matchers with EventLogSupport {
-  import EventLogProtocol._
+  import EventsourcingProtocol._
   import ReplicationProtocol._
 
   var requestorProbe: TestProbe = _

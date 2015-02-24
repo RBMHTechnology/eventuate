@@ -28,7 +28,8 @@ import org.iq80.leveldb.WriteBatch
 import org.scalatest._
 
 import com.rbmhtechnology.eventuate._
-import com.rbmhtechnology.eventuate.log.LeveldbEventLog.ReadResult
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.ReadResult
 
 object EventLogSupport {
   case object GetSequenceNr
@@ -96,7 +97,7 @@ trait EventLogSupport extends BeforeAndAfterAll with BeforeAndAfterEach { this: 
     _logCtr.toString
 
   def logProps(logId: String): Props =
-    Props(new BatchingLayer(Props(new TestEventLog(logId)).withDispatcher("log.leveldb.write-dispatcher")))
+    Props(new BatchingEventLog(Props(new TestEventLog(logId)).withDispatcher("log.leveldb.write-dispatcher")))
 
   def system: ActorSystem
 }

@@ -47,7 +47,7 @@ object BasicReplicationThroughputConfig extends MultiNodeConfig {
       |akka.remote.netty.tcp.maximum-frame-size = 512000b
       |akka.test.single-expect-default = 10s
       |akka.testconductor.barrier-timeout = 60s
-      |log.replication.transfer-batch-size = 2000
+      |log.replication.transfer-batch-size-max = 2000
       |log.replication.transfer-retry-interval = 10s
       |log.replication.connect-retry-interval = 1s
       |log.replication.failure-detection-limit = 60s
@@ -56,7 +56,7 @@ object BasicReplicationThroughputConfig extends MultiNodeConfig {
 
 object BasicReplicationThroughputSpec {
   class ReplicatedActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
-    override val sync = false
+    override val stateSync = false
 
     var events: Vector[String] = Vector.empty
     var startTime: Long = 0L

@@ -38,23 +38,23 @@ class ReplicationFilterSpec extends WordSpec with Matchers {
 
   "A replication filter" must {
     "be composable" in {
-      val f1 = filter("a").compose(filter("ab"))
+      val f1 = filter("a").and(filter("ab"))
 
       assert(f1(event("abc")))
       assert(!f1(event("a")))
       assert(!f1(event("b")))
 
-      val f2 = filter("a").compose(filter("ab")).compose(filter("abc"))
+      val f2 = filter("a").and(filter("ab")).and(filter("abc"))
 
       assert(f2(event("abc")))
       assert(!f2(event("a")))
 
-      val f3 = filter("a").compose(filter("b"))
+      val f3 = filter("a").and(filter("b"))
 
       assert(!f3(event("abc")))
       assert(!f3(event("a")))
 
-      val f4 = f1.compose(f2)
+      val f4 = f1.and(f2)
 
       assert(f4(event("abc")))
       assert(!f4(event("a")))

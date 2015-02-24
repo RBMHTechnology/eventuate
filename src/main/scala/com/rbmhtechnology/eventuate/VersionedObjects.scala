@@ -25,7 +25,11 @@ import scala.util._
 import VersionedObjects._
 
 /**
- * An implementation of the (invented) versioned domain objects pattern.
+ * Utility to maintain [[ConcurrentVersions]] of `Map` values.
+ *
+ * @tparam S Map value type.
+ * @tparam C Command type.
+ * @tparam E Event type.
  */
 class VersionedObjects[S, C: DomainCmd, E: DomainEvt](
     cmdHandler: (S, C) => Try[E],
@@ -113,7 +117,7 @@ class VersionedObjects[S, C: DomainCmd, E: DomainEvt](
 
   def handleUpdated(evt: E, timestamp: VectorTime, sequenceNr: Long): Unit = {
     current.get(E.id(evt)) match {
-      case None => // ignore (can only happen with async persist)
+      case None => // ignore (can only happen with stateSync = false)
       case Some(versions) =>
         _current += (E.id(evt) -> versions.update(evt, timestamp))
     }
@@ -121,7 +125,7 @@ class VersionedObjects[S, C: DomainCmd, E: DomainEvt](
 
   def handleResolved(evt: Resolved, timestamp: VectorTime, sequenceNr: Long): Unit = {
     val versions = current.get(evt.id) match {
-      case None => // ignore (can only happen with async persist)
+      case None => // ignore (can only happen with stateSync = false)
       case Some(versions) =>
         _current += (evt.id -> versions.resolve(evt.selected, timestamp))
     }

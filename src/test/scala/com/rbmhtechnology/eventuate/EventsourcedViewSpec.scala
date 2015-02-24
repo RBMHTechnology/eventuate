@@ -44,7 +44,7 @@ object EventsourcedViewSpec {
 
 class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
   import EventsourcedViewSpec._
-  import EventLogProtocol._
+  import EventsourcingProtocol._
 
   var instanceId: Int = _
   var logProbe: TestProbe = _
@@ -59,7 +59,7 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
   override def afterAll: Unit =
     TestKit.shutdownActorSystem(system)
 
-  def unrecoveredView(sync: Boolean = true): ActorRef =
+  def unrecoveredView(): ActorRef =
     system.actorOf(Props(new TestEventsourcedView(logProbe.ref, dstProbe.ref)))
 
   "An EventsourcedView" must {

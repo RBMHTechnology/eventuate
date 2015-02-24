@@ -22,7 +22,19 @@ import com.rbmhtechnology.eventuate.VectorTime
 
 import scala.concurrent.Future
 
+/**
+ * Replicated counter.
+ *
+ * @param value Current counter value.
+ * @tparam A Counter value type.
+ *
+ * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]]
+ */
 case class Counter[A : Integral](value: A) {
+  /**
+   * Adds `delta` (which can also be negative) to the counter `value` and
+   * returns an updated counter.
+   */
   def update(delta: A): Counter[A] =
     copy(value = implicitly[Integral[A]].plus(value, delta))
 }
@@ -50,15 +62,15 @@ object Counter {
 /**
  * Replicated [[Counter]] CRDT service.
  *
- * @param processId unique process id of this service replica.
- * @param log event log
- * @tparam A counter value type
+ * @param processId Unique process id of this service replica.
+ * @param log Event log.
+ * @tparam A Counter value type.
  */
 class CounterService[A](val processId: String, val log: ActorRef)(implicit system: ActorSystem, integral: Integral[A], val ops: CRDTServiceOps[Counter[A], A])
   extends CRDTService[Counter[A], A] {
 
   /**
-   * Updates the counter identified by `id` with specified `delta` and returns the updated counter value.
+   * Adds `delta` (which can also be negative) to the counter identified by `id` and returns the updated counter value.
    */
   def update(id: String, delta: A): Future[A] =
     op(id, UpdateOp(delta))

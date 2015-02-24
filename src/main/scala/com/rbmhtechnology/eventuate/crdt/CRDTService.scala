@@ -126,14 +126,14 @@ trait CRDTService[A, B] {
   }
 
   /**
-   * Returns the current value of CRDT identified by `id`.
+   * Returns the current value of the CRDT identified by `id`.
    */
   def value(id: String): Future[B] = withWorkerAndDispatcher { (w, d) =>
     w.ask(GetValue(id)).mapTo[GetValueReply].map(_.value)(d)
   }
 
   /**
-   * Updates the CRDT identified by `id` with specified `operation`.
+   * Updates the CRDT identified by `id` with given `operation`.
    * Returns the updated value of the CRDT.
    */
   protected def op(id: String, operation: Any): Future[B] = withWorkerAndDispatcher { (w, d) =>
@@ -154,7 +154,7 @@ trait CRDTService[A, B] {
     var crdts: Map[String, A] = Map.empty.withDefault(_ => ops.zero)
     val crdtClassName = ops.zero.getClass.getSimpleName
 
-    override def sync: Boolean =
+    override def stateSync: Boolean =
       ops.precondition
 
     override def onCommand: Receive = {

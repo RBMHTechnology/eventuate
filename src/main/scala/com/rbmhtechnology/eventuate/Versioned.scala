@@ -25,23 +25,22 @@ import scala.collection.immutable.Seq
 /**
  * A versioned value.
  *
- * @param value the value.
- * @param version the version vector of the value.
- * @param processId process id that caused this version
- *
- * @see [[http://haslab.wordpress.com/2011/07/08/version-vectors-are-not-vector-clocks/]]
+ * @param value The value.
+ * @param version The version vector of the value.
+ * @param processId Id of the process that emitted the corresponding
+ *                  event that caused this version.
  */
 case class Versioned[A](value: A, version: VectorTime, processId: String = "")
 
 /**
  * Tracks concurrent [[Versioned]] values which arise from concurrent updates.
  *
- * @tparam A type of versioned values
- * @tparam B type of updates
+ * @tparam A Versioned value type
+ * @tparam B Update type
  */
 trait ConcurrentVersions[A, B] {
   /**
-   * Updates that versioned value with `b` that is a predecessor of `eventTimestamp`. If
+   * Updates that [[Versioned]] value with `b` that is a predecessor of `eventTimestamp`. If
    * there is no such predecessor, a new concurrent version is created (optionally derived
    * from an older entry in the version history, in case of incremental updates).
    */
@@ -81,7 +80,7 @@ trait ConcurrentVersions[A, B] {
   def conflict: Boolean = all.length > 1
 
   /**
-   * Owner of versioned A.
+   * Owner of versioned values.
    */
   def owner: String
 
@@ -92,14 +91,22 @@ trait ConcurrentVersions[A, B] {
 }
 
 object ConcurrentVersions {
-  def apply[A, B](zero: A, f: (A, B) => A): ConcurrentVersions[A, B] =
-    ConcurrentVersionsTree[A, B](zero, f)
+  /**
+   * Creates a new [[ConcurrentVersionsTree]] that uses projection function `f` to compute
+   * new (potentially concurrent) versions from a parent version.
+   *
+   * @param initial Value of the initial version.
+   * @param f Projection function for updates.
+   * @tparam A Versioned value type
+   * @tparam B Update type
+   */
+  def apply[A, B](initial: A, f: (A, B) => A): ConcurrentVersions[A, B] =
+    ConcurrentVersionsTree[A, B](initial, f)
 }
 
 /**
- * A [[ConcurrentVersions]] implementation that shall be used if update values replace
- * current versioned values (= full updates). `ConcurrentVersionsList` is an immutable
- * data structure.
+ * A [[ConcurrentVersions]] implementation that shall be used if updates replace current
+ * versioned values (= full updates). `ConcurrentVersionsList` is an immutable data structure.
  */
 class ConcurrentVersionsList[A](vs: List[Versioned[A]], val owner: String = "") extends ConcurrentVersions[A, A] {
   def update(na: A, eventTimestamp: VectorTime, eventProcessId: String = ""): ConcurrentVersionsList[A] = {
@@ -136,15 +143,21 @@ class ConcurrentVersionsList[A](vs: List[Versioned[A]], val owner: String = "") 
 }
 
 case object ConcurrentVersionsList {
+  /**
+   * Creates an empty [[ConcurrentVersionsList]].
+   */
   def apply[A]: ConcurrentVersionsList[A] =
     new ConcurrentVersionsList(Nil)
 
+  /**
+   * Creates a new [[ConcurrentVersionsList]] with a single [[Versioned]] value from `a` and `timestamp`.
+   */
   def apply[A](a: A, timestamp: VectorTime): ConcurrentVersionsList[A] =
     new ConcurrentVersionsList(List(Versioned(a, timestamp, "")))
 }
 
 /**
- * A [[ConcurrentVersions]] implementation that shall be used if update values modify
+ * A [[ConcurrentVersions]] implementation that shall be used if updates modify
  * current versioned values (= incremental updates). `ConcurrentVersionsTree` is a
  * mutable data structure.
  *
@@ -152,15 +165,15 @@ case object ConcurrentVersionsList {
  * moment. Also, future versions of `ConcurrentVersionsTree` will likely be based
  * on immutable data structures.
  *
- * @param f projection function for updates.
+ * @param f Projection function for updates.
  */
-class ConcurrentVersionsTree[A, B](f: (A, B) => A, zero: A = null.asInstanceOf[A] /* FIXME */) extends ConcurrentVersions[A, B] {
+class ConcurrentVersionsTree[A, B](f: (A, B) => A, initial: A = null.asInstanceOf[A] /* FIXME */) extends ConcurrentVersions[A, B] {
   import ConcurrentVersionsTree._
 
   private var _owner: String = ""
 
   private val root: Node[A] =
-    new Node(Versioned(zero, VectorTime(), ""))
+    new Node(Versioned(initial, VectorTime(), ""))
 
   override def update(b: B, eventTimestamp: VectorTime, eventProcessId: String = ""): ConcurrentVersionsTree[A, B] = {
     val p = pred(eventTimestamp)
@@ -214,19 +227,43 @@ class ConcurrentVersionsTree[A, B](f: (A, B) => A, zero: A = null.asInstanceOf[A
 }
 
 object ConcurrentVersionsTree {
+  /**
+   * Creates a new [[ConcurrentVersionsTree]] that uses projection function `f` to compute
+   * new (potentially concurrent) versions from a parent version.
+   *
+   * @param f Projection function for updates.
+   * @tparam A Versioned value type
+   * @tparam B Update type
+   */
   def apply[A, B](f: (A, B) => A): ConcurrentVersionsTree[A, B] =
     new ConcurrentVersionsTree[A, B](f)
 
-  def apply[A, B](zero: A, f: (A, B) => A): ConcurrentVersionsTree[A, B] =
-    new ConcurrentVersionsTree[A, B](f, zero)
+  /**
+   * Creates a new [[ConcurrentVersionsTree]] that uses projection function `f` to compute
+   * new (potentially concurrent) versions from a parent version.
+   *
+   * @param initial Value of the initial version.
+   * @param f Projection function for updates.
+   * @tparam A Versioned value type
+   * @tparam B Update type
+   */
+  def apply[A, B](initial: A, f: (A, B) => A): ConcurrentVersionsTree[A, B] =
+    new ConcurrentVersionsTree[A, B](f, initial)
 
   /**
    * Java API.
+   *
+   * Creates a new [[ConcurrentVersionsTree]] that uses projection function `f` to compute
+   * new (potentially concurrent) versions from a parent version.
+   *
+   * @param f Projection function for updates.
+   * @tparam A Versioned value type
+   * @tparam B Update type
    */
   def create[A, B](f: BiFunction[A, B, A]): ConcurrentVersionsTree[A, B] =
     new ConcurrentVersionsTree[A, B](f.apply)
 
-  class Node[A](var versioned: Versioned[A]) {
+  private[eventuate] class Node[A](var versioned: Versioned[A]) {
     var rejected: Boolean = false
     var children: Vector[Node[A]] = Vector.empty
     var parent: Node[A] = this

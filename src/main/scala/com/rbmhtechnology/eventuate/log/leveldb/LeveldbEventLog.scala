@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.eventuate.log
+package com.rbmhtechnology.eventuate.log.leveldb
 
 import java.io.File
 import java.nio.ByteBuffer
@@ -29,10 +29,21 @@ import akka.serialization.SerializationExtension
 import org.iq80.leveldb._
 import org.fusesource.leveldbjni.JniDBFactory.factory
 
-import com.rbmhtechnology.eventuate.{ReplicationFilter, DurableEvent}
-import com.rbmhtechnology.eventuate.EventLogProtocol._
+import com.rbmhtechnology.eventuate._
+import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
+import com.rbmhtechnology.eventuate.log.BatchingEventLog
 
+/**
+ * An event log actor with LevelDB as storage backend. The directory containing the LevelDB files
+ * for this event log is named after the constructor parameters using the template "`prefix`-`id`"
+ * and stored in a root directory defined by the `log.leveldb.dir` configuration.
+ *
+ * '''Please note:''' `prefix` and `id` are currently not escaped when creating the directory name.
+ *
+ * @param id unique log id.
+ * @param prefix prefix of the directory that contains the LevelDB files
+ */
 class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNumericIdentifierMap with LeveldbReplicationProgressMap {
   import LeveldbEventLog._
 
@@ -57,10 +68,10 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
   var sequenceNr = 0L
 
   final def receive = {
-    case GetLastSourceLogSequenceNrReplicated(sourceLogId) =>
+    case GetLastSourceLogReadPosition(sourceLogId) =>
       Try(readReplicationProgress(sourceLogId)) match {
-        case Success(r) => sender() ! GetLastSourceLogSequenceNrReplicatedSuccess(sourceLogId, r)
-        case Failure(e) => sender() ! GetLastSourceLogSequenceNrReplicatedFailure(e)
+        case Success(r) => sender() ! GetLastSourceLogReadPositionSuccess(sourceLogId, r)
+        case Failure(e) => sender() ! GetLastSourceLogReadPositionFailure(e)
       }
     case Replay(from, requestor, iid) =>
       registered = registered + context.watch(requestor)
@@ -75,7 +86,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
         case Failure(cause)  => sdr ! ReadFailure(cause)
       }
     case Delay(commands, commandsSender, requestor, iid) =>
-      commands.foreach(cmd => requestor.tell(DelaySuccess(cmd, iid), commandsSender))
+      commands.foreach(cmd => requestor.tell(DelayComplete(cmd, iid), commandsSender))
     case WriteN(writes) =>
       val updated = writes.map(w => w.copy(events = prepareWrite(w.events)))
       val result = Try(withBatch(batch => updated.foreach(w => write(w.events, batch))))
@@ -106,8 +117,8 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
     case Replicate(events, sourceLogId, lastSourceLogSequenceNrRead) =>
       Try(readReplicationProgress(sourceLogId)) match {
         case Failure(e) => sender() ! ReplicateFailure(e)
-        case Success(lastSourceLogSequenceNrReplicated) =>
-          if (lastSourceLogSequenceNrRead > lastSourceLogSequenceNrReplicated) {
+        case Success(lastSourceLogSequenceNrStored) =>
+          if (lastSourceLogSequenceNrRead > lastSourceLogSequenceNrStored) {
             val updated = prepareReplicate(events)
             val result = Try {
               withBatch { batch =>
@@ -125,7 +136,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
                 publishUpdateNotification(updated)
             }
           } else {
-            sender() ! ReplicateSuccess(0, lastSourceLogSequenceNrReplicated)
+            sender() ! ReplicateSuccess(0, lastSourceLogSequenceNrStored)
           }
       }
     case Terminated(requestor) =>
@@ -265,30 +276,41 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
 }
 
 object LeveldbEventLog {
-  case class ReadResult(events: Seq[DurableEvent], to: Long)
+  private[eventuate] case class ReadResult(events: Seq[DurableEvent], to: Long)
 
-  val counterKey: Long = 0L
-  val counterKeyBytes: Array[Byte] =
+  private[eventuate] val counterKey: Long =
+    0L
+
+  private[eventuate] val counterKeyBytes: Array[Byte] =
     longBytes(counterKey)
 
-  val eventKeyEnd: Long = Long.MaxValue
-  val eventKeyEndBytes: Array[Byte] =
+  private[eventuate] val eventKeyEnd: Long =
+    Long.MaxValue
+
+  private[eventuate] val eventKeyEndBytes: Array[Byte] =
     longBytes(eventKeyEnd)
 
-  def eventKeyBytes(sequenceNr: Long): Array[Byte] =
+  private[eventuate] def eventKeyBytes(sequenceNr: Long): Array[Byte] =
     longBytes(sequenceNr)
 
-  def eventKey(a: Array[Byte]): Long =
+  private[eventuate] def eventKey(a: Array[Byte]): Long =
     longFromBytes(a)
 
-  def longBytes(l: Long): Array[Byte] =
+  private[eventuate] def longBytes(l: Long): Array[Byte] =
     ByteBuffer.allocate(8).putLong(l).array
 
-  def longFromBytes(a: Array[Byte]): Long =
+  private[eventuate] def longFromBytes(a: Array[Byte]): Long =
     ByteBuffer.wrap(a).getLong
 
+  /**
+   * Creates a [[LeveldbEventLog]] configuration object.
+   *
+   * @param id unique log id.
+   * @param prefix prefix of the directory that contains the LevelDB files
+   * @param batching `true` if write-batching shall be enabled (recommended).
+   */
   def props(id: String, prefix: String = "log", batching: Boolean = true): Props = {
     val logProps = Props(new LeveldbEventLog(id, prefix)).withDispatcher("log.leveldb.write-dispatcher")
-    if (batching) Props(new BatchingLayer(logProps)) else logProps
+    if (batching) Props(new BatchingEventLog(logProps)) else logProps
   }
 }

@@ -53,12 +53,12 @@ class ReplicationFailureDetectorSpec extends TestKit(ActorSystem("test", config)
       system.eventStream.subscribe(probe.ref, classOf[Available])
       system.eventStream.subscribe(probe.ref, classOf[Unavailable])
 
-      failureDetector ! Tick
+      failureDetector ! Ping
       probe.expectMsg(Available("A", "L1"))
       // time passes ...
       probe.expectMsg(Unavailable("A", "L1"))
-      failureDetector ! Tick
-      failureDetector ! Tick // second Tick within limit doesn't publish another Available
+      failureDetector ! Ping
+      failureDetector ! Ping // second Tick within limit doesn't publish another Available
       probe.expectMsg(Available("A", "L1"))
       // time passes ...
       probe.expectMsg(Unavailable("A", "L1"))

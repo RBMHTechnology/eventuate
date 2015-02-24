@@ -19,12 +19,21 @@ package akka.actor
 trait InternalStash extends Stash with StashFactory {
   private val theStash: StashSupport = createStash()
 
+  /**
+   * Internal API.
+   */
   def internalStash(): Unit =
     theStash.stash()
 
+  /**
+   * Internal API.
+   */
   def internalUnstash(): Unit =
     theStash.unstash()
 
+  /**
+   * Internal API.
+   */
   def internalUnstashAll(): Unit =
     theStash.unstashAll()
 

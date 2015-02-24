@@ -27,9 +27,10 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.japi.pf.ReceiveBuilder;
 
+import com.rbmhtechnology.eventuate.ReplicationConnection;
 import com.rbmhtechnology.eventuate.ReplicationEndpoint;
 import com.rbmhtechnology.eventuate.VersionedObjects.*;
-import com.rbmhtechnology.eventuate.log.LeveldbEventLog;
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog;
 import com.typesafe.config.ConfigFactory;
 
 import com.rbmhtechnology.example.japi.OrderManager.*;
@@ -129,7 +130,7 @@ public class OrderExample extends AbstractActor {
     }
 
     public static void main(String[] args) {
-        ActorSystem system = ActorSystem.create("site", ConfigFactory.load(args[0]));
+        ActorSystem system = ActorSystem.create(ReplicationConnection.DefaultRemoteSystemName(), ConfigFactory.load(args[0]));
         ReplicationEndpoint endpoint = ReplicationEndpoint.create(id -> LeveldbEventLog.props(id, "java", true), system);
 
         ActorRef manager = system.actorOf(Props.create(OrderManager.class, endpoint.id(), endpoint.logs().apply(ReplicationEndpoint.DefaultLogName())));

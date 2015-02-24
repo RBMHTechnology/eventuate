@@ -20,31 +20,59 @@ import scala.collection.immutable.SortedMap
 
 import akka.actor._
 
-object Delivery {
+private object ConfirmedDelivery {
   case class DeliveryAttempt(message: Any, destination: ActorPath)
 }
 
-trait Delivery extends Eventsourced { this: EventsourcedActor =>
-  import Delivery._
+/**
+ * Supports the reliable delivery of messages by accepting delivery confirmations. Both, message
+ * delivery and confirmation must be executed within an [[EventsourcedActor]]'s event handler.
+ * New messages are delivered by calling `deliver`. When the destination replies with a confirmation
+ * message, the [[EventsourcedActor]] must generate an event for which the handler calls `confirm`.
+ * Until confirmation, delivered messages are tracked as ''unconfirmed'' messages. Unconfirmed
+ * messages can be redelivered by calling `redeliverUnconfirmed`. This is usually done within a
+ * command handler by processing scheduler messages. Redelivery occurs automatically when the
+ * [[EventsourcedActor]] successfully recovers after initial start or a re-start.
+ */
+trait ConfirmedDelivery extends Eventsourced { this: EventsourcedActor =>
+  import ConfirmedDelivery._
 
   private var _unconfirmed: SortedMap[String, DeliveryAttempt] = SortedMap.empty
 
+  /**
+   * Delivers the given `message` to a `destination`. The delivery of `message` is identified by
+   * the given `deliveryId` which must be unique in context of the sending actor. The message is
+   * tracked as unconfirmed message until delivery is confirmed with `confirm`, using the same
+   * `deliveryId`.
+   */
   def deliver(deliveryId: String, message: Any, destination: ActorPath): Unit = {
     _unconfirmed = _unconfirmed + (deliveryId -> DeliveryAttempt(message, destination))
     if (!recovering) send(message, destination)
   }
 
+  /**
+   * Redelivers all unconfirmed messages.
+   */
   def redeliverUnconfirmed(): Unit = _unconfirmed.foreach {
     case (_, DeliveryAttempt(m, d)) => send(m, d)
   }
 
+  /**
+   * Confirms the message delivery identified by `deliveryId`.
+   */
   def confirm(deliveryId: String): Unit =
     _unconfirmed = _unconfirmed - deliveryId
 
+  /**
+   * Delivery ids of unconfirmed messages.
+   */
   def unconfirmed: Set[String] =
     _unconfirmed.keySet
 
-  override def onRecoverySuccess(): Unit = {
+  /**
+   * Internal API.
+   */
+  private[eventuate] override def onRecoverySuccess(): Unit = {
     super.onRecoverySuccess()
     redeliverUnconfirmed()
   }

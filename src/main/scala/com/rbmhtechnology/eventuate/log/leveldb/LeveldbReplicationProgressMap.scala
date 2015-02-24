@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.eventuate.log
+package com.rbmhtechnology.eventuate.log.leveldb
 
 import java.nio.ByteBuffer
 
@@ -65,7 +65,7 @@ trait LeveldbReplicationProgressMap extends Actor { this: LeveldbEventLog with L
   }
 }
 
-object LeveldbReplicationProgressMap {
+private object LeveldbReplicationProgressMap {
   val rpKeyEnd: Int = Int.MaxValue
   val rpKeyEndBytes: Array[Byte] = {
     val bb = ByteBuffer.allocate(12)

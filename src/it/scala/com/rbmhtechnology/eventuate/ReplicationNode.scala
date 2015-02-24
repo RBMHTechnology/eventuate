@@ -22,7 +22,7 @@ import scala.collection.immutable.Seq
 
 import akka.actor._
 
-import com.rbmhtechnology.eventuate.log.LeveldbEventLog
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
 import com.typesafe.config.ConfigFactory
 
 import org.apache.commons.io.FileUtils
@@ -35,14 +35,14 @@ class ReplicationNode(nodeId: String, logIds: Set[String], port: Int, connection
       |akka.test.single-expect-default = 10s
       |
       |log.leveldb.dir = target/logs-system-${nodeId}
-      |log.replication.transfer-batch-size = 3
+      |log.replication.transfer-batch-size-max = 3
       |log.replication.transfer-retry-interval = 1s
       |log.replication.connect-retry-interval = 1s
       |log.replication.failure-detection-limit = 3s
     """.stripMargin)
 
   val system: ActorSystem =
-    ActorSystem("site", config)
+    ActorSystem(ReplicationConnection.DefaultRemoteSystemName, config)
 
   cleanup()
   storageLocation.mkdirs()

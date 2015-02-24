@@ -18,9 +18,9 @@ package com.rbmhtechnology.example
 
 import akka.actor._
 
-import com.rbmhtechnology.eventuate.ReplicationEndpoint
+import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.VersionedObjects._
-import com.rbmhtechnology.eventuate.log.LeveldbEventLog
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
 import com.typesafe.config.ConfigFactory
 
 class OrderExample(manager: ActorRef, view: ActorRef) extends Actor {
@@ -74,7 +74,7 @@ object OrderExample extends App {
   val cc = ConfigFactory.load("common.conf")
   val sc = ConfigFactory.load(args(0))
 
-  val system = ActorSystem("site", sc.withFallback(cc))
+  val system = ActorSystem(ReplicationConnection.DefaultRemoteSystemName, sc.withFallback(cc))
   val endpoint = ReplicationEndpoint(id => LeveldbEventLog.props(id, "scala"))(system)
   val manager = system.actorOf(Props(new OrderManager(endpoint.id, endpoint.logs(ReplicationEndpoint.DefaultLogName))))
   val view = system.actorOf(Props(new OrderView(s"${endpoint.id}-view", endpoint.logs(ReplicationEndpoint.DefaultLogName))))

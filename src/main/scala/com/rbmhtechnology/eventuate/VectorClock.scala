@@ -21,6 +21,12 @@ import scala.annotation.tailrec
 import scalaz._
 import Scalaz._
 
+/**
+ * An immutable vector clock.
+ *
+ * @param processId Id of the owner process.
+ * @param currentTime The clock's current time.
+ */
 case class VectorClock(processId: String, currentTime: VectorTime = VectorTime()) {
   /**
    * Returns the local time of `processId` recorded in this clock.
@@ -29,7 +35,7 @@ case class VectorClock(processId: String, currentTime: VectorTime = VectorTime()
     currentTime.localTime(processId)
 
   /**
-   * Updated current time from `t` (tick and merge).
+   * Updates current time with `t` (tick and merge).
    */
   def update(t: VectorTime): VectorClock =
     tick().merge(t)
@@ -48,7 +54,7 @@ case class VectorClock(processId: String, currentTime: VectorTime = VectorTime()
 }
 
 /**
- * Vector time, represented as process id -> logical time map.
+ * Vector time, represented as ''process id'' -> ''logical time'' map.
  */
 case class VectorTime(value: Map[String, Long] = Map.empty) {
   /**
@@ -66,7 +72,7 @@ case class VectorTime(value: Map[String, Long] = Map.empty) {
   }
 
   /**
-   * Increases local time of specified `processId` by `1L`.
+   * Increases local time of given `processId` by `1L`.
    */
   def increase(processId: String): VectorTime = value.get(processId) match {
     case Some(v) => copy(value + (processId -> (v + 1)))
@@ -78,6 +84,7 @@ case class VectorTime(value: Map[String, Long] = Map.empty) {
    * the corresponding local times.
    */
   def merge(that: VectorTime): VectorTime = {
+    // TODO: this needs optimization
     val v1 = value.mapValues{List(_)}
     val v2 = that.value.mapValues{List(_)}
     // FIXME: Map() ++ necessary to avoid NotSerializableException
