@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Reference guide &mdash; Eventuate</title>
+  <title>Download &mdash; Eventuate</title>
   
 
   
@@ -29,8 +29,8 @@
 
   
     <link rel="top" title="Eventuate" href="index.html"/>
-        <link rel="next" title="Developer guide" href="dev-guide.html"/>
-        <link rel="prev" title="Download" href="download.html"/> 
+        <link rel="next" title="Reference guide" href="ref-guide.html"/>
+        <link rel="prev" title="Architecture" href="architecture.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -71,13 +71,13 @@
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#adapters">Adapters</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="download.html">Download</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="download.html#maven-repository">Maven repository</a></li>
-<li class="toctree-l2"><a class="reference internal" href="download.html#maven-dependency">Maven dependency</a></li>
-<li class="toctree-l2"><a class="reference internal" href="download.html#sbt-dependency">SBT dependency</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Download</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#maven-repository">Maven repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#maven-dependency">Maven dependency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sbt-dependency">SBT dependency</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Reference guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ref-guide.html">Reference guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev-guide.html">Developer guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="appendix.html#project">Project</a></li>
@@ -109,10 +109,10 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Reference guide</li>
+    <li>Download</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/ref-guide.txt" rel="nofollow"> View page source</a>
+          <a href="_sources/download.txt" rel="nofollow"> View page source</a>
         
       </li>
   </ul>
@@ -120,9 +120,38 @@
 </div>
           <div role="main">
             
-  <div class="section" id="reference-guide">
-<h1>Reference guide<a class="headerlink" href="#reference-guide" title="Permalink to this headline">¶</a></h1>
-<p>This reference guide is work in progress and is going to replace the <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/blob/master/src/sphinx/ref-guide.md">old reference guide</a>.</p>
+  <div class="section" id="download">
+<h1>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="maven-repository">
+<h2>Maven repository<a class="headerlink" href="#maven-repository" title="Permalink to this headline">¶</a></h2>
+<p>Eventuate snapshot JARs are currently published to the <a class="reference external" href="https://oss.jfrog.org/oss-snapshot-local/com/rbmhtechnology/eventuate_2.11/">OJO snapshot repository</a>.</p>
+</div>
+<div class="section" id="maven-dependency">
+<h2>Maven dependency<a class="headerlink" href="#maven-dependency" title="Permalink to this headline">¶</a></h2>
+<p>To include the latest development snapshot into a Maven project, add the following to your <tt class="docutils literal"><span class="pre">pom.xml</span></tt>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">&lt;</span><span class="n">repository</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">id</span><span class="o">&gt;</span><span class="n">ojo</span><span class="o">-</span><span class="n">snapshots</span><span class="o">&lt;/</span><span class="n">id</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="nc">OJO</span> <span class="nc">Snapshots</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">url</span><span class="o">&gt;</span><span class="n">https</span><span class="o">://</span><span class="n">oss</span><span class="o">.</span><span class="n">jfrog</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">oss</span><span class="o">-</span><span class="n">snapshot</span><span class="o">-</span><span class="n">local</span><span class="o">&lt;/</span><span class="n">url</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">repository</span><span class="o">&gt;</span>
+
+<span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.1</span><span class="o">-</span><span class="nc">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sbt-dependency">
+<h2>SBT dependency<a class="headerlink" href="#sbt-dependency" title="Permalink to this headline">¶</a></h2>
+<p>To include the latest development snapshot into an SBT project, add the following to your <tt class="docutils literal"><span class="pre">build.sbt</span></tt>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;OJO Snapshots&quot;</span> <span class="n">at</span> <span class="s">&quot;https://oss.jfrog.org/oss-snapshot-local&quot;</span>
+
+<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate&quot;</span> <span class="o">%</span> <span class="s">&quot;0.1-SNAPSHOT&quot;</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -131,10 +160,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dev-guide.html" class="btn btn-neutral float-right" title="Developer guide"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="ref-guide.html" class="btn btn-neutral float-right" title="Reference guide"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="download.html" class="btn btn-neutral" title="Download"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="architecture.html" class="btn btn-neutral" title="Architecture"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
