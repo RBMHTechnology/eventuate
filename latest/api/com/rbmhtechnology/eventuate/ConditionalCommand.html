@@ -47,7 +47,11 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A conditional command is a command (<code>cmd</code>) to an <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actor whose
+delivery is delayed until the actor's <code>lastVectorTimestamp</code> becomes greater than
+or equal the <code>condition</code> timestamp. If the condition is met, <code>cmd</code> is delivered
+to the actor's command handler.
+</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>

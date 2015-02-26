@@ -47,7 +47,13 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Replicated MV-Register. Has several <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values assigned in case of concurrent assignments,
+otherwise, a single <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value. Concurrent assignments can be reduced to a single assignment
+by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with a timestamp that is greater than those of the currently assigned
+<a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>MV-Register value type.
+</p></dd><dt class="param">versionedValues</dt><dd class="cmt"><p>Assigned, versioned values. Initially empty.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
+</p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -87,7 +93,7 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.crdt.MVRegister#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.crdt.MVRegister#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="&lt;init&gt;(versionedValues:Set[com.rbmhtechnology.eventuate.Versioned[A]]):com.rbmhtechnology.eventuate.crdt.MVRegister[A]"></a>
       <a id="&lt;init&gt;:MVRegister[A]"></a>
       <h4 class="signature">
@@ -103,7 +109,7 @@
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">versionedValues</dt><dd class="cmt"><p>Assigned, versioned values. Initially empty.</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -329,7 +335,7 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegister#set" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegister#set" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="set(v:A,timestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.crdt.MVRegister[A]"></a>
       <a id="set(A,VectorTime):MVRegister[A]"></a>
       <h4 class="signature">
@@ -345,7 +351,9 @@
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Assigns a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value from <code>v</code> and <code>timestamp</code> and returns an updated MV-Register.</p><div class="fullcomment"><div class="comment cmt"><p>Assigns a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value from <code>v</code> and <code>timestamp</code> and returns an updated MV-Register.
+</p></div><dl class="paramcmts block"><dt class="param">v</dt><dd class="cmt"><p>assigned value.</p></dd><dt class="param">timestamp</dt><dd class="cmt"><p>assignment timestamp.
+</p></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -380,7 +388,7 @@
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegister#versionedValues" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegister#versionedValues" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="versionedValues:Set[com.rbmhtechnology.eventuate.Versioned[A]]"></a>
       <a id="versionedValues:Set[Versioned[A]]"></a>
       <h4 class="signature">
@@ -396,7 +404,7 @@
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Assigned, versioned values.</p><div class="fullcomment"><div class="comment cmt"><p>Assigned, versioned values. Initially empty.</p></div></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

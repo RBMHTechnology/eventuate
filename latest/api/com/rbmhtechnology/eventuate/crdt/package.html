@@ -107,7 +107,7 @@ of events.
 </p><div class="fullcomment"><div class="comment cmt"><p>Typeclass to be implemented by CRDTs if they shall be managed by <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>CRDT type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>CRDT value type
 </p></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.Counter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.crdt.Counter" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Counter[A]extendsProductwithSerializable"></a>
       <a id="Counter[A]:Counter[A]"></a>
       <h4 class="signature">
@@ -123,7 +123,10 @@ of events.
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Replicated counter.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated counter.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Counter value type.
+</p></dd><dt class="param">value</dt><dd class="cmt"><p>Current counter value.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.CounterService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CounterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.Counter[A],A]"></a>
       <a id="CounterService[A]:CounterService[A]"></a>
@@ -141,9 +144,9 @@ of events.
       </a>
     </span>
       <p class="shortcomment cmt">Replicated <a href="Counter.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Counter">Counter</a> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <a href="Counter.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Counter">Counter</a> CRDT service.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>counter value type
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Counter value type.
 </p></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegister" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegister" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MVRegister[A]extendsProductwithSerializable"></a>
       <a id="MVRegister[A]:MVRegister[A]"></a>
       <h4 class="signature">
@@ -159,7 +162,13 @@ of events.
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Replicated MV-Register.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated MV-Register. Has several <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values assigned in case of concurrent assignments,
+otherwise, a single <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value. Concurrent assignments can be reduced to a single assignment
+by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with a timestamp that is greater than those of the currently assigned
+<a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>MV-Register value type.
+</p></dd><dt class="param">versionedValues</dt><dd class="cmt"><p>Assigned, versioned values. Initially empty.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegisterService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MVRegisterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.MVRegister[A],Set[A]]"></a>
       <a id="MVRegisterService[A]:MVRegisterService[A]"></a>
@@ -177,9 +186,9 @@ of events.
       </a>
     </span>
       <p class="shortcomment cmt">Replicated <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> CRDT service.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> value type
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> value type.
 </p></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.ORSet" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORSet" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ORSet[A]extendsProductwithSerializable"></a>
       <a id="ORSet[A]:ORSet[A]"></a>
       <h4 class="signature">
@@ -195,7 +204,10 @@ of events.
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Replicated OR-Set.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated OR-Set. In case of a concurrent <code>add</code> and <code>remove</code>, <code>add</code> has precedence.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Entry value type.
+</p></dd><dt class="param">versionedEntries</dt><dd class="cmt"><p><a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSetService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ORSetService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.ORSet[A],Set[A]]"></a>
       <a id="ORSetService[A]:ORSetService[A]"></a>

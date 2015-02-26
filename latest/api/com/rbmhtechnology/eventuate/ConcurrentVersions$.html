@@ -144,8 +144,8 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersions#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply[A,B](zero:A,f:(A,B)=&gt;A):com.rbmhtechnology.eventuate.ConcurrentVersions[A,B]"></a>
+    </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersions#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="apply[A,B](initial:A,f:(A,B)=&gt;A):com.rbmhtechnology.eventuate.ConcurrentVersions[A,B]"></a>
       <a id="apply[A,B](A,(A,B)⇒A):ConcurrentVersions[A,B]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -153,14 +153,18 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span><span class="params">(<span name="zero">zero: <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.apply.A">A</span></span>, <span name="f">f: (<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.apply.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.apply.B">B</span>) ⇒ <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.apply.A">A</span></span>)</span><span class="result">: <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.apply.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.apply.B">B</span>]</span>
+        <span class="name">apply</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span><span class="params">(<span name="initial">initial: <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.apply.A">A</span></span>, <span name="f">f: (<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.apply.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.apply.B">B</span>) ⇒ <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.apply.A">A</span></span>)</span><span class="result">: <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.apply.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.apply.B">B</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConcurrentVersions$@apply[A,B](zero:A,f:(A,B)=&gt;A):com.rbmhtechnology.eventuate.ConcurrentVersions[A,B]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConcurrentVersions$@apply[A,B](initial:A,f:(A,B)=&gt;A):com.rbmhtechnology.eventuate.ConcurrentVersions[A,B]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Creates a new <a href="ConcurrentVersionsTree.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a> that uses projection function <code>f</code> to compute
+new (potentially concurrent) versions from a parent version.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a new <a href="ConcurrentVersionsTree.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a> that uses projection function <code>f</code> to compute
+new (potentially concurrent) versions from a parent version.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Versioned value type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>Update type
+</p></dd><dt class="param">initial</dt><dd class="cmt"><p>Value of the initial version.</p></dd><dt class="param">f</dt><dd class="cmt"><p>Projection function for updates.</p></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>

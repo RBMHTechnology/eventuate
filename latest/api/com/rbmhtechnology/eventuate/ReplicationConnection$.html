@@ -144,7 +144,24 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationConnection#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationConnection#DefaultRemoteSystemName" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DefaultRemoteSystemName:String"></a>
+      <a id="DefaultRemoteSystemName:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">DefaultRemoteSystemName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationConnection$@DefaultRemoteSystemName:String" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Default name of the remote actor system to connect to.</p>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationConnection#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="apply(host:String,port:Int,filter:Option[com.rbmhtechnology.eventuate.ReplicationFilter]):com.rbmhtechnology.eventuate.ReplicationConnection"></a>
       <a id="apply(String,Int,Option[ReplicationFilter]):ReplicationConnection"></a>
       <h4 class="signature">
@@ -160,8 +177,13 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationConnection#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Creates <a href="ReplicationConnection.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationConnection">ReplicationConnection</a> with remote actor system <code>name</code> set to <a href="#DefaultRemoteSystemName:String" class="extmbr" name="com.rbmhtechnology.eventuate.ReplicationConnection#DefaultRemoteSystemName">DefaultRemoteSystemName</a>
+and an optional replication <code>filter</code> applied to the event log with name <a href="ReplicationEndpoint$.html#DefaultLogName:String" class="extmbr" name="com.rbmhtechnology.eventuate.ReplicationEndpoint#DefaultLogName">ReplicationEndpoint.DefaultLogName</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Creates <a href="ReplicationConnection.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationConnection">ReplicationConnection</a> with remote actor system <code>name</code> set to <a href="#DefaultRemoteSystemName:String" class="extmbr" name="com.rbmhtechnology.eventuate.ReplicationConnection#DefaultRemoteSystemName">DefaultRemoteSystemName</a>
+and an optional replication <code>filter</code> applied to the event log with name <a href="ReplicationEndpoint$.html#DefaultLogName:String" class="extmbr" name="com.rbmhtechnology.eventuate.ReplicationEndpoint#DefaultLogName">ReplicationEndpoint.DefaultLogName</a>.
+</p></div><dl class="paramcmts block"><dt class="param">host</dt><dd class="cmt"><p>host of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">port</dt><dd class="cmt"><p>port of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">filter</dt><dd class="cmt"><p>Optional filter applied remotely. If defined, the filter is applied to
+              the event log with name <a href="ReplicationEndpoint$.html#DefaultLogName:String" class="extmbr" name="com.rbmhtechnology.eventuate.ReplicationEndpoint#DefaultLogName">ReplicationEndpoint.DefaultLogName</a>.
+</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationConnection#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="apply(host:String,port:Int,filters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]):com.rbmhtechnology.eventuate.ReplicationConnection"></a>
       <a id="apply(String,Int,Map[String,ReplicationFilter]):ReplicationConnection"></a>
       <h4 class="signature">
@@ -177,7 +199,10 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Creates <a href="ReplicationConnection.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationConnection">ReplicationConnection</a> with remote actor system <code>name</code> set to <a href="#DefaultRemoteSystemName:String" class="extmbr" name="com.rbmhtechnology.eventuate.ReplicationConnection#DefaultRemoteSystemName">DefaultRemoteSystemName</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Creates <a href="ReplicationConnection.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationConnection">ReplicationConnection</a> with remote actor system <code>name</code> set to <a href="#DefaultRemoteSystemName:String" class="extmbr" name="com.rbmhtechnology.eventuate.ReplicationConnection#DefaultRemoteSystemName">DefaultRemoteSystemName</a>.
+</p></div><dl class="paramcmts block"><dt class="param">host</dt><dd class="cmt"><p>host of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">port</dt><dd class="cmt"><p>port of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">filters</dt><dd class="cmt"><p>Replication filters applied remotely. Filters are applied to individual
+               event logs where filter keys are the corresponding event log names.
+</p></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>

@@ -47,9 +47,8 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a> implementation that shall be used if update values replace
-current versioned values (= full updates). <code>ConcurrentVersionsList</code> is an immutable
-data structure.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a> implementation that shall be used if updates replace current
+versioned values (= full updates). <code>ConcurrentVersionsList</code> is an immutable data structure.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsList.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsList.A">A</span>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -437,7 +436,7 @@ concurrent (= conflicting) versions.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Owner of versioned A.</p><div class="fullcomment"><div class="comment cmt"><p>Owner of versioned A.
+      <p class="shortcomment cmt">Owner of versioned values.</p><div class="fullcomment"><div class="comment cmt"><p>Owner of versioned values.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsList">ConcurrentVersionsList</a> → <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersionsList#resolve" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="resolve(selectedTimestamp:com.rbmhtechnology.eventuate.VectorTime,eventTimestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.ConcurrentVersionsList[A]"></a>
@@ -529,7 +528,7 @@ be concurrent to other updates).
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Updates that versioned value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Updates that versioned value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>. If
+      <p class="shortcomment cmt">Updates that <a href="Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Updates that <a href="Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>. If
 there is no such predecessor, a new concurrent version is created (optionally derived
 from an older entry in the version history, in case of incremental updates).
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsList">ConcurrentVersionsList</a> → <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a></dd></dl></div>

@@ -43,13 +43,15 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">EventsourcedView</span><span class="result"> extends <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> with <a href="ConditionalCommands.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</a> with <span class="extype" name="akka.actor.Stash">Stash</span></span>
+        <span class="name">EventsourcedView</span><span class="result"> extends <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> with <span class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</span> with <span class="extype" name="akka.actor.Stash">Stash</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>An <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actor that can only consumes events from its event log. Commands
+sent to this actor during recovery are delayed until recovery completes.
+</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <a href="ConditionalCommands.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</a>, <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</span>, <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
             <span class="toggle">Known Subclasses</span>
             <div class="subClasses hiddenContent"><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a></div>
@@ -130,7 +132,8 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
+      <p class="shortcomment cmt">Event log actor.</p><div class="fullcomment"><div class="comment cmt"><p>Event log actor.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#onCommand" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="onCommand:Eventsourced.this.Receive"></a>
       <a id="onCommand:Receive"></a>
@@ -147,7 +150,8 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
+      <p class="shortcomment cmt">Command handler.</p><div class="fullcomment"><div class="comment cmt"><p>Command handler.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#onEvent" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="onEvent:Eventsourced.this.Receive"></a>
       <a id="onEvent:Receive"></a>
@@ -164,7 +168,8 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
+      <p class="shortcomment cmt">Event handler.</p><div class="fullcomment"><div class="comment cmt"><p>Event handler.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li></ol>
             </div>
 
@@ -346,40 +351,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ConditionalCommands#conditionChanged" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="conditionChanged(condition:com.rbmhtechnology.eventuate.VectorTime):Unit"></a>
-      <a id="conditionChanged(VectorTime):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">conditionChanged</span><span class="params">(<span name="condition">condition: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedView@conditionChanged(condition:com.rbmhtechnology.eventuate.VectorTime):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ConditionalCommands.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ConditionalCommands#conditionalSend" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="conditionalSend(condition:com.rbmhtechnology.eventuate.VectorTime,cmd:Any):Unit"></a>
-      <a id="conditionalSend(VectorTime,Any):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">conditionalSend</span><span class="params">(<span name="condition">condition: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="cmd">cmd: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedView@conditionalSend(condition:com.rbmhtechnology.eventuate.VectorTime,cmd:Any):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ConditionalCommands.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</a></dd></dl></div>
     </li><li name="akka.actor.Actor#context" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="context:akka.actor.ActorContext"></a>
       <a id="context:ActorContext"></a>
@@ -538,7 +509,8 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
+      <p class="shortcomment cmt">Process id of the last consumed event.</p><div class="fullcomment"><div class="comment cmt"><p>Process id of the last consumed event.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastSequenceNr" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="lastSequenceNr:Long"></a>
       <a id="lastSequenceNr:Long"></a>
@@ -555,7 +527,8 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
+      <p class="shortcomment cmt">Sequence number of the last consumed event.</p><div class="fullcomment"><div class="comment cmt"><p>Sequence number of the last consumed event.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastSystemTimestamp" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="lastSystemTimestamp:Long"></a>
       <a id="lastSystemTimestamp:Long"></a>
@@ -572,7 +545,8 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
+      <p class="shortcomment cmt">Wall-clock timestamp of the last consumed event.</p><div class="fullcomment"><div class="comment cmt"><p>Wall-clock timestamp of the last consumed event.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastVectorTimestamp" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime"></a>
       <a id="lastVectorTimestamp:VectorTime"></a>
@@ -589,7 +563,8 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
+      <p class="shortcomment cmt">Vector timestamp of the last consumed event.</p><div class="fullcomment"><div class="comment cmt"><p>Vector timestamp of the last consumed event.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -641,40 +616,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.Eventsourced#onLastConsumed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onLastConsumed(d:com.rbmhtechnology.eventuate.DurableEvent):Unit"></a>
-      <a id="onLastConsumed(DurableEvent):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onLastConsumed</span><span class="params">(<span name="d">d: <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedView@onLastConsumed(d:com.rbmhtechnology.eventuate.DurableEvent):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.Eventsourced#onRecoverySuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onRecoverySuccess():Unit"></a>
-      <a id="onRecoverySuccess():Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onRecoverySuccess</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedView@onRecoverySuccess():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="akka.actor.Actor#postRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="postRestart(reason:Throwable):Unit"></a>
       <a id="postRestart(Throwable):Unit"></a>
@@ -748,7 +689,8 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
+      <p class="shortcomment cmt">Initiates recovery by sending a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">EventsourcingProtocol.Replay</a> request to the event log.</p><div class="fullcomment"><div class="comment cmt"><p>Initiates recovery by sending a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">EventsourcingProtocol.Replay</a> request to the event log.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="receive:EventsourcedView.this.Receive"></a>
       <a id="receive:Receive"></a>
@@ -782,7 +724,11 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
+      <p class="shortcomment cmt">Returns <code>true</code> if this actor is currently recovering internal state by consuming
+replayed events from the event log.</p><div class="fullcomment"><div class="comment cmt"><p>Returns <code>true</code> if this actor is currently recovering internal state by consuming
+replayed events from the event log. Returns <code>false</code> after recovery completed and
+the actor switches to consuming live events.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="akka.actor.Actor#self" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="self:akka.actor.ActorRef"></a>
       <a id="self:ActorRef"></a>
@@ -1006,7 +952,7 @@
             </div><div class="parent" name="akka.actor.StashSupport">
               <h3>Inherited from <span class="extype" name="akka.actor.StashSupport">StashSupport</span></h3>
             </div><div class="parent" name="com.rbmhtechnology.eventuate.ConditionalCommands">
-              <h3>Inherited from <a href="ConditionalCommands.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</a></h3>
+              <h3>Inherited from <span class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</span></h3>
             </div><div class="parent" name="com.rbmhtechnology.eventuate.Eventsourced">
               <h3>Inherited from <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></h3>
             </div><div class="parent" name="akka.actor.Actor">

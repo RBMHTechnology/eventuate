@@ -1,0 +1,209 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>leveldb - com.rbmhtechnology.eventuate.log.leveldb</title>
+          <meta name="description" content="leveldb - com.rbmhtechnology.eventuate.log.leveldb" />
+          <meta name="keywords" content="leveldb com.rbmhtechnology.eventuate.log.leveldb" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../index.html';
+            var hash = 'com.rbmhtechnology.eventuate.log.leveldb.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../../package.html" class="extype" name="com">com</a>.<a href="../../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate.log">log</a></p>
+        <h1>leveldb</h1> <span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">leveldb</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="LeveldbEventLogextendsActorwithLeveldbNumericIdentifierMapwithLeveldbReplicationProgressMap"></a>
+      <a id="LeveldbEventLog:LeveldbEventLog"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="LeveldbEventLog.html"><span class="name">LeveldbEventLog</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="LeveldbNumericIdentifierMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbNumericIdentifierMap">LeveldbNumericIdentifierMap</a> with <a href="LeveldbReplicationProgressMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap">LeveldbReplicationProgressMap</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package@LeveldbEventLogextendsActorwithLeveldbNumericIdentifierMapwithLeveldbReplicationProgressMap" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">An event log actor with LevelDB as storage backend.</p><div class="fullcomment"><div class="comment cmt"><p>An event log actor with LevelDB as storage backend. The directory containing the LevelDB files
+for this event log is named after the constructor parameters using the template &quot;<code>prefix</code>-<code>id</code>&quot;
+and stored in a root directory defined by the <code>log.leveldb.dir</code> configuration.</p><p><b>Please note:</b> <code>prefix</code> and <code>id</code> are currently not escaped when creating the directory name.
+</p></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbNumericIdentifierMap" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="LeveldbNumericIdentifierMapextendsActor"></a>
+      <a id="LeveldbNumericIdentifierMap:LeveldbNumericIdentifierMap"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="LeveldbNumericIdentifierMap.html"><span class="name">LeveldbNumericIdentifierMap</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package@LeveldbNumericIdentifierMapextendsActor" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="LeveldbReplicationProgressMapextendsActor"></a>
+      <a id="LeveldbReplicationProgressMap:LeveldbReplicationProgressMap"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="LeveldbReplicationProgressMap.html"><span class="name">LeveldbReplicationProgressMap</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package@LeveldbReplicationProgressMapextendsActor" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LeveldbEventLog"></a>
+      <a id="LeveldbEventLog:LeveldbEventLog"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="LeveldbEventLog$.html"><span class="name">LeveldbEventLog</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package@LeveldbEventLog" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbNumericIdentifierMap" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LeveldbNumericIdentifierMap"></a>
+      <a id="LeveldbNumericIdentifierMap:LeveldbNumericIdentifierMap"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="LeveldbNumericIdentifierMap$.html"><span class="name">LeveldbNumericIdentifierMap</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package@LeveldbNumericIdentifierMap" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LeveldbReplicationProgressMap"></a>
+      <a id="LeveldbReplicationProgressMap:LeveldbReplicationProgressMap"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="LeveldbReplicationProgressMap$.html"><span class="name">LeveldbReplicationProgressMap</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package@LeveldbReplicationProgressMap" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

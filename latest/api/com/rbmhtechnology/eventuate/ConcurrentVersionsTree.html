@@ -47,7 +47,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a> implementation that shall be used if update values modify
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a> implementation that shall be used if updates modify
 current versioned values (= incremental updates). <code>ConcurrentVersionsTree</code> is a
 mutable data structure.</p><p><b>Please note:</b> This implementation is not optimized and leaks memory at the
 moment. Also, future versions of <code>ConcurrentVersionsTree</code> will likely be based
@@ -93,7 +93,7 @@ on immutable data structures.
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(f:(A,B)=&gt;A,zero:A):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]"></a>
+      <a id="&lt;init&gt;(f:(A,B)=&gt;A,initial:A):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]"></a>
       <a id="&lt;init&gt;:ConcurrentVersionsTree[A,B]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -101,14 +101,14 @@ on immutable data structures.
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ConcurrentVersionsTree</span><span class="params">(<span name="f">f: (<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.B">B</span>) ⇒ <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.A">A</span></span>, <span name="zero">zero: <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.A">A</span> = <span class="symbol">null.asInstanceOf[A]</span></span>)</span>
+        <span class="name">ConcurrentVersionsTree</span><span class="params">(<span name="f">f: (<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.B">B</span>) ⇒ <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.A">A</span></span>, <span name="initial">initial: <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.A">A</span> = <span class="symbol">null.asInstanceOf[A]</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConcurrentVersionsTree@&lt;init&gt;(f:(A,B)=&gt;A,zero:A):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConcurrentVersionsTree@&lt;init&gt;(f:(A,B)=&gt;A,initial:A):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">f</dt><dd class="cmt"><p>projection function for updates.
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">f</dt><dd class="cmt"><p>Projection function for updates.
 </p></dd></dl></div>
     </li></ol>
             </div>
@@ -440,7 +440,7 @@ concurrent (= conflicting) versions.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Owner of versioned A.</p><div class="fullcomment"><div class="comment cmt"><p>Owner of versioned A.
+      <p class="shortcomment cmt">Owner of versioned values.</p><div class="fullcomment"><div class="comment cmt"><p>Owner of versioned values.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a> → <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree#resolve" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="resolve(selectedTimestamp:com.rbmhtechnology.eventuate.VectorTime,eventTimestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]"></a>
@@ -532,7 +532,7 @@ be concurrent to other updates).
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Updates that versioned value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Updates that versioned value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>. If
+      <p class="shortcomment cmt">Updates that <a href="Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Updates that <a href="Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>. If
 there is no such predecessor, a new concurrent version is created (optionally derived
 from an older entry in the version history, in case of incremental updates).
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a> → <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a></dd></dl></div>

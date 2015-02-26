@@ -47,7 +47,10 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Replicated OR-Set. In case of a concurrent <code>add</code> and <code>remove</code>, <code>add</code> has precedence.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Entry value type.
+</p></dd><dt class="param">versionedEntries</dt><dd class="cmt"><p><a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
+</p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -87,7 +90,7 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.crdt.ORSet#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.crdt.ORSet#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="&lt;init&gt;(versionedEntries:Set[com.rbmhtechnology.eventuate.Versioned[A]]):com.rbmhtechnology.eventuate.crdt.ORSet[A]"></a>
       <a id="&lt;init&gt;:ORSet[A]"></a>
       <h4 class="signature">
@@ -103,7 +106,7 @@
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">versionedEntries</dt><dd class="cmt"><p><a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries.</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -180,7 +183,7 @@
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Adds a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entry from <code>entry</code> and <code>timestamp</code> and returns an updated OR-Set.</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -362,7 +365,7 @@
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Collects all timestamps of given <code>entry</code>.</p>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSet#remove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="remove(entry:A,timestamps:Set[com.rbmhtechnology.eventuate.VectorTime]):com.rbmhtechnology.eventuate.crdt.ORSet[A]"></a>
       <a id="remove(A,Set[VectorTime]):ORSet[A]"></a>
@@ -379,7 +382,7 @@
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Removes <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries matching <code>entry</code> and <code>timestamps</code> and returns an updated OR-Set.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -413,7 +416,7 @@
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Returns all entries, masking duplicates of different version.</p>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSet#versionedEntries" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="versionedEntries:Set[com.rbmhtechnology.eventuate.Versioned[A]]"></a>
       <a id="versionedEntries:Set[Versioned[A]]"></a>
@@ -430,7 +433,7 @@
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt"><a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries.</p>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

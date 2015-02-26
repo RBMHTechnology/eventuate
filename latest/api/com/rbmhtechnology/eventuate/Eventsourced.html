@@ -47,12 +47,17 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Implemented by actors that derive internal state from events stored in an event log. Events
+are pushed from the <code>eventLog</code> actor to this actor and handled with the <code>onEvent</code> event handler. An
+event handler defines how events are projected on internal state. Internal state must only be modified
+within <code>onEvent</code>. External commands are handled with the <code>onCommand</code> command handler. A command handler
+may access internal state but must not modify it.
+</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
             <span class="toggle">Known Subclasses</span>
-            <div class="subClasses hiddenContent"><a href="AbstractEventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourced">AbstractEventsourced</a>, <a href="AbstractEventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor">AbstractEventsourcedActor</a>, <a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a>, <a href="Delivery.html" class="extype" name="com.rbmhtechnology.eventuate.Delivery">Delivery</a>, <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></div>
+            <div class="subClasses hiddenContent"><a href="AbstractEventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourced">AbstractEventsourced</a>, <a href="AbstractEventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor">AbstractEventsourcedActor</a>, <a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a>, <a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a>, <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></div>
           </div></div>
         
 
@@ -130,7 +135,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Event log actor.</p>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#onCommand" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="onCommand:Eventsourced.this.Receive"></a>
       <a id="onCommand:Receive"></a>
@@ -147,7 +152,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Command handler.</p>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#onEvent" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="onEvent:Eventsourced.this.Receive"></a>
       <a id="onEvent:Receive"></a>
@@ -164,7 +169,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Event handler.</p>
     </li><li name="akka.actor.Actor#receive" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="receive:akka.actor.Actor.Receive"></a>
       <a id="receive:akka.actor.Actor.Receive"></a>
@@ -521,7 +526,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Process id of the last consumed event.</p>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastSequenceNr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="lastSequenceNr:Long"></a>
       <a id="lastSequenceNr:Long"></a>
@@ -538,7 +543,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Sequence number of the last consumed event.</p>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastSystemTimestamp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="lastSystemTimestamp:Long"></a>
       <a id="lastSystemTimestamp:Long"></a>
@@ -555,7 +560,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Wall-clock timestamp of the last consumed event.</p>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastVectorTimestamp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime"></a>
       <a id="lastVectorTimestamp:VectorTime"></a>
@@ -572,7 +577,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Vector timestamp of the last consumed event.</p>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -624,40 +629,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.Eventsourced#onLastConsumed" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="onLastConsumed(d:com.rbmhtechnology.eventuate.DurableEvent):Unit"></a>
-      <a id="onLastConsumed(DurableEvent):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onLastConsumed</span><span class="params">(<span name="d">d: <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced@onLastConsumed(d:com.rbmhtechnology.eventuate.DurableEvent):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.Eventsourced#onRecoverySuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="onRecoverySuccess():Unit"></a>
-      <a id="onRecoverySuccess():Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">onRecoverySuccess</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced@onRecoverySuccess():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="akka.actor.Actor#postRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="postRestart(reason:Throwable):Unit"></a>
       <a id="postRestart(Throwable):Unit"></a>
@@ -750,7 +721,7 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.Eventsourced#recovering" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.Eventsourced#recovering" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="recovering:Boolean"></a>
       <a id="recovering:Boolean"></a>
       <h4 class="signature">
@@ -766,7 +737,11 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Returns <code>true</code> if this actor is currently recovering internal state by consuming
+replayed events from the event log.</p><div class="fullcomment"><div class="comment cmt"><p>Returns <code>true</code> if this actor is currently recovering internal state by consuming
+replayed events from the event log. Returns <code>false</code> after recovery completed and
+the actor switches to consuming live events.
+</p></div></div>
     </li><li name="akka.actor.Actor#self" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="self:akka.actor.ActorRef"></a>
       <a id="self:ActorRef"></a>

@@ -89,125 +89,57 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ClientInfo" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ClientInfoextendsProductwithSerializable"></a>
-      <a id="ClientInfo:ClientInfo"></a>
+              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPosition" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="GetLastSourceLogReadPositionextendsProductwithSerializable"></a>
+      <a id="GetLastSourceLogReadPosition:GetLastSourceLogReadPosition"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ClientInfo.html"><span class="name">ClientInfo</span></a><span class="params">(<span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="filter">filter: <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$GetLastSourceLogReadPosition.html"><span class="name">GetLastSourceLogReadPosition</span></a><span class="params">(<span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ClientInfoextendsProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@GetLastSourceLogReadPositionextendsProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.Connect" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ConnectextendsProductwithSerializable"></a>
-      <a id="Connect:Connect"></a>
+      <p class="shortcomment cmt">Requests from a target log the last read position in the given source log.</p>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPositionFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="GetLastSourceLogReadPositionFailureextendsProductwithSerializable"></a>
+      <a id="GetLastSourceLogReadPositionFailure:GetLastSourceLogReadPositionFailure"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$Connect.html"><span class="name">Connect</span></a><span class="params">(<span name="clientInfos">clientInfos: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="ReplicationProtocol$$ClientInfo.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ClientInfo">ClientInfo</a>]</span>, <span name="instanceId">instanceId: <a href="ReplicationEndpoint$$InstanceId.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint.InstanceId">InstanceId</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$GetLastSourceLogReadPositionFailure.html"><span class="name">GetLastSourceLogReadPositionFailure</span></a><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ConnectextendsProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@GetLastSourceLogReadPositionFailureextendsProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ConnectAccepted" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ConnectAcceptedextendsProductwithSerializable"></a>
-      <a id="ConnectAccepted:ConnectAccepted"></a>
+      <p class="shortcomment cmt">Failure reply after a <a href="ReplicationProtocol$$GetLastSourceLogReadPosition.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPosition">GetLastSourceLogReadPosition</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPositionSuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="GetLastSourceLogReadPositionSuccessextendsProductwithSerializable"></a>
+      <a id="GetLastSourceLogReadPositionSuccess:GetLastSourceLogReadPositionSuccess"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ConnectAccepted.html"><span class="name">ConnectAccepted</span></a><span class="params">(<span name="serverInfos">serverInfos: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="ReplicationProtocol$$ServerInfo.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ServerInfo">ServerInfo</a>]</span>, <span name="instanceId">instanceId: <a href="ReplicationEndpoint$$InstanceId.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint.InstanceId">InstanceId</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$GetLastSourceLogReadPositionSuccess.html"><span class="name">GetLastSourceLogReadPositionSuccess</span></a><span class="params">(<span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="lastSourceLogSequenceNrStored">lastSourceLogSequenceNrStored: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ConnectAcceptedextendsProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@GetLastSourceLogReadPositionSuccessextendsProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ConnectRequested" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ConnectRequestedextendsProductwithSerializable"></a>
-      <a id="ConnectRequested:ConnectRequested"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$ConnectRequested.html"><span class="name">ConnectRequested</span></a><span class="params">(<span name="instanceId">instanceId: <a href="ReplicationEndpoint$$InstanceId.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint.InstanceId">InstanceId</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ConnectRequestedextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogSequenceNrReplicated" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="GetLastSourceLogSequenceNrReplicatedextendsProductwithSerializable"></a>
-      <a id="GetLastSourceLogSequenceNrReplicated:GetLastSourceLogSequenceNrReplicated"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$GetLastSourceLogSequenceNrReplicated.html"><span class="name">GetLastSourceLogSequenceNrReplicated</span></a><span class="params">(<span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@GetLastSourceLogSequenceNrReplicatedextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogSequenceNrReplicatedFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="GetLastSourceLogSequenceNrReplicatedFailureextendsProductwithSerializable"></a>
-      <a id="GetLastSourceLogSequenceNrReplicatedFailure:GetLastSourceLogSequenceNrReplicatedFailure"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$GetLastSourceLogSequenceNrReplicatedFailure.html"><span class="name">GetLastSourceLogSequenceNrReplicatedFailure</span></a><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@GetLastSourceLogSequenceNrReplicatedFailureextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogSequenceNrReplicatedSuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="GetLastSourceLogSequenceNrReplicatedSuccessextendsProductwithSerializable"></a>
-      <a id="GetLastSourceLogSequenceNrReplicatedSuccess:GetLastSourceLogSequenceNrReplicatedSuccess"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$GetLastSourceLogSequenceNrReplicatedSuccess.html"><span class="name">GetLastSourceLogSequenceNrReplicatedSuccess</span></a><span class="params">(<span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sourceLogSequenceNr">sourceLogSequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@GetLastSourceLogSequenceNrReplicatedSuccessextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
+      <p class="shortcomment cmt">Success reply after a <a href="ReplicationProtocol$$GetLastSourceLogReadPosition.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPosition">GetLastSourceLogReadPosition</a>.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.Replicate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicateextendsProductwithSerializable"></a>
       <a id="Replicate:Replicate"></a>
@@ -224,7 +156,8 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Instructs a target log to store replicated <code>events</code> from the source log identified by
+<code>sourceLogId</code> along with the last read position in the source log (<code>lastSourceLogSequenceNrRead</code>).</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicateFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicateFailureextendsProductwithSerializable"></a>
       <a id="ReplicateFailure:ReplicateFailure"></a>
@@ -241,8 +174,8 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicateSuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Failure reply after a <a href="ReplicationProtocol$$Replicate.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Replicate">Replicate</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicateSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ReplicateSuccessextendsProductwithSerializable"></a>
       <a id="ReplicateSuccess:ReplicateSuccess"></a>
       <h4 class="signature">
@@ -251,83 +184,17 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicateSuccess.html"><span class="name">ReplicateSuccess</span></a><span class="params">(<span name="num">num: <span class="extype" name="scala.Int">Int</span></span>, <span name="lastSourceLogSequenceNrReplicated">lastSourceLogSequenceNrReplicated: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$ReplicateSuccess.html"><span class="name">ReplicateSuccess</span></a><span class="params">(<span name="num">num: <span class="extype" name="scala.Int">Int</span></span>, <span name="lastSourceLogSequenceNrStored">lastSourceLogSequenceNrStored: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicateSuccessextendsProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ServerInfo" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ServerInfoextendsProductwithSerializable"></a>
-      <a id="ServerInfo:ServerInfo"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$ServerInfo.html"><span class="name">ServerInfo</span></a><span class="params">(<span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="server">server: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ServerInfoextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.Transfer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="TransferextendsProductwithSerializable"></a>
-      <a id="Transfer:Transfer"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$Transfer.html"><span class="name">Transfer</span></a><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="correlationId">correlationId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@TransferextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.TransferFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="TransferFailureextendsProductwithSerializable"></a>
-      <a id="TransferFailure:TransferFailure"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$TransferFailure.html"><span class="name">TransferFailure</span></a><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="correlationId">correlationId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@TransferFailureextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.TransferSuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="TransferSuccessextendsProductwithSerializable"></a>
-      <a id="TransferSuccess:TransferSuccess"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$TransferSuccess.html"><span class="name">TransferSuccess</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="lastSourceLogSequenceNrRead">lastSourceLogSequenceNrRead: <span class="extype" name="scala.Long">Long</span></span>, <span name="correlationId">correlationId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@TransferSuccessextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.Updated" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Success reply after a <a href="ReplicationProtocol$$Replicate.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Replicate">Replicate</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Success reply after a <a href="ReplicationProtocol$$Replicate.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Replicate">Replicate</a>.
+</p></div><dl class="paramcmts block"><dt class="param">num</dt><dd class="cmt"><p>Number of events actually replicated.</p></dd><dt class="param">lastSourceLogSequenceNrStored</dt><dd class="cmt"><p>Last source log read position stored in the target log.
+</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.Updated" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="UpdatedextendsProductwithSerializable"></a>
       <a id="Updated:Updated"></a>
       <h4 class="signature">
@@ -343,7 +210,11 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">published by event logs to the actor system's event stream whenever new events have been written,
+either by replication or by event-sourced actors.</p><div class="fullcomment"><div class="comment cmt"><p>published by event logs to the actor system's event stream whenever new events have been written,
+either by replication or by event-sourced actors.
+</p></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>Written events.
+</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -402,23 +273,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.TransferDue" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="TransferDue"></a>
-      <a id="TransferDue:TransferDue"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$TransferDue$.html"><span class="name">TransferDue</span></a><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@TransferDue" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>

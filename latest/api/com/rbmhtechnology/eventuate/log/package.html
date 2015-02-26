@@ -66,74 +66,27 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.log.BatchingLayer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="BatchingLayerextendsActor"></a>
-      <a id="BatchingLayer:BatchingLayer"></a>
+              <ol><li name="com.rbmhtechnology.eventuate.log.BatchingEventLog" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="BatchingEventLogextendsActor"></a>
+      <a id="BatchingEventLog:BatchingEventLog"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="BatchingLayer.html"><span class="name">BatchingLayer</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span></span>
+        <a href="BatchingEventLog.html"><span class="name">BatchingEventLog</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@BatchingLayerextendsActor" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@BatchingEventLogextendsActor" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.log.LeveldbEventLog" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="LeveldbEventLogextendsActorwithLeveldbNumericIdentifierMapwithLeveldbReplicationProgressMap"></a>
-      <a id="LeveldbEventLog:LeveldbEventLog"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="LeveldbEventLog.html"><span class="name">LeveldbEventLog</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="LeveldbNumericIdentifierMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.LeveldbNumericIdentifierMap">LeveldbNumericIdentifierMap</a> with <a href="LeveldbReplicationProgressMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.LeveldbReplicationProgressMap">LeveldbReplicationProgressMap</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@LeveldbEventLogextendsActorwithLeveldbNumericIdentifierMapwithLeveldbReplicationProgressMap" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.log.LeveldbNumericIdentifierMap" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="LeveldbNumericIdentifierMapextendsActor"></a>
-      <a id="LeveldbNumericIdentifierMap:LeveldbNumericIdentifierMap"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="LeveldbNumericIdentifierMap.html"><span class="name">LeveldbNumericIdentifierMap</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@LeveldbNumericIdentifierMapextendsActor" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.log.LeveldbReplicationProgressMap" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="LeveldbReplicationProgressMapextendsActor"></a>
-      <a id="LeveldbReplicationProgressMap:LeveldbReplicationProgressMap"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="LeveldbReplicationProgressMap.html"><span class="name">LeveldbReplicationProgressMap</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@LeveldbReplicationProgressMapextendsActor" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
+      <p class="shortcomment cmt">An event log wrapper that batches <a href="../EventsourcingProtocol$$Write.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">EventsourcingProtocol.Write</a> commands.</p><div class="fullcomment"><div class="comment cmt"><p>An event log wrapper that batches <a href="../EventsourcingProtocol$$Write.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">EventsourcingProtocol.Write</a> commands. Batched write commands are
+sent as <a href="../EventsourcingProtocol$$WriteN.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteN">EventsourcingProtocol.WriteN</a> batch to the wrapped event log.</p><p>Batch sizes dynamically increase up to a configurable maximum under increasing load. The maximum batch
+size can be configured with <code>log.write-batch-size-max</code>. If there is no current write operation in progress,
+a new <code>Write</code> command is served immediately (as <code>WriteN</code> batch of size 1), keeping latency at a minimum.
+</p></div></div>
     </li></ol>
             </div>
 
@@ -141,53 +94,19 @@
 
         <div id="values" class="values members">
               <h3>Value Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.log.LeveldbEventLog" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="LeveldbEventLog"></a>
-      <a id="LeveldbEventLog:LeveldbEventLog"></a>
+              <ol><li name="com.rbmhtechnology.eventuate.log.leveldb" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="leveldb"></a>
+      <a id="leveldb:leveldb"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">object</span>
+        <span class="kind">package</span>
       </span>
       <span class="symbol">
-        <a href="LeveldbEventLog$.html"><span class="name">LeveldbEventLog</span></a>
+        <a href="leveldb/package.html"><span class="name">leveldb</span></a>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@LeveldbEventLog" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.log.LeveldbNumericIdentifierMap" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="LeveldbNumericIdentifierMap"></a>
-      <a id="LeveldbNumericIdentifierMap:LeveldbNumericIdentifierMap"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="LeveldbNumericIdentifierMap$.html"><span class="name">LeveldbNumericIdentifierMap</span></a>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@LeveldbNumericIdentifierMap" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.log.LeveldbReplicationProgressMap" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="LeveldbReplicationProgressMap"></a>
-      <a id="LeveldbReplicationProgressMap:LeveldbReplicationProgressMap"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="LeveldbReplicationProgressMap$.html"><span class="name">LeveldbReplicationProgressMap</span></a>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@LeveldbReplicationProgressMap" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@leveldb" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>

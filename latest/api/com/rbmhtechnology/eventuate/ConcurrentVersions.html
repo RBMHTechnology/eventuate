@@ -48,7 +48,7 @@
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Tracks concurrent <a href="Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values which arise from concurrent updates.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>type of versioned values</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>type of updates
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Versioned value type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>Update type
 </p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -129,7 +129,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Owner of versioned A.</p>
+      <p class="shortcomment cmt">Owner of versioned values.</p>
     </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersions#resolve" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="resolve(selectedTimestamp:com.rbmhtechnology.eventuate.VectorTime,eventTimestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.ConcurrentVersions[A,B]"></a>
       <a id="resolve(VectorTime,VectorTime):ConcurrentVersions[A,B]"></a>
@@ -168,7 +168,7 @@ be concurrent to other updates).
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Updates that versioned value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Updates that versioned value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>. If
+      <p class="shortcomment cmt">Updates that <a href="Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Updates that <a href="Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>. If
 there is no such predecessor, a new concurrent version is created (optionally derived
 from an older entry in the version history, in case of incremental updates).
 </p></div></div>

@@ -43,11 +43,13 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicateSuccess</span><span class="params">(<span name="num">num: <span class="extype" name="scala.Int">Int</span></span>, <span name="lastSourceLogSequenceNrReplicated">lastSourceLogSequenceNrReplicated: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">ReplicateSuccess</span><span class="params">(<span name="num">num: <span class="extype" name="scala.Int">Int</span></span>, <span name="lastSourceLogSequenceNrStored">lastSourceLogSequenceNrStored: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Success reply after a <a href="ReplicationProtocol$$Replicate.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Replicate">Replicate</a>.
+</p></div><dl class="paramcmts block"><dt class="param">num</dt><dd class="cmt"><p>Number of events actually replicated.</p></dd><dt class="param">lastSourceLogSequenceNrStored</dt><dd class="cmt"><p>Last source log read position stored in the target log.
+</p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -87,8 +89,8 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicateSuccess#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(num:Int,lastSourceLogSequenceNrReplicated:Long):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicateSuccess"></a>
+              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicateSuccess#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(num:Int,lastSourceLogSequenceNrStored:Long):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicateSuccess"></a>
       <a id="&lt;init&gt;:ReplicateSuccess"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -96,14 +98,15 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicateSuccess</span><span class="params">(<span name="num">num: <span class="extype" name="scala.Int">Int</span></span>, <span name="lastSourceLogSequenceNrReplicated">lastSourceLogSequenceNrReplicated: <span class="extype" name="scala.Long">Long</span></span>)</span>
+        <span class="name">ReplicateSuccess</span><span class="params">(<span name="num">num: <span class="extype" name="scala.Int">Int</span></span>, <span name="lastSourceLogSequenceNrStored">lastSourceLogSequenceNrStored: <span class="extype" name="scala.Long">Long</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicateSuccess@&lt;init&gt;(num:Int,lastSourceLogSequenceNrReplicated:Long):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicateSuccess" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicateSuccess@&lt;init&gt;(num:Int,lastSourceLogSequenceNrStored:Long):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicateSuccess" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">num</dt><dd class="cmt"><p>Number of events actually replicated.</p></dd><dt class="param">lastSourceLogSequenceNrStored</dt><dd class="cmt"><p>Last source log read position stored in the target log.
+</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -278,23 +281,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicateSuccess#lastSourceLogSequenceNrReplicated" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="lastSourceLogSequenceNrReplicated:Long"></a>
-      <a id="lastSourceLogSequenceNrReplicated:Long"></a>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicateSuccess#lastSourceLogSequenceNrStored" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="lastSourceLogSequenceNrStored:Long"></a>
+      <a id="lastSourceLogSequenceNrStored:Long"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">lastSourceLogSequenceNrReplicated</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+        <span class="name">lastSourceLogSequenceNrStored</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicateSuccess@lastSourceLogSequenceNrReplicated:Long" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicateSuccess@lastSourceLogSequenceNrStored:Long" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Last source log read position stored in the target log.</p>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -362,7 +365,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Number of events actually replicated.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
