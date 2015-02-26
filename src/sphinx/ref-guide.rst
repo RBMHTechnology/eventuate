@@ -2,6 +2,6 @@
 Reference guide
 ---------------
 
-See README_.
+This reference guide is work in progress and is going to replace the `old reference guide`_.
 
-.. _README: https://github.com/RBMHTechnology/eventuate/blob/master/README.md#eventuate
+.. _old reference guide: https://github.com/RBMHTechnology/eventuate/blob/master/src/sphinx/ref-guide.md

@@ -9,6 +9,7 @@ Eventuate
 
    introduction
    architecture
+   download
    ref-guide
    dev-guide
    appendix
