@@ -2,7 +2,7 @@
 Eventuate
 =========
 
-**Please note:** The project has **early access** status and will gradually evolve into a production-ready toolkit during the next months.
+**Please note:** this project has **early access** status and will gradually evolve into a production-ready toolkit.
 
 .. toctree::
    :maxdepth: 1
@@ -12,4 +12,5 @@ Eventuate
    download
    ref-guide
    dev-guide
-   appendix
+   project
+   articles
