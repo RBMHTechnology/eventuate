@@ -72,20 +72,18 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Download</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#maven-repository">Maven repository</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#maven-dependency">Maven dependency</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#sbt-dependency">SBT dependency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#binaries">Binaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sources">Sources</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ref-guide.html">Reference guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="dev-guide.html">Developer guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="appendix.html">Appendix</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="appendix.html#project">Project</a></li>
-<li class="toctree-l2"><a class="reference internal" href="appendix.html#articles">Articles</a></li>
-<li class="toctree-l2"><a class="reference internal" href="appendix.html#community">Community</a></li>
-<li class="toctree-l2"><a class="reference internal" href="appendix.html#id1">Community</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project.html">Project</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project.html#information">Information</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project.html#community">Community</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="articles.html">Articles</a></li>
 </ul>
 
         
@@ -122,12 +120,11 @@
             
   <div class="section" id="download">
 <h1>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="maven-repository">
-<h2>Maven repository<a class="headerlink" href="#maven-repository" title="Permalink to this headline">¶</a></h2>
-<p>Eventuate snapshot JARs are currently published to the <a class="reference external" href="https://oss.jfrog.org/oss-snapshot-local/com/rbmhtechnology/eventuate_2.11/">OJO snapshot repository</a>.</p>
-</div>
-<div class="section" id="maven-dependency">
-<h2>Maven dependency<a class="headerlink" href="#maven-dependency" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="binaries">
+<h2>Binaries<a class="headerlink" href="#binaries" title="Permalink to this headline">¶</a></h2>
+<p>Eventuate snapshots are published to the <a class="reference external" href="https://oss.jfrog.org/oss-snapshot-local/com/rbmhtechnology/eventuate_2.11/">OJO snapshot repository</a>. There are no releases yet.</p>
+<div class="section" id="maven">
+<h3>Maven<a class="headerlink" href="#maven" title="Permalink to this headline">¶</a></h3>
 <p>To include the latest development snapshot into a Maven project, add the following to your <tt class="docutils literal"><span class="pre">pom.xml</span></tt>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="o">&lt;</span><span class="n">repository</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">id</span><span class="o">&gt;</span><span class="n">ojo</span><span class="o">-</span><span class="n">snapshots</span><span class="o">&lt;/</span><span class="n">id</span><span class="o">&gt;</span>
@@ -143,14 +140,19 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="sbt-dependency">
-<h2>SBT dependency<a class="headerlink" href="#sbt-dependency" title="Permalink to this headline">¶</a></h2>
-<p>To include the latest development snapshot into an SBT project, add the following to your <tt class="docutils literal"><span class="pre">build.sbt</span></tt>:</p>
+<div class="section" id="sbt">
+<h3>SBT<a class="headerlink" href="#sbt" title="Permalink to this headline">¶</a></h3>
+<p>To include the latest development snapshot into an <a class="reference external" href="http://www.scala-sbt.org/">SBT</a> project, add the following to your <tt class="docutils literal"><span class="pre">build.sbt</span></tt>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;OJO Snapshots&quot;</span> <span class="n">at</span> <span class="s">&quot;https://oss.jfrog.org/oss-snapshot-local&quot;</span>
 
 <span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate&quot;</span> <span class="o">%</span> <span class="s">&quot;0.1-SNAPSHOT&quot;</span>
 </pre></div>
 </div>
+</div>
+</div>
+<div class="section" id="sources">
+<h2>Sources<a class="headerlink" href="#sources" title="Permalink to this headline">¶</a></h2>
+<p>To download the Eventuate sources, clone the <a class="reference external" href="https://github.com/RBMHTechnology/eventuate">Github repository</a>.</p>
 </div>
 </div>
 

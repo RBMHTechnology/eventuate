@@ -2,13 +2,13 @@
 Download
 --------
 
-Maven repository
-----------------
+Binaries
+--------
 
-Eventuate snapshot JARs are currently published to the `OJO snapshot repository`_.
+Eventuate snapshots are published to the `OJO snapshot repository`_. There are no releases yet.
 
-Maven dependency
-----------------
+Maven
+~~~~~
 
 To include the latest development snapshot into a Maven project, add the following to your ``pom.xml``::
 
@@ -24,13 +24,21 @@ To include the latest development snapshot into a Maven project, add the followi
         <version>0.1-SNAPSHOT</version>
     </dependency>
 
-SBT dependency
---------------
+SBT
+~~~
 
-To include the latest development snapshot into an SBT project, add the following to your ``build.sbt``::
+To include the latest development snapshot into an SBT_ project, add the following to your ``build.sbt``::
 
     resolvers += "OJO Snapshots" at "https://oss.jfrog.org/oss-snapshot-local"
 
     libraryDependencies += "com.rbmhtechnology" %% "eventuate" % "0.1-SNAPSHOT"
 
+Sources
+-------
+
+To download the Eventuate sources, clone the `Github repository`_.
+
 .. _OJO snapshot repository: https://oss.jfrog.org/oss-snapshot-local/com/rbmhtechnology/eventuate_2.11/
+.. _Github repository: https://github.com/RBMHTechnology/eventuate
+
+.. _SBT: http://www.scala-sbt.org/
