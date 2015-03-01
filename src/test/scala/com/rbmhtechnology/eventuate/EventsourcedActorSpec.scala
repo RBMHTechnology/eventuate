@@ -24,8 +24,14 @@ import akka.testkit._
 import org.scalatest._
 
 object EventsourcedActorSpec {
-  val processIdA = "A"
-  val processIdB = "B"
+  import DurableEvent._
+
+  val replicaIdA = "A"
+  val replicaIdB = "B"
+
+  val processIdA = processId(replicaIdA)
+  val processIdB = processId(replicaIdB)
+
   val logId = "log"
 
   case class Cmd(payload: Any, num: Int = 1)
@@ -39,7 +45,7 @@ object EventsourcedActorSpec {
       val errProbe: ActorRef,
       override val stateSync: Boolean) extends EventsourcedActor {
 
-    val processId = EventsourcedActorSpec.processIdA
+    val replicaId = EventsourcedActorSpec.replicaIdA
     val eventLog = logProbe
 
     override def onCommand: Receive = {
@@ -74,7 +80,7 @@ object EventsourcedActorSpec {
       val errProbe: ActorRef,
       override val stateSync: Boolean) extends EventsourcedActor {
 
-    val processId = EventsourcedActorSpec.processIdA
+    val replicaId = EventsourcedActorSpec.replicaIdA
     val eventLog = logProbe
 
     var stashing = false
@@ -106,10 +112,10 @@ object EventsourcedActorSpec {
   }
 
   def eventA(payload: Any, sequenceNr: Long, timestamp: VectorTime): DurableEvent =
-    DurableEvent(payload, 0L, timestamp, processIdA, logId, logId, sequenceNr, sequenceNr)
+    DurableEvent(payload, 0L, timestamp, replicaIdA, None, Set(), logId, logId, sequenceNr, sequenceNr)
 
   def eventB(payload: Any, sequenceNr: Long, timestamp: VectorTime): DurableEvent =
-    DurableEvent(payload, 0L, timestamp, processIdB, logId, logId, sequenceNr, sequenceNr)
+    DurableEvent(payload, 0L, timestamp, replicaIdB, None, Set(), logId, logId, sequenceNr, sequenceNr)
 
   def timestampA(timeA: Long): VectorTime =
     VectorTime(processIdA -> timeA)
@@ -137,8 +143,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
   override def afterAll: Unit =
     TestKit.shutdownActorSystem(system)
 
-  def unrecoveredActor(sync: Boolean = true): ActorRef =
-    system.actorOf(Props(new TestEventsourcedActor(logProbe.ref, dstProbe.ref, errProbe.ref, sync)))
+  def unrecoveredActor(stateSync: Boolean = true): ActorRef =
+    system.actorOf(Props(new TestEventsourcedActor(logProbe.ref, dstProbe.ref, errProbe.ref, stateSync)))
 
   def recoveredActor(stateSync: Boolean = true): ActorRef = {
     val actor = unrecoveredActor(stateSync)

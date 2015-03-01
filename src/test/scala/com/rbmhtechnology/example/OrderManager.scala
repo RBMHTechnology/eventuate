@@ -16,106 +16,60 @@
 
 package com.rbmhtechnology.example
 
+import akka.actor._
+import akka.pattern.ask
+import akka.util.Timeout
+
+import com.rbmhtechnology.eventuate.EventsourcedView
+import com.rbmhtechnology.eventuate.VersionedAggregate.Resolve
+
+import scala.concurrent.Future
+import scala.concurrent.duration._
 import scala.util._
 
-import akka.actor.ActorRef
+/**
+ * Manages event-sourced [[OrderActor]]s of a location where the location identifier is
+ * `replicaId`. [[OrderActor]]s can be
+ *
+ *  - instantiated on-demand in the command handler
+ *  - instantiated on-demand in the event handler
+ *  - stopped and removed from the internal map to free memory
+ *
+ *  This order manager implements [[EventsourcedView]] only for the purpose to eagerly
+ *  instantiate [[OrderActor]]s as soon as an [[OrderActor.OrderCreated]] event has
+ *  been logged. This is usually not necessary but we do it here to see the console
+ *  output of all [[OrderActor]]s at each location immediately.
+ */
+class OrderManager(val replicaId: String, val eventLog: ActorRef) extends EventsourcedView {
+  import OrderActor._
+  import context.dispatcher
 
-import com.rbmhtechnology.eventuate._
-import com.rbmhtechnology.eventuate.VersionedObjects._
+  private implicit val timeout = Timeout(10.seconds)
+  private var orderActors: Map[String, ActorRef] = Map.empty
 
-object OrderManager {
-  trait OrderCommand {
-    def orderId: String
-    def event: OrderEvent
-  }
-
-  trait OrderEvent {
-    def orderId: String
-  }
-
-  case class CreateOrder(orderId: String) extends OrderCommand { val event = OrderCreated(orderId) }
-  case class CancelOrder(orderId: String) extends OrderCommand { val event = OrderCancelled(orderId) }
-  case class AddOrderItem(orderId: String, item: String) extends OrderCommand  { val event = OrderItemAdded(orderId, item) }
-  case class RemoveOrderItem(orderId: String, item: String) extends OrderCommand { val event = OrderItemRemoved(orderId, item) }
-
-  case class OrderCreated(orderId: String, creator: String = "") extends OrderEvent
-  case class OrderItemAdded(orderId: String, item: String) extends OrderEvent
-  case class OrderItemRemoved(orderId: String, item: String) extends OrderEvent
-  case class OrderCancelled(orderId: String) extends OrderEvent
-
-  case class CommandSuccess(orderId: String)
-  case class CommandFailure(orderId: String, cause: Throwable)
-
-  case object GetState
-  case class GetStateSuccess(state: Map[String, Seq[Versioned[Order]]])
-
-  implicit object OrderDomainCmd extends VersionedObjects.DomainCmd[OrderCommand] {
-    override def id(cmd: OrderCommand): String = cmd.orderId
-    override def origin(cmd: OrderCommand): String = ""
-  }
-
-  implicit object OrderDomainEvt extends VersionedObjects.DomainEvt[OrderEvent] {
-    override def id(evt: OrderEvent): String = evt.orderId
-    override def origin(evt: OrderEvent): String = evt match {
-      case OrderCreated(_, creator) => creator
-      case _ => ""
-    }
-  }
-}
-
-class OrderManager(id: String, val eventLog: ActorRef) extends EventsourcedActor {
-  import OrderManager._
-
-  val processId = id
-
-  private val orders: VersionedObjects[Order, OrderCommand, OrderEvent] =
-    new VersionedObjects(commandValidation, eventProjection)
-
-  override val onCommand: Receive = {
-    case c: CreateOrder =>
-      processValidationResult(c.orderId, orders.validateCreate(c))
-    case c: OrderCommand =>
-      processValidationResult(c.orderId, orders.validateUpdate(c))
-    case c: Resolve =>
-      processValidationResult(c.id, orders.validateResolve(c.withOrigin(processId)))
+  override def onCommand: Receive = {
+    case c: OrderCommand => orderActor(c.orderId) forward c
+    case r: Resolve      => orderActor(r.id) forward r
+    case GetState if orderActors.isEmpty =>
+      sender() ! GetStateSuccess(Map.empty)
     case GetState =>
-      sender() ! GetStateSuccess(orders.current.mapValues(_.all))
+      val sdr = sender()
+      val statesF = orderActors.values.map(_.ask(GetState).mapTo[GetStateSuccess].map(_.state))
+      Future.sequence(statesF).map(_.reduce(_ ++ _)) onComplete {
+        case Success(states) => sdr ! GetStateSuccess(states)
+        case Failure(cause) => sdr ! GetStateFailure(cause)
+      }
   }
 
-  override val onEvent: Receive = {
-    case e: OrderCreated =>
-      orders.handleCreated(e, lastVectorTimestamp, lastSequenceNr)
-      if (!recovering) printOrder(orders.versions(e.orderId))
-    case e: OrderEvent =>
-      orders.handleUpdated(e, lastVectorTimestamp, lastSequenceNr)
-      if (!recovering) printOrder(orders.versions(e.orderId))
-    case e: Resolved =>
-      orders.handleResolved(e, lastVectorTimestamp, lastSequenceNr)
-      if (!recovering) printOrder(orders.versions(e.id))
+  override def onEvent: Receive = {
+    // eagerly create order actor so that their console output is immediately visible
+    case OrderCreated(orderId, _) if !orderActors.contains(orderId) => orderActor(orderId)
   }
 
-  private def commandValidation: (Order, OrderCommand) => Try[OrderEvent] = {
-    case (_, c: CreateOrder) => Success(c.event.copy(creator = processId))
-    case (_, c: OrderCommand) => Success(c.event)
-  }
-
-  private def eventProjection: (Order, OrderEvent) => Order = {
-    case (_    , OrderCreated(id, _)) => Order(id)
-    case (order, OrderCancelled(_)) => order.cancel
-    case (order, OrderItemAdded(_, item)) => order.addItem(item)
-    case (order, OrderItemRemoved(_, item)) => order.removeItem(item)
-  }
-
-  private def processValidationResult(orderId: String, result: Try[Any]): Unit = result match {
-    case Failure(err) =>
-      sender() ! CommandFailure(orderId, err)
-    case Success(evt) => persist(evt) {
-      case Success(e) =>
-        onEvent(e)
-        sender() ! CommandSuccess(orderId)
-      case Failure(e) =>
-        sender() ! CommandFailure(orderId, e)
-    }
+  private def orderActor(orderId: String): ActorRef = orderActors.get(orderId) match {
+    case Some(orderActor) => orderActor
+    case None =>
+      orderActors = orderActors + (orderId -> context.actorOf(Props(new OrderActor(orderId, replicaId, eventLog))))
+      orderActors(orderId)
   }
 }
-

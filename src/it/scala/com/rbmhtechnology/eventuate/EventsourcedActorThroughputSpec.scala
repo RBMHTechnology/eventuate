@@ -30,7 +30,7 @@ import org.scalatest._
 object EventsourcedActorThroughputSpec {
   val config = ConfigFactory.parseString("log.leveldb.dir = target/test")
 
-  class Writer1(val processId: String, val eventLog: ActorRef, override val stateSync: Boolean, probe: ActorRef) extends EventsourcedActor {
+  class Writer1(val replicaId: String, val eventLog: ActorRef, override val stateSync: Boolean, probe: ActorRef) extends EventsourcedActor {
     var startTime: Long = 0L
     var stopTime: Long = 0L
     var num: Int = 0
@@ -55,7 +55,7 @@ object EventsourcedActorThroughputSpec {
     }
   }
 
-  class Writer2(val processId: String, val eventLog: ActorRef, collector: ActorRef) extends EventsourcedActor {
+  class Writer2(val replicaId: String, val eventLog: ActorRef, collector: ActorRef) extends EventsourcedActor {
     def onCommand = {
       case s: String =>
         persist(s) {

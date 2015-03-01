@@ -40,8 +40,8 @@ object EventLogSupport {
   case class GetReplicationProgressSuccess(progress: Long)
 
   class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") {
-    override def replay(from: Long)(f: (DurableEvent) => Unit): Unit =
-      if (from == -1L) throw boom else super.replay(from)(f)
+    override def replay(from: Long, classifier: Int)(f: (DurableEvent) => Unit): Unit =
+      if (from == -1L) throw boom else super.replay(from, classifier)(f)
 
     override def read(from: Long, max: Int, filter: ReplicationFilter): ReadResult =
       if (from == -1L) throw boom else super.read(from, max, filter)
@@ -55,9 +55,9 @@ object EventLogSupport {
       case GetSequenceNr =>
         sender() ! GetSequenceNrSuccess(sequenceNr)
       case GetReplicationProgress(logId) =>
-        sender() ! GetReplicationProgressSuccess(readReplicationProgress(logId))
+        sender() ! GetReplicationProgressSuccess(replicationProgressMap.readReplicationProgress(logId))
       case SetReplicationProgress(logId, sequenceNr) =>
-        writeReplicationProgress(logId, sequenceNr)
+        withBatch(batch => replicationProgressMap.writeReplicationProgress(logId, sequenceNr, batch))
       case "boom" =>
         throw boom
       case _ =>

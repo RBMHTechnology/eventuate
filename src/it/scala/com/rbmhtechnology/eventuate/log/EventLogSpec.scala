@@ -31,22 +31,22 @@ import org.scalatest._
 object EventLogSpec {
   val config = ConfigFactory.parseString("log.leveldb.dir = target/test")
 
-  val processIdA = "A"
-  val processIdB = "B"
-  val processIdC = "C"
+  val replicaIdA = "A"
+  val replicaIdB = "B"
+  val replicaIdC = "C"
   val remoteLogId = "R1"
 
   val remoteLogIdFilter = SourceLogIdExclusionFilter(remoteLogId)
   val undefinedLogIdFilter = SourceLogIdExclusionFilter(UndefinedLogId)
 
-  def event(payload: Any, timestamp: VectorTime, processId: String): DurableEvent =
-    DurableEvent(payload, 0L, timestamp, processId, UndefinedLogId, UndefinedLogId, UndefinedSequenceNr, UndefinedSequenceNr)
+  def event(payload: Any, timestamp: VectorTime, replicaId: String, sourceAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): DurableEvent =
+    DurableEvent(payload, 0L, timestamp, replicaId, sourceAggregateId, destinationAggregateIds)
 
   def timestampA(timeA: Long): VectorTime =
-    VectorTime(processIdA -> timeA)
+    VectorTime(processId(replicaIdA) -> timeA)
 
   def timestampAB(timeA: Long, timeB: Long): VectorTime =
-    VectorTime(processIdA -> timeA, processIdB -> timeB)
+    VectorTime(processId(replicaIdA) -> timeA, processId(replicaIdB) -> timeB)
 }
 
 import EventLogSpec._
@@ -59,8 +59,8 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
   var replicatorProbe: TestProbe = _
   var notificationProbe: TestProbe = _
 
-  var generatedEvents: Vector[DurableEvent] = _
-  var replicatedEvents: Vector[DurableEvent] = _
+  var generatedEvents: Vector[DurableEvent] = Vector.empty
+  var replicatedEvents: Vector[DurableEvent] = Vector.empty
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -73,47 +73,53 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
   }
 
   override def afterEach(): Unit = {
+    generatedEvents = Vector.empty
+    replicatedEvents = Vector.empty
     system.eventStream.unsubscribe(notificationProbe.ref, classOf[Updated])
   }
 
-  def registerCollaborator(collaborator: TestProbe = TestProbe()): TestProbe = {
-    log ! Replay(Long.MaxValue, collaborator.ref, 0)
+  def registerCollaborator(aggregateId: Option[String] = None, collaborator: TestProbe = TestProbe()): TestProbe = {
+    log ! Replay(Long.MaxValue, collaborator.ref, aggregateId, 0)
     collaborator.expectMsg(ReplaySuccess(0))
     collaborator
   }
   
-  def generateEvents(): Unit = {
+  def generateEvents(offset: Long = 0L, sourceAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): Unit = {
     val events: Vector[DurableEvent] = Vector(
-      event("a", timestampAB(1, 0), processIdA),
-      event("b", timestampAB(2, 0), processIdA),
-      event("c", timestampAB(3, 0), processIdA))
+      event("a", timestampAB(1 + offset, 0), replicaIdA, sourceAggregateId, destinationAggregateIds),
+      event("b", timestampAB(2 + offset, 0), replicaIdA, sourceAggregateId, destinationAggregateIds),
+      event("c", timestampAB(3 + offset, 0), replicaIdA, sourceAggregateId, destinationAggregateIds))
 
-    generatedEvents = Vector(
-      DurableEvent("a", 0L, timestampAB(1, 0), processIdA, logId, logId, 1, 1),
-      DurableEvent("b", 0L, timestampAB(2, 0), processIdA, logId, logId, 2, 2),
-      DurableEvent("c", 0L, timestampAB(3, 0), processIdA, logId, logId, 3, 3))
+    val generated = Vector(
+      DurableEvent("a", 0L, timestampAB(1 + offset, 0), replicaIdA, sourceAggregateId, destinationAggregateIds, logId, logId, 1 + offset, 1 + offset),
+      DurableEvent("b", 0L, timestampAB(2 + offset, 0), replicaIdA, sourceAggregateId, destinationAggregateIds, logId, logId, 2 + offset, 2 + offset),
+      DurableEvent("c", 0L, timestampAB(3 + offset, 0), replicaIdA, sourceAggregateId, destinationAggregateIds, logId, logId, 3 + offset, 3 + offset))
+
+    generatedEvents ++= generated
 
     log ! Write(events, system.deadLetters, requestorProbe.ref, 0)
-    requestorProbe.expectMsg(WriteSuccess(generatedEvents(0), 0))
-    requestorProbe.expectMsg(WriteSuccess(generatedEvents(1), 0))
-    requestorProbe.expectMsg(WriteSuccess(generatedEvents(2), 0))
-    notificationProbe.expectMsg(Updated(generatedEvents))
+    requestorProbe.expectMsg(WriteSuccess(generated(0), 0))
+    requestorProbe.expectMsg(WriteSuccess(generated(1), 0))
+    requestorProbe.expectMsg(WriteSuccess(generated(2), 0))
+    notificationProbe.expectMsg(Updated(generated))
   }
 
-  def replicateEvents(offset: Long, remoteLogId: String = remoteLogId): Unit = {
+  def replicateEvents(offset: Long, remoteLogId: String = remoteLogId, sourceAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): Unit = {
     val events: Vector[DurableEvent] = Vector(
-      DurableEvent("i", 0L, timestampAB(0, 7), processIdB, remoteLogId, remoteLogId, 7, 7),
-      DurableEvent("j", 0L, timestampAB(0, 8), processIdB, remoteLogId, remoteLogId, 8, 8),
-      DurableEvent("k", 0L, timestampAB(0, 9), processIdB, remoteLogId, remoteLogId, 9, 9))
+      DurableEvent("i", 0L, timestampAB(0, 7 + offset), replicaIdB, sourceAggregateId, destinationAggregateIds, remoteLogId, remoteLogId, 7 + offset, 7 + offset),
+      DurableEvent("j", 0L, timestampAB(0, 8 + offset), replicaIdB, sourceAggregateId, destinationAggregateIds, remoteLogId, remoteLogId, 8 + offset, 8 + offset),
+      DurableEvent("k", 0L, timestampAB(0, 9 + offset), replicaIdB, sourceAggregateId, destinationAggregateIds, remoteLogId, remoteLogId, 9 + offset, 9 + offset))
 
-    replicatedEvents = Vector(
-      DurableEvent("i", 0L, timestampAB(0, 7), processIdB, remoteLogId, logId, 7, 1 + offset),
-      DurableEvent("j", 0L, timestampAB(0, 8), processIdB, remoteLogId, logId, 8, 2 + offset),
-      DurableEvent("k", 0L, timestampAB(0, 9), processIdB, remoteLogId, logId, 9, 3 + offset))
+    val replicated = Vector(
+      DurableEvent("i", 0L, timestampAB(0, 7 + offset), replicaIdB, sourceAggregateId, destinationAggregateIds, remoteLogId, logId, 7 + offset, 1 + offset),
+      DurableEvent("j", 0L, timestampAB(0, 8 + offset), replicaIdB, sourceAggregateId, destinationAggregateIds, remoteLogId, logId, 8 + offset, 2 + offset),
+      DurableEvent("k", 0L, timestampAB(0, 9 + offset), replicaIdB, sourceAggregateId, destinationAggregateIds, remoteLogId, logId, 9 + offset, 3 + offset))
 
-    log.tell(Replicate(events, remoteLogId, 9), replicatorProbe.ref)
-    replicatorProbe.expectMsg(ReplicateSuccess(events.length, 9))
-    notificationProbe.expectMsg(Updated(replicatedEvents))
+    replicatedEvents ++= replicated
+
+    log.tell(Replicate(events, remoteLogId, 9 + offset), replicatorProbe.ref)
+    replicatorProbe.expectMsg(ReplicateSuccess(events.length, 9 + offset))
+    notificationProbe.expectMsg(Updated(replicated))
   }
 
   def replicateNone(lastSourceLogSequenceNrRead: Long, expectedLastSourceLogSequenceNrReplicated: Long, remoteLogId: String = remoteLogId): Unit = {
@@ -125,31 +131,113 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     "write local events and send them to the requestor" in {
       generateEvents()
     }
-    "write local events and send them to collaborators" in {
-      val collaborator = registerCollaborator()
-      generateEvents()
+    "write local events with no destinationAggregateIds defined and send them to collaborators with no aggregateId defined" in {
+      val collaborator = registerCollaborator(aggregateId = None)
+      generateEvents(offset = 0, destinationAggregateIds = Set())
       collaborator.expectMsg(Written(generatedEvents(0)))
       collaborator.expectMsg(Written(generatedEvents(1)))
       collaborator.expectMsg(Written(generatedEvents(2)))
     }
+    "write local events with a destinationAggregateId defined and send them to collaborators with no aggregateId defined" in {
+      val collaborator = registerCollaborator(aggregateId = None)
+      generateEvents(offset = 0, destinationAggregateIds = Set("a1"))
+      collaborator.expectMsg(Written(generatedEvents(0)))
+      collaborator.expectMsg(Written(generatedEvents(1)))
+      collaborator.expectMsg(Written(generatedEvents(2)))
+    }
+    "write local events with a destinationAggregateId defined and send them to collaborators with a matching aggregateId defined" in {
+      val collaborator = registerCollaborator(aggregateId = Some("a1"))
+      generateEvents(offset = 0, destinationAggregateIds = Set("a1"))
+      collaborator.expectMsg(Written(generatedEvents(0)))
+      collaborator.expectMsg(Written(generatedEvents(1)))
+      collaborator.expectMsg(Written(generatedEvents(2)))
+    }
+    "write local events with two destinationAggregateIds defined and send them to collaborators with a matching aggregateId defined" in {
+      val collaborator1 = registerCollaborator(aggregateId = Some("a1"))
+      val collaborator2 = registerCollaborator(aggregateId = Some("a2"))
+      generateEvents(offset = 0, destinationAggregateIds = Set("a1", "a2"))
+      collaborator1.expectMsg(Written(generatedEvents(0)))
+      collaborator1.expectMsg(Written(generatedEvents(1)))
+      collaborator1.expectMsg(Written(generatedEvents(2)))
+      collaborator2.expectMsg(Written(generatedEvents(0)))
+      collaborator2.expectMsg(Written(generatedEvents(1)))
+      collaborator2.expectMsg(Written(generatedEvents(2)))
+    }
+    "write local events with a destinationAggregateId defined but not send them to collaborators with a non-matching aggregateId defined" in {
+      val collaborator = registerCollaborator(aggregateId = Some("a1"))
+      generateEvents(offset = 0, destinationAggregateIds = Set("a2"))
+      generateEvents(offset = 3, destinationAggregateIds = Set("a1"))
+      collaborator.expectMsg(Written(generatedEvents(3)))
+      collaborator.expectMsg(Written(generatedEvents(4)))
+      collaborator.expectMsg(Written(generatedEvents(5)))
+    }
+    "write local events with no destinationAggregateId defined but not send them to collaborators with an aggregateId defined" in {
+      val collaborator = registerCollaborator(aggregateId = Some("a1"))
+      generateEvents(offset = 0, destinationAggregateIds = Set())
+      generateEvents(offset = 3, destinationAggregateIds = Set("a1"))
+      collaborator.expectMsg(Written(generatedEvents(3)))
+      collaborator.expectMsg(Written(generatedEvents(4)))
+      collaborator.expectMsg(Written(generatedEvents(5)))
+    }
     "reply with a failure message if write fails" in {
       val events = Vector(
-        event("boom", timestampAB(1, 0), processIdA),
-        event("okay", timestampAB(2, 0), processIdA))
+        event("boom", timestampAB(1, 0), replicaIdA),
+        event("okay", timestampAB(2, 0), replicaIdA))
 
       log ! Write(events, system.deadLetters, requestorProbe.ref, 0)
-      requestorProbe.expectMsg(WriteFailure(DurableEvent("boom", 0L, timestampAB(1, 0), processIdA, logId, logId, 1, 1), boom, 0))
-      requestorProbe.expectMsg(WriteFailure(DurableEvent("okay", 0L, timestampAB(2, 0), processIdA, logId, logId, 2, 2), boom, 0))
+      requestorProbe.expectMsg(WriteFailure(DurableEvent("boom", 0L, timestampAB(1, 0), replicaIdA, None, Set(), logId, logId, 1, 1), boom, 0))
+      requestorProbe.expectMsg(WriteFailure(DurableEvent("okay", 0L, timestampAB(2, 0), replicaIdA, None, Set(), logId, logId, 2, 2), boom, 0))
     }
     "write replicated events" in {
       replicateEvents(offset = 0)
     }
-    "write replicated events and send them to collaborators" in {
-      val collaborator = registerCollaborator()
-      replicateEvents(offset = 0)
+    "write replicated events with no destinationAggregateId defined and send them to collaborators with no aggregateId defined" in {
+      val collaborator = registerCollaborator(aggregateId = None)
+      replicateEvents(offset = 0, destinationAggregateIds = Set())
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(1)))
       collaborator.expectMsg(Written(replicatedEvents(2)))
+    }
+    "write replicated events with a destinationAggregateId defined and send them to collaborators with no aggregateId defined" in {
+      val collaborator = registerCollaborator(aggregateId = None)
+      replicateEvents(offset = 0, destinationAggregateIds = Set("a1"))
+      collaborator.expectMsg(Written(replicatedEvents(0)))
+      collaborator.expectMsg(Written(replicatedEvents(1)))
+      collaborator.expectMsg(Written(replicatedEvents(2)))
+    }
+    "write replicated events with a destinationAggregateId defined and send them to collaborators with a matching aggregateId defined" in {
+      val collaborator = registerCollaborator(aggregateId = Some("a1"))
+      replicateEvents(offset = 0, destinationAggregateIds = Set("a1"))
+      collaborator.expectMsg(Written(replicatedEvents(0)))
+      collaborator.expectMsg(Written(replicatedEvents(1)))
+      collaborator.expectMsg(Written(replicatedEvents(2)))
+    }
+    "write replicated events with two destinationAggregateIds defined and send them to collaborators with a matching aggregateId defined" in {
+      val collaborator1 = registerCollaborator(aggregateId = Some("a1"))
+      val collaborator2 = registerCollaborator(aggregateId = Some("a2"))
+      replicateEvents(offset = 0, destinationAggregateIds = Set("a1", "a2"))
+      collaborator1.expectMsg(Written(replicatedEvents(0)))
+      collaborator1.expectMsg(Written(replicatedEvents(1)))
+      collaborator1.expectMsg(Written(replicatedEvents(2)))
+      collaborator2.expectMsg(Written(replicatedEvents(0)))
+      collaborator2.expectMsg(Written(replicatedEvents(1)))
+      collaborator2.expectMsg(Written(replicatedEvents(2)))
+    }
+    "write replicated events with a destinationAggregateId defined but not send them to collaborators with a non-matching aggregateId defined" in {
+      val collaborator = registerCollaborator(aggregateId = Some("a1"))
+      replicateEvents(offset = 0, destinationAggregateIds = Set("a2"))
+      replicateEvents(offset = 3, destinationAggregateIds = Set("a1"))
+      collaborator.expectMsg(Written(replicatedEvents(3)))
+      collaborator.expectMsg(Written(replicatedEvents(4)))
+      collaborator.expectMsg(Written(replicatedEvents(5)))
+    }
+    "write replicated events with no destinationAggregateId defined but not send them to collaborators with an aggregateId defined" in {
+      val collaborator = registerCollaborator(aggregateId = Some("a1"))
+      replicateEvents(offset = 0, destinationAggregateIds = Set())
+      replicateEvents(offset = 3, destinationAggregateIds = Set("a1"))
+      collaborator.expectMsg(Written(replicatedEvents(3)))
+      collaborator.expectMsg(Written(replicatedEvents(4)))
+      collaborator.expectMsg(Written(replicatedEvents(5)))
     }
     "write replicated events and update the replication progress map" in {
       log.tell(GetReplicationProgress(remoteLogId), requestorProbe.ref)
@@ -175,14 +263,14 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
       val collaborator = registerCollaborator()
 
       val events: Vector[DurableEvent] = Vector(
-        DurableEvent("i", 0L, timestampAB(0, 7), processIdB, remoteLogId, remoteLogId, 7, 7),
-        DurableEvent("j", 0L, timestampAB(0, 8), processIdB, remoteLogId, remoteLogId, 8, 8),
-        DurableEvent("k", 0L, timestampAB(0, 9), processIdB, remoteLogId, remoteLogId, 9, 9))
+        DurableEvent("i", 0L, timestampAB(0, 7), replicaIdB, None, Set(), remoteLogId, remoteLogId, 7, 7),
+        DurableEvent("j", 0L, timestampAB(0, 8), replicaIdB, None, Set(), remoteLogId, remoteLogId, 8, 8),
+        DurableEvent("k", 0L, timestampAB(0, 9), replicaIdB, None, Set(), remoteLogId, remoteLogId, 9, 9))
 
       val replicatedEvents = Vector(
-        DurableEvent("i", 0L, timestampAB(0, 7), processIdB, remoteLogId, logId, 7, 1),
-        DurableEvent("j", 0L, timestampAB(0, 8), processIdB, remoteLogId, logId, 8, 2),
-        DurableEvent("k", 0L, timestampAB(0, 9), processIdB, remoteLogId, logId, 9, 3))
+        DurableEvent("i", 0L, timestampAB(0, 7), replicaIdB, None, Set(), remoteLogId, logId, 7, 1),
+        DurableEvent("j", 0L, timestampAB(0, 8), replicaIdB, None, Set(), remoteLogId, logId, 8, 2),
+        DurableEvent("k", 0L, timestampAB(0, 9), replicaIdB, None, Set(), remoteLogId, logId, 9, 3))
 
       // replicate first two events
       log.tell(Replicate(events.take(2), remoteLogId, 8), replicatorProbe.ref)
@@ -208,8 +296,8 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     }
     "reply with a failure message if replication fails" in {
       val events: Vector[DurableEvent] = Vector(
-        DurableEvent("boom", 0L, timestampAB(0, 7), processIdB, remoteLogId, remoteLogId, 7, 7),
-        DurableEvent("okay", 0L, timestampAB(0, 8), processIdB, remoteLogId, remoteLogId, 8, 8))
+        DurableEvent("boom", 0L, timestampAB(0, 7), replicaIdB, None, Set(), remoteLogId, remoteLogId, 7, 7),
+        DurableEvent("okay", 0L, timestampAB(0, 8), replicaIdB, None, Set(), remoteLogId, remoteLogId, 8, 8))
 
       log.tell(Replicate(events, remoteLogId, 8), replicatorProbe.ref)
       replicatorProbe.expectMsg(ReplicateFailure(boom))
@@ -229,6 +317,55 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
       requestorProbe.expectMsg(ReplaySuccess(0))
       // custom position > last sequence number
       log ! Replay(5L, requestorProbe.ref, 0)
+      requestorProbe.expectMsg(ReplaySuccess(0))
+    }
+    "replay events from the default log if request replicaId is not defined" in {
+      generateEvents(destinationAggregateIds = Set("a1"))
+      log ! Replay(1L, requestorProbe.ref, None, 0)
+      requestorProbe.expectMsg(Replaying(generatedEvents(0), 0))
+      requestorProbe.expectMsg(Replaying(generatedEvents(1), 0))
+      requestorProbe.expectMsg(Replaying(generatedEvents(2), 0))
+      requestorProbe.expectMsg(ReplaySuccess(0))
+    }
+    "replay events from the index if request replicaId is defined" in {
+      generateEvents(offset = 0, destinationAggregateIds = Set("a1"))
+      log ! Replay(1L, requestorProbe.ref, Some("a1"), 0)
+      requestorProbe.expectMsg(Replaying(generatedEvents(0), 0))
+      requestorProbe.expectMsg(Replaying(generatedEvents(1), 0))
+      requestorProbe.expectMsg(Replaying(generatedEvents(2), 0))
+      requestorProbe.expectMsg(ReplaySuccess(0))
+    }
+    "replay events from the index and properly stop at the index classifier" in {
+      generateEvents(offset = 0, destinationAggregateIds = Set("a1"))
+      generateEvents(offset = 3, destinationAggregateIds = Set("a2"))
+      log ! Replay(1L, requestorProbe.ref, Some("a1"), 0)
+      requestorProbe.expectMsg(Replaying(generatedEvents(0), 0))
+      requestorProbe.expectMsg(Replaying(generatedEvents(1), 0))
+      requestorProbe.expectMsg(Replaying(generatedEvents(2), 0))
+      requestorProbe.expectMsg(ReplaySuccess(0))
+    }
+    "replay events from the index and from a custom position" in {
+      generateEvents(offset = 0, destinationAggregateIds = Set("a1"))
+      generateEvents(offset = 3, destinationAggregateIds = Set("a2"))
+      log ! Replay(2L, requestorProbe.ref, Some("a1"), 0)
+      requestorProbe.expectMsg(Replaying(generatedEvents(1), 0))
+      requestorProbe.expectMsg(Replaying(generatedEvents(2), 0))
+      requestorProbe.expectMsg(ReplaySuccess(0))
+      log ! Replay(5L, requestorProbe.ref, Some("a1"), 0)
+      requestorProbe.expectMsg(ReplaySuccess(0))
+      log ! Replay(2L, requestorProbe.ref, Some("a2"), 0)
+      requestorProbe.expectMsg(Replaying(generatedEvents(3), 0))
+      requestorProbe.expectMsg(Replaying(generatedEvents(4), 0))
+      requestorProbe.expectMsg(Replaying(generatedEvents(5), 0))
+      requestorProbe.expectMsg(ReplaySuccess(0))
+      log ! Replay(5L, requestorProbe.ref, Some("a2"), 0)
+      requestorProbe.expectMsg(Replaying(generatedEvents(4), 0))
+      requestorProbe.expectMsg(Replaying(generatedEvents(5), 0))
+      requestorProbe.expectMsg(ReplaySuccess(0))
+    }
+    "not replay events with non-matching replicaId if request replicaId is defined" in {
+      generateEvents(destinationAggregateIds = Set("a1"))
+      log ! Replay(1L, requestorProbe.ref, Some("a2"), 0)
       requestorProbe.expectMsg(ReplaySuccess(0))
     }
     "reply with a failure message if replay fails" in {

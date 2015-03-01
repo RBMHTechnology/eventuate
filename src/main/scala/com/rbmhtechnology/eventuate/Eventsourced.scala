@@ -16,6 +16,7 @@
 
 package com.rbmhtechnology.eventuate
 
+import java.util.{Optional => JOption}
 import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor._
@@ -25,11 +26,15 @@ object Eventsourced {
 }
 
 /**
- * Implemented by actors that derive internal state from events stored in an event log. Events
- * are pushed from the `eventLog` actor to this actor and handled with the `onEvent` event handler. An
- * event handler defines how events are projected on internal state. Internal state must only be modified
- * within `onEvent`. External commands are handled with the `onCommand` command handler. A command handler
- * may access internal state but must not modify it.
+ * Implemented by actors that derive internal state from events stored in an event log. Events are
+ * pushed from the `eventLog` actor to this actor and handled with the `onEvent` event handler. An
+ * event handler defines how events are projected on internal state.
+ *
+ * By default, an `Eventsourced` actor does not define an `aggregateId`. In this case, the `eventLog`
+ * pushes all events to this actor. If it defines an `aggregateId`, the `eventLog` actor only pushes
+ * those events that contain the `aggregateId` value in their `destinationAggregateIds` set.
+ *
+ * Commands sent to an `Eventsourced` actor during recovery are delayed until recovery completes.
  */
 trait Eventsourced extends Actor {
   import Eventsourced._
@@ -37,7 +42,7 @@ trait Eventsourced extends Actor {
   private var _lastSequenceNr: Long = 0L
   private var _lastSystemTimestamp: Long = 0L
   private var _lastVectorTimestamp: VectorTime = VectorTime()
-  private var _lastProcessId: String = ""
+  private var _lastReplicaId: String = ""
   private var _recovering: Boolean = true
 
   val instanceId: Int = instanceIdCounter.getAndIncrement()
@@ -58,6 +63,12 @@ trait Eventsourced extends Actor {
   def onEvent: Receive
 
   /**
+   * Optional aggregate id. Not defined by default.
+   */
+  def aggregateId: Option[String] =
+    None
+
+  /**
    * Sequence number of the last consumed event.
    */
   def lastSequenceNr: Long =
@@ -76,10 +87,16 @@ trait Eventsourced extends Actor {
     _lastVectorTimestamp
 
   /**
+   * Replica id of the last consumed event.
+   */
+  def lastReplicaId: String =
+    _lastReplicaId
+
+  /**
    * Process id of the last consumed event.
    */
   def lastProcessId: String =
-    _lastProcessId
+    DurableEvent.processId(lastReplicaId, aggregateId)
 
   /**
    * Returns `true` if this actor is currently recovering internal state by consuming
@@ -90,10 +107,24 @@ trait Eventsourced extends Actor {
     _recovering
 
   /**
+   * Called after recovery successfully completed. Can be overridden by implementations.
+   */
+  def recovered(): Unit = ()
+
+  /**
+   * Sends a [[EventsourcingProtocol.Replay]] command to the event log. Can be overridden
+   * by implementations to customize recovery.
+   */
+  def replay(): Unit =
+    eventLog ! EventsourcingProtocol.Replay(1, self, aggregateId, instanceId)
+
+  /**
    * Internal API.
    */
-  private[eventuate] def onRecoverySuccess(): Unit =
+  private[eventuate] def onRecoverySuccess(): Unit = {
     _recovering = false
+    recovered()
+  }
 
   /**
    * Internal API.
@@ -102,7 +133,7 @@ trait Eventsourced extends Actor {
     _lastSequenceNr = d.sequenceNr
     _lastSystemTimestamp = d.systemTimestamp
     _lastVectorTimestamp = d.vectorTimestamp
-    _lastProcessId = d.processId
+    _lastReplicaId = d.replicaId
   }
 }
 
@@ -117,6 +148,17 @@ abstract class AbstractEventsourced extends Eventsourced {
 
   final def onCommand: Receive = _onCommand
   final def onEvent: Receive = _onEvent
+
+  override def aggregateId: Option[String] =
+    Option(getAggregateId.orElse(null));
+
+  /**
+   * Java API.
+   *
+   * Optional aggregate id. Not defined by default.
+   */
+  def getAggregateId: JOption[String] =
+    JOption.empty()
 
   /**
    * Sets this actor's command handler.

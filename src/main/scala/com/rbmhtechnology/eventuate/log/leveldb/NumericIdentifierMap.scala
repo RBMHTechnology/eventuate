@@ -18,23 +18,28 @@ package com.rbmhtechnology.eventuate.log.leveldb
 
 import java.nio.ByteBuffer
 
-import akka.actor.Actor
+import org.iq80.leveldb.{DB, DBIterator}
 
-import org.iq80.leveldb.DBIterator
+private[leveldb] class NumericIdentifierMap(leveldb: DB, classifier: Int) {
+  private var idMap: Map[String, Int] =
+    Map.empty
 
-trait LeveldbNumericIdentifierMap extends Actor { this: LeveldbEventLog =>
-  import LeveldbNumericIdentifierMap._
+  private val idKeyEnd: Int =
+    Int.MaxValue
 
-  private var idMap: Map[String, Int] = Map.empty
+  private val idKeyEndBytes: Array[Byte] =
+    idKeyBytes(idKeyEnd)
+
+  leveldb.put(idKeyEndBytes, Array.empty[Byte])
 
   def numericId(id: String): Int = idMap.get(id) match {
-    case None    => writeIdMapping(id, idMap.size)
+    case None    => writeIdMapping(id, idMap.size + 1)
     case Some(v) => v
   }
 
-  private def readIdMap(): Map[String, Int] = withIterator { iter =>
+  def readIdMap(iter: DBIterator): Unit = {
     iter.seek(idKeyBytes(0))
-    readIdMap(Map.empty, iter)
+    idMap = readIdMap(Map.empty, iter)
   }
 
   private def readIdMap(idMap: Map[String, Int], iter: DBIterator): Map[String, Int] = {
@@ -54,32 +59,16 @@ trait LeveldbNumericIdentifierMap extends Actor { this: LeveldbEventLog =>
     nid
   }
 
-  override def preStart() {
-    leveldb.put(idKeyEndBytes, Array.empty[Byte])
-    idMap = readIdMap()
-    super.preStart()
-  }
-}
-
-private object LeveldbNumericIdentifierMap {
-  val idKeyEnd: Int = Int.MaxValue
-  val idKeyEndBytes: Array[Byte] = {
-    val bb = ByteBuffer.allocate(12)
-    bb.putLong(-2L)
-    bb.putInt(idKeyEnd)
-    bb.array
-  }
-
-  def idKeyBytes(nid: Int): Array[Byte] = {
-    val bb = ByteBuffer.allocate(12)
-    bb.putLong(-2L)
+  private def idKeyBytes(nid: Int): Array[Byte] = {
+    val bb = ByteBuffer.allocate(8)
+    bb.putInt(classifier)
     bb.putInt(nid)
     bb.array
   }
 
-  def idKey(a: Array[Byte]): Int = {
+  private def idKey(a: Array[Byte]): Int = {
     val bb = ByteBuffer.wrap(a)
-    bb.getLong
+    bb.getInt
     bb.getInt
   }
 }

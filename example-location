@@ -1,6 +1,6 @@
 #!/bin/sh
 
-EXAMPLE_CONF=site-$1.conf
+EXAMPLE_CONF=location-$1.conf
 EXAMPLE_MAIN=com.rbmhtechnology.example.OrderExample
 
 if [ -n "$2" ]

@@ -136,7 +136,7 @@ Event-sourced actors
 An event-sourced actor (EA) can be implemented by extending the `EventsourcedActor` trait.
 
 ```scala
-class MyEA(override val log: ActorRef, override val processId: String) extends EventsourcedActor {
+class MyEA(override val eventLog: ActorRef, override val replicaId: String) extends EventsourcedActor {
   override def onCommand: Receive = {
     case "some-cmd" => persist("some-event") {
       case Success(evt) => onEvent(evt)
@@ -150,32 +150,32 @@ class MyEA(override val log: ActorRef, override val processId: String) extends E
 }
 ```
 
-Similar to akka-persistence, commands are processed by a command handler (`onCommand`), events are processed by an event handler (`onEvent`) and events are written to the event log with the `persist` method whose signature is `persist[A](event: A)(handler: Try[A] => Unit)`. An EA must also implement `log` which is the event log that the EA shares with other EAs. The event log `ActorRef` of a location can be obtained from the replication endpoint with `endpoint.log`. 
+Similar to akka-persistence, commands are processed by a command handler (`onCommand`), events are processed by an event handler (`onEvent`) and events are written to the event log with the `persist` method whose signature is `persist[A](event: A)(handler: Try[A] => Unit)`. An EA must also implement `eventLog` which is the event log that the EA shares with other EAs. 
 
-The `processId` of an EA must be globally unique as it contributes to vector clocks. In the current implementation, each EA instance maintains its own vector clock, as it represents a light-weight process that exchanges events with other EA instances via a shared distributed `log`. Therefore, vector clock sizes linearly grow with the number of EA instances. Future versions will provide means to limit vector clock sizes, for example, by partitioning EAs in the event space or by grouping several EAs into the same "process", so that the system can scale to a large number of EAs.  
+The `replicaId` must be unique within the context of an EA’s `aggregateId` (not shown here, see [API docs](http://rbmhtechnology.github.io/eventuate/latest/api/index.html#com.rbmhtechnology.eventuate.Eventsourced)) as it contributes to vector clocks. Vector clocks of EAs with different `aggregateId` are isolated from each other by default, hence, vector clock sizes scale with the (smaller) number of replicas rather than the (potentially large) number of aggregates.
 
-An EA does not only receive events persisted by itself but also those persisted by other EAs (at the same or other locations) as long as they share a replicated `log` and can process those in its event handler. With the following definition of `MyEA`
+An EA does not only receive events persisted by itself but also those persisted by other EAs (at the same or other locations) as long as they share a replicated `eventLog` and can process those in its event handler. With the following definition of `MyEA`
 
 ```scala
-class MyEA(val log: ActorRef, val processId: String) extends EventsourcedActor {
+class MyEA(val eventLog: ActorRef, val replicaId: String) extends EventsourcedActor {
   def onCommand: Receive = {
-    case cmd: String => persist(s"${cmd}-${processId}") {
+    case cmd: String => persist(s"${cmd}-${replicaId}") {
       case Success(evt) => onEvent(evt)
       case Failure(err) => // ...
     }
   }
 
   def onEvent: Receive = {
-    case evt: String => println(s"[${processId}] event = ${evt} (event timestamp = ${lastVectorTimestamp})")
+    case evt: String => println(s"[${replicaId}] event = ${evt} (event timestamp = ${lastVectorTimestamp})")
   }
 }
 ```
 
-and two instances of `MyEA`, `ea1` and `ea2` (with `processId`s `ea1` and `ea2`)
+and two instances of `MyEA`, `ea1` and `ea2` (with `replicaId`s `ea1` and `ea2`)
 
 ```scala
-val ea1 = system.actorOf(Props(new MyEA(endpoint.log, "ea1")))
-val ea2 = system.actorOf(Props(new MyEA(endpoint.log, "ea2")))
+val ea1 = system.actorOf(Props(new MyEA(endpoint.logs("default"), "ea1")))
+val ea2 = system.actorOf(Props(new MyEA(endpoint.logs("default"), "ea2")))
 ```
 
 we send `ea1` and `ea2` a `test` command.
@@ -201,13 +201,15 @@ Please note that the timestamps in the output are event timestamps and not the c
     
 Maybe you'll see a different ordering of lines as `ea1` and `ea2` are running concurrently.
 
+An EA that has no `aggregateId` defined (which is the default) receives events from all other actors on the same event log. An EA that has an `aggregateId` defined receives events only from replica actors with the same `aggregateId` by default. The default event routing logic can be customized with the `destinationAggregateIds` parameter of `persist` (see [API docs](http://rbmhtechnology.github.io/eventuate/latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor) for details).
+
 Event-sourced views
 -------------------
 
-Classes that extend the `EventsourcedView` (EV) trait (instead of `EventsourcedActor`) only implement the event consumer part of an EA but not the event producer part (i.e. they do not have a `persist` method). EVs also don't have a `processId` (as they do not contribute to vector clocks) but still need to implement `log` from which they consume events.  
+Classes that extend the `EventsourcedView` (EV) trait (instead of `EventsourcedActor`) only implement the event consumer part of an EA but not the event producer part (i.e. they do not have a `persist` method). EVs also don't have a `replicaId` (as they do not contribute to vector clocks) but still need to implement `eventLog` from which they consume events.  
 
 ```scala
-class MyEV(val log: ActorRef) extends EventsourcedView {
+class MyEV(val eventLog: ActorRef) extends EventsourcedView {
   def onCommand: Receive = {
     case cmd => // ...
   }
@@ -230,7 +232,7 @@ Vector timestamps
 The vector timestamp of an event can be obtained with `lastVectorTimestamp` during event processing. Vector timestamps, for example, can be attached as version vectors to current state and compared to timestamps of new events in order to determine whether previous state updates happened-before or are concurrent to the current event.
 
 ```scala
-class MyEA(val log: ActorRef, val processId: String) extends EventsourcedActor {
+class MyEA(val eventLog: ActorRef, val replicaId: String) extends EventsourcedActor {
   var updateTimestamp: VectorTime = VectorTime()
 
   def updateState(event: String): Unit = {
@@ -270,11 +272,11 @@ Concurrent versions
 The ordering of concurrent events, however, is not defined: if `e1` is concurrent to `e2` then some EA instances may consume `e1` before `e2`, others `e2` before `e1`. With commutative state update operations (see CmRDTs, for example), this is not an issue. With non-commutative state update operations, applications may want to track state updates from concurrent events as concurrent (or conflicting) versions of application state. This can be done with `ConcurrentVersions[S, A]` where `S` is the type of application state for which concurrent versions shall be tracked in case of concurrent events of type `A`.
 
 ```scala
-class MyEA(val log: ActorRef, val processId: String) extends EventsourcedActor {
+class MyEA(val eventLog: ActorRef, val replicaId: String) extends EventsourcedActor {
   var versionedState: ConcurrentVersions[Vector[String], String] = ConcurrentVersions(Vector(), (s, a) => s :+ a)
 
   def updateState(event: String): Unit = {
-    versionedState = versionedState.update(event, lastVectorTimestamp, lastProcessId)
+    versionedState = versionedState.update(event, lastVectorTimestamp, lastReplicaId)
     if (versionedState.conflict) {
       // TODO: either automated conflict resolution immediately or interactive conflict resolution later ...
     }
@@ -290,7 +292,7 @@ class MyEA(val log: ActorRef, val processId: String) extends EventsourcedActor {
 }
 ```
 
-In the example above, application state is of type `Vector[String]` and update events are of type `String`. State updates (appending to a `Vector`) are not commutative and we track concurrent versions of application state as `ConcurrentVersions[Vector[String], String]`. The state update function (= event projection function) `(s, a) => s :+ a` is called whenever `versionedState.update` is called (with event, event timestamp and the `processId` of the event emitter as arguments). In case of a concurrent update, `versionedState.conflict` returns `true` and the application should [resolve](#conflict-resolution) the conflict.
+In the example above, application state is of type `Vector[String]` and update events are of type `String`. State updates (appending to a `Vector`) are not commutative and we track concurrent versions of application state as `ConcurrentVersions[Vector[String], String]`. The state update function (= event projection function) `(s, a) => s :+ a` is called whenever `versionedState.update` is called (with event, event timestamp and the `replicaId` of the event emitter as arguments). In case of a concurrent update, `versionedState.conflict` returns `true` and the application should [resolve](#conflict-resolution) the conflict.
 
 Please note that concurrent events are not necessarily conflicting events. Concurrent updates to different domain objects may be acceptable to an application whereas concurrent updates to the same domain object may be considered as conflict. In this case, concurrent versions for individual domain objects should be tracked. For example, an order management application could declare application state as follows:
 
@@ -306,15 +308,15 @@ Conflict resolution
 Concurrent versions of application state represent update conflicts from concurrent events. Conflict resolution selects one of the concurrent versions as the winner which can be done in an automated or interactive way. The following is an example of automated conflict resolution: 
 
 ```scala
-class MyEA(val log: ActorRef, val processId: String) extends EventsourcedActor {
+class MyEA(val eventLog: ActorRef, val replicaId: String) extends EventsourcedActor {
   var versionedState: ConcurrentVersions[Vector[String], String] = ConcurrentVersions(Vector(), (s, a) => s :+ a)
 
   def updateState(event: String): Unit = {
-    versionedState = versionedState.update(event, lastVectorTimestamp, lastProcessId)
+    versionedState = versionedState.update(event, lastVectorTimestamp, lastReplicaId)
     if (versionedState.conflict) {
-      // conflicting versions, sorted by processIds of EAs that emitted the concurrent update events
-      val conflictingVersions: Seq[Versioned[Vector[String]]] = versionedState.all.sortBy(_.processId)
-      // example conflict resolution function: lower process id wins
+      // conflicting versions, sorted by replicaIds of EAs that emitted the concurrent update events
+      val conflictingVersions: Seq[Versioned[Vector[String]]] = versionedState.all.sortBy(_.replicaId)
+      // example conflict resolution function: lower replica id wins
       val winnerVersion: VectorTime = conflictingVersions.head.version
       // resolve conflict by specifying the winner version
       versionedState = versionedState.resolve(winnerVersion)
@@ -331,7 +333,7 @@ class MyEA(val log: ActorRef, val processId: String) extends EventsourcedActor {
 }
 ```
 
-In the example above, the version created from the event with the lower emitter `processId` is selected to be the winner. The selected version is identified by its version vector (`winnerVersion`) and passed as argument to `versionedState.update` during conflict resolution. Using emitter `processId`s for choosing a winner is just one example how conflicts can be resolved. Others could compare conflicting versions directly to make a decision. It is only important that the conflict resolution result does not depend on the order of conflicting events so that all application state replicas converge to the same value. 
+In the example above, the version created from the event with the lower emitter `replicaId` is selected to be the winner. The selected version is identified by its version vector (`winnerVersion`) and passed as argument to `versionedState.update` during conflict resolution. Using emitter `replicaId`s for choosing a winner is just one example how conflicts can be resolved. Others could compare conflicting versions directly to make a decision. It is only important that the conflict resolution result does not depend on the order of conflicting events so that all application state replicas converge to the same value. 
 
 Interactive conflict resolution does not resolve conflicts immediately but requests the user to select a winner version. In this case, the selected version must be stored as `Resolved` event in the event log (see example application code for details). Furthermore, interactive conflict resolution requires global agreement to avoid concurrent conflict resolutions. This can be achieved by static rules (for example, only the initial creator of a domain object may resolve conflicts for that object) or by global coordination, if needed. Global coordination can work well if conflicts do not occur frequently.
 
@@ -464,13 +466,13 @@ Update results from user commands and replicated events are written to `stdout`.
 
 Before you continue, install [sbt](http://www.scala-sbt.org/) and run `sbt test` from the project's root (needs to be done only once). Then, open 6 terminal windows (representing locations A - F) and run
 
-- `example-site A` for starting location A
-- `example-site B` for starting location B
-- `example-site C` for starting location C
-- `example-site D` for starting location D
-- `example-site E` for starting location E
-- `example-site F` for starting location F
+- `example-location A` for starting location A
+- `example-location B` for starting location B
+- `example-location C` for starting location C
+- `example-location D` for starting location D
+- `example-location E` for starting location E
+- `example-location F` for starting location F
 
-Alternatively, run `example` which opens these terminal windows automatically. For running the Java version of the example application, run `example-site` or `example` with `java` as additional argument. 
+Alternatively, run `example` which opens these terminal windows automatically. For running the Java version of the example application, run `example-location` or `example` with `java` as additional argument. 
 
 Create and update some orders and see how changes are replicated across locations. To make concurrent updates to an order, for example, enter `exit` at location `C`, and add different items to that order at locations `A` and `F`. When starting location `C` again, both updates propagate to all other locations which are then displayed as conflict. Resolve the conflict with the `resolve` command.  

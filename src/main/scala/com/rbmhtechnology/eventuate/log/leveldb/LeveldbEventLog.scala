@@ -32,7 +32,7 @@ import org.fusesource.leveldbjni.JniDBFactory.factory
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
-import com.rbmhtechnology.eventuate.log.BatchingEventLog
+import com.rbmhtechnology.eventuate.log.{AggregateRegistry, BatchingEventLog}
 
 /**
  * An event log actor with LevelDB as storage backend. The directory containing the LevelDB files
@@ -44,7 +44,7 @@ import com.rbmhtechnology.eventuate.log.BatchingEventLog
  * @param id unique log id.
  * @param prefix prefix of the directory that contains the LevelDB files
  */
-class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNumericIdentifierMap with LeveldbReplicationProgressMap {
+class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNumericIdentifierMap with LeveldbReplicationProgressMap*/ {
   import LeveldbEventLog._
 
   val serialization = SerializationExtension(context.system)
@@ -63,19 +63,31 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
 
   implicit val dispatcher = context.system.dispatchers.lookup("log.leveldb.read-dispatcher")
 
-  var registered: Set[ActorRef] = Set.empty
+  var aggregateRegistry: AggregateRegistry = AggregateRegistry()
+  var defaultRegistry: Set[ActorRef] = Set.empty
   var replicated: Map[String, Long] = Map.empty
   var sequenceNr = 0L
 
+  val aggregateIdMap = new NumericIdentifierMap(leveldb, -1)
+  val eventLogIdMap = new NumericIdentifierMap(leveldb, -2)
+  val replicationProgressMap = new ReplicationProgressMap(leveldb, -3, eventLogIdMap.numericId)
+
   final def receive = {
     case GetLastSourceLogReadPosition(sourceLogId) =>
-      Try(readReplicationProgress(sourceLogId)) match {
+      Try(replicationProgressMap.readReplicationProgress(sourceLogId)) match {
         case Success(r) => sender() ! GetLastSourceLogReadPositionSuccess(sourceLogId, r)
         case Failure(e) => sender() ! GetLastSourceLogReadPositionFailure(e)
       }
-    case Replay(from, requestor, iid) =>
-      registered = registered + context.watch(requestor)
-      Future(replay(from)(event => requestor ! Replaying(event, iid))) onComplete {
+    case Replay(from, requestor, None, iid) =>
+      defaultRegistry = defaultRegistry + context.watch(requestor)
+      Future(replay(from, EventKey.DefaultClassifier)(event => requestor ! Replaying(event, iid))) onComplete {
+        case Success(_) => requestor ! ReplaySuccess(iid)
+        case Failure(e) => requestor ! ReplayFailure(e, iid)
+      }
+    case Replay(from, requestor, Some(sourceAggregateId), iid) =>
+      val nid = aggregateIdMap.numericId(sourceAggregateId)
+      aggregateRegistry = aggregateRegistry.add(context.watch(requestor), sourceAggregateId)
+      Future(replay(from, nid)(event => requestor ! Replaying(event, iid))) onComplete {
         case Success(_) => requestor ! ReplaySuccess(iid)
         case Failure(e) => requestor ! ReplayFailure(e, iid)
       }
@@ -95,12 +107,12 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
         case Failure(e) =>
           updated.foreach {
             case Write(events, eventsSender, requestor, iid) =>
-              replyFailure(events, eventsSender, requestor, iid, e)
+              pushWriteFailure(events, eventsSender, requestor, iid, e)
           }
         case Success(_) =>
           updated.foreach {
             case Write(events, eventsSender, requestor, iid) =>
-              replySuccess(events, eventsSender, requestor, iid)
+              pushWriteSuccess(events, eventsSender, requestor, iid)
           }
           publishUpdateNotification(updated.flatMap(_.events))
       }
@@ -109,13 +121,13 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
       val result = Try(write(updated))
       result match {
         case Failure(e) =>
-          replyFailure(updated, eventsSender, requestor, iid, e)
+          pushWriteFailure(updated, eventsSender, requestor, iid, e)
         case Success(_) =>
-          replySuccess(updated, eventsSender, requestor, iid)
+          pushWriteSuccess(updated, eventsSender, requestor, iid)
           publishUpdateNotification(updated)
       }
     case Replicate(events, sourceLogId, lastSourceLogSequenceNrRead) =>
-      Try(readReplicationProgress(sourceLogId)) match {
+      Try(replicationProgressMap.readReplicationProgress(sourceLogId)) match {
         case Failure(e) => sender() ! ReplicateFailure(e)
         case Success(lastSourceLogSequenceNrStored) =>
           if (lastSourceLogSequenceNrRead > lastSourceLogSequenceNrStored) {
@@ -123,7 +135,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
             val result = Try {
               withBatch { batch =>
                 // atomic write of events and replication progress
-                writeReplicationProgress(sourceLogId, lastSourceLogSequenceNrRead, batch)
+                replicationProgressMap.writeReplicationProgress(sourceLogId, lastSourceLogSequenceNrRead, batch)
                 write(updated, batch)
               }
             }
@@ -131,8 +143,8 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
               case Failure(e) =>
                 sender() ! ReplicateFailure(e)
               case Success(_) =>
-                updated.foreach { event => registered.foreach(_ ! Written(event))}
                 sender() ! ReplicateSuccess(events.size, lastSourceLogSequenceNrRead)
+                pushReplicateSuccess(updated)
                 publishUpdateNotification(updated)
             }
           } else {
@@ -140,21 +152,42 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
           }
       }
     case Terminated(requestor) =>
-      registered = registered - requestor
+      aggregateRegistry.aggregateId(requestor) match {
+        case Some(aggregateId) => aggregateRegistry = aggregateRegistry.remove(requestor, aggregateId)
+        case None              => defaultRegistry = defaultRegistry - requestor
+      }
   }
 
   def publishUpdateNotification(update: Seq[DurableEvent] = Seq()): Unit = {
     if (update.nonEmpty) eventStream.publish(Updated(update))
   }
 
-  def replySuccess(events: Seq[DurableEvent], eventsSender: ActorRef, requestor: ActorRef, instanceId: Int): Unit = {
+  def pushReplicateSuccess(events: Seq[DurableEvent]): Unit = {
     events.foreach { event =>
-      requestor.tell(WriteSuccess(event, instanceId), eventsSender)
-      registered.foreach(r => if (r != requestor) r ! Written(event))
+      // in any case, notify all default subscribers
+      defaultRegistry.foreach(_ ! Written(event))
+      // notify subscribers with matching aggregate id
+      for {
+        aggregateId <- event.destinationAggregateIds
+        aggregate <- aggregateRegistry(aggregateId)
+      } aggregate ! Written(event)
     }
   }
 
-  def replyFailure(events: Seq[DurableEvent], eventsSender: ActorRef, requestor: ActorRef, instanceId: Int, cause: Throwable): Unit = {
+  def pushWriteSuccess(events: Seq[DurableEvent], eventsSender: ActorRef, requestor: ActorRef, instanceId: Int): Unit = {
+    events.foreach { event =>
+      requestor.tell(WriteSuccess(event, instanceId), eventsSender)
+      // in any case, notify all default subscribers (except requestor)
+      defaultRegistry.foreach(r => if (r != requestor) r ! Written(event))
+      // notify subscribers with matching aggregate id (except requestor)
+      for {
+        aggregateId <- event.destinationAggregateIds
+        aggregate <- aggregateRegistry(aggregateId) if aggregate != requestor
+      } aggregate ! Written(event)
+    }
+  }
+
+  def pushWriteFailure(events: Seq[DurableEvent], eventsSender: ActorRef, requestor: ActorRef, instanceId: Int, cause: Throwable): Unit = {
     events.foreach { event =>
       requestor.tell(WriteFailure(event, cause, instanceId), eventsSender)
     }
@@ -186,9 +219,14 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
     withBatch(write(events, _))
 
   def write(events: Seq[DurableEvent], batch: WriteBatch): Unit = events.foreach { event =>
-    val snr = event.sequenceNr
-    batch.put(counterKeyBytes, longBytes(snr))
-    batch.put(eventKeyBytes(snr), eventBytes(event))
+    val sequenceNr = event.sequenceNr
+    val eventBytes = this.eventBytes(event)
+
+    batch.put(counterKeyBytes, longBytes(sequenceNr))
+    batch.put(eventKeyBytes(EventKey.DefaultClassifier, sequenceNr), eventBytes)
+    event.destinationAggregateIds.foreach { id => // additionally index events by aggregate id
+      batch.put(eventKeyBytes(aggregateIdMap.numericId(id), sequenceNr), eventBytes)
+    }
   }
 
   def read(from: Long, max: Int, filter: ReplicationFilter): ReadResult = withIterator { iter =>
@@ -198,29 +236,29 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
     def go(events: Vector[DurableEvent], num: Int): Vector[DurableEvent] = if (iter.hasNext && num > 0) {
       val nextEntry = iter.next()
       val nextKey = eventKey(nextEntry.getKey)
-      if (nextKey != eventKeyEnd) {
+      if (nextKey.classifier == EventKey.DefaultClassifier) {
         val nextEvt = event(nextEntry.getValue)
-        last = nextKey
+        last = nextKey.sequenceNr
         if (!filter(nextEvt)) go(events, num)
         else go(events :+ event(nextEntry.getValue), num - 1)
       } else events
     } else events
-    iter.seek(eventKeyBytes(first))
+    iter.seek(eventKeyBytes(EventKey.DefaultClassifier, first))
     ReadResult(go(Vector.empty, max), last)
   }
 
-  def replay(from: Long)(f: DurableEvent => Unit): Unit = withIterator { iter =>
+  def replay(from: Long, classifier: Int)(f: DurableEvent => Unit): Unit = withIterator { iter =>
     val first = if (from < 1L) 1L else from
     @annotation.tailrec
     def go(): Unit = if (iter.hasNext) {
       val nextEntry = iter.next()
       val nextKey = eventKey(nextEntry.getKey)
-      if (nextKey != eventKeyEnd) {
+      if (nextKey.classifier == classifier) {
         f(event(nextEntry.getValue))
         go()
       }
     }
-    iter.seek(eventKeyBytes(first))
+    iter.seek(eventKeyBytes(classifier, first))
     go()
   }
 
@@ -241,7 +279,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
     }
   }
 
-  def withIterator[R](body: DBIterator ⇒ R): R = {
+  def withIterator[R](body: DBIterator => R): R = {
     val so = snapshotOptions()
     val iter = leveldb.iterator(so)
     try {
@@ -261,7 +299,9 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
   }
 
   override def preStart(): Unit = {
-    super.preStart()
+    withIterator(iter => aggregateIdMap.readIdMap(iter))
+    withIterator(iter => eventLogIdMap.readIdMap(iter))
+    withIterator(iter => replicationProgressMap.readRpMap(iter))
     leveldb.put(eventKeyEndBytes, Array.empty[Byte])
     leveldb.get(counterKeyBytes) match {
       case null => sequenceNr = 0L
@@ -278,23 +318,32 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor with LeveldbNume
 object LeveldbEventLog {
   private[eventuate] case class ReadResult(events: Seq[DurableEvent], to: Long)
 
-  private[eventuate] val counterKey: Long =
-    0L
+  private[eventuate] case class EventKey(classifier: Int, sequenceNr: Long)
+
+  private[eventuate] object EventKey {
+    val DefaultClassifier: Int = 0
+  }
 
   private[eventuate] val counterKeyBytes: Array[Byte] =
-    longBytes(counterKey)
+    eventKeyBytes(0, 0L)
 
-  private[eventuate] val eventKeyEnd: Long =
-    Long.MaxValue
+  private[eventuate] val eventKeyEnd: EventKey =
+    EventKey(Int.MaxValue, Long.MaxValue)
 
   private[eventuate] val eventKeyEndBytes: Array[Byte] =
-    longBytes(eventKeyEnd)
+    eventKeyBytes(eventKeyEnd.classifier, eventKeyEnd.sequenceNr)
 
-  private[eventuate] def eventKeyBytes(sequenceNr: Long): Array[Byte] =
-    longBytes(sequenceNr)
+  private[eventuate] def eventKeyBytes(classifier: Int, sequenceNr: Long): Array[Byte] = {
+    val bb = ByteBuffer.allocate(12)
+    bb.putInt(classifier)
+    bb.putLong(sequenceNr)
+    bb.array
+  }
 
-  private[eventuate] def eventKey(a: Array[Byte]): Long =
-    longFromBytes(a)
+  private[eventuate] def eventKey(a: Array[Byte]): EventKey = {
+    val bb = ByteBuffer.wrap(a)
+    EventKey(bb.getInt, bb.getLong)
+  }
 
   private[eventuate] def longBytes(l: Long): Array[Byte] =
     ByteBuffer.allocate(8).putLong(l).array

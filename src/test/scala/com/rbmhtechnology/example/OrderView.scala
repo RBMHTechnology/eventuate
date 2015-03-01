@@ -25,11 +25,13 @@ object OrderView {
   case class GetUpdateCountSuccess(orderId: String, count: Int)
 }
 
-class OrderView(id: String, val eventLog: ActorRef) extends EventsourcedView {
-  import OrderManager._
+/**
+ * Consumes events written by all event-sourced [[OrderActor]]s.
+ */
+class OrderView(val eventLog: ActorRef) extends EventsourcedView {
+  import OrderActor._
   import OrderView._
 
-  val processId: String = id
   var updateCounts: Map[String, Int] = Map.empty
 
   override def onCommand = {

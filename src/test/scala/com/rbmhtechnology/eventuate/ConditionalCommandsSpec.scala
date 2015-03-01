@@ -22,6 +22,8 @@ import akka.testkit._
 import org.scalatest._
 
 object ConditionalCommandsSpec {
+  import DurableEvent._
+
   class ConditionalCommandReceiver extends Actor with ConditionalCommands {
     def receive = {
       case ConditionalCommand(con, cmd) => conditionalSend(con, cmd)
@@ -31,7 +33,7 @@ object ConditionalCommandsSpec {
   }
 
   def timestampAB(timeA: Long, timeB: Long): VectorTime =
-    VectorTime("A" -> timeA, "B" -> timeB)
+    VectorTime(processId("A") -> timeA, processId("B") -> timeB)
 }
 
 class ConditionalCommandsSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach with ImplicitSender {

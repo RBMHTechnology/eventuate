@@ -31,7 +31,7 @@ object ReplicationIntegrationSpec {
     }
   }
 
-  class ReplicatedActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class ReplicatedActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     def onCommand = {
       case s: String => persist(s) {
         case Success(e) => onEvent(e)

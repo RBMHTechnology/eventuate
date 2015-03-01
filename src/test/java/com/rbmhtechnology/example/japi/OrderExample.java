@@ -29,12 +29,12 @@ import akka.japi.pf.ReceiveBuilder;
 
 import com.rbmhtechnology.eventuate.ReplicationConnection;
 import com.rbmhtechnology.eventuate.ReplicationEndpoint;
-import com.rbmhtechnology.eventuate.VersionedObjects.*;
+import com.rbmhtechnology.eventuate.VersionedAggregate.*;
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog;
 import com.typesafe.config.ConfigFactory;
 
-import com.rbmhtechnology.example.japi.OrderManager.*;
-import com.rbmhtechnology.example.japi.OrderView.*;
+import static com.rbmhtechnology.example.japi.OrderActor.*;
+import static com.rbmhtechnology.example.japi.OrderView.*;
 
 public class OrderExample extends AbstractActor {
     private static Pattern pExit    = Pattern.compile("^exit\\s*");
@@ -59,7 +59,11 @@ public class OrderExample extends AbstractActor {
 
         receive(ReceiveBuilder
                 .match(GetStateSuccess.class, r -> {
-                    r.getState().values().stream().forEach(OrderManager::printOrder);
+                    r.getState().values().stream().forEach(OrderActor::printOrder);
+                    prompt();
+                })
+                .match(GetStateFailure.class, r -> {
+                    System.out.println(r.getCause().getMessage());
                     prompt();
                 })
                 .match(GetUpdateCountSuccess.class, r -> {
@@ -69,7 +73,7 @@ public class OrderExample extends AbstractActor {
                 .match(CommandFailure.class, r -> r.getCause() instanceof ConflictDetectedException, r -> {
                     ConflictDetectedException cause = (ConflictDetectedException)r.getCause();
                     System.out.println(cause.getMessage() + ", select one of the following versions to resolve conflict");
-                    OrderManager.printOrder(cause.getVersions());
+                    OrderActor.printOrder(cause.getVersions());
                     prompt();
                 })
                 .match(CommandFailure.class, r -> {
@@ -134,7 +138,7 @@ public class OrderExample extends AbstractActor {
         ReplicationEndpoint endpoint = ReplicationEndpoint.create(id -> LeveldbEventLog.props(id, "java", true), system);
 
         ActorRef manager = system.actorOf(Props.create(OrderManager.class, endpoint.id(), endpoint.logs().apply(ReplicationEndpoint.DefaultLogName())));
-        ActorRef view = system.actorOf(Props.create(OrderView.class, endpoint.id() + "-view", endpoint.logs().apply(ReplicationEndpoint.DefaultLogName())));
+        ActorRef view = system.actorOf(Props.create(OrderView.class, endpoint.logs().apply(ReplicationEndpoint.DefaultLogName())));
         ActorRef driver = system.actorOf(Props.create(OrderExample.class, manager, view));
     }
 }

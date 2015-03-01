@@ -55,7 +55,7 @@ object BasicReplicationThroughputConfig extends MultiNodeConfig {
 }
 
 object BasicReplicationThroughputSpec {
-  class ReplicatedActor(val processId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class ReplicatedActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     override val stateSync = false
 
     var events: Vector[String] = Vector.empty

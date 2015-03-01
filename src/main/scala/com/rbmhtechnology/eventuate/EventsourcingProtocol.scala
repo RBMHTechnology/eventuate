@@ -93,8 +93,19 @@ object EventsourcingProtocol {
    * Replayed events are sent within [[Replaying]] messages. If replay successfully completes the
    * event log must additionally send a [[ReplaySuccess]] message, otherwise, a [[ReplayFailure]]
    * message.
+   *
+   * If `aggregateId` is defined, only events with a matching `aggregateId` are replayed, otherwise,
+   * all events.
    */
-  case class Replay(from: Long, requestor: ActorRef, instanceId: Int)
+  case class Replay(from: Long, requestor: ActorRef, aggregateId: Option[String], instanceId: Int)
+
+  object Replay {
+    /**
+     * Creates a [[Replay]] command where `aggregateId` is not defined.
+     */
+    def apply(from: Long, requestor: ActorRef, instanceId: Int): Replay =
+      new Replay(from, requestor, None, instanceId)
+  }
 
   /**
    * Single `event` replay after a [[Replay]].

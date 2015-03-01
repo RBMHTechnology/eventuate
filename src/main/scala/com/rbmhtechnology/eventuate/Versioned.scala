@@ -27,10 +27,9 @@ import scala.collection.immutable.Seq
  *
  * @param value The value.
  * @param version The version vector of the value.
- * @param processId Id of the process that emitted the corresponding
- *                  event that caused this version.
+ * @param replicaId Replica id of the event emitter that caused this version.
  */
-case class Versioned[A](value: A, version: VectorTime, processId: String = "")
+case class Versioned[A](value: A, version: VectorTime, replicaId: String = "")
 
 /**
  * Tracks concurrent [[Versioned]] values which arise from concurrent updates.
@@ -44,7 +43,7 @@ trait ConcurrentVersions[A, B] {
    * there is no such predecessor, a new concurrent version is created (optionally derived
    * from an older entry in the version history, in case of incremental updates).
    */
-  def update(b: B, eventTimestamp: VectorTime, eventProcessId: String = ""): ConcurrentVersions[A, B]
+  def update(b: B, eventTimestamp: VectorTime, replicaId: String = ""): ConcurrentVersions[A, B]
 
   /**
    * Resolves multiple concurrent versions to a single version. For the resolution to be
@@ -109,13 +108,13 @@ object ConcurrentVersions {
  * versioned values (= full updates). `ConcurrentVersionsList` is an immutable data structure.
  */
 class ConcurrentVersionsList[A](vs: List[Versioned[A]], val owner: String = "") extends ConcurrentVersions[A, A] {
-  def update(na: A, eventTimestamp: VectorTime, eventProcessId: String = ""): ConcurrentVersionsList[A] = {
+  def update(na: A, eventTimestamp: VectorTime, replicaId: String = ""): ConcurrentVersionsList[A] = {
     val r = vs.foldRight[(List[Versioned[A]], Boolean)]((Nil, false)) {
       case (a, (acc, true))  => (a :: acc, true)
       case (a, (acc, false)) =>
         if (eventTimestamp > a.version)
           // regular update on that version
-          (Versioned(na, eventTimestamp, eventProcessId) :: acc, true)
+          (Versioned(na, eventTimestamp, replicaId) :: acc, true)
         else if (eventTimestamp < a.version)
           // conflict already resolved, ignore
           (a :: acc, true)
@@ -125,7 +124,7 @@ class ConcurrentVersionsList[A](vs: List[Versioned[A]], val owner: String = "") 
     }
     r match {
       case (updates, true)   => new ConcurrentVersionsList(updates, owner)
-      case (original, false) => new ConcurrentVersionsList((Versioned(na, eventTimestamp, eventProcessId) :: original), owner)
+      case (original, false) => new ConcurrentVersionsList((Versioned(na, eventTimestamp, replicaId) :: original), owner)
     }
   }
 
@@ -157,13 +156,13 @@ case object ConcurrentVersionsList {
 }
 
 /**
- * A [[ConcurrentVersions]] implementation that shall be used if updates modify
- * current versioned values (= incremental updates). `ConcurrentVersionsTree` is a
- * mutable data structure.
+ * A [[ConcurrentVersions]] implementation that shall be used if updates modify current
+ * versioned values (= incremental updates). `ConcurrentVersionsTree` is a mutable data
+ * structure.
  *
- * '''Please note:''' This implementation is not optimized and leaks memory at the
- * moment. Also, future versions of `ConcurrentVersionsTree` will likely be based
- * on immutable data structures.
+ * '''Please note:''' This implementation is not optimized yet and leaks memory at the
+ * moment (which shouldn't be a problem if the number of incremental updates is small).
+ * Also, future versions of `ConcurrentVersionsTree` will likely be immutable.
  *
  * @param f Projection function for updates.
  */
@@ -175,9 +174,9 @@ class ConcurrentVersionsTree[A, B](f: (A, B) => A, initial: A = null.asInstanceO
   private val root: Node[A] =
     new Node(Versioned(initial, VectorTime(), ""))
 
-  override def update(b: B, eventTimestamp: VectorTime, eventProcessId: String = ""): ConcurrentVersionsTree[A, B] = {
+  override def update(b: B, eventTimestamp: VectorTime, replicaId: String = ""): ConcurrentVersionsTree[A, B] = {
     val p = pred(eventTimestamp)
-    p.addChild(new Node(Versioned(f(p.versioned.value, b), eventTimestamp, eventProcessId)))
+    p.addChild(new Node(Versioned(f(p.versioned.value, b), eventTimestamp, replicaId)))
     this
   }
 

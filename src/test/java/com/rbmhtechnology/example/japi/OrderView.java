@@ -23,14 +23,14 @@ import akka.actor.ActorRef;
 import akka.japi.pf.ReceiveBuilder;
 
 import com.rbmhtechnology.eventuate.AbstractEventsourcedView;
-import com.rbmhtechnology.example.japi.OrderManager.*;
+import com.rbmhtechnology.example.japi.OrderActor.*;
 
 public class OrderView extends AbstractEventsourcedView {
     private Map<String, Integer> updateCounts;
 
-    public OrderView(String id, ActorRef log) {
-        super(id, log);
-        this.updateCounts = new HashMap<String, Integer>();
+    public OrderView(ActorRef eventLog) {
+        super(eventLog);
+        this.updateCounts = new HashMap<>();
 
         onReceiveCommand(ReceiveBuilder.match(GetUpdateCount.class, this::handleGetUpdateCount).build());
         onReceiveEvent(ReceiveBuilder.match(OrderEvent.class, this::handleOrderEvent).build());

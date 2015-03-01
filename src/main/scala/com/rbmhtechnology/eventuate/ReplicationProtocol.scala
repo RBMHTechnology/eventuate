@@ -235,6 +235,7 @@ private[eventuate] class ReplicationClientConnector(host: String, port: Int, nam
   val connecting: Receive = {
     case ReceiveTimeout =>
       context.become(identifying)
+      self ! ReceiveTimeout
     case ConnectAccepted(serverInfos, rid) =>
       serverInfos.foreach {
         case ServerInfo(logName, sourceLogId, server) =>
@@ -253,8 +254,10 @@ private[eventuate] class ReplicationClientConnector(host: String, port: Int, nam
 
   def receive = identifying
 
-  override def preStart(): Unit =
+  override def preStart(): Unit = {
     context.setReceiveTimeout(retry)
+    self ! ReceiveTimeout
+  }
 }
 
 private[eventuate] object ReplicationServerConnector {

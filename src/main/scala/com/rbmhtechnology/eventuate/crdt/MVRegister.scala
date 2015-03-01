@@ -77,11 +77,11 @@ object MVRegister {
 /**
  * Replicated [[MVRegister]] CRDT service.
  *
- * @param processId Unique process id of this service replica.
+ * @param replicaId Unique replica id of this service replica.
  * @param log Event log.
  * @tparam A [[MVRegister]] value type.
  */
-class MVRegisterService[A](val processId: String, val log: ActorRef)(implicit system: ActorSystem, val ops: CRDTServiceOps[MVRegister[A], Set[A]])
+class MVRegisterService[A](val replicaId: String, val log: ActorRef)(implicit system: ActorSystem, val ops: CRDTServiceOps[MVRegister[A], Set[A]])
   extends CRDTService[MVRegister[A], Set[A]] {
 
   /**

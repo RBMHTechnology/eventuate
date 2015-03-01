@@ -25,14 +25,15 @@ import akka.actor._
 /**
  * An [[Eventsourced]] actor that can also produce new events to its event log. New events
  * can be produced with methods `persist` and `persistN`. They must only be used within
- * `onCommand`. An [[EventsourcedActor]] does not only consume its own events but can also
- * consume events produced by other [[EventsourcedActor]]s to the same event log. Commands
- * sent to this actor during recovery are delayed until recovery completes.
+ * the `onCommand` command handler. The command handler may only read internal state but
+ * must not modify it. Internal state may only be modified within `onEvent`.
  *
  * An `EventsourcedActor` maintains a [[VectorClock]] used to time-stamp the events it writes
  * to the event log. Events that are handled by its event handler update the vector clock.
  * Events that are pushed from the `eventLog` actor but not handled by `onEvent` do not
  * update the vector clock.
+ *
+ * @see [[Eventsourced]]
  */
 trait EventsourcedActor extends Eventsourced with ConditionalCommands with InternalStash {
   import EventsourcingProtocol._
@@ -49,7 +50,15 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
   /**
    * Unique process id, used to store this actor's logical time in its vector clock.
    */
-  def processId: String
+  final lazy val processId: String =
+    DurableEvent.processId(replicaId, aggregateId)
+
+  /**
+   * The replica id distinguishes replicas of an `EventsourcedActor` with a given `aggregateId`.
+   * It must be unique in context of a given `aggregateId` but can be reused in context of a
+   * different `aggregateId`.
+   */
+  def replicaId: String
 
   /**
    * State synchronization. If set to `true`, commands see internal state that is
@@ -83,14 +92,23 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
    * message dispatch by this actor, hence, it is safe to modify internal state within
    * `handler`. The `onLast` handler is additionally called for the last event in the
    * sequence.
+   *
+   * With the `destinationAggregateIds` parameter, custom routing destinations can be defined. If
+   * `destinationAggregateIds` is empty, the event is only routed to [[Eventsourced]] destinations
+   * (actors or views) that have no `aggregateId` defined. If it contains aggregate ids, the event
+   * is additionally routed to destinations that have a matching `aggregateId`.
+   *
+   * The `destinationAggregateIds` default value is `Set(aggregateId.get)` if this actor's
+   * `aggregateId` is defined, otherwise `Set()` i.e. if `aggregateId` is defined, the emitted event
+   * will be additionally routed to destinations with the same `aggregateId`.
    */
-  final def persistN[A](events: Seq[A], onLast: Handler[A] = (_: Try[A]) => ())(handler: Handler[A]): Unit = events match {
+  final def persistN[A](events: Seq[A], onLast: Handler[A] = (_: Try[A]) => (), destinationAggregateIds: Set[String] = defaultDestinationAggregateIds)(handler: Handler[A]): Unit = events match {
     case Seq()   =>
     case es :+ e =>
       es.foreach { event =>
         persist(event)(handler)
       }
-      persist(e) { r =>
+      persist(e, destinationAggregateIds) { r =>
         handler(r)
         onLast(r)
       }
@@ -100,26 +118,47 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
    * Persists the given `event` and asynchronously calls `handler` with the persist result.
    * The `handler` is called during a separate message dispatch by this actor, hence, it
    * is safe to modify internal state within `handler`.
+   *
+   * With the `destinationAggregateIds` parameter, custom routing destinations can be defined. If
+   * `destinationAggregateIds` is empty, the event is only routed to [[Eventsourced]] destinations
+   * (actors or views) that have no `aggregateId` defined. If it contains aggregate ids, the event
+   * is additionally routed to destinations that have a matching `aggregateId`.
+   *
+   * The `destinationAggregateIds` default value is `Set(aggregateId.get)` if this actor's
+   * `aggregateId` is defined, otherwise `Set()` i.e. if `aggregateId` is defined, the emitted event
+   * will be additionally routed to destinations with the same `aggregateId`.
    */
-  final def persist[A](event: A)(handler: Handler[A]): Unit =
-    persistWithLocalTime(_ => event)(handler)
+  final def persist[A](event: A, destinationAggregateIds: Set[String] = defaultDestinationAggregateIds)(handler: Handler[A]): Unit =
+    persistWithLocalTime(_ => event, destinationAggregateIds)(handler)
 
   /**
    * Persists the event returned by  `f` and asynchronously calls `handler` with the
    * persist result. The input parameter to `f` is the current local time. The `handler` is
    * called during a separate message dispatch by this actor, hence, it is safe to modify
    * internal state within `handler`.
+   *
+   * With the `destinationAggregateIds` parameter, custom routing destinations can be defined. If
+   * `destinationAggregateIds` is empty, the event is only routed to [[Eventsourced]] destinations
+   * (actors or views) that have no `aggregateId` defined. If it contains aggregate ids, the event
+   * is additionally routed to destinations that have a matching `aggregateId`.
+   *
+   * The `destinationAggregateIds` default value is `Set(aggregateId.get)` if this actor's
+   * `aggregateId` is defined, otherwise `Set()` i.e. if `aggregateId` is defined, the emitted event
+   * will be additionally routed to destinations with the same `aggregateId`.
    */
-  final def persistWithLocalTime[A](f: Long => A)(handler: Handler[A]): A = {
+  final def persistWithLocalTime[A](f: Long => A, destinationAggregateIds: Set[String] = defaultDestinationAggregateIds)(handler: Handler[A]): A = {
     clock = clock.tick()
     val event = f(clock.currentLocalTime())
-    writeRequests = writeRequests :+ DurableEvent(event, System.currentTimeMillis, clock.currentTime, processId = processId)
+    writeRequests = writeRequests :+ DurableEvent(event, System.currentTimeMillis, clock.currentTime, replicaId, aggregateId, destinationAggregateIds)
     writeHandlers = writeHandlers :+ handler.asInstanceOf[Try[Any] => Unit]
     event
   }
 
   private[eventuate] def currentTime: VectorTime =
     clock.currentTime
+
+  private def defaultDestinationAggregateIds: Set[String] =
+    aggregateId.map(Set(_)).getOrElse(Set.empty)
 
   private def delayPending: Boolean =
     delayRequests.nonEmpty
@@ -153,8 +192,20 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
     }
   }
 
+  /**
+   * Asserts that if aggregateId is defined, event.aggregateId must be defined with
+   * the same value. In other words, an event sourced actor that has an aggregateId
+   * defined, must only receive events of the same aggregateId, whereas event sourced
+   * actors with no aggregateId defined, may receive any events.
+   */
+  private def assertMatchingAggregateId(event: DurableEvent): Unit = {
+    aggregateId.foreach(id => assert(event.sourceAggregateId == aggregateId,
+      s"Expected aggregateId Some(${id}) but got ${event.sourceAggregateId}. Event log fails to push events correctly"))
+  }
+
   private val initiating: Receive = {
     case Replaying(event, iid) => if (iid == instanceId) {
+      assertMatchingAggregateId(event)
       onDurableEvent(event)
     }
     case ReplaySuccess(iid) => if (iid == instanceId) {
@@ -184,6 +235,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
       delayHandlers = delayHandlers.tail
     }
     case WriteSuccess(event, iid) => if (iid == instanceId) {
+      assertMatchingAggregateId(event)
       onLastConsumed(event)
       conditionChanged(lastVectorTimestamp)
       writeHandlers.head(Success(event.payload))
@@ -194,6 +246,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
       }
     }
     case WriteFailure(event, cause, iid) => if (iid == instanceId) {
+      assertMatchingAggregateId(event)
       onLastConsumed(event)
       writeHandlers.head(Failure(cause))
       writeHandlers = writeHandlers.tail
@@ -202,8 +255,10 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
         internalUnstash()
       }
     }
-    case Written(event) => if (event.sequenceNr > lastSequenceNr)
+    case Written(event) => if (event.sequenceNr > lastSequenceNr) {
+      assertMatchingAggregateId(event)
       onDurableEvent(event, e => conditionChanged(e.vectorTimestamp))
+    }
     case ConditionalCommand(condition, cmd) =>
       conditionalSend(condition, cmd)
     case cmd =>
@@ -230,7 +285,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
    */
   override def preStart(): Unit = {
     clock = VectorClock(processId)
-    eventLog ! Replay(1, self, instanceId)
+    replay()
   }
 }
 
@@ -244,7 +299,7 @@ class DelayException(msg: String) extends RuntimeException(msg)
  *
  * @see [[EventsourcedActor]]
  */
-abstract class AbstractEventsourcedActor(val processId: String, val eventLog: ActorRef) extends AbstractEventsourced with EventsourcedActor with ConfirmedDelivery {
+abstract class AbstractEventsourcedActor(val replicaId: String, val eventLog: ActorRef) extends AbstractEventsourced with EventsourcedActor with ConfirmedDelivery {
   /**
    * Persists the given `event` and asynchronously calls `handler` with the persist result.
    * The `handler` is called during a separate message dispatch by this actor, hence, it

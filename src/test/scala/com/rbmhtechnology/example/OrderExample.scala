@@ -19,12 +19,12 @@ package com.rbmhtechnology.example
 import akka.actor._
 
 import com.rbmhtechnology.eventuate._
-import com.rbmhtechnology.eventuate.VersionedObjects._
+import com.rbmhtechnology.eventuate.VersionedAggregate._
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
 import com.typesafe.config.ConfigFactory
 
 class OrderExample(manager: ActorRef, view: ActorRef) extends Actor {
-  import OrderManager._
+  import OrderActor._
   import OrderView._
 
   val lines = io.Source.stdin.getLines
@@ -32,6 +32,9 @@ class OrderExample(manager: ActorRef, view: ActorRef) extends Actor {
   def receive = {
     case GetStateSuccess(state) =>
       state.values.foreach(printOrder)
+      prompt()
+    case GetStateFailure(cause) =>
+      println(cause.getMessage)
       prompt()
     case GetUpdateCountSuccess(orderId, count) =>
       println(s"[${orderId}] update count = ${count}")
@@ -77,7 +80,7 @@ object OrderExample extends App {
   val system = ActorSystem(ReplicationConnection.DefaultRemoteSystemName, sc.withFallback(cc))
   val endpoint = ReplicationEndpoint(id => LeveldbEventLog.props(id, "scala"))(system)
   val manager = system.actorOf(Props(new OrderManager(endpoint.id, endpoint.logs(ReplicationEndpoint.DefaultLogName))))
-  val view = system.actorOf(Props(new OrderView(s"${endpoint.id}-view", endpoint.logs(ReplicationEndpoint.DefaultLogName))))
+  val view = system.actorOf(Props(new OrderView(endpoint.logs(ReplicationEndpoint.DefaultLogName))))
   val driver = system.actorOf(Props(new OrderExample(manager, view)).withDispatcher("cli-dispatcher"))
 }
 

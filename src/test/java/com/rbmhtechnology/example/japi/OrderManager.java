@@ -16,309 +16,93 @@
 
 package com.rbmhtechnology.example.japi;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import scala.concurrent.Future;
 
 import akka.actor.ActorRef;
+import akka.actor.Props;
+import akka.dispatch.Futures;
+import akka.dispatch.Mapper;
+import akka.dispatch.OnComplete;
 import akka.japi.pf.ReceiveBuilder;
+import akka.pattern.Patterns;
 
-import com.rbmhtechnology.eventuate.AbstractEventsourcedActor;
-import com.rbmhtechnology.eventuate.Versioned;
-import com.rbmhtechnology.eventuate.VersionedObjects;
+import com.rbmhtechnology.eventuate.AbstractEventsourcedView;
 
-import static com.rbmhtechnology.eventuate.VersionedObjects.*;
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.reducing;
 
-public class OrderManager extends AbstractEventsourcedActor {
-    private VersionedObjects<Order, OrderCommand, OrderEvent> orders;
+import static com.rbmhtechnology.eventuate.VersionedAggregate.*;
+import static com.rbmhtechnology.example.japi.OrderActor.*;
 
-    private BiFunction<Order, OrderCommand, OrderEvent> commandValidation = (o, c) -> {
-        if (c instanceof CreateOrder)
-            return ((CreateOrder)c).createEvent().withCreator(processId());
-        else
-            return c.createEvent();
-    };
+public class OrderManager extends AbstractEventsourcedView {
 
-    private BiFunction<Order, OrderEvent, Order> eventProjection = (o, e) -> {
-        if (e instanceof OrderCreated)
-            return new Order(e.getOrderId());
-        else if (e instanceof OrderCancelled)
-            return o.cancel();
-        else if (e instanceof OrderItemAdded)
-            return o.addItem(((OrderItemAdded) e).getItem());
-        else if (e instanceof OrderItemRemoved)
-            return o.removeItem(((OrderItemRemoved) e).getItem());
-        else throw new IllegalArgumentException("event not supported: " + e);
-    };
+    private final String replicaId;
+    private final Map<String, ActorRef> orderActors;
 
-    public OrderManager(String processId, ActorRef log) {
-        super(processId, log);
-        this.orders = VersionedObjects.create(
-                commandValidation,
-                eventProjection,
-                OrderDomainCmd.instance,
-                OrderDomainEvt.instance);
+
+    public OrderManager(String replicaId, ActorRef eventLog) {
+        super(eventLog);
+        this.replicaId = replicaId;
+        this.orderActors = new HashMap<>();
 
         onReceiveCommand(ReceiveBuilder
-                .match(CreateOrder.class, c -> processCommand(c.getOrderId(), () -> orders.doValidateCreate(c)))
-                .match(OrderCommand.class, c -> processCommand(c.getOrderId(), () -> orders.doValidateUpdate(c)))
-                .match(Resolve.class, c -> processCommand(c.id(), () -> orders.doValidateResolve(c.withOrigin(processId()))))
-                .match(GetState.class, c -> sender().tell(new GetStateSuccess(ordersSnapshot()), self())).build());
+                .match(OrderCommand.class, c -> orderActor(c.getOrderId()).tell(c, sender()))
+                .match(Resolve.class, c -> orderActor(c.id()).tell(c, sender()))
+                .match(GetState.class, c -> orderActors.isEmpty(), c -> replyStateZero(sender()))
+                .match(GetState.class, c -> !orderActors.isEmpty(), c -> replyState(sender())).build());
 
         onReceiveEvent(ReceiveBuilder
-                .match(OrderCreated.class, e -> {
-                    orders.handleCreated(e, lastVectorTimestamp(), lastSequenceNr());
-                    if (!recovering()) printOrder(orders.getVersions(e.getOrderId()));
-                })
-                .match(OrderEvent.class, e -> {
-                    orders.handleUpdated(e, lastVectorTimestamp(), lastSequenceNr());
-                    if (!recovering()) printOrder(orders.getVersions(e.getOrderId()));
-                })
-                .match(Resolved.class, e -> {
-                    orders.handleResolved(e, lastVectorTimestamp(), lastSequenceNr());
-                    if (!recovering()) printOrder(orders.getVersions(e.id()));
-                })
-                .build());
+                .match(OrderCreated.class, e -> !orderActors.containsKey(e.getOrderId()), e -> orderActor(e.getOrderId())).build());
     }
 
-    private <E> void processCommand(String orderId, Supplier<E> cmdValidation) {
-        try {
-            processEvent(orderId, cmdValidation.get());
-        } catch (Throwable err) {
-            sender().tell(new CommandFailure(orderId, err), self());
+    private ActorRef orderActor(String orderId) {
+        if (!orderActors.containsKey(orderId)) {
+            ActorRef orderActor = context().actorOf(Props.create(OrderActor.class, orderId, replicaId, eventLog()));
+            orderActors.put(orderId, orderActor);
         }
+        return orderActors.get(orderId);
     }
 
-    private <E> void processEvent(String orderId, E event) {
-        persist(event, (evt, err) -> {
-            if (err == null) {
-                onEvent().apply(evt);
-                sender().tell(new CommandSuccess(orderId), self());
-            } else {
-                sender().tell(new CommandFailure(orderId, err), self());
+    private void replyStateZero(ActorRef target) {
+        target.tell(new GetStateSuccess(new HashMap<>()), self());
+    }
+
+    private void replyState(ActorRef target) {
+        OnComplete<GetStateSuccess> completionHander = new OnComplete<GetStateSuccess>() {
+            public void onComplete(Throwable failure, GetStateSuccess success) throws Throwable {
+                if (failure == null) {
+                    target.tell(success, self());
+                }  else {
+                    target.tell(new GetStateFailure(failure), self());
+                }
             }
-        });
+        };
+
+        Stream<Future<GetStateSuccess>> resultStream = orderActors.values().stream()
+                .map(this::asyncGetState);
+
+        Futures.sequence(resultStream::iterator, context().dispatcher())
+                .map(resultsReducer, context().dispatcher())
+                .onComplete(completionHander, context().dispatcher());
     }
 
-    private Map<String, List<Versioned<Order>>> ordersSnapshot() {
-        return orders.getCurrent().entrySet().stream().collect(toMap(
-                entry -> entry.getKey(),
-                entry -> entry.getValue().getAll()));
+    private Future<GetStateSuccess> asyncGetState(ActorRef actor) {
+        return Patterns.ask(actor, GetState.instance, 10000L).map(resultMapper, context().dispatcher());
     }
 
-    static void printOrder(List<Versioned<Order>> versions) {
-        if (versions.size() > 1) {
-            System.out.println("Conflict:");
-            IntStream.range(0, versions.size()).forEach(i -> System.out.println("- version " + i + ": " + versions.get(i).value()));
-        } else if (versions.size() == 1) {
-            System.out.println(versions.get(0).value());
+    private static Mapper<Object, GetStateSuccess> resultMapper = new Mapper<Object, GetStateSuccess>() {
+        public GetStateSuccess apply(Object result) {
+            return (GetStateSuccess)result;
         }
-    }
+    };
 
-    // ------------------------------------------------------------------------------
-    //  Type class instances needed by VersionedState
-    // ------------------------------------------------------------------------------
-
-    public static class OrderDomainCmd implements VersionedObjects.DomainCmd<OrderCommand> {
-        public static OrderDomainCmd instance = new OrderDomainCmd();
-
-        public String id(OrderCommand cmd) {
-            return cmd.getOrderId();
+    private static Mapper<Iterable<GetStateSuccess>, GetStateSuccess> resultsReducer = new Mapper<Iterable<GetStateSuccess>, GetStateSuccess>() {
+        public GetStateSuccess apply(Iterable<GetStateSuccess> results) {
+            return StreamSupport.stream(results.spliterator(), false).collect(reducing((a, b) -> a.merge(b))).get();
         }
-
-        public String origin(OrderCommand cmd) {
-            return "";
-        }
-    }
-
-    public static class OrderDomainEvt implements VersionedObjects.DomainEvt<OrderEvent> {
-        public static OrderDomainEvt instance = new OrderDomainEvt();
-
-        public String id(OrderEvent evt) {
-            return evt.getOrderId();
-        }
-
-        public String origin(OrderEvent evt) {
-            if (evt instanceof OrderCreated) {
-                return ((OrderCreated) evt).getCreator();
-            } else {
-                return "";
-            }
-        }
-    }
-
-    // ------------------------------------------------------------------------------
-    //  Domain commands
-    // ------------------------------------------------------------------------------
-
-    public static abstract class OrderCommand extends OrderId {
-        protected OrderCommand(String orderId) {
-            super(orderId);
-        }
-
-        abstract OrderEvent createEvent();
-    }
-
-    public static class CreateOrder extends OrderCommand {
-        public CreateOrder(String orderId) {
-            super(orderId);
-        }
-
-        public OrderCreated createEvent() {
-            return new OrderCreated(getOrderId());
-        }
-    }
-
-    public static class CancelOrder extends OrderCommand {
-        public CancelOrder(String orderId) {
-            super(orderId);
-        }
-
-        public OrderEvent createEvent() {
-            return new OrderCancelled(getOrderId());
-        }
-    }
-
-    public abstract static class ModifyOrderItems extends OrderCommand {
-        private String item;
-
-        protected ModifyOrderItems(String orderId, String item) {
-            super(orderId);
-            this.item = item;
-        }
-
-        public String getItem() {
-            return item;
-        }
-    }
-
-    public static class AddOrderItem extends ModifyOrderItems {
-        public AddOrderItem(String orderId, String item) {
-            super(orderId, item);
-        }
-
-        public OrderEvent createEvent() {
-            return new OrderItemAdded(getOrderId(), getItem());
-        }
-    }
-
-    public static class RemoveOrderItem extends ModifyOrderItems {
-        public RemoveOrderItem(String orderId, String item) {
-            super(orderId, item);
-        }
-
-        public OrderEvent createEvent() {
-            return new OrderItemRemoved(getOrderId(), getItem());
-        }
-    }
-
-    // ------------------------------------------------------------------------------
-    //  Domain events
-    // ------------------------------------------------------------------------------
-
-    public static abstract class OrderEvent extends OrderId {
-        protected OrderEvent(String orderId) {
-            super(orderId);
-        }
-    }
-
-    public static class OrderCreated extends OrderEvent {
-        private String creator;
-
-        public OrderCreated(String orderId) {
-            this(orderId, "");
-        }
-
-        public OrderCreated(String orderId, String creator) {
-            super(orderId);
-            this.creator = creator;
-        }
-
-        public String getCreator() {
-            return creator;
-        }
-
-        public OrderCreated withCreator(String creator) {
-            return new OrderCreated(getOrderId(), creator);
-        }
-    }
-
-    public static class OrderCancelled extends OrderEvent {
-        public OrderCancelled(String orderId) {
-            super(orderId);
-        }
-    }
-
-    public abstract static class OrderItemModified extends OrderEvent {
-        private String item;
-
-        protected OrderItemModified(String orderId, String item) {
-            super(orderId);
-            this.item = item;
-        }
-
-        public String getItem() {
-            return item;
-        }
-    }
-
-    public static class OrderItemAdded extends OrderItemModified {
-        public OrderItemAdded(String orderId, String item) {
-            super(orderId, item);
-        }
-    }
-
-    public static class OrderItemRemoved extends OrderItemModified {
-        public OrderItemRemoved(String orderId, String item) {
-            super(orderId, item);
-        }
-    }
-
-    // ------------------------------------------------------------------------------
-    //  Command replies
-    // ------------------------------------------------------------------------------
-
-    public static class CommandSuccess extends OrderId {
-        public CommandSuccess(String orderId) {
-            super(orderId);
-        }
-    }
-
-    public static class CommandFailure extends OrderId {
-        private Throwable cause;
-
-        public CommandFailure(String orderId, Throwable cause) {
-            super(orderId);
-            this.cause = cause;
-        }
-
-        public Throwable getCause() {
-            return cause;
-        }
-    }
-
-    // ------------------------------------------------------------------------------
-    //  Other commands
-    // ------------------------------------------------------------------------------
-
-    public static class GetState {
-        private GetState() {}
-
-        public static GetState instance = new GetState();
-    }
-
-    public static class GetStateSuccess {
-        private Map<String, List<Versioned<Order>>> state;
-
-        public GetStateSuccess(Map<String, List<Versioned<Order>>> state) {
-            this.state = state;
-        }
-
-        public Map<String, List<Versioned<Order>>> getState() {
-            return state;
-        }
-    }
+    };
 }

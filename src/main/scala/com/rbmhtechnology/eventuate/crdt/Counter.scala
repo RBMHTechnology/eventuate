@@ -62,11 +62,11 @@ object Counter {
 /**
  * Replicated [[Counter]] CRDT service.
  *
- * @param processId Unique process id of this service replica.
+ * @param replicaId Unique replica id of this service replica.
  * @param log Event log.
  * @tparam A Counter value type.
  */
-class CounterService[A](val processId: String, val log: ActorRef)(implicit system: ActorSystem, integral: Integral[A], val ops: CRDTServiceOps[Counter[A], A])
+class CounterService[A](val replicaId: String, val log: ActorRef)(implicit system: ActorSystem, integral: Integral[A], val ops: CRDTServiceOps[Counter[A], A])
   extends CRDTService[Counter[A], A] {
 
   /**
