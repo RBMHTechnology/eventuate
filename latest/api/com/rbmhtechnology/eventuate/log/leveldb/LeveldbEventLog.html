@@ -43,7 +43,7 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">LeveldbEventLog</span><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="LeveldbNumericIdentifierMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbNumericIdentifierMap">LeveldbNumericIdentifierMap</a> with <a href="LeveldbReplicationProgressMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap">LeveldbReplicationProgressMap</a></span>
+        <span class="name">LeveldbEventLog</span><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span></span>
       </span>
       </h4>
       
@@ -52,7 +52,7 @@ for this event log is named after the constructor parameters using the template 
 and stored in a root directory defined by the <code>log.leveldb.dir</code> configuration.</p><p><b>Please note:</b> <code>prefix</code> and <code>id</code> are currently not escaped when creating the directory name.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="LeveldbReplicationProgressMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap">LeveldbReplicationProgressMap</a>, <a href="LeveldbNumericIdentifierMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbNumericIdentifierMap">LeveldbNumericIdentifierMap</a>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -70,7 +70,7 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog"><span>LeveldbEventLog</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap"><span>LeveldbReplicationProgressMap</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbNumericIdentifierMap"><span>LeveldbNumericIdentifierMap</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog"><span>LeveldbEventLog</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -188,8 +188,42 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#aggregateIdMap" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="aggregateIdMap:com.rbmhtechnology.eventuate.log.leveldb.NumericIdentifierMap"></a>
+      <a id="aggregateIdMap:NumericIdentifierMap"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">aggregateIdMap</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.NumericIdentifierMap">NumericIdentifierMap</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@aggregateIdMap:com.rbmhtechnology.eventuate.log.leveldb.NumericIdentifierMap" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#aggregateRegistry" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="aggregateRegistry:com.rbmhtechnology.eventuate.log.AggregateRegistry"></a>
+      <a id="aggregateRegistry:AggregateRegistry"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">var</span>
+      </span>
+      <span class="symbol">
+        <span class="name">aggregateRegistry</span><span class="result">: <a href="../AggregateRegistry.html" class="extype" name="com.rbmhtechnology.eventuate.log.AggregateRegistry">AggregateRegistry</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@aggregateRegistry:com.rbmhtechnology.eventuate.log.AggregateRegistry" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="akka.actor.Actor#aroundPostRestart" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="aroundPostRestart(reason:Throwable):Unit"></a>
+      <a id="aroundPostRestart(reason:&lt;?&gt;):Unit"></a>
       <a id="aroundPostRestart(Throwable):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -223,7 +257,7 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
     </li><li name="akka.actor.Actor#aroundPreRestart" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="aroundPreRestart(reason:Throwable,message:Option[Any]):Unit"></a>
+      <a id="aroundPreRestart(reason:&lt;?&gt;,message:&lt;?&gt;):Unit"></a>
       <a id="aroundPreRestart(Throwable,Option[Any]):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -257,7 +291,7 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
     </li><li name="akka.actor.Actor#aroundReceive" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="aroundReceive(receive:akka.actor.Actor.Receive,msg:Any):Unit"></a>
+      <a id="aroundReceive(receive:&lt;?&gt;,msg:&lt;?&gt;):Unit"></a>
       <a id="aroundReceive(akka.actor.Actor.Receive,Any):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -330,6 +364,23 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#defaultRegistry" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="defaultRegistry:Set[akka.actor.ActorRef]"></a>
+      <a id="defaultRegistry:Set[ActorRef]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">var</span>
+      </span>
+      <span class="symbol">
+        <span class="name">defaultRegistry</span><span class="result">: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="akka.actor.ActorRef">ActorRef</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@defaultRegistry:Set[akka.actor.ActorRef]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#dispatcher" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="dispatcher:akka.dispatch.MessageDispatcher"></a>
       <a id="dispatcher:MessageDispatcher"></a>
@@ -411,6 +462,23 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </span>
       </h4><span class="permalink">
       <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@eventBytes(e:com.rbmhtechnology.eventuate.DurableEvent):Array[Byte]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#eventLogIdMap" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="eventLogIdMap:com.rbmhtechnology.eventuate.log.leveldb.NumericIdentifierMap"></a>
+      <a id="eventLogIdMap:NumericIdentifierMap"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eventLogIdMap</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.NumericIdentifierMap">NumericIdentifierMap</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@eventLogIdMap:com.rbmhtechnology.eventuate.log.leveldb.NumericIdentifierMap" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
@@ -693,25 +761,8 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbNumericIdentifierMap#numericId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="numericId(id:String):Int"></a>
-      <a id="numericId(String):Int"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">numericId</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@numericId(id:String):Int" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LeveldbNumericIdentifierMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbNumericIdentifierMap">LeveldbNumericIdentifierMap</a></dd></dl></div>
     </li><li name="akka.actor.Actor#postRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="postRestart(reason:Throwable):Unit"></a>
+      <a id="postRestart(reason:&lt;?&gt;):Unit"></a>
       <a id="postRestart(Throwable):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -789,7 +840,7 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="LeveldbReplicationProgressMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap">LeveldbReplicationProgressMap</a> → <a href="LeveldbNumericIdentifierMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbNumericIdentifierMap">LeveldbNumericIdentifierMap</a> → Actor</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#prepareReplicate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="prepareReplicate(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]):scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]"></a>
       <a id="prepareReplicate(Seq[DurableEvent]):Seq[DurableEvent]"></a>
@@ -841,6 +892,57 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#pushReplicateSuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="pushReplicateSuccess(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]):Unit"></a>
+      <a id="pushReplicateSuccess(Seq[DurableEvent]):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pushReplicateSuccess</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@pushReplicateSuccess(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#pushWriteFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="pushWriteFailure(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],eventsSender:akka.actor.ActorRef,requestor:akka.actor.ActorRef,instanceId:Int,cause:Throwable):Unit"></a>
+      <a id="pushWriteFailure(Seq[DurableEvent],ActorRef,ActorRef,Int,Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pushWriteFailure</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="eventsSender">eventsSender: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>, <span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@pushWriteFailure(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],eventsSender:akka.actor.ActorRef,requestor:akka.actor.ActorRef,instanceId:Int,cause:Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#pushWriteSuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="pushWriteSuccess(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],eventsSender:akka.actor.ActorRef,requestor:akka.actor.ActorRef,instanceId:Int):Unit"></a>
+      <a id="pushWriteSuccess(Seq[DurableEvent],ActorRef,ActorRef,Int):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pushWriteSuccess</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="eventsSender">eventsSender: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@pushWriteSuccess(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],eventsSender:akka.actor.ActorRef,requestor:akka.actor.ActorRef,instanceId:Int):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#read" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="read(from:Long,max:Int,filter:com.rbmhtechnology.eventuate.ReplicationFilter):com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.ReadResult"></a>
       <a id="read(Long,Int,ReplicationFilter):ReadResult"></a>
@@ -858,23 +960,6 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap#readReplicationProgress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="readReplicationProgress(logId:String):Long"></a>
-      <a id="readReplicationProgress(String):Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">readReplicationProgress</span><span class="params">(<span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@readReplicationProgress(logId:String):Long" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LeveldbReplicationProgressMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap">LeveldbReplicationProgressMap</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="receive:PartialFunction[Any,Unit]"></a>
       <a id="receive:PartialFunction[Any,Unit]"></a>
@@ -892,36 +977,19 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#registered" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="registered:Set[akka.actor.ActorRef]"></a>
-      <a id="registered:Set[ActorRef]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">var</span>
-      </span>
-      <span class="symbol">
-        <span class="name">registered</span><span class="result">: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="akka.actor.ActorRef">ActorRef</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@registered:Set[akka.actor.ActorRef]" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#replay" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="replay(from:Long)(f:com.rbmhtechnology.eventuate.DurableEvent=&gt;Unit):Unit"></a>
-      <a id="replay(Long)((DurableEvent)⇒Unit):Unit"></a>
+      <a id="replay(from:Long,classifier:Int)(f:com.rbmhtechnology.eventuate.DurableEvent=&gt;Unit):Unit"></a>
+      <a id="replay(Long,Int)((DurableEvent)⇒Unit):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">replay</span><span class="params">(<span name="from">from: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="params">(<span name="f">f: (<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">replay</span><span class="params">(<span name="from">from: <span class="extype" name="scala.Long">Long</span></span>, <span name="classifier">classifier: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="params">(<span name="f">f: (<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@replay(from:Long)(f:com.rbmhtechnology.eventuate.DurableEvent=&gt;Unit):Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@replay(from:Long,classifier:Int)(f:com.rbmhtechnology.eventuate.DurableEvent=&gt;Unit):Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
@@ -943,36 +1011,19 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#replyFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="replyFailure(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],eventsSender:akka.actor.ActorRef,requestor:akka.actor.ActorRef,instanceId:Int,cause:Throwable):Unit"></a>
-      <a id="replyFailure(Seq[DurableEvent],ActorRef,ActorRef,Int,Throwable):Unit"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#replicationProgressMap" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="replicationProgressMap:com.rbmhtechnology.eventuate.log.leveldb.ReplicationProgressMap"></a>
+      <a id="replicationProgressMap:ReplicationProgressMap"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">replyFailure</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="eventsSender">eventsSender: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>, <span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">replicationProgressMap</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.ReplicationProgressMap">ReplicationProgressMap</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@replyFailure(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],eventsSender:akka.actor.ActorRef,requestor:akka.actor.ActorRef,instanceId:Int,cause:Throwable):Unit" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#replySuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="replySuccess(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],eventsSender:akka.actor.ActorRef,requestor:akka.actor.ActorRef,instanceId:Int):Unit"></a>
-      <a id="replySuccess(Seq[DurableEvent],ActorRef,ActorRef,Int):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">replySuccess</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="eventsSender">eventsSender: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@replySuccess(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],eventsSender:akka.actor.ActorRef,requestor:akka.actor.ActorRef,instanceId:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@replicationProgressMap:com.rbmhtechnology.eventuate.log.leveldb.ReplicationProgressMap" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
@@ -1250,40 +1301,6 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap#writeReplicationProgress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="writeReplicationProgress(logId:String,logSnr:Long,batch:org.iq80.leveldb.WriteBatch):Unit"></a>
-      <a id="writeReplicationProgress(String,Long,WriteBatch):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">writeReplicationProgress</span><span class="params">(<span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logSnr">logSnr: <span class="extype" name="scala.Long">Long</span></span>, <span name="batch">batch: <span class="extype" name="org.iq80.leveldb.WriteBatch">WriteBatch</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@writeReplicationProgress(logId:String,logSnr:Long,batch:org.iq80.leveldb.WriteBatch):Unit" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LeveldbReplicationProgressMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap">LeveldbReplicationProgressMap</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap#writeReplicationProgress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="writeReplicationProgress(logId:String,logSnr:Long):Unit"></a>
-      <a id="writeReplicationProgress(String,Long):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">writeReplicationProgress</span><span class="params">(<span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logSnr">logSnr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@writeReplicationProgress(logId:String,logSnr:Long):Unit" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LeveldbReplicationProgressMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap">LeveldbReplicationProgressMap</a></dd></dl></div>
     </li></ol>
             </div>
 
@@ -1293,11 +1310,7 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap">
-              <h3>Inherited from <a href="LeveldbReplicationProgressMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbReplicationProgressMap">LeveldbReplicationProgressMap</a></h3>
-            </div><div class="parent" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbNumericIdentifierMap">
-              <h3>Inherited from <a href="LeveldbNumericIdentifierMap.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbNumericIdentifierMap">LeveldbNumericIdentifierMap</a></h3>
-            </div><div class="parent" name="akka.actor.Actor">
+        <div class="parent" name="akka.actor.Actor">
               <h3>Inherited from <span class="extype" name="akka.actor.Actor">Actor</span></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>

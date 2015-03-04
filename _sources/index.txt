@@ -14,3 +14,4 @@ Eventuate
    dev-guide
    project
    articles
+   limitations

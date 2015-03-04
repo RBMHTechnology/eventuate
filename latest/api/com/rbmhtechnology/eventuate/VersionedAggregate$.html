@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>VersionedObjects - com.rbmhtechnology.eventuate.VersionedObjects</title>
-          <meta name="description" content="VersionedObjects - com.rbmhtechnology.eventuate.VersionedObjects" />
-          <meta name="keywords" content="VersionedObjects com.rbmhtechnology.eventuate.VersionedObjects" />
+          <title>VersionedAggregate - com.rbmhtechnology.eventuate.VersionedAggregate</title>
+          <meta name="description" content="VersionedAggregate - com.rbmhtechnology.eventuate.VersionedAggregate" />
+          <meta name="keywords" content="VersionedAggregate com.rbmhtechnology.eventuate.VersionedAggregate" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.VersionedObjects$';
+            var hash = 'com.rbmhtechnology.eventuate.VersionedAggregate$';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -28,10 +28,10 @@
         </head>
         <body class="value">
       <div id="definition">
-        <a href="VersionedObjects.html" title="Go to companion"><img src="../../../lib/object_to_class_big.png" /></a>
+        <a href="VersionedAggregate.html" title="Go to companion"><img src="../../../lib/object_to_class_big.png" /></a>
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a></p>
-        <h1><a href="VersionedObjects.html" title="Go to companion">VersionedObjects</a></h1> <span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$" title="Permalink" target="_top">
+        <h1><a href="VersionedAggregate.html" title="Go to companion">VersionedAggregate</a></h1> <span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -43,13 +43,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">VersionedObjects</span>
+        <span class="name">VersionedAggregate</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -67,7 +67,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.VersionedObjects"><span>VersionedObjects</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.VersionedAggregate"><span>VersionedAggregate</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -89,7 +89,58 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.VersionedObjects.ConflictDetectedException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.VersionedAggregate.AggregateAlreadyExistsException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AggregateAlreadyExistsExceptionextendsException"></a>
+      <a id="AggregateAlreadyExistsException:AggregateAlreadyExistsException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="VersionedAggregate$$AggregateAlreadyExistsException.html"><span class="name">AggregateAlreadyExistsException</span></a><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@AggregateAlreadyExistsExceptionextendsException" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate.AggregateDoesNotExistException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AggregateDoesNotExistExceptionextendsException"></a>
+      <a id="AggregateDoesNotExistException:AggregateDoesNotExistException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="VersionedAggregate$$AggregateDoesNotExistException.html"><span class="name">AggregateDoesNotExistException</span></a><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@AggregateDoesNotExistExceptionextendsException" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate.AggregateNotLoadedException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AggregateNotLoadedExceptionextendsException"></a>
+      <a id="AggregateNotLoadedException:AggregateNotLoadedException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="VersionedAggregate$$AggregateNotLoadedException.html"><span class="name">AggregateNotLoadedException</span></a><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@AggregateNotLoadedExceptionextendsException" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate.ConflictDetectedException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ConflictDetectedException[S]extendsException"></a>
       <a id="ConflictDetectedException[S]:ConflictDetectedException[S]"></a>
       <h4 class="signature">
@@ -98,15 +149,15 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="VersionedObjects$$ConflictDetectedException.html"><span class="name">ConflictDetectedException</span></a><span class="tparams">[<span name="S">S</span>]</span><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span></span>
+        <a href="VersionedAggregate$$ConflictDetectedException.html"><span class="name">ConflictDetectedException</span></a><span class="tparams">[<span name="S">S</span>]</span><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@ConflictDetectedException[S]extendsException" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@ConflictDetectedException[S]extendsException" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.VersionedObjects.ConflictNotDetectedException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate.ConflictNotDetectedException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ConflictNotDetectedExceptionextendsException"></a>
       <a id="ConflictNotDetectedException:ConflictNotDetectedException"></a>
       <h4 class="signature">
@@ -115,15 +166,15 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="VersionedObjects$$ConflictNotDetectedException.html"><span class="name">ConflictNotDetectedException</span></a><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span></span>
+        <a href="VersionedAggregate$$ConflictNotDetectedException.html"><span class="name">ConflictNotDetectedException</span></a><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@ConflictNotDetectedExceptionextendsException" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@ConflictNotDetectedExceptionextendsException" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.VersionedObjects.ConflictResolutionRejectedException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate.ConflictResolutionRejectedException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ConflictResolutionRejectedExceptionextendsException"></a>
       <a id="ConflictResolutionRejectedException:ConflictResolutionRejectedException"></a>
       <h4 class="signature">
@@ -132,15 +183,15 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="VersionedObjects$$ConflictResolutionRejectedException.html"><span class="name">ConflictResolutionRejectedException</span></a><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span></span>
+        <a href="VersionedAggregate$$ConflictResolutionRejectedException.html"><span class="name">ConflictResolutionRejectedException</span></a><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@ConflictResolutionRejectedExceptionextendsException" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@ConflictResolutionRejectedExceptionextendsException" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.VersionedObjects.DomainCmd" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate.DomainCmd" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="DomainCmd[C]extendsAnyRef"></a>
       <a id="DomainCmd[C]:DomainCmd[C]"></a>
       <h4 class="signature">
@@ -149,15 +200,15 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="VersionedObjects$$DomainCmd.html"><span class="name">DomainCmd</span></a><span class="tparams">[<span name="C">C</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <a href="VersionedAggregate$$DomainCmd.html"><span class="name">DomainCmd</span></a><span class="tparams">[<span name="C">C</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@DomainCmd[C]extendsAnyRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@DomainCmd[C]extendsAnyRef" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.VersionedObjects.DomainEvt" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate.DomainEvt" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="DomainEvt[E]extendsAnyRef"></a>
       <a id="DomainEvt[E]:DomainEvt[E]"></a>
       <h4 class="signature">
@@ -166,66 +217,15 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="VersionedObjects$$DomainEvt.html"><span class="name">DomainEvt</span></a><span class="tparams">[<span name="E">E</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <a href="VersionedAggregate$$DomainEvt.html"><span class="name">DomainEvt</span></a><span class="tparams">[<span name="E">E</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@DomainEvt[E]extendsAnyRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@DomainEvt[E]extendsAnyRef" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.VersionedObjects.ObjectAlreadyExistsException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ObjectAlreadyExistsExceptionextendsException"></a>
-      <a id="ObjectAlreadyExistsException:ObjectAlreadyExistsException"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="VersionedObjects$$ObjectAlreadyExistsException.html"><span class="name">ObjectAlreadyExistsException</span></a><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@ObjectAlreadyExistsExceptionextendsException" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.VersionedObjects.ObjectDoesNotExistException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ObjectDoesNotExistExceptionextendsException"></a>
-      <a id="ObjectDoesNotExistException:ObjectDoesNotExistException"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="VersionedObjects$$ObjectDoesNotExistException.html"><span class="name">ObjectDoesNotExistException</span></a><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@ObjectDoesNotExistExceptionextendsException" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.VersionedObjects.ObjectNotLoadedException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ObjectNotLoadedExceptionextendsException"></a>
-      <a id="ObjectNotLoadedException:ObjectNotLoadedException"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="VersionedObjects$$ObjectNotLoadedException.html"><span class="name">ObjectNotLoadedException</span></a><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@ObjectNotLoadedExceptionextendsException" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.VersionedObjects.Resolve" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate.Resolve" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ResolveextendsProductwithSerializable"></a>
       <a id="Resolve:Resolve"></a>
       <h4 class="signature">
@@ -234,15 +234,15 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="VersionedObjects$$Resolve.html"><span class="name">Resolve</span></a><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="selected">selected: <span class="extype" name="scala.Int">Int</span></span>, <span name="origin">origin: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="VersionedAggregate$$Resolve.html"><span class="name">Resolve</span></a><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="selected">selected: <span class="extype" name="scala.Int">Int</span></span>, <span name="origin">origin: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@ResolveextendsProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@ResolveextendsProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.VersionedObjects.Resolved" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate.Resolved" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ResolvedextendsProductwithSerializable"></a>
       <a id="Resolved:Resolved"></a>
       <h4 class="signature">
@@ -251,10 +251,10 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="VersionedObjects$$Resolved.html"><span class="name">Resolved</span></a><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="selected">selected: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="origin">origin: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="VersionedAggregate$$Resolved.html"><span class="name">Resolved</span></a><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="selected">selected: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="origin">origin: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@ResolvedextendsProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@ResolvedextendsProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -278,7 +278,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -295,7 +295,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@##():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@##():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -312,7 +312,7 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -329,7 +329,7 @@
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -346,7 +346,7 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@clone():Object" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@clone():Object" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -357,19 +357,19 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.VersionedObjects#create" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="create[S,C,E](cmdHandler:java.util.function.BiFunction[S,C,E],evtHandler:java.util.function.BiFunction[S,E,S])(implicitevidence$3:com.rbmhtechnology.eventuate.VersionedObjects.DomainCmd[C],implicitevidence$4:com.rbmhtechnology.eventuate.VersionedObjects.DomainEvt[E]):com.rbmhtechnology.eventuate.VersionedObjects[S,C,E]"></a>
-      <a id="create[S,C,E](BiFunction[S,C,E],BiFunction[S,E,S])(DomainCmd[C],DomainEvt[E]):VersionedObjects[S,C,E]"></a>
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate#create" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="create[S,C,E](id:String,cmdHandler:java.util.function.BiFunction[S,C,E],evtHandler:java.util.function.BiFunction[S,E,S])(implicitevidence$3:com.rbmhtechnology.eventuate.VersionedAggregate.DomainCmd[C],implicitevidence$4:com.rbmhtechnology.eventuate.VersionedAggregate.DomainEvt[E]):com.rbmhtechnology.eventuate.VersionedAggregate[S,C,E]"></a>
+      <a id="create[S,C,E](String,BiFunction[S,C,E],BiFunction[S,E,S])(DomainCmd[C],DomainEvt[E]):VersionedAggregate[S,C,E]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">create</span><span class="tparams">[<span name="S">S</span>, <span name="C">C</span>, <span name="E">E</span>]</span><span class="params">(<span name="cmdHandler">cmdHandler: <span class="extype" name="java.util.function.BiFunction">BiFunction</span>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects.create.S">S</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects.create.C">C</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects.create.E">E</span>]</span>, <span name="evtHandler">evtHandler: <span class="extype" name="java.util.function.BiFunction">BiFunction</span>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects.create.S">S</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects.create.E">E</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects.create.S">S</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <a href="VersionedObjects$$DomainCmd.html" class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects.DomainCmd">DomainCmd</a>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects.create.C">C</span>]</span>, <span name="arg1">arg1: <a href="VersionedObjects$$DomainEvt.html" class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects.DomainEvt">DomainEvt</a>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects.create.E">E</span>]</span>)</span><span class="result">: <a href="VersionedObjects.html" class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects">VersionedObjects</a>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects.create.S">S</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects.create.C">C</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedObjects.create.E">E</span>]</span>
+        <span class="name">create</span><span class="tparams">[<span name="S">S</span>, <span name="C">C</span>, <span name="E">E</span>]</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="cmdHandler">cmdHandler: <span class="extype" name="java.util.function.BiFunction">BiFunction</span>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.create.S">S</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.create.C">C</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.create.E">E</span>]</span>, <span name="evtHandler">evtHandler: <span class="extype" name="java.util.function.BiFunction">BiFunction</span>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.create.S">S</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.create.E">E</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.create.S">S</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <a href="VersionedAggregate$$DomainCmd.html" class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.DomainCmd">DomainCmd</a>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.create.C">C</span>]</span>, <span name="arg1">arg1: <a href="VersionedAggregate$$DomainEvt.html" class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.DomainEvt">DomainEvt</a>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.create.E">E</span>]</span>)</span><span class="result">: <a href="VersionedAggregate.html" class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate">VersionedAggregate</a>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.create.S">S</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.create.C">C</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.create.E">E</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@create[S,C,E](cmdHandler:java.util.function.BiFunction[S,C,E],evtHandler:java.util.function.BiFunction[S,E,S])(implicitevidence$3:com.rbmhtechnology.eventuate.VersionedObjects.DomainCmd[C],implicitevidence$4:com.rbmhtechnology.eventuate.VersionedObjects.DomainEvt[E]):com.rbmhtechnology.eventuate.VersionedObjects[S,C,E]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@create[S,C,E](id:String,cmdHandler:java.util.function.BiFunction[S,C,E],evtHandler:java.util.function.BiFunction[S,E,S])(implicitevidence$3:com.rbmhtechnology.eventuate.VersionedAggregate.DomainCmd[C],implicitevidence$4:com.rbmhtechnology.eventuate.VersionedAggregate.DomainEvt[E]):com.rbmhtechnology.eventuate.VersionedAggregate[S,C,E]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -386,7 +386,7 @@
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -403,7 +403,7 @@
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@equals(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -420,7 +420,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -443,7 +443,7 @@
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -460,7 +460,7 @@
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@hashCode():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@hashCode():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -477,7 +477,7 @@
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -494,7 +494,7 @@
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -511,7 +511,7 @@
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@notify():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -528,12 +528,12 @@
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.VersionedObjects#priority" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate#priority" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="priority(creator1:String,creator2:String):String"></a>
       <a id="priority(String,String):String"></a>
       <h4 class="signature">
@@ -545,7 +545,7 @@
         <span class="name">priority</span><span class="params">(<span name="creator1">creator1: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="creator2">creator2: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@priority(creator1:String,creator2:String):String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@priority(creator1:String,creator2:String):String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -562,7 +562,7 @@
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -579,7 +579,7 @@
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@toString():String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@toString():String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -596,7 +596,7 @@
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@wait():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -619,7 +619,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -642,7 +642,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedObjects$@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate$@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -662,7 +662,11 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
+        <div class="parent" name="scala.Serializable">
+              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="java.io.Serializable">
+              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>

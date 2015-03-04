@@ -192,7 +192,7 @@ and applying the given replication <code>filter</code>.</p>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="EventsourcingProtocol$$Replay.html"><span class="name">Replay</span></a><span class="params">(<span name="from">from: <span class="extype" name="scala.Long">Long</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="EventsourcingProtocol$$Replay.html"><span class="name">Replay</span></a><span class="params">(<span name="from">from: <span class="extype" name="scala.Long">Long</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="aggregateId">aggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ReplayextendsProductwithSerializable" title="Permalink" target="_top">
@@ -202,7 +202,8 @@ and applying the given replication <code>filter</code>.</p>
       <p class="shortcomment cmt">Instructs an event log to replay events from sequence number <code>from</code> to the given <code>requestor</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Instructs an event log to replay events from sequence number <code>from</code> to the given <code>requestor</code>.
 Replayed events are sent within <a href="EventsourcingProtocol$$Replaying.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replaying">Replaying</a> messages. If replay successfully completes the
 event log must additionally send a <a href="EventsourcingProtocol$$ReplaySuccess.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.ReplaySuccess">ReplaySuccess</a> message, otherwise, a <a href="EventsourcingProtocol$$ReplayFailure.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.ReplayFailure">ReplayFailure</a>
-message.
+message.</p><p>If <code>aggregateId</code> is defined, only events with a matching <code>aggregateId</code> are replayed, otherwise,
+all events.
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.ReplayFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplayFailureextendsProductwithSerializable"></a>
@@ -404,6 +405,23 @@ This message is not sent to a participant if that participant has sent a corresp
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Replay"></a>
+      <a id="Replay:Replay"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcingProtocol$$Replay$.html"><span class="name">Replay</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@Replay" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteNComplete" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="WriteNComplete"></a>
       <a id="WriteNComplete:WriteNComplete"></a>

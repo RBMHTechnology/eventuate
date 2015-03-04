@@ -178,12 +178,12 @@ versioned values (= full updates). <code>ConcurrentVersionsList</code> is an imm
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">A <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a> implementation that shall be used if updates modify
-current versioned values (= incremental updates).</p><div class="fullcomment"><div class="comment cmt"><p>A <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a> implementation that shall be used if updates modify
-current versioned values (= incremental updates). <code>ConcurrentVersionsTree</code> is a
-mutable data structure.</p><p><b>Please note:</b> This implementation is not optimized and leaks memory at the
-moment. Also, future versions of <code>ConcurrentVersionsTree</code> will likely be based
-on immutable data structures.
+      <p class="shortcomment cmt">A <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a> implementation that shall be used if updates modify current
+versioned values (= incremental updates).</p><div class="fullcomment"><div class="comment cmt"><p>A <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a> implementation that shall be used if updates modify current
+versioned values (= incremental updates). <code>ConcurrentVersionsTree</code> is a mutable data
+structure.</p><p><b>Please note:</b> This implementation is not optimized yet and leaks memory at the
+moment (which shouldn't be a problem if the number of incremental updates is small).
+Also, future versions of <code>ConcurrentVersionsTree</code> will likely be immutable.
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.ConditionalCommand" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ConditionalCommandextendsProductwithSerializable"></a>
@@ -259,7 +259,7 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="DurableEvent.html"><span class="name">DurableEvent</span></a><span class="params">(<span name="payload">payload: <span class="extype" name="scala.Any">Any</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="processId">processId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="sourceLogSequenceNr">sourceLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>, <span name="targetLogSequenceNr">targetLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="DurableEvent.html"><span class="name">DurableEvent</span></a><span class="params">(<span name="payload">payload: <span class="extype" name="scala.Any">Any</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="replicaId">replicaId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sourceAggregateId">sourceAggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="destinationAggregateIds">destinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="sourceLogSequenceNr">sourceLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>, <span name="targetLogSequenceNr">targetLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.package@DurableEventextendsProductwithSerializable" title="Permalink" target="_top">
@@ -267,7 +267,9 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
       </a>
     </span>
       <p class="shortcomment cmt">Provider API.</p><div class="fullcomment"><div class="comment cmt"><p>Provider API.</p><p>Event storage format.
-</p></div><dl class="paramcmts block"><dt class="param">payload</dt><dd class="cmt"><p>Custom, application-defined event.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>Wall-clock timestamp, generated by emitter (e.g. <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>Vector timestamp, generated by emitter (e.g. <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">processId</dt><dd class="cmt"><p>Process id of emitter (e.g. <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Source log id from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></dd><dt class="param">targetLogId</dt><dd class="cmt"><p>Target log id from last replication.</p></dd><dt class="param">sourceLogSequenceNr</dt><dd class="cmt"><p>Source log sequence number from last replication.</p></dd><dt class="param">targetLogSequenceNr</dt><dd class="cmt"><p>Target log sequence number from last replication.
+</p></div><dl class="paramcmts block"><dt class="param">payload</dt><dd class="cmt"><p>Custom, application-defined event.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>Wall-clock timestamp, generated by emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>Vector timestamp, generated by emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">replicaId</dt><dd class="cmt"><p>Replica id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">sourceAggregateId</dt><dd class="cmt"><p>Aggregate id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">destinationAggregateIds</dt><dd class="cmt"><p>Aggregate ids of destinations (<a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actors or views). If the
+                               destination has no <code>aggregateId</code> defined, it will receive the event in
+                               any case.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Source log id from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></dd><dt class="param">targetLogId</dt><dd class="cmt"><p>Target log id from last replication.</p></dd><dt class="param">sourceLogSequenceNr</dt><dd class="cmt"><p>Source log sequence number from last replication.</p></dd><dt class="param">targetLogSequenceNr</dt><dd class="cmt"><p>Target log sequence number from last replication.
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EventsourcedextendsActor"></a>
@@ -285,11 +287,11 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Implemented by actors that derive internal state from events stored in an event log.</p><div class="fullcomment"><div class="comment cmt"><p>Implemented by actors that derive internal state from events stored in an event log. Events
-are pushed from the <code>eventLog</code> actor to this actor and handled with the <code>onEvent</code> event handler. An
-event handler defines how events are projected on internal state. Internal state must only be modified
-within <code>onEvent</code>. External commands are handled with the <code>onCommand</code> command handler. A command handler
-may access internal state but must not modify it.
+      <p class="shortcomment cmt">Implemented by actors that derive internal state from events stored in an event log.</p><div class="fullcomment"><div class="comment cmt"><p>Implemented by actors that derive internal state from events stored in an event log. Events are
+pushed from the <code>eventLog</code> actor to this actor and handled with the <code>onEvent</code> event handler. An
+event handler defines how events are projected on internal state.</p><p>By default, an <code>Eventsourced</code> actor does not define an <code>aggregateId</code>. In this case, the <code>eventLog</code>
+pushes all events to this actor. If it defines an <code>aggregateId</code>, the <code>eventLog</code> actor only pushes
+those events that contain the <code>aggregateId</code> value in their <code>destinationAggregateIds</code> set.</p><p>Commands sent to an <code>Eventsourced</code> actor during recovery are delayed until recovery completes.
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EventsourcedActorextendsEventsourcedwithConditionalCommandswithInternalStash"></a>
@@ -309,13 +311,13 @@ may access internal state but must not modify it.
     </span>
       <p class="shortcomment cmt">An <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actor that can also produce new events to its event log.</p><div class="fullcomment"><div class="comment cmt"><p>An <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actor that can also produce new events to its event log. New events
 can be produced with methods <code>persist</code> and <code>persistN</code>. They must only be used within
-<code>onCommand</code>. An <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> does not only consume its own events but can also
-consume events produced by other <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>s to the same event log. Commands
-sent to this actor during recovery are delayed until recovery completes.</p><p>An <code>EventsourcedActor</code> maintains a <a href="VectorClock.html" class="extype" name="com.rbmhtechnology.eventuate.VectorClock">VectorClock</a> used to time-stamp the events it writes
+the <code>onCommand</code> command handler. The command handler may only read internal state but
+must not modify it. Internal state may only be modified within <code>onEvent</code>.</p><p>An <code>EventsourcedActor</code> maintains a <a href="VectorClock.html" class="extype" name="com.rbmhtechnology.eventuate.VectorClock">VectorClock</a> used to time-stamp the events it writes
 to the event log. Events that are handled by its event handler update the vector clock.
 Events that are pushed from the <code>eventLog</code> actor but not handled by <code>onEvent</code> do not
 update the vector clock.
-</p></div></div>
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a>
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EventsourcedViewextendsEventsourcedwithConditionalCommandswithStash"></a>
       <a id="EventsourcedView:EventsourcedView"></a>
@@ -332,9 +334,9 @@ update the vector clock.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">An <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actor that can only consumes events from its event log.</p><div class="fullcomment"><div class="comment cmt"><p>An <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actor that can only consumes events from its event log. Commands
-sent to this actor during recovery are delayed until recovery completes.
-</p></div></div>
+      <p class="shortcomment cmt">An <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actor that can only consume events from its <code>eventLog</code>.</p><div class="fullcomment"><div class="comment cmt"><p>An <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actor that can only consume events from its <code>eventLog</code>.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a>
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationConnection" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ReplicationConnectionextendsProductwithSerializable"></a>
       <a id="ReplicationConnection:ReplicationConnection"></a>
@@ -438,7 +440,7 @@ replicated only between event logs with matching names.
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="Versioned.html"><span class="name">Versioned</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="value">value: <span class="extype" name="com.rbmhtechnology.eventuate.Versioned.A">A</span></span>, <span name="version">version: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="processId">processId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="Versioned.html"><span class="name">Versioned</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="value">value: <span class="extype" name="com.rbmhtechnology.eventuate.Versioned.A">A</span></span>, <span name="version">version: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="replicaId">replicaId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.package@Versioned[A]extendsProductwithSerializable" title="Permalink" target="_top">
@@ -446,28 +448,27 @@ replicated only between event logs with matching names.
       </a>
     </span>
       <p class="shortcomment cmt">A versioned value.</p><div class="fullcomment"><div class="comment cmt"><p>A versioned value.
-</p></div><dl class="paramcmts block"><dt class="param">value</dt><dd class="cmt"><p>The value.</p></dd><dt class="param">version</dt><dd class="cmt"><p>The version vector of the value.</p></dd><dt class="param">processId</dt><dd class="cmt"><p>Id of the process that emitted the corresponding
-                 event that caused this version.
+</p></div><dl class="paramcmts block"><dt class="param">value</dt><dd class="cmt"><p>The value.</p></dd><dt class="param">version</dt><dd class="cmt"><p>The version vector of the value.</p></dd><dt class="param">replicaId</dt><dd class="cmt"><p>Replica id of the event emitter that caused this version.
 </p></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.VersionedObjects" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="VersionedObjects[S,C,E]extendsAnyRef"></a>
-      <a id="VersionedObjects[S,C,E]:VersionedObjects[S,C,E]"></a>
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="VersionedAggregate[S,C,E]extendsProductwithSerializable"></a>
+      <a id="VersionedAggregate[S,C,E]:VersionedAggregate[S,C,E]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">class</span>
+        <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="VersionedObjects.html"><span class="name">VersionedObjects</span></a><span class="tparams">[<span name="S">S</span>, <span name="C">C</span>, <span name="E">E</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <a href="VersionedAggregate.html"><span class="name">VersionedAggregate</span></a><span class="tparams">[<span name="S">S</span>, <span name="C">C</span>, <span name="E">E</span>]</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="cmdHandler">cmdHandler: (<span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.S">S</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.C">C</span>) ⇒ <span class="extype" name="scala.util.Try">Try</span>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.E">E</span>]</span>, <span name="evtHandler">evtHandler: (<span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.S">S</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.E">E</span>) ⇒ <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.S">S</span></span>, <span name="aggregate">aggregate: <span class="extype" name="scala.Option">Option</span>[<a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.S">S</span>, <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.E">E</span>]] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="evidence$1">evidence$1: <a href="VersionedAggregate$$DomainCmd.html" class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.DomainCmd">DomainCmd</a>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.C">C</span>]</span>, <span name="evidence$2">evidence$2: <a href="VersionedAggregate$$DomainEvt.html" class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.DomainEvt">DomainEvt</a>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.E">E</span>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@VersionedObjects[S,C,E]extendsAnyRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@VersionedAggregate[S,C,E]extendsProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Utility to maintain <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a> of <code>Map</code> values.</p><div class="fullcomment"><div class="comment cmt"><p>Utility to maintain <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a> of <code>Map</code> values.
-</p></div><dl class="paramcmts block"><dt class="tparam">S</dt><dd class="cmt"><p>Map value type.</p></dd><dt class="tparam">C</dt><dd class="cmt"><p>Command type.</p></dd><dt class="tparam">E</dt><dd class="cmt"><p>Event type.
-</p></dd></dl></div>
+      <p class="shortcomment cmt">Manages concurrent versions of an event-sourced aggregate.</p><div class="fullcomment"><div class="comment cmt"><p>Manages concurrent versions of an event-sourced aggregate.
+</p></div><dl class="paramcmts block"><dt class="tparam">S</dt><dd class="cmt"><p>Aggregate type.</p></dd><dt class="tparam">C</dt><dd class="cmt"><p>Command type.</p></dd><dt class="tparam">E</dt><dd class="cmt"><p>Event type.
+</p></dd><dt class="param">id</dt><dd class="cmt"><p>Aggregate id</p></dd><dt class="param">cmdHandler</dt><dd class="cmt"><p>Command handler</p></dd><dt class="param">evtHandler</dt><dd class="cmt"><p>Event handler</p></dd><dt class="param">aggregate</dt><dd class="cmt"><p>Aggregate.</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -645,19 +646,19 @@ replicated only between event logs with matching names.
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.VersionedObjects" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="VersionedObjects"></a>
-      <a id="VersionedObjects:VersionedObjects"></a>
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="VersionedAggregate"></a>
+      <a id="VersionedAggregate:VersionedAggregate"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="VersionedObjects$.html"><span class="name">VersionedObjects</span></a>
+        <a href="VersionedAggregate$.html"><span class="name">VersionedAggregate</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@VersionedObjects" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@VersionedAggregate" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Eventuate &mdash; Eventuate</title>
+  <title>Limitations &mdash; Eventuate</title>
   
 
   
@@ -28,8 +28,8 @@
   
 
   
-    <link rel="top" title="Eventuate" href="#"/>
-        <link rel="next" title="Introduction" href="introduction.html"/> 
+    <link rel="top" title="Eventuate" href="index.html"/>
+        <link rel="prev" title="Articles" href="articles.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -43,7 +43,7 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
-        <a href="#" class="fa fa-home"> Eventuate</a>
+        <a href="index.html" class="fa fa-home"> Eventuate</a>
         <div role="search">
   <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -56,7 +56,7 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
         
-            <ul>
+            <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-logs">Event logs</a></li>
@@ -83,7 +83,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="articles.html">Articles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="limitations.html">Limitations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Limitations</a></li>
 </ul>
 
         
@@ -96,7 +96,7 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">Eventuate</a>
+        <a href="index.html">Eventuate</a>
       </nav>
 
 
@@ -105,12 +105,12 @@
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="#">Docs</a> &raquo;</li>
+    <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Eventuate</li>
+    <li>Limitations</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/index.txt" rel="nofollow"> View page source</a>
+          <a href="_sources/limitations.txt" rel="nofollow"> View page source</a>
         
       </li>
   </ul>
@@ -118,21 +118,32 @@
 </div>
           <div role="main">
             
-  <div class="section" id="eventuate">
-<h1>Eventuate<a class="headerlink" href="#eventuate" title="Permalink to this headline">¶</a></h1>
-<p><strong>Please note:</strong> this project has <strong>early access</strong> status and will gradually evolve into a production-ready toolkit.</p>
-<div class="toctree-wrapper compound">
+  <div class="section" id="limitations">
+<h1>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h1>
+<p>The following is a list of known limitations that are going to be addressed in future versions. If any of these limitations are particularly painful to you, please <a class="reference external" href="https://groups.google.com/forum/#!forum/eventuate">let us know</a> so that we can target them accordingly.</p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="download.html">Download</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ref-guide.html">Reference guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dev-guide.html">Developer guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="project.html">Project</a></li>
-<li class="toctree-l1"><a class="reference internal" href="articles.html">Articles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="limitations.html">Limitations</a></li>
-</ul>
+<li><p class="first">The current version of Eventuate does not support cycles in the replication network. An example of a valid replication network topology is:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">A</span>        <span class="n">E</span>
+ <span class="o">\</span>      <span class="o">/</span>
+  <span class="n">C</span> <span class="o">--</span> <span class="n">D</span>
+ <span class="o">/</span>      <span class="o">\</span>
+<span class="n">B</span>        <span class="n">F</span>
+</pre></div>
 </div>
+<p>whereas the following topology is not valid:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">A</span> <span class="o">------</span> <span class="n">E</span>
+ <span class="o">\</span>      <span class="o">/</span>
+  <span class="n">C</span> <span class="o">--</span> <span class="n">D</span>
+ <span class="o">/</span>      <span class="o">\</span>
+<span class="n">B</span>        <span class="n">F</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">The only event log storage backend supported at the moment is <a class="reference external" href="https://github.com/google/leveldb">LevelDB</a>. There will be a plugin API in the future together with a default implementation of a replicated storage backend.</p>
+</li>
+<li><p class="first">...</p>
+</li>
+</ul>
 </div>
 
 
@@ -141,8 +152,8 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="introduction.html" class="btn btn-neutral float-right" title="Introduction"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
+        <a href="articles.html" class="btn btn-neutral" title="Articles"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

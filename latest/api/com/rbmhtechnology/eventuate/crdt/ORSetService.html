@@ -90,7 +90,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.crdt.ORSetService#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(processId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORSet[A],Set[A]]):com.rbmhtechnology.eventuate.crdt.ORSetService[A]"></a>
+      <a id="&lt;init&gt;(replicaId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORSet[A],Set[A]]):com.rbmhtechnology.eventuate.crdt.ORSetService[A]"></a>
       <a id="&lt;init&gt;:ORSetService[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -98,14 +98,14 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ORSetService</span><span class="params">(<span name="processId">processId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="log">log: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>, <span name="ops">ops: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>)</span>
+        <span class="name">ORSetService</span><span class="params">(<span name="replicaId">replicaId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="log">log: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>, <span name="ops">ops: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@&lt;init&gt;(processId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORSet[A],Set[A]]):com.rbmhtechnology.eventuate.crdt.ORSetService[A]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@&lt;init&gt;(replicaId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORSet[A],Set[A]]):com.rbmhtechnology.eventuate.crdt.ORSetService[A]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">processId</dt><dd class="cmt"><p>unique process id of this service replica.</p></dd><dt class="param">log</dt><dd class="cmt"><p>event log</p></dd></dl></div>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">replicaId</dt><dd class="cmt"><p>Unique replica id of this service replica.</p></dd><dt class="param">log</dt><dd class="cmt"><p>Event log</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -347,7 +347,7 @@
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">event log</p><div class="fullcomment"><div class="comment cmt"><p>event log</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService">ORSetService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
+      <p class="shortcomment cmt">Event log</p><div class="fullcomment"><div class="comment cmt"><p>Event log</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService">ORSetService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -436,23 +436,6 @@ Returns the updated value of the CRDT.
     </span>
       <p class="shortcomment cmt">CRDT service operations.</p><div class="fullcomment"><div class="comment cmt"><p>CRDT service operations.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService">ORSetService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.ORSetService#processId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="processId:String"></a>
-      <a id="processId:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">processId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@processId:String" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">unique process id of this service replica.</p><div class="fullcomment"><div class="comment cmt"><p>unique process id of this service replica.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService">ORSetService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSetService#remove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="remove(id:String,entry:A):scala.concurrent.Future[Set[A]]"></a>
       <a id="remove(String,A):Future[Set[A]]"></a>
@@ -470,6 +453,23 @@ Returns the updated value of the CRDT.
       </a>
     </span>
       <p class="shortcomment cmt">Removes <code>entry</code> from the OR-Set identified by <code>id</code> and returns the updated entry set.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORSetService#replicaId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="replicaId:String"></a>
+      <a id="replicaId:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">replicaId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@replicaId:String" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Unique replica id of this service replica.</p><div class="fullcomment"><div class="comment cmt"><p>Unique replica id of this service replica.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService">ORSetService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#start" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="start()(implicitsystem:akka.actor.ActorSystem):Unit"></a>
       <a id="start()(ActorSystem):Unit"></a>

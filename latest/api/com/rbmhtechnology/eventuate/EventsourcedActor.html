@@ -49,13 +49,13 @@
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>An <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actor that can also produce new events to its event log. New events
 can be produced with methods <code>persist</code> and <code>persistN</code>. They must only be used within
-<code>onCommand</code>. An <a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> does not only consume its own events but can also
-consume events produced by other <a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>s to the same event log. Commands
-sent to this actor during recovery are delayed until recovery completes.</p><p>An <code>EventsourcedActor</code> maintains a <a href="VectorClock.html" class="extype" name="com.rbmhtechnology.eventuate.VectorClock">VectorClock</a> used to time-stamp the events it writes
+the <code>onCommand</code> command handler. The command handler may only read internal state but
+must not modify it. Internal state may only be modified within <code>onEvent</code>.</p><p>An <code>EventsourcedActor</code> maintains a <a href="VectorClock.html" class="extype" name="com.rbmhtechnology.eventuate.VectorClock">VectorClock</a> used to time-stamp the events it writes
 to the event log. Events that are handled by its event handler update the vector clock.
 Events that are pushed from the <code>eventLog</code> actor but not handled by <code>onEvent</code> do not
 update the vector clock.
-</p></div><div class="toggleContainer block">
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a>
+</p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="akka.actor.InternalStash">InternalStash</span>, <span class="extype" name="akka.actor.StashFactory">StashFactory</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</span>, <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
@@ -193,23 +193,26 @@ update the vector clock.
     </span>
       <p class="shortcomment cmt">Event handler.</p><div class="fullcomment"><div class="comment cmt"><p>Event handler.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#processId" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="processId:String"></a>
-      <a id="processId:String"></a>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#replicaId" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="replicaId:String"></a>
+      <a id="replicaId:String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">processId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">replicaId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@processId:String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@replicaId:String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Unique process id, used to store this actor's logical time in its vector clock.</p>
+      <p class="shortcomment cmt">The replica id distinguishes replicas of an <code>EventsourcedActor</code> with a given <code>aggregateId</code>.</p><div class="fullcomment"><div class="comment cmt"><p>The replica id distinguishes replicas of an <code>EventsourcedActor</code> with a given <code>aggregateId</code>.
+It must be unique in context of a given <code>aggregateId</code> but can be reused in context of a
+different <code>aggregateId</code>.
+</p></div></div>
     </li></ol>
             </div>
 
@@ -266,6 +269,24 @@ update the vector clock.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.Eventsourced#aggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="aggregateId:Option[String]"></a>
+      <a id="aggregateId:Option[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">aggregateId</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@aggregateId:Option[String]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Optional aggregate id.</p><div class="fullcomment"><div class="comment cmt"><p>Optional aggregate id. Not defined by default.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="akka.actor.Actor#aroundPostRestart" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="aroundPostRestart(reason:Throwable):Unit"></a>
       <a id="aroundPostRestart(Throwable):Unit"></a>
@@ -629,6 +650,24 @@ safe to access internal state within <code>handler</code>.
     </span>
       <p class="shortcomment cmt">Process id of the last consumed event.</p><div class="fullcomment"><div class="comment cmt"><p>Process id of the last consumed event.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastReplicaId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="lastReplicaId:String"></a>
+      <a id="lastReplicaId:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">lastReplicaId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@lastReplicaId:String" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Replica id of the last consumed event.</p><div class="fullcomment"><div class="comment cmt"><p>Replica id of the last consumed event.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastSequenceNr" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="lastSequenceNr:Long"></a>
       <a id="lastSequenceNr:Long"></a>
@@ -735,38 +774,43 @@ safe to access internal state within <code>handler</code>.
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#persist" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="persist[A](event:A)(handler:EventsourcedActor.this.Handler[A]):Unit"></a>
-      <a id="persist[A](A)(Handler[A]):Unit"></a>
+      <a id="persist[A](event:A,destinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit"></a>
+      <a id="persist[A](A,Set[String])(Handler[A]):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">persist</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="event">event: <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persist.A">A</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persist.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">persist</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="event">event: <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persist.A">A</span></span>, <span name="destinationAggregateIds">destinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">defaultDestinationAggregateIds</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persist.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@persist[A](event:A)(handler:EventsourcedActor.this.Handler[A]):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@persist[A](event:A,destinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Persists the given <code>event</code> and asynchronously calls <code>handler</code> with the persist result.</p><div class="fullcomment"><div class="comment cmt"><p>Persists the given <code>event</code> and asynchronously calls <code>handler</code> with the persist result.
 The <code>handler</code> is called during a separate message dispatch by this actor, hence, it
-is safe to modify internal state within <code>handler</code>.
+is safe to modify internal state within <code>handler</code>.</p><p>With the <code>destinationAggregateIds</code> parameter, custom routing destinations can be defined. If
+<code>destinationAggregateIds</code> is empty, the event is only routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> destinations
+(actors or views) that have no <code>aggregateId</code> defined. If it contains aggregate ids, the event
+is additionally routed to destinations that have a matching <code>aggregateId</code>.</p><p>The <code>destinationAggregateIds</code> default value is <code>Set(aggregateId.get)</code> if this actor's
+<code>aggregateId</code> is defined, otherwise <code>Set()</code> i.e. if <code>aggregateId</code> is defined, the emitted event
+will be additionally routed to destinations with the same <code>aggregateId</code>.
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#persistN" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="persistN[A](events:Seq[A],onLast:EventsourcedActor.this.Handler[A])(handler:EventsourcedActor.this.Handler[A]):Unit"></a>
-      <a id="persistN[A](Seq[A],Handler[A])(Handler[A]):Unit"></a>
+      <a id="persistN[A](events:Seq[A],onLast:EventsourcedActor.this.Handler[A],destinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit"></a>
+      <a id="persistN[A](Seq[A],Handler[A],Set[String])(Handler[A]):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">persistN</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="events">events: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistN.A">A</span>]</span>, <span name="onLast">onLast: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistN.A">A</span>] = <span class="symbol">(_: Try[A]) =&gt; ()</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistN.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">persistN</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="events">events: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistN.A">A</span>]</span>, <span name="onLast">onLast: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistN.A">A</span>] = <span class="symbol">(_: Try[A]) =&gt; ()</span></span>, <span name="destinationAggregateIds">destinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">defaultDestinationAggregateIds</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistN.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@persistN[A](events:Seq[A],onLast:EventsourcedActor.this.Handler[A])(handler:EventsourcedActor.this.Handler[A]):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@persistN[A](events:Seq[A],onLast:EventsourcedActor.this.Handler[A],destinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -775,21 +819,26 @@ results.</p><div class="fullcomment"><div class="comment cmt"><p>Persists a sequ
 results. The <code>handler</code> is called for each event in the sequence during a separate
 message dispatch by this actor, hence, it is safe to modify internal state within
 <code>handler</code>. The <code>onLast</code> handler is additionally called for the last event in the
-sequence.
+sequence.</p><p>With the <code>destinationAggregateIds</code> parameter, custom routing destinations can be defined. If
+<code>destinationAggregateIds</code> is empty, the event is only routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> destinations
+(actors or views) that have no <code>aggregateId</code> defined. If it contains aggregate ids, the event
+is additionally routed to destinations that have a matching <code>aggregateId</code>.</p><p>The <code>destinationAggregateIds</code> default value is <code>Set(aggregateId.get)</code> if this actor's
+<code>aggregateId</code> is defined, otherwise <code>Set()</code> i.e. if <code>aggregateId</code> is defined, the emitted event
+will be additionally routed to destinations with the same <code>aggregateId</code>.
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#persistWithLocalTime" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="persistWithLocalTime[A](f:Long=&gt;A)(handler:EventsourcedActor.this.Handler[A]):A"></a>
-      <a id="persistWithLocalTime[A]((Long)⇒A)(Handler[A]):A"></a>
+      <a id="persistWithLocalTime[A](f:Long=&gt;A,destinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):A"></a>
+      <a id="persistWithLocalTime[A]((Long)⇒A,Set[String])(Handler[A]):A"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">persistWithLocalTime</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="scala.Long">Long</span>) ⇒ <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistWithLocalTime.A">A</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistWithLocalTime.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistWithLocalTime.A">A</span></span>
+        <span class="name">persistWithLocalTime</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="scala.Long">Long</span>) ⇒ <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistWithLocalTime.A">A</span></span>, <span name="destinationAggregateIds">destinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">defaultDestinationAggregateIds</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistWithLocalTime.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistWithLocalTime.A">A</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@persistWithLocalTime[A](f:Long=&gt;A)(handler:EventsourcedActor.this.Handler[A]):A" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@persistWithLocalTime[A](f:Long=&gt;A,destinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):A" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -797,7 +846,12 @@ sequence.
 persist result.</p><div class="fullcomment"><div class="comment cmt"><p>Persists the event returned by  <code>f</code> and asynchronously calls <code>handler</code> with the
 persist result. The input parameter to <code>f</code> is the current local time. The <code>handler</code> is
 called during a separate message dispatch by this actor, hence, it is safe to modify
-internal state within <code>handler</code>.
+internal state within <code>handler</code>.</p><p>With the <code>destinationAggregateIds</code> parameter, custom routing destinations can be defined. If
+<code>destinationAggregateIds</code> is empty, the event is only routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> destinations
+(actors or views) that have no <code>aggregateId</code> defined. If it contains aggregate ids, the event
+is additionally routed to destinations that have a matching <code>aggregateId</code>.</p><p>The <code>destinationAggregateIds</code> default value is <code>Set(aggregateId.get)</code> if this actor's
+<code>aggregateId</code> is defined, otherwise <code>Set()</code> i.e. if <code>aggregateId</code> is defined, the emitted event
+will be additionally routed to destinations with the same <code>aggregateId</code>.
 </p></div></div>
     </li><li name="akka.actor.Actor#postRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="postRestart(reason:Throwable):Unit"></a>
@@ -874,6 +928,23 @@ internal state within <code>handler</code>.
     </span>
       <p class="shortcomment cmt">Initiates recovery by sending a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">EventsourcingProtocol.Replay</a> request to the event log.</p><div class="fullcomment"><div class="comment cmt"><p>Initiates recovery by sending a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">EventsourcingProtocol.Replay</a> request to the event log.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> → Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#processId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="processId:String"></a>
+      <a id="processId:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">lazy val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">processId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@processId:String" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Unique process id, used to store this actor's logical time in its vector clock.</p>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="receive:EventsourcedActor.this.Receive"></a>
       <a id="receive:Receive"></a>
@@ -891,6 +962,24 @@ internal state within <code>handler</code>.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> → Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.Eventsourced#recovered" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recovered():Unit"></a>
+      <a id="recovered():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">recovered</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@recovered():Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Called after recovery successfully completed.</p><div class="fullcomment"><div class="comment cmt"><p>Called after recovery successfully completed. Can be overridden by implementations.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#recovering" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="recovering:Boolean"></a>
       <a id="recovering:Boolean"></a>
@@ -911,6 +1000,25 @@ internal state within <code>handler</code>.
 replayed events from the event log.</p><div class="fullcomment"><div class="comment cmt"><p>Returns <code>true</code> if this actor is currently recovering internal state by consuming
 replayed events from the event log. Returns <code>false</code> after recovery completed and
 the actor switches to consuming live events.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.Eventsourced#replay" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="replay():Unit"></a>
+      <a id="replay():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">replay</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@replay():Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Sends a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">EventsourcingProtocol.Replay</a> command to the event log.</p><div class="fullcomment"><div class="comment cmt"><p>Sends a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">EventsourcingProtocol.Replay</a> command to the event log. Can be overridden
+by implementations to customize recovery.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="akka.actor.Actor#self" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="self:akka.actor.ActorRef"></a>
