@@ -123,24 +123,25 @@
 <span id="id1"></span><h1>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="event-logs">
 <h2>Event logs<a class="headerlink" href="#event-logs" title="Permalink to this headline">¶</a></h2>
-<p>Eventuate applications store application-defined events in event-logs. An event log can be replicated across <em>locations</em> where each location has its own copy of events in a local event log. Replication occurs asynchronously over <em>replication connections</em> between <em>replication endpoints</em>.</p>
+<p>Eventuate applications store events in event logs. An event log can be replicated across <em>locations</em> where each location has its own copy of events in a local event log. Replication occurs asynchronously over <em>replication connections</em> between <em>replication endpoints</em>.</p>
 <div class="figure" style="width: 70%">
 <img alt="_images/architecture-1.png" src="_images/architecture-1.png" />
 <p class="caption">Fig. 1</p>
 <div class="legend">
 An event log, replicated across locations A, B and C.</div>
 </div>
-<p>Events within a local log are totally ordered. This total order however is likely to differ among locations, as events can be written concurrently. The strongest ordering guarantee that can be given across locations is <a class="reference external" href="http://krasserm.github.io/2015/01/13/event-sourcing-at-global-scale/#event-log">causal ordering</a> <a class="footnote-reference" href="#id5" id="id2">[1]</a> which is tracked with <a class="reference external" href="http://en.wikipedia.org/wiki/Vector_clock">vector clocks</a>. Causal ordering is guaranteed to be consistent with total ordering in local event logs.</p>
-<p>A replication endpoint can also manage more than one local event log. Event logs are indexed by name and replication occurs only between logs of the same name. Logs with different names are isolated from each other which is the basis for scaling writes. Also, their distribution across locations may differ, as shown in the following figure.</p>
+<p>Events within a local log are totally ordered. This total order however is likely to differ among locations, as events can be written concurrently. The strongest ordering guarantee that can be given across locations is <a class="reference external" href="http://krasserm.github.io/2015/01/13/event-sourcing-at-global-scale/#event-log">causal ordering</a> <a class="footnote-reference" href="#id7" id="id2">[1]</a> which is tracked with <a class="reference external" href="http://en.wikipedia.org/wiki/Vector_clock">vector clocks</a>. Causal ordering is guaranteed to be consistent with total ordering in local event logs.</p>
+<p>A replication endpoint can also manage more than one local event log. Event logs are indexed by name and replication occurs only between logs of the same name. Logs with different names are isolated from each other <a class="footnote-reference" href="#id8" id="id3">[2]</a> and their distribution across locations may differ, as shown in the following figure.</p>
 <div class="figure" style="width: 70%">
 <img alt="_images/architecture-2.png" src="_images/architecture-2.png" />
 <p class="caption">Fig. 2</p>
 <div class="legend">
 Three replicated event logs. Log X (blue) is replicated across locations A, B and C. Log Y (red) is replicated across locations A and B and log Z (green) is replicated across locations A and C.</div>
 </div>
-<p>Event storage backends at individual locations are pluggable. A location that requires strong durability guarantees should use a storage backend that is (synchronously) replicated within that location, others may use a more lightweight, non-replicated storage backend in case of weaker durability requirements.</p>
-<p>Event replication across locations is reliable. Should a location crash or the network partitions, replication automatically resumes when crashed location recovers and/or the partition heals. Built-in failure detectors inform applications about (un)availability of other locations. Replication endpoints also ensure that no duplicates are ever written to target event logs.</p>
-<p>Replication connections can be configured with replication filters, so that only events matching one or more filter predicates are replicated. This is especially useful for smaller locations (for example, a mobile device) that only needs to exchange a subset of events with other locations.</p>
+<p>Eventuate event logs are comparable to <a class="reference external" href="https://kafka.apache.org/">Apache Kafka</a> topics. The main difference is that Kafka chooses consistency over write-availability for replicated topics whereas Eventuate chooses write-availability over consistency for replicated event logs, giving up total ordering for causal ordering.</p>
+<p>Event storage backends at individual locations are pluggable. A location that requires strong durability guarantees should use a storage backend that is (synchronously) replicated within that location (<a class="reference external" href="https://kafka.apache.org/">Apache Kafka</a> is an good fit here), others may use a more lightweight, non-replicated storage backend in case of weaker durability requirements.</p>
+<p>Event replication across locations is reliable. Should a location crash or a network partition occur, replication automatically resumes when crashed location recovers and/or the partition heals. Built-in failure detectors inform applications about (un)availability of other locations. Replication endpoints also ensure that no duplicates are ever written to target event logs.</p>
+<p>Replication connections can be configured with replication filters, so that only events matching one or more filter criteria are replicated. This is especially useful for smaller locations (for example, a mobile device) that only needs to exchange a subset of events with other locations.</p>
 </div>
 <div class="section" id="event-sourced-actors">
 <h2>Event-sourced actors<a class="headerlink" href="#event-sourced-actors" title="Permalink to this headline">¶</a></h2>
@@ -152,8 +153,8 @@ Three replicated event logs. Log X (blue) is replicated across locations A, B an
 An event-sourced actor, producing events to and consuming events from an event log.</div>
 </div>
 <p>When an event-sourced actor is re-started, internal state is recovered by replaying events from its local event log. Since events in a local event log are totally ordered, event replay at a given location is deterministic. Event replay can also be started from a snapshot of internal state which is an optimization to reduce recovery times.</p>
-<p>In addition to consuming their own events, event-sourced actors can also consume events produced by other event-sourced actors to the same event log. This enables <a class="reference external" href="http://martinfowler.com/eaaDev/EventCollaboration.html">event collaboration</a> between actors (<a class="reference internal" href="#arch-fig4"><em>Fig. 4</em></a>). Event routing between actors can be customized with application-defined routing logic.</p>
-<p>A special form of event collaboration is state replication where actors of the same type consume the same events at different locations to re-construct state. Another example of event collaboration is a distributed business process where actors of different type collaborate by exchanging events to achieve a common goal.</p>
+<p>In addition to consuming their own events, event-sourced actors can also consume events produced by other event-sourced actors to the same event log. This enables <a class="reference external" href="http://martinfowler.com/eaaDev/EventCollaboration.html">event collaboration</a> between actors (<a class="reference internal" href="#arch-fig4"><em>Fig. 4</em></a>). The underlying event routing can be customized with application-defined routing logic.</p>
+<p>A special form of event collaboration is state replication where actors of the same type consume the same events at different locations to re-construct state (see also <a class="reference internal" href="#crdt-services"><em>CRDT services</em></a>). Another example of event collaboration is a distributed business process where actors of different type collaborate by exchanging events to achieve a common goal.</p>
 <div class="figure" id="arch-fig4" style="width: 70%">
 <img alt="_images/architecture-4.png" src="_images/architecture-4.png" />
 <p class="caption">Fig. 4</p>
@@ -171,11 +172,11 @@ External service integration.</div>
 </div>
 <div class="section" id="event-sourced-views">
 <h2>Event-sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h2>
-<p>Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. Views do not only maintain state in-memory but often persist it to a database. By additionally storing the latest sequence number in the database, writing can be made idempotent. When used in context of a <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> architecture, views implement the query-side (Q).</p>
+<p>Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. Views do not only maintain state in-memory but often persist it to a database. By additionally storing the sequence number of the last processed event in the database, writing can be made idempotent. When used in context of a <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> architecture, views implement the query-side (Q).</p>
 </div>
 <div class="section" id="event-sourced-processors">
-<h2>Event-sourced processors<a class="headerlink" href="#event-sourced-processors" title="Permalink to this headline">¶</a></h2>
-<p>An event-sourced processor consumes events from one event log, processes them (stateless or stateful) and produces processed events to another event log. Event-sourced processors are gateways between otherwise partitioned event logs. They are not implemented yet but coming soon.</p>
+<span id="processors"></span><h2>Event-sourced processors<a class="headerlink" href="#event-sourced-processors" title="Permalink to this headline">¶</a></h2>
+<p>An event-sourced processor consumes events from one or more event logs, processes them (stateless or stateful) and produces the processed events to another event log. Event-sourced processors are gateways between otherwise partitioned event logs. They are not implemented yet but coming soon.</p>
 </div>
 <div class="section" id="snapshots">
 <h2>Snapshots<a class="headerlink" href="#snapshots" title="Permalink to this headline">¶</a></h2>
@@ -187,7 +188,7 @@ External service integration.</div>
 <p>Only events that are actually handled by an event-sourced actor contribute to its vector clock. This allows to keep vector clock sizes small, even if a large number of event-sourced actors is used. For example, if an application follows a one-<a class="reference external" href="http://martinfowler.com/bliki/DDD_Aggregate.html">aggregate</a>-per-actor design, vector clock sizes scale only with the (small) number of locations rather than the (potentially large) number of aggregates.</p>
 </div>
 <div class="section" id="crdt-services">
-<h2>CRDT services<a class="headerlink" href="#crdt-services" title="Permalink to this headline">¶</a></h2>
+<span id="id4"></span><h2>CRDT services<a class="headerlink" href="#crdt-services" title="Permalink to this headline">¶</a></h2>
 <p>Eventuate provides implementations of operation-based <a class="reference external" href="http://en.wikipedia.org/wiki/Conflict-free_replicated_data_type">CRDT</a>s (commutative replicated data types or CmRDTs) that rely on a replicated event log to reliably broadcast update operations. CmRDTs are managed by <a class="reference external" href="https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/">CRDT services</a> that provide applications convenient access to CmRDTs. New CmRDT types can be integrated into the CRDT service infrastructure with the CRDT development framework.</p>
 </div>
 <div class="section" id="batching">
@@ -209,11 +210,17 @@ External service integration.</div>
 <li><a class="reference external" href="http://doc.akka.io/docs/akka-stream-and-http-experimental/current/scala.html">akka-streams</a></li>
 <li><a class="reference external" href="https://github.com/scalaz/scalaz-stream">scalaz-stream</a></li>
 </ul>
-<p>We haven’t started yet working on this. Should you have any preferences or proposals for further integrations, please <a class="reference external" href="https://groups.google.com/forum/#!forum/eventuate">let us know</a>. Of course, we love contributions too :)</p>
-<table class="docutils footnote" frame="void" id="id5" rules="none">
+<p>We haven’t started yet working on this. Should you have any preferences or proposals for further integrations, please <a class="reference external" href="https://groups.google.com/forum/#!forum/eventuate">let us know</a>. Of course, we love contributions :)</p>
+<table class="docutils footnote" frame="void" id="id7" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>In the linked article, the term <em>site</em> is synonymous with <em>location</em>.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id8" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td><a class="reference internal" href="#processors"><em>Event-sourced processors</em></a> can be used to connect partitioned event logs.</td></tr>
 </tbody>
 </table>
 </div>
