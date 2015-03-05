@@ -99,8 +99,8 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
    * is additionally routed to destinations that have a matching `aggregateId`.
    *
    * The `destinationAggregateIds` default value is `Set(aggregateId.get)` if this actor's
-   * `aggregateId` is defined, otherwise `Set()` i.e. if `aggregateId` is defined, the emitted event
-   * will be additionally routed to destinations with the same `aggregateId`.
+   * `aggregateId` is defined, otherwise `Set()`. In other words, if `aggregateId` is defined, the
+   * emitted event will be additionally routed to destinations with the same `aggregateId`.
    */
   final def persistN[A](events: Seq[A], onLast: Handler[A] = (_: Try[A]) => (), destinationAggregateIds: Set[String] = defaultDestinationAggregateIds)(handler: Handler[A]): Unit = events match {
     case Seq()   =>
@@ -125,8 +125,8 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
    * is additionally routed to destinations that have a matching `aggregateId`.
    *
    * The `destinationAggregateIds` default value is `Set(aggregateId.get)` if this actor's
-   * `aggregateId` is defined, otherwise `Set()` i.e. if `aggregateId` is defined, the emitted event
-   * will be additionally routed to destinations with the same `aggregateId`.
+   * `aggregateId` is defined, otherwise `Set()`. In other words, if `aggregateId` is defined, the
+   * emitted event will be additionally routed to destinations with the same `aggregateId`.
    */
   final def persist[A](event: A, destinationAggregateIds: Set[String] = defaultDestinationAggregateIds)(handler: Handler[A]): Unit =
     persistWithLocalTime(_ => event, destinationAggregateIds)(handler)
@@ -143,8 +143,8 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
    * is additionally routed to destinations that have a matching `aggregateId`.
    *
    * The `destinationAggregateIds` default value is `Set(aggregateId.get)` if this actor's
-   * `aggregateId` is defined, otherwise `Set()` i.e. if `aggregateId` is defined, the emitted event
-   * will be additionally routed to destinations with the same `aggregateId`.
+   * `aggregateId` is defined, otherwise `Set()`. In other words, if `aggregateId` is defined, the
+   * emitted event will be additionally routed to destinations with the same `aggregateId`.
    */
   final def persistWithLocalTime[A](f: Long => A, destinationAggregateIds: Set[String] = defaultDestinationAggregateIds)(handler: Handler[A]): A = {
     clock = clock.tick()
@@ -154,11 +154,18 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
     event
   }
 
+  /**
+   * Returns the default event routing destinations of this actor. Can be overridden to customize
+   * default event routing.
+   *
+   * @see [[persist]]
+   * @see [[persistN]]
+   */
+  def defaultDestinationAggregateIds: Set[String] =
+    aggregateId.map(Set(_)).getOrElse(Set.empty)
+
   private[eventuate] def currentTime: VectorTime =
     clock.currentTime
-
-  private def defaultDestinationAggregateIds: Set[String] =
-    aggregateId.map(Set(_)).getOrElse(Set.empty)
 
   private def delayPending: Boolean =
     delayRequests.nonEmpty
