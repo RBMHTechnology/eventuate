@@ -5,7 +5,7 @@ Project
 Information
 -----------
 
-- `Source repository`_
+- `Code repository`_
 - `Issue tracker`_
 - `API docs`_
 
@@ -15,7 +15,7 @@ Community
 - `User mailing list`_
 - `Gitter chat room`_
 
-.. _Source repository: https://github.com/RBMHTechnology/eventuate
+.. _Code repository: https://github.com/RBMHTechnology/eventuate
 .. _Issue tracker: https://github.com/RBMHTechnology/eventuate/issues
 .. _API docs: latest/api/index.html
 
