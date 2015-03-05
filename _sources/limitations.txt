@@ -22,8 +22,10 @@ The following is a list of known limitations that are going to be addressed in f
 
 - The only event log storage backend supported at the moment is LevelDB_. There will be a plugin API in the future together with a default implementation of a replicated storage backend.
 
-- ...
+- Event routing is limited at the moment. In addition to event broadcast and ``aggregateId``-based collaboration groups, there is `direct event routing`_ supported but `advanced event routing`_ will come in a later release.
 
 .. _LevelDB: https://github.com/google/leveldb
 .. _let us know: https://groups.google.com/forum/#!forum/eventuate
 
+.. _direct event routing: https://github.com/RBMHTechnology/eventuate/issues/45
+.. _advanced event routing: https://github.com/RBMHTechnology/eventuate/issues/46
