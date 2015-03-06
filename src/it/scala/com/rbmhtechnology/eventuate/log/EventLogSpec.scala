@@ -408,6 +408,12 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
       log.tell(Read(1, Int.MaxValue, SourceLogIdExclusionFilter(remoteLogId)), requestorProbe.ref)
       requestorProbe.expectMsg(ReadSuccess(generatedEvents, 6))
     }
+    "not batch-read events from index" in {
+      generateEvents(offset = 0, destinationAggregateIds = Set("a1"))
+      generateEvents(offset = 3, destinationAggregateIds = Set())
+      log.tell(Read(1, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
+      requestorProbe.expectMsg(ReadSuccess(generatedEvents, 6))
+    }
     "reply with a failure message if batch-read fails" in {
       log.tell(Read(-1, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
       requestorProbe.expectMsg(ReadFailure(boom))
