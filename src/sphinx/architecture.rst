@@ -4,6 +4,8 @@
 Architecture
 ------------
 
+.. _event-logs:
+
 Event logs
 ----------
 
@@ -14,18 +16,18 @@ Eventuate applications store events in event logs. An event log can be replicate
 
    Fig. 1
 
-   An event log, replicated across locations A, B and C.
+   An event log, replicated across locations 1, 2 and 3.
 
-Events within a local log are totally ordered. This total order however is likely to differ among locations, as events can be written concurrently. The strongest ordering guarantee that can be given across locations is `causal ordering`_ [#]_ which is tracked with `vector clocks`_. Causal ordering is guaranteed to be consistent with total ordering in local event logs. 
+Events within a local log are totally ordered. This total order however is likely to differ among locations, as events can be written concurrently. The strongest ordering guarantee that can be given across locations is `causal ordering`_\ [#]_ which is tracked with `vector clocks`_. Causal ordering is guaranteed to be consistent with total ordering in local event logs. 
 
-A replication endpoint can also manage more than one local event log. Event logs are indexed by name and replication occurs only between logs of the same name. Logs with different names are isolated from each other [#]_ and their distribution across locations may differ, as shown in the following figure.
+A replication endpoint can also manage more than one local event log. Event logs are indexed by name and replication occurs only between logs of the same name. Logs with different names are isolated from each other\ [#]_ and their distribution across locations may differ, as shown in the following figure.
 
 .. figure:: images/architecture-2.png
    :figwidth: 70%
 
    Fig. 2
 
-   Three replicated event logs. Log X (blue) is replicated across locations A, B and C. Log Y (red) is replicated across locations A and B and log Z (green) is replicated across locations A and C.
+   Three replicated event logs. Log X (blue) is replicated across locations 1, 2 and 3. Log Y (red) is replicated across locations 1 and 2 and log Z (green) is replicated across locations 1 and 3.
 
 Eventuate event logs are comparable to `Apache Kafka`_ topics. The main difference is that Kafka chooses consistency over write-availability for replicated topics whereas Eventuate chooses write-availability over consistency for replicated event logs, giving up total ordering for causal ordering.
 
@@ -89,6 +91,8 @@ Snapshots
 ---------
 
 Snapshots of internal state can be taken from event-sourced actors, views and processors. Snapshotting is an optimization to reduce recovery times of event-sourced components. Snapshotting is not implemented yet but coming soon.
+
+.. _vector-clocks:
 
 Vector clocks
 -------------

@@ -35,6 +35,15 @@ trait ReplicationFilter extends Serializable {
     case f @ AndFilter(filters) => f.copy(filter +: filters)
     case _ => AndFilter(Seq(filter, this))
   }
+
+  /**
+   * Returns a composed replication filter that represents a logical OR of
+   * this filter and the given `filter`.
+   */
+  def or(filter: ReplicationFilter): ReplicationFilter = this match {
+    case f @ OrFilter(filters) => f.copy(filter +: filters)
+    case _ => OrFilter(Seq(filter, this))
+  }
 }
 
 /**
@@ -49,6 +58,23 @@ private[eventuate] case class AndFilter(filters: Seq[ReplicationFilter]) extends
     def go(filters: Seq[ReplicationFilter]): Boolean = filters match {
       case Nil => true
       case f +: fs => if (f(event)) go(fs) else false
+    }
+    go(filters)
+  }
+}
+
+/**
+ * Serializable logical OR of given `filters`.
+ */
+private[eventuate] case class OrFilter(filters: Seq[ReplicationFilter]) extends ReplicationFilter {
+  /**
+   * Evaluates to `true` if any of `filters` evaluate to `true`, `false` otherwise.
+   */
+  def apply(event: DurableEvent): Boolean = {
+    @annotation.tailrec
+    def go(filters: Seq[ReplicationFilter]): Boolean = filters match {
+      case Nil => false
+      case f +: fs => if (f(event)) true else go(fs)
     }
     go(filters)
   }

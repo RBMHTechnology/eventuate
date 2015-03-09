@@ -59,7 +59,7 @@ class ReplicatedORSetSpec extends MultiNodeSpec(ReplicatedORSetConfig) with Mult
       val probe = TestProbe()
 
       runOn(nodeA) {
-        val endpoint = createEndpoint(nodeA.name, Seq(node(nodeB).address.toReplicationConnection))
+        val endpoint = createEndpoint(nodeA.name, Set(node(nodeB).address.toReplicationConnection))
         val service = new ORSetService[Int]("A", endpoint.logs(DefaultLogName)) {
           override private[crdt] def onChange(crdt: ORSet[Int]): Unit = probe.ref ! crdt.value
         }
@@ -85,7 +85,7 @@ class ReplicatedORSetSpec extends MultiNodeSpec(ReplicatedORSetConfig) with Mult
       }
 
       runOn(nodeB) {
-        val endpoint = createEndpoint(nodeB.name, Seq(node(nodeA).address.toReplicationConnection))
+        val endpoint = createEndpoint(nodeB.name, Set(node(nodeA).address.toReplicationConnection))
         val service = new ORSetService[Int]("B", endpoint.logs(DefaultLogName)) {
           override private[crdt] def onChange(crdt: ORSet[Int]): Unit = probe.ref ! crdt.value
         }

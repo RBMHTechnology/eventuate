@@ -27,7 +27,7 @@ import com.typesafe.config.ConfigFactory
 
 import org.apache.commons.io.FileUtils
 
-class ReplicationNode(nodeId: String, logIds: Set[String], port: Int, connections: Seq[ReplicationConnection]) {
+class ReplicationNode(nodeId: String, logIds: Set[String], port: Int, connections: Set[ReplicationConnection]) {
   val config = ConfigFactory.parseString(
     s"""
       |akka.remote.netty.tcp.hostname = "127.0.0.1"

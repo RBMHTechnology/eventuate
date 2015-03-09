@@ -30,12 +30,12 @@ object EventsourcedViewSpec {
 
     val eventLog = logProbe
 
-    override def onCommand: Receive = {
+    override val onCommand: Receive = {
       case "boom" => throw boom
       case Ping(i) => dstProbe ! Pong(i)
     }
 
-    override def onEvent: Receive = {
+    override val onEvent: Receive = {
       case "boom" => throw boom
       case evt => dstProbe ! ((evt, lastVectorTimestamp, lastSequenceNr))
     }

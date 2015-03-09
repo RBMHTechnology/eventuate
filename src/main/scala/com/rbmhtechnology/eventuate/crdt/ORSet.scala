@@ -87,6 +87,7 @@ object ORSet {
   }
 }
 
+//#or-set-service
 /**
  * Replicated [[ORSet]] CRDT service.
  *
@@ -112,5 +113,9 @@ class ORSetService[A](val replicaId: String, val log: ActorRef)(implicit system:
   start()
 }
 
+/** Persistent add operation */
 private case class AddOp(entry: Any)
+
+/** Persistent remove operation */
 private case class RemoveOp(entry: Any, timestamps: Set[VectorTime] = Set.empty)
+//#

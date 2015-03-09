@@ -162,7 +162,7 @@ trait CRDTService[A, B] {
     override def stateSync: Boolean =
       ops.precondition
 
-    override def onCommand: Receive = {
+    override val onCommand: Receive = {
       case GetValue(id) =>
         sender() ! GetValueReply(id, ops.value(crdts(id)))
       case UpdateValue(id, operation) =>
@@ -180,7 +180,7 @@ trait CRDTService[A, B] {
         }
     }
 
-    override def onEvent: Receive = {
+    override val onEvent: Receive = {
       case ValueUpdated(id, operation) =>
         val crdt = crdts.get(id) match {
           case Some(crdt) => crdt

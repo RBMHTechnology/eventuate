@@ -2,16 +2,20 @@
 Eventuate
 =========
 
-**Please note:** this project has **early access** status and will gradually evolve into a production-ready toolkit.
+.. note::
+   This project has **early access** status.
 
 .. toctree::
    :maxdepth: 1
 
+   getting-started
    introduction
    architecture
    download
-   ref-guide
-   dev-guide
+   user-guide
+   reference
+   developers
    project
    articles
-   limitations
+   example-application
+   current-limitations

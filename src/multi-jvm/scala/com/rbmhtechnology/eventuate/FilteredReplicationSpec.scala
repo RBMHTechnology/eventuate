@@ -51,14 +51,14 @@ object FilteredReplicationSpec {
   }
 
   class ReplicatedActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
-    def onCommand = {
+    val onCommand: Receive = {
       case s: String => persist(s) {
         case Success(e) => onEvent(e)
         case Failure(e) => throw e
       }
     }
 
-    def onEvent = {
+    val onEvent: Receive = {
       case s: String => probe ! s
     }
   }
@@ -80,7 +80,7 @@ class FilteredReplicationSpec extends MultiNodeSpec(FilteredReplicationConfig) w
 
       runOn(nodeA) {
         val connection = node(nodeB).address.toReplicationConnection.copy(filters = Map(DefaultLogName -> new PayloadEqualityFilter("B2")))
-        val endpoint = createEndpoint(nodeA.name, Seq(connection))
+        val endpoint = createEndpoint(nodeA.name, Set(connection))
         val actor = system.actorOf(Props(new ReplicatedActor("pa", endpoint.logs(DefaultLogName), probe.ref)))
 
         actor ! ("A1")
@@ -92,7 +92,7 @@ class FilteredReplicationSpec extends MultiNodeSpec(FilteredReplicationConfig) w
 
       runOn(nodeB) {
         val connection = node(nodeA).address.toReplicationConnection.copy(filters = Map(DefaultLogName -> new PayloadEqualityFilter("A2")))
-        val endpoint = createEndpoint(nodeB.name, Seq(connection))
+        val endpoint = createEndpoint(nodeB.name, Set(connection))
         val actor = system.actorOf(Props(new ReplicatedActor("pb", endpoint.logs(DefaultLogName), probe.ref)))
 
         actor ! ("B1")

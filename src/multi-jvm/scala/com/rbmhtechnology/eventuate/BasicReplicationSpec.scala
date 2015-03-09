@@ -47,14 +47,14 @@ object BasicReplicationConfig extends MultiNodeConfig {
 
 object BasicReplicationSpec {
   class ReplicatedActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
-    def onCommand = {
+    val onCommand: Receive = {
       case s: String => persist(s) {
         case Success(e) => onEvent(e)
         case Failure(e) => throw e
       }
     }
 
-    def onEvent = {
+    val onEvent: Receive = {
       case s: String => probe ! s
     }
   }
@@ -80,7 +80,7 @@ class BasicReplicationSpec extends MultiNodeSpec(BasicReplicationConfig) with Mu
       val probe = TestProbe()
 
       runOn(nodeA) {
-        val endpoint = createEndpoint(nodeA.name, Seq(node(nodeB).address.toReplicationConnection))
+        val endpoint = createEndpoint(nodeA.name, Set(node(nodeB).address.toReplicationConnection))
         val actor = system.actorOf(Props(new ReplicatedActor("pa", endpoint.logs(DefaultLogName), probe.ref)))
 
         actor ! ("A1")
@@ -88,7 +88,7 @@ class BasicReplicationSpec extends MultiNodeSpec(BasicReplicationConfig) with Mu
       }
 
       runOn(nodeB) {
-        val endpoint = createEndpoint(nodeB.name, Seq(
+        val endpoint = createEndpoint(nodeB.name, Set(
           node(nodeA).address.toReplicationConnection,
           node(nodeC).address.toReplicationConnection))
         val actor = system.actorOf(Props(new ReplicatedActor("pb", endpoint.logs(DefaultLogName), probe.ref)))
@@ -98,7 +98,7 @@ class BasicReplicationSpec extends MultiNodeSpec(BasicReplicationConfig) with Mu
       }
 
       runOn(nodeC) {
-        val endpoint = createEndpoint(nodeC.name, Seq(node(nodeB).address.toReplicationConnection))
+        val endpoint = createEndpoint(nodeC.name, Set(node(nodeB).address.toReplicationConnection))
         val actor = system.actorOf(Props(new ReplicatedActor("pc", endpoint.logs(DefaultLogName), probe.ref)))
 
         actor ! ("C1")

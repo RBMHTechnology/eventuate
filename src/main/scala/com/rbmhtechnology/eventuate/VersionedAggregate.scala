@@ -105,7 +105,7 @@ case class VersionedAggregate[S, C: DomainCmd, E: DomainEvt](
     case Some(versions) if versions.owner != origin =>
       Failure(new ConflictResolutionRejectedException(id, versions.owner, origin))
     case Some(versions) =>
-      Success(Resolved(id, versions.all(selected).version, origin))
+      Success(Resolved(id, versions.all(selected).updateTimestamp, origin))
   }
 
   def handleCreated(evt: E, timestamp: VectorTime, sequenceNr: Long): VersionedAggregate[S, C, E] = {
@@ -122,8 +122,8 @@ case class VersionedAggregate[S, C: DomainCmd, E: DomainEvt](
     copy(aggregate = aggregate.map(_.update(evt, timestamp)))
   }
 
-  def handleResolved(evt: Resolved, eventTimestamp: VectorTime, sequenceNr: Long): VersionedAggregate[S, C, E] = {
-    copy(aggregate = aggregate.map(_.resolve(evt.selected, eventTimestamp)))
+  def handleResolved(evt: Resolved, updateTimestamp: VectorTime, sequenceNr: Long): VersionedAggregate[S, C, E] = {
+    copy(aggregate = aggregate.map(_.resolve(evt.selected, updateTimestamp)))
   }
 }
 

@@ -32,14 +32,14 @@ object ReplicationIntegrationSpec {
   }
 
   class ReplicatedActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
-    def onCommand = {
+    val onCommand: Receive = {
       case s: String => persist(s) {
         case Success(e) => onEvent(e)
         case Failure(e) => throw e
       }
     }
 
-    def onEvent = {
+    val onEvent: Receive = {
       case s: String => probe ! s
     }
   }
@@ -71,9 +71,9 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
 
   "Event log replication" must {
     "replicate all events by default" in {
-      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, List(localConnection(2553))))
-      val nodeB = register(new ReplicationNode("B", Set("L1"), 2553, List(localConnection(2552), localConnection(2554))))
-      val nodeC = register(new ReplicationNode("C", Set("L1"), 2554, List(localConnection(2553))))
+      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, Set(localConnection(2553))))
+      val nodeB = register(new ReplicationNode("B", Set("L1"), 2553, Set(localConnection(2552), localConnection(2554))))
+      val nodeC = register(new ReplicationNode("C", Set("L1"), 2554, Set(localConnection(2553))))
 
       val probeA = new TestProbe(nodeA.system)
       val probeB = new TestProbe(nodeB.system)
@@ -112,8 +112,8 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
       assertPartialOrderOnAllReplicas("c1", "c2", "c3")
     }
     "replicate events based on filter criteria" in {
-      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, List(localConnection(2553, Map("L1" -> new PayloadEqualityFilter("b2"))))))
-      val nodeB = register(new ReplicationNode("B", Set("L1"), 2553, List(localConnection(2552, Map("L1" -> new PayloadEqualityFilter("a2"))))))
+      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, Set(localConnection(2553, Map("L1" -> new PayloadEqualityFilter("b2"))))))
+      val nodeB = register(new ReplicationNode("B", Set("L1"), 2553, Set(localConnection(2552, Map("L1" -> new PayloadEqualityFilter("a2"))))))
 
       val probeA = new TestProbe(nodeA.system)
       val probeB = new TestProbe(nodeB.system)
@@ -133,8 +133,8 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
       val eventsB = probeB.expectMsgAllOf("b1", "b2", "b3", "a2")
     }
     "immediately attempt next batch if last replicated batch was not empty" in {
-      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, List(localConnection(2553))))
-      val nodeB = register(new ReplicationNode("B", Set("L1"), 2553, List(localConnection(2552))))
+      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, Set(localConnection(2553))))
+      val nodeB = register(new ReplicationNode("B", Set("L1"), 2553, Set(localConnection(2552))))
 
       val probeB = new TestProbe(nodeB.system)
 
@@ -149,8 +149,8 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
     "detect replication server availability" in {
       import ReplicationEndpoint._
 
-      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, List(localConnection(2553))))
-      val nodeB = register(new ReplicationNode("B", Set("L1"), 2553, List(localConnection(2552))))
+      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, Set(localConnection(2553))))
+      val nodeB = register(new ReplicationNode("B", Set("L1"), 2553, Set(localConnection(2552))))
 
       val probeA = new TestProbe(nodeA.system)
       val probeB = new TestProbe(nodeB.system)
@@ -164,8 +164,8 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
     "detect replication server unavailability" in {
       import ReplicationEndpoint._
 
-      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, List(localConnection(2553))))
-      val nodeB1 = register(new ReplicationNode("B", Set("L1"), 2553, List(localConnection(2552))))
+      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, Set(localConnection(2553))))
+      val nodeB1 = register(new ReplicationNode("B", Set("L1"), 2553, Set(localConnection(2552))))
 
       val probeAvailable1 = new TestProbe(nodeA.system)
       val probeAvailable2 = new TestProbe(nodeA.system)
@@ -179,7 +179,7 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
       probeUnavailable.expectMsg(Unavailable("B", "L1"))
 
       // start replication node B again
-      register(new ReplicationNode("B", Set("L1"), 2553, List(localConnection(2552))))
+      register(new ReplicationNode("B", Set("L1"), 2553, Set(localConnection(2552))))
 
       nodeA.system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
       probeAvailable2.expectMsg(Available("B", "L1"))
@@ -187,8 +187,8 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
     "support multiple logs per replication endpoint" in {
       val logNames = Set("L1", "L2")
 
-      val nodeA = register(new ReplicationNode("A", logNames, 2552, List(localConnection(2553))))
-      val nodeB = register(new ReplicationNode("B", logNames, 2553, List(localConnection(2552))))
+      val nodeA = register(new ReplicationNode("A", logNames, 2552, Set(localConnection(2553))))
+      val nodeB = register(new ReplicationNode("B", logNames, 2553, Set(localConnection(2552))))
 
       val probeAL1 = new TestProbe(nodeA.system)
       val probeAL2 = new TestProbe(nodeA.system)
@@ -216,8 +216,8 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
       val logNamesA = Set("L1", "L2")
       val logNamesB = Set("L2", "L3")
 
-      val nodeA = register(new ReplicationNode("A", logNamesA, 2552, List(localConnection(2553))))
-      val nodeB = register(new ReplicationNode("B", logNamesB, 2553, List(localConnection(2552))))
+      val nodeA = register(new ReplicationNode("A", logNamesA, 2552, Set(localConnection(2553))))
+      val nodeB = register(new ReplicationNode("B", logNamesB, 2553, Set(localConnection(2552))))
 
       val probeAL1 = new TestProbe(nodeA.system)
       val probeAL2 = new TestProbe(nodeA.system)

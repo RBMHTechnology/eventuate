@@ -32,10 +32,10 @@ trait MultiNodeReplicationEndpoint extends BeforeAndAfterAll { this: MultiNodeSp
   private val logPrefix = "log"
   private var logId = ""
 
-  def createEndpoint(endpointId: String, connections: Seq[ReplicationConnection]): ReplicationEndpoint =
+  def createEndpoint(endpointId: String, connections: Set[ReplicationConnection]): ReplicationEndpoint =
     createEndpoint(endpointId, Set(ReplicationEndpoint.DefaultLogName), connections)
 
-  def createEndpoint(endpointId: String, logNames: Set[String], connections: Seq[ReplicationConnection]): ReplicationEndpoint = {
+  def createEndpoint(endpointId: String, logNames: Set[String], connections: Set[ReplicationConnection]): ReplicationEndpoint = {
     new ReplicationEndpoint(endpointId, logNames, id => { logId = id; LeveldbEventLog.props(id, logPrefix) }, connections)
   }
 

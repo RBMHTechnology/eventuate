@@ -39,8 +39,8 @@ object EventLogSpec {
   val remoteLogIdFilter = SourceLogIdExclusionFilter(remoteLogId)
   val undefinedLogIdFilter = SourceLogIdExclusionFilter(UndefinedLogId)
 
-  def event(payload: Any, timestamp: VectorTime, replicaId: String, sourceAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): DurableEvent =
-    DurableEvent(payload, 0L, timestamp, replicaId, sourceAggregateId, destinationAggregateIds)
+  def event(payload: Any, timestamp: VectorTime, replicaId: String, emitterAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): DurableEvent =
+    DurableEvent(payload, 0L, timestamp, replicaId, emitterAggregateId, destinationAggregateIds)
 
   def timestampA(timeA: Long): VectorTime =
     VectorTime(processId(replicaIdA) -> timeA)
@@ -84,16 +84,16 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     collaborator
   }
   
-  def generateEvents(offset: Long = 0L, sourceAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): Unit = {
+  def generateEvents(offset: Long = 0L, emitterAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): Unit = {
     val events: Vector[DurableEvent] = Vector(
-      event("a", timestampAB(1 + offset, 0), replicaIdA, sourceAggregateId, destinationAggregateIds),
-      event("b", timestampAB(2 + offset, 0), replicaIdA, sourceAggregateId, destinationAggregateIds),
-      event("c", timestampAB(3 + offset, 0), replicaIdA, sourceAggregateId, destinationAggregateIds))
+      event("a", timestampAB(1 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds),
+      event("b", timestampAB(2 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds),
+      event("c", timestampAB(3 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds))
 
     val generated = Vector(
-      DurableEvent("a", 0L, timestampAB(1 + offset, 0), replicaIdA, sourceAggregateId, destinationAggregateIds, logId, logId, 1 + offset, 1 + offset),
-      DurableEvent("b", 0L, timestampAB(2 + offset, 0), replicaIdA, sourceAggregateId, destinationAggregateIds, logId, logId, 2 + offset, 2 + offset),
-      DurableEvent("c", 0L, timestampAB(3 + offset, 0), replicaIdA, sourceAggregateId, destinationAggregateIds, logId, logId, 3 + offset, 3 + offset))
+      DurableEvent("a", 0L, timestampAB(1 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds, logId, logId, 1 + offset, 1 + offset),
+      DurableEvent("b", 0L, timestampAB(2 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds, logId, logId, 2 + offset, 2 + offset),
+      DurableEvent("c", 0L, timestampAB(3 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds, logId, logId, 3 + offset, 3 + offset))
 
     generatedEvents ++= generated
 
@@ -104,16 +104,16 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     notificationProbe.expectMsg(Updated(generated))
   }
 
-  def replicateEvents(offset: Long, remoteLogId: String = remoteLogId, sourceAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): Unit = {
+  def replicateEvents(offset: Long, remoteLogId: String = remoteLogId, emitterAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): Unit = {
     val events: Vector[DurableEvent] = Vector(
-      DurableEvent("i", 0L, timestampAB(0, 7 + offset), replicaIdB, sourceAggregateId, destinationAggregateIds, remoteLogId, remoteLogId, 7 + offset, 7 + offset),
-      DurableEvent("j", 0L, timestampAB(0, 8 + offset), replicaIdB, sourceAggregateId, destinationAggregateIds, remoteLogId, remoteLogId, 8 + offset, 8 + offset),
-      DurableEvent("k", 0L, timestampAB(0, 9 + offset), replicaIdB, sourceAggregateId, destinationAggregateIds, remoteLogId, remoteLogId, 9 + offset, 9 + offset))
+      DurableEvent("i", 0L, timestampAB(0, 7 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, remoteLogId, remoteLogId, 7 + offset, 7 + offset),
+      DurableEvent("j", 0L, timestampAB(0, 8 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, remoteLogId, remoteLogId, 8 + offset, 8 + offset),
+      DurableEvent("k", 0L, timestampAB(0, 9 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, remoteLogId, remoteLogId, 9 + offset, 9 + offset))
 
     val replicated = Vector(
-      DurableEvent("i", 0L, timestampAB(0, 7 + offset), replicaIdB, sourceAggregateId, destinationAggregateIds, remoteLogId, logId, 7 + offset, 1 + offset),
-      DurableEvent("j", 0L, timestampAB(0, 8 + offset), replicaIdB, sourceAggregateId, destinationAggregateIds, remoteLogId, logId, 8 + offset, 2 + offset),
-      DurableEvent("k", 0L, timestampAB(0, 9 + offset), replicaIdB, sourceAggregateId, destinationAggregateIds, remoteLogId, logId, 9 + offset, 3 + offset))
+      DurableEvent("i", 0L, timestampAB(0, 7 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, remoteLogId, logId, 7 + offset, 1 + offset),
+      DurableEvent("j", 0L, timestampAB(0, 8 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, remoteLogId, logId, 8 + offset, 2 + offset),
+      DurableEvent("k", 0L, timestampAB(0, 9 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, remoteLogId, logId, 9 + offset, 3 + offset))
 
     replicatedEvents ++= replicated
 

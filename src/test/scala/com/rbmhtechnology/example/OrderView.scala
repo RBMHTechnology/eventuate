@@ -34,11 +34,11 @@ class OrderView(val eventLog: ActorRef) extends EventsourcedView {
 
   var updateCounts: Map[String, Int] = Map.empty
 
-  override def onCommand = {
+  override val onCommand: Receive = {
     case GetUpdateCount(orderId) => sender() ! GetUpdateCountSuccess(orderId, updateCounts.getOrElse(orderId, 0))
   }
 
-  override def onEvent = {
+  override val onEvent: Receive = {
     case oe: OrderEvent => updateCounts.get(oe.orderId) match {
       case Some(count) => updateCounts += (oe.orderId -> (count + 1))
       case None        => updateCounts += (oe.orderId -> 1)

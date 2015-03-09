@@ -19,10 +19,14 @@ package com.rbmhtechnology.eventuate
 import akka.actor._
 
 /**
- * A conditional command is a command (`cmd`) to an [[Eventsourced]] actor whose
- * delivery is delayed until the actor's `lastVectorTimestamp` becomes greater than
- * or equal the `condition` timestamp. If the condition is met, `cmd` is delivered
- * to the actor's command handler.
+ * A conditional command is a command to an [[Eventsourced]] actor whose delivery
+ * to the actor's command handler is delayed until the following condition is met:
+ * the merge result of all timestamps of events, that have been previously handled
+ * by that actor, must be `>=` the given `condition` timestamp.
+ *
+ * For example, this condition is met by an [[Eventsourced]] actor if the `condition`
+ * timestamp is the vector timestamp of an event and that event has been handled by
+ * the actor.
  */
 case class ConditionalCommand(condition: VectorTime, cmd: Any)
 
@@ -56,14 +60,14 @@ private object ConditionalCommands {
 
   class CommandManager(owner: ActorRef) extends Actor {
     val commandBuffer = context.actorOf(Props(new CommandBuffer(owner)))
-    var currentVersion: VectorTime = VectorTime()
+    var currentTime: VectorTime = VectorTime()
 
     val idle: Receive = {
       case cc: Command =>
         process(cc)
       case t: VectorTime =>
-        currentVersion = currentVersion.merge(t)
-        commandBuffer ! Send(currentVersion)
+        currentTime = currentTime.merge(t)
+        commandBuffer ! Send(currentTime)
         context.become(sending)
     }
 
@@ -71,17 +75,17 @@ private object ConditionalCommands {
       case cc: Command =>
         process(cc)
       case t: VectorTime =>
-        currentVersion = currentVersion.merge(t)
-      case Sent(olderThan, num) if olderThan == currentVersion =>
+        currentTime = currentTime.merge(t)
+      case Sent(olderThan, num) if olderThan == currentTime =>
         context.become(idle)
       case Sent(olderThan, num) =>
-        commandBuffer ! Send(currentVersion)
+        commandBuffer ! Send(currentTime)
     }
 
     def receive = idle
 
     def process(cc: Command): Unit = {
-      if (cc.condition <= currentVersion) owner.tell(cc.cmd, cc.sdr)
+      if (cc.condition <= currentTime) owner.tell(cc.cmd, cc.sdr)
       else commandBuffer ! cc
     }
   }

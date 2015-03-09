@@ -58,6 +58,15 @@ abstract class ConcurrentVersionsSpec extends WordSpec with Matchers with Before
       result.conflict should be(false)
       result.all(0) should be(Versioned("a", vectorTime(2,1,0)))
     }
+    "resolve concurrent updates with implicit event timestamp" in {
+      val result = versions
+        .update("a", vectorTime(1,0,0))
+        .update("b", vectorTime(0,1,0))
+        .resolve(vectorTime(1,0,0))
+
+      result.conflict should be(false)
+      result.all(0) should be(Versioned("a", vectorTime(1,1,0)))
+    }
     "resolve concurrent updates (advanced)" in {
       val updated = versions
         .update("a", vectorTime(1,0,0))

@@ -39,10 +39,7 @@ object Eventsourced {
 trait Eventsourced extends Actor {
   import Eventsourced._
 
-  private var _lastSequenceNr: Long = 0L
-  private var _lastSystemTimestamp: Long = 0L
-  private var _lastVectorTimestamp: VectorTime = VectorTime()
-  private var _lastReplicaId: String = ""
+  private var _lastEvent = DurableEvent(payload = null, systemTimestamp = 0L, vectorTimestamp = VectorTime(), emitterReplicaId = "", targetLogSequenceNr = 0L)
   private var _recovering: Boolean = true
 
   val instanceId: Int = instanceIdCounter.getAndIncrement()
@@ -72,31 +69,37 @@ trait Eventsourced extends Actor {
    * Sequence number of the last consumed event.
    */
   def lastSequenceNr: Long =
-    _lastSequenceNr
+    _lastEvent.sequenceNr
 
   /**
    * Wall-clock timestamp of the last consumed event.
    */
   def lastSystemTimestamp: Long =
-    _lastSystemTimestamp
+    _lastEvent.systemTimestamp
 
   /**
    * Vector timestamp of the last consumed event.
    */
   def lastVectorTimestamp: VectorTime =
-    _lastVectorTimestamp
+    _lastEvent.vectorTimestamp
 
   /**
-   * Replica id of the last consumed event.
+   * Emitter aggregate id of the last consumed event.
    */
-  def lastReplicaId: String =
-    _lastReplicaId
+  def lastEmitterAggregateId: Option[String] =
+    _lastEvent.emitterAggregateId
+
+  /**
+   * Emitter replica id of the last consumed event.
+   */
+  def lastEmitterReplicaId: String =
+    _lastEvent.emitterReplicaId
 
   /**
    * Process id of the last consumed event.
    */
-  def lastProcessId: String =
-    DurableEvent.processId(lastReplicaId, aggregateId)
+  def lastEmitterProcessId: String =
+    _lastEvent.emitterProcessId
 
   /**
    * Returns `true` if this actor is currently recovering internal state by consuming
@@ -129,12 +132,8 @@ trait Eventsourced extends Actor {
   /**
    * Internal API.
    */
-  private[eventuate] def onLastConsumed(d: DurableEvent): Unit = {
-    _lastSequenceNr = d.sequenceNr
-    _lastSystemTimestamp = d.systemTimestamp
-    _lastVectorTimestamp = d.vectorTimestamp
-    _lastReplicaId = d.replicaId
-  }
+  private[eventuate] def onLastConsumed(d: DurableEvent): Unit =
+    _lastEvent = d
 }
 
 /**
@@ -150,7 +149,7 @@ abstract class AbstractEventsourced extends Eventsourced {
   final def onEvent: Receive = _onEvent
 
   override def aggregateId: Option[String] =
-    Option(getAggregateId.orElse(null));
+    Option(getAggregateId.orElse(null))
 
   /**
    * Java API.

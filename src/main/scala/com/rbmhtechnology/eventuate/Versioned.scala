@@ -26,10 +26,10 @@ import scala.collection.immutable.Seq
  * A versioned value.
  *
  * @param value The value.
- * @param version The version vector of the value.
- * @param replicaId Replica id of the event emitter that caused this version.
+ * @param updateTimestamp Timestamp of the event that caused this version.
+ * @param emitterReplicaId Emitter replica id of the event that caused this version.
  */
-case class Versioned[A](value: A, version: VectorTime, replicaId: String = "")
+case class Versioned[A](value: A, updateTimestamp: VectorTime, emitterReplicaId: String = "")
 
 /**
  * Tracks concurrent [[Versioned]] values which arise from concurrent updates.
@@ -39,26 +39,26 @@ case class Versioned[A](value: A, version: VectorTime, replicaId: String = "")
  */
 trait ConcurrentVersions[A, B] {
   /**
-   * Updates that [[Versioned]] value with `b` that is a predecessor of `eventTimestamp`. If
+   * Updates that [[Versioned]] value with `b` that is a predecessor of `updateTimestamp`. If
    * there is no such predecessor, a new concurrent version is created (optionally derived
    * from an older entry in the version history, in case of incremental updates).
    */
-  def update(b: B, eventTimestamp: VectorTime, replicaId: String = ""): ConcurrentVersions[A, B]
+  def update(b: B, updateTimestamp: VectorTime, replicaId: String = ""): ConcurrentVersions[A, B]
 
   /**
    * Resolves multiple concurrent versions to a single version. For the resolution to be
-   * successful, one of the concurrent versions must have a version vector that is equal to
-   * `selectedTimestamp`. Only those concurrent versions with a version vector less than the
-   * `eventTimestamp` participate in the resolution process (which allows for resolutions to
+   * successful, one of the concurrent versions must have a `creationTimestamp` that is equal to
+   * `selectedTimestamp`. Only those concurrent versions with a `creationTimestamp` less than the
+   * `updateTimestamp` participate in the resolution process (which allows for resolutions to
    * be concurrent to other updates).
    */
-  def resolve(selectedTimestamp: VectorTime, eventTimestamp: VectorTime): ConcurrentVersions[A, B]
+  def resolve(selectedTimestamp: VectorTime, updateTimestamp: VectorTime): ConcurrentVersions[A, B]
 
   /**
    * Experimental ...
    */
   def resolve(selectedTimestamp: VectorTime): ConcurrentVersions[A, B] =
-    resolve(selectedTimestamp, all.map(_.version).foldLeft(VectorTime())(_.merge(_)))
+    resolve(selectedTimestamp, all.map(_.updateTimestamp).foldLeft(VectorTime())(_.merge(_)))
 
   /**
    * Returns all (un-resolved) concurrent versions.
@@ -108,14 +108,14 @@ object ConcurrentVersions {
  * versioned values (= full updates). `ConcurrentVersionsList` is an immutable data structure.
  */
 class ConcurrentVersionsList[A](vs: List[Versioned[A]], val owner: String = "") extends ConcurrentVersions[A, A] {
-  def update(na: A, eventTimestamp: VectorTime, replicaId: String = ""): ConcurrentVersionsList[A] = {
+  def update(na: A, updateTimestamp: VectorTime, replicaId: String = ""): ConcurrentVersionsList[A] = {
     val r = vs.foldRight[(List[Versioned[A]], Boolean)]((Nil, false)) {
       case (a, (acc, true))  => (a :: acc, true)
       case (a, (acc, false)) =>
-        if (eventTimestamp > a.version)
+        if (updateTimestamp > a.updateTimestamp)
           // regular update on that version
-          (Versioned(na, eventTimestamp, replicaId) :: acc, true)
-        else if (eventTimestamp < a.version)
+          (Versioned(na, updateTimestamp, replicaId) :: acc, true)
+        else if (updateTimestamp < a.updateTimestamp)
           // conflict already resolved, ignore
           (a :: acc, true)
         else
@@ -124,14 +124,14 @@ class ConcurrentVersionsList[A](vs: List[Versioned[A]], val owner: String = "") 
     }
     r match {
       case (updates, true)   => new ConcurrentVersionsList(updates, owner)
-      case (original, false) => new ConcurrentVersionsList((Versioned(na, eventTimestamp, replicaId) :: original), owner)
+      case (original, false) => new ConcurrentVersionsList(Versioned(na, updateTimestamp, replicaId) :: original, owner)
     }
   }
 
-  def resolve(selectedTimestamp: VectorTime, eventTimestamp: VectorTime): ConcurrentVersionsList[A] = {
+  def resolve(selectedTimestamp: VectorTime, updateTimestamp: VectorTime): ConcurrentVersionsList[A] = {
     new ConcurrentVersionsList(vs.foldRight(List.empty[Versioned[A]]) {
-      case (v, acc) if v.version == selectedTimestamp => v.copy(version = eventTimestamp) :: acc
-      case (v, acc) if v.version.conc(eventTimestamp) => v :: acc
+      case (v, acc) if v.updateTimestamp == selectedTimestamp => v.copy(updateTimestamp = updateTimestamp) :: acc
+      case (v, acc) if v.updateTimestamp.conc(updateTimestamp) => v :: acc
       case (v, acc)                                   => acc
     })
   }
@@ -156,17 +156,20 @@ case object ConcurrentVersionsList {
 }
 
 /**
- * A [[ConcurrentVersions]] implementation that shall be used if updates modify current
- * versioned values (= incremental updates). `ConcurrentVersionsTree` is a mutable data
- * structure.
+ * A [[ConcurrentVersions]] implementation that shall be used if updates are incremental.
+ * `ConcurrentVersionsTree` is a mutable data structure. Therefore, it is recommended not
+ * to share instances of `ConcurrentVersionsTree` directly but rather the [[Versioned]]
+ * sequence returned by [[ConcurrentVersionsTree.all]]. Later releases will be based on
+ * an immutable data structure.
  *
- * '''Please note:''' This implementation is not optimized yet and leaks memory at the
- * moment (which shouldn't be a problem if the number of incremental updates is small).
- * Also, future versions of `ConcurrentVersionsTree` will likely be immutable.
+ * '''Please note:''' This implementation does not purge old versions at the moment (which
+ * shouldn't be a problem if the number of incremental updates to a versioned aggregate is
+ * rather small). In later releases, manual and automated purging of old versions will be
+ * supported.
  *
  * @param f Projection function for updates.
  */
-class ConcurrentVersionsTree[A, B](f: (A, B) => A, initial: A = null.asInstanceOf[A] /* FIXME */) extends ConcurrentVersions[A, B] {
+class ConcurrentVersionsTree[A, B](f: (A, B) => A, initial: A = null.asInstanceOf[A] /* FIXME: use Monoid[A].zero */) extends ConcurrentVersions[A, B] {
   import ConcurrentVersionsTree._
 
   private var _owner: String = ""
@@ -174,18 +177,18 @@ class ConcurrentVersionsTree[A, B](f: (A, B) => A, initial: A = null.asInstanceO
   private val root: Node[A] =
     new Node(Versioned(initial, VectorTime(), ""))
 
-  override def update(b: B, eventTimestamp: VectorTime, replicaId: String = ""): ConcurrentVersionsTree[A, B] = {
-    val p = pred(eventTimestamp)
-    p.addChild(new Node(Versioned(f(p.versioned.value, b), eventTimestamp, replicaId)))
+  override def update(b: B, updateTimestamp: VectorTime, replicaId: String = ""): ConcurrentVersionsTree[A, B] = {
+    val p = pred(updateTimestamp)
+    p.addChild(new Node(Versioned(f(p.versioned.value, b), updateTimestamp, replicaId)))
     this
   }
 
-  override def resolve(selectedTimestamp: VectorTime, eventTimestamp: VectorTime): ConcurrentVersionsTree[A, B] = {
+  override def resolve(selectedTimestamp: VectorTime, updateTimestamp: VectorTime): ConcurrentVersionsTree[A, B] = {
     leaves.foreach {
-      case n if n.rejected                               => // ignore rejected leaf
-      case n if n.versioned.version.conc(eventTimestamp) => // ignore concurrent update
-      case n if n.versioned.version == selectedTimestamp => n.stamp(eventTimestamp)
-      case n                                             => n.reject()
+      case n if n.rejected                                       => // ignore rejected leaf
+      case n if n.versioned.updateTimestamp.conc(updateTimestamp) => // ignore concurrent update
+      case n if n.versioned.updateTimestamp == selectedTimestamp => n.stamp(updateTimestamp)
+      case n                                                     => n.reject()
     }
     this
   }
@@ -210,7 +213,7 @@ class ConcurrentVersionsTree[A, B](f: (A, B) => A, initial: A = null.asInstanceO
   }
 
   private[eventuate] def pred(timestamp: VectorTime): Node[A] = foldLeft(root, root) {
-    case (candidate, n) => if (timestamp > n.versioned.version && n.versioned.version > candidate.versioned.version) n else candidate
+    case (candidate, n) => if (timestamp > n.versioned.updateTimestamp && n.versioned.updateTimestamp > candidate.versioned.updateTimestamp) n else candidate
   }
 
   // TODO: make foldLeft tail recursive or create a trampolined version
@@ -281,7 +284,7 @@ object ConcurrentVersionsTree {
     }
 
     def stamp(t: VectorTime): Unit = {
-      versioned = versioned.copy(version = t)
+      versioned = versioned.copy(updateTimestamp = t)
     }
   }
 }

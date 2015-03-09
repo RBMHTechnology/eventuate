@@ -48,7 +48,7 @@ object EventsourcedActorSpec {
     val replicaId = EventsourcedActorSpec.replicaIdA
     val eventLog = logProbe
 
-    override def onCommand: Receive = {
+    override val onCommand: Receive = {
       case "boom" => throw boom
       case Ping(i) => dstProbe ! Pong(i)
       case "test-handler-order" =>
@@ -68,7 +68,7 @@ object EventsourcedActorSpec {
       }
     }
 
-    override def onEvent: Receive = {
+    override val onEvent: Receive = {
       case "boom" => throw boom
       case evt if evt != "x" => dstProbe ! ((evt, currentTime, lastVectorTimestamp, lastSequenceNr))
     }
@@ -85,7 +85,7 @@ object EventsourcedActorSpec {
 
     var stashing = false
 
-    override def onCommand: Receive = {
+    override val onCommand: Receive = {
       case "boom" =>
         throw boom
       case "stash-on" =>
@@ -106,7 +106,7 @@ object EventsourcedActorSpec {
       }
     }
 
-    override def onEvent: Receive = {
+    override val onEvent: Receive = {
       case evt => dstProbe ! evt
     }
   }

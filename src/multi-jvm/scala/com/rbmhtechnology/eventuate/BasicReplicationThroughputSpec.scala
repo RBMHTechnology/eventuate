@@ -62,7 +62,7 @@ object BasicReplicationThroughputSpec {
     var startTime: Long = 0L
     var stopTime: Long = 0L
 
-    def onCommand = {
+    val onCommand: Receive = {
       case "stats" =>
         probe ! s"${(1000.0 * 1000 * 1000 * events.size) / (stopTime - startTime) } events/sec"
       case s: String => persist(s) {
@@ -71,7 +71,7 @@ object BasicReplicationThroughputSpec {
       }
     }
 
-    def onEvent = {
+    val onEvent: Receive = {
       case "start" =>
         startTime = System.nanoTime()
       case "stop" =>
@@ -122,7 +122,7 @@ class BasicReplicationThroughputSpec extends MultiNodeSpec(BasicReplicationThrou
 
 
       runOn(nodeA) {
-        val endpoint = createEndpoint(nodeA.name, Seq(node(nodeC).address.toReplicationConnection))
+        val endpoint = createEndpoint(nodeA.name, Set(node(nodeC).address.toReplicationConnection))
         actor = system.actorOf(Props(new ReplicatedActor("pa", endpoint.logs(DefaultLogName), probe.ref)))
 
         actor ! "start"
@@ -131,12 +131,12 @@ class BasicReplicationThroughputSpec extends MultiNodeSpec(BasicReplicationThrou
       }
 
       runOn(nodeB) {
-        val endpoint = createEndpoint(nodeB.name, Seq(node(nodeC).address.toReplicationConnection))
+        val endpoint = createEndpoint(nodeB.name, Set(node(nodeC).address.toReplicationConnection))
         actor = system.actorOf(Props(new ReplicatedActor("pb", endpoint.logs(DefaultLogName), probe.ref)))
       }
 
       runOn(nodeC) {
-        val endpoint = createEndpoint(nodeC.name, Seq(
+        val endpoint = createEndpoint(nodeC.name, Set(
           node(nodeA).address.toReplicationConnection,
           node(nodeB).address.toReplicationConnection,
           node(nodeD).address.toReplicationConnection))
@@ -144,7 +144,7 @@ class BasicReplicationThroughputSpec extends MultiNodeSpec(BasicReplicationThrou
       }
 
       runOn(nodeD) {
-        val endpoint = createEndpoint(nodeD.name, Seq(
+        val endpoint = createEndpoint(nodeD.name, Set(
           node(nodeC).address.toReplicationConnection,
           node(nodeE).address.toReplicationConnection,
           node(nodeF).address.toReplicationConnection))
@@ -152,12 +152,12 @@ class BasicReplicationThroughputSpec extends MultiNodeSpec(BasicReplicationThrou
       }
 
       runOn(nodeE) {
-        val endpoint = createEndpoint(nodeE.name, Seq(node(nodeD).address.toReplicationConnection))
+        val endpoint = createEndpoint(nodeE.name, Set(node(nodeD).address.toReplicationConnection))
         actor = system.actorOf(Props(new ReplicatedActor("pe", endpoint.logs(DefaultLogName), probe.ref)))
       }
 
       runOn(nodeF) {
-        val endpoint = createEndpoint(nodeF.name, Seq(node(nodeD).address.toReplicationConnection))
+        val endpoint = createEndpoint(nodeF.name, Set(node(nodeD).address.toReplicationConnection))
         actor = system.actorOf(Props(new ReplicatedActor("pf", endpoint.logs(DefaultLogName), probe.ref)))
       }
 

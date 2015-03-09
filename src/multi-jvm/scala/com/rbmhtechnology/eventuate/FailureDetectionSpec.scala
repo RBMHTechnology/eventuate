@@ -65,7 +65,7 @@ class FailureDetectionSpec extends MultiNodeSpec(FailureDetectionConfig) with Mu
       enterBarrier("subscribe")
 
       runOn(nodeA) {
-        createEndpoint(nodeA.name, Seq(node(nodeB).address.toReplicationConnection))
+        createEndpoint(nodeA.name, Set(node(nodeB).address.toReplicationConnection))
         probeAvailable1.expectMsg(Available(nodeB.name, DefaultLogName))
 
         // network partition
@@ -81,7 +81,7 @@ class FailureDetectionSpec extends MultiNodeSpec(FailureDetectionConfig) with Mu
       }
 
       runOn(nodeB) {
-        createEndpoint(nodeB.name, Seq(node(nodeA).address.toReplicationConnection))
+        createEndpoint(nodeB.name, Set(node(nodeA).address.toReplicationConnection))
         probeAvailable1.expectMsg(Available(nodeA.name, DefaultLogName))
 
         enterBarrier("broken")

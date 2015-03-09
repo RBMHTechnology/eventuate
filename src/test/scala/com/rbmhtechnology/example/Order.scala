@@ -16,6 +16,7 @@
 
 package com.rbmhtechnology.example
 
+//#order-definition
 case class Order(id: String, items: List[String] = Nil, cancelled: Boolean = false) {
   def addItem(item: String): Order =
     copy(items = item :: items)
@@ -29,3 +30,4 @@ case class Order(id: String, items: List[String] = Nil, cancelled: Boolean = fal
   override def toString() =
     s"[${id}] items=${items.reverse.mkString(",")} cancelled=${cancelled}"
 }
+//#

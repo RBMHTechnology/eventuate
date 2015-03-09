@@ -1,6 +1,8 @@
------------
-Limitations
------------
+.. _current-limitations:
+
+-------------------
+Current Limitations
+-------------------
 
 The following is a list of known limitations that are going to be addressed in future versions. If any of these limitations are particularly painful to you, please `let us know`_ so that we can target them accordingly.
 
@@ -20,7 +22,7 @@ The following is a list of known limitations that are going to be addressed in f
      /      \
     B        F
 
-- The only event log storage backend supported at the moment is LevelDB_. There will be a plugin API in the future together with a default implementation of a replicated storage backend.
+- The only supported event log storage backend at the moment is LevelDB_. There will be a plugin API in the future together with a default implementation of a replicated storage backend.
 
 - Event routing is limited at the moment. In addition to event broadcast and ``aggregateId``-based collaboration groups, there is `direct event routing`_ supported but `advanced event routing`_ will come in a later release.
 

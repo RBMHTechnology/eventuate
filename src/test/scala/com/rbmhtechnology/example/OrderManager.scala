@@ -47,7 +47,7 @@ class OrderManager(val replicaId: String, val eventLog: ActorRef) extends Events
   private implicit val timeout = Timeout(10.seconds)
   private var orderActors: Map[String, ActorRef] = Map.empty
 
-  override def onCommand: Receive = {
+  override val onCommand: Receive = {
     case c: OrderCommand => orderActor(c.orderId) forward c
     case r: Resolve      => orderActor(r.id) forward r
     case GetState if orderActors.isEmpty =>
@@ -61,7 +61,7 @@ class OrderManager(val replicaId: String, val eventLog: ActorRef) extends Events
       }
   }
 
-  override def onEvent: Receive = {
+  override val onEvent: Receive = {
     // eagerly create order actor so that their console output is immediately visible
     case OrderCreated(orderId, _) if !orderActors.contains(orderId) => orderActor(orderId)
   }

@@ -189,7 +189,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
       onLastConsumed(event)
       onEvent(event.payload)
       handled(event)
-    } else if (event.processId == processId) {
+    } else if (event.emitterProcessId == processId) {
       // Event not handled but it has been previously emitted by this
       // actor. So we need to recover local time, otherwise, we could
       // end up in the past after recovery ....
@@ -199,20 +199,8 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
     }
   }
 
-  /**
-   * Asserts that if aggregateId is defined, event.aggregateId must be defined with
-   * the same value. In other words, an event sourced actor that has an aggregateId
-   * defined, must only receive events of the same aggregateId, whereas event sourced
-   * actors with no aggregateId defined, may receive any events.
-   */
-  private def assertMatchingAggregateId(event: DurableEvent): Unit = {
-    aggregateId.foreach(id => assert(event.sourceAggregateId == aggregateId,
-      s"Expected aggregateId Some(${id}) but got ${event.sourceAggregateId}. Event log fails to push events correctly"))
-  }
-
   private val initiating: Receive = {
     case Replaying(event, iid) => if (iid == instanceId) {
-      assertMatchingAggregateId(event)
       onDurableEvent(event)
     }
     case ReplaySuccess(iid) => if (iid == instanceId) {
@@ -242,7 +230,6 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
       delayHandlers = delayHandlers.tail
     }
     case WriteSuccess(event, iid) => if (iid == instanceId) {
-      assertMatchingAggregateId(event)
       onLastConsumed(event)
       conditionChanged(lastVectorTimestamp)
       writeHandlers.head(Success(event.payload))
@@ -253,7 +240,6 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
       }
     }
     case WriteFailure(event, cause, iid) => if (iid == instanceId) {
-      assertMatchingAggregateId(event)
       onLastConsumed(event)
       writeHandlers.head(Failure(cause))
       writeHandlers = writeHandlers.tail
@@ -263,7 +249,6 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
       }
     }
     case Written(event) => if (event.sequenceNr > lastSequenceNr) {
-      assertMatchingAggregateId(event)
       onDurableEvent(event, e => conditionChanged(e.vectorTimestamp))
     }
     case ConditionalCommand(condition, cmd) =>

@@ -45,7 +45,7 @@ case class MVRegister[A](versionedValues: Set[Versioned[A]] = Set.empty[Versione
    */
   def set(v: A, timestamp: VectorTime): MVRegister[A] = {
     val (vvs, updated) = versionedValues.foldLeft((Set.empty[Versioned[A]], false)) {
-      case ((acc, updated), vv) if timestamp > vv.version =>
+      case ((acc, updated), vv) if timestamp > vv.updateTimestamp =>
         ((acc + vv.copy(v, timestamp)), true)
       case ((acc, updated), vv) =>
         ((acc + vv), updated)
