@@ -2,12 +2,8 @@
 Project
 -------
 
-Information
------------
-
 - `Code repository`_
 - `Issue tracker`_
-- `API docs`_
 
 Community
 ---------
@@ -15,9 +11,15 @@ Community
 - `User mailing list`_
 - `Gitter chat room`_
 
+License
+-------
+
+- `Apache License, Version 2.0`_
+
 .. _Code repository: https://github.com/RBMHTechnology/eventuate
 .. _Issue tracker: https://github.com/RBMHTechnology/eventuate/issues
-.. _API docs: latest/api/index.html
 
 .. _User mailing list: https://groups.google.com/forum/#!forum/eventuate
 .. _Gitter chat room: https://gitter.im/RBMHTechnology/eventuate
+
+.. _Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0

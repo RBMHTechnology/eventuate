@@ -14,7 +14,7 @@
   
 
   
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 
   
   
@@ -28,8 +28,10 @@
   
 
   
+
+  
     <link rel="top" title="Eventuate" href="index.html"/>
-        <link rel="next" title="Limitations" href="limitations.html"/>
+        <link rel="next" title="Example application" href="example-application.html"/>
         <link rel="prev" title="Project" href="project.html"/> 
 
   
@@ -44,9 +46,12 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
-        <a href="index.html" class="fa fa-home"> Eventuate</a>
-        <div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+        
+          <a href="index.html" class="fa fa-home"> Eventuate</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -56,8 +61,10 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
-        
-            <ul class="current">
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-logs">Event logs</a></li>
@@ -76,17 +83,40 @@
 <li class="toctree-l2"><a class="reference internal" href="download.html#sources">Sources</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="ref-guide.html">Reference guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dev-guide.html">Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide.html">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-sourced-actors">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#detecting-concurrent-updates">Detecting concurrent updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#tracking-conflicting-versions">Tracking conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#resolving-conflicting-versions">Resolving conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#commutative-replicated-data-types">Commutative replicated data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#conditional-commands">Conditional commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event sourced views</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="project.html">Project</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="project.html#information">Information</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project.html#community">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project.html#license">License</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Articles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="limitations.html">Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example-application.html">Example application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="example-application.html#domain">Domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example-application.html#replication">Replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example-application.html#interface">Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example-application.html#running">Running</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="current-limitations.html">Current Limitations</a></li>
 </ul>
 
+          
         
       </div>
       &nbsp;
@@ -117,7 +147,7 @@
   </ul>
   <hr/>
 </div>
-          <div role="main">
+          <div role="main" class="document">
             
   <div class="section" id="articles">
 <h1>Articles<a class="headerlink" href="#articles" title="Permalink to this headline">¶</a></h1>
@@ -133,7 +163,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="limitations.html" class="btn btn-neutral float-right" title="Limitations"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="example-application.html" class="btn btn-neutral float-right" title="Example application">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="project.html" class="btn btn-neutral" title="Project"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -149,7 +179,8 @@
     </p>
   </div>
 
-  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
 </footer>
         </div>
       </div>

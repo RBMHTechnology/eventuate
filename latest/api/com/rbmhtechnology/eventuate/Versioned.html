@@ -43,12 +43,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">Versioned</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="value">value: <span class="extype" name="com.rbmhtechnology.eventuate.Versioned.A">A</span></span>, <span name="version">version: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="replicaId">replicaId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Versioned</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="value">value: <span class="extype" name="com.rbmhtechnology.eventuate.Versioned.A">A</span></span>, <span name="updateTimestamp">updateTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="emitterReplicaId">emitterReplicaId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A versioned value.
-</p></div><dl class="paramcmts block"><dt class="param">value</dt><dd class="cmt"><p>The value.</p></dd><dt class="param">version</dt><dd class="cmt"><p>The version vector of the value.</p></dd><dt class="param">replicaId</dt><dd class="cmt"><p>Replica id of the event emitter that caused this version.
+</p></div><dl class="paramcmts block"><dt class="param">value</dt><dd class="cmt"><p>The value.</p></dd><dt class="param">updateTimestamp</dt><dd class="cmt"><p>Timestamp of the event that caused this version.</p></dd><dt class="param">emitterReplicaId</dt><dd class="cmt"><p>Emitter replica id of the event that caused this version.
 </p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -90,7 +90,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.Versioned#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(value:A,version:com.rbmhtechnology.eventuate.VectorTime,replicaId:String):com.rbmhtechnology.eventuate.Versioned[A]"></a>
+      <a id="&lt;init&gt;(value:A,updateTimestamp:com.rbmhtechnology.eventuate.VectorTime,emitterReplicaId:String):com.rbmhtechnology.eventuate.Versioned[A]"></a>
       <a id="&lt;init&gt;:Versioned[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -98,14 +98,14 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Versioned</span><span class="params">(<span name="value">value: <span class="extype" name="com.rbmhtechnology.eventuate.Versioned.A">A</span></span>, <span name="version">version: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="replicaId">replicaId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span>
+        <span class="name">Versioned</span><span class="params">(<span name="value">value: <span class="extype" name="com.rbmhtechnology.eventuate.Versioned.A">A</span></span>, <span name="updateTimestamp">updateTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="emitterReplicaId">emitterReplicaId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Versioned@&lt;init&gt;(value:A,version:com.rbmhtechnology.eventuate.VectorTime,replicaId:String):com.rbmhtechnology.eventuate.Versioned[A]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.Versioned@&lt;init&gt;(value:A,updateTimestamp:com.rbmhtechnology.eventuate.VectorTime,emitterReplicaId:String):com.rbmhtechnology.eventuate.Versioned[A]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">value</dt><dd class="cmt"><p>The value.</p></dd><dt class="param">version</dt><dd class="cmt"><p>The version vector of the value.</p></dd><dt class="param">replicaId</dt><dd class="cmt"><p>Replica id of the event emitter that caused this version.
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">value</dt><dd class="cmt"><p>The value.</p></dd><dt class="param">updateTimestamp</dt><dd class="cmt"><p>Timestamp of the event that caused this version.</p></dd><dt class="param">emitterReplicaId</dt><dd class="cmt"><p>Emitter replica id of the event that caused this version.
 </p></dd></dl></div>
     </li></ol>
             </div>
@@ -207,6 +207,23 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.Versioned#emitterReplicaId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="emitterReplicaId:String"></a>
+      <a id="emitterReplicaId:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">emitterReplicaId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.Versioned@emitterReplicaId:String" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Emitter replica id of the event that caused this version.</p>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -332,23 +349,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.Versioned#replicaId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="replicaId:String"></a>
-      <a id="replicaId:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">replicaId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Versioned@replicaId:String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Replica id of the event emitter that caused this version.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -366,6 +366,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.Versioned#updateTimestamp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="updateTimestamp:com.rbmhtechnology.eventuate.VectorTime"></a>
+      <a id="updateTimestamp:VectorTime"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">updateTimestamp</span><span class="result">: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.Versioned@updateTimestamp:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Timestamp of the event that caused this version.</p>
     </li><li name="com.rbmhtechnology.eventuate.Versioned#value" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="value:A"></a>
       <a id="value:A"></a>
@@ -383,23 +400,6 @@
       </a>
     </span>
       <p class="shortcomment cmt">The value.</p>
-    </li><li name="com.rbmhtechnology.eventuate.Versioned#version" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="version:com.rbmhtechnology.eventuate.VectorTime"></a>
-      <a id="version:VectorTime"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">version</span><span class="result">: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Versioned@version:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">The version vector of the value.</p>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

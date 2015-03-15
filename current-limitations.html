@@ -7,14 +7,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Limitations &mdash; Eventuate</title>
+  <title>Current Limitations &mdash; Eventuate</title>
   
 
   
   
 
   
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 
   
   
@@ -28,8 +28,10 @@
   
 
   
+
+  
     <link rel="top" title="Eventuate" href="index.html"/>
-        <link rel="prev" title="Articles" href="articles.html"/> 
+        <link rel="prev" title="Example application" href="example-application.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -43,9 +45,12 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
-        <a href="index.html" class="fa fa-home"> Eventuate</a>
-        <div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+        
+          <a href="index.html" class="fa fa-home"> Eventuate</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -55,8 +60,10 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
-        
-            <ul class="current">
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-logs">Event logs</a></li>
@@ -75,17 +82,40 @@
 <li class="toctree-l2"><a class="reference internal" href="download.html#sources">Sources</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="ref-guide.html">Reference guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dev-guide.html">Developer guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide.html">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-sourced-actors">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#detecting-concurrent-updates">Detecting concurrent updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#tracking-conflicting-versions">Tracking conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#resolving-conflicting-versions">Resolving conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#commutative-replicated-data-types">Commutative replicated data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#conditional-commands">Conditional commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event sourced views</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="project.html">Project</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="project.html#information">Information</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project.html#community">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project.html#license">License</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="articles.html">Articles</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example-application.html">Example application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="example-application.html#domain">Domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example-application.html#replication">Replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example-application.html#interface">Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example-application.html#running">Running</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Current Limitations</a></li>
 </ul>
 
+          
         
       </div>
       &nbsp;
@@ -107,19 +137,19 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Limitations</li>
+    <li>Current Limitations</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/limitations.txt" rel="nofollow"> View page source</a>
+          <a href="_sources/current-limitations.txt" rel="nofollow"> View page source</a>
         
       </li>
   </ul>
   <hr/>
 </div>
-          <div role="main">
+          <div role="main" class="document">
             
-  <div class="section" id="limitations">
-<h1>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="current-limitations">
+<span id="id1"></span><h1>Current Limitations<a class="headerlink" href="#current-limitations" title="Permalink to this headline">¶</a></h1>
 <p>The following is a list of known limitations that are going to be addressed in future versions. If any of these limitations are particularly painful to you, please <a class="reference external" href="https://groups.google.com/forum/#!forum/eventuate">let us know</a> so that we can target them accordingly.</p>
 <ul>
 <li><p class="first">The current version of Eventuate does not support cycles in the replication network. An example of a valid replication network topology is:</p>
@@ -139,9 +169,9 @@
 </pre></div>
 </div>
 </li>
-<li><p class="first">The only event log storage backend supported at the moment is <a class="reference external" href="https://github.com/google/leveldb">LevelDB</a>. There will be a plugin API in the future together with a default implementation of a replicated storage backend.</p>
+<li><p class="first">The only supported event log storage backend at the moment is <a class="reference external" href="https://github.com/google/leveldb">LevelDB</a>. There will be a plugin API in the future together with a default implementation of a replicated storage backend.</p>
 </li>
-<li><p class="first">Event routing is limited at the moment. In addition to event broadcast and <tt class="docutils literal"><span class="pre">aggregateId</span></tt>-based collaboration groups, there is <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/45">direct event routing</a> supported but <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/46">advanced event routing</a> will come in a later release.</p>
+<li><p class="first">Event routing is limited at the moment. In addition to event broadcast and <code class="docutils literal"><span class="pre">aggregateId</span></code>-based collaboration groups, there is <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/45">direct event routing</a> supported but <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/46">advanced event routing</a> will come in a later release.</p>
 </li>
 </ul>
 </div>
@@ -153,7 +183,7 @@
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="articles.html" class="btn btn-neutral" title="Articles"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="example-application.html" class="btn btn-neutral" title="Example application"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -166,7 +196,8 @@
     </p>
   </div>
 
-  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
 </footer>
         </div>
       </div>

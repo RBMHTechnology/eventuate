@@ -1,5 +1,5 @@
-.. _dev-guide:
+---------------
+Getting started
+---------------
 
----------------
-Developer guide
----------------
+TODO

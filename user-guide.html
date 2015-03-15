@@ -1,0 +1,695 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>User guide &mdash; Eventuate</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Eventuate" href="index.html"/>
+        <link rel="next" title="Reference" href="reference.html"/>
+        <link rel="prev" title="Download" href="download.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> Eventuate</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-logs">Event logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-actors">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-processors">Event-sourced processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#snapshots">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#vector-clocks">Vector clocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#crdt-services">CRDT services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#batching">Batching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#adapters">Adapters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="download.html">Download</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="download.html#binaries">Binaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="download.html#sources">Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#event-sourced-actors">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#detecting-concurrent-updates">Detecting concurrent updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tracking-conflicting-versions">Tracking conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#resolving-conflicting-versions">Resolving conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#commutative-replicated-data-types">Commutative replicated data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conditional-commands">Conditional commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event sourced views</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project.html">Project</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project.html#community">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project.html#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="articles.html">Articles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example-application.html">Example application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="example-application.html#domain">Domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example-application.html#replication">Replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example-application.html#interface">Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example-application.html#running">Running</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="current-limitations.html">Current Limitations</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Eventuate</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>User guide</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/user-guide.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="user-guide">
+<span id="id1"></span><h1>User guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
+<p>This is a brief user guide to Eventuate. It is recommended to read sections <a class="reference internal" href="introduction.html#introduction"><span>Introduction</span></a> and <a class="reference internal" href="architecture.html#architecture"><span>Architecture</span></a> first. Based on simple examples, you’ll see how to</p>
+<ul class="simple">
+<li>implement an event-sourced actor</li>
+<li>replicate actor state with event sourcing</li>
+<li>detect concurrent updates to replicated state</li>
+<li>track conflicts from concurrent updates</li>
+<li>resolve conflicts automatically and interactively</li>
+<li>avoid conflicts with operation-based CRDTs</li>
+<li>implement an event-sourced view over all event-sourced actors and</li>
+<li>achieve read-your-write consistency across event-sourced actors and views.</li>
+</ul>
+<p>The user guide only scratches the surface of Eventuate. You can find further details in the <a class="reference internal" href="reference.html#reference"><span>Reference</span></a> and the <a class="reference external" href="latest/api/index.html">API docs</a>.</p>
+<div class="section" id="event-sourced-actors">
+<h2>Event-sourced actors<a class="headerlink" href="#event-sourced-actors" title="Permalink to this headline">¶</a></h2>
+<p>An event-sourced actor is an actor that captures changes to its internal state as a sequence of events. It <em>persists</em> these events to its event log and <em>replays</em> them to recover internal state after a crash or a planned re-start. This is the basic idea behind <a class="reference external" href="http://martinfowler.com/eaaDev/EventSourcing.html">event sourcing</a>: instead of storing current application state, the full history of changes is stored as <em>immutable facts</em> and current state is derived from the history of changes.</p>
+<p>Event-sourced actors distinguish between <em>commands</em> and <em>events</em>. During command processing they usually validate external commands against internal state and, if validation succeeds, write one or more events to their event log. During event processing they consume events they have written and update internal state by handling these events.</p>
+<p>Concrete event-sourced actors must implement the <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> trait. The following <code class="docutils literal"><span class="pre">ExampleActor</span></code> maintains state of type <code class="docutils literal"><span class="pre">Vector[String]</span></code> to which entries can be appended:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.util._</span>
+<span class="k">import</span> <span class="nn">akka.actor._</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
+
+<span class="c1">// Commands</span>
+<span class="k">case</span> <span class="k">object</span> <span class="nc">Print</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">Append</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+
+<span class="c1">// Command replies</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">AppendSuccess</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">AppendFailure</span><span class="o">(</span><span class="n">cause</span><span class="k">:</span> <span class="kt">Throwable</span><span class="o">)</span>
+
+<span class="c1">// Event</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">Appended</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+
+<span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">replicaId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
+
+  <span class="k">private</span> <span class="k">var</span> <span class="n">currentState</span><span class="k">:</span> <span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Vector</span><span class="o">.</span><span class="n">empty</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">aggregateId</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Print</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">s&quot;[id = </span><span class="si">$id</span><span class="s">, replica id = </span><span class="si">$replicaId</span><span class="s">] </span><span class="si">${</span><span class="n">currentState</span><span class="o">.</span><span class="n">mkString</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">)</span><span class="si">}</span><span class="s">&quot;</span><span class="o">)</span>
+    <span class="k">case</span> <span class="nc">Append</span><span class="o">(</span><span class="n">entry</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">persist</span><span class="o">(</span><span class="nc">Appended</span><span class="o">(</span><span class="n">entry</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Success</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span> <span class="k">=&gt;</span>
+        <span class="n">onEvent</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span>
+        <span class="n">sender</span><span class="o">()</span> <span class="o">!</span> <span class="nc">AppendSuccess</span><span class="o">(</span><span class="n">entry</span><span class="o">)</span>
+      <span class="k">case</span> <span class="nc">Failure</span><span class="o">(</span><span class="n">err</span><span class="o">)</span> <span class="k">=&gt;</span>
+        <span class="n">sender</span><span class="o">()</span> <span class="o">!</span> <span class="nc">AppendFailure</span><span class="o">(</span><span class="n">err</span><span class="o">)</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onEvent</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Appended</span><span class="o">(</span><span class="n">entry</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">currentState</span> <span class="k">=</span> <span class="n">currentState</span> <span class="o">:+</span> <span class="n">entry</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>For modifying <code class="docutils literal"><span class="pre">currentState</span></code>, applications can send <code class="docutils literal"><span class="pre">Append</span></code> commands which are handled by the <code class="docutils literal"><span class="pre">onCommand</span></code> handler. From an <code class="docutils literal"><span class="pre">Append</span></code> command, the handler derives an <code class="docutils literal"><span class="pre">Appended</span></code> event and <code class="docutils literal"><span class="pre">persist</span></code>s it to the given <code class="docutils literal"><span class="pre">eventLog</span></code>. If persistence succeeds, the <code class="docutils literal"><span class="pre">onEvent</span></code> handler is called with the persisted event and the command sender is informed about successful processing. If persistence fails, the command sender is informed about the failure so that it can retry, if needed.</p>
+<p>The <code class="docutils literal"><span class="pre">onEvent</span></code> handler modifies <code class="docutils literal"><span class="pre">currentState</span></code> from successfully persisted events. If the actor is re-started, either after a crash or during normal application start, persisted events are replayed to <code class="docutils literal"><span class="pre">onEvent</span></code> so that internal state is automatically recovered before new commands are processed.</p>
+<p>The <code class="docutils literal"><span class="pre">ExampleActor</span></code> also implements an optional <code class="docutils literal"><span class="pre">aggregateId</span></code> and the mandatory <code class="docutils literal"><span class="pre">replicaId</span></code> to distinguish its instances (more on that later). The <code class="docutils literal"><span class="pre">eventLog</span></code> actor reference is used by an sourced actor to write events to and read events from an <a class="reference internal" href="reference/event-log.html#event-log"><span>Event log</span></a>.</p>
+<div class="section" id="creating-a-single-instance">
+<h3>Creating a single instance<a class="headerlink" href="#creating-a-single-instance" title="Permalink to this headline">¶</a></h3>
+<p>In the following, a single instance of <code class="docutils literal"><span class="pre">ExampleActor</span></code> is created and two <code class="docutils literal"><span class="pre">Append</span></code> commands are sent to it:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">system</span><span class="k">:</span> <span class="kt">ActorSystem</span> <span class="o">=</span> <span class="c1">// ...</span>
+<span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="c1">// ...</span>
+
+<span class="k">val</span> <span class="n">ea1_r1</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;ea1&quot;</span><span class="o">,</span> <span class="s">&quot;r1&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">)))</span>
+
+<span class="n">ea1_r1</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">)</span>
+<span class="n">ea1_r1</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;b&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Section <a class="reference internal" href="reference/event-log.html#event-log"><span>Event log</span></a> explains how to create <code class="docutils literal"><span class="pre">eventLog</span></code> actor references. Sending a <code class="docutils literal"><span class="pre">Print</span></code> command</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">ea1_r1</span> <span class="o">!</span> <span class="nc">Print</span>
+</pre></div>
+</div>
+<p>should print:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">[</span><span class="kt">id</span> <span class="kt">=</span> <span class="kt">ea1</span>, <span class="kt">replica</span> <span class="kt">id</span> <span class="kt">=</span> <span class="kt">r1</span><span class="o">]</span> <span class="n">a</span><span class="o">,</span><span class="n">b</span>
+</pre></div>
+</div>
+<p>When the application is re-started, persisted events are replayed to <code class="docutils literal"><span class="pre">onEvent</span></code> so that <code class="docutils literal"><span class="pre">currentState</span></code> is recovered. Sending another <code class="docutils literal"><span class="pre">Print</span></code> command should print again:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">[</span><span class="kt">id</span> <span class="kt">=</span> <span class="kt">ea1</span>, <span class="kt">replica</span> <span class="kt">id</span> <span class="kt">=</span> <span class="kt">r1</span><span class="o">]</span> <span class="n">a</span><span class="o">,</span><span class="n">b</span>
+</pre></div>
+</div>
+<p>In the following sections, several instances of <code class="docutils literal"><span class="pre">ExampleActor</span></code> are created. They <em>share</em> an event log which can be either a <a class="reference internal" href="reference/event-log.html#local-event-log"><span>Local event log</span></a> or a <a class="reference internal" href="reference/event-log.html#replicated-event-log"><span>Replicated event log</span></a>, depending on their distribution across <em>locations</em>.</p>
+<p>A shared event log is a pre-requisite for event-sourced actors to consume each other’s events. However, sharing an event log doesn’t necessarily mean broadcast communication between all actors on the same log. It is their <code class="docutils literal"><span class="pre">aggreagteId</span></code> and <code class="docutils literal"><span class="pre">replicaId</span></code> that determine which actors consume each other’s events. The underlying <em>event routing</em> rules can be customized by applications.</p>
+</div>
+<div class="section" id="creating-two-isolated-instances">
+<h3>Creating two isolated instances<a class="headerlink" href="#creating-two-isolated-instances" title="Permalink to this headline">¶</a></h3>
+<p>When creating two instances of <code class="docutils literal"><span class="pre">ExampleActor</span></code> with different <code class="docutils literal"><span class="pre">aggregateId</span></code>s, they are isolated from each other and do not consume each other’s events:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">ea2_r1</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;ea2&quot;</span><span class="o">,</span> <span class="s">&quot;r1&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">)))</span>
+<span class="k">val</span> <span class="n">ea3_r1</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;ea3&quot;</span><span class="o">,</span> <span class="s">&quot;r1&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">)))</span>
+
+<span class="n">ea2_r1</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">)</span>
+<span class="n">ea2_r1</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;b&quot;</span><span class="o">)</span>
+
+<span class="n">ea3_r1</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;x&quot;</span><span class="o">)</span>
+<span class="n">ea3_r1</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;y&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Sending two <code class="docutils literal"><span class="pre">Print</span></code> commands</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">ea2_r1</span> <span class="o">!</span> <span class="nc">Print</span>
+<span class="n">ea3_r1</span> <span class="o">!</span> <span class="nc">Print</span>
+</pre></div>
+</div>
+<p>should print:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">[</span><span class="kt">id</span> <span class="kt">=</span> <span class="kt">ea2</span>, <span class="kt">replica</span> <span class="kt">id</span> <span class="kt">=</span> <span class="kt">r1</span><span class="o">]</span> <span class="n">a</span><span class="o">,</span><span class="n">b</span>
+<span class="o">[</span><span class="kt">id</span> <span class="kt">=</span> <span class="kt">ea3</span>, <span class="kt">replica</span> <span class="kt">id</span> <span class="kt">=</span> <span class="kt">r1</span><span class="o">]</span> <span class="n">x</span><span class="o">,</span><span class="n">y</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-two-replica-instances">
+<h3>Creating two replica instances<a class="headerlink" href="#creating-two-replica-instances" title="Permalink to this headline">¶</a></h3>
+<p>When creating two <code class="docutils literal"><span class="pre">ExampleActor</span></code> instances with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> but different <code class="docutils literal"><span class="pre">replicaId</span></code>s, they consume each other’s events <a class="footnote-reference" href="#id6" id="id2">[1]</a>. They are usually created at different locations (but can also be created at the same location, for example, for testing purposes).</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="c1">// created at location 1</span>
+<span class="k">val</span> <span class="n">ea4_r1</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;ea4&quot;</span><span class="o">,</span> <span class="s">&quot;r1&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">)))</span>
+
+<span class="c1">// created at location 2</span>
+<span class="k">val</span> <span class="n">ea4_r2</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;ea4&quot;</span><span class="o">,</span> <span class="s">&quot;r2&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">)))</span>
+
+<span class="n">ea4_r1</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal"><span class="pre">ea4_r1</span></code> processes an <code class="docutils literal"><span class="pre">Append</span></code> command and persists an <code class="docutils literal"><span class="pre">Appended</span></code> event. This event this then consumed by both, <code class="docutils literal"><span class="pre">ea4_r1</span></code> and <code class="docutils literal"><span class="pre">ea4_r2</span></code>, so that they can update their internal state. After waiting a bit for convergence, sending a <code class="docutils literal"><span class="pre">Print</span></code> command to both actors should print:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">[</span><span class="kt">id</span> <span class="kt">=</span> <span class="kt">ea4</span>, <span class="kt">replica</span> <span class="kt">id</span> <span class="kt">=</span> <span class="kt">r1</span><span class="o">]</span> <span class="n">a</span>
+<span class="o">[</span><span class="kt">id</span> <span class="kt">=</span> <span class="kt">ea4</span>, <span class="kt">replica</span> <span class="kt">id</span> <span class="kt">=</span> <span class="kt">r2</span><span class="o">]</span> <span class="n">a</span>
+</pre></div>
+</div>
+<p>After both replicas have converged, another <code class="docutils literal"><span class="pre">Append</span></code> is sent to <code class="docutils literal"><span class="pre">ea4_r2</span></code>.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">ea4_r2</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;b&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Again both actors consume the event and sending another <code class="docutils literal"><span class="pre">Print</span></code> command should print:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">[</span><span class="kt">id</span> <span class="kt">=</span> <span class="kt">ea4</span>, <span class="kt">replica</span> <span class="kt">id</span> <span class="kt">=</span> <span class="kt">r1</span><span class="o">]</span> <span class="n">a</span><span class="o">,</span><span class="n">b</span>
+<span class="o">[</span><span class="kt">id</span> <span class="kt">=</span> <span class="kt">ea4</span>, <span class="kt">replica</span> <span class="kt">id</span> <span class="kt">=</span> <span class="kt">r2</span><span class="o">]</span> <span class="n">a</span><span class="o">,</span><span class="n">b</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p>As you have probably recognized, replica convergence in this example can only be achieved if the second <code class="docutils literal"><span class="pre">Append</span></code> command is sent after both actors have processed the <code class="docutils literal"><span class="pre">Appended</span></code> event from the first <code class="docutils literal"><span class="pre">Append</span></code> command. In this case, the second <code class="docutils literal"><span class="pre">Appended</span></code> event causally depends on the first one. Since events are guaranteed to be delivered in causal order to all replicas, they can converge to the same state.</p>
+<p class="last">When concurrent updates are made to both replicas, the corresponding <code class="docutils literal"><span class="pre">Appended</span></code> events are not causally related and can be delivered in any order to both replicas. This may cause replicas to diverge because append operations do not commute. The following sections give examples how to detect and handle concurrent updates.</p>
+</div>
+</div>
+</div>
+<div class="section" id="detecting-concurrent-updates">
+<h2>Detecting concurrent updates<a class="headerlink" href="#detecting-concurrent-updates" title="Permalink to this headline">¶</a></h2>
+<p>Eventuate tracks causality of events with <a class="reference internal" href="architecture.html#vector-clocks"><span>Vector clocks</span></a> maintained by <code class="docutils literal"><span class="pre">EventsourcedActor</span></code>s. Whenever an event-sourced actor writes an event, it advances its local time in the vector clock by 1 and attaches the current vector time as vector timestamp to the event. When handling an event, an event-sourced actor updates its vector clock according to the <a class="reference external" href="http://en.wikipedia.org/wiki/Vector_clock">vector clock update rules</a>. But why are vector clocks and vector timestamps needed at all?</p>
+<p>Let’s assume that an event-sourced actor emits an event <code class="docutils literal"><span class="pre">e1</span></code> for changing internal state and later receives an event <code class="docutils literal"><span class="pre">e2</span></code> from a replica instance. If the replica instance emits <code class="docutils literal"><span class="pre">e2</span></code> after having processed <code class="docutils literal"><span class="pre">e1</span></code>, the actor can apply <code class="docutils literal"><span class="pre">e2</span></code> as regular update. If the replica instance emits <code class="docutils literal"><span class="pre">e2</span></code> before having received <code class="docutils literal"><span class="pre">e1</span></code>, the actor has received a concurrent, potentially conflicting update.</p>
+<p>How can the actor determine if <code class="docutils literal"><span class="pre">e2</span></code> is a regular i.e. causally related or concurrent update? It can do so by comparing the vector timestamps of <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code>, where <code class="docutils literal"><span class="pre">t1</span></code> is the vector timestamp of <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">t2</span></code> the vector timestamp of <code class="docutils literal"><span class="pre">e2</span></code>. If events <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code> are concurrent then <code class="docutils literal"><span class="pre">t1</span> <span class="pre">conc</span> <span class="pre">t2</span></code> evaluates to <code class="docutils literal"><span class="pre">true</span></code>. Otherwise, they are causally related and <code class="docutils literal"><span class="pre">t1</span> <span class="pre">&lt;</span> <span class="pre">t2</span></code> evaluates to <code class="docutils literal"><span class="pre">true</span></code> (because <code class="docutils literal"><span class="pre">e1</span></code> <em>happened-before</em> <code class="docutils literal"><span class="pre">e2</span></code>).</p>
+<p>The vector timestamp of an event can be obtained with <code class="docutils literal"><span class="pre">lastVectorTimestamp</span></code> during event processing. Vector timestamps can be attached as <em>update timestamp</em> to current state and compared to the vector timestamp of a new event in order to determine whether the new event is causally related to the previous state update or not<a class="footnote-reference" href="#id7" id="id3">[2]</a>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.VectorTime</span>
+
+<span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">replicaId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
+
+  <span class="k">private</span> <span class="k">var</span> <span class="n">currentState</span><span class="k">:</span> <span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Vector</span><span class="o">.</span><span class="n">empty</span>
+  <span class="k">private</span> <span class="k">var</span> <span class="n">updateTimestamp</span><span class="k">:</span> <span class="kt">VectorTime</span> <span class="o">=</span> <span class="nc">VectorTime</span><span class="o">()</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">aggregateId</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onEvent</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Appended</span><span class="o">(</span><span class="n">entry</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">updateTimestamp</span> <span class="o">&lt;</span> <span class="n">lastVectorTimestamp</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// regular update</span>
+        <span class="n">currentState</span> <span class="k">=</span> <span class="n">currentState</span> <span class="o">:+</span> <span class="n">entry</span>
+        <span class="n">updateTimestamp</span> <span class="k">=</span> <span class="n">lastVectorTimestamp</span>
+      <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">updateTimestamp</span> <span class="n">conc</span> <span class="n">lastVectorTimestamp</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// concurrent update</span>
+        <span class="c1">// TODO: track conflicting versions</span>
+      <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Attaching update timestamps to current state and comparing them with vector timestamps of new events can be easily abstracted so that applications don’t have to deal with these low level details, as shown in the next section.</p>
+</div>
+<div class="section" id="tracking-conflicting-versions">
+<h2>Tracking conflicting versions<a class="headerlink" href="#tracking-conflicting-versions" title="Permalink to this headline">¶</a></h2>
+<p>If state update operations from concurrent events do not commute, conflicting versions of actor state arise that must be tracked and resolved. This can be done with Eventuate’s <code class="docutils literal"><span class="pre">ConcurrentVersions[S,</span> <span class="pre">A]</span></code> abstraction and an application-defined <em>update function</em> of type <code class="docutils literal"><span class="pre">(S,</span> <span class="pre">A)</span> <span class="pre">=&gt;</span> <span class="pre">S</span></code> where <code class="docutils literal"><span class="pre">S</span></code> is the type of actor state and <code class="docutils literal"><span class="pre">A</span></code> the update type. In our example the <code class="docutils literal"><span class="pre">ConcurrentVersions</span></code> type is <code class="docutils literal"><span class="pre">ConcurrentVersions[Vector[String],</span> <span class="pre">String]</span></code> and the update function <code class="docutils literal"><span class="pre">(s,</span> <span class="pre">a)</span> <span class="pre">=&gt;</span> <span class="pre">s</span> <span class="pre">:+</span> <span class="pre">a</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.collection.immutable.Seq</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.</span><span class="o">{</span><span class="nc">ConcurrentVersions</span><span class="o">,</span> <span class="nc">Versioned</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
+
+<span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">replicaId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
+
+  <span class="k">private</span> <span class="k">var</span> <span class="n">versionedState</span><span class="k">:</span> <span class="kt">ConcurrentVersions</span><span class="o">[</span><span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>, <span class="kt">String</span><span class="o">]</span> <span class="k">=</span>
+    <span class="nc">ConcurrentVersions</span><span class="o">(</span><span class="nc">Vector</span><span class="o">.</span><span class="n">empty</span><span class="o">,</span> <span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">a</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">s</span> <span class="o">:+</span> <span class="n">a</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">aggregateId</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onEvent</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Appended</span><span class="o">(</span><span class="n">entry</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">versionedState</span> <span class="k">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="n">update</span><span class="o">(</span><span class="n">entry</span><span class="o">,</span> <span class="n">lastVectorTimestamp</span><span class="o">)</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">versionedState</span><span class="o">.</span><span class="n">conflict</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">val</span> <span class="n">conflictingVersions</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">Versioned</span><span class="o">[</span><span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">]]]</span> <span class="k">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="n">all</span>
+        <span class="c1">// TODO: resolve conflicting versions</span>
+      <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="k">val</span> <span class="n">currentState</span><span class="k">:</span> <span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">value</span>
+        <span class="c1">// ...</span>
+      <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Internally, <code class="docutils literal"><span class="pre">ConcurrentVersions</span></code> maintains versions of actor state in a tree structure where each concurrent <code class="docutils literal"><span class="pre">update</span></code> creates a new branch. The shape of the tree is determined solely by the vector timestamps of the corresponding update events.</p>
+<p>An event’s vector timestamp is passed as <code class="docutils literal"><span class="pre">lastVectorTimestamp</span></code> argument to <code class="docutils literal"><span class="pre">update</span></code>. A new version is internally created by applying the update function <code class="docutils literal"><span class="pre">(s,</span> <span class="pre">a)</span> <span class="pre">=&gt;</span> <span class="pre">s</span> <span class="pre">:+</span> <span class="pre">a</span></code> to the closest predecessor version and the actual update value (<code class="docutils literal"><span class="pre">entry</span></code>). The <code class="docutils literal"><span class="pre">lastVectorTimestamp</span></code> is attached as update timestamp to the newly created version.</p>
+<p>Concurrent versions of actor state and their update timestamp can be obtained with <code class="docutils literal"><span class="pre">all</span></code> which is a sequence of type <code class="docutils literal"><span class="pre">Seq[Versioned[Vector[String]]]</span></code> in our example. The <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.Versioned">Versioned</a> data type represents a particular version of actor state and its update timestamp.</p>
+<p>If <code class="docutils literal"><span class="pre">all</span></code> contains only a single element, there is no conflict and the element represents the current, conflict-free actor state. If the sequence contains two or more elements, there is a conflict where the elements represent conflicting versions of actor states. They can be resolved either automatically or interactively.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Only concurrent updates to replicas with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> may conflict. Concurrent updates to actors with different <code class="docutils literal"><span class="pre">aggregateId</span></code> do not conflict (unless an application overrides the default event routing rules).</p>
+<p class="last">Also, if the data type of actor state is designed in a way that update operations commute, conflicts do not occur. This is discussed in section <a class="reference internal" href="#crdt-tour"><span>Commutative replicated data types</span></a>.</p>
+</div>
+</div>
+<div class="section" id="resolving-conflicting-versions">
+<h2>Resolving conflicting versions<a class="headerlink" href="#resolving-conflicting-versions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="automated-conflict-resolution">
+<h3>Automated conflict resolution<a class="headerlink" href="#automated-conflict-resolution" title="Permalink to this headline">¶</a></h3>
+<p>The following is a very simple example of automated conflict resolution: if a conflict has been detected, the writer with the lower <code class="docutils literal"><span class="pre">replicaId</span></code> is selected to be the winner. The <code class="docutils literal"><span class="pre">replicaId</span></code> of an event writer can be obtained with <code class="docutils literal"><span class="pre">lastEmitterReplicaId</span></code> during event handling.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">replicaId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
+
+  <span class="k">private</span> <span class="k">var</span> <span class="n">versionedState</span><span class="k">:</span> <span class="kt">ConcurrentVersions</span><span class="o">[</span><span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>, <span class="kt">String</span><span class="o">]</span> <span class="k">=</span>
+    <span class="nc">ConcurrentVersions</span><span class="o">(</span><span class="nc">Vector</span><span class="o">.</span><span class="n">empty</span><span class="o">,</span> <span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">a</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">s</span> <span class="o">:+</span> <span class="n">a</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">aggregateId</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onEvent</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Appended</span><span class="o">(</span><span class="n">entry</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">versionedState</span> <span class="k">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="n">update</span><span class="o">(</span><span class="n">entry</span><span class="o">,</span> <span class="n">lastVectorTimestamp</span><span class="o">,</span> <span class="n">lastEmitterReplicaId</span><span class="o">)</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">versionedState</span><span class="o">.</span><span class="n">conflict</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">val</span> <span class="n">conflictingVersions</span> <span class="k">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">sortBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">emitterReplicaId</span><span class="o">)</span>
+        <span class="k">val</span> <span class="n">winnerTimestamp</span><span class="k">:</span> <span class="kt">VectorTime</span> <span class="o">=</span> <span class="n">conflictingVersions</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">updateTimestamp</span>
+        <span class="n">versionedState</span> <span class="k">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="n">resolve</span><span class="o">(</span><span class="n">winnerTimestamp</span><span class="o">)</span>
+      <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>The conflicting versions are sorted by ascending <code class="docutils literal"><span class="pre">emitterReplicaId</span></code> and the first version is selected as the winner. Its update timestamp is passed as argument to <code class="docutils literal"><span class="pre">resolve</span></code> which selects this version and discards all other versions.</p>
+<p>Alternatively, we could also have used the POSIX timestamps to let the <em>last</em> writer win. In case of equal timestamps, the lower <code class="docutils literal"><span class="pre">emitterReplicaId</span></code> wins. This requires synchronized system clocks to give reasonable result, however, convergence does not depend on proper synchronization.</p>
+<p>More advanced conflict resolution examples could use logic that depends on the actual values of concurrent versions. After selecting a winner, an application could even update the winner version with <em>merged</em> content from all conflicting versions <a class="footnote-reference" href="#id8" id="id4">[3]</a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For replicas to converge, it is important that winner selection does not depend on the order of conflicting events. In our example, this is the case because <code class="docutils literal"><span class="pre">replicaId</span></code> comparison is transitive.</p>
+</div>
+</div>
+<div class="section" id="interactive-conflict-resolution">
+<h3>Interactive conflict resolution<a class="headerlink" href="#interactive-conflict-resolution" title="Permalink to this headline">¶</a></h3>
+<p>Interactive conflict resolution does not resolve conflicts immediately but requests the user to select a winner version. In this case, the update timestamp of the selected winner must be explicitly stored within a conflict resolution event so that conflict resolution is repeatable at other replicas and during event replay.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">case</span> <span class="k">class</span> <span class="nc">Append</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">AppendRejected</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">conflictingVersions</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">Versioned</span><span class="o">[</span><span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">]]])</span>
+
+<span class="k">case</span> <span class="k">class</span> <span class="nc">Resolve</span><span class="o">(</span><span class="n">selectedTimestamp</span><span class="k">:</span> <span class="kt">VectorTime</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">Resolved</span><span class="o">(</span><span class="n">selectedTimestamp</span><span class="k">:</span> <span class="kt">VectorTime</span><span class="o">)</span>
+
+<span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">replicaId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
+
+  <span class="k">private</span> <span class="k">var</span> <span class="n">versionedState</span><span class="k">:</span> <span class="kt">ConcurrentVersions</span><span class="o">[</span><span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>, <span class="kt">String</span><span class="o">]</span> <span class="k">=</span>
+    <span class="nc">ConcurrentVersions</span><span class="o">(</span><span class="nc">Vector</span><span class="o">.</span><span class="n">empty</span><span class="o">,</span> <span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">a</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">s</span> <span class="o">:+</span> <span class="n">a</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">aggregateId</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Append</span><span class="o">(</span><span class="n">entry</span><span class="o">)</span> <span class="k">if</span> <span class="n">versionedState</span><span class="o">.</span><span class="n">conflict</span> <span class="k">=&gt;</span>
+      <span class="n">sender</span><span class="o">()</span> <span class="o">!</span> <span class="nc">AppendRejected</span><span class="o">(</span><span class="n">entry</span><span class="o">,</span> <span class="n">versionedState</span><span class="o">.</span><span class="n">all</span><span class="o">)</span>
+    <span class="k">case</span> <span class="nc">Append</span><span class="o">(</span><span class="n">entry</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="c1">// ...</span>
+    <span class="k">case</span> <span class="nc">Resolve</span><span class="o">(</span><span class="n">selectedTimestamp</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">persist</span><span class="o">(</span><span class="nc">Resolved</span><span class="o">(</span><span class="n">selectedTimestamp</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Success</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span> <span class="k">=&gt;</span>
+        <span class="n">onEvent</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span>
+        <span class="c1">// reply to sender omitted ...</span>
+      <span class="k">case</span> <span class="nc">Failure</span><span class="o">(</span><span class="n">err</span><span class="o">)</span> <span class="k">=&gt;</span>
+        <span class="c1">// reply to sender omitted ...</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onEvent</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Appended</span><span class="o">(</span><span class="n">entry</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">versionedState</span> <span class="k">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="n">update</span><span class="o">(</span><span class="n">entry</span><span class="o">,</span> <span class="n">lastVectorTimestamp</span><span class="o">,</span> <span class="n">lastEmitterReplicaId</span><span class="o">)</span>
+    <span class="k">case</span> <span class="nc">Resolved</span><span class="o">(</span><span class="n">selectedTimestamp</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">versionedState</span> <span class="k">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="n">resolve</span><span class="o">(</span><span class="n">selectedTimestamp</span><span class="o">,</span> <span class="n">lastVectorTimestamp</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>When a user tries to <code class="docutils literal"><span class="pre">Append</span></code> in presence of a conflict, the <code class="docutils literal"><span class="pre">ExampleActor</span></code> rejects the update and requests the user to select a winner version from a sequence of conflicting versions. The user then sends the update timestamp of the winner version as <code class="docutils literal"><span class="pre">selectedTimestamp</span></code> with a <code class="docutils literal"><span class="pre">Resolve</span></code> command from which a <code class="docutils literal"><span class="pre">Resolved</span></code> event is derived and persisted. Handling of <code class="docutils literal"><span class="pre">Resolved</span></code> at all replicas finally resolves the conflict.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Interactive conflict resolution requires agreement between replicas affected by a given conflict. Only one of them may emit the <code class="docutils literal"><span class="pre">Resolved</span></code> event. This does not necessarily mean distributed leader (= resolver) election or lock acquisition but can also rely on static rules such as <em>only the initial creator location of an aggregate is allowed to resolve the conflict</em>. This rule is implemented in the <a class="reference internal" href="example-application.html#example-application"><span>Example application</span></a>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="commutative-replicated-data-types">
+<span id="crdt-tour"></span><h2>Commutative replicated data types<a class="headerlink" href="#commutative-replicated-data-types" title="Permalink to this headline">¶</a></h2>
+<p>If state update operations commute, there’s no need to use Eventuate’s <code class="docutils literal"><span class="pre">ConcurrentVersions</span></code> utility. A simple example is a replicated counter, which converges because the increment and decrement operations commute. A formal to approach to commutative replicated data types (CmRDTs) or operation-based CRDTs is given in the paper <a class="reference external" href="http://hal.upmc.fr/file/index/docid/555588/filename/techreport.pdf">A comprehensive study of Convergent and Commutative Replicated Data Types</a> by Marc Shapiro et al. Eventuate is a good basis for implementing operation-based CRDTs:</p>
+<ul class="simple">
+<li>Update operations can be modeled as events that are reliably broadcasted to all replicas by the <a class="reference internal" href="reference/event-log.html#replicated-event-log"><span>Replicated event log</span></a>.</li>
+<li>The command and event handler of an event-sourced actor can be used to implement the two update phases mentioned in the paper: <em>atSource</em> and <em>downstream</em>, respectively.</li>
+<li>All <em>downstream</em> preconditions mentioned in the paper are satisfied by causal delivery of update operations which is guaranteed for actors consuming from a replicated event log.</li>
+</ul>
+<p>Eventuate already provides implementations for some of the operation-based CRDTs in the paper. They can be accessed and used via <em>CRDT services</em>. CRDT services free applications from dealing with low-level details like event-sourced actors or command messages. CRDT operations are asynchronous methods on the service interface. The following is the definition of Eventuate’s <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.ORSetService">ORSetService</a>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * Replicated [[ORSet]] CRDT service.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param replicaId Unique replica id of this service replica.</span>
+<span class="cm"> * @param log Event log</span>
+<span class="cm"> * @tparam A [[ORSet]] entry type</span>
+<span class="cm"> */</span>
+<span class="k">class</span> <span class="nc">ORSetService</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="k">val</span> <span class="n">replicaId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="k">val</span> <span class="n">log</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)(</span><span class="k">implicit</span> <span class="n">system</span><span class="k">:</span> <span class="kt">ActorSystem</span><span class="o">,</span> <span class="k">val</span> <span class="n">ops</span><span class="k">:</span> <span class="kt">CRDTServiceOps</span><span class="o">[</span><span class="kt">ORSet</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span>, <span class="kt">Set</span><span class="o">[</span><span class="kt">A</span><span class="o">]])</span>
+  <span class="k">extends</span> <span class="nc">CRDTService</span><span class="o">[</span><span class="kt">ORSet</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span>, <span class="kt">Set</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span> <span class="o">{</span>
+
+  <span class="cm">/**</span>
+<span class="cm">   * Adds `entry` to the OR-Set identified by `id` and returns the updated entry set.</span>
+<span class="cm">   */</span>
+  <span class="k">def</span> <span class="n">add</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">entry</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Set</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span> <span class="k">=</span>
+    <span class="n">op</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="nc">AddOp</span><span class="o">(</span><span class="n">entry</span><span class="o">))</span>
+
+  <span class="cm">/**</span>
+<span class="cm">   * Removes `entry` from the OR-Set identified by `id` and returns the updated entry set.</span>
+<span class="cm">   */</span>
+  <span class="k">def</span> <span class="n">remove</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">entry</span><span class="k">:</span> <span class="kt">A</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Set</span><span class="o">[</span><span class="kt">A</span><span class="o">]]</span> <span class="k">=</span>
+    <span class="n">op</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="nc">RemoveOp</span><span class="o">(</span><span class="n">entry</span><span class="o">))</span>
+
+  <span class="n">start</span><span class="o">()</span>
+<span class="o">}</span>
+
+<span class="cm">/** Persistent add operation */</span>
+<span class="k">private</span> <span class="k">case</span> <span class="k">class</span> <span class="nc">AddOp</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">Any</span><span class="o">)</span>
+
+<span class="cm">/** Persistent remove operation */</span>
+<span class="k">private</span> <span class="k">case</span> <span class="k">class</span> <span class="nc">RemoveOp</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">Any</span><span class="o">,</span> <span class="n">timestamps</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">VectorTime</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>The <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.ORSetService">ORSetService</a> is a CRDT service that manages <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> instances which are specified in section 3.3.5 in the paper. It implements the asynchronous <code class="docutils literal"><span class="pre">add</span></code> and <code class="docutils literal"><span class="pre">remove</span></code> methods and inherits the <code class="docutils literal"><span class="pre">value(id:</span> <span class="pre">String):</span> <span class="pre">Set[A]</span></code> method from <code class="docutils literal"><span class="pre">CRDTService</span></code> for reading the current value. Their <code class="docutils literal"><span class="pre">id</span></code> parameter identifies an <code class="docutils literal"><span class="pre">ORSet</span></code> instance. Instances are automatically created by the service on demand. A usage example is the <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/blob/master/src/multi-jvm/scala/com/rbmhtechnology/eventuate/crdt/ReplicatedORSetSpec.scala">ReplicatedOrSetSpec</a> that is based on Akka’s <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/dev/multi-node-testing.html">multi node testkit</a>.</p>
+<p>New operation-based CRDTs and their service interfaces can be implemented with the CRDT service framework, by defining an instance of the <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a> type class and implementing the <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a> trait. Take a look at the <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/main/scala/com/rbmhtechnology/eventuate/crdt">CRDT sources</a> for examples. Eventuate’s CRDT approach is also described in <a class="reference external" href="https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/">this article</a>.</p>
+</div>
+<div class="section" id="event-sourced-views">
+<h2>Event-sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h2>
+<p>Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. A view that doesn’t define an <code class="docutils literal"><span class="pre">aggregateId</span></code> can consume events from all event-sourced actors on the same event log. If it defines an <code class="docutils literal"><span class="pre">aggregateId</span></code> it can only consume events from event-sourced actors with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> (assuming the default event routing rules).</p>
+<p>Concrete event-sourced views must implement the <code class="docutils literal"><span class="pre">EventsourcedView</span></code> trait. In the following example, the view counts all <code class="docutils literal"><span class="pre">Appended</span></code> and <code class="docutils literal"><span class="pre">Resolved</span></code> events emitted by all event-sourced actors on the same <code class="docutils literal"><span class="pre">eventLog</span></code>. It doesn’t define an <code class="docutils literal"><span class="pre">aggregateId</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">akka.actor.ActorRef</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedView</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.VectorTime</span>
+
+<span class="k">case</span> <span class="k">class</span> <span class="nc">Appended</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">Resolved</span><span class="o">(</span><span class="n">selectedTimestamp</span><span class="k">:</span> <span class="kt">VectorTime</span><span class="o">)</span>
+
+<span class="k">case</span> <span class="k">object</span> <span class="nc">GetAppendCount</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">GetAppendCountReply</span><span class="o">(</span><span class="n">count</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span>
+
+<span class="k">case</span> <span class="k">object</span> <span class="nc">GetResolveCount</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">GetResolveCountReply</span><span class="o">(</span><span class="n">count</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span>
+
+<span class="k">class</span> <span class="nc">ExampleView</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedView</span> <span class="o">{</span>
+  <span class="k">private</span> <span class="k">var</span> <span class="n">appendCount</span><span class="k">:</span> <span class="kt">Long</span> <span class="o">=</span> <span class="mi">0L</span>
+  <span class="k">private</span> <span class="k">var</span> <span class="n">resolveCount</span><span class="k">:</span> <span class="kt">Long</span> <span class="o">=</span> <span class="mi">0L</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">GetAppendCount</span> <span class="k">=&gt;</span> <span class="n">sender</span><span class="o">()</span> <span class="o">!</span> <span class="nc">GetAppendCountReply</span><span class="o">(</span><span class="n">appendCount</span><span class="o">)</span>
+    <span class="k">case</span> <span class="nc">GetResolveCount</span> <span class="k">=&gt;</span> <span class="n">sender</span><span class="o">()</span> <span class="o">!</span> <span class="nc">GetResolveCountReply</span><span class="o">(</span><span class="n">resolveCount</span><span class="o">)</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onEvent</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Appended</span><span class="o">(</span><span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">appendCount</span> <span class="o">+=</span> <span class="mi">1L</span>
+    <span class="k">case</span> <span class="nc">Resolved</span><span class="o">(</span><span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">resolveCount</span> <span class="o">+=</span> <span class="mi">1L</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Event-sourced views handle events in the same way as event-sourced actors by implementing an <code class="docutils literal"><span class="pre">onEvent</span></code> handler. The <code class="docutils literal"><span class="pre">onCommand</span></code> handler in the example processes the read commands <code class="docutils literal"><span class="pre">GetAppendCount</span></code> and <code class="docutils literal"><span class="pre">GetResolveCount</span></code>.</p>
+</div>
+<div class="section" id="conditional-commands">
+<h2>Conditional commands<a class="headerlink" href="#conditional-commands" title="Permalink to this headline">¶</a></h2>
+<p>Events emitted by one event-sourced actor are asynchronously consumed by other event sourced-actors or views. For example, an application that successfully appended an entry to an <code class="docutils literal"><span class="pre">ExampleActor</span></code> may not immediately see that update in the <code class="docutils literal"><span class="pre">appendCount</span></code> of <code class="docutils literal"><span class="pre">ExampleView</span></code>. To achieve read-your-write consistency between an event-sourced actor and a view, the view should delay command processing until the emitted event has been consumed by the view. This is possible with a <code class="docutils literal"><span class="pre">ConditionalCommand</span></code>.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
+<span class="k">import</span> <span class="nn">scala.util._</span>
+<span class="k">import</span> <span class="nn">akka.actor._</span>
+<span class="k">import</span> <span class="nn">akka.pattern.ask</span>
+<span class="k">import</span> <span class="nn">akka.util.Timeout</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.ConditionalCommand</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.</span><span class="o">{</span><span class="nc">EventsourcedActor</span><span class="o">,</span> <span class="nc">VectorTime</span><span class="o">}</span>
+
+<span class="k">case</span> <span class="k">class</span> <span class="nc">Append</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">AppendSuccess</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">updateTimestamp</span><span class="k">:</span> <span class="kt">VectorTime</span><span class="o">)</span>
+
+<span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">replicaId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
+
+  <span class="k">private</span> <span class="k">var</span> <span class="n">currentState</span><span class="k">:</span> <span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Vector</span><span class="o">.</span><span class="n">empty</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">aggregateId</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Append</span><span class="o">(</span><span class="n">entry</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">persist</span><span class="o">(</span><span class="nc">Appended</span><span class="o">(</span><span class="n">entry</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">Success</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span> <span class="k">=&gt;</span>
+        <span class="n">onEvent</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span>
+        <span class="n">sender</span><span class="o">()</span> <span class="o">!</span> <span class="nc">AppendSuccess</span><span class="o">(</span><span class="n">entry</span><span class="o">,</span> <span class="n">lastVectorTimestamp</span><span class="o">)</span>
+      <span class="c1">// ...</span>
+    <span class="o">}</span>
+    <span class="c1">// ...</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onEvent</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Appended</span><span class="o">(</span><span class="n">entry</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">currentState</span> <span class="k">=</span> <span class="n">currentState</span> <span class="o">:+</span> <span class="n">entry</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">ea</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;ea&quot;</span><span class="o">,</span> <span class="s">&quot;r1&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">)))</span>
+<span class="k">val</span> <span class="n">ev</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleView</span><span class="o">(</span><span class="n">eventLog</span><span class="o">)))</span>
+
+<span class="k">import</span> <span class="nn">system.dispatcher</span>
+<span class="k">implicit</span> <span class="k">val</span> <span class="n">timeout</span> <span class="k">=</span> <span class="nc">Timeout</span><span class="o">(</span><span class="mf">5.</span><span class="n">seconds</span><span class="o">)</span>
+
+<span class="k">for</span> <span class="o">{</span>
+  <span class="nc">AppendSuccess</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">timestamp</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="n">ea</span> <span class="o">?</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">)</span>
+  <span class="nc">GetAppendCountReply</span><span class="o">(</span><span class="n">count</span><span class="o">)</span>  <span class="k">&lt;-</span> <span class="n">ev</span> <span class="o">?</span> <span class="nc">ConditionalCommand</span><span class="o">(</span><span class="n">timestamp</span><span class="o">,</span> <span class="nc">GetAppendCount</span><span class="o">)</span>
+<span class="o">}</span> <span class="n">println</span><span class="o">(</span><span class="s">s&quot;append count = </span><span class="si">$count</span><span class="s">&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">ExampleActor</span></code> includes the event’s vector timestamp in its <code class="docutils literal"><span class="pre">AppendSuccess</span></code> reply. Together with the actual <code class="docutils literal"><span class="pre">GetAppendCount</span></code> command, the timestamp is included as condition into a <code class="docutils literal"><span class="pre">ConditionalCommand</span></code> and sent to the view. <code class="docutils literal"><span class="pre">EventsourcedView</span></code> internally delays the command, if needed, and only dispatches <code class="docutils literal"><span class="pre">GetAppendCount</span></code> to <code class="docutils literal"><span class="pre">onCommand</span></code> after having received an event whose timestamp is <code class="docutils literal"><span class="pre">&gt;=</span></code> the condition timestamp in the conditional command<a class="footnote-reference" href="#id9" id="id5">[4]</a>. When running the example with an empty event log, it should print:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">append</span> <span class="n">count</span> <span class="k">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Not only event-sourced views but also event-sourced actors can receive and delay conditional commands. Also, delaying conditional commands may re-order them relative to other conditional and non-conditional commands.</p>
+</div>
+<table class="docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td><code class="docutils literal"><span class="pre">EventsourcedActor</span></code>s and <code class="docutils literal"><span class="pre">EventsourcedView</span></code>s that have no <code class="docutils literal"><span class="pre">aggregateId</span></code> defined can consume events from all other actors on the same event log.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id7" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>Attached update timestamps are not version vectors because we use <a class="reference external" href="http://en.wikipedia.org/wiki/Vector_clock">vector clock update rules</a> instead of <a class="reference external" href="http://en.wikipedia.org/wiki/Version_vector">version vector update rules</a>. Consequently, update timestamp equivalence cannot be used as criterion for replica convergence.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id8" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td>A formal approach to automatically <em>merge</em> concurrent versions of application state are convergent replicated data types (CvRDTs) or state-based CRDTs.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id9" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td>More precisely, the command is dispatched if the current time of the view’s internal clock is <code class="docutils literal"><span class="pre">&gt;=</span></code> the condition timestamp in the conditional command. The view’s internal clock is updated by <em>merging</em> its current time with the vector timestamps of received events.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="reference.html" class="btn btn-neutral float-right" title="Reference">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="download.html" class="btn btn-neutral" title="Download"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015 Red Bull Media House.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1-SNAPSHOT',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

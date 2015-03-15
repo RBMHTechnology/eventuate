@@ -47,11 +47,14 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a> implementation that shall be used if updates modify current
-versioned values (= incremental updates). <code>ConcurrentVersionsTree</code> is a mutable data
-structure.</p><p><b>Please note:</b> This implementation is not optimized yet and leaks memory at the
-moment (which shouldn't be a problem if the number of incremental updates is small).
-Also, future versions of <code>ConcurrentVersionsTree</code> will likely be immutable.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a> implementation that shall be used if updates are incremental.
+<code>ConcurrentVersionsTree</code> is a mutable data structure. Therefore, it is recommended not
+to share instances of <code>ConcurrentVersionsTree</code> directly but rather the <a href="Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a>
+sequence returned by <a href="#all:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.Versioned[A]]" class="extmbr" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree#all">ConcurrentVersionsTree.all</a>. Later releases will be based on
+an immutable data structure.</p><p><b>Please note:</b> This implementation does not purge old versions at the moment (which
+shouldn't be a problem if the number of incremental updates to a versioned aggregate is
+rather small). In later releases, manual and automated purging of old versions will be
+supported.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.B">B</span>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -443,7 +446,7 @@ concurrent (= conflicting) versions.
       <p class="shortcomment cmt">Owner of versioned values.</p><div class="fullcomment"><div class="comment cmt"><p>Owner of versioned values.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a> → <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree#resolve" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="resolve(selectedTimestamp:com.rbmhtechnology.eventuate.VectorTime,eventTimestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]"></a>
+      <a id="resolve(selectedTimestamp:com.rbmhtechnology.eventuate.VectorTime,updateTimestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]"></a>
       <a id="resolve(VectorTime,VectorTime):ConcurrentVersionsTree[A,B]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -451,17 +454,17 @@ concurrent (= conflicting) versions.
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">resolve</span><span class="params">(<span name="selectedTimestamp">selectedTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="eventTimestamp">eventTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.B">B</span>]</span>
+        <span class="name">resolve</span><span class="params">(<span name="selectedTimestamp">selectedTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="updateTimestamp">updateTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.B">B</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConcurrentVersionsTree@resolve(selectedTimestamp:com.rbmhtechnology.eventuate.VectorTime,eventTimestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConcurrentVersionsTree@resolve(selectedTimestamp:com.rbmhtechnology.eventuate.VectorTime,updateTimestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Resolves multiple concurrent versions to a single version.</p><div class="fullcomment"><div class="comment cmt"><p>Resolves multiple concurrent versions to a single version. For the resolution to be
-successful, one of the concurrent versions must have a version vector that is equal to
-<code>selectedTimestamp</code>. Only those concurrent versions with a version vector less than the
-<code>eventTimestamp</code> participate in the resolution process (which allows for resolutions to
+successful, one of the concurrent versions must have a <code>creationTimestamp</code> that is equal to
+<code>selectedTimestamp</code>. Only those concurrent versions with a <code>creationTimestamp</code> less than the
+<code>updateTimestamp</code> participate in the resolution process (which allows for resolutions to
 be concurrent to other updates).
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a> → <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersions#resolve" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -517,7 +520,7 @@ be concurrent to other updates).
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree#update" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="update(b:B,eventTimestamp:com.rbmhtechnology.eventuate.VectorTime,replicaId:String):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]"></a>
+      <a id="update(b:B,updateTimestamp:com.rbmhtechnology.eventuate.VectorTime,replicaId:String):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]"></a>
       <a id="update(B,VectorTime,String):ConcurrentVersionsTree[A,B]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -525,14 +528,14 @@ be concurrent to other updates).
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">update</span><span class="params">(<span name="b">b: <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.B">B</span></span>, <span name="eventTimestamp">eventTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="replicaId">replicaId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.B">B</span>]</span>
+        <span class="name">update</span><span class="params">(<span name="b">b: <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.B">B</span></span>, <span name="updateTimestamp">updateTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="replicaId">replicaId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.B">B</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConcurrentVersionsTree@update(b:B,eventTimestamp:com.rbmhtechnology.eventuate.VectorTime,replicaId:String):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConcurrentVersionsTree@update(b:B,updateTimestamp:com.rbmhtechnology.eventuate.VectorTime,replicaId:String):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Updates that <a href="Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Updates that <a href="Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with <code>b</code> that is a predecessor of <code>eventTimestamp</code>. If
+      <p class="shortcomment cmt">Updates that <a href="Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with <code>b</code> that is a predecessor of <code>updateTimestamp</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Updates that <a href="Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with <code>b</code> that is a predecessor of <code>updateTimestamp</code>. If
 there is no such predecessor, a new concurrent version is created (optionally derived
 from an older entry in the version history, in case of incremental updates).
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a> → <a href="ConcurrentVersions.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a></dd></dl></div>

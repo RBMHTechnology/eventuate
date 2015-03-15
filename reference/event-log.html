@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Event log &mdash; Eventuate</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Eventuate" href="../index.html"/>
+        <link rel="up" title="Reference" href="../reference.html"/>
+        <link rel="next" title="Event sourced actors" href="event-sourcing.html"/>
+        <link rel="prev" title="Reference" href="../reference.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="../index.html" class="fa fa-home"> Eventuate</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-logs">Event logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-sourced-actors">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-sourced-processors">Event-sourced processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#snapshots">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#vector-clocks">Vector clocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#crdt-services">CRDT services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#batching">Batching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#adapters">Adapters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../download.html">Download</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../download.html#binaries">Binaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../download.html#sources">Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#event-sourced-actors">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#detecting-concurrent-updates">Detecting concurrent updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#tracking-conflicting-versions">Tracking conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#resolving-conflicting-versions">Resolving conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#commutative-replicated-data-types">Commutative replicated data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#conditional-commands">Conditional commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../reference.html">Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Event log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html">Event sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#event-sourced-views">Event sourced views</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project.html">Project</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../project.html#community">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../project.html#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../articles.html">Articles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example-application.html">Example application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#domain">Domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#replication">Replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#interface">Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#running">Running</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../current-limitations.html">Current Limitations</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">Eventuate</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../reference.html">Reference</a> &raquo;</li>
+      
+    <li>Event log</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../_sources/reference/event-log.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="event-log">
+<span id="id1"></span><h1>Event log<a class="headerlink" href="#event-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="local-event-log">
+<span id="id2"></span><h2>Local event log<a class="headerlink" href="#local-event-log" title="Permalink to this headline">¶</a></h2>
+<p>A local event log belongs to a given <em>location</em><a class="footnote-reference" href="#id6" id="id3">[1]</a> and a location can have one or more local event logs. Depending on the backend store, a local event log may optionally be replicated within that location for stronger durability guarantees but this is rather an implementation details of the local event log. From Eventuate’s perspective, event replication occurs between different locations which is further described in section <a class="reference internal" href="#replicated-event-log"><span>Replicated event log</span></a>.</p>
+<p>To an application, an event log is represented by an event log actor. Producers and consumer interact with that actor to produce events to and read events from an event log. They can also register at the event log actor to be notified about newly written events. The messages that can be exchanged with an event log actor are defined in <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$">EventsourcingProtocol</a>.</p>
+<p>A local event log actor with a LevelDB backend store can be created with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">akka.actor.ActorSystem</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog</span>
+
+<span class="k">val</span> <span class="n">system</span><span class="k">:</span> <span class="kt">ActorSystem</span> <span class="o">=</span> <span class="c1">// ...</span>
+<span class="k">val</span> <span class="n">log</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">LeveldbEventLog</span><span class="o">.</span><span class="n">props</span><span class="o">(</span><span class="n">id</span> <span class="k">=</span> <span class="s">&quot;L1&quot;</span><span class="o">,</span> <span class="n">prefix</span> <span class="k">=</span> <span class="s">&quot;log&quot;</span><span class="o">))</span>
+</pre></div>
+</div>
+<p>Applications must provide a unique <code class="docutils literal"><span class="pre">id</span></code> for that log, the prefix is optional and defaults to <code class="docutils literal"><span class="pre">log</span></code>. This will create a directory <code class="docutils literal"><span class="pre">log-L1</span></code> in which the LevelDB files are stored. The root directory of all local LevelDB directories can be configured with the <code class="docutils literal"><span class="pre">log.leveldb.dir</span></code> configuration key in <code class="docutils literal"><span class="pre">application.conf</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">log</span><span class="o">.</span><span class="n">leveldb</span><span class="o">.</span><span class="n">dir</span> <span class="k">=</span> <span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">eventuate</span>
+</pre></div>
+</div>
+<p>With this configuration, the the absolute path of the LevelDB directory in the above example is <code class="docutils literal"><span class="pre">/var/eventuate/log-L1</span></code>. If not configured, <code class="docutils literal"><span class="pre">log.leveldb.dir</span></code> defaults to <code class="docutils literal"><span class="pre">target</span></code>.</p>
+</div>
+<div class="section" id="replicated-event-log">
+<span id="id4"></span><h2>Replicated event log<a class="headerlink" href="#replicated-event-log" title="Permalink to this headline">¶</a></h2>
+<p>Local event logs from different locations can be connected for event replication. For example, when connecting a local event log <code class="docutils literal"><span class="pre">L1</span></code> at location <code class="docutils literal"><span class="pre">1</span></code> with a local event log <code class="docutils literal"><span class="pre">L2</span></code> at location <code class="docutils literal"><span class="pre">2</span></code>, then the events written to <code class="docutils literal"><span class="pre">L1</span></code> are asynchronously replicated to location <code class="docutils literal"><span class="pre">2</span></code> and merged into to <code class="docutils literal"><span class="pre">L2</span></code>. Also, events written to <code class="docutils literal"><span class="pre">L2</span></code> are asynchronously replicated to location <code class="docutils literal"><span class="pre">1</span></code> and merged into <code class="docutils literal"><span class="pre">L1</span></code>. Merging preserves the causal ordering of events which is tracked with vector timestamps. Setting up a bi-directional replication connection between local event logs <code class="docutils literal"><span class="pre">L1</span></code> and <code class="docutils literal"><span class="pre">L2</span></code> yields a <em>replicated event log</em> <code class="docutils literal"><span class="pre">L</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">L1</span> <span class="o">----</span> <span class="n">L2</span>
+</pre></div>
+</div>
+<p>Since events can be written concurrently at different locations, the local event logs are likely to have a different total order of events at different locations. The causal order of events, however, is consistent across locations: if event <code class="docutils literal"><span class="pre">e1</span></code> causes event <code class="docutils literal"><span class="pre">e2</span></code> (i.e. <code class="docutils literal"><span class="pre">e1</span></code> happened before <code class="docutils literal"><span class="pre">e2</span></code>) then the offset of <code class="docutils literal"><span class="pre">e1</span></code> is less than the offset of <code class="docutils literal"><span class="pre">e2</span></code> at all locations. The offset of an event in a local event log is its local sequence number. On the other hand, if <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code> are written concurrently, their relative order in a local event log is not defined: the offset of <code class="docutils literal"><span class="pre">e1</span></code> can be less than that of <code class="docutils literal"><span class="pre">e2</span></code> at one location but greater than that of <code class="docutils literal"><span class="pre">e2</span></code> at another location.</p>
+<p>A replicated event log can also be set up for more than two locations (see also current <a class="reference internal" href="../current-limitations.html#current-limitations"><span>Current Limitations</span></a>). Here event log <code class="docutils literal"><span class="pre">L</span></code> is replicated across locations <code class="docutils literal"><span class="pre">1</span></code> - <code class="docutils literal"><span class="pre">6</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">L1</span>           <span class="n">L5</span>
+  <span class="o">\</span>         <span class="o">/</span>
+   <span class="n">L2</span> <span class="o">---</span> <span class="n">L4</span>
+  <span class="o">/</span>         <span class="o">\</span>
+<span class="n">L3</span>           <span class="n">L6</span>
+</pre></div>
+</div>
+<p>A location may also have several local event logs that can be replicated independently of each other. The following example shows three replicated events logs <code class="docutils literal"><span class="pre">L</span></code>, <code class="docutils literal"><span class="pre">M</span></code> and <code class="docutils literal"><span class="pre">N</span></code> that are replicated across locations <code class="docutils literal"><span class="pre">1</span></code> and <code class="docutils literal"><span class="pre">2</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">L1</span> <span class="o">----</span> <span class="n">L2</span>
+<span class="n">M1</span> <span class="o">----</span> <span class="n">M2</span>
+<span class="n">N1</span> <span class="o">----</span> <span class="n">N2</span>
+</pre></div>
+</div>
+<p>The distribution of <code class="docutils literal"><span class="pre">L</span></code>, <code class="docutils literal"><span class="pre">M</span></code> and <code class="docutils literal"><span class="pre">N</span></code> across locations may also differ:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">L1</span> <span class="o">----</span> <span class="n">L2</span>
+<span class="n">M1</span> <span class="o">----</span> <span class="n">M2</span> <span class="o">---</span> <span class="n">M3</span>
+        <span class="n">N2</span> <span class="o">---</span> <span class="n">N3</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="replication-endpoints">
+<h2>Replication endpoints<a class="headerlink" href="#replication-endpoints" title="Permalink to this headline">¶</a></h2>
+<p>Events are replicated over <em>replication connections</em> that are established between <em>replication endpoints</em>. A location may have one or more replication endpoints and a replication endpoint can manage one or more event logs. The following examples assume two locations <code class="docutils literal"><span class="pre">1</span></code> and <code class="docutils literal"><span class="pre">2</span></code> and two replicated event logs <code class="docutils literal"><span class="pre">L</span></code> and <code class="docutils literal"><span class="pre">M</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">L1</span> <span class="o">----</span> <span class="n">L2</span>
+<span class="n">M1</span> <span class="o">----</span> <span class="n">M2</span>
+</pre></div>
+</div>
+<p>Each location has a <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> that manages the local event logs. The network address of a replication endpoint is configured in <code class="docutils literal"><span class="pre">application.conf</span></code>. For location <code class="docutils literal"><span class="pre">1</span></code> it is:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">netty</span><span class="o">.</span><span class="n">tcp</span><span class="o">.</span><span class="n">hostname</span> <span class="k">=</span> <span class="s">&quot;127.0.0.1&quot;</span>
+<span class="n">akka</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">netty</span><span class="o">.</span><span class="n">tcp</span><span class="o">.</span><span class="n">port</span><span class="k">=</span><span class="mi">2552</span>
+</pre></div>
+</div>
+<p>For location <code class="docutils literal"><span class="pre">2</span></code> it is:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">netty</span><span class="o">.</span><span class="n">tcp</span><span class="o">.</span><span class="n">hostname</span> <span class="k">=</span> <span class="s">&quot;127.0.0.1&quot;</span>
+<span class="n">akka</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">netty</span><span class="o">.</span><span class="n">tcp</span><span class="o">.</span><span class="n">port</span><span class="k">=</span><span class="mi">2553</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> at location <code class="docutils literal"><span class="pre">1</span></code> can be created programmatically with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate._</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog</span>
+
+<span class="k">implicit</span> <span class="k">val</span> <span class="n">system</span><span class="k">:</span> <span class="kt">ActorSystem</span> <span class="o">=</span>
+  <span class="nc">ActorSystem</span><span class="o">(</span><span class="nc">ReplicationConnection</span><span class="o">.</span><span class="nc">DefaultRemoteSystemName</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">endpoint1</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ReplicationEndpoint</span><span class="o">(</span><span class="n">id</span> <span class="k">=</span> <span class="s">&quot;1&quot;</span><span class="o">,</span> <span class="n">logNames</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">(</span><span class="s">&quot;L&quot;</span><span class="o">,</span> <span class="s">&quot;M&quot;</span><span class="o">),</span>
+  <span class="n">logFactory</span> <span class="k">=</span> <span class="n">logId</span> <span class="k">=&gt;</span> <span class="nc">LeveldbEventLog</span><span class="o">.</span><span class="n">props</span><span class="o">(</span><span class="n">logId</span><span class="o">),</span>
+  <span class="n">connections</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">(</span><span class="nc">ReplicationConnection</span><span class="o">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="o">,</span> <span class="mi">2553</span><span class="o">)))</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> must have a global unique <code class="docutils literal"><span class="pre">id</span></code>. Here, the location identifier <code class="docutils literal"><span class="pre">1</span></code> is used to identify the replication endpoint. Furthermore, the <code class="docutils literal"><span class="pre">logNames</span></code><a class="footnote-reference" href="#id7" id="id5">[2]</a> of the replicated event logs (<code class="docutils literal"><span class="pre">L</span></code> and <code class="docutils literal"><span class="pre">M</span></code>) and a <code class="docutils literal"><span class="pre">logFactory</span></code> for creating the local event log actors are provided. Input parameter of the <code class="docutils literal"><span class="pre">logFactory</span></code> is a unique <code class="docutils literal"><span class="pre">logId</span></code> that is generated by the replication endpoint from a combination of the provided <code class="docutils literal"><span class="pre">logNames</span></code> and the endpoint <code class="docutils literal"><span class="pre">id</span></code>.</p>
+<p>The last <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> constructor parameter is a set of <code class="docutils literal"><span class="pre">ReplicationConnection</span></code>s. Here, it is a single replication connection that connects to the the remote replication endpoint at location <code class="docutils literal"><span class="pre">2</span></code>. With this replication connection, events are replicated from location <code class="docutils literal"><span class="pre">2</span></code> to location <code class="docutils literal"><span class="pre">1</span></code>. For replicating events in the other direction, a corresponding <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> and <code class="docutils literal"><span class="pre">ReplicationConnection</span></code> must be set up at location <code class="docutils literal"><span class="pre">2</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">endpoint2</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ReplicationEndpoint</span><span class="o">(</span><span class="n">id</span> <span class="k">=</span> <span class="s">&quot;2&quot;</span><span class="o">,</span> <span class="n">logNames</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">(</span><span class="s">&quot;L&quot;</span><span class="o">,</span> <span class="s">&quot;M&quot;</span><span class="o">),</span>
+  <span class="n">logFactory</span> <span class="k">=</span> <span class="n">logId</span> <span class="k">=&gt;</span> <span class="nc">LeveldbEventLog</span><span class="o">.</span><span class="n">props</span><span class="o">(</span><span class="n">logId</span><span class="o">),</span>
+  <span class="n">connections</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">(</span><span class="nc">ReplicationConnection</span><span class="o">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="o">,</span> <span class="mi">2552</span><span class="o">)))</span>
+</pre></div>
+</div>
+<p>The event log actors that are created by a <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> can be obtained from its <code class="docutils literal"><span class="pre">logs</span></code> maps. Map keys are the event log names, map values the event log <code class="docutils literal"><span class="pre">ActorRef</span></code>s:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">l1</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="n">endpoint1</span><span class="o">.</span><span class="n">logs</span><span class="o">(</span><span class="s">&quot;L&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">m1</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="n">endpoint1</span><span class="o">.</span><span class="n">logs</span><span class="o">(</span><span class="s">&quot;M&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Further <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> creation options are described in the API docs of the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint$">ReplicationEndpoint</a> and <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationConnection$">ReplicationConnection</a> companion objects.</p>
+</div>
+</div>
+<div class="section" id="replication-filters">
+<h2>Replication filters<a class="headerlink" href="#replication-filters" title="Permalink to this headline">¶</a></h2>
+<p>By default, all events are replicated. Applications may provide <code class="docutils literal"><span class="pre">ReplicationFilter</span></code>s to limit replication to a subset of events. A custom replication filter can be defined, by extending <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> and implementing a filter predicate (method <code class="docutils literal"><span class="pre">apply</span></code>). For example, the following replication filter selects <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s with a matching <code class="docutils literal"><span class="pre">aggregateId</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate._</span>
+
+<span class="k">case</span> <span class="k">class</span> <span class="nc">AggregateIdFilter</span><span class="o">(</span><span class="n">aggregateId</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">ReplicationFilter</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">event</span><span class="k">:</span> <span class="kt">DurableEvent</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span>
+    <span class="n">event</span><span class="o">.</span><span class="n">emitterAggregateId</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span> <span class="o">==</span> <span class="n">aggregateId</span><span class="o">).</span><span class="n">getOrElse</span><span class="o">(</span><span class="kc">false</span><span class="o">)</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Replication filters can be defined per <code class="docutils literal"><span class="pre">ReplicationConnection</span></code> and event log name. They must be serializable because they are transferred to a remote replication endpoint and applied there while reading from a <em>source event log</em> during replication. The following example configures a replication filter for log <code class="docutils literal"><span class="pre">L</span></code> so that only events with a defined <code class="docutils literal"><span class="pre">sourceAggregateId</span></code> of value <code class="docutils literal"><span class="pre">order-17</span></code> are replicated from the remote source log:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">filter1</span> <span class="k">=</span> <span class="nc">AggregateIdFilter</span><span class="o">(</span><span class="s">&quot;order-17&quot;</span><span class="o">)</span>
+<span class="nc">ReplicationConnection</span><span class="o">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="o">,</span> <span class="mi">2553</span><span class="o">,</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&quot;L&quot;</span> <span class="o">-&gt;</span> <span class="n">filter1</span><span class="o">))</span>
+</pre></div>
+</div>
+<p>Replication filters can also be composed. The following creates a composed filter so that events with a defined <code class="docutils literal"><span class="pre">sourceAggregateId</span></code> of value <code class="docutils literal"><span class="pre">order-17</span></code> or <code class="docutils literal"><span class="pre">order-19</span></code> are replicated:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">filter2</span> <span class="k">=</span> <span class="n">filter1</span> <span class="n">or</span> <span class="nc">AggregateIdFilter</span><span class="o">(</span><span class="s">&quot;order-19&quot;</span><span class="o">)</span>
+<span class="nc">ReplicationConnection</span><span class="o">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="o">,</span> <span class="mi">2553</span><span class="o">,</span> <span class="nc">Map</span><span class="o">(</span><span class="s">&quot;M&quot;</span> <span class="o">-&gt;</span> <span class="n">filter2</span><span class="o">))</span>
+</pre></div>
+</div>
+<p>For the definition of filter logic based on application-defined events, replication filters should use the <code class="docutils literal"><span class="pre">payload</span></code> field of <code class="docutils literal"><span class="pre">DurableEvent</span></code>.</p>
+</div>
+<div class="section" id="failure-detection">
+<h2>Failure detection<a class="headerlink" href="#failure-detection" title="Permalink to this headline">¶</a></h2>
+<p>Replication endpoints can notify applications about availability and un-availability of remote event logs. They can become unavailable either during a network partition, a crash or a scheduled downtime of their hosting application. A local replication endpoint publishes</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">Available(endpointId:</span> <span class="pre">String,</span> <span class="pre">logName:</span> <span class="pre">String)</span></code> messages to the local <code class="docutils literal"><span class="pre">ActorSystem</span></code>s <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/event-bus.html#event-stream">event stream</a> if the remote replication endpoint is available, and</li>
+<li><code class="docutils literal"><span class="pre">Unavailable(endpointId:</span> <span class="pre">String,</span> <span class="pre">logName:</span> <span class="pre">String)</span></code> messages to the local <code class="docutils literal"><span class="pre">ActorSystem</span></code>s <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/event-bus.html#event-stream">event stream</a> if the remote replication endpoint is unavailable</li>
+</ul>
+<p>Both messages are defined in <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint$">ReplicationEndpoint</a>. Their <code class="docutils literal"><span class="pre">endpointId</span></code> parameter is the id of the the remote endpoint, the <code class="docutils literal"><span class="pre">logName</span></code> parameter is the name of an event log that is managed by the remote endpoint. The failure detection limit can be configured with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">log</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">failure</span><span class="o">-</span><span class="n">detection</span><span class="o">-</span><span class="n">limit</span> <span class="k">=</span> <span class="mi">60</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>It instructs the failure detector to publish an <code class="docutils literal"><span class="pre">Unavailable</span></code> message if there is no heartbeat from the remote replication endpoint within 60 seconds. <code class="docutils literal"><span class="pre">Available</span></code> and <code class="docutils literal"><span class="pre">Unavailable</span></code> messages are published periodically at intervals of <code class="docutils literal"><span class="pre">log.replication.failure-detection-limit</span></code>.</p>
+<table class="docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[1]</a></td><td>A location can be a whole data center, a node within a data center or even a process on a single node, for example.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id7" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[2]</a></td><td>Log names must be unique per replication endpoint. Replication connections are only established between logs of the same name.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="event-sourcing.html" class="btn btn-neutral float-right" title="Event sourced actors">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../reference.html" class="btn btn-neutral" title="Reference"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015 Red Bull Media House.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1-SNAPSHOT',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

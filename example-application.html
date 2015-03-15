@@ -1,0 +1,307 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Example application &mdash; Eventuate</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Eventuate" href="index.html"/>
+        <link rel="next" title="Current Limitations" href="current-limitations.html"/>
+        <link rel="prev" title="Articles" href="articles.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="index.html" class="fa fa-home"> Eventuate</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-logs">Event logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-actors">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-processors">Event-sourced processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#snapshots">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#vector-clocks">Vector clocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#crdt-services">CRDT services</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#batching">Batching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#adapters">Adapters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="download.html">Download</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="download.html#binaries">Binaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="download.html#sources">Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user-guide.html">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-sourced-actors">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#detecting-concurrent-updates">Detecting concurrent updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#tracking-conflicting-versions">Tracking conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#resolving-conflicting-versions">Resolving conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#commutative-replicated-data-types">Commutative replicated data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#conditional-commands">Conditional commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event sourced views</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project.html">Project</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project.html#community">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project.html#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="articles.html">Articles</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Example application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#domain">Domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#replication">Replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#interface">Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running">Running</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="current-limitations.html">Current Limitations</a></li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Eventuate</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Example application</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/example-application.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="example-application">
+<span id="id1"></span><h1>Example application<a class="headerlink" href="#example-application" title="Permalink to this headline">¶</a></h1>
+<p>The example application is an over-simplified order management application that allows users to add and remove items from orders via a command-line interface. Order instances are replicated across locations and can be updated at any location. Orders remain writeable during partitions and conflicting updates can be resolved interactively when the partition heals. The example application source code is available as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example">Scala version</a> and as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/japi">Java 8 version</a>.</p>
+<div class="section" id="domain">
+<h2>Domain<a class="headerlink" href="#domain" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal"><span class="pre">Order</span></code> domain object is defined as follows:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">case</span> <span class="k">class</span> <span class="nc">Order</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">items</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Nil</span><span class="o">,</span> <span class="n">cancelled</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">addItem</span><span class="o">(</span><span class="n">item</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Order</span> <span class="o">=</span>
+    <span class="n">copy</span><span class="o">(</span><span class="n">items</span> <span class="k">=</span> <span class="n">item</span> <span class="o">::</span> <span class="n">items</span><span class="o">)</span>
+
+  <span class="k">def</span> <span class="n">removeItem</span><span class="o">(</span><span class="n">item</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Order</span> <span class="o">=</span>
+    <span class="n">copy</span><span class="o">(</span><span class="n">items</span> <span class="k">=</span> <span class="n">items</span><span class="o">.</span><span class="n">filterNot</span><span class="o">(</span><span class="k">_</span> <span class="o">==</span> <span class="n">item</span><span class="o">))</span>
+
+  <span class="k">def</span> <span class="n">cancel</span><span class="k">:</span> <span class="kt">Order</span> <span class="o">=</span>
+    <span class="n">copy</span><span class="o">(</span><span class="n">cancelled</span> <span class="k">=</span> <span class="kc">true</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">toString</span><span class="o">()</span> <span class="k">=</span>
+    <span class="s">s&quot;[</span><span class="si">${</span><span class="n">id</span><span class="si">}</span><span class="s">] items=</span><span class="si">${</span><span class="n">items</span><span class="o">.</span><span class="n">reverse</span><span class="o">.</span><span class="n">mkString</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">)</span><span class="si">}</span><span class="s"> cancelled=</span><span class="si">${</span><span class="n">cancelled</span><span class="si">}</span><span class="s">&quot;</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Order creation and updates are tracked as events in a replicated event log. At each location, there is one event-sourced <code class="docutils literal"><span class="pre">OrderActor</span></code> instance per created <code class="docutils literal"><span class="pre">Order</span></code> instance and one event-sourced <code class="docutils literal"><span class="pre">OrderView</span></code> instance that counts the updates made to all orders.</p>
+</div>
+<div class="section" id="replication">
+<h2>Replication<a class="headerlink" href="#replication" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">OrderActor</span></code>s are replicated across locations A - F, each running as separate process on <code class="docutils literal"><span class="pre">localhost</span></code> (see section <a class="reference internal" href="#running"><span>Running</span></a>):</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">A</span>        <span class="n">E</span>
+ <span class="o">\</span>      <span class="o">/</span>
+  <span class="n">C</span> <span class="o">--</span> <span class="n">D</span>
+ <span class="o">/</span>      <span class="o">\</span>
+<span class="n">B</span>        <span class="n">F</span>
+</pre></div>
+</div>
+<p>Each location can create and update orders, even under presence of partitions. In the example application, partitions can be created by shutting down locations. For example, when shutting down location <code class="docutils literal"><span class="pre">C</span></code>, partitions <code class="docutils literal"><span class="pre">A</span></code>, <code class="docutils literal"><span class="pre">B</span></code> and <code class="docutils literal"><span class="pre">E-D-F</span></code> are created.</p>
+<p>Concurrent updates to orders with different order id do not conflict. Concurrent updates to replicas of the same order are considered as conflict and must be resolved by the user, otherwise, further updates to that order are rejected. Updates are only rejected if a conflict is already <em>visible</em> to a location.</p>
+</div>
+<div class="section" id="interface">
+<h2>Interface<a class="headerlink" href="#interface" title="Permalink to this headline">¶</a></h2>
+<p>Each location of the example application has a simple command-line interface to create and update orders:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">create</span> <span class="pre">&lt;order-id&gt;</span></code> creates an order with given <code class="docutils literal"><span class="pre">order-id</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">add</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;item&gt;</span></code> adds <code class="docutils literal"><span class="pre">item</span></code> to an order&#8217;s items list.</li>
+<li><code class="docutils literal"><span class="pre">remove</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;item&gt;</span></code> removes <code class="docutils literal"><span class="pre">item</span></code> from an order&#8217;s items list.</li>
+<li><code class="docutils literal"><span class="pre">cancel</span> <span class="pre">&lt;order-id&gt;</span></code> cancels an order.</li>
+</ul>
+<p>If there’s a conflict from a concurrent update, the conflict must be resolved by selecting one of the conflicting versions:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">resolve</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;index&gt;</span></code> resolves a conflict by selecting a version <code class="docutils literal"><span class="pre">index</span></code>. Only the location that initially created the order can resolve the conflict<a class="footnote-reference" href="#id4" id="id2">[1]</a>.</li>
+</ul>
+<p>Other commands are:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">count</span> <span class="pre">&lt;order-id&gt;</span></code> prints the number of updates to an order, including creation. Update counts are maintained by a separate view that consumes order events from all <code class="docutils literal"><span class="pre">OrderActor</span></code>s on the replicated event log.</li>
+<li><code class="docutils literal"><span class="pre">state</span></code> prints the current state i.e. all orders at a location. Location state may differ during partitions.</li>
+<li><code class="docutils literal"><span class="pre">exit</span></code> stops a location and the replication connections to and from that location.</li>
+</ul>
+<p>Update results from user commands and replicated events are written to <cite>stdout</cite>. A location’s current state is also printed after successful recovery.</p>
+</div>
+<div class="section" id="running">
+<span id="id3"></span><h2>Running<a class="headerlink" href="#running" title="Permalink to this headline">¶</a></h2>
+<p>Before you can run the example application, install <a class="reference external" href="http://www.scala-sbt.org/">sbt</a> and run:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">test</span>
+</pre></div>
+</div>
+<p>from the project&#8217;s root directory (needs to be done only once). Then, run:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span>
+</pre></div>
+</div>
+<p>which opens six terminal windows, representing locations A - F. For running the Java version of the example application run:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span> <span class="n">java</span>
+</pre></div>
+</div>
+<p>Create and update some orders and see how changes are propagated to other locations. To make concurrent updates to an order, for example, enter <code class="docutils literal"><span class="pre">exit</span></code> at location <code class="docutils literal"><span class="pre">C</span></code>, and add different items to that order at locations <code class="docutils literal"><span class="pre">A</span></code> and <code class="docutils literal"><span class="pre">F</span></code>. When starting location <code class="docutils literal"><span class="pre">C</span></code> again with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">-</span><span class="n">location</span> <span class="n">A</span>
+</pre></div>
+</div>
+<p>or the Java version with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">-</span><span class="n">location</span> <span class="n">A</span> <span class="n">java</span>
+</pre></div>
+</div>
+<p>both updates propagate to all other locations which are then displayed as conflict. Resolve the conflict with the <code class="docutils literal"><span class="pre">resolve</span></code> command. Conflict resolution writes a conflict resolution event to the replicated event log so that the conflict is automatically resolved at all locations.</p>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>This is a static rule for distributed agreement on conflict resolution.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="current-limitations.html" class="btn btn-neutral float-right" title="Current Limitations">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="articles.html" class="btn btn-neutral" title="Articles"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015 Red Bull Media House.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1-SNAPSHOT',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
