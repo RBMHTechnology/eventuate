@@ -28,13 +28,15 @@ object Eventsourced {
 /**
  * Implemented by actors that derive internal state from events stored in an event log. Events are
  * pushed from the `eventLog` actor to this actor and handled with the `onEvent` event handler. An
- * event handler defines how events are projected on internal state.
+ * event handler defines how events update internal state.
  *
  * By default, an `Eventsourced` actor does not define an `aggregateId`. In this case, the `eventLog`
  * pushes all events to this actor. If it defines an `aggregateId`, the `eventLog` actor only pushes
- * those events that contain the `aggregateId` value in their `destinationAggregateIds` set.
+ * those events that contain the `aggregateId` value in their `routingDestinations` set.
  *
  * Commands sent to an `Eventsourced` actor during recovery are delayed until recovery completes.
+ *
+ * @see [[DurableEvent]]
  */
 trait Eventsourced extends Actor {
   import Eventsourced._

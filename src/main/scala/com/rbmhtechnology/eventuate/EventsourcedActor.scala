@@ -23,12 +23,12 @@ import scala.util._
 import akka.actor._
 
 /**
- * An [[Eventsourced]] actor that can also produce new events to its event log. New events
- * can be produced with methods `persist` and `persistN`. They must only be used within
- * the `onCommand` command handler. The command handler may only read internal state but
- * must not modify it. Internal state may only be modified within `onEvent`.
+ * An [[Eventsourced]] actor that can also produce (= emit) new events to its event log. New events
+ * can be produced with methods `persist`, `persistN` and `persistWithLocalTime`. They must
+ * only be used within the `onCommand` command handler. The command handler may only read
+ * internal state but must not modify it. Internal state may only be modified within `onEvent`.
  *
- * An `EventsourcedActor` maintains a [[VectorClock]] used to time-stamp the events it writes
+ * An `EventsourcedActor` maintains a [[VectorClock]] used to time-stamp the events it emits
  * to the event log. Events that are handled by its event handler update the vector clock.
  * Events that are pushed from the `eventLog` actor but not handled by `onEvent` do not
  * update the vector clock.
@@ -93,22 +93,19 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
    * `handler`. The `onLast` handler is additionally called for the last event in the
    * sequence.
    *
-   * With the `destinationAggregateIds` parameter, custom routing destinations can be defined. If
-   * `destinationAggregateIds` is empty, the event is only routed to [[Eventsourced]] destinations
-   * (actors or views) that have no `aggregateId` defined. If it contains aggregate ids, the event
-   * is additionally routed to destinations that have a matching `aggregateId`.
-   *
-   * The `destinationAggregateIds` default value is `Set(aggregateId.get)` if this actor's
-   * `aggregateId` is defined, otherwise `Set()`. In other words, if `aggregateId` is defined, the
-   * emitted event will be additionally routed to destinations with the same `aggregateId`.
+   * By default, the event is routed to [[Eventsourced]] destinations with an undefined `aggregateId`.
+   * If this actor's `aggregateId` is defined it is additionally routed to this actor's replicas.
+   * Further routing destinations can be defined with the `customRoutingDestinations` parameter.
+   * If non-empty, the event is additionally routed to [[Eventsourced]] destinations with a matching
+   * `aggregateId`.
    */
-  final def persistN[A](events: Seq[A], onLast: Handler[A] = (_: Try[A]) => (), destinationAggregateIds: Set[String] = defaultDestinationAggregateIds)(handler: Handler[A]): Unit = events match {
+  final def persistN[A](events: Seq[A], onLast: Handler[A] = (_: Try[A]) => (), customRoutingDestinations: Set[String] = Set())(handler: Handler[A]): Unit = events match {
     case Seq()   =>
     case es :+ e =>
       es.foreach { event =>
-        persist(event)(handler)
+        persist(event, customRoutingDestinations)(handler)
       }
-      persist(e, destinationAggregateIds) { r =>
+      persist(e, customRoutingDestinations) { r =>
         handler(r)
         onLast(r)
       }
@@ -119,50 +116,35 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
    * The `handler` is called during a separate message dispatch by this actor, hence, it
    * is safe to modify internal state within `handler`.
    *
-   * With the `destinationAggregateIds` parameter, custom routing destinations can be defined. If
-   * `destinationAggregateIds` is empty, the event is only routed to [[Eventsourced]] destinations
-   * (actors or views) that have no `aggregateId` defined. If it contains aggregate ids, the event
-   * is additionally routed to destinations that have a matching `aggregateId`.
-   *
-   * The `destinationAggregateIds` default value is `Set(aggregateId.get)` if this actor's
-   * `aggregateId` is defined, otherwise `Set()`. In other words, if `aggregateId` is defined, the
-   * emitted event will be additionally routed to destinations with the same `aggregateId`.
+   * By default, the event is routed to [[Eventsourced]] destinations with an undefined `aggregateId`.
+   * If this actor's `aggregateId` is defined it is additionally routed to this actor's replicas.
+   * Further routing destinations can be defined with the `customRoutingDestinations` parameter.
+   * If non-empty, the event is additionally routed to [[Eventsourced]] destinations with a matching
+   * `aggregateId`.
    */
-  final def persist[A](event: A, destinationAggregateIds: Set[String] = defaultDestinationAggregateIds)(handler: Handler[A]): Unit =
-    persistWithLocalTime(_ => event, destinationAggregateIds)(handler)
+  final def persist[A](event: A, customRoutingDestinations: Set[String] = Set())(handler: Handler[A]): Unit =
+    persistWithLocalTime(_ => event, customRoutingDestinations)(handler)
 
   /**
-   * Persists the event returned by  `f` and asynchronously calls `handler` with the
-   * persist result. The input parameter to `f` is the current local time. The `handler` is
-   * called during a separate message dispatch by this actor, hence, it is safe to modify
+   * Persists the event returned by  `f` and asynchronously calls `handler` with the persist
+   * result. The input parameter to `f` is the current local time which is the actor's logical
+   * time, taken from its internal vector clock, and not the current system time. The `handler`
+   * is called during a separate message dispatch by this actor, hence, it is safe to modify
    * internal state within `handler`.
    *
-   * With the `destinationAggregateIds` parameter, custom routing destinations can be defined. If
-   * `destinationAggregateIds` is empty, the event is only routed to [[Eventsourced]] destinations
-   * (actors or views) that have no `aggregateId` defined. If it contains aggregate ids, the event
-   * is additionally routed to destinations that have a matching `aggregateId`.
-   *
-   * The `destinationAggregateIds` default value is `Set(aggregateId.get)` if this actor's
-   * `aggregateId` is defined, otherwise `Set()`. In other words, if `aggregateId` is defined, the
-   * emitted event will be additionally routed to destinations with the same `aggregateId`.
+   * By default, the event is routed to [[Eventsourced]] destinations with an undefined `aggregateId`.
+   * If this actor's `aggregateId` is defined it is additionally routed to this actor's replicas.
+   * Further routing destinations can be defined with the `customRoutingDestinations` parameter.
+   * If non-empty, the event is additionally routed to [[Eventsourced]] destinations with a matching
+   * `aggregateId`.
    */
-  final def persistWithLocalTime[A](f: Long => A, destinationAggregateIds: Set[String] = defaultDestinationAggregateIds)(handler: Handler[A]): A = {
+  final def persistWithLocalTime[A](f: Long => A, customRoutingDestinations: Set[String] = Set())(handler: Handler[A]): A = {
     clock = clock.tick()
     val event = f(clock.currentLocalTime())
-    writeRequests = writeRequests :+ DurableEvent(event, System.currentTimeMillis, clock.currentTime, replicaId, aggregateId, destinationAggregateIds)
+    writeRequests = writeRequests :+ DurableEvent(event, System.currentTimeMillis, clock.currentTime, replicaId, aggregateId, customRoutingDestinations)
     writeHandlers = writeHandlers :+ handler.asInstanceOf[Try[Any] => Unit]
     event
   }
-
-  /**
-   * Returns the default event routing destinations of this actor. Can be overridden to customize
-   * default event routing.
-   *
-   * @see [[persist]]
-   * @see [[persistN]]
-   */
-  def defaultDestinationAggregateIds: Set[String] =
-    aggregateId.map(Set(_)).getOrElse(Set.empty)
 
   private[eventuate] def currentTime: VectorTime =
     clock.currentTime

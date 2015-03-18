@@ -16,6 +16,8 @@
 
 package com.rbmhtechnology.eventuate
 
+import com.rbmhtechnology.eventuate.EventsourcedActorIntegrationSpec.RouteeActor
+
 import scala.util._
 
 import akka.actor._
@@ -139,6 +141,25 @@ object EventsourcedActorIntegrationSpec {
         if (initiated) probe ! lastVectorTimestamp else self ! CollabCmd(from)
     }
   }
+
+  case class Route(s: String, destinations: Set[String])
+
+  class RouteeActor(override val aggregateId: Option[String],
+                    override val replicaId: String,
+                    override val eventLog: ActorRef,
+                    probe: ActorRef) extends EventsourcedActor {
+
+    override val onCommand: Receive = {
+      case Route(s, destinations) => persist(s, destinations) {
+        case Success(s) => onEvent(s)
+        case Failure(e) => throw e
+      }
+    }
+
+    override val onEvent: Receive = {
+      case s: String => probe ! s
+    }
+  }
 }
 
 import EventsourcedActorIntegrationSpec._
@@ -234,6 +255,26 @@ class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test", confi
       probe.expectMsg("a")
       probe.expectMsg("b")
       probe.expectMsg("a")
+    }
+    "route events to custom destinations" in {
+      val probe1 = TestProbe()
+      val probe2 = TestProbe()
+      val probe3 = TestProbe()
+
+      val a1r1 = system.actorOf(Props(new RouteeActor(Some("a1"), "r1", log, probe1.ref)))
+      val a1r2 = system.actorOf(Props(new RouteeActor(Some("a1"), "r2", log, probe2.ref)))
+      val a2r1 = system.actorOf(Props(new RouteeActor(Some("a2"), "r1", log, probe3.ref)))
+
+      a1r1 ! Route("x", Set())
+
+      probe1.expectMsg("x")
+      probe2.expectMsg("x")
+
+      a1r1 ! Route("y", Set("a2"))
+
+      probe1.expectMsg("y")
+      probe2.expectMsg("y")
+      probe3.expectMsg("y")
     }
   }
 

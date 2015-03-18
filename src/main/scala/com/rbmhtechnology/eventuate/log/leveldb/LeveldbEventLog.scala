@@ -168,7 +168,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNu
       defaultRegistry.foreach(_ ! Written(event))
       // notify subscribers with matching aggregate id
       for {
-        aggregateId <- event.destinationAggregateIds
+        aggregateId <- event.routingDestinations
         aggregate <- aggregateRegistry(aggregateId)
       } aggregate ! Written(event)
     }
@@ -181,7 +181,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNu
       defaultRegistry.foreach(r => if (r != requestor) r ! Written(event))
       // notify subscribers with matching aggregate id (except requestor)
       for {
-        aggregateId <- event.destinationAggregateIds
+        aggregateId <- event.routingDestinations
         aggregate <- aggregateRegistry(aggregateId) if aggregate != requestor
       } aggregate ! Written(event)
     }
@@ -224,7 +224,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNu
 
     batch.put(counterKeyBytes, longBytes(sequenceNr))
     batch.put(eventKeyBytes(EventKey.DefaultClassifier, sequenceNr), eventBytes)
-    event.destinationAggregateIds.foreach { id => // additionally index events by aggregate id
+    event.routingDestinations.foreach { id => // additionally index events by aggregate id
       batch.put(eventKeyBytes(aggregateIdMap.numericId(id), sequenceNr), eventBytes)
     }
   }

@@ -131,53 +131,82 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     "write local events and send them to the requestor" in {
       generateEvents()
     }
-    "write local events with no destinationAggregateIds defined and send them to collaborators with no aggregateId defined" in {
+    "write local events with undefined defaultRoutingDestination and undefined customRoutingDestinations and route them to collaborators with undefined aggregateId" in {
       val collaborator = registerCollaborator(aggregateId = None)
-      generateEvents(offset = 0, destinationAggregateIds = Set())
+      generateEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set())
       collaborator.expectMsg(Written(generatedEvents(0)))
       collaborator.expectMsg(Written(generatedEvents(1)))
       collaborator.expectMsg(Written(generatedEvents(2)))
     }
-    "write local events with a destinationAggregateId defined and send them to collaborators with no aggregateId defined" in {
+    "write local events with undefined defaultRoutingDestination and defined customRoutingDestinations and route them to collaborators with undefined aggregateId" in {
       val collaborator = registerCollaborator(aggregateId = None)
-      generateEvents(offset = 0, destinationAggregateIds = Set("a1"))
+      generateEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set("a1"))
       collaborator.expectMsg(Written(generatedEvents(0)))
       collaborator.expectMsg(Written(generatedEvents(1)))
       collaborator.expectMsg(Written(generatedEvents(2)))
     }
-    "write local events with a destinationAggregateId defined and send them to collaborators with a matching aggregateId defined" in {
-      val collaborator = registerCollaborator(aggregateId = Some("a1"))
-      generateEvents(offset = 0, destinationAggregateIds = Set("a1"))
+    "write local events with defined defaultRoutingDestination and undefined customRoutingDestinations and route them to collaborators with undefined aggregateId" in {
+      val collaborator = registerCollaborator(aggregateId = None)
+      generateEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set())
       collaborator.expectMsg(Written(generatedEvents(0)))
       collaborator.expectMsg(Written(generatedEvents(1)))
       collaborator.expectMsg(Written(generatedEvents(2)))
     }
-    "write local events with two destinationAggregateIds defined and send them to collaborators with a matching aggregateId defined" in {
-      val collaborator1 = registerCollaborator(aggregateId = Some("a1"))
-      val collaborator2 = registerCollaborator(aggregateId = Some("a2"))
-      generateEvents(offset = 0, destinationAggregateIds = Set("a1", "a2"))
-      collaborator1.expectMsg(Written(generatedEvents(0)))
-      collaborator1.expectMsg(Written(generatedEvents(1)))
-      collaborator1.expectMsg(Written(generatedEvents(2)))
-      collaborator2.expectMsg(Written(generatedEvents(0)))
-      collaborator2.expectMsg(Written(generatedEvents(1)))
-      collaborator2.expectMsg(Written(generatedEvents(2)))
+    "write local events with defined defaultRoutingDestination and defined customRoutingDestinations and route them to collaborators with undefined aggregateId" in {
+      val collaborator = registerCollaborator(aggregateId = None)
+      generateEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set("a2"))
+      collaborator.expectMsg(Written(generatedEvents(0)))
+      collaborator.expectMsg(Written(generatedEvents(1)))
+      collaborator.expectMsg(Written(generatedEvents(2)))
     }
-    "write local events with a destinationAggregateId defined but not send them to collaborators with a non-matching aggregateId defined" in {
-      val collaborator = registerCollaborator(aggregateId = Some("a1"))
-      generateEvents(offset = 0, destinationAggregateIds = Set("a2"))
-      generateEvents(offset = 3, destinationAggregateIds = Set("a1"))
-      collaborator.expectMsg(Written(generatedEvents(3)))
-      collaborator.expectMsg(Written(generatedEvents(4)))
-      collaborator.expectMsg(Written(generatedEvents(5)))
+    "write local events with undefined defaultRoutingDestination and undefined customRoutingDestinations and not route them to collaborators with defined aggregateId" in {
+      val collaborator = TestProbe()
+      registerCollaborator(aggregateId = Some("a1"), collaborator = collaborator)
+      registerCollaborator(aggregateId = None, collaborator = collaborator)
+      generateEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set())
+      collaborator.expectMsg(Written(generatedEvents(0)))
+      collaborator.expectMsg(Written(generatedEvents(1)))
+      collaborator.expectMsg(Written(generatedEvents(2)))
     }
-    "write local events with no destinationAggregateId defined but not send them to collaborators with an aggregateId defined" in {
-      val collaborator = registerCollaborator(aggregateId = Some("a1"))
-      generateEvents(offset = 0, destinationAggregateIds = Set())
-      generateEvents(offset = 3, destinationAggregateIds = Set("a1"))
-      collaborator.expectMsg(Written(generatedEvents(3)))
-      collaborator.expectMsg(Written(generatedEvents(4)))
-      collaborator.expectMsg(Written(generatedEvents(5)))
+    "write local events with undefined defaultRoutingDestination and defined customRoutingDestinations and route them to collaborators with defined aggregateId" in {
+      val collaborator = TestProbe()
+      registerCollaborator(aggregateId = Some("a1"), collaborator = collaborator)
+      registerCollaborator(aggregateId = None, collaborator = collaborator)
+      generateEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set("a1"))
+      collaborator.expectMsg(Written(generatedEvents(0)))
+      collaborator.expectMsg(Written(generatedEvents(0)))
+      collaborator.expectMsg(Written(generatedEvents(1)))
+      collaborator.expectMsg(Written(generatedEvents(1)))
+      collaborator.expectMsg(Written(generatedEvents(2)))
+      collaborator.expectMsg(Written(generatedEvents(2)))
+    }
+    "write local events with defined defaultRoutingDestination and undefined customRoutingDestinations and route them to collaborators with defined aggregateId" in {
+      val collaborator = TestProbe()
+      registerCollaborator(aggregateId = Some("a1"), collaborator = collaborator)
+      registerCollaborator(aggregateId = None, collaborator = collaborator)
+      generateEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set())
+      collaborator.expectMsg(Written(generatedEvents(0)))
+      collaborator.expectMsg(Written(generatedEvents(0)))
+      collaborator.expectMsg(Written(generatedEvents(1)))
+      collaborator.expectMsg(Written(generatedEvents(1)))
+      collaborator.expectMsg(Written(generatedEvents(2)))
+      collaborator.expectMsg(Written(generatedEvents(2)))
+    }
+    "write local events with defined defaultRoutingDestination and defined customRoutingDestinations and route them to collaborators with defined aggregateId" in {
+      val collaborator = TestProbe()
+      registerCollaborator(aggregateId = Some("a1"), collaborator = collaborator)
+      registerCollaborator(aggregateId = Some("a2"), collaborator = collaborator)
+      registerCollaborator(aggregateId = None, collaborator = collaborator)
+      generateEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set("a2"))
+      collaborator.expectMsg(Written(generatedEvents(0)))
+      collaborator.expectMsg(Written(generatedEvents(0)))
+      collaborator.expectMsg(Written(generatedEvents(0)))
+      collaborator.expectMsg(Written(generatedEvents(1)))
+      collaborator.expectMsg(Written(generatedEvents(1)))
+      collaborator.expectMsg(Written(generatedEvents(1)))
+      collaborator.expectMsg(Written(generatedEvents(2)))
+      collaborator.expectMsg(Written(generatedEvents(2)))
+      collaborator.expectMsg(Written(generatedEvents(2)))
     }
     "reply with a failure message if write fails" in {
       val events = Vector(
@@ -191,53 +220,82 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     "write replicated events" in {
       replicateEvents(offset = 0)
     }
-    "write replicated events with no destinationAggregateId defined and send them to collaborators with no aggregateId defined" in {
+    "write replicated events with undefined defaultRoutingDestination and undefined customRoutingDestinations and route them to collaborators with undefined aggregateId" in {
       val collaborator = registerCollaborator(aggregateId = None)
-      replicateEvents(offset = 0, destinationAggregateIds = Set())
+      replicateEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set())
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(1)))
       collaborator.expectMsg(Written(replicatedEvents(2)))
     }
-    "write replicated events with a destinationAggregateId defined and send them to collaborators with no aggregateId defined" in {
+    "write replicated events with undefined defaultRoutingDestination and defined customRoutingDestinations and route them to collaborators with undefined aggregateId" in {
       val collaborator = registerCollaborator(aggregateId = None)
-      replicateEvents(offset = 0, destinationAggregateIds = Set("a1"))
+      replicateEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set("a1"))
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(1)))
       collaborator.expectMsg(Written(replicatedEvents(2)))
     }
-    "write replicated events with a destinationAggregateId defined and send them to collaborators with a matching aggregateId defined" in {
-      val collaborator = registerCollaborator(aggregateId = Some("a1"))
-      replicateEvents(offset = 0, destinationAggregateIds = Set("a1"))
+    "write replicated events with defined defaultRoutingDestination and undefined customRoutingDestinations and route them to collaborators with undefined aggregateId" in {
+      val collaborator = registerCollaborator(aggregateId = None)
+      replicateEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set())
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(1)))
       collaborator.expectMsg(Written(replicatedEvents(2)))
     }
-    "write replicated events with two destinationAggregateIds defined and send them to collaborators with a matching aggregateId defined" in {
-      val collaborator1 = registerCollaborator(aggregateId = Some("a1"))
-      val collaborator2 = registerCollaborator(aggregateId = Some("a2"))
-      replicateEvents(offset = 0, destinationAggregateIds = Set("a1", "a2"))
-      collaborator1.expectMsg(Written(replicatedEvents(0)))
-      collaborator1.expectMsg(Written(replicatedEvents(1)))
-      collaborator1.expectMsg(Written(replicatedEvents(2)))
-      collaborator2.expectMsg(Written(replicatedEvents(0)))
-      collaborator2.expectMsg(Written(replicatedEvents(1)))
-      collaborator2.expectMsg(Written(replicatedEvents(2)))
+    "write replicated events with defined defaultRoutingDestination and defined customRoutingDestinations and route them to collaborators with undefined aggregateId" in {
+      val collaborator = registerCollaborator(aggregateId = None)
+      replicateEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set("a2"))
+      collaborator.expectMsg(Written(replicatedEvents(0)))
+      collaborator.expectMsg(Written(replicatedEvents(1)))
+      collaborator.expectMsg(Written(replicatedEvents(2)))
     }
-    "write replicated events with a destinationAggregateId defined but not send them to collaborators with a non-matching aggregateId defined" in {
-      val collaborator = registerCollaborator(aggregateId = Some("a1"))
-      replicateEvents(offset = 0, destinationAggregateIds = Set("a2"))
-      replicateEvents(offset = 3, destinationAggregateIds = Set("a1"))
-      collaborator.expectMsg(Written(replicatedEvents(3)))
-      collaborator.expectMsg(Written(replicatedEvents(4)))
-      collaborator.expectMsg(Written(replicatedEvents(5)))
+    "write replicated events with undefined defaultRoutingDestination and undefined customRoutingDestinations and not route them to collaborators with defined aggregateId" in {
+      val collaborator = TestProbe()
+      registerCollaborator(aggregateId = Some("a1"), collaborator = collaborator)
+      registerCollaborator(aggregateId = None, collaborator = collaborator)
+      replicateEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set())
+      collaborator.expectMsg(Written(replicatedEvents(0)))
+      collaborator.expectMsg(Written(replicatedEvents(1)))
+      collaborator.expectMsg(Written(replicatedEvents(2)))
     }
-    "write replicated events with no destinationAggregateId defined but not send them to collaborators with an aggregateId defined" in {
-      val collaborator = registerCollaborator(aggregateId = Some("a1"))
-      replicateEvents(offset = 0, destinationAggregateIds = Set())
-      replicateEvents(offset = 3, destinationAggregateIds = Set("a1"))
-      collaborator.expectMsg(Written(replicatedEvents(3)))
-      collaborator.expectMsg(Written(replicatedEvents(4)))
-      collaborator.expectMsg(Written(replicatedEvents(5)))
+    "write replicated events with undefined defaultRoutingDestination and defined customRoutingDestinations and route them to collaborators with defined aggregateId" in {
+      val collaborator = TestProbe()
+      registerCollaborator(aggregateId = Some("a1"), collaborator = collaborator)
+      registerCollaborator(aggregateId = None, collaborator = collaborator)
+      replicateEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set("a1"))
+      collaborator.expectMsg(Written(replicatedEvents(0)))
+      collaborator.expectMsg(Written(replicatedEvents(0)))
+      collaborator.expectMsg(Written(replicatedEvents(1)))
+      collaborator.expectMsg(Written(replicatedEvents(1)))
+      collaborator.expectMsg(Written(replicatedEvents(2)))
+      collaborator.expectMsg(Written(replicatedEvents(2)))
+    }
+    "write replicated events with defined defaultRoutingDestination and undefined customRoutingDestinations and route them to collaborators with defined aggregateId" in {
+      val collaborator = TestProbe()
+      registerCollaborator(aggregateId = Some("a1"), collaborator = collaborator)
+      registerCollaborator(aggregateId = None, collaborator = collaborator)
+      replicateEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set())
+      collaborator.expectMsg(Written(replicatedEvents(0)))
+      collaborator.expectMsg(Written(replicatedEvents(0)))
+      collaborator.expectMsg(Written(replicatedEvents(1)))
+      collaborator.expectMsg(Written(replicatedEvents(1)))
+      collaborator.expectMsg(Written(replicatedEvents(2)))
+      collaborator.expectMsg(Written(replicatedEvents(2)))
+    }
+    "write replicated events with defined defaultRoutingDestination and defined customRoutingDestinations and route them to collaborators with defined aggregateId" in {
+      val collaborator = TestProbe()
+      registerCollaborator(aggregateId = Some("a1"), collaborator = collaborator)
+      registerCollaborator(aggregateId = Some("a2"), collaborator = collaborator)
+      registerCollaborator(aggregateId = None, collaborator = collaborator)
+      replicateEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set("a2"))
+      collaborator.expectMsg(Written(replicatedEvents(0)))
+      collaborator.expectMsg(Written(replicatedEvents(0)))
+      collaborator.expectMsg(Written(replicatedEvents(0)))
+      collaborator.expectMsg(Written(replicatedEvents(1)))
+      collaborator.expectMsg(Written(replicatedEvents(1)))
+      collaborator.expectMsg(Written(replicatedEvents(1)))
+      collaborator.expectMsg(Written(replicatedEvents(2)))
+      collaborator.expectMsg(Written(replicatedEvents(2)))
+      collaborator.expectMsg(Written(replicatedEvents(2)))
     }
     "write replicated events and update the replication progress map" in {
       log.tell(GetReplicationProgress(remoteLogId), requestorProbe.ref)
