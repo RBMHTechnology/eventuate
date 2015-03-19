@@ -1,7 +1,7 @@
 .. _current-limitations:
 
 -------------------
-Current Limitations
+Current limitations
 -------------------
 
 The following is a list of known limitations that are going to be addressed in future versions. If any of these limitations are particularly painful to you, please `let us know`_ so that we can target them accordingly.
