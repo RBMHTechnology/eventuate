@@ -104,7 +104,11 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Developers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#contributing-to-eventuate">Contributing to Eventuate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-eventuate">Building Eventuate</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="project.html">Project</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="project.html#community">Community</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project.html#license">License</a></li>
@@ -156,7 +160,64 @@
             
   <div class="section" id="developers">
 <span id="id1"></span><h1>Developers<a class="headerlink" href="#developers" title="Permalink to this headline">¶</a></h1>
-<p>TODO</p>
+<div class="section" id="contributing-to-eventuate">
+<h2>Contributing to Eventuate<a class="headerlink" href="#contributing-to-eventuate" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Sign the <em>Contributor License Agreement</em> (CLA) (TODO: add link).</li>
+<li>Fork the <a class="reference external" href="https://github.com/RBMHTechnology/eventuate">Eventuate Github repository</a> and start working on a feature branch.</li>
+<li>When you are done, create a pull request towards the targeted branch.</li>
+<li>When there’s consensus on the review, someone from the Eventuate team will merge it.</li>
+</ul>
+<p>Please follow the best practices mentioned in <a class="reference external" href="https://sandofsky.com/blog/git-workflow.html">Git workflow</a> and the guidelines for <a class="reference external" href="http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html">Git commit messages</a>. If you need help or want to discuss your contribution, post a message to the <a class="reference external" href="https://groups.google.com/forum/#!forum/eventuate">Eventuate mailing list</a>.</p>
+</div>
+<div class="section" id="building-eventuate">
+<h2>Building Eventuate<a class="headerlink" href="#building-eventuate" title="Permalink to this headline">¶</a></h2>
+<p>Eventuate builds require an installation of the <a class="reference external" href="http://www.scala-sbt.org/">sbt</a> build tool and a local clone of the <a class="reference external" href="https://github.com/RBMHTechnology/eventuate">Eventuate Github repository</a> or your personal fork.</p>
+<div class="section" id="binaries">
+<h3>Binaries<a class="headerlink" href="#binaries" title="Permalink to this headline">¶</a></h3>
+<p>After having cloned the repository, change to the <code class="docutils literal"><span class="pre">eventuate</span></code> directory:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">cd</span> <span class="n">eventuate</span>
+</pre></div>
+</div>
+<p>and run the tests with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">test</span>
+</pre></div>
+</div>
+<p>To publish the binaries to the local Ivy repository, run:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">publishLocal</span>
+</pre></div>
+</div>
+<p>To publish the binaries to the local Maven repository, run:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">publishM2</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<p>Our documentation is written in <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> and located in <code class="docutils literal"><span class="pre">src/sphinx</span></code>. Building the documentation requires an installation of <a class="reference external" href="https://www.python.org/">Python</a> and <a class="reference external" href="http://sphinx-doc.org/">Sphinx</a>.</p>
+<p>The following installation instructions are for Mac OS X. If Python isn’t already installed, install <a class="reference external" href="http://brew.sh/">Homebrew</a> first and then Python with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">brew</span> <span class="n">install</span> <span class="n">python</span>
+</pre></div>
+</div>
+<p>Next, install pip:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">sudo</span> <span class="n">easy_install</span> <span class="n">pip</span>
+</pre></div>
+</div>
+<p>and then Sphinx with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx</span>
+</pre></div>
+</div>
+<p>Additionally, the Sphinx <a class="reference external" href="https://readthedocs.org/">Read the Docs</a> scheme is required:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx_rtd_scheme</span>
+</pre></div>
+</div>
+<p>Now build the documentation with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">makeSite</span>
+</pre></div>
+</div>
+<p>and open <code class="docutils literal"><span class="pre">target/site/index.html</span></code> in your browser.</p>
+</div>
+</div>
 </div>
 
 
