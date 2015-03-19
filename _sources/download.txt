@@ -36,7 +36,7 @@ To include the latest development snapshot into an SBT_ project, add the followi
 Sources
 -------
 
-To download the Eventuate sources, clone the `Github repository`_.
+To download the Eventuate sources, clone the `Github repository`_. Source jar files are also published to the `OJO snapshot repository`_.
 
 .. _OJO snapshot repository: https://oss.jfrog.org/oss-snapshot-local/com/rbmhtechnology/eventuate_2.11/
 .. _Github repository: https://github.com/RBMHTechnology/eventuate

@@ -31,7 +31,7 @@
 
   
     <link rel="top" title="Eventuate" href="index.html"/>
-        <link rel="next" title="Event log" href="reference/event-log.html"/>
+        <link rel="next" title="API docs" href="reference/api-docs.html"/>
         <link rel="prev" title="User guide" href="user-guide.html"/> 
 
   
@@ -71,7 +71,6 @@
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-actors">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-views">Event-sourced views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-processors">Event-sourced processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#vector-clocks">Vector clocks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#crdt-services">CRDT services</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#batching">Batching</a></li>
@@ -94,9 +93,15 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/api-docs.html">API docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event sourced actors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#state-recovery">State recovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-routing">Event routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
@@ -151,9 +156,9 @@
             
   <div class="section" id="reference">
 <span id="id1"></span><h1>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
-<p>The reference comprises the <a class="reference external" href="latest/api/index.html">API docs</a> and the following sections which complement the <a class="reference internal" href="user-guide.html#user-guide"><span>User guide</span></a>.</p>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="reference/api-docs.html">API docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/event-log.html">Event log</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-log.html#local-event-log">Local event log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-log.html#replicated-event-log">Replicated event log</a></li>
@@ -162,8 +167,18 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-log.html#failure-detection">Failure detection</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reference/event-sourcing.html">Event sourced actors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event sourced views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#command-handler">Command handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#state-synchronization">State synchronization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-handler">Event handler</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/event-sourcing.html#state-recovery">State recovery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/event-sourcing.html#event-routing">Event routing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
 </div>
 </div>
@@ -174,7 +189,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="reference/event-log.html" class="btn btn-neutral float-right" title="Event log">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="reference/api-docs.html" class="btn btn-neutral float-right" title="API docs">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="user-guide.html" class="btn btn-neutral" title="User guide"><span class="fa fa-arrow-circle-left"></span> Previous</a>

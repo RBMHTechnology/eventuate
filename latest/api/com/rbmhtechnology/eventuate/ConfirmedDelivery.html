@@ -47,14 +47,15 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Supports the reliable delivery of messages by accepting delivery confirmations. Both, message
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Supports the reliable delivery of messages to destinations by enabling applications
+to redeliver messages until they are confirmed by their destinations. Both, message
 delivery and confirmation must be executed within an <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>'s event handler.
 New messages are delivered by calling <code>deliver</code>. When the destination replies with a confirmation
 message, the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> must generate an event for which the handler calls <code>confirm</code>.
 Until confirmation, delivered messages are tracked as <i>unconfirmed</i> messages. Unconfirmed
 messages can be redelivered by calling <code>redeliverUnconfirmed</code>. This is usually done within a
 command handler by processing scheduler messages. Redelivery occurs automatically when the
-<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> successfully recovers after initial start or a re-start.
+<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> successfully recovered after initial start or a re-start.
 </p></div><dl class="attributes block"> <dt>Self Type</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a> with <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -588,7 +589,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Emitter aggregate id of the last consumed event.</p><div class="fullcomment"><div class="comment cmt"><p>Emitter aggregate id of the last consumed event.
+      <p class="shortcomment cmt">Emitter aggregate id of the last handled event.</p><div class="fullcomment"><div class="comment cmt"><p>Emitter aggregate id of the last handled event.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastEmitterProcessId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="lastEmitterProcessId:String"></a>
@@ -606,7 +607,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Process id of the last consumed event.</p><div class="fullcomment"><div class="comment cmt"><p>Process id of the last consumed event.
+      <p class="shortcomment cmt">Process id of the last handled event.</p><div class="fullcomment"><div class="comment cmt"><p>Process id of the last handled event.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastEmitterReplicaId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="lastEmitterReplicaId:String"></a>
@@ -624,7 +625,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Emitter replica id of the last consumed event.</p><div class="fullcomment"><div class="comment cmt"><p>Emitter replica id of the last consumed event.
+      <p class="shortcomment cmt">Emitter replica id of the last handled event.</p><div class="fullcomment"><div class="comment cmt"><p>Emitter replica id of the last handled event.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastSequenceNr" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="lastSequenceNr:Long"></a>
@@ -642,7 +643,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Sequence number of the last consumed event.</p><div class="fullcomment"><div class="comment cmt"><p>Sequence number of the last consumed event.
+      <p class="shortcomment cmt">Sequence number of the last handled event.</p><div class="fullcomment"><div class="comment cmt"><p>Sequence number of the last handled event.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastSystemTimestamp" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="lastSystemTimestamp:Long"></a>
@@ -660,7 +661,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Wall-clock timestamp of the last consumed event.</p><div class="fullcomment"><div class="comment cmt"><p>Wall-clock timestamp of the last consumed event.
+      <p class="shortcomment cmt">Wall-clock timestamp of the last handled event.</p><div class="fullcomment"><div class="comment cmt"><p>Wall-clock timestamp of the last handled event.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastVectorTimestamp" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime"></a>
@@ -678,7 +679,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Vector timestamp of the last consumed event.</p><div class="fullcomment"><div class="comment cmt"><p>Vector timestamp of the last consumed event.
+      <p class="shortcomment cmt">Vector timestamp of the last handled event.</p><div class="fullcomment"><div class="comment cmt"><p>Vector timestamp of the last handled event.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>

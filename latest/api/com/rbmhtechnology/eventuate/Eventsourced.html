@@ -49,10 +49,11 @@
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Implemented by actors that derive internal state from events stored in an event log. Events are
 pushed from the <code>eventLog</code> actor to this actor and handled with the <code>onEvent</code> event handler. An
-event handler defines how events are projected on internal state.</p><p>By default, an <code>Eventsourced</code> actor does not define an <code>aggregateId</code>. In this case, the <code>eventLog</code>
+event handler defines how events update internal state.</p><p>By default, an <code>Eventsourced</code> actor does not define an <code>aggregateId</code>. In this case, the <code>eventLog</code>
 pushes all events to this actor. If it defines an <code>aggregateId</code>, the <code>eventLog</code> actor only pushes
-those events that contain the <code>aggregateId</code> value in their <code>destinationAggregateIds</code> set.</p><p>Commands sent to an <code>Eventsourced</code> actor during recovery are delayed until recovery completes.
-</p></div><div class="toggleContainer block">
+those events that contain the <code>aggregateId</code> value in their <code>routingDestinations</code> set.</p><p>Commands sent to an <code>Eventsourced</code> actor during recovery are delayed until recovery completes.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>
+</p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
@@ -544,7 +545,7 @@ those events that contain the <code>aggregateId</code> value in their <code>dest
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Emitter aggregate id of the last consumed event.</p>
+      <p class="shortcomment cmt">Emitter aggregate id of the last handled event.</p>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastEmitterProcessId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="lastEmitterProcessId:String"></a>
       <a id="lastEmitterProcessId:String"></a>
@@ -561,7 +562,7 @@ those events that contain the <code>aggregateId</code> value in their <code>dest
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Process id of the last consumed event.</p>
+      <p class="shortcomment cmt">Process id of the last handled event.</p>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastEmitterReplicaId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="lastEmitterReplicaId:String"></a>
       <a id="lastEmitterReplicaId:String"></a>
@@ -578,7 +579,7 @@ those events that contain the <code>aggregateId</code> value in their <code>dest
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Emitter replica id of the last consumed event.</p>
+      <p class="shortcomment cmt">Emitter replica id of the last handled event.</p>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastSequenceNr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="lastSequenceNr:Long"></a>
       <a id="lastSequenceNr:Long"></a>
@@ -595,7 +596,7 @@ those events that contain the <code>aggregateId</code> value in their <code>dest
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Sequence number of the last consumed event.</p>
+      <p class="shortcomment cmt">Sequence number of the last handled event.</p>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastSystemTimestamp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="lastSystemTimestamp:Long"></a>
       <a id="lastSystemTimestamp:Long"></a>
@@ -612,7 +613,7 @@ those events that contain the <code>aggregateId</code> value in their <code>dest
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Wall-clock timestamp of the last consumed event.</p>
+      <p class="shortcomment cmt">Wall-clock timestamp of the last handled event.</p>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced#lastVectorTimestamp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime"></a>
       <a id="lastVectorTimestamp:VectorTime"></a>
@@ -629,7 +630,7 @@ those events that contain the <code>aggregateId</code> value in their <code>dest
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Vector timestamp of the last consumed event.</p>
+      <p class="shortcomment cmt">Vector timestamp of the last handled event.</p>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>

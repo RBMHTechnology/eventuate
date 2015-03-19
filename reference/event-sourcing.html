@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Event sourced actors &mdash; Eventuate</title>
+  <title>Event-sourced actors &mdash; Eventuate</title>
   
 
   
@@ -32,7 +32,7 @@
   
     <link rel="top" title="Eventuate" href="../index.html"/>
         <link rel="up" title="Reference" href="../reference.html"/>
-        <link rel="next" title="Developers" href="../developers.html"/>
+        <link rel="next" title="Configuration" href="configuration.html"/>
         <link rel="prev" title="Event log" href="event-log.html"/> 
 
   
@@ -72,7 +72,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-sourced-actors">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-sourced-views">Event-sourced views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-sourced-processors">Event-sourced processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../architecture.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../architecture.html#vector-clocks">Vector clocks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../architecture.html#crdt-services">CRDT services</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../architecture.html#batching">Batching</a></li>
@@ -95,9 +94,15 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../reference.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api-docs.html">API docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-log.html">Event log</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Event sourced actors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#event-sourced-views">Event sourced views</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#state-recovery">State recovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-routing">Event routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reliable-delivery">Reliable delivery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#snapshots">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../developers.html">Developers</a></li>
@@ -141,7 +146,7 @@
       
           <li><a href="../reference.html">Reference</a> &raquo;</li>
       
-    <li>Event sourced actors</li>
+    <li>Event-sourced actors</li>
       <li class="wy-breadcrumbs-aside">
         
           <a href="../_sources/reference/event-sourcing.txt" rel="nofollow"> View page source</a>
@@ -153,12 +158,274 @@
           <div role="main" class="document">
             
   <div class="section" id="event-sourced-actors">
-<h1>Event sourced actors<a class="headerlink" href="#event-sourced-actors" title="Permalink to this headline">¶</a></h1>
-<p>TODO</p>
+<h1>Event-sourced actors<a class="headerlink" href="#event-sourced-actors" title="Permalink to this headline">¶</a></h1>
+<p>An introduction to event-sourced actors is already given in <a class="reference internal" href="../architecture.html#architecture"><span>Architecture</span></a> and the <a class="reference internal" href="../user-guide.html#user-guide"><span>User guide</span></a>. Applications use event-sourced actors for writing events to an event log and for maintaining state on the command side (C) of <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> based applications. Event-sourced actors distinguish command processing from event processing. They must extend the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> trait and implement a command handler and an event handler.</p>
+<div class="section" id="command-handler">
+<span id="id1"></span><h2>Command handler<a class="headerlink" href="#command-handler" title="Permalink to this headline">¶</a></h2>
+<p>A command handler is partial function of type <code class="docutils literal"><span class="pre">PartialFunction[Any,</span> <span class="pre">Unit]</span></code> for which a type alias <code class="docutils literal"><span class="pre">Receive</span></code> exists. It can be defined by implementing <code class="docutils literal"><span class="pre">onCommand</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.util._</span>
+<span class="k">import</span> <span class="nn">akka.actor._</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
+
+<span class="k">case</span> <span class="k">class</span> <span class="nc">ExampleEvent</span><span class="o">(</span><span class="n">data</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">ExampleCommand</span><span class="o">(</span><span class="n">data</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">ExampleCommandSuccess</span><span class="o">(</span><span class="n">data</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">ExampleCommandFailure</span><span class="o">(</span><span class="n">cause</span><span class="k">:</span> <span class="kt">Throwable</span><span class="o">)</span>
+
+<span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">replicaId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
+
+  <span class="cm">/** Command handler */</span>
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">ExampleCommand</span><span class="o">(</span><span class="n">data</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="c1">// validate command</span>
+      <span class="c1">// ...</span>
+
+      <span class="c1">// derive event</span>
+      <span class="k">val</span> <span class="n">event</span> <span class="k">=</span> <span class="nc">ExampleEvent</span><span class="o">(</span><span class="n">data</span><span class="o">)</span>
+      <span class="c1">// persist event</span>
+      <span class="n">persist</span><span class="o">(</span><span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">case</span> <span class="nc">Success</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span> <span class="k">=&gt;</span>
+          <span class="c1">// handle event</span>
+          <span class="n">onEvent</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span>
+          <span class="c1">// success reply</span>
+          <span class="n">sender</span><span class="o">()</span> <span class="o">!</span> <span class="nc">ExampleCommandSuccess</span><span class="o">(</span><span class="n">data</span><span class="o">)</span>
+        <span class="k">case</span> <span class="nc">Failure</span><span class="o">(</span><span class="n">cause</span><span class="o">)</span> <span class="k">=&gt;</span>
+          <span class="c1">// failure reply</span>
+          <span class="n">sender</span><span class="o">()</span> <span class="o">!</span> <span class="nc">ExampleCommandFailure</span><span class="o">(</span><span class="n">cause</span><span class="o">)</span>
+      <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onEvent</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">ExampleEvent</span><span class="o">(</span><span class="n">data</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="c1">// ...</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Messages sent by an application to an event-sourced actor are received by its command handler. Usually, a command handler first validates a command, then derives one or more events from it, persists these events with <code class="docutils literal"><span class="pre">persist</span></code> and if persistence succeeds, handles the events<a class="footnote-reference" href="#id12" id="id2">[1]</a> and replies to the command sender. The <code class="docutils literal"><span class="pre">persist</span></code> method has the following signature<a class="footnote-reference" href="#id13" id="id3">[2]</a>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">def</span> <span class="n">persist</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">event</span><span class="k">:</span> <span class="kt">A</span><span class="o">,</span> <span class="n">customRoutingDestinations</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">())(</span><span class="n">handler</span><span class="k">:</span> <span class="kt">Try</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">persist</span></code> method can be called one ore more times per received command. Calling <code class="docutils literal"><span class="pre">persist</span></code> does not immediately write events to the event log. Instead, events from <code class="docutils literal"><span class="pre">persist</span></code> calls are collected in memory and written to the event log when <code class="docutils literal"><span class="pre">onCommand</span></code> returns.</p>
+<p>Events are written asynchronously to the event-sourced actor’s <code class="docutils literal"><span class="pre">eventLog</span></code>. After writing, the <code class="docutils literal"><span class="pre">eventLog</span></code> actor internally replies to the event-sourced actor with a success or failure message which is passed as argument to the persist <code class="docutils literal"><span class="pre">handler</span></code>.</p>
+<p>The persist handler is called during a normal actor message dispatch. It can therefore safely access an actor’s internal state. The <code class="docutils literal"><span class="pre">sender()</span></code> reference of the original command sender is also preserved, so that a persist handler can reply to the initial command sender.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">The <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> trait also defines methods <code class="docutils literal"><span class="pre">persistN</span></code> and <code class="docutils literal"><span class="pre">persistWithLocalTime</span></code>. Refer to the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> API documentation for details.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A command handler should not modify persistent actor state i.e. state that is derived from events.</p>
+</div>
+</div>
+<div class="section" id="state-synchronization">
+<h2>State synchronization<a class="headerlink" href="#state-synchronization" title="Permalink to this headline">¶</a></h2>
+<p>As explained in section <a class="reference internal" href="#command-handler"><span>Command handler</span></a>, events are persisted asynchronously. What happens if a another command is sent to an event-sourced actor while persistence is in progress? This depends on the value of <code class="docutils literal"><span class="pre">stateSync</span></code>, a member of <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> that can be overridden.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">def</span> <span class="n">stateSync</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">true</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal"><span class="pre">stateSync</span></code> is <code class="docutils literal"><span class="pre">true</span></code> (default), new commands are <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/actors.html#stash">stashed</a> while persistence is in progress. Consequently, new commands see actor state that is <em>in sync</em> with the events in the event log. The consequence is limited write throughput, because <a class="reference internal" href="../architecture.html#batching"><span>Batching</span></a> of write requests is not possible in this case<a class="footnote-reference" href="#id14" id="id4">[3]</a>. This setting is recommended for event-sourced actors that must validate commands against current state.</p>
+<p>If <code class="docutils literal"><span class="pre">stateSync</span></code> is <code class="docutils literal"><span class="pre">false</span></code>, new commands are dispatched to <code class="docutils literal"><span class="pre">onCommand</span></code> immediately. Consequently, new commands may see stale actor state. The advantage is significantly higher write throughput as <a class="reference internal" href="../architecture.html#batching"><span>Batching</span></a> of write requests is possible. This setting is recommended for event-sourced actors that don’t need to validate commands against current state.</p>
+<p>If a sender sends an update command followed by a read command to an event-sourced actor that has <code class="docutils literal"><span class="pre">stateSync</span></code> set to <code class="docutils literal"><span class="pre">false</span></code>, the read command will probably not see the state change from the preceding update command. To achieve read-your-write consistency, there are two options:</p>
+<ol class="arabic">
+<li><p class="first">The command sender waits for a reply to the update command before sending the read command. The reply must of course be sent from within a persist handler. From a throughput perspective, this is essentially the same as setting <code class="docutils literal"><span class="pre">stateSync</span></code> to <code class="docutils literal"><span class="pre">true</span></code> but allows for achieving read-your-write consistency for individual commands rather than all commands.</p>
+</li>
+<li><p class="first">The command sender sends the read command immediately after the update command and the event-sourced actor calls <code class="docutils literal"><span class="pre">delay</span></code> with the read command as argument. The <code class="docutils literal"><span class="pre">delay</span></code> method has the following signature:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">def</span> <span class="n">delay</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">command</span><span class="k">:</span> <span class="kt">A</span><span class="o">)(</span><span class="n">handler</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span>
+</pre></div>
+</div>
+<p>It delays processing of a command to that point in the future where all previously <code class="docutils literal"><span class="pre">persist</span></code>ed events have been handled. The delayed command is passed as argument to the delay <code class="docutils literal"><span class="pre">handler</span></code><a class="footnote-reference" href="#id15" id="id5">[4]</a>. A delay handler must not call <code class="docutils literal"><span class="pre">persist</span></code> or related methods.</p>
+</li>
+</ol>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">For details about the <code class="docutils literal"><span class="pre">delay</span></code> method, refer to the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> API documentation.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">State synchronization settings only apply to a single actor instance. Events that are emitted concurrently by other actors and handled by that instance can arrive at any time and modify actor state. Anyway, concurrent events are not relevant for achieving read-your-write consistency and should be handled as described in the <a class="reference internal" href="../user-guide.html#user-guide"><span>User guide</span></a>.</p>
+</div>
+</div>
+<div class="section" id="event-handler">
+<h2>Event handler<a class="headerlink" href="#event-handler" title="Permalink to this headline">¶</a></h2>
+<p>An event handler is partial function of type <code class="docutils literal"><span class="pre">PartialFunction[Any,</span> <span class="pre">Unit]</span></code> for which a type alias <code class="docutils literal"><span class="pre">Receive</span></code> exists. It can be defined by implementing <code class="docutils literal"><span class="pre">onEvent</span></code>. An event handler handles persisted events by updating actor state from event details.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="cm">/** Event handler */</span>
+<span class="k">override</span> <span class="k">val</span> <span class="n">onEvent</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">ExampleEvent</span><span class="o">(</span><span class="n">details</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="k">val</span> <span class="n">eventSequenceNr</span> <span class="k">=</span> <span class="n">lastSequenceNr</span>
+    <span class="k">val</span> <span class="n">eventVectorTimestamp</span> <span class="k">=</span> <span class="n">lastVectorTimestamp</span>
+    <span class="c1">// ...</span>
+
+    <span class="c1">// update actor state</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Handled events also update an event-sourced actor’s vector clock. Events that are routed to an actor but not handled do not update its vector clock (see also section <a class="reference internal" href="#event-routing"><span>Event routing</span></a>). Events emitted by an actor, <em>after</em> it handled an event, causally depend on that event.</p>
+<p>Event metadata of the last handled event can be obtained with the <code class="docutils literal"><span class="pre">last*</span></code> methods defined by <code class="docutils literal"><span class="pre">EventsourcedActor</span></code>. For example, <code class="docutils literal"><span class="pre">lastSequenceNr</span></code> returns the event’s local sequence number, <code class="docutils literal"><span class="pre">lastVectorTimestamp</span></code> returns the event’s vector timestamp. A complete reference is given by the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> API documentation.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">An event handler should not have side-effects that are visible outside its actor. An exception is <a class="reference internal" href="#reliable-delivery"><span>Reliable delivery</span></a> of messages.</p>
+</div>
+</div>
 </div>
 <div class="section" id="event-sourced-views">
-<h1>Event sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h1>
-<p>TODO</p>
+<h1>Event-sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h1>
+<p>An introduction to event-sourced views is already given in <a class="reference internal" href="../architecture.html#architecture"><span>Architecture</span></a> and the <a class="reference internal" href="../user-guide.html#user-guide"><span>User guide</span></a>. Applications use event-sourced views for consuming events from an event log and for maintaining state on the query side (Q) of <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> based applications.</p>
+<p>Like event-sourced actors, event-sourced views distinguish command processing from event processing. They must implement the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> trait. <code class="docutils literal"><span class="pre">EventsourcedView</span></code> is a functional subset of <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> that can neither <code class="docutils literal"><span class="pre">persist</span></code> events nor <code class="docutils literal"><span class="pre">delay</span></code> commands. Furthermore, views don’t need to define a <code class="docutils literal"><span class="pre">replicaId</span></code>.</p>
+</div>
+<div class="section" id="state-recovery">
+<h1>State recovery<a class="headerlink" href="#state-recovery" title="Permalink to this headline">¶</a></h1>
+<p>When an event-sourced actor or view is started or re-started, events are replayed to its <code class="docutils literal"><span class="pre">onEvent</span></code> handler so that internal state can be recovered<a class="footnote-reference" href="#id16" id="id6">[5]</a>. Event replay is initiated by sending a <code class="docutils literal"><span class="pre">Replay</span></code> message to the <code class="docutils literal"><span class="pre">eventLog</span></code> actor:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">def</span> <span class="n">replay</span><span class="o">()</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span>
+  <span class="n">eventLog</span> <span class="o">!</span> <span class="nc">EventsourcingProtocol</span><span class="o">.</span><span class="nc">Replay</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">self</span><span class="o">,</span> <span class="n">aggregateId</span><span class="o">,</span> <span class="n">instanceId</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">replay</span></code> method is defined by the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> trait and called internally by <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> and <code class="docutils literal"><span class="pre">EventsourcedView</span></code>. Both, <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> and <code class="docutils literal"><span class="pre">EventsourcedView</span></code>, extend <code class="docutils literal"><span class="pre">Eventsourced</span></code>.</p>
+<p>Sending a <code class="docutils literal"><span class="pre">Replay</span></code> message automatically registers the sending actor at its event log, so that newly written events can be immediately routed to that actor. If the actor is stopped it is automatically de-registered.</p>
+<p>While an event-sourced actor or view is recovering i.e. replaying messages, its <code class="docutils literal"><span class="pre">recovering</span></code> method returns <code class="docutils literal"><span class="pre">true</span></code>. If recovery successfully completes, its empty <code class="docutils literal"><span class="pre">recovered()</span></code> method is called which can be overridden by applications.</p>
+<p>During recovery, new commands are <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/actors.html#stash">stashed</a> and dispatched to <code class="docutils literal"><span class="pre">onCommand</span></code> after recovery successfully completed. This ensures that new commands never see partially recovered state.</p>
+</div>
+<div class="section" id="event-routing">
+<span id="id7"></span><h1>Event routing<a class="headerlink" href="#event-routing" title="Permalink to this headline">¶</a></h1>
+<p>An event that is emitted by an event-sourced actor can be routed to other event-sourced actors and views if they share an <a class="reference internal" href="event-log.html#event-log"><span>Event log</span></a><a class="footnote-reference" href="#id17" id="id8">[6]</a> . The default event routing rules are:</p>
+<ul class="simple">
+<li>If an event-sourced actor or view has an undefined <code class="docutils literal"><span class="pre">aggregateId</span></code>, all events are routed to it. It may choose to handle only a subset of them though.</li>
+<li>If an event-sourced actor or view has a defined <code class="docutils literal"><span class="pre">aggregateId</span></code>, only events emitted by event-sourced actors with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> are routed to it.</li>
+</ul>
+<p>Routing destinations are defined during emission of an event and are persisted together with the event<a class="footnote-reference" href="#id18" id="id9">[7]</a>. This makes routing decisions repeatable during event replay and allows for routing rule changes without affecting past routing decisions. Applications can define additional routing destinations with the <code class="docutils literal"><span class="pre">customRoutingDestinations</span></code> parameter of <code class="docutils literal"><span class="pre">persist</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.util._</span>
+<span class="k">import</span> <span class="nn">akka.actor._</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
+
+<span class="k">case</span> <span class="k">class</span> <span class="nc">ExampleEvent</span><span class="o">(</span><span class="n">data</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">ExampleCommand</span><span class="o">(</span><span class="n">data</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+
+<span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">replicaId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">aggregateId</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;a1&quot;</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">ExampleCommand</span><span class="o">(</span><span class="n">data</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">persist</span><span class="o">(</span><span class="nc">ExampleEvent</span><span class="o">(</span><span class="n">data</span><span class="o">),</span> <span class="n">customRoutingDestinations</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">(</span><span class="s">&quot;a2&quot;</span><span class="o">,</span> <span class="s">&quot;a3&quot;</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">case</span> <span class="nc">Success</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span>   <span class="k">=&gt;</span> <span class="c1">// ...</span>
+        <span class="k">case</span> <span class="nc">Failure</span><span class="o">(</span><span class="n">cause</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="c1">// ...</span>
+      <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="c1">// ...</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal"><span class="pre">ExampleEvent</span></code> will routed to destinations with <code class="docutils literal"><span class="pre">aggregateId</span></code>s <code class="docutils literal"><span class="pre">Some(“a2”)</span></code> and <code class="docutils literal"><span class="pre">Some(“a3”)</span></code> in addition to the default routing destination with <code class="docutils literal"><span class="pre">aggregateId</span></code>s <code class="docutils literal"><span class="pre">Some(“a1”)</span></code> and <code class="docutils literal"><span class="pre">None</span></code>.</p>
+</div>
+<div class="section" id="reliable-delivery">
+<span id="id10"></span><h1>Reliable delivery<a class="headerlink" href="#reliable-delivery" title="Permalink to this headline">¶</a></h1>
+<p>Reliable, event-based remote communication between event-sourced actors and/or views should be done via a <a class="reference internal" href="event-log.html#replicated-event-log"><span>Replicated event log</span></a>. For reliable communication with other services that cannot connect to a replicated event log, event-sourced actors should use the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a> trait:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
+<span class="k">import</span> <span class="nn">scala.util._</span>
+<span class="k">import</span> <span class="nn">akka.actor._</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.ConfirmedDelivery</span>
+
+<span class="k">case</span> <span class="k">class</span> <span class="nc">DeliverCommand</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">DeliverEvent</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+
+<span class="k">case</span> <span class="k">class</span> <span class="nc">Confirmation</span><span class="o">(</span><span class="n">deliveryId</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">ConfirmationEvent</span><span class="o">(</span><span class="n">deliveryId</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+
+<span class="k">case</span> <span class="k">class</span> <span class="nc">ReliableMessage</span><span class="o">(</span><span class="n">deliveryId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">message</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">object</span> <span class="nc">Redeliver</span>
+
+<span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="n">destination</span><span class="k">:</span> <span class="kt">ActorPath</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">replicaId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span>
+  <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="k">with</span> <span class="nc">ConfirmedDelivery</span> <span class="o">{</span>
+
+  <span class="k">import</span> <span class="nn">context.dispatcher</span>
+
+  <span class="n">context</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">scheduler</span><span class="o">.</span><span class="n">schedule</span><span class="o">(</span>
+    <span class="n">initialDelay</span> <span class="k">=</span> <span class="mf">10.</span><span class="n">seconds</span><span class="o">,</span>
+    <span class="n">interval</span> <span class="k">=</span> <span class="mf">5.</span><span class="n">seconds</span><span class="o">,</span>
+    <span class="n">receiver</span> <span class="k">=</span> <span class="n">self</span><span class="o">,</span>
+    <span class="n">message</span> <span class="k">=</span> <span class="nc">Redeliver</span><span class="o">)</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">DeliverCommand</span><span class="o">(</span><span class="n">message</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">persist</span><span class="o">(</span><span class="nc">DeliverEvent</span><span class="o">(</span><span class="n">message</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">case</span> <span class="nc">Success</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">onEvent</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span>
+        <span class="k">case</span> <span class="nc">Failure</span><span class="o">(</span><span class="n">err</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="c1">// ...</span>
+      <span class="o">}</span>
+    <span class="k">case</span> <span class="nc">Confirmation</span><span class="o">(</span><span class="n">deliveryId</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">persist</span><span class="o">(</span><span class="nc">ConfirmationEvent</span><span class="o">(</span><span class="n">deliveryId</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">case</span> <span class="nc">Success</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">onEvent</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span>
+        <span class="k">case</span> <span class="nc">Failure</span><span class="o">(</span><span class="n">err</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="c1">// ...</span>
+      <span class="o">}</span>
+    <span class="k">case</span> <span class="nc">Redeliver</span> <span class="k">=&gt;</span>
+      <span class="n">redeliverUnconfirmed</span><span class="o">()</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onEvent</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">DeliverEvent</span><span class="o">(</span><span class="n">message</span><span class="o">)</span> <span class="k">=&gt;</span>
+        <span class="k">val</span> <span class="n">deliveryId</span> <span class="k">=</span> <span class="n">lastSequenceNr</span><span class="o">.</span><span class="n">toString</span>
+        <span class="n">deliver</span><span class="o">(</span><span class="n">deliveryId</span><span class="o">,</span> <span class="nc">ReliableMessage</span><span class="o">(</span><span class="n">deliveryId</span><span class="o">,</span> <span class="n">message</span><span class="o">),</span> <span class="n">destination</span><span class="o">)</span>
+      <span class="k">case</span> <span class="nc">ConfirmationEvent</span><span class="o">(</span><span class="n">deliveryId</span><span class="o">)</span> <span class="k">=&gt;</span>
+        <span class="n">confirm</span><span class="o">(</span><span class="n">deliveryId</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">ConfirmedDelivery</span></code> supports the reliable delivery of messages to destinations by enabling applications to re-deliver messages until they are confirmed by their destinations. In this example, the reliable delivery of a message is initiated by sending a <code class="docutils literal"><span class="pre">DeliverCommand</span></code> to <code class="docutils literal"><span class="pre">ExampleActor</span></code>.</p>
+<p>The generated <code class="docutils literal"><span class="pre">DeliverEvent</span></code> calls <code class="docutils literal"><span class="pre">deliver</span></code> to deliver a <code class="docutils literal"><span class="pre">ReliableMessage</span></code> to a <code class="docutils literal"><span class="pre">destination</span></code>. The <code class="docutils literal"><span class="pre">deliveryId</span></code> is the correlation identifier for the delivery <code class="docutils literal"><span class="pre">Confirmation</span></code>. The <code class="docutils literal"><span class="pre">deliveryId</span></code> can be any application-defined id. Here, the event’s sequence number is used which can be obtained with <code class="docutils literal"><span class="pre">lastSequenceNumber</span></code>.</p>
+<p>The destination confirms the delivery of the message by sending a <code class="docutils literal"><span class="pre">Confirmation</span></code> reply to the event-sourced actor from which the actor generates a <code class="docutils literal"><span class="pre">ConfirmationEvent</span></code>. When handling the event, message delivery can be confirmed by calling <code class="docutils literal"><span class="pre">confirm</span></code> with the <code class="docutils literal"><span class="pre">deliveryId</span></code> as argument.</p>
+<p>When the actor is re-started, unconfirmed <code class="docutils literal"><span class="pre">ReliableMessage</span></code>s are automatically re-delivered to their <code class="docutils literal"><span class="pre">destination</span></code>s. The example actor additionally schedules <code class="docutils literal"><span class="pre">redeliverUnconfirmed</span></code> calls to periodically re-deliver unconfirmed messages. This is done within the actor’s command handler.</p>
+</div>
+<div class="section" id="snapshots">
+<span id="id11"></span><h1>Snapshots<a class="headerlink" href="#snapshots" title="Permalink to this headline">¶</a></h1>
+<p>Snapshots of internal state can be taken from event-sourced actors and views. Snapshotting is an optimization to reduce recovery times. It is not implemented yet but coming soon.</p>
+<table class="docutils footnote" frame="void" id="id12" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>An explicit <code class="docutils literal"><span class="pre">onEvent</span></code> call may become obsolete in future releases.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id13" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>The <code class="docutils literal"><span class="pre">customRoutingDestinations</span></code> parameter is described in section <a class="reference internal" href="#event-routing"><span>Event routing</span></a>.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id14" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td>Writes from different event-sourced actors that have <code class="docutils literal"><span class="pre">stateSync</span></code> set to <code class="docutils literal"><span class="pre">true</span></code> are still batched, but not the writes from a single event-sourced actor.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id15" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td>This mechanism of delaying commands might the replaced with something that is closer related to <a class="reference internal" href="../user-guide.html#conditional-commands"><span>Conditional commands</span></a> in future releases.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id16" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[5]</a></td><td>Event replay can optionally start from <a class="reference internal" href="#snapshots"><span>Snapshots</span></a> of actor state.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id17" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id8">[6]</a></td><td><a class="reference internal" href="../architecture.html#processors"><span>Event-sourced processors</span></a> can additionally route events between event logs.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id18" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id9">[7]</a></td><td>The routing destinations of a <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a> can be obtained with method <code class="docutils literal"><span class="pre">routingDestinations</span></code>.</td></tr>
+</tbody>
+</table>
 </div>
 
 
@@ -167,7 +434,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../developers.html" class="btn btn-neutral float-right" title="Developers">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="configuration.html" class="btn btn-neutral float-right" title="Configuration">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="event-log.html" class="btn btn-neutral" title="Event log"><span class="fa fa-arrow-circle-left"></span> Previous</a>

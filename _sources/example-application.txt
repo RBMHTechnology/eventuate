@@ -60,13 +60,13 @@ Running
 
 Before you can run the example application, install sbt_ and run::
 
-    sbt test
+    sbt test:compile
 
 from the project's root directory (needs to be done only once). Then, run::
 
     ./example
 
-which opens six terminal windows, representing locations A - F. For running the Java version of the example application run::
+This should open six terminal windows, representing locations A - F. For running the Java version of the example application run::
 
     ./example java
 

@@ -71,7 +71,6 @@
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-actors">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-views">Event-sourced views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-processors">Event-sourced processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#vector-clocks">Vector clocks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#crdt-services">CRDT services</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#batching">Batching</a></li>
@@ -94,9 +93,15 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/api-docs.html">API docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event sourced actors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#state-recovery">State recovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-routing">Event routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
@@ -209,14 +214,14 @@
 <div class="section" id="running">
 <span id="id3"></span><h2>Running<a class="headerlink" href="#running" title="Permalink to this headline">¶</a></h2>
 <p>Before you can run the example application, install <a class="reference external" href="http://www.scala-sbt.org/">sbt</a> and run:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">test</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">test</span><span class="k">:</span><span class="kt">compile</span>
 </pre></div>
 </div>
 <p>from the project&#8217;s root directory (needs to be done only once). Then, run:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span>
 </pre></div>
 </div>
-<p>which opens six terminal windows, representing locations A - F. For running the Java version of the example application run:</p>
+<p>This should open six terminal windows, representing locations A - F. For running the Java version of the example application run:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span> <span class="n">java</span>
 </pre></div>
 </div>
