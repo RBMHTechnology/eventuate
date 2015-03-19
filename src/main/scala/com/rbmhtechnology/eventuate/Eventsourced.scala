@@ -68,37 +68,37 @@ trait Eventsourced extends Actor {
     None
 
   /**
-   * Sequence number of the last consumed event.
+   * Sequence number of the last handled event.
    */
   def lastSequenceNr: Long =
     _lastEvent.sequenceNr
 
   /**
-   * Wall-clock timestamp of the last consumed event.
+   * Wall-clock timestamp of the last handled event.
    */
   def lastSystemTimestamp: Long =
     _lastEvent.systemTimestamp
 
   /**
-   * Vector timestamp of the last consumed event.
+   * Vector timestamp of the last handled event.
    */
   def lastVectorTimestamp: VectorTime =
     _lastEvent.vectorTimestamp
 
   /**
-   * Emitter aggregate id of the last consumed event.
+   * Emitter aggregate id of the last handled event.
    */
   def lastEmitterAggregateId: Option[String] =
     _lastEvent.emitterAggregateId
 
   /**
-   * Emitter replica id of the last consumed event.
+   * Emitter replica id of the last handled event.
    */
   def lastEmitterReplicaId: String =
     _lastEvent.emitterReplicaId
 
   /**
-   * Process id of the last consumed event.
+   * Process id of the last handled event.
    */
   def lastEmitterProcessId: String =
     _lastEvent.emitterProcessId
@@ -120,8 +120,10 @@ trait Eventsourced extends Actor {
    * Sends a [[EventsourcingProtocol.Replay]] command to the event log. Can be overridden
    * by implementations to customize recovery.
    */
+  //#replay
   def replay(): Unit =
     eventLog ! EventsourcingProtocol.Replay(1, self, aggregateId, instanceId)
+  //#
 
   /**
    * Internal API.

@@ -70,7 +70,9 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
    * commands are not stashed and events can be batched for write which significantly increases
    * write throughput.
    */
+  //#state-sync
   def stateSync: Boolean = true
+  //#
 
   /**
    * Delays the given command, by looping it through the event log actor, and asynchronously
