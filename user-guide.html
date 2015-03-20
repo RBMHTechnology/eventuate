@@ -71,8 +71,8 @@
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-actors">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-views">Event-sourced views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-processors">Event-sourced processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#vector-clocks">Vector clocks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#crdt-services">CRDT services</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#batching">Batching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#adapters">Adapters</a></li>
 </ul>
@@ -87,7 +87,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#detecting-concurrent-updates">Detecting concurrent updates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#tracking-conflicting-versions">Tracking conflicting versions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#resolving-conflicting-versions">Resolving conflicting versions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#commutative-replicated-data-types">Commutative replicated data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#event-sourced-views">Event-sourced views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#conditional-commands">Conditional commands</a></li>
 </ul>
@@ -383,7 +383,7 @@
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>Only concurrent updates to replicas with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> may conflict. Concurrent updates to actors with different <code class="docutils literal"><span class="pre">aggregateId</span></code> do not conflict (unless an application does custom event routing).</p>
-<p class="last">Also, if the data type of actor state is designed in a way that update operations commute, conflicts do not occur. This is discussed in section <a class="reference internal" href="#crdt-tour"><span>Commutative replicated data types</span></a>.</p>
+<p class="last">Also, if the data type of actor state is designed in a way that update operations commute, conflicts do not occur. This is discussed in section <a class="reference internal" href="#commutative-replicated-data-types"><span>Operation-based CRDTs</span></a>.</p>
 </div>
 </div>
 <div class="section" id="resolving-conflicting-versions">
@@ -472,11 +472,11 @@
 </div>
 </div>
 </div>
-<div class="section" id="commutative-replicated-data-types">
-<span id="crdt-tour"></span><h2>Commutative replicated data types<a class="headerlink" href="#commutative-replicated-data-types" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="operation-based-crdts">
+<span id="commutative-replicated-data-types"></span><h2>Operation-based CRDTs<a class="headerlink" href="#operation-based-crdts" title="Permalink to this headline">¶</a></h2>
 <p>If state update operations commute, there’s no need to use Eventuate’s <code class="docutils literal"><span class="pre">ConcurrentVersions</span></code> utility. A simple example is a replicated counter, which converges because the increment and decrement operations commute. A formal to approach to commutative replicated data types (CmRDTs) or operation-based CRDTs is given in the paper <a class="reference external" href="http://hal.upmc.fr/file/index/docid/555588/filename/techreport.pdf">A comprehensive study of Convergent and Commutative Replicated Data Types</a> by Marc Shapiro et al. Eventuate is a good basis for implementing operation-based CRDTs:</p>
 <ul class="simple">
-<li>Update operations can be modeled as events that are reliably broadcasted to all replicas by the <a class="reference internal" href="reference/event-log.html#replicated-event-log"><span>Replicated event log</span></a>.</li>
+<li>Update operations can be modeled as events that are reliably broadcasted to all replicas by a <a class="reference internal" href="reference/event-log.html#replicated-event-log"><span>Replicated event log</span></a>.</li>
 <li>The command and event handler of an event-sourced actor can be used to implement the two update phases mentioned in the paper: <em>atSource</em> and <em>downstream</em>, respectively.</li>
 <li>All <em>downstream</em> preconditions mentioned in the paper are satisfied by causal delivery of update operations which is guaranteed for actors consuming from a replicated event log.</li>
 </ul>
@@ -514,7 +514,7 @@
 </pre></div>
 </div>
 <p>The <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.ORSetService">ORSetService</a> is a CRDT service that manages <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> instances which are specified in section 3.3.5 in the paper. It implements the asynchronous <code class="docutils literal"><span class="pre">add</span></code> and <code class="docutils literal"><span class="pre">remove</span></code> methods and inherits the <code class="docutils literal"><span class="pre">value(id:</span> <span class="pre">String):</span> <span class="pre">Set[A]</span></code> method from <code class="docutils literal"><span class="pre">CRDTService</span></code> for reading the current value. Their <code class="docutils literal"><span class="pre">id</span></code> parameter identifies an <code class="docutils literal"><span class="pre">ORSet</span></code> instance. Instances are automatically created by the service on demand. A usage example is the <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/blob/master/src/multi-jvm/scala/com/rbmhtechnology/eventuate/crdt/ReplicatedORSetSpec.scala">ReplicatedOrSetSpec</a> that is based on Akka’s <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/dev/multi-node-testing.html">multi node testkit</a>.</p>
-<p>New operation-based CRDTs and their service interfaces can be implemented with the CRDT service framework, by defining an instance of the <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a> type class and implementing the <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a> trait. Take a look at the <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/main/scala/com/rbmhtechnology/eventuate/crdt">CRDT sources</a> for examples. Eventuate’s CRDT approach is also described in <a class="reference external" href="https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/">this article</a>.</p>
+<p>New operation-based CRDTs and their service interfaces can be implemented with the CRDT development framework, by defining an instance of the <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a> type class and implementing the <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a> trait. Take a look at the <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/main/scala/com/rbmhtechnology/eventuate/crdt">CRDT sources</a> for examples. Eventuate’s CRDT approach is also described in <a class="reference external" href="https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/">this article</a>.</p>
 </div>
 <div class="section" id="event-sourced-views">
 <h2>Event-sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h2>

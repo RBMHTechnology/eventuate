@@ -141,7 +141,7 @@ If ``all`` contains only a single element, there is no conflict and the element 
 .. note::
    Only concurrent updates to replicas with the same ``aggregateId`` may conflict. Concurrent updates to actors with different ``aggregateId`` do not conflict (unless an application does custom event routing).
 
-   Also, if the data type of actor state is designed in a way that update operations commute, conflicts do not occur. This is discussed in section :ref:`crdt-tour`.
+   Also, if the data type of actor state is designed in a way that update operations commute, conflicts do not occur. This is discussed in section :ref:`commutative-replicated-data-types`.
 
 Resolving conflicting versions
 ------------------------------
@@ -176,14 +176,14 @@ When a user tries to ``Append`` in presence of a conflict, the ``ExampleActor`` 
 .. note::
    Interactive conflict resolution requires agreement between replicas affected by a given conflict. Only one of them may emit the ``Resolved`` event. This does not necessarily mean distributed lock acquisition or leader (= resolver) election but can also rely on static rules such as *only the initial creator location of an aggregate is allowed to resolve the conflict*\ [#]_. This rule is implemented in the :ref:`example-application`.
 
-.. _crdt-tour:
+.. _commutative-replicated-data-types:
 
-Commutative replicated data types
----------------------------------
+Operation-based CRDTs
+---------------------
 
 If state update operations commute, there’s no need to use Eventuate’s ``ConcurrentVersions`` utility. A simple example is a replicated counter, which converges because the increment and decrement operations commute. A formal to approach to commutative replicated data types (CmRDTs) or operation-based CRDTs is given in the paper `A comprehensive study of Convergent and Commutative Replicated Data Types`_ by Marc Shapiro et al. Eventuate is a good basis for implementing operation-based CRDTs:
 
-- Update operations can be modeled as events that are reliably broadcasted to all replicas by the :ref:`replicated-event-log`.
+- Update operations can be modeled as events that are reliably broadcasted to all replicas by a :ref:`replicated-event-log`.
 - The command and event handler of an event-sourced actor can be used to implement the two update phases mentioned in the paper: *atSource* and *downstream*, respectively.
 - All *downstream* preconditions mentioned in the paper are satisfied by causal delivery of update operations which is guaranteed for actors consuming from a replicated event log.
 
@@ -194,7 +194,7 @@ Eventuate already provides implementations for some of the operation-based CRDTs
 
 The ORSetService_ is a CRDT service that manages ORSet_ instances which are specified in section 3.3.5 in the paper. It implements the asynchronous ``add`` and ``remove`` methods and inherits the ``value(id: String): Set[A]`` method from ``CRDTService`` for reading the current value. Their ``id`` parameter identifies an ``ORSet`` instance. Instances are automatically created by the service on demand. A usage example is the ReplicatedOrSetSpec_ that is based on Akka’s `multi node testkit`_.
 
-New operation-based CRDTs and their service interfaces can be implemented with the CRDT service framework, by defining an instance of the CRDTServiceOps_ type class and implementing the CRDTService_ trait. Take a look at the `CRDT sources`_ for examples. Eventuate’s CRDT approach is also described in `this article`_.
+New operation-based CRDTs and their service interfaces can be implemented with the CRDT development framework, by defining an instance of the CRDTServiceOps_ type class and implementing the CRDTService_ trait. Take a look at the `CRDT sources`_ for examples. Eventuate’s CRDT approach is also described in `this article`_.
 
 .. _this article: https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/
 
