@@ -123,7 +123,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../example-application.html#running">Running</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../current-limitations.html">Current Limitations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../current-limitations.html">Current limitations</a></li>
 </ul>
 
           
@@ -188,7 +188,7 @@
 </pre></div>
 </div>
 <p>Since events can be written concurrently at different locations, the local event logs are likely to have a different total order of events at different locations. The causal order of events, however, is consistent across locations: if event <code class="docutils literal"><span class="pre">e1</span></code> causes event <code class="docutils literal"><span class="pre">e2</span></code> (i.e. <code class="docutils literal"><span class="pre">e1</span></code> happened before <code class="docutils literal"><span class="pre">e2</span></code>) then the offset of <code class="docutils literal"><span class="pre">e1</span></code> is less than the offset of <code class="docutils literal"><span class="pre">e2</span></code> at all locations. The offset of an event in a local event log is its local sequence number. On the other hand, if <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code> are written concurrently, their relative order in a local event log is not defined: the offset of <code class="docutils literal"><span class="pre">e1</span></code> can be less than that of <code class="docutils literal"><span class="pre">e2</span></code> at one location but greater than that of <code class="docutils literal"><span class="pre">e2</span></code> at another location.</p>
-<p>A replicated event log can also be set up for more than two locations (see also current <a class="reference internal" href="../current-limitations.html#current-limitations"><span>Current Limitations</span></a>). Here event log <code class="docutils literal"><span class="pre">L</span></code> is replicated across locations <code class="docutils literal"><span class="pre">1</span></code> - <code class="docutils literal"><span class="pre">6</span></code>:</p>
+<p>A replicated event log can also be set up for more than two locations (see also current <a class="reference internal" href="../current-limitations.html#current-limitations"><span>Current limitations</span></a>). Here event log <code class="docutils literal"><span class="pre">L</span></code> is replicated across locations <code class="docutils literal"><span class="pre">1</span></code> - <code class="docutils literal"><span class="pre">6</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">L1</span>           <span class="n">L5</span>
   <span class="o">\</span>         <span class="o">/</span>
    <span class="n">L2</span> <span class="o">---</span> <span class="n">L4</span>
