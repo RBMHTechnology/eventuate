@@ -180,6 +180,8 @@
 </li>
 <li><p class="first">Replication network topologies must be statically defined at the moment. Dynamic changes, such add adding new locations at runtime, will be supported in future versions. We also think about an integration with <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/cluster-usage.html">Akka Cluster</a>.</p>
 </li>
+<li><p class="first">Event replication is based on <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/remoting.html">Akka Remoting</a> which doesn&#8217;t support <a class="reference external" href="http://de.wikipedia.org/wiki/Network_Address_Translation">NAT</a>. We are currently investigating alternatives.</p>
+</li>
 <li><p class="first">The only supported event log storage backend at the moment is <a class="reference external" href="https://github.com/google/leveldb">LevelDB</a>. There will be a plugin API in the future together with a default implementation of a replicated storage backend.</p>
 </li>
 <li><p class="first">Event routing is limited at the moment. In addition to event broadcast and <code class="docutils literal"><span class="pre">aggregateId</span></code>-based collaboration groups, there is <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/45">direct event routing</a> supported but <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/46">advanced event routing</a> will come in a later release.</p>
