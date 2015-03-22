@@ -60,14 +60,14 @@ private object ConditionalCommands {
 
   class CommandManager(owner: ActorRef) extends Actor {
     val commandBuffer = context.actorOf(Props(new CommandBuffer(owner)))
-    var currentTime: VectorTime = VectorTime()
+    var currentVersion: VectorTime = VectorTime()
 
     val idle: Receive = {
       case cc: Command =>
         process(cc)
       case t: VectorTime =>
-        currentTime = currentTime.merge(t)
-        commandBuffer ! Send(currentTime)
+        currentVersion = currentVersion.merge(t)
+        commandBuffer ! Send(currentVersion)
         context.become(sending)
     }
 
@@ -75,17 +75,17 @@ private object ConditionalCommands {
       case cc: Command =>
         process(cc)
       case t: VectorTime =>
-        currentTime = currentTime.merge(t)
-      case Sent(olderThan, num) if olderThan == currentTime =>
+        currentVersion = currentVersion.merge(t)
+      case Sent(olderThan, num) if olderThan == currentVersion =>
         context.become(idle)
       case Sent(olderThan, num) =>
-        commandBuffer ! Send(currentTime)
+        commandBuffer ! Send(currentVersion)
     }
 
     def receive = idle
 
     def process(cc: Command): Unit = {
-      if (cc.condition <= currentTime) owner.tell(cc.cmd, cc.sdr)
+      if (cc.condition <= currentVersion) owner.tell(cc.cmd, cc.sdr)
       else commandBuffer ! cc
     }
   }
