@@ -66,30 +66,30 @@ class FailureDetectionSpec extends MultiNodeSpec(FailureDetectionConfig) with Mu
 
       runOn(nodeA) {
         createEndpoint(nodeA.name, Set(node(nodeB).address.toReplicationConnection))
-        probeAvailable1.expectMsg(Available(nodeB.name, DefaultLogName))
+        probeAvailable1.expectMsg(Available(nodeB.name, logName))
 
         // network partition
         testConductor.blackhole(nodeA, nodeB, Direction.Both).await
 
         enterBarrier("broken")
-        probeUnavailable.expectMsg(Unavailable(nodeB.name, DefaultLogName))
+        probeUnavailable.expectMsg(Unavailable(nodeB.name, logName))
         system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
 
         enterBarrier("repair")
         testConductor.passThrough(nodeA, nodeB, Direction.Both).await
-        probeAvailable2.expectMsg(Available(nodeB.name, DefaultLogName))
+        probeAvailable2.expectMsg(Available(nodeB.name, logName))
       }
 
       runOn(nodeB) {
         createEndpoint(nodeB.name, Set(node(nodeA).address.toReplicationConnection))
-        probeAvailable1.expectMsg(Available(nodeA.name, DefaultLogName))
+        probeAvailable1.expectMsg(Available(nodeA.name, logName))
 
         enterBarrier("broken")
-        probeUnavailable.expectMsg(Unavailable(nodeA.name, DefaultLogName))
+        probeUnavailable.expectMsg(Unavailable(nodeA.name, logName))
         system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
 
         enterBarrier("repair")
-        probeAvailable2.expectMsg(Available(nodeA.name, DefaultLogName))
+        probeAvailable2.expectMsg(Available(nodeA.name, logName))
       }
 
      enterBarrier("finish")

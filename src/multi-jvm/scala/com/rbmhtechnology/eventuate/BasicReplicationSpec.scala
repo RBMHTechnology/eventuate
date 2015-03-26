@@ -81,7 +81,7 @@ class BasicReplicationSpec extends MultiNodeSpec(BasicReplicationConfig) with Mu
 
       runOn(nodeA) {
         val endpoint = createEndpoint(nodeA.name, Set(node(nodeB).address.toReplicationConnection))
-        val actor = system.actorOf(Props(new ReplicatedActor("pa", endpoint.logs(DefaultLogName), probe.ref)))
+        val actor = system.actorOf(Props(new ReplicatedActor("pa", endpoint.log, probe.ref)))
 
         actor ! ("A1")
         actor ! ("A2")
@@ -91,7 +91,7 @@ class BasicReplicationSpec extends MultiNodeSpec(BasicReplicationConfig) with Mu
         val endpoint = createEndpoint(nodeB.name, Set(
           node(nodeA).address.toReplicationConnection,
           node(nodeC).address.toReplicationConnection))
-        val actor = system.actorOf(Props(new ReplicatedActor("pb", endpoint.logs(DefaultLogName), probe.ref)))
+        val actor = system.actorOf(Props(new ReplicatedActor("pb", endpoint.log, probe.ref)))
 
         actor ! ("B1")
         actor ! ("B2")
@@ -99,7 +99,7 @@ class BasicReplicationSpec extends MultiNodeSpec(BasicReplicationConfig) with Mu
 
       runOn(nodeC) {
         val endpoint = createEndpoint(nodeC.name, Set(node(nodeB).address.toReplicationConnection))
-        val actor = system.actorOf(Props(new ReplicatedActor("pc", endpoint.logs(DefaultLogName), probe.ref)))
+        val actor = system.actorOf(Props(new ReplicatedActor("pc", endpoint.log, probe.ref)))
 
         actor ! ("C1")
         actor ! ("C2")

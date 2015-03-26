@@ -123,7 +123,7 @@ class BasicReplicationThroughputSpec extends MultiNodeSpec(BasicReplicationThrou
 
       runOn(nodeA) {
         val endpoint = createEndpoint(nodeA.name, Set(node(nodeC).address.toReplicationConnection))
-        actor = system.actorOf(Props(new ReplicatedActor("pa", endpoint.logs(DefaultLogName), probe.ref)))
+        actor = system.actorOf(Props(new ReplicatedActor("pa", endpoint.log, probe.ref)))
 
         actor ! "start"
         expected.foreach(actor ! _)
@@ -132,7 +132,7 @@ class BasicReplicationThroughputSpec extends MultiNodeSpec(BasicReplicationThrou
 
       runOn(nodeB) {
         val endpoint = createEndpoint(nodeB.name, Set(node(nodeC).address.toReplicationConnection))
-        actor = system.actorOf(Props(new ReplicatedActor("pb", endpoint.logs(DefaultLogName), probe.ref)))
+        actor = system.actorOf(Props(new ReplicatedActor("pb", endpoint.log, probe.ref)))
       }
 
       runOn(nodeC) {
@@ -140,7 +140,7 @@ class BasicReplicationThroughputSpec extends MultiNodeSpec(BasicReplicationThrou
           node(nodeA).address.toReplicationConnection,
           node(nodeB).address.toReplicationConnection,
           node(nodeD).address.toReplicationConnection))
-        actor = system.actorOf(Props(new ReplicatedActor("pc", endpoint.logs(DefaultLogName), probe.ref)))
+        actor = system.actorOf(Props(new ReplicatedActor("pc", endpoint.log, probe.ref)))
       }
 
       runOn(nodeD) {
@@ -148,17 +148,17 @@ class BasicReplicationThroughputSpec extends MultiNodeSpec(BasicReplicationThrou
           node(nodeC).address.toReplicationConnection,
           node(nodeE).address.toReplicationConnection,
           node(nodeF).address.toReplicationConnection))
-        actor = system.actorOf(Props(new ReplicatedActor("pd", endpoint.logs(DefaultLogName), probe.ref)))
+        actor = system.actorOf(Props(new ReplicatedActor("pd", endpoint.log, probe.ref)))
       }
 
       runOn(nodeE) {
         val endpoint = createEndpoint(nodeE.name, Set(node(nodeD).address.toReplicationConnection))
-        actor = system.actorOf(Props(new ReplicatedActor("pe", endpoint.logs(DefaultLogName), probe.ref)))
+        actor = system.actorOf(Props(new ReplicatedActor("pe", endpoint.log, probe.ref)))
       }
 
       runOn(nodeF) {
         val endpoint = createEndpoint(nodeF.name, Set(node(nodeD).address.toReplicationConnection))
-        actor = system.actorOf(Props(new ReplicatedActor("pf", endpoint.logs(DefaultLogName), probe.ref)))
+        actor = system.actorOf(Props(new ReplicatedActor("pf", endpoint.log, probe.ref)))
       }
 
       probe.expectMsg(timeout, expected)

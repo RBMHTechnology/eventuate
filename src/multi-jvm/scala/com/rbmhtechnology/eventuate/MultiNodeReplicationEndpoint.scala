@@ -18,7 +18,7 @@ package com.rbmhtechnology.eventuate
 
 import java.io.File
 
-import akka.actor.Address
+import akka.actor.{ActorRef, Address}
 import akka.remote.testkit.MultiNodeSpec
 
 import org.apache.commons.io.FileUtils
@@ -26,14 +26,17 @@ import org.scalatest.BeforeAndAfterAll
 
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
 
-import scala.collection.immutable.Seq
-
 trait MultiNodeReplicationEndpoint extends BeforeAndAfterAll { this: MultiNodeSpec with MultiNodeWordSpec =>
   private val logPrefix = "log"
   private var logId = ""
 
+  def logName: String = {
+    val cn = getClass.getSimpleName
+    cn.substring(0, cn.lastIndexOf("MultiJvm"))
+  }
+
   def createEndpoint(endpointId: String, connections: Set[ReplicationConnection]): ReplicationEndpoint =
-    createEndpoint(endpointId, Set(ReplicationEndpoint.DefaultLogName), connections)
+    createEndpoint(endpointId, Set(logName), connections)
 
   def createEndpoint(endpointId: String, logNames: Set[String], connections: Set[ReplicationConnection]): ReplicationEndpoint = {
     new ReplicationEndpoint(endpointId, logNames, id => { logId = id; LeveldbEventLog.props(id, logPrefix) }, connections)
@@ -42,6 +45,11 @@ trait MultiNodeReplicationEndpoint extends BeforeAndAfterAll { this: MultiNodeSp
   implicit class RichAddress(address: Address) {
     def toReplicationConnection: ReplicationConnection =
       ReplicationConnection(address.host.get, address.port.get, address.system)
+  }
+
+  implicit class RichReplicationEndpoint(endpoint: ReplicationEndpoint) {
+    def log: ActorRef =
+      endpoint.logs(logName)
   }
 
   override def afterAll(): Unit = {

@@ -79,9 +79,9 @@ class FilteredReplicationSpec extends MultiNodeSpec(FilteredReplicationConfig) w
       val probe = TestProbe()
 
       runOn(nodeA) {
-        val connection = node(nodeB).address.toReplicationConnection.copy(filters = Map(DefaultLogName -> new PayloadEqualityFilter("B2")))
+        val connection = node(nodeB).address.toReplicationConnection.copy(filters = Map(logName -> new PayloadEqualityFilter("B2")))
         val endpoint = createEndpoint(nodeA.name, Set(connection))
-        val actor = system.actorOf(Props(new ReplicatedActor("pa", endpoint.logs(DefaultLogName), probe.ref)))
+        val actor = system.actorOf(Props(new ReplicatedActor("pa", endpoint.log, probe.ref)))
 
         actor ! ("A1")
         actor ! ("A2")
@@ -91,9 +91,9 @@ class FilteredReplicationSpec extends MultiNodeSpec(FilteredReplicationConfig) w
       }
 
       runOn(nodeB) {
-        val connection = node(nodeA).address.toReplicationConnection.copy(filters = Map(DefaultLogName -> new PayloadEqualityFilter("A2")))
+        val connection = node(nodeA).address.toReplicationConnection.copy(filters = Map(logName -> new PayloadEqualityFilter("A2")))
         val endpoint = createEndpoint(nodeB.name, Set(connection))
-        val actor = system.actorOf(Props(new ReplicatedActor("pb", endpoint.logs(DefaultLogName), probe.ref)))
+        val actor = system.actorOf(Props(new ReplicatedActor("pb", endpoint.log, probe.ref)))
 
         actor ! ("B1")
         actor ! ("B2")
