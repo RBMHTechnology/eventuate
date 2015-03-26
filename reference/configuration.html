@@ -102,6 +102,7 @@
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#event-routing">Event routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#snapshots">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#custom-serialization">Custom serialization</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">Configuration</a></li>
 </ul>
 </li>
@@ -165,8 +166,22 @@
 <span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <p>This is the reference configuration of Eventuate. It is processed by Typesafe&#8217;s <a class="reference external" href="https://github.com/typesafehub/config">config</a> library and can be overridden by applications:</p>
 <div class="highlight-scala"><div class="highlight"><pre>akka {
-  actor.provider = &quot;akka.remote.RemoteActorRefProvider&quot;
+  actor {
+    provider = &quot;akka.remote.RemoteActorRefProvider&quot;
+
+    serializers {
+      # Protobuf serializer for DurableEvent
+      eventuate-event = &quot;com.rbmhtechnology.eventuate.DurableEventSerializer&quot;
+    }
+
+    serialization-bindings {
+      # Serialization binding for DurableEvent
+      &quot;com.rbmhtechnology.eventuate.DurableEvent&quot; = eventuate-event
+    }
+  }
+
   remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
+
   loglevel = &quot;ERROR&quot;
 }
 

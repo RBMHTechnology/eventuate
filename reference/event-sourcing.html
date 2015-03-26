@@ -102,6 +102,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#event-routing">Event routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reliable-delivery">Reliable delivery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#snapshots">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-serialization">Custom serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuration</a></li>
 </ul>
 </li>
@@ -388,6 +389,26 @@
 <div class="section" id="snapshots">
 <span id="id11"></span><h1>Snapshots<a class="headerlink" href="#snapshots" title="Permalink to this headline">¶</a></h1>
 <p>Snapshots of internal state can be taken from event-sourced actors and views. Snapshotting is an optimization to reduce recovery times. It is not implemented yet but coming soon.</p>
+</div>
+<div class="section" id="custom-serialization">
+<h1>Custom serialization<a class="headerlink" href="#custom-serialization" title="Permalink to this headline">¶</a></h1>
+<p>Custom serializers for application-defined events can be configured with Akka&#8217;s <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html">serialization extension</a> mechanism. For example, an application that wants to use a custom <code class="docutils literal"><span class="pre">DomainEventSerializer</span></code> for events of type <code class="docutils literal"><span class="pre">DomainEvent</span></code> (both defined in package <code class="docutils literal"><span class="pre">com.example</span></code>) should add the following configuration to <code class="docutils literal"><span class="pre">application.conf</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span><span class="o">.</span><span class="n">actor</span> <span class="o">{</span>
+  <span class="n">serializers</span> <span class="o">{</span>
+    <span class="n">domain</span><span class="o">-</span><span class="n">event</span><span class="o">-</span><span class="n">serializer</span> <span class="k">=</span> <span class="s">&quot;com.example.DomainEventSerializer&quot;</span>
+  <span class="o">}</span>
+
+  <span class="n">serialization</span><span class="o">-</span><span class="n">bindings</span> <span class="o">{</span>
+    <span class="s">&quot;com.example.DomainEvent&quot;</span> <span class="k">=</span> <span class="n">domain</span><span class="o">-</span><span class="n">event</span><span class="o">-</span><span class="n">serializer</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">DomainEventSerializer</span></code> must extend Akka’s <a class="reference external" href="http://doc.akka.io/api/akka/2.3.9/#akka.serialization.Serializer">Serializer</a> trait. Please refer to Akka’s <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html">serialization extension</a> documentation for further details.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Eventuate stores application-defined events as <code class="docutils literal"><span class="pre">payload</span></code> of <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s. <code class="docutils literal"><span class="pre">DurableEvent</span></code> itself is serialized with <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEventSerializer">DurableEventSerializer</a>, a <a class="reference external" href="https://developers.google.com/protocol-buffers/">Protocol Buffers</a> serializer that delegates <code class="docutils literal"><span class="pre">payload</span></code> serialization to a custom serializer. If no custom serializer is configured, one of Akka’s default serializer is used.</p>
+</div>
 <table class="docutils footnote" frame="void" id="id12" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
