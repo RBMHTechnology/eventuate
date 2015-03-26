@@ -139,6 +139,19 @@ Snapshots
 
 Snapshots of internal state can be taken from event-sourced actors and views. Snapshotting is an optimization to reduce recovery times. It is not implemented yet but coming soon.
 
+Custom serialization
+--------------------
+
+Custom serializers for application-defined events can be configured with Akka's `serialization extension`_ mechanism. For example, an application that wants to use a custom ``DomainEventSerializer`` for events of type ``DomainEvent`` (both defined in package ``com.example``) should add the following configuration to ``application.conf``:
+
+.. includecode:: ../conf/serializer.conf
+   :snippet: custom-serializer
+
+``DomainEventSerializer`` must extend Akka’s Serializer_ trait. Please refer to Akka’s `serialization extension`_ documentation for further details.
+
+.. hint:: 
+   Eventuate stores application-defined events as ``payload`` of DurableEvent_\ s. ``DurableEvent`` itself is serialized with DurableEventSerializer_, a `Protocol Buffers`_ serializer that delegates ``payload`` serialization to a custom serializer. If no custom serializer is configured, one of Akka’s default serializer is used.
+
 .. [#] An explicit ``onEvent`` call may become obsolete in future releases.
 .. [#] The ``customRoutingDestinations`` parameter is described in section :ref:`event-routing`.
 .. [#] Writes from different event-sourced actors that have ``stateSync`` set to ``true`` are still batched, but not the writes from a single event-sourced actor.
@@ -149,9 +162,13 @@ Snapshots of internal state can be taken from event-sourced actors and views. Sn
 
 .. _CQRS: http://martinfowler.com/bliki/CQRS.html
 .. _stashed: http://doc.akka.io/docs/akka/2.3.9/scala/actors.html#stash
+.. _serialization extension: http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html
+.. _Serializer: http://doc.akka.io/api/akka/2.3.9/#akka.serialization.Serializer
+.. _Protocol Buffers: https://developers.google.com/protocol-buffers/
 
 .. _ConfirmedDelivery: ../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery
 .. _DurableEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent
+.. _DurableEventSerializer: ../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEventSerializer
 .. _Eventsourced: ../latest/api/index.html#com.rbmhtechnology.eventuate.Eventsourced
 .. _EventsourcedActor: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor
 .. _EventsourcedView: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedView

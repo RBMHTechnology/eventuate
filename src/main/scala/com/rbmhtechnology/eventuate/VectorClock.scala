@@ -87,8 +87,6 @@ case class VectorTime(value: Map[String, Long] = Map.empty) {
     // TODO: this needs optimization
     val v1 = value.mapValues{List(_)}
     val v2 = that.value.mapValues{List(_)}
-    // FIXME: Map() ++ necessary to avoid NotSerializableException
-    // (becomes obsolete with protobuf serializer for VectorTime)
     copy(Map() ++ (v1 |+| v2).mapValues(_.max))
   }
 

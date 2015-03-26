@@ -1,0 +1,3 @@
+#!/bin/sh
+
+protoc src/main/protobuf/DurableEventFormats.proto --java_out=src/main/java
