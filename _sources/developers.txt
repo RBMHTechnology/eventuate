@@ -7,10 +7,9 @@ Developers
 Contributing to Eventuate
 -------------------------
 
-- Sign the *Contributor License Agreement* (CLA) (TODO: add link).
-- Fork the `Eventuate Github repository`_ and start working on a feature branch.
-- When you are done, create a pull request towards the targeted branch.
-- When there’s consensus on the review, someone from the Eventuate team will merge it.
+If you haven't already done, please sign the `Individual Contributor License Agreement`_ (CLA). To sign it online, send an email to `opensource@redbullmediahouse.com`_ including your full name and email address. You'll receive an email with a link for filling and signing the CLA.
+
+Then, fork the `Eventuate Github repository`_ and start working on a feature branch. When you are done, create a pull request towards the targeted branch. When there’s consensus on the review, someone from the Eventuate team will merge it.
 
 Please follow the best practices mentioned in `Git workflow`_ and the guidelines for `Git commit messages`_. If you need help or want to discuss your contribution, post a message to the `Eventuate mailing list`_.
 
@@ -80,6 +79,8 @@ and open ``target/site/index.html`` in your browser.
 
 .. _Eventuate Github repository: https://github.com/RBMHTechnology/eventuate
 .. _Eventuate mailing list: https://groups.google.com/forum/#!forum/eventuate
+.. _Individual Contributor License Agreement: http://rbmhtechnology.github.io/cla/cla.pdf
+.. _opensource@redbullmediahouse.com: mailto:opensource@redbullmediahouse.com?subject=Individual%20CLA
 
 .. _Git workflow: https://sandofsky.com/blog/git-workflow.html
 .. _Git commit messages: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
