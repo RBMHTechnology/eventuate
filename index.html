@@ -160,9 +160,21 @@
             
   <div class="section" id="eventuate">
 <h1>Eventuate<a class="headerlink" href="#eventuate" title="Permalink to this headline">¶</a></h1>
+<p>Eventuate is a toolkit for building distributed, highly-available and partition-tolerant event-sourced applications. It is written in <a class="reference external" href="http://www.scala-lang.org/">Scala</a> and built on top of <a class="reference external" href="http://akka.io">Akka</a>, a toolkit for building highly concurrent, distributed, and resilient message-driven applications on the JVM. Eventuate</p>
+<ul class="simple">
+<li>derives current application state from application-defined events (<a class="reference external" href="http://martinfowler.com/eaaDev/EventSourcing.html">event sourcing</a>)</li>
+<li>replicates application state by replicating event streams across multiple <em>locations</em></li>
+<li>allows updates to replicated state at multiple locations concurrently (multi-master)</li>
+<li>allows individual locations to continue writing even if they are partitioned from other locations</li>
+<li>provides means to detect, track and resolve conflicting updates (automated and interactive)</li>
+<li>enables applications to implement a causal consistency model</li>
+<li>preserves causal ordering of replicated event streams</li>
+<li>provides implementations of operation-based CRDTs</li>
+<li>supports replication at any scale e.g. from single node to multi-datacenter</li>
+</ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This project has <strong>early access</strong> status.</p>
+<p class="last">This project has <strong>early access</strong> status (see also <a class="reference internal" href="current-limitations.html#current-limitations"><span>Current limitations</span></a>).</p>
 </div>
 <div class="toctree-wrapper compound">
 <ul>

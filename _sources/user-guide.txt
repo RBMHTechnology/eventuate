@@ -194,7 +194,10 @@ Eventuate already provides implementations for some of the operation-based CRDTs
 
 The ORSetService_ is a CRDT service that manages ORSet_ instances which are specified in section 3.3.5 in the paper. It implements the asynchronous ``add`` and ``remove`` methods and inherits the ``value(id: String): Set[A]`` method from ``CRDTService`` for reading the current value. Their ``id`` parameter identifies an ``ORSet`` instance. Instances are automatically created by the service on demand. A usage example is the ReplicatedOrSetSpec_ that is based on Akka’s `multi node testkit`_.
 
-New operation-based CRDTs and their service interfaces can be implemented with the CRDT development framework, by defining an instance of the CRDTServiceOps_ type class and implementing the CRDTService_ trait. Take a look at the `CRDT sources`_ for examples. Eventuate’s CRDT approach is also described in `this article`_.
+New operation-based CRDTs and their service interfaces can be implemented with the CRDT development framework, by defining an instance of the CRDTServiceOps_ type class and implementing the CRDTService_ trait. Take a look at the `CRDT sources`_ for examples. 
+
+.. hint::
+   Eventuate’s CRDT approach is also described in `this article`_.
 
 .. _this article: https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/
 
