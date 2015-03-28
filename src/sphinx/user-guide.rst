@@ -156,9 +156,9 @@ The following is a very simple example of automated conflict resolution: if a co
 
 The conflicting versions are sorted by ascending ``emitterReplicaId`` and the first version is selected as the winner. Its update timestamp is passed as argument to ``resolve`` which selects this version and discards all other versions.
 
-Alternatively, we could also have used the POSIX timestamps to let the *last* writer win. In case of equal timestamps, the lower ``emitterReplicaId`` wins. This requires synchronized system clocks to give reasonable result, however, convergence does not depend on proper synchronization.
+Alternatively, we could also have used POSIX timestamps to let the *last* writer win. In case of equal timestamps, the lower ``emitterReplicaId`` wins. This requires synchronized system clocks to give reasonable result, however, convergence does not depend on proper synchronization. If system clock synchronization is not an option, one could also have used `Lamport timestamps`_ and the ``lastEmitterProcessId`` to consistently resolve the conflict\ [#]_.
 
-More advanced conflict resolution examples could use logic that depends on the actual values of concurrent versions. After selecting a winner, an application could even update the winner version with *merged* content from all conflicting versions [#]_.
+More advanced conflict resolution examples could use logic that depends on the actual values of concurrent versions. After selecting a winner, an application could even update the winner version with *merged* content from all conflicting versions\ [#]_.
 
 .. note::
    For replicas to converge, it is important that winner selection does not depend on the order of conflicting events. In our example, this is the case because ``replicaId`` comparison is transitive.
@@ -234,6 +234,7 @@ The ``ExampleActor`` includes the event’s vector timestamp in its ``AppendSucc
 .. _event sourcing: http://martinfowler.com/eaaDev/EventSourcing.html
 .. _vector clock update rules: http://en.wikipedia.org/wiki/Vector_clock
 .. _version vector update rules: http://en.wikipedia.org/wiki/Version_vector
+.. _Lamport timestamps: http://en.wikipedia.org/wiki/Lamport_timestamps
 .. _multi node testkit: http://doc.akka.io/docs/akka/2.3.9/dev/multi-node-testing.html
 .. _ReplicatedOrSetSpec: https://github.com/RBMHTechnology/eventuate/blob/master/src/multi-jvm/scala/com/rbmhtechnology/eventuate/crdt/ReplicatedORSetSpec.scala
 .. _CRDT sources: https://github.com/RBMHTechnology/eventuate/tree/master/src/main/scala/com/rbmhtechnology/eventuate/crdt
@@ -248,6 +249,8 @@ The ``ExampleActor`` includes the event’s vector timestamp in its ``AppendSucc
 .. [#] ``EventsourcedActor``\ s and ``EventsourcedView``\ s that have an undefined ``aggregateId`` can consume events from all other actors on the same event log. 
 
 .. [#] Attached update timestamps are not version vectors because we use `vector clock update rules`_ instead of `version vector update rules`_. Consequently, update timestamp equivalence cannot be used as criterion for replica convergence.
+
+.. [#] The Lamport timestamp of an event can be obtained with ``lastVectorTimestamp.localTime(lastEmitterProcessId)``.
 
 .. [#] A formal approach to automatically *merge* concurrent versions of application state are convergent replicated data types (CvRDTs) or state-based CRDTs.
 
