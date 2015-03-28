@@ -274,7 +274,7 @@
 </div>
 <div class="section" id="creating-two-replica-instances">
 <h3>Creating two replica instances<a class="headerlink" href="#creating-two-replica-instances" title="Permalink to this headline">¶</a></h3>
-<p>When creating two <code class="docutils literal"><span class="pre">ExampleActor</span></code> instances with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> but different <code class="docutils literal"><span class="pre">replicaId</span></code>s, they consume each other’s events <a class="footnote-reference" href="#id8" id="id2">[1]</a>. They are usually created at different locations (but can also be created at the same location, for example, for testing purposes).</p>
+<p>When creating two <code class="docutils literal"><span class="pre">ExampleActor</span></code> instances with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> but different <code class="docutils literal"><span class="pre">replicaId</span></code>s, they consume each other’s events <a class="footnote-reference" href="#id9" id="id2">[1]</a>. They are usually created at different locations (but can also be created at the same location, for example, for testing purposes).</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="c1">// created at location 1</span>
 <span class="k">val</span> <span class="n">ea4_r1</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;ea4&quot;</span><span class="o">,</span> <span class="s">&quot;r1&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">)))</span>
 
@@ -310,7 +310,7 @@
 <p>Eventuate tracks causality of events with <a class="reference internal" href="architecture.html#vector-clocks"><span>Vector clocks</span></a> maintained by <code class="docutils literal"><span class="pre">EventsourcedActor</span></code>s. Whenever an event-sourced actor writes an event, it advances its local time in the vector clock by 1 and attaches the current vector time as vector timestamp to the event. When handling an event, an event-sourced actor updates its vector clock according to the <a class="reference external" href="http://en.wikipedia.org/wiki/Vector_clock">vector clock update rules</a>. But why are vector clocks and vector timestamps needed at all?</p>
 <p>Let’s assume that an event-sourced actor emits an event <code class="docutils literal"><span class="pre">e1</span></code> for changing internal state and later receives an event <code class="docutils literal"><span class="pre">e2</span></code> from a replica instance. If the replica instance emits <code class="docutils literal"><span class="pre">e2</span></code> after having processed <code class="docutils literal"><span class="pre">e1</span></code>, the actor can apply <code class="docutils literal"><span class="pre">e2</span></code> as regular update. If the replica instance emits <code class="docutils literal"><span class="pre">e2</span></code> before having received <code class="docutils literal"><span class="pre">e1</span></code>, the actor has received a concurrent, potentially conflicting update.</p>
 <p>How can the actor determine if <code class="docutils literal"><span class="pre">e2</span></code> is a regular i.e. causally related or concurrent update? It can do so by comparing the vector timestamps of <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code>, where <code class="docutils literal"><span class="pre">t1</span></code> is the vector timestamp of <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">t2</span></code> the vector timestamp of <code class="docutils literal"><span class="pre">e2</span></code>. If events <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code> are concurrent then <code class="docutils literal"><span class="pre">t1</span> <span class="pre">conc</span> <span class="pre">t2</span></code> evaluates to <code class="docutils literal"><span class="pre">true</span></code>. Otherwise, they are causally related and <code class="docutils literal"><span class="pre">t1</span> <span class="pre">&lt;</span> <span class="pre">t2</span></code> evaluates to <code class="docutils literal"><span class="pre">true</span></code> (because <code class="docutils literal"><span class="pre">e1</span></code> <em>happened-before</em> <code class="docutils literal"><span class="pre">e2</span></code>).</p>
-<p>The vector timestamp of an event can be obtained with <code class="docutils literal"><span class="pre">lastVectorTimestamp</span></code> during event processing. Vector timestamps can be attached as <em>update timestamp</em> to current state and compared to the vector timestamp of a new event in order to determine whether the new event is causally related to the previous state update or not<a class="footnote-reference" href="#id9" id="id3">[2]</a>:</p>
+<p>The vector timestamp of an event can be obtained with <code class="docutils literal"><span class="pre">lastVectorTimestamp</span></code> during event processing. Vector timestamps can be attached as <em>update timestamp</em> to current state and compared to the vector timestamp of a new event in order to determine whether the new event is causally related to the previous state update or not<a class="footnote-reference" href="#id10" id="id3">[2]</a>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.VectorTime</span>
 
@@ -418,8 +418,8 @@
 </pre></div>
 </div>
 <p>The conflicting versions are sorted by ascending <code class="docutils literal"><span class="pre">emitterReplicaId</span></code> and the first version is selected as the winner. Its update timestamp is passed as argument to <code class="docutils literal"><span class="pre">resolve</span></code> which selects this version and discards all other versions.</p>
-<p>Alternatively, we could also have used the POSIX timestamps to let the <em>last</em> writer win. In case of equal timestamps, the lower <code class="docutils literal"><span class="pre">emitterReplicaId</span></code> wins. This requires synchronized system clocks to give reasonable result, however, convergence does not depend on proper synchronization.</p>
-<p>More advanced conflict resolution examples could use logic that depends on the actual values of concurrent versions. After selecting a winner, an application could even update the winner version with <em>merged</em> content from all conflicting versions <a class="footnote-reference" href="#id10" id="id4">[3]</a>.</p>
+<p>Alternatively, we could also have used POSIX timestamps to let the <em>last</em> writer win. In case of equal timestamps, the lower <code class="docutils literal"><span class="pre">emitterReplicaId</span></code> wins. This requires synchronized system clocks to give reasonable result, however, convergence does not depend on proper synchronization. If system clock synchronization is not an option, one could also have used <a class="reference external" href="http://en.wikipedia.org/wiki/Lamport_timestamps">Lamport timestamps</a> and the <code class="docutils literal"><span class="pre">lastEmitterProcessId</span></code> to consistently resolve the conflict<a class="footnote-reference" href="#id11" id="id4">[3]</a>.</p>
+<p>More advanced conflict resolution examples could use logic that depends on the actual values of concurrent versions. After selecting a winner, an application could even update the winner version with <em>merged</em> content from all conflicting versions<a class="footnote-reference" href="#id12" id="id5">[4]</a>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For replicas to converge, it is important that winner selection does not depend on the order of conflicting events. In our example, this is the case because <code class="docutils literal"><span class="pre">replicaId</span></code> comparison is transitive.</p>
@@ -469,7 +469,7 @@
 <p>When a user tries to <code class="docutils literal"><span class="pre">Append</span></code> in presence of a conflict, the <code class="docutils literal"><span class="pre">ExampleActor</span></code> rejects the update and requests the user to select a winner version from a sequence of conflicting versions. The user then sends the update timestamp of the winner version as <code class="docutils literal"><span class="pre">selectedTimestamp</span></code> with a <code class="docutils literal"><span class="pre">Resolve</span></code> command from which a <code class="docutils literal"><span class="pre">Resolved</span></code> event is derived and persisted. Handling of <code class="docutils literal"><span class="pre">Resolved</span></code> at all replicas finally resolves the conflict.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Interactive conflict resolution requires agreement between replicas affected by a given conflict. Only one of them may emit the <code class="docutils literal"><span class="pre">Resolved</span></code> event. This does not necessarily mean distributed lock acquisition or leader (= resolver) election but can also rely on static rules such as <em>only the initial creator location of an aggregate is allowed to resolve the conflict</em><a class="footnote-reference" href="#id11" id="id5">[4]</a>. This rule is implemented in the <a class="reference internal" href="example-application.html#example-application"><span>Example application</span></a>.</p>
+<p class="last">Interactive conflict resolution requires agreement between replicas affected by a given conflict. Only one of them may emit the <code class="docutils literal"><span class="pre">Resolved</span></code> event. This does not necessarily mean distributed lock acquisition or leader (= resolver) election but can also rely on static rules such as <em>only the initial creator location of an aggregate is allowed to resolve the conflict</em><a class="footnote-reference" href="#id13" id="id6">[5]</a>. This rule is implemented in the <a class="reference internal" href="example-application.html#example-application"><span>Example application</span></a>.</p>
 </div>
 </div>
 </div>
@@ -557,7 +557,7 @@
 <p>Event-sourced views handle events in the same way as event-sourced actors by implementing an <code class="docutils literal"><span class="pre">onEvent</span></code> handler. The <code class="docutils literal"><span class="pre">onCommand</span></code> handler in the example processes the read commands <code class="docutils literal"><span class="pre">GetAppendCount</span></code> and <code class="docutils literal"><span class="pre">GetResolveCount</span></code>.</p>
 </div>
 <div class="section" id="conditional-commands">
-<span id="id6"></span><h2>Conditional commands<a class="headerlink" href="#conditional-commands" title="Permalink to this headline">¶</a></h2>
+<span id="id7"></span><h2>Conditional commands<a class="headerlink" href="#conditional-commands" title="Permalink to this headline">¶</a></h2>
 <p>Events emitted by one event-sourced actor are asynchronously consumed by other event sourced-actors or views. For example, an application that successfully appended an entry to an <code class="docutils literal"><span class="pre">ExampleActor</span></code> may not immediately see that update in the <code class="docutils literal"><span class="pre">appendCount</span></code> of <code class="docutils literal"><span class="pre">ExampleView</span></code>. To achieve read-your-write consistency between an event-sourced actor and a view, the view should delay command processing until the emitted event has been consumed by the view. This is possible with a <code class="docutils literal"><span class="pre">ConditionalCommand</span></code>.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
 <span class="k">import</span> <span class="nn">scala.util._</span>
@@ -605,7 +605,7 @@
 <span class="o">}</span> <span class="n">println</span><span class="o">(</span><span class="s">s&quot;append count = </span><span class="si">$count</span><span class="s">&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">ExampleActor</span></code> includes the event’s vector timestamp in its <code class="docutils literal"><span class="pre">AppendSuccess</span></code> reply. Together with the actual <code class="docutils literal"><span class="pre">GetAppendCount</span></code> command, the timestamp is included as condition into a <code class="docutils literal"><span class="pre">ConditionalCommand</span></code> and sent to the view. <code class="docutils literal"><span class="pre">EventsourcedView</span></code> internally delays the command, if needed, and only dispatches <code class="docutils literal"><span class="pre">GetAppendCount</span></code> to <code class="docutils literal"><span class="pre">onCommand</span></code> after having received an event whose timestamp is <code class="docutils literal"><span class="pre">&gt;=</span></code> the condition timestamp in the conditional command<a class="footnote-reference" href="#id12" id="id7">[5]</a>. When running the example with an empty event log, it should print:</p>
+<p>The <code class="docutils literal"><span class="pre">ExampleActor</span></code> includes the event’s vector timestamp in its <code class="docutils literal"><span class="pre">AppendSuccess</span></code> reply. Together with the actual <code class="docutils literal"><span class="pre">GetAppendCount</span></code> command, the timestamp is included as condition into a <code class="docutils literal"><span class="pre">ConditionalCommand</span></code> and sent to the view. <code class="docutils literal"><span class="pre">EventsourcedView</span></code> internally delays the command, if needed, and only dispatches <code class="docutils literal"><span class="pre">GetAppendCount</span></code> to <code class="docutils literal"><span class="pre">onCommand</span></code> after having received an event whose timestamp is <code class="docutils literal"><span class="pre">&gt;=</span></code> the condition timestamp in the conditional command<a class="footnote-reference" href="#id14" id="id8">[6]</a>. When running the example with an empty event log, it should print:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">append</span> <span class="n">count</span> <span class="k">=</span> <span class="mi">1</span>
 </pre></div>
 </div>
@@ -613,34 +613,40 @@
 <p class="first admonition-title">Note</p>
 <p class="last">Not only event-sourced views but also event-sourced actors can receive and delay conditional commands. Also, delaying conditional commands may re-order them relative to other conditional and non-conditional commands.</p>
 </div>
-<table class="docutils footnote" frame="void" id="id8" rules="none">
+<table class="docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td><code class="docutils literal"><span class="pre">EventsourcedActor</span></code>s and <code class="docutils literal"><span class="pre">EventsourcedView</span></code>s that have an undefined <code class="docutils literal"><span class="pre">aggregateId</span></code> can consume events from all other actors on the same event log.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id9" rules="none">
+<table class="docutils footnote" frame="void" id="id10" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>Attached update timestamps are not version vectors because we use <a class="reference external" href="http://en.wikipedia.org/wiki/Vector_clock">vector clock update rules</a> instead of <a class="reference external" href="http://en.wikipedia.org/wiki/Version_vector">version vector update rules</a>. Consequently, update timestamp equivalence cannot be used as criterion for replica convergence.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id10" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td>A formal approach to automatically <em>merge</em> concurrent versions of application state are convergent replicated data types (CvRDTs) or state-based CRDTs.</td></tr>
-</tbody>
-</table>
 <table class="docutils footnote" frame="void" id="id11" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td>Distributed lock acquisition or leader election require an external coordination service like <a class="reference external" href="http://zookeeper.apache.org/">ZooKeeper</a>, for example, whereas static rules do not.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td>The Lamport timestamp of an event can be obtained with <code class="docutils literal"><span class="pre">lastVectorTimestamp.localTime(lastEmitterProcessId)</span></code>.</td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id12" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id7">[5]</a></td><td>More precisely, the command is dispatched if the current time of the view’s internal clock is <code class="docutils literal"><span class="pre">&gt;=</span></code> the condition timestamp in the conditional command. The view’s internal clock is updated by <em>merging</em> its current time with the vector timestamps of received events.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td>A formal approach to automatically <em>merge</em> concurrent versions of application state are convergent replicated data types (CvRDTs) or state-based CRDTs.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id13" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[5]</a></td><td>Distributed lock acquisition or leader election require an external coordination service like <a class="reference external" href="http://zookeeper.apache.org/">ZooKeeper</a>, for example, whereas static rules do not.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id14" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id8">[6]</a></td><td>More precisely, the command is dispatched if the current time of the view’s internal clock is <code class="docutils literal"><span class="pre">&gt;=</span></code> the condition timestamp in the conditional command. The view’s internal clock is updated by <em>merging</em> its current time with the vector timestamps of received events.</td></tr>
 </tbody>
 </table>
 </div>
