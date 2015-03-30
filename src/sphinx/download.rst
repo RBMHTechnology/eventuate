@@ -15,7 +15,7 @@ To include the latest release into a Maven project, add the following to your ``
     <repository>
         <id>eventuate-releases</id>
         <name>Eventuate Releases</name>
-        <url>https://bintray.com/rbmhtechnology/maven/eventuate</url>
+        <url>https://dl.bintray.com/rbmhtechnology/maven</url>
     </repository>
 
     <dependency>
@@ -35,7 +35,7 @@ To include the latest development snapshot::
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate_2.11</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.2-SNAPSHOT</version>
     </dependency>
 
 SBT
@@ -43,7 +43,7 @@ SBT
 
 To include the latest release into an sbt_ project, add the following to your ``build.sbt``::
 
-    resolvers += "Eventuate Releases" at "https://bintray.com/rbmhtechnology/maven/eventuate"
+    resolvers += "Eventuate Releases" at "https://dl.bintray.com/rbmhtechnology/maven"
 
     libraryDependencies += "com.rbmhtechnology" %% "eventuate" % "0.1"
 
@@ -51,7 +51,7 @@ To include the latest development snapshot::
 
     resolvers += "OJO Snapshots" at "https://oss.jfrog.org/oss-snapshot-local"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate" % "0.1-SNAPSHOT"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate" % "0.2-SNAPSHOT"
 
 Sources
 -------
