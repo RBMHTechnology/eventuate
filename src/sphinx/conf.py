@@ -1,6 +1,5 @@
 import sys
 import os
-import sphinx_rtd_theme
 
 sys.path.insert(0, os.path.abspath('_ext'))
 
@@ -15,5 +14,14 @@ release = '0.1-SNAPSHOT'
 exclude_patterns = []
 highlight_language = 'scala'
 html_title = 'Eventuate'
-html_theme = 'sphinx_rtd_theme'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme = 'rbmh'
+html_theme_path = ['_themes']
+html_theme_options = {
+    'project_icon': 'fa-calendar',
+    'typekit_id': 'snv5vzo'
+}
+html_logo = '_themes/rbmh/static/RedBullMediaHouse-dark.png'
+html_favicon = '_themes/rbmh/static/favicon.ico'
+html_show_sourcelink = False
+html_show_sphinx = False
+

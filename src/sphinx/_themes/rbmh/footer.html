@@ -1,0 +1,24 @@
+<div class="wrapper-footer">
+<footer>
+  <div role="contentinfo">
+    <p>
+    {%- if show_copyright %}
+      {%- if hasdoc('copyright') %}
+        {% trans path=pathto('copyright'), copyright=copyright|e %}&copy; <a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}
+      {%- else %}
+        {% trans copyright=copyright|e %}&copy; Copyright {{ copyright }}.  | <a href="{{ path}}/imprint.html">Imprint</a> | <a href="{{ path}}/termsconditions.html">Terms &amp; Conditions</a> | <a href="{{ path}}/dataprivacypolicy.html">Data Privacy Policy</a> {% endtrans %}
+      {%- endif %}
+    {%- endif %}
+
+    {%- if last_updated %}
+      {% trans last_updated=last_updated|e %}Last updated on {{ last_updated }}.{% endtrans %}
+    {%- endif %}
+    </p>
+  </div>
+
+  {%- if show_sphinx %}
+  {% trans %}Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>{% endtrans %}.
+  {%- endif %}
+
+</footer>
+</div>
