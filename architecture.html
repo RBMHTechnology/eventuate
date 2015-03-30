@@ -12,9 +12,10 @@
 
   
   
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
 
   
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 
   
   
@@ -35,8 +36,11 @@
         <link rel="prev" title="Introduction" href="introduction.html"/> 
 
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+  <script src="_static/js/modernizr.min.js"></script>
 
+  
+	<script src="//fonts.redbullmediahouse.com/snv5vzo.js"></script>
+	<script>try{Typekit.load();}catch(e){}</script>
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -47,16 +51,22 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
         
-          <a href="index.html" class="fa fa-home"> Eventuate</a>
+
+        
+          
+          <a href="index.html"><img src="_static/RedBullMediaHouse-dark.png" class="logo" /></a>
         
         
-<div role="search">
+		
+<div role="search" class="searchbox">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search Eventuate" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
+	
+        
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
@@ -137,21 +147,20 @@
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Eventuate</a>
+        <a href="index.html"><img src="_static/RedBullMediaHouse-light.png" class="logo" /></a>
       </nav>
-
-
+ 
       
       <div class="wy-nav-content">
         <div class="rst-content">
           <div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
+    <li>
+		<a href="index.html"><h2><span class="breadcrumbicon rbicons topfront"><i class="fa fa-calendar"></i></span>Eventuate</h2></a> &raquo;
+	</li>
+    
     <li>Architecture</li>
       <li class="wy-breadcrumbs-aside">
-        
-          <a href="_sources/architecture.txt" rel="nofollow"> View page source</a>
         
       </li>
   </ul>
@@ -161,13 +170,13 @@
             
   <div class="section" id="architecture">
 <span id="id1"></span><h1>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h1>
-<p>The following sections give an overview of the main functional building blocks of Eventuate. Further details are given in the <a class="reference internal" href="user-guide.html#user-guide"><span>User guide</span></a> and <a class="reference internal" href="reference.html#reference"><span>Reference</span></a>.</p>
+<p>The following sections give an overview of the main functional building blocks of Eventuate. Further details are given in the <a class="reference internal" href="user-guide.html#user-guide"><em>User guide</em></a> and <a class="reference internal" href="reference.html#reference"><em>Reference</em></a>.</p>
 <div class="section" id="event-logs">
 <span id="id2"></span><h2>Event logs<a class="headerlink" href="#event-logs" title="Permalink to this headline">¶</a></h2>
 <p>Eventuate applications store events in event logs. An event log can be replicated across <em>locations</em> where each location has its own copy of events in a local event log. Replication occurs asynchronously over <em>replication connections</em> between <em>replication endpoints</em>.</p>
 <div class="figure" id="id11" style="width: 70%">
 <img alt="_images/architecture-1.png" src="_images/architecture-1.png" />
-<p class="caption"><span class="caption-text">Fig. 1</span></p>
+<p class="caption"><span class="caption-text">Fig. 1</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
 <div class="legend">
 An event log, replicated across locations 1, 2 and 3.</div>
 </div>
@@ -175,7 +184,7 @@ An event log, replicated across locations 1, 2 and 3.</div>
 <p>A replication endpoint can also manage more than one local event log. Event logs are indexed by name and replication occurs only between logs of the same name. Logs with different names are isolated from each other<a class="footnote-reference" href="#id10" id="id4">[2]</a> and their distribution across locations may differ, as shown in the following figure.</p>
 <div class="figure" id="id12" style="width: 70%">
 <img alt="_images/architecture-2.png" src="_images/architecture-2.png" />
-<p class="caption"><span class="caption-text">Fig. 2</span></p>
+<p class="caption"><span class="caption-text">Fig. 2</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
 <div class="legend">
 Three replicated event logs. Log X (blue) is replicated across locations 1, 2 and 3. Log Y (red) is replicated across locations 1 and 2 and log Z (green) is replicated across locations 1 and 3.</div>
 </div>
@@ -189,23 +198,23 @@ Three replicated event logs. Log X (blue) is replicated across locations 1, 2 an
 <p>Event-sourced actors produce events to and consume events from an event log. During <em>command processing</em> they usually validate external commands against internal state and, if validation succeeds, write one or more events to their event log. During <em>event processing</em> they consume events they have written and update internal state by handling these events. This is the basic idea behind <a class="reference external" href="http://martinfowler.com/eaaDev/EventSourcing.html">event sourcing</a>. When used in context of a <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> architecture, event-sourced actors usually implement the command-side (C).</p>
 <div class="figure" id="id13" style="width: 70%">
 <img alt="_images/architecture-3.png" src="_images/architecture-3.png" />
-<p class="caption"><span class="caption-text">Fig. 3</span></p>
+<p class="caption"><span class="caption-text">Fig. 3</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
 <div class="legend">
 An event-sourced actor, producing events to and consuming events from an event log.</div>
 </div>
 <p>When an event-sourced actor is re-started, internal state is recovered by replaying events from its local event log. Since events in a local event log are totally ordered, event replay at a given location is deterministic. Event replay can also be started from a snapshot of internal state which is an optimization to reduce recovery times.</p>
-<p>In addition to consuming their own events, event-sourced actors can also consume events produced by other event-sourced actors to the same event log. This enables <a class="reference external" href="http://martinfowler.com/eaaDev/EventCollaboration.html">event collaboration</a> between actors (<a class="reference internal" href="#arch-fig4"><span>Fig. 4</span></a>). The underlying event routing rules can be customized by applications.</p>
+<p>In addition to consuming their own events, event-sourced actors can also consume events produced by other event-sourced actors to the same event log. This enables <a class="reference external" href="http://martinfowler.com/eaaDev/EventCollaboration.html">event collaboration</a> between actors (<a class="reference internal" href="#arch-fig4"><em>Fig. 4</em></a>). The underlying event routing rules can be customized by applications.</p>
 <p>A special form of event collaboration is state replication where actors of the same type consume the same events at different locations to re-construct state. Another example of event collaboration is a distributed business process where actors of different type collaborate by exchanging events to achieve a common goal.</p>
 <div class="figure" id="id14" style="width: 70%">
 <span id="arch-fig4"></span><img alt="_images/architecture-4.png" src="_images/architecture-4.png" />
-<p class="caption"><span class="caption-text">Fig. 4</span></p>
+<p class="caption"><span class="caption-text">Fig. 4</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
 <div class="legend">
 Two event-sourced actors exchanging events over a distributed event log.</div>
 </div>
 <p>Event-sourced actors may also interact with external services by sending commands and processing replies. Commands can be sent with at-most-once or at-least-once delivery semantics, depending on the reliability requirements of an application. Replies from external services are usually processed like external commands which may result in further events to be written. This way, external services can be included into reliable, event-driven business processes controlled by event-sourced actors.</p>
 <div class="figure" id="id15" style="width: 70%">
 <img alt="_images/architecture-5.png" src="_images/architecture-5.png" />
-<p class="caption"><span class="caption-text">Fig. 5</span></p>
+<p class="caption"><span class="caption-text">Fig. 5</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
 <div class="legend">
 External service integration.</div>
 </div>
@@ -221,7 +230,7 @@ External service integration.</div>
 </div>
 <div class="section" id="operation-based-crdts">
 <span id="id5"></span><h2>Operation-based CRDTs<a class="headerlink" href="#operation-based-crdts" title="Permalink to this headline">¶</a></h2>
-<p>Eventuate provides implementations of <a class="reference internal" href="user-guide.html#commutative-replicated-data-types"><span>Operation-based CRDTs</span></a> (commutative replicated data types or CmRDTs) that rely on a replicated event log to reliably broadcast update operations. CmRDTs are managed by <em>CRDT services</em> that provide applications convenient access to CmRDTs. New CmRDT types can be integrated into the CRDT service infrastructure with the CRDT development framework.</p>
+<p>Eventuate provides implementations of <a class="reference internal" href="user-guide.html#commutative-replicated-data-types"><em>Operation-based CRDTs</em></a> (commutative replicated data types or CmRDTs) that rely on a replicated event log to reliably broadcast update operations. CmRDTs are managed by <em>CRDT services</em> that provide applications convenient access to CmRDTs. New CmRDT types can be integrated into the CRDT service infrastructure with the CRDT development framework.</p>
 </div>
 <div class="section" id="vector-clocks">
 <span id="id6"></span><h2>Vector clocks<a class="headerlink" href="#vector-clocks" title="Permalink to this headline">¶</a></h2>
@@ -257,7 +266,7 @@ External service integration.</div>
 <table class="docutils footnote" frame="void" id="id10" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[2]</a></td><td><a class="reference internal" href="#processors"><span>Event-sourced processors</span></a> can be used to connect partitioned event logs.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id4">[2]</a></td><td><a class="reference internal" href="#processors"><em>Event-sourced processors</em></a> can be used to connect partitioned event logs.</td></tr>
 </tbody>
 </table>
 </div>
@@ -265,32 +274,29 @@ External service integration.</div>
 
 
           </div>
-          <footer>
-  
+		    
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="download.html" class="btn btn-neutral float-right" title="Download">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="download.html" class="float-right" title="Download">Next</a>
       
       
-        <a href="introduction.html" class="btn btn-neutral" title="Introduction"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="introduction.html" title="Introduction">Previous</a>
       
     </div>
   
-
-  <hr/>
-
+        </div>
+	  </div>
+    <div class="wrapper-footer">
+<footer>
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2015 Red Bull Media House.
+        &copy; Copyright 2015 Red Bull Media House.  | <a href="/imprint.html">Imprint</a> | <a href="/termsconditions.html">Terms &amp; Conditions</a> | <a href="/dataprivacypolicy.html">Data Privacy Policy</a> 
     </p>
   </div>
 
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-  
 </footer>
-        </div>
-      </div>
-
+</div>
+      
     </section>
 
   </div>
