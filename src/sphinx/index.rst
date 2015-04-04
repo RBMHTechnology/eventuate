@@ -12,7 +12,7 @@ Eventuate is a toolkit for building distributed, highly-available and partition-
 - enables applications to implement a causal consistency model
 - preserves causal ordering of replicated events
 - provides implementations of operation-based CRDTs
-- supports replication at any scale e.g. from single node to multi-datacenter
+- supports distribution up to global scale.
 
 .. note::
    This project has **early access** status (see also :ref:`current-limitations`).

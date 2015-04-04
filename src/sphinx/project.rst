@@ -2,7 +2,7 @@
 Project
 -------
 
-- `Code repository`_
+- `Source code`_
 - `Issue tracker`_
 
 Community
@@ -16,7 +16,7 @@ License
 
 - `Apache License, Version 2.0`_
 
-.. _Code repository: https://github.com/RBMHTechnology/eventuate
+.. _Source code: https://github.com/RBMHTechnology/eventuate
 .. _Issue tracker: https://github.com/RBMHTechnology/eventuate/issues
 
 .. _User mailing list: https://groups.google.com/forum/#!forum/eventuate
