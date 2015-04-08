@@ -6,7 +6,7 @@ Current limitations
 
 The following is a list of known limitations that are going to be addressed in future versions. If any of these limitations are particularly painful to you, please `let us know`_ so that we can target them accordingly.
 
-- The current version of Eventuate does not support cycles in the replication network. An example of a valid replication network topology is::
+- The current version of Eventuate does not support cycles in the replication network\ [#]_. An example of a valid replication network topology is::
 
     A        E
      \      /
@@ -33,6 +33,8 @@ The following is a list of known limitations that are going to be addressed in f
 - No performance optimizations have been made yet.
 
 - :ref:`snapshots` are not supported yet.
+
+.. [#] In the example figures, a line between two locations represents a bi-directional replication link. Such a link is not considered to be a cycle here.
 
 .. _Akka Cluster: http://doc.akka.io/docs/akka/2.3.9/scala/cluster-usage.html
 .. _Akka Remoting: http://doc.akka.io/docs/akka/2.3.9/scala/remoting.html

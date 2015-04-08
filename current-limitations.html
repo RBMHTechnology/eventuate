@@ -171,7 +171,7 @@
 <span id="id1"></span><h1>Current limitations<a class="headerlink" href="#current-limitations" title="Permalink to this headline">¶</a></h1>
 <p>The following is a list of known limitations that are going to be addressed in future versions. If any of these limitations are particularly painful to you, please <a class="reference external" href="https://groups.google.com/forum/#!forum/eventuate">let us know</a> so that we can target them accordingly.</p>
 <ul>
-<li><p class="first">The current version of Eventuate does not support cycles in the replication network. An example of a valid replication network topology is:</p>
+<li><p class="first">The current version of Eventuate does not support cycles in the replication network<a class="footnote-reference" href="#id3" id="id2">[1]</a>. An example of a valid replication network topology is:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">A</span>        <span class="n">E</span>
  <span class="o">\</span>      <span class="o">/</span>
   <span class="n">C</span> <span class="o">--</span> <span class="n">D</span>
@@ -201,6 +201,12 @@
 <li><p class="first"><a class="reference internal" href="reference/event-sourcing.html#snapshots"><span>Snapshots</span></a> are not supported yet.</p>
 </li>
 </ul>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>In the example figures, a line between two locations represents a bi-directional replication link. Such a link is not considered to be a cycle here.</td></tr>
+</tbody>
+</table>
 </div>
 
 
