@@ -83,12 +83,8 @@ case class VectorTime(value: Map[String, Long] = Map.empty) {
    * Merges this vector time with `that` by taking the max of
    * the corresponding local times.
    */
-  def merge(that: VectorTime): VectorTime = {
-    // TODO: this needs optimization
-    val v1 = value.mapValues{List(_)}
-    val v2 = that.value.mapValues{List(_)}
-    copy(Map() ++ (v1 |+| v2).mapValues(_.max))
-  }
+  def merge(that: VectorTime): VectorTime =
+    copy(value.unionWith(that.value)(math.max))
 
   /**
    * Returns `true` if this vector time is equivalent (equal) to `that`.
