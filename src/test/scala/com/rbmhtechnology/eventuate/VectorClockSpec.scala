@@ -34,13 +34,13 @@ class VectorClockSpec extends WordSpec with Matchers with BeforeAndAfterEach {
     }
     "update itself with tick and merge" in {
       clock
-        .copy(currentTime = VectorTime(clock.processId -> 3L, "p2" -> 1L, "p3" -> 2L))
-        .update(VectorTime(clock.processId -> 1L, "p3" -> 2L, "p4" -> 8L))
+        .copy(currentTime =    VectorTime(clock.processId -> 3L, "p2" -> 1L, "p3" -> 2L))
+        .update(               VectorTime(clock.processId -> 1L,             "p3" -> 2L, "p4" -> 8L))
         .currentTime should be(VectorTime(clock.processId -> 4L, "p2" -> 1L, "p3" -> 2L, "p4" -> 8L))
     }
     "not modify remote times on tick" in {
       clock
-        .copy(currentTime = VectorTime(clock.processId -> 3L, "p2" -> 1L, "p3" -> 2L))
+        .copy(currentTime =    VectorTime(clock.processId -> 3L, "p2" -> 1L, "p3" -> 2L))
         .tick()
         .currentTime should be(VectorTime(clock.processId -> 4L, "p2" -> 1L, "p3" -> 2L))
     }
