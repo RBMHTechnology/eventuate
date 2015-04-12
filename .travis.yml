@@ -1,16 +1,16 @@
 language:
   - scala
 before_install:
-  - test $TRAVIS_PULL_REQUEST == "false" && ./deploy.prep
-  - test $TRAVIS_PULL_REQUEST == "false" && eval `ssh-agent`
-  - test $TRAVIS_PULL_REQUEST == "false" && ssh-add deploy
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then ./deploy.prep; fi
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then eval `ssh-agent`; fi
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then ssh-add deploy; fi
 before_script:
   - sudo pip install sphinx
   - sudo pip install sphinx_rtd_theme
 script:
   - sbt ++$TRAVIS_SCALA_VERSION test makeSite
 after_success:
-  - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && sbt publish ghpagesPushSite
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then sbt ++$TRAVIS_SCALA_VERSION publish ghpagesPushSite; fi
 scala:
   - 2.11.4
 jdk:
