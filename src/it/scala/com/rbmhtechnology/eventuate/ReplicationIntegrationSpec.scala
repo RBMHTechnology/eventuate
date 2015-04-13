@@ -28,6 +28,7 @@ import org.apache.commons.io.FileUtils
 import org.scalatest._
 
 import scala.collection.immutable.Seq
+import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util._
 
@@ -67,10 +68,8 @@ abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with Be
     ctr += 1
   }
 
-  override def afterEach(): Unit = {
-    nodes.foreach(_.shutdown())
-    nodes.foreach(_.awaitTermination())
-  }
+  override def afterEach(): Unit =
+    nodes.foreach(node => Await.result(node.terminate(), 10.seconds))
 
   def register(node: ReplicationNode): ReplicationNode = {
     nodes = node :: nodes
@@ -194,7 +193,7 @@ abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with Be
       nodeA.system.eventStream.subscribe(probeUnavailable.ref, classOf[Unavailable])
 
       probeAvailable1.expectMsg(Available(nodeId("B"), "L1"))
-      nodeB1.shutdown()
+      Await.result(nodeB1.terminate(), 10.seconds)
       probeUnavailable.expectMsg(Unavailable(nodeId("B"), "L1"))
 
       // start replication node B again

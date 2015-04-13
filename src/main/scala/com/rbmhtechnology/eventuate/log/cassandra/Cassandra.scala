@@ -136,7 +136,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
     _session.execute(createReplicationProgressTableStatement)
   } match {
     case Success(_) => logging.info("Cassandra extension initialized")
-    case Failure(e) => logging.error(e, "Cassandra extension initialization failed."); exit() // TODO: retry
+    case Failure(e) => logging.error(e, "Cassandra extension initialization failed."); terminate() // TODO: retry
   }
 
   /**
@@ -205,8 +205,8 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
     batch
   }
 
-  private def exit(): Unit =
-    system.shutdown()
+  private def terminate(): Unit =
+    system.terminate()
 
   system.registerOnTermination {
     session.close()
