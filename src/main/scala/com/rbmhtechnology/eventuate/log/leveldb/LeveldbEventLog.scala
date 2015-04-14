@@ -73,10 +73,10 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNu
   val replicationProgressMap = new ReplicationProgressMap(leveldb, -3, eventLogIdMap.numericId)
 
   final def receive = {
-    case GetLastSourceLogReadPosition(sourceLogId) =>
+    case GetLastSourceLogReadPosition(sourceLogId, correlationId) =>
       Try(replicationProgressMap.readReplicationProgress(sourceLogId)) match {
-        case Success(r) => sender() ! GetLastSourceLogReadPositionSuccess(sourceLogId, r)
-        case Failure(e) => sender() ! GetLastSourceLogReadPositionFailure(e)
+        case Success(r) => sender() ! GetLastSourceLogReadPositionSuccess(sourceLogId, r, correlationId)
+        case Failure(e) => sender() ! GetLastSourceLogReadPositionFailure(e, correlationId)
       }
     case Replay(from, requestor, None, iid) =>
       defaultRegistry = defaultRegistry + context.watch(requestor)
@@ -91,11 +91,18 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNu
         case Success(_) => requestor ! ReplaySuccess(iid)
         case Failure(e) => requestor ! ReplayFailure(e, iid)
       }
-    case Read(from, max, filter) =>
+    case r @ ReplicationRead(from, max, filter, correlationId, targetLogId) =>
       val sdr = sender()
+      eventStream.publish(r)
       Future(read(from, max, filter)) onComplete {
-        case Success(result) => sdr ! ReadSuccess(result.events, result.to)
-        case Failure(cause)  => sdr ! ReadFailure(cause)
+        case Success(result) =>
+          val r = ReplicationReadSuccess(result.events, result.to, correlationId, targetLogId)
+          sdr ! r
+          eventStream.publish(r)
+        case Failure(cause)  =>
+          val r = ReplicationReadFailure(cause, correlationId, targetLogId)
+          sdr ! r
+          eventStream.publish(r)
       }
     case Delay(commands, commandsSender, requestor, iid) =>
       commands.foreach(cmd => requestor.tell(DelayComplete(cmd, iid), commandsSender))
@@ -126,9 +133,9 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNu
           pushWriteSuccess(updated, eventsSender, requestor, iid)
           publishUpdateNotification(updated)
       }
-    case Replicate(events, sourceLogId, lastSourceLogSequenceNrRead) =>
+    case ReplicationWrite(events, sourceLogId, lastSourceLogSequenceNrRead, correlationId) =>
       Try(replicationProgressMap.readReplicationProgress(sourceLogId)) match {
-        case Failure(e) => sender() ! ReplicateFailure(e)
+        case Failure(e) => sender() ! ReplicationWriteFailure(e, correlationId)
         case Success(lastSourceLogSequenceNrStored) =>
           if (lastSourceLogSequenceNrRead > lastSourceLogSequenceNrStored) {
             val updated = prepareReplicate(events)
@@ -141,14 +148,14 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNu
             }
             result match {
               case Failure(e) =>
-                sender() ! ReplicateFailure(e)
+                sender() ! ReplicationWriteFailure(e, correlationId)
               case Success(_) =>
-                sender() ! ReplicateSuccess(events.size, lastSourceLogSequenceNrRead)
+                sender() ! ReplicationWriteSuccess(events.size, lastSourceLogSequenceNrRead, correlationId)
                 pushReplicateSuccess(updated)
                 publishUpdateNotification(updated)
             }
           } else {
-            sender() ! ReplicateSuccess(0, lastSourceLogSequenceNrStored)
+            sender() ! ReplicationWriteSuccess(0, lastSourceLogSequenceNrStored, correlationId)
           }
       }
     case Terminated(requestor) =>

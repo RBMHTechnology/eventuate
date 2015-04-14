@@ -117,14 +117,14 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
 
     replicatedEvents ++= replicated
 
-    log.tell(Replicate(events, remoteLogId, 9 + offset), replicatorProbe.ref)
-    replicatorProbe.expectMsg(ReplicateSuccess(events.length, 9 + offset))
+    log.tell(ReplicationWrite(events, remoteLogId, 9 + offset, 0), replicatorProbe.ref)
+    replicatorProbe.expectMsg(ReplicationWriteSuccess(events.length, 9 + offset, 0))
     notificationProbe.expectMsg(Updated(replicated))
   }
 
   def replicateNone(lastSourceLogSequenceNrRead: Long, expectedLastSourceLogSequenceNrReplicated: Long, remoteLogId: String = remoteLogId): Unit = {
-    log.tell(Replicate(Seq(), remoteLogId, lastSourceLogSequenceNrRead), replicatorProbe.ref)
-    replicatorProbe.expectMsg(ReplicateSuccess(0, expectedLastSourceLogSequenceNrReplicated))
+    log.tell(ReplicationWrite(Seq(), remoteLogId, lastSourceLogSequenceNrRead, 0), replicatorProbe.ref)
+    replicatorProbe.expectMsg(ReplicationWriteSuccess(0, expectedLastSourceLogSequenceNrReplicated, 0))
   }
 
   "An event log" must {
@@ -331,23 +331,23 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
         DurableEvent("k", 0L, timestampAB(0, 9), replicaIdB, None, Set(), remoteLogId, logId, 9, 3))
 
       // replicate first two events
-      log.tell(Replicate(events.take(2), remoteLogId, 8), replicatorProbe.ref)
+      log.tell(ReplicationWrite(events.take(2), remoteLogId, 8, 0), replicatorProbe.ref)
 
-      replicatorProbe.expectMsg(ReplicateSuccess(2, 8))
+      replicatorProbe.expectMsg(ReplicationWriteSuccess(2, 8, 0))
       notificationProbe.expectMsg(Updated(replicatedEvents.take(2)))
 
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(1)))
 
       // replicate first two events again (= duplicate)
-      log.tell(Replicate(events.take(2), remoteLogId, 8), replicatorProbe.ref)
+      log.tell(ReplicationWrite(events.take(2), remoteLogId, 8, 0), replicatorProbe.ref)
 
-      replicatorProbe.expectMsg(ReplicateSuccess(0, 8))
+      replicatorProbe.expectMsg(ReplicationWriteSuccess(0, 8, 0))
 
       // replicate remaining events
-      log.tell(Replicate(events.drop(2), remoteLogId, 9), replicatorProbe.ref)
+      log.tell(ReplicationWrite(events.drop(2), remoteLogId, 9, 0), replicatorProbe.ref)
 
-      replicatorProbe.expectMsg(ReplicateSuccess(1, 9))
+      replicatorProbe.expectMsg(ReplicationWriteSuccess(1, 9, 0))
       notificationProbe.expectMsg(Updated(replicatedEvents.drop(2)))
 
       collaborator.expectMsg(Written(replicatedEvents(2)))
@@ -357,8 +357,8 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
         DurableEvent("boom", 0L, timestampAB(0, 7), replicaIdB, None, Set(), remoteLogId, remoteLogId, 7, 7),
         DurableEvent("okay", 0L, timestampAB(0, 8), replicaIdB, None, Set(), remoteLogId, remoteLogId, 8, 8))
 
-      log.tell(Replicate(events, remoteLogId, 8), replicatorProbe.ref)
-      replicatorProbe.expectMsg(ReplicateFailure(boom))
+      log.tell(ReplicationWrite(events, remoteLogId, 8, 0), replicatorProbe.ref)
+      replicatorProbe.expectMsg(ReplicationWriteFailure(boom, 0))
     }
     "replay events from scratch" in {
       generateEvents()
@@ -432,49 +432,49 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     }
     "batch-read local events" in {
       generateEvents()
-      log.tell(Read(1, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(generatedEvents, 3))
+      log.tell(ReplicationRead(1, Int.MaxValue, undefinedLogIdFilter, UndefinedLogId, 0), requestorProbe.ref)
+      requestorProbe.expectMsg(ReplicationReadSuccess(generatedEvents, 3, UndefinedLogId, 0))
     }
     "batch-read local and replicated events" in {
       generateEvents()
       replicateEvents(offset = 3)
-      log.tell(Read(1, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(generatedEvents ++ replicatedEvents, 6))
+      log.tell(ReplicationRead(1, Int.MaxValue, undefinedLogIdFilter, UndefinedLogId, 0), requestorProbe.ref)
+      requestorProbe.expectMsg(ReplicationReadSuccess(generatedEvents ++ replicatedEvents, 6, UndefinedLogId, 0))
     }
     "batch-read events with a batch size limit" in {
       generateEvents()
-      log.tell(Read(1, 2, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(generatedEvents.take(2), 2))
-      log.tell(Read(1, 0, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(Nil, 0))
+      log.tell(ReplicationRead(1, 2, undefinedLogIdFilter, UndefinedLogId, 0), requestorProbe.ref)
+      requestorProbe.expectMsg(ReplicationReadSuccess(generatedEvents.take(2), 2, UndefinedLogId, 0))
+      log.tell(ReplicationRead(1, 0, undefinedLogIdFilter, UndefinedLogId, 0), requestorProbe.ref)
+      requestorProbe.expectMsg(ReplicationReadSuccess(Nil, 0, UndefinedLogId, 0))
     }
     "batch-read events from a custom position" in {
       generateEvents()
-      log.tell(Read(2, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(generatedEvents.drop(1), 3))
+      log.tell(ReplicationRead(2, Int.MaxValue, undefinedLogIdFilter, UndefinedLogId, 0), requestorProbe.ref)
+      requestorProbe.expectMsg(ReplicationReadSuccess(generatedEvents.drop(1), 3, UndefinedLogId, 0))
     }
     "batch-read events from a custom position with a batch size limit" in {
       generateEvents()
-      log.tell(Read(2, 1, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(generatedEvents.drop(1).take(1), 2))
+      log.tell(ReplicationRead(2, 1, undefinedLogIdFilter, UndefinedLogId, 0), requestorProbe.ref)
+      requestorProbe.expectMsg(ReplicationReadSuccess(generatedEvents.drop(1).take(1), 2, UndefinedLogId, 0))
     }
     "batch-read events with exclusion" in {
       generateEvents()
       replicateEvents(offset = 3)
-      log.tell(Read(1, Int.MaxValue, SourceLogIdExclusionFilter(logId)), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(replicatedEvents, 6))
-      log.tell(Read(1, Int.MaxValue, SourceLogIdExclusionFilter(remoteLogId)), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(generatedEvents, 6))
+      log.tell(ReplicationRead(1, Int.MaxValue, SourceLogIdExclusionFilter(logId), UndefinedLogId, 0), requestorProbe.ref)
+      requestorProbe.expectMsg(ReplicationReadSuccess(replicatedEvents, 6, UndefinedLogId, 0))
+      log.tell(ReplicationRead(1, Int.MaxValue, SourceLogIdExclusionFilter(remoteLogId), UndefinedLogId, 0), requestorProbe.ref)
+      requestorProbe.expectMsg(ReplicationReadSuccess(generatedEvents, 6, UndefinedLogId, 0))
     }
     "not batch-read events from index" in {
       generateEvents(offset = 0, destinationAggregateIds = Set("a1"))
       generateEvents(offset = 3, destinationAggregateIds = Set())
-      log.tell(Read(1, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadSuccess(generatedEvents, 6))
+      log.tell(ReplicationRead(1, Int.MaxValue, undefinedLogIdFilter, UndefinedLogId, 0), requestorProbe.ref)
+      requestorProbe.expectMsg(ReplicationReadSuccess(generatedEvents, 6, UndefinedLogId, 0))
     }
     "reply with a failure message if batch-read fails" in {
-      log.tell(Read(-1, Int.MaxValue, undefinedLogIdFilter), requestorProbe.ref)
-      requestorProbe.expectMsg(ReadFailure(boom))
+      log.tell(ReplicationRead(-1, Int.MaxValue, undefinedLogIdFilter, UndefinedLogId, 0), requestorProbe.ref)
+      requestorProbe.expectMsg(ReplicationReadFailure(boom, UndefinedLogId, 0))
     }
     "recover the current sequence number on (re)start" in {
       generateEvents()

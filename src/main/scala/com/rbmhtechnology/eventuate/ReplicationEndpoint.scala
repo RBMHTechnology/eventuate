@@ -16,75 +16,39 @@
 
 package com.rbmhtechnology.eventuate
 
+import java.util.concurrent.TimeUnit
 import java.util.function.{Function => JFunction}
-
-import scala.collection.JavaConverters._
 
 import akka.actor._
 
-object ReplicationConnection {
-  /**
-   * Default name of the remote actor system to connect to.
-   */
-  val DefaultRemoteSystemName: String = "location"
+import scala.collection.JavaConverters._
+import scala.concurrent.duration._
 
-  /**
-   * Creates [[ReplicationConnection]] with remote actor system `name` set to [[DefaultRemoteSystemName]].
-   *
-   * @param host host of the remote actor system that runs a [[ReplicationEndpoint]].
-   * @param port port of the remote actor system that runs a [[ReplicationEndpoint]].
-   * @param filters Replication filters applied remotely. Filters are applied to individual
-   *                event logs where filter keys are the corresponding event log names.
-   */
-  def apply(host: String, port: Int, filters: Map[String, ReplicationFilter]): ReplicationConnection =
-    new ReplicationConnection(host, port, filters = filters)
+import ReplicationProtocol._
 
-  /**
-   * Creates [[ReplicationConnection]] with remote actor system `name` set to [[DefaultRemoteSystemName]]
-   * and an optional replication `filter` applied to the event log with name [[ReplicationEndpoint.DefaultLogName]].
-   *
-   * @param host host of the remote actor system that runs a [[ReplicationEndpoint]].
-   * @param port port of the remote actor system that runs a [[ReplicationEndpoint]].
-   * @param filter Optional filter applied remotely. If defined, the filter is applied to
-   *               the event log with name [[ReplicationEndpoint.DefaultLogName]].
-   */
-  def apply(host: String, port: Int, filter: Option[ReplicationFilter]): ReplicationConnection = filter match {
-    case Some(f) => new ReplicationConnection(host, port, filters = Map(ReplicationEndpoint.DefaultLogName -> f))
-    case None    => new ReplicationConnection(host, port)
-  }
+private object ReplicationSettings {
+  def apply(system: ActorSystem): ReplicationSettings =
+    new ReplicationSettings(system)
 }
 
-/**
- * A replication connection descriptor.
- *
- * @param host Host of the remote actor system that runs a [[ReplicationEndpoint]].
- * @param port Port of the remote actor system that runs a [[ReplicationEndpoint]].
- * @param name Name of the remote actor system that runs a [[ReplicationEndpoint]].
- * @param filters Replication filters applied remotely. Filters are applied to individual
- *                event logs where filter keys are the corresponding event log names.
- */
-case class ReplicationConnection(host: String, port: Int, name: String = ReplicationConnection.DefaultRemoteSystemName, filters: Map[String, ReplicationFilter] = Map.empty)
+private class ReplicationSettings(system: ActorSystem) {
+  val config = system.settings.config.getConfig("log.replication")
+
+  val replicationRetryInterval: FiniteDuration =
+    config.getDuration("retry-interval", TimeUnit.MILLISECONDS).millis
+
+  val replicationBatchSize: Int =
+    config.getInt("batch-size-max")
+
+  val failureDetectionLimit =
+    config.getDuration("failure-detection-limit", TimeUnit.MILLISECONDS).millis
+}
 
 object ReplicationEndpoint {
   /**
    * Default log name.
    */
   val DefaultLogName: String = "default"
-
-  /**
-   * Identifies a [[ReplicationEndpoint]] instance.
-   *
-   * @param uid Globally unique endpoint id.
-   * @param iid Instance specific endpoint id. Unique within scope of `uid`.
-   */
-  case class InstanceId(uid: String, iid: Long) {
-
-    /**
-     * Returns `true` if `this` is a new instance (= incarnation) `id`.
-     */
-    def newIncarnationOf(id: InstanceId): Boolean =
-      uid == id.uid && iid != id.iid
-  }
 
   /**
    * Published to the actor system's event stream if a remote log is available.
@@ -141,7 +105,7 @@ object ReplicationEndpoint {
   def apply(logFactory: String => Props, connections: Set[ReplicationConnection])(implicit system: ActorSystem): ReplicationEndpoint = {
     val config = system.settings.config
     val endpointId = config.getString("endpoint.id")
-    new ReplicationEndpoint(endpointId, Set(DefaultLogName), logFactory, connections)(system)
+    new ReplicationEndpoint(endpointId, Set(ReplicationEndpoint.DefaultLogName), logFactory, connections)(system)
   }
 
   /**
@@ -164,8 +128,9 @@ object ReplicationEndpoint {
 
 /**
  * A replication endpoint connects to other replication endpoints for replicating events. Events are
- * replicated from the connected endpoints to this endpoint. To setup bi-directional replication, the
- * other replication endpoints must additionally setup replication connections to this endpoint.
+ * replicated from the connected endpoints to this endpoint. The connected endpoints are ''replication
+ * sources'', this endpoint is a ''replication target''. To setup bi-directional replication, the other
+ * replication endpoints must additionally setup replication connections to this endpoint.
  *
  * A replication endpoint manages one or more event logs. Event logs are indexed by name. Events are
  * replicated only between event logs with matching names.
@@ -176,43 +141,249 @@ object ReplicationEndpoint {
  *                   log id generated by this endpoint. The log actor must be assigned this log id.
  * @param connections Replication connections to other replication endpoints.
  */
-class ReplicationEndpoint(val id: String, logNames: Set[String], logFactory: String => Props, connections: Set[ReplicationConnection])(implicit system: ActorSystem) {
-  import ReplicationEndpoint._
-
+class ReplicationEndpoint(val id: String, val logNames: Set[String], logFactory: String => Props, connections: Set[ReplicationConnection])(implicit system: ActorSystem) {
   /**
-   * Unique replication endpoint instance id. The `instanceId` is used to distinguish
-   * between different incarnations of an endpoint with given id.
+   * This replication endpoint's info object.
    */
-  val instanceId: InstanceId =
-    InstanceId(id, System.currentTimeMillis)
+  private val info: ReplicationEndpointInfo =
+    ReplicationEndpointInfo(id, logNames)
 
   /**
    * The log actors managed by this endpoint, indexed by their name.
    */
   val logs: Map[String, ActorRef] =
-    logNames.map(logName => logName -> system.actorOf(logFactory(logId(logName)))).toMap
-
-  /**
-   * Remote endpoints connect to this `connector`.
-   */
-  private val connector: ActorRef =
-    system.actorOf(Props(new ReplicationServerConnector(logs, logId, instanceId)), ReplicationServerConnector.name)
+    logNames.map(logName => logName -> system.actorOf(logFactory(logId(logName)), name = logId(logName))).toMap
 
   /**
    * Returns the unique log id for given `logName`.
    */
-  private def logId(logName: String): String =
-    s"${id}-${logName}"
+  def logId(logName: String): String =
+    info.logId(logName)
 
-  connections.foreach {
-    case ReplicationConnection(host, port, name, filters) =>
-      var cfs = filters
-      logNames.foreach { logName =>
-        cfs.get(logName) match {
-          case Some(f) => cfs += (logName -> SourceLogIdExclusionFilter(logId(logName)).and(f))
-          case None    => cfs += (logName -> SourceLogIdExclusionFilter(logId(logName)))
+  system.actorOf(Props(new SourceReplicationConnector(info)), name = SourceReplicationConnector.Name)
+  system.actorOf(Props(new NotificationChannel), name = NotificationChannel.Name)
+
+  connections.map { connection =>
+    system.actorOf(Props(new TargetReplicationConnector(this, connection)))
+  }
+}
+
+/**
+ * References a remote replication source.
+ */
+private case class ReplicationSource(
+  endpointId: String,
+  logName: String,
+  logId: String,
+  log: ActorSelection)
+
+/**
+ * References a local replication target.
+ */
+private case class ReplicationTarget(
+  endpointId: String,
+  logName: String,
+  logId: String,
+  log: ActorRef)
+
+private object SourceReplicationConnector {
+  val Name = "connector"
+}
+
+/**
+ * Replication connector at a source [[ReplicationEndpoint]].
+ */
+private class SourceReplicationConnector(sourceEndpointInfo: ReplicationEndpointInfo) extends Actor {
+  def receive = {
+    case GetReplicationEndpointInfo =>
+      sender() ! GetReplicationEndpointInfoSuccess(sourceEndpointInfo)
+  }
+}
+
+/**
+ * Replication connector at a target [[ReplicationEndpoint]]. Obtains a [[ReplicationEndpointInfo]]
+ * object from a source replication endpoint for settings up log [[Replicator]]s, one per common log
+ * name.
+ */
+private class TargetReplicationConnector(targetEndpoint: ReplicationEndpoint, connection: ReplicationConnection) extends Actor {
+  import context.dispatcher
+
+  private val connector = selection(SourceReplicationConnector.Name)
+  private val schedule = context.system.scheduler.schedule(0.seconds, ReplicationSettings(context.system).replicationRetryInterval, new Runnable {
+    override def run() = connector ! GetReplicationEndpointInfo
+  })
+
+  private var connected = false
+
+  def receive = {
+    case GetReplicationEndpointInfoSuccess(info) if !connected =>
+      info.logNames.intersect(targetEndpoint.logNames).foreach { logName =>
+        val sourceLogId = info.logId(logName)
+        val source = ReplicationSource(info.endpointId, logName, sourceLogId, selection(sourceLogId))
+        val target = ReplicationTarget(targetEndpoint.id, logName, targetEndpoint.logId(logName), targetEndpoint.logs(logName))
+        context.actorOf(Props(new Replicator(source, target, connection.filters.get(logName), selection(NotificationChannel.Name))))
+      }
+      connected = true
+      schedule.cancel()
+  }
+
+  private def selection(actor: String): ActorSelection = {
+    import connection._
+
+    val protocol = context.system match {
+      case sys: ExtendedActorSystem => sys.provider.getDefaultAddress.protocol
+      case sys                      => "akka.tcp"
+    }
+
+    context.actorSelection(s"${protocol}://${name}@${host}:${port}/user/${actor}")
+  }
+
+  override def postStop(): Unit =
+    schedule.cancel()
+}
+
+/**
+ * Replicates events from a source log to a target log.
+ */
+private class Replicator(source: ReplicationSource, target: ReplicationTarget, filter: Option[ReplicationFilter], notificationChannel: ActorSelection) extends Actor {
+  import ReplicationServerFailureDetector._
+  import context.dispatcher
+
+  val replicationSettings = ReplicationSettings(context.system)
+  val replicationFilter = filter match {
+    case Some(f) => SourceLogIdExclusionFilter(target.logId).and(f)
+    case None    => SourceLogIdExclusionFilter(target.logId)
+  }
+
+  val failureDetector = context.actorOf(Props(new ReplicationServerFailureDetector(source.endpointId, source.logName)))
+  val registrationSchedule = context.system.scheduler.schedule(0.seconds, replicationSettings.replicationRetryInterval, new Runnable {
+    override def run() = notificationChannel ! SubscribeReplicator(target.logId, self, replicationFilter)
+  })
+
+  var correlationId = 0
+
+  val idle: Receive = {
+    case ReplicationDue =>
+      val correlationId = nextCorrelationId()
+      target.log ! GetLastSourceLogReadPosition(source.logId, correlationId)
+      context.become(replicating(correlationId))
+      failureDetector ! Tick
+    case ReceiveTimeout =>
+      val correlationId = nextCorrelationId()
+      target.log ! GetLastSourceLogReadPosition(source.logId, correlationId)
+      context.become(replicating(correlationId))
+  }
+
+  def replicating(correlationId: Int): Receive = {
+    case GetLastSourceLogReadPositionSuccess(sourceLogId, lastSourceLogSequenceNrStored, `correlationId`) =>
+      source.log ! ReplicationRead(lastSourceLogSequenceNrStored + 1, replicationSettings.replicationBatchSize, replicationFilter, target.logId, correlationId)
+    case GetLastSourceLogReadPositionFailure(cause, `correlationId`) =>
+      // TODO: log cause
+      context.become(idle)
+    case ReplicationReadSuccess(events, lastSourceLogSequenceNrRead, _, `correlationId`) =>
+      target.log ! ReplicationWrite(events, source.logId, lastSourceLogSequenceNrRead, correlationId)
+      failureDetector ! Tick
+    case ReplicationReadFailure(cause, _, `correlationId`) =>
+      // TODO: log cause
+      context.become(idle)
+      failureDetector ! Tick
+    case ReplicationWriteSuccess(num, lastSourceLogSequenceNrStored, `correlationId`) if num > 0 =>
+      val correlationId = nextCorrelationId()
+      source.log ! ReplicationRead(lastSourceLogSequenceNrStored + 1, replicationSettings.replicationBatchSize, replicationFilter, target.logId, correlationId)
+      context.become(replicating(correlationId))
+    case ReplicationWriteSuccess(_, _, `correlationId`) =>
+      context.become(idle)
+    case ReplicationWriteFailure(cause, `correlationId`) =>
+      // TODO: log cause
+      context.become(idle)
+    case ReceiveTimeout =>
+      context.become(idle)
+  }
+
+  def receive = idle
+
+  override def preStart(): Unit = {
+    context.setReceiveTimeout(replicationSettings.replicationRetryInterval)
+    self ! ReplicationDue
+  }
+
+  override def postStop(): Unit = {
+    registrationSchedule.cancel()
+  }
+
+  private def nextCorrelationId(): Int = {
+    correlationId += 1
+    correlationId
+  }
+}
+
+private object ReplicationServerFailureDetector {
+  case object Tick
+}
+
+private class ReplicationServerFailureDetector(sourceEndpointId: String, logName: String) extends Actor {
+  import ReplicationServerFailureDetector._
+  import ReplicationEndpoint._
+
+  val limit = ReplicationSettings(context.system).failureDetectionLimit.toMillis
+  var lastTick: Long = 0L
+
+  context.setReceiveTimeout(limit.millis)
+
+  def receive = {
+    case Tick =>
+      val currentTime = System.currentTimeMillis
+      val lastInterval =  currentTime - lastTick
+      if (lastInterval >= limit) {
+        context.system.eventStream.publish(Available(sourceEndpointId, logName))
+        lastTick = currentTime
+      }
+    case ReceiveTimeout =>
+      context.system.eventStream.publish(Unavailable(sourceEndpointId, logName))
+  }
+}
+
+private object NotificationChannel {
+  val Name = "notifications"
+}
+
+/**
+ * Notifies registered [[Replicator]]s about source log updates.
+ */
+private class NotificationChannel extends Actor {
+  // targetLogId -> subscription
+  var registry: Map[String, SubscribeReplicator] = Map.empty
+
+  // targetLogIds for which a read operation is in progress
+  var reading: Set[String] = Set.empty
+
+  def receive = {
+    case r @ SubscribeReplicator(targetLogId, _, _) =>
+      registry += (targetLogId -> r)
+    case Updated(events) =>
+      registry.foreach {
+        case (targetLogId, reg) => if (events.exists(reg.filter.apply)) {
+          if (!reading.contains(targetLogId)) reg.replicator ! ReplicationDue
+          else { /* skip sending a notification, read is in progress anyway */ }
         }
       }
-      system.actorOf(Props(new ReplicationClientConnector(host, port, name, logs, cfs, instanceId)))
+    case r: ReplicationRead =>
+      reading += r.targetLogId
+    case r: ReplicationReadSuccess =>
+      reading -= r.targetLogId
+    case r: ReplicationReadFailure =>
+      reading -= r.targetLogId
+  }
+
+  override def preStart(): Unit = {
+    val stream = context.system.eventStream
+    stream.subscribe(self, classOf[Updated])
+    stream.subscribe(self, classOf[ReplicationRead])
+    stream.subscribe(self, classOf[ReplicationReadSuccess])
+    stream.subscribe(self, classOf[ReplicationReadFailure])
+  }
+
+  override def postStop(): Unit = {
+    context.system.eventStream.unsubscribe(self)
   }
 }

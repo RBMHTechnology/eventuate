@@ -35,9 +35,8 @@ class ReplicationNode(nodeId: String, logIds: Set[String], port: Int, connection
       |akka.test.single-expect-default = 10s
       |
       |log.leveldb.dir = target/logs-system-${nodeId}
-      |log.replication.transfer-batch-size-max = 3
-      |log.replication.transfer-retry-interval = 1s
-      |log.replication.connect-retry-interval = 1s
+      |log.replication.batch-size-max = 3
+      |log.replication.retry-interval = 1s
       |log.replication.failure-detection-limit = 3s
     """.stripMargin)
 
