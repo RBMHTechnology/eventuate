@@ -128,61 +128,6 @@ message sender.
       </a>
     </span>
       <p class="shortcomment cmt">Completion reply after a <a href="EventsourcingProtocol$$Delay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delay">Delay</a>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Read" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReadextendsProductwithSerializable"></a>
-      <a id="Read:Read"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="EventsourcingProtocol$$Read.html"><span class="name">Read</span></a><span class="params">(<span name="from">from: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ReadextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Instructs an event log to read up to <code>max</code> events starting from sequence number <code>from</code>
-and applying the given replication <code>filter</code>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.ReadFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReadFailureextendsProductwithSerializable"></a>
-      <a id="ReadFailure:ReadFailure"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="EventsourcingProtocol$$ReadFailure.html"><span class="name">ReadFailure</span></a><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ReadFailureextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Failure reply after a <a href="EventsourcingProtocol$$Read.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Read">Read</a>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.ReadSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ReadSuccessextendsProductwithSerializable"></a>
-      <a id="ReadSuccess:ReadSuccess"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="EventsourcingProtocol$$ReadSuccess.html"><span class="name">ReadSuccess</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="last">last: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ReadSuccessextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Success reply after a <a href="EventsourcingProtocol$$Read.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Read">Read</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Success reply after a <a href="EventsourcingProtocol$$Read.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Read">Read</a>.
-</p></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>read events</p></dd><dt class="param">last</dt><dd class="cmt"><p>last read sequence number. This is greater than or equal the sequence number
-            of the last read event (if any).
-</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ReplayextendsProductwithSerializable"></a>
       <a id="Replay:Replay"></a>

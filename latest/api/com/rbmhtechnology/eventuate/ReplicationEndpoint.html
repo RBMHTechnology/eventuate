@@ -48,8 +48,9 @@
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A replication endpoint connects to other replication endpoints for replicating events. Events are
-replicated from the connected endpoints to this endpoint. To setup bi-directional replication, the
-other replication endpoints must additionally setup replication connections to this endpoint.</p><p>A replication endpoint manages one or more event logs. Event logs are indexed by name. Events are
+replicated from the connected endpoints to this endpoint. The connected endpoints are <i>replication
+sources</i>, this endpoint is a <i>replication target</i>. To setup bi-directional replication, the other
+replication endpoints must additionally setup replication connections to this endpoint.</p><p>A replication endpoint manages one or more event logs. Event logs are indexed by name. Events are
 replicated only between event logs with matching names.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
@@ -318,25 +319,6 @@ replicated only between event logs with matching names.
       </a>
     </span>
       <p class="shortcomment cmt">Unique replication endpoint id.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#instanceId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="instanceId:com.rbmhtechnology.eventuate.ReplicationEndpoint.InstanceId"></a>
-      <a id="instanceId:InstanceId"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">instanceId</span><span class="result">: <a href="ReplicationEndpoint$$InstanceId.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint.InstanceId">InstanceId</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@instanceId:com.rbmhtechnology.eventuate.ReplicationEndpoint.InstanceId" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Unique replication endpoint instance id.</p><div class="fullcomment"><div class="comment cmt"><p>Unique replication endpoint instance id. The <code>instanceId</code> is used to distinguish
-between different incarnations of an endpoint with given id.
-</p></div></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -354,6 +336,40 @@ between different incarnations of an endpoint with given id.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#logId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="logId(logName:String):String"></a>
+      <a id="logId(String):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">logId</span><span class="params">(<span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@logId(logName:String):String" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Returns the unique log id for given <code>logName</code>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#logNames" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="logNames:Set[String]"></a>
+      <a id="logNames:Set[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">logNames</span><span class="result">: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@logNames:Set[String]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Names of the event logs managed by this replication endpoint.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#logs" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="logs:Map[String,akka.actor.ActorRef]"></a>
       <a id="logs:Map[String,ActorRef]"></a>

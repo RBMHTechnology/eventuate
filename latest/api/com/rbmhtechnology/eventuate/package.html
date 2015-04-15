@@ -421,8 +421,9 @@ update the vector clock.
       </a>
     </span>
       <p class="shortcomment cmt">A replication endpoint connects to other replication endpoints for replicating events.</p><div class="fullcomment"><div class="comment cmt"><p>A replication endpoint connects to other replication endpoints for replicating events. Events are
-replicated from the connected endpoints to this endpoint. To setup bi-directional replication, the
-other replication endpoints must additionally setup replication connections to this endpoint.</p><p>A replication endpoint manages one or more event logs. Event logs are indexed by name. Events are
+replicated from the connected endpoints to this endpoint. The connected endpoints are <i>replication
+sources</i>, this endpoint is a <i>replication target</i>. To setup bi-directional replication, the other
+replication endpoints must additionally setup replication connections to this endpoint.</p><p>A replication endpoint manages one or more event logs. Event logs are indexed by name. Events are
 replicated only between event logs with matching names.
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationFilter" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">

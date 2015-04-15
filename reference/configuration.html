@@ -189,32 +189,30 @@
     }
   }
 
-  remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
+  remote {
+    enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
+  }
 
   loglevel = &quot;ERROR&quot;
 }
 
+log.write {
+  # Maximum write batch size for emitted events by event-sourced actors.
+  batch-size-max = 200
+}
+
 log.replication {
-  # Maximum batch size for event transfer and event writing to the target
+  # Maximum batch size for event replication and event writing to the target
   # event log.
-  transfer-batch-size-max = 200
+  batch-size-max = 200
 
-  # Event transfer retry interval. Event transfer is re-tried at this interval
-  # if previous transfer batch was empty.
-  transfer-retry-interval = 5s
-
-  # Connect retry interval. Connection to a remote location is re-tried at
-  # this interval if previous connect attempt failed.
-  connect-retry-interval = 3s
+  # Event replication retry interval. Event replication is re-tried at this
+  # interval if previous transfer batch was empty.
+  retry-interval = 5s
 
   # Maximum duration of missing heartbeats from a remote location until
   # that location is considered unavailable.
   failure-detection-limit = 60s
-}
-
-log {
-  # Maximum write batch size for emitted events by event-sourced actors.
-  write-batch-size-max = 200
 }
 
 log.leveldb {
