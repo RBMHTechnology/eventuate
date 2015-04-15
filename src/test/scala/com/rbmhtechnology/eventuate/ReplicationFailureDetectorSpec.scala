@@ -35,7 +35,7 @@ class ReplicationFailureDetectorSpec extends TestKit(ActorSystem("test", config)
   var failureDetector: ActorRef = _
 
   override def beforeEach(): Unit = {
-    failureDetector = system.actorOf(Props(new ReplicationServerFailureDetector(InstanceId("A", 0), "L1")))
+    failureDetector = system.actorOf(Props(new ReplicationServerFailureDetector("A", "L1")))
   }
 
   override def afterEach(): Unit = {
@@ -53,12 +53,12 @@ class ReplicationFailureDetectorSpec extends TestKit(ActorSystem("test", config)
       system.eventStream.subscribe(probe.ref, classOf[Available])
       system.eventStream.subscribe(probe.ref, classOf[Unavailable])
 
-      failureDetector ! Ping
+      failureDetector ! Tick
       probe.expectMsg(Available("A", "L1"))
       // time passes ...
       probe.expectMsg(Unavailable("A", "L1"))
-      failureDetector ! Ping
-      failureDetector ! Ping // second Tick within limit doesn't publish another Available
+      failureDetector ! Tick
+      failureDetector ! Tick // second Tick within limit doesn't publish another Available
       probe.expectMsg(Available("A", "L1"))
       // time passes ...
       probe.expectMsg(Unavailable("A", "L1"))

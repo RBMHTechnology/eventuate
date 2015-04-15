@@ -21,27 +21,6 @@ import akka.actor._
 import scala.collection.immutable.Seq
 
 object EventsourcingProtocol {
-
-  /**
-   * Instructs an event log to read up to `max` events starting from sequence number `from`
-   * and applying the given replication `filter`.
-   */
-  case class Read(from: Long, max: Int, filter: ReplicationFilter)
-
-  /**
-   * Success reply after a [[Read]].
-   *
-   * @param events read events
-   * @param last last read sequence number. This is greater than or equal the sequence number
-   *             of the last read event (if any).
-   */
-  case class ReadSuccess(events: Seq[DurableEvent], last: Long)
-
-  /**
-   * Failure reply after a [[Read]].
-   */
-  case class ReadFailure(cause: Throwable)
-
   /**
    * Instructs an event log to loop the given `commands` to the given `requestor`, preserving
    * the relative order to events being written by that event log. Commands are looped to the

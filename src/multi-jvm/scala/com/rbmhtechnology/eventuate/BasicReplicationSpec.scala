@@ -38,9 +38,8 @@ object BasicReplicationConfig extends MultiNodeConfig {
     s"""
       |akka.loglevel = "ERROR"
       |akka.test.single-expect-default = 10s
-      |log.replication.transfer-batch-size-max = 3
-      |log.replication.transfer-retry-interval = 1s
-      |log.replication.connect-retry-interval = 1s
+      |log.replication.batch-size-max = 3
+      |log.replication.retry-interval = 1s
       |log.replication.failure-detection-limit = 60s
     """.stripMargin))
 }

@@ -56,7 +56,7 @@ The distribution of ``L``, ``M`` and ``N`` across locations may also differ::
             N2 --- N3
 
 .. note::
-   Event replication is reliable and fault-tolerant. Event transfer from a source log and a target log is acknowledged after successful event storage in the target log and re-tried on missing acknowledgement. Replicated events are also guaranteed to be written *exactly-once* to a target log. This is possible because replication progress metadata are stored along with replicated events in the target log. This allows a replication target to reliably detect and ignore duplicates. Event-sourced actors and views can therefore rely on receiving a de-duplicated event stream. Event replication can also recover from crashes of source and target locations i.e. event replication automatically resumes when a crashed location recovers.
+   Event replication is reliable and fault-tolerant. Replicated events are also guaranteed to be written *exactly-once* to a target log. This is possible because replication progress metadata are stored along with replicated events in the target log. This allows a replication target to reliably detect and ignore duplicates. Event-sourced actors and views can therefore rely on receiving a de-duplicated event stream. Event replication can also recover from crashes of source and target locations i.e. event replication automatically resumes when a crashed location recovers.
 
 Replication endpoints
 ~~~~~~~~~~~~~~~~~~~~~

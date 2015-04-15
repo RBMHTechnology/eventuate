@@ -39,8 +39,7 @@ object ReplicatedORSetConfig extends MultiNodeConfig {
     s"""
       |akka.loglevel = "ERROR"
       |akka.test.single-expect-default = 10s
-      |log.replication.transfer-retry-interval = 1s
-      |log.replication.connect-retry-interval = 1s
+      |log.replication.retry-interval = 1s
       |log.replication.failure-detection-limit = 60s
     """.stripMargin))
 }
