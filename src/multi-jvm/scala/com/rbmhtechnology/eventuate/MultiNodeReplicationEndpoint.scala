@@ -54,7 +54,7 @@ trait MultiNodeReplicationEndpoint extends BeforeAndAfterAll { this: MultiNodeSp
 
   override def afterAll(): Unit = {
     // get all config data before shutting down node
-    val logRootDir = new File(system.settings.config.getString("log.leveldb.dir"))
+    val logRootDir = new File(system.settings.config.getString("eventuate.log.leveldb.dir"))
     val logDir = new File(logRootDir, s"${logPrefix}-${logId}")
 
     // shut down node

@@ -28,7 +28,7 @@ import ReplicationServerFailureDetector._
 import ReplicationFailureDetectorSpec._
 
 object ReplicationFailureDetectorSpec {
-  val config = ConfigFactory.parseString("log.replication.failure-detection-limit = 1s")
+  val config = ConfigFactory.parseString("eventuate.log.replication.failure-detection-limit = 1s")
 }
 
 class ReplicationFailureDetectorSpec extends TestKit(ActorSystem("test", config)) with WordSpecLike with Matchers with BeforeAndAfterEach with BeforeAndAfterAll {

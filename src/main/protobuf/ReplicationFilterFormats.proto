@@ -21,30 +21,23 @@
 option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
-message DurableEventFormat {
-  optional PayloadFormat payload = 1;
-  optional int64 systemTimestamp = 2;
-  optional VectorTimeFormat vectorTimestamp = 3;
-  optional string emitterReplicaId = 4;
-  optional string emitterAggregateId = 5;
-  repeated string customRoutingDestinations = 6;
-  optional string sourceLogId = 7;
-  optional string targetLogId = 8;
-  optional int64 sourceLogSequenceNr = 9;
-  optional int64 targetLogSequenceNr = 10;
-}
-
-message PayloadFormat {
+message ReplicationFilterLeafFormat {
   optional int32 serializerId = 1;
-  optional bytes payload = 2;
-  optional bytes payloadManifest = 3;
+  optional bytes filter = 2;
+  optional bytes filterManifest = 3;
 }
 
-message VectorTimeEntryFormat {
-  required string processId = 1;
-  required int64 logicalTime = 2;
+message ReplicationFilterTreeFormat {
+  enum NodeType {
+    LEAF = 1;
+    AND = 2;
+    OR = 3;
+  }
+  required NodeType nodeType = 1;
+  repeated ReplicationFilterTreeFormat children = 2; // set if nodeType == AND | OR
+  optional ReplicationFilterLeafFormat filter = 3;   // set if nodeType == LEAF
 }
 
-message VectorTimeFormat {
-  repeated VectorTimeEntryFormat entries = 1;
+message SourceLogIdExclusionFilterFormat {
+  required string sourceLogId = 1;
 }

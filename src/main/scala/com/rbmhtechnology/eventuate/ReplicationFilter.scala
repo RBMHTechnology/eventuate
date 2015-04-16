@@ -18,6 +18,13 @@ package com.rbmhtechnology.eventuate
 
 import scala.collection.immutable.Seq
 
+object ReplicationFilter {
+  /**
+   * Marker trait for protobuf-serializable replication filters.
+   */
+  trait Format extends Serializable
+}
+
 /**
  * Serializable and composable replication filter.
  */
@@ -49,7 +56,7 @@ trait ReplicationFilter extends Serializable {
 /**
  * Serializable logical AND of given `filters`.
  */
-private[eventuate] case class AndFilter(filters: Seq[ReplicationFilter]) extends ReplicationFilter {
+private[eventuate] case class AndFilter(filters: Seq[ReplicationFilter]) extends ReplicationFilter with ReplicationFilter.Format {
   /**
    * Evaluates to `true` if all `filters` evaluate to `true`, `false` otherwise.
    */
@@ -66,7 +73,7 @@ private[eventuate] case class AndFilter(filters: Seq[ReplicationFilter]) extends
 /**
  * Serializable logical OR of given `filters`.
  */
-private[eventuate] case class OrFilter(filters: Seq[ReplicationFilter]) extends ReplicationFilter {
+private[eventuate] case class OrFilter(filters: Seq[ReplicationFilter]) extends ReplicationFilter with ReplicationFilter.Format {
   /**
    * Evaluates to `true` if any of `filters` evaluate to `true`, `false` otherwise.
    */
@@ -83,7 +90,7 @@ private[eventuate] case class OrFilter(filters: Seq[ReplicationFilter]) extends 
 /**
  * Default replication filter.
  */
-private[eventuate] case class SourceLogIdExclusionFilter(sourceLogId: String) extends ReplicationFilter {
+private[eventuate] case class SourceLogIdExclusionFilter(sourceLogId: String) extends ReplicationFilter with ReplicationFilter.Format {
   /**
    * Evaluates to `true` if `event.sourceLogId` does not equal `sourceLogId`.
    */

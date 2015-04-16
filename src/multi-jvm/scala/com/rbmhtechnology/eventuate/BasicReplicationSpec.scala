@@ -20,8 +20,6 @@ import akka.actor._
 import akka.remote.testkit._
 import akka.testkit.TestProbe
 
-import com.typesafe.config.ConfigFactory
-
 import scala.collection.immutable.Seq
 import scala.util._
 
@@ -34,14 +32,7 @@ object BasicReplicationConfig extends MultiNodeConfig {
   val nodeB = role("nodeB")
   val nodeC = role("nodeC")
 
-  commonConfig(ConfigFactory.parseString(
-    s"""
-      |akka.loglevel = "ERROR"
-      |akka.test.single-expect-default = 10s
-      |log.replication.batch-size-max = 3
-      |log.replication.retry-interval = 1s
-      |log.replication.failure-detection-limit = 60s
-    """.stripMargin))
+  commonConfig(MultiNodeReplicationConfig.create())
 }
 
 object BasicReplicationSpec {

@@ -142,15 +142,29 @@ Snapshots of internal state can be taken from event-sourced actors and views. Sn
 Custom serialization
 --------------------
 
-Custom serializers for application-defined events can be configured with Akka's `serialization extension`_ mechanism. For example, an application that wants to use a custom ``DomainEventSerializer`` for events of type ``DomainEvent`` (both defined in package ``com.example``) should add the following configuration to ``application.conf``:
+Custom event serialization
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Custom serializers for application-defined events can be configured with Akka's `serialization extension`_ mechanism. For example, an application that wants to use a custom ``MyDomainEventSerializer`` for events of type ``MyDomainEvent`` (both defined in package ``com.example``) should add the following configuration to ``application.conf``:
 
 .. includecode:: ../conf/serializer.conf
-   :snippet: custom-serializer
+   :snippet: custom-event-serializer
 
-``DomainEventSerializer`` must extend Akka’s Serializer_ trait. Please refer to Akka’s `serialization extension`_ documentation for further details.
+``MyDomainEventSerializer`` must extend Akka’s Serializer_ trait. Please refer to Akka’s `serialization extension`_ documentation for further details.
 
-.. hint:: 
-   Eventuate stores application-defined events as ``payload`` of DurableEvent_\ s. ``DurableEvent`` itself is serialized with DurableEventSerializer_, a `Protocol Buffers`_ serializer that delegates ``payload`` serialization to a custom serializer. If no custom serializer is configured, one of Akka’s default serializer is used.
+Eventuate stores application-defined events as ``payload`` of DurableEvent_\ s. ``DurableEvent`` itself is serialized with DurableEventSerializer_, a `Protocol Buffers`_ serializer that delegates ``payload`` serialization to a custom serializer. If no custom serializer is configured, one of Akka’s default serializers is used.
+
+.. _replication-filter-serialization:
+
+Custom replication filter serialization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+in the same way as application-defined events, custom serializers for :ref:`replication-filters` can also be configured via Akka's `serialization extension`_ mechanism. For example, an application that wants to use a custom ``MyReplicationFilterSerializer`` for replication filters of type ``MyReplicationFilter`` (both defined in package ``com.example``) should add the following configuration to ``application.conf``:
+
+.. includecode:: ../conf/serializer.conf
+   :snippet: custom-filter-serializer
+
+Custom replication filter serialization also works if the custom filter is part of a composite filter that has been created with ``and`` or ``or`` combinators (see ReplicationFilter_ API). If no custom filter serializer is configured, one of Akka’s default serializers is used.
 
 .. [#] An explicit ``onEvent`` call may become obsolete in future releases.
 .. [#] The ``customRoutingDestinations`` parameter is described in section :ref:`event-routing`.
@@ -172,3 +186,4 @@ Custom serializers for application-defined events can be configured with Akka's 
 .. _Eventsourced: ../latest/api/index.html#com.rbmhtechnology.eventuate.Eventsourced
 .. _EventsourcedActor: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor
 .. _EventsourcedView: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedView
+.. _ReplicationFilter: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationFilter

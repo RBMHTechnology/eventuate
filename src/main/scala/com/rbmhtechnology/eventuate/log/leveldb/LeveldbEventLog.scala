@@ -21,6 +21,7 @@ import java.nio.ByteBuffer
 
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
+import akka.event.Logging
 import scala.util._
 
 import akka.actor._
@@ -44,13 +45,14 @@ import com.rbmhtechnology.eventuate.log.{AggregateRegistry, BatchingEventLog}
  * @param id unique log id.
  * @param prefix prefix of the directory that contains the LevelDB files
  */
-class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNumericIdentifierMap with LeveldbReplicationProgressMap*/ {
+class LeveldbEventLog(id: String, prefix: String) extends Actor {
   import LeveldbEventLog._
 
   val serialization = SerializationExtension(context.system)
   val eventStream = context.system.eventStream
+  val syslog = Logging(context.system, this)
 
-  val leveldbConfig = context.system.settings.config.getConfig("log.leveldb")
+  val leveldbConfig = context.system.settings.config.getConfig("eventuate.log.leveldb")
   val leveldbRootDir = leveldbConfig.getString("dir")
   val leveldbFsync = leveldbConfig.getBoolean("fsync")
 
@@ -61,7 +63,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNu
   val leveldbDir = new File(leveldbRootDir, s"${prefix}-${id}")
   var leveldb = factory.open(leveldbDir, leveldbOptions)
 
-  implicit val dispatcher = context.system.dispatchers.lookup("log.leveldb.read-dispatcher")
+  implicit val dispatcher = context.system.dispatchers.lookup("eventuate.log.leveldb.read-dispatcher")
 
   var aggregateRegistry: AggregateRegistry = AggregateRegistry()
   var defaultRegistry: Set[ActorRef] = Set.empty
@@ -76,20 +78,20 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNu
     case GetLastSourceLogReadPosition(sourceLogId, correlationId) =>
       Try(replicationProgressMap.readReplicationProgress(sourceLogId)) match {
         case Success(r) => sender() ! GetLastSourceLogReadPositionSuccess(sourceLogId, r, correlationId)
-        case Failure(e) => sender() ! GetLastSourceLogReadPositionFailure(e, correlationId)
+        case Failure(e) => sender() ! GetLastSourceLogReadPositionFailure(e, correlationId); syslog.error(e, "GetLastSourceLogReadPosition failure")
       }
     case Replay(from, requestor, None, iid) =>
       defaultRegistry = defaultRegistry + context.watch(requestor)
       Future(replay(from, EventKey.DefaultClassifier)(event => requestor ! Replaying(event, iid))) onComplete {
         case Success(_) => requestor ! ReplaySuccess(iid)
-        case Failure(e) => requestor ! ReplayFailure(e, iid)
+        case Failure(e) => requestor ! ReplayFailure(e, iid); syslog.error(e, "Replay failure")
       }
     case Replay(from, requestor, Some(sourceAggregateId), iid) =>
       val nid = aggregateIdMap.numericId(sourceAggregateId)
       aggregateRegistry = aggregateRegistry.add(context.watch(requestor), sourceAggregateId)
       Future(replay(from, nid)(event => requestor ! Replaying(event, iid))) onComplete {
         case Success(_) => requestor ! ReplaySuccess(iid)
-        case Failure(e) => requestor ! ReplayFailure(e, iid)
+        case Failure(e) => requestor ! ReplayFailure(e, iid); syslog.error(e, "Replay failure")
       }
     case r @ ReplicationRead(from, max, filter, correlationId, targetLogId) =>
       val sdr = sender()
@@ -100,9 +102,10 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNu
           sdr ! r
           eventStream.publish(r)
         case Failure(cause)  =>
-          val r = ReplicationReadFailure(cause, correlationId, targetLogId)
+          val r = ReplicationReadFailure(cause.getMessage, correlationId, targetLogId)
           sdr ! r
           eventStream.publish(r)
+          syslog.error(cause, "ReplicationRead failure")
       }
     case Delay(commands, commandsSender, requestor, iid) =>
       commands.foreach(cmd => requestor.tell(DelayComplete(cmd, iid), commandsSender))
@@ -116,6 +119,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNu
             case Write(events, eventsSender, requestor, iid) =>
               pushWriteFailure(events, eventsSender, requestor, iid, e)
           }
+          syslog.error(e, "WriteN failure")
         case Success(_) =>
           updated.foreach {
             case Write(events, eventsSender, requestor, iid) =>
@@ -129,6 +133,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNu
       result match {
         case Failure(e) =>
           pushWriteFailure(updated, eventsSender, requestor, iid, e)
+          syslog.error(e, "Write failure")
         case Success(_) =>
           pushWriteSuccess(updated, eventsSender, requestor, iid)
           publishUpdateNotification(updated)
@@ -149,6 +154,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor /*with LeveldbNu
             result match {
               case Failure(e) =>
                 sender() ! ReplicationWriteFailure(e, correlationId)
+                syslog.error(e, "ReplicationWrite failure")
               case Success(_) =>
                 sender() ! ReplicationWriteSuccess(events.size, lastSourceLogSequenceNrRead, correlationId)
                 pushReplicateSuccess(updated)
@@ -366,7 +372,7 @@ object LeveldbEventLog {
    * @param batching `true` if write-batching shall be enabled (recommended).
    */
   def props(id: String, prefix: String = "log", batching: Boolean = true): Props = {
-    val logProps = Props(new LeveldbEventLog(id, prefix)).withDispatcher("log.leveldb.write-dispatcher")
+    val logProps = Props(new LeveldbEventLog(id, prefix)).withDispatcher("eventuate.log.leveldb.write-dispatcher")
     if (batching) Props(new BatchingEventLog(logProps)) else logProps
   }
 }

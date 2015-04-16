@@ -22,9 +22,6 @@ import akka.remote.transport.ThrottlerTransportAdapter.Direction
 import akka.testkit.TestProbe
 
 import com.rbmhtechnology.eventuate._
-import com.typesafe.config.ConfigFactory
-
-import scala.collection.immutable.Seq
 
 class ReplicatedORSetSpecMultiJvmNode1 extends ReplicatedORSetSpec
 class ReplicatedORSetSpecMultiJvmNode2 extends ReplicatedORSetSpec
@@ -35,13 +32,7 @@ object ReplicatedORSetConfig extends MultiNodeConfig {
 
   testTransport(on = true)
 
-  commonConfig(ConfigFactory.parseString(
-    s"""
-      |akka.loglevel = "ERROR"
-      |akka.test.single-expect-default = 10s
-      |log.replication.retry-interval = 1s
-      |log.replication.failure-detection-limit = 60s
-    """.stripMargin))
+  commonConfig(MultiNodeReplicationConfig.create("eventuate.log.replication.batch-size-max = 200"))
 }
 
 class ReplicatedORSetSpec extends MultiNodeSpec(ReplicatedORSetConfig) with MultiNodeWordSpec with MultiNodeReplicationEndpoint {

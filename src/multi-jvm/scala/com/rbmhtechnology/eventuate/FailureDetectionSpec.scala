@@ -20,10 +20,6 @@ import akka.remote.testkit.{MultiNodeSpec, MultiNodeConfig}
 import akka.remote.transport.ThrottlerTransportAdapter.Direction
 import akka.testkit.TestProbe
 
-import com.typesafe.config.ConfigFactory
-
-import scala.collection.immutable.Seq
-
 class FailureDetectionSpecMultiJvmNode1 extends FailureDetectionSpec
 class FailureDetectionSpecMultiJvmNode2 extends FailureDetectionSpec
 
@@ -33,14 +29,7 @@ object FailureDetectionConfig extends MultiNodeConfig {
 
   testTransport(on = true)
 
-  commonConfig(ConfigFactory.parseString(
-    s"""
-      |akka.loglevel = "ERROR"
-      |akka.test.single-expect-default = 10s
-      |log.replication.batch-size-max = 3
-      |log.replication.retry-interval = 1s
-      |log.replication.failure-detection-limit = 3s
-    """.stripMargin))
+  commonConfig(MultiNodeReplicationConfig.create("eventuate.log.replication.failure-detection-limit = 3s"))
 }
 
 class FailureDetectionSpec extends MultiNodeSpec(FailureDetectionConfig) with MultiNodeWordSpec with MultiNodeReplicationEndpoint {

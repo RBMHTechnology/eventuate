@@ -11,13 +11,7 @@ import org.scalatest._
 import scala.concurrent._
 import scala.concurrent.duration._
 
-object CRDTServiceSpec {
-  val config = ConfigFactory.parseString("log.leveldb.dir = target/test")
-}
-
-import CRDTServiceSpec._
-
-class CRDTServiceSpec  extends TestKit(ActorSystem("test", config)) with WordSpecLike with Matchers with EventLogSupport {
+class CRDTServiceSpec  extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with EventLogSupport {
   implicit class AwaitHelper[T](w: Awaitable[T]) {
     def await: T = Await.result(w, 3.seconds)
   }
