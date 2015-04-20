@@ -73,7 +73,7 @@ trait EventLogSupport extends BeforeAndAfterAll with BeforeAndAfterEach { this: 
   private var _log: ActorRef = _
 
   private lazy val storageLocations: List[File] =
-    List("log.leveldb.dir").map(s => new File(system.settings.config.getString(s)))
+    List("eventuate.log.leveldb.dir").map(s => new File(system.settings.config.getString(s)))
 
   override def beforeEach(): Unit = {
     _logCtr += 1
@@ -97,7 +97,7 @@ trait EventLogSupport extends BeforeAndAfterAll with BeforeAndAfterEach { this: 
     _logCtr.toString
 
   def logProps(logId: String): Props =
-    Props(new BatchingEventLog(Props(new TestEventLog(logId)).withDispatcher("log.leveldb.write-dispatcher")))
+    Props(new BatchingEventLog(Props(new TestEventLog(logId)).withDispatcher("eventuate.log.leveldb.write-dispatcher")))
 
   def system: ActorSystem
 }

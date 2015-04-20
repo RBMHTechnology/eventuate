@@ -18,30 +18,15 @@ package com.rbmhtechnology.eventuate
 
 import java.io.File
 
-import scala.collection.immutable.Seq
-
 import akka.actor._
 
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
-import com.typesafe.config.ConfigFactory
 
 import org.apache.commons.io.FileUtils
 
 class ReplicationNode(nodeId: String, logIds: Set[String], port: Int, connections: Set[ReplicationConnection]) {
-  val config = ConfigFactory.parseString(
-    s"""
-      |akka.remote.netty.tcp.hostname = "127.0.0.1"
-      |akka.remote.netty.tcp.port = ${port}
-      |akka.test.single-expect-default = 10s
-      |
-      |log.leveldb.dir = target/logs-system-${nodeId}
-      |log.replication.batch-size-max = 3
-      |log.replication.retry-interval = 1s
-      |log.replication.failure-detection-limit = 3s
-    """.stripMargin)
-
   val system: ActorSystem =
-    ActorSystem(ReplicationConnection.DefaultRemoteSystemName, config)
+    ActorSystem(ReplicationConnection.DefaultRemoteSystemName, ReplicationConfig.create(nodeId, port))
 
   cleanup()
   storageLocation.mkdirs()
@@ -65,8 +50,8 @@ class ReplicationNode(nodeId: String, logIds: Set[String], port: Int, connection
   }
 
   private def storageLocation: File =
-    new File(system.settings.config.getString("log.leveldb.dir"))
+    new File(system.settings.config.getString("eventuate.log.leveldb.dir"))
 
   private def localEndpoint(port: Int) =
-    s""""127.0.0.1:${port}""""
+    s"127.0.0.1:${port}"
 }

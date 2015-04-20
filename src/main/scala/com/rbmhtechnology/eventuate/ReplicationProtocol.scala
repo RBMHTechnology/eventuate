@@ -21,6 +21,11 @@ import akka.actor._
 import scala.collection.immutable.Seq
 
 object ReplicationProtocol {
+  /**
+   * Marker trait for protobuf-serializable replication protocol messages.
+   */
+  trait Format extends Serializable
+
   private[eventuate] object ReplicationEndpointInfo {
     /**
      * Creates a log identifier from `endpointId` and `logName`
@@ -36,7 +41,7 @@ object ReplicationProtocol {
    * @param endpointId Replication endpoint id.
    * @param logNames Names of logs managed by the replication endpoint.
    */
-  private[eventuate] case class ReplicationEndpointInfo(endpointId: String, logNames: Set[String]) {
+  private[eventuate] case class ReplicationEndpointInfo(endpointId: String, logNames: Set[String]) extends Format {
     /**
      * Creates a log identifier from this info object's `endpointId` and `logName`
      */
@@ -44,18 +49,17 @@ object ReplicationProtocol {
       ReplicationEndpointInfo.logId(endpointId, logName)
   }
 
-  private[eventuate] case object GetReplicationEndpointInfo
-  private[eventuate] case class GetReplicationEndpointInfoSuccess(info: ReplicationEndpointInfo)
+  private[eventuate] case object GetReplicationEndpointInfo extends Format
+  private[eventuate] case class GetReplicationEndpointInfoSuccess(info: ReplicationEndpointInfo) extends Format
 
-  private[eventuate] case object ReplicationDue
-  private[eventuate] case class SubscribeReplicator(targetLogId: String, replicator: ActorRef, filter: ReplicationFilter)
-
+  private[eventuate] case object ReplicationDue extends Format
+  private[eventuate] case class SubscribeReplicator(targetLogId: String, replicator: ActorRef, filter: ReplicationFilter) extends Format
 
   /**
    * Instructs a source log to read up to `maxNumEvents` starting `fromSequenceNr`
    * and applying the given replication `filter`.
    */
-  case class ReplicationRead(fromSequenceNr: Long, maxNumEvents: Int, filter: ReplicationFilter, targetLogId: String, correlationId: Int)
+  case class ReplicationRead(fromSequenceNr: Long, maxNumEvents: Int, filter: ReplicationFilter, targetLogId: String, correlationId: Int) extends Format
 
   /**
    * Success reply after a [[ReplicationRead]].
@@ -65,12 +69,12 @@ object ReplicationProtocol {
    *                                    or equal the sequence number of the last read
    *                                    event (if any).
    */
-  case class ReplicationReadSuccess(events: Seq[DurableEvent], lastSourceLogSequenceNrRead: Long, targetLogId: String, correlationId: Int)
+  case class ReplicationReadSuccess(events: Seq[DurableEvent], lastSourceLogSequenceNrRead: Long, targetLogId: String, correlationId: Int) extends Format
 
   /**
    * Failure reply after a [[ReplicationRead]].
    */
-  case class ReplicationReadFailure(cause: Throwable, targetLogId: String, correlationId: Int)
+  case class ReplicationReadFailure(cause: String, targetLogId: String, correlationId: Int) extends Format
 
   /**
    * Requests from a target log the last read position in the given source log.

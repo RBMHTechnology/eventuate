@@ -20,8 +20,6 @@ import akka.actor._
 import akka.remote.testkit._
 import akka.testkit.TestProbe
 
-import com.typesafe.config.ConfigFactory
-
 import scala.collection.immutable.Seq
 import scala.concurrent.duration._
 import scala.util._
@@ -41,15 +39,13 @@ object BasicReplicationThroughputConfig extends MultiNodeConfig {
   val nodeE = role("nodeE")
   val nodeF = role("nodeF")
 
-  commonConfig(ConfigFactory.parseString(
+  commonConfig(MultiNodeReplicationConfig.create(
     s"""
-      |akka.loglevel = "ERROR"
       |akka.remote.netty.tcp.maximum-frame-size = 512000b
-      |akka.test.single-expect-default = 10s
       |akka.testconductor.barrier-timeout = 60s
-      |log.replication.batch-size-max = 2000
-      |log.replication.retry-interval = 10s
-      |log.replication.failure-detection-limit = 60s
+      |
+      |eventuate.log.replication.batch-size-max = 2000
+      |eventuate.log.replication.retry-interval = 10s
     """.stripMargin))
 }
 

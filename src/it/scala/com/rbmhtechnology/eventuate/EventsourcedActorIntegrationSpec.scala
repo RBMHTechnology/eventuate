@@ -29,8 +29,6 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest._
 
 object EventsourcedActorIntegrationSpec {
-  val config = ConfigFactory.parseString("log.leveldb.dir = target/test")
-
   case class Cmd(payloads: String*)
 
   class SampleActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
@@ -162,9 +160,9 @@ object EventsourcedActorIntegrationSpec {
   }
 }
 
-import EventsourcedActorIntegrationSpec._
+class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with EventLogSupport {
+  import EventsourcedActorIntegrationSpec._
 
-class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test", config)) with WordSpecLike with Matchers with EventLogSupport {
   var probe: TestProbe = _
 
   override def beforeEach(): Unit = {

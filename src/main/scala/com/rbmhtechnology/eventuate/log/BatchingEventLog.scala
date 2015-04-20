@@ -33,7 +33,7 @@ import com.rbmhtechnology.eventuate.EventsourcingProtocol._
  *                      created as child actor of this wrapper.
  */
 class BatchingEventLog(eventLogProps: Props) extends Actor {
-  val batchSizeLimit = context.system.settings.config.getInt("log.write.batch-size-max")
+  val batchSizeLimit = context.system.settings.config.getInt("eventuate.log.write.batch-size-max")
   val eventLog = context.actorOf(eventLogProps)
 
   var batch: Vector[Write] = Vector.empty

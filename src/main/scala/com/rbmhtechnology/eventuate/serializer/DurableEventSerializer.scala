@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.eventuate
+package com.rbmhtechnology.eventuate.serializer
 
 import akka.actor._
 import akka.serialization._
 
 import com.google.protobuf.ByteString
-import com.rbmhtechnology.eventuate.DurableEventFormats._
+import com.rbmhtechnology.eventuate.{DurableEvent, VectorTime}
+import com.rbmhtechnology.eventuate.serializer.DurableEventFormats._
 
 import scala.collection.JavaConverters._
 import scala.language.existentials
@@ -37,14 +38,14 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
   override def includeManifest: Boolean = true
 
   override def toBinary(o: AnyRef): Array[Byte] = o match {
-    case m: DurableEvent => durableEventMessageBuilder(m).build().toByteArray
+    case m: DurableEvent => durableEventFormatBuilder(m).build().toByteArray
     case _               => throw new IllegalArgumentException(s"can't serialize object of type ${o.getClass}")
   }
 
   override def fromBinary(bytes: Array[Byte], manifest: Option[Class[_]]): AnyRef = manifest match {
-    case None => durableEvent(DurableEventMessage.parseFrom(bytes))
+    case None => durableEvent(DurableEventFormat.parseFrom(bytes))
     case Some(c) => c match {
-      case DurableEventClass => durableEvent(DurableEventMessage.parseFrom(bytes))
+      case DurableEventClass => durableEvent(DurableEventFormat.parseFrom(bytes))
       case _                 => throw new IllegalArgumentException(s"can't deserialize object of type ${c}")
     }
   }
@@ -53,11 +54,11 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
   //  toBinary helpers
   // --------------------------------------------------------------------------------
 
-  private def durableEventMessageBuilder(durableEvent: DurableEvent): DurableEventMessage.Builder = {
-    val builder = DurableEventMessage.newBuilder
-    builder.setPayload(payloadMessageBuilder(durableEvent.payload.asInstanceOf[AnyRef]))
+  private[eventuate] def durableEventFormatBuilder(durableEvent: DurableEvent): DurableEventFormat.Builder = {
+    val builder = DurableEventFormat.newBuilder
+    builder.setPayload(payloadFormatBuilder(durableEvent.payload.asInstanceOf[AnyRef]))
     builder.setSystemTimestamp(durableEvent.systemTimestamp)
-    builder.setVectorTimestamp(vectorTimeMessageBuilder(durableEvent.vectorTimestamp))
+    builder.setVectorTimestamp(vectorTimeFormatBuilder(durableEvent.vectorTimestamp))
     builder.setEmitterReplicaId(durableEvent.emitterReplicaId)
     builder.setSourceLogId(durableEvent.sourceLogId)
     builder.setTargetLogId(durableEvent.targetLogId)
@@ -75,9 +76,9 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
     builder
   }
 
-  private def payloadMessageBuilder(payload: AnyRef) = {
+  private def payloadFormatBuilder(payload: AnyRef) = {
     val serializer = SerializationExtension(system).findSerializerFor(payload)
-    val builder = PayloadMessage.newBuilder()
+    val builder = PayloadFormat.newBuilder()
 
     if (serializer.includeManifest)
       builder.setPayloadManifest(ByteString.copyFromUtf8(payload.getClass.getName))
@@ -87,10 +88,10 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
     builder
   }
 
-  private def vectorTimeMessageBuilder(vectorTime: VectorTime): VectorTimeMessage.Builder = {
-    val builder = VectorTimeMessage.newBuilder
+  private def vectorTimeFormatBuilder(vectorTime: VectorTime): VectorTimeFormat.Builder = {
+    val builder = VectorTimeFormat.newBuilder
     vectorTime.value.foreach { entry =>
-      builder.addEntries(VectorTimeEntryMessage.newBuilder
+      builder.addEntries(VectorTimeEntryFormat.newBuilder
         .setProcessId(entry._1)
         .setLogicalTime(entry._2))
     }
@@ -101,39 +102,39 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
   //  fromBinary helpers
   // --------------------------------------------------------------------------------
 
-  private def durableEvent(durableEventMessage: DurableEventMessage): DurableEvent = {
+  private[eventuate] def durableEvent(durableEventFormat: DurableEventFormat): DurableEvent = {
     val emitterAggregateId: Option[String] =
-      if (durableEventMessage.hasEmitterAggregateId) Some(durableEventMessage.getEmitterAggregateId) else None
+      if (durableEventFormat.hasEmitterAggregateId) Some(durableEventFormat.getEmitterAggregateId) else None
 
-    val customRoutingDestinations = durableEventMessage.getCustomRoutingDestinationsList.iterator().asScala.foldLeft(Set.empty[String]) {
+    val customRoutingDestinations = durableEventFormat.getCustomRoutingDestinationsList.iterator().asScala.foldLeft(Set.empty[String]) {
       case (result, dest) => result + dest
     }
 
     DurableEvent(
-      payload = payload(durableEventMessage.getPayload),
-      systemTimestamp = durableEventMessage.getSystemTimestamp,
-      vectorTimestamp = vectorTime(durableEventMessage.getVectorTimestamp),
-      emitterReplicaId = durableEventMessage.getEmitterReplicaId,
+      payload = payload(durableEventFormat.getPayload),
+      systemTimestamp = durableEventFormat.getSystemTimestamp,
+      vectorTimestamp = vectorTime(durableEventFormat.getVectorTimestamp),
+      emitterReplicaId = durableEventFormat.getEmitterReplicaId,
       emitterAggregateId = emitterAggregateId,
       customRoutingDestinations = customRoutingDestinations,
-      sourceLogId = durableEventMessage.getSourceLogId,
-      targetLogId = durableEventMessage.getTargetLogId,
-      sourceLogSequenceNr = durableEventMessage.getSourceLogSequenceNr,
-      targetLogSequenceNr = durableEventMessage.getTargetLogSequenceNr)
+      sourceLogId = durableEventFormat.getSourceLogId,
+      targetLogId = durableEventFormat.getTargetLogId,
+      sourceLogSequenceNr = durableEventFormat.getSourceLogSequenceNr,
+      targetLogSequenceNr = durableEventFormat.getTargetLogSequenceNr)
   }
 
-  private def payload(payloadMessage: PayloadMessage): Any = {
-    val payloadClass = if (payloadMessage.hasPayloadManifest)
-      Some(system.dynamicAccess.getClassFor[AnyRef](payloadMessage.getPayloadManifest.toStringUtf8).get) else None
+  private def payload(payloadFormat: PayloadFormat): Any = {
+    val payloadClass = if (payloadFormat.hasPayloadManifest)
+      Some(system.dynamicAccess.getClassFor[AnyRef](payloadFormat.getPayloadManifest.toStringUtf8).get) else None
 
     SerializationExtension(system).deserialize(
-      payloadMessage.getPayload.toByteArray,
-      payloadMessage.getSerializerId,
+      payloadFormat.getPayload.toByteArray,
+      payloadFormat.getSerializerId,
       payloadClass).get
   }
 
-  private def vectorTime(vectorTimeMessage: VectorTimeMessage): VectorTime = {
-    VectorTime(vectorTimeMessage.getEntriesList.iterator.asScala.foldLeft(Map.empty[String, Long]) {
+  private def vectorTime(vectorTimeFormat: VectorTimeFormat): VectorTime = {
+    VectorTime(vectorTimeFormat.getEntriesList.iterator.asScala.foldLeft(Map.empty[String, Long]) {
       case (result, entry) => result.updated(entry.getProcessId, entry.getLogicalTime)
     })
   }

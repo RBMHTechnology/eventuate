@@ -74,13 +74,10 @@ class OrderExample(manager: ActorRef, view: ActorRef) extends Actor {
 }
 
 object OrderExample extends App {
-  val cc = ConfigFactory.load("common.conf")
-  val sc = ConfigFactory.load(args(0))
-
-  val system = ActorSystem(ReplicationConnection.DefaultRemoteSystemName, sc.withFallback(cc))
+  val system = ActorSystem(ReplicationConnection.DefaultRemoteSystemName, ConfigFactory.load(args(0)))
   val endpoint = ReplicationEndpoint(id => LeveldbEventLog.props(id, "scala"))(system)
   val manager = system.actorOf(Props(new OrderManager(endpoint.id, endpoint.logs(ReplicationEndpoint.DefaultLogName))))
   val view = system.actorOf(Props(new OrderView(endpoint.logs(ReplicationEndpoint.DefaultLogName))))
-  val driver = system.actorOf(Props(new OrderExample(manager, view)).withDispatcher("cli-dispatcher"))
+  val driver = system.actorOf(Props(new OrderExample(manager, view)).withDispatcher("eventuate.cli-dispatcher"))
 }
 

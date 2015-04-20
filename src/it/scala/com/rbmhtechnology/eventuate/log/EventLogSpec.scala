@@ -29,8 +29,6 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest._
 
 object EventLogSpec {
-  val config = ConfigFactory.parseString("log.leveldb.dir = target/test")
-
   val replicaIdA = "A"
   val replicaIdB = "B"
   val replicaIdC = "C"
@@ -49,11 +47,10 @@ object EventLogSpec {
     VectorTime(processId(replicaIdA) -> timeA, processId(replicaIdB) -> timeB)
 }
 
-import EventLogSpec._
-
-class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLike with Matchers with EventLogSupport {
+class EventLogSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with EventLogSupport {
   import EventsourcingProtocol._
   import ReplicationProtocol._
+  import EventLogSpec._
 
   var requestorProbe: TestProbe = _
   var replicatorProbe: TestProbe = _
@@ -474,7 +471,7 @@ class EventLogSpec extends TestKit(ActorSystem("test", config)) with WordSpecLik
     }
     "reply with a failure message if batch-read fails" in {
       log.tell(ReplicationRead(-1, Int.MaxValue, undefinedLogIdFilter, UndefinedLogId, 0), requestorProbe.ref)
-      requestorProbe.expectMsg(ReplicationReadFailure(boom, UndefinedLogId, 0))
+      requestorProbe.expectMsg(ReplicationReadFailure(boom.getMessage, UndefinedLogId, 0))
     }
     "recover the current sequence number on (re)start" in {
       generateEvents()

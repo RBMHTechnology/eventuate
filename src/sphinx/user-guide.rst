@@ -33,7 +33,10 @@ For modifying ``currentState``, applications can send ``Append`` commands which 
 
 The ``onEvent`` handler modifies ``currentState`` from successfully persisted events. If the actor is re-started, either after a crash or during normal application start, persisted events are replayed to ``onEvent`` so that internal state is automatically recovered before new commands are processed.
 
-The ``ExampleActor`` also implements an optional ``aggregateId`` and the mandatory ``replicaId`` to distinguish its instances (more on that later). The ``eventLog`` actor reference is used by an sourced actor to write events to and read events from an :ref:`event-log`. 
+The ``ExampleActor`` also implements an optional ``aggregateId`` and the mandatory ``replicaId`` to distinguish its instances (more on that later). The ``eventLog`` actor reference is used by an sourced actor to write events to and read events from an event log. 
+
+.. hint::
+   Section :ref:`event-log` explains how to create ``eventLog`` actor references. 
 
 Creating a single instance
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,7 +46,7 @@ In the following, a single instance of ``ExampleActor`` is created and two ``App
 .. includecode:: code/UserGuideDoc.scala
    :snippet: create-one-instance
 
-Section :ref:`event-log` explains how to create ``eventLog`` actor references. Sending a ``Print`` command 
+Sending a ``Print`` command 
 
 .. includecode:: code/UserGuideDoc.scala
    :snippet: print-one-instance

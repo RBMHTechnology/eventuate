@@ -17,12 +17,12 @@ A local event log actor with a LevelDB backend store can be created with:
 .. includecode:: ../code/EventLogDoc.scala
    :snippet: local-log
 
-Applications must provide a unique ``id`` for that log, the prefix is optional and defaults to ``log``. This will create a directory ``log-L1`` in which the LevelDB files are stored. The root directory of all local LevelDB directories can be configured with the ``log.leveldb.dir`` configuration key in ``application.conf``:
+Applications must provide a unique ``id`` for that log, the prefix is optional and defaults to ``log``. This will create a directory ``log-L1`` in which the LevelDB files are stored. The root directory of all local LevelDB directories can be configured with the ``eventuate.log.leveldb.dir`` configuration key in ``application.conf``:
 
 .. includecode:: ../conf/common.conf
    :snippet: leveldb-root-dir
 
-With this configuration, the absolute path of the LevelDB directory in the above example is ``/var/eventuate/log-L1``. If not configured, ``log.leveldb.dir`` defaults to ``target``.
+With this configuration, the absolute path of the LevelDB directory in the above example is ``/var/eventuate/log-L1``. If not configured, ``eventuate.log.leveldb.dir`` defaults to ``target``.
 
 .. _replicated-event-log:
 
@@ -59,19 +59,24 @@ The distribution of ``L``, ``M`` and ``N`` across locations may also differ::
    Event replication is reliable and fault-tolerant. Replicated events are also guaranteed to be written *exactly-once* to a target log. This is possible because replication progress metadata are stored along with replicated events in the target log. This allows a replication target to reliably detect and ignore duplicates. Event-sourced actors and views can therefore rely on receiving a de-duplicated event stream. Event replication can also recover from crashes of source and target locations i.e. event replication automatically resumes when a crashed location recovers.
 
 Replication endpoints
-~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^
 
 Events are replicated over *replication connections* that are established between *replication endpoints*. A location may have one or more replication endpoints and a replication endpoint can manage one or more event logs. The following examples assume two locations ``1`` and ``2`` and two replicated event logs ``L`` and ``M``::
 
     L1 ---- L2
     M1 ---- M2
 
-Each location has a ``ReplicationEndpoint`` that manages the local event logs. The network address of a replication endpoint is configured in ``application.conf``. For location ``1`` it is:
+Each location has a ``ReplicationEndpoint`` that manages the local event logs. Replication endpoints communicate with each other via `Akka Remoting`_ which must be enabled by all locations in their ``application.conf``:
+
+.. includecode:: ../conf/location-1.conf
+   :snippet: remoting-conf
+
+The network address of the replication endpoint at location ``1`` is:
 
 .. includecode:: ../conf/location-1.conf
    :snippet: endpoint-address
 
-For location ``2`` it is:
+At location ``2`` it is:
 
 .. includecode:: ../conf/location-2.conf
    :snippet: endpoint-address
@@ -96,15 +101,17 @@ The event log actors that are created by a ``ReplicationEndpoint`` can be obtain
 .. hint::
    Further ``ReplicationEndpoint`` creation options are described in the API documentation of the ReplicationEndpoint_ and ReplicationConnection_ companion objects. A complete reference of configuration options is given in section :ref:`configuration`.
 
+.. _replication-filters:
+
 Replication filters
-~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^
 
 By default, all events are replicated. Applications may provide ``ReplicationFilter``\ s to limit replication to a subset of events. A custom replication filter can be defined, by extending ReplicationFilter_ and implementing a filter predicate (method ``apply``). For example, the following replication filter selects DurableEvent_\ s with a matching ``emitterAggregateId``:
 
 .. includecode:: ../code/EventLogDoc.scala
    :snippet: replication-filter-definition
 
-Replication filters can be defined per ``ReplicationConnection`` and event log name. They must be serializable because they are transferred to a remote replication endpoint and applied there while reading from a *source event log* during replication. The following example configures a replication filter for log ``L`` so that only events with a defined ``emitterAggregateId`` of value ``order-17`` are replicated from the remote source log:
+Replication filters can be defined per ``ReplicationConnection`` and event log name. They are transferred to a remote replication endpoint and applied there while reading from a *source event log* during replication. The following example configures a replication filter for log ``L`` so that only events with a defined ``emitterAggregateId`` of value ``order-17`` are replicated from the remote source log:
 
 .. includecode:: ../code/EventLogDoc.scala
    :snippet: replication-filter-application
@@ -116,8 +123,11 @@ Replication filters can also be composed. The following creates a composed filte
 
 For the definition of filter logic based on application-defined events, replication filters should use the ``payload`` field of ``DurableEvent``.
 
+.. hint::
+   Serialization of replication filters can be customized as described in section :ref:`replication-filter-serialization`.
+
 Failure detection
-~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^
 
 Replication endpoints can notify applications about availability and un-availability of remote event logs. They can become unavailable either during a network partition, a crash or a scheduled downtime of their hosting application. A local replication endpoint publishes
 
@@ -129,7 +139,7 @@ Both messages are defined in ReplicationEndpoint_. Their ``endpointId`` paramete
 .. includecode:: ../conf/common.conf
    :snippet: failure-detection-limit
 
-It instructs the failure detector to publish an ``Unavailable`` message if there is no heartbeat from the remote replication endpoint within 60 seconds. ``Available`` and ``Unavailable`` messages are published periodically at intervals of ``log.replication.failure-detection-limit``.
+It instructs the failure detector to publish an ``Unavailable`` message if there is no heartbeat from the remote replication endpoint within 60 seconds. ``Available`` and ``Unavailable`` messages are published periodically at intervals of ``eventuate.log.replication.failure-detection-limit``.
 
 .. _Akka Remoting: http://doc.akka.io/docs/akka/2.3.9/scala/remoting.html
 .. _event stream: http://doc.akka.io/docs/akka/2.3.9/scala/event-bus.html#event-stream

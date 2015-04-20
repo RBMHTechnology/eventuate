@@ -28,8 +28,6 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest._
 
 object EventsourcedActorThroughputSpec {
-  val config = ConfigFactory.parseString("log.leveldb.dir = target/test")
-
   class Writer1(val replicaId: String, val eventLog: ActorRef, override val stateSync: Boolean, probe: ActorRef) extends EventsourcedActor {
     var startTime: Long = 0L
     var stopTime: Long = 0L
@@ -90,9 +88,9 @@ object EventsourcedActorThroughputSpec {
   }
 }
 
-import EventsourcedActorThroughputSpec._
+class EventsourcedActorThroughputSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with EventLogSupport {
+  import EventsourcedActorThroughputSpec._
 
-class EventsourcedActorThroughputSpec extends TestKit(ActorSystem("test", config)) with WordSpecLike with Matchers with EventLogSupport {
   var probe: TestProbe = _
 
   override def beforeEach(): Unit = {

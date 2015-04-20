@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.eventuate
+package com.rbmhtechnology.eventuate.serializer
 
 import akka.actor._
 import akka.serialization.{SerializationExtension, Serializer}
-import com.typesafe.config.ConfigFactory
+
+import com.rbmhtechnology.eventuate._
+
 import org.scalatest._
 
-import scala.concurrent.duration._
-
 object DurableEventSerializerSpec {
-  val config = ConfigFactory.parseString(
-    """
-      |akka.actor.serializers {
-      |  eventuate-test = "com.rbmhtechnology.eventuate.DurableEventSerializerSpec$ExamplePayloadSerializer"
-      |}
-      |
-      |akka.actor.serialization-bindings {
-      |  "com.rbmhtechnology.eventuate.DurableEventSerializerSpec$ExamplePayload" = eventuate-test
-      |}
-      |
-      |akka.remote.netty.tcp.port=2553
-    """.stripMargin)
-
   case class ExamplePayload(foo: String, bar: String)
 
   /**
@@ -58,12 +45,8 @@ object DurableEventSerializerSpec {
         ExamplePayload(s(1), s(0))
     }
   }
-}
 
-class DurableEventSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
-  import com.rbmhtechnology.eventuate.DurableEventSerializerSpec._
-
-  private val event = DurableEvent(
+  val event = DurableEvent(
     payload = ExamplePayload("foo", "bar"),
     systemTimestamp = 1L,
     vectorTimestamp = VectorTime("A" -> 1L, "B" -> 2L),
@@ -74,33 +57,39 @@ class DurableEventSerializerSpec extends WordSpec with Matchers with BeforeAndAf
     targetLogId = "Y",
     sourceLogSequenceNr = 17L,
     targetLogSequenceNr = 18L)
+}
 
-  private var defaultSystem: ActorSystem = _
-  private var customSystem: ActorSystem = _
+class DurableEventSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
+  import DurableEventSerializerSpec._
 
-  override protected def beforeAll(): Unit = {
-    defaultSystem = ActorSystem("test-default")
-    customSystem = ActorSystem("test-custom", config)
+  val config =
+    """
+      |akka.actor.serializers {
+      |  eventuate-test = "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayloadSerializer"
+      |}
+      |akka.actor.serialization-bindings {
+      |  "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayload" = eventuate-test
+      |}
+    """.stripMargin
 
-  }
+  val support = new SerializerSpecSupport(
+    ReplicationConfig.create("A", 2552),
+    ReplicationConfig.create("B", 2553, config))
 
-  override protected def afterAll(): Unit = {
-    defaultSystem.shutdown()
-    customSystem.shutdown()
+  override def afterAll(): Unit =
+    support.shutdown()
 
-    defaultSystem.awaitTermination(10.seconds)
-    customSystem.awaitTermination(10.seconds)
-  }
+  import support._
 
   "A DurableEventSerializer" must {
     "support default payload serialization" in {
-      val serialization = SerializationExtension(defaultSystem)
+      val serialization = SerializationExtension(system1)
       val expected = event
 
       serialization.deserialize(serialization.serialize(event).get, classOf[DurableEvent]).get should be(expected)
     }
     "support custom payload serialization" in {
-      val serialization = SerializationExtension(customSystem)
+      val serialization = SerializationExtension(system2)
       val expected = event.copy(ExamplePayload("bar", "foo"))
 
       serialization.deserialize(serialization.serialize(event).get, classOf[DurableEvent]).get should be(expected)
