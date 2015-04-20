@@ -229,7 +229,11 @@
 </div>
 <p>For modifying <code class="docutils literal"><span class="pre">currentState</span></code>, applications can send <code class="docutils literal"><span class="pre">Append</span></code> commands which are handled by the <code class="docutils literal"><span class="pre">onCommand</span></code> handler. From an <code class="docutils literal"><span class="pre">Append</span></code> command, the handler derives an <code class="docutils literal"><span class="pre">Appended</span></code> event and <code class="docutils literal"><span class="pre">persist</span></code>s it to the given <code class="docutils literal"><span class="pre">eventLog</span></code>. If persistence succeeds, the <code class="docutils literal"><span class="pre">onEvent</span></code> handler is called with the persisted event and the command sender is informed about successful processing. If persistence fails, the command sender is informed about the failure so that it can retry, if needed.</p>
 <p>The <code class="docutils literal"><span class="pre">onEvent</span></code> handler modifies <code class="docutils literal"><span class="pre">currentState</span></code> from successfully persisted events. If the actor is re-started, either after a crash or during normal application start, persisted events are replayed to <code class="docutils literal"><span class="pre">onEvent</span></code> so that internal state is automatically recovered before new commands are processed.</p>
-<p>The <code class="docutils literal"><span class="pre">ExampleActor</span></code> also implements an optional <code class="docutils literal"><span class="pre">aggregateId</span></code> and the mandatory <code class="docutils literal"><span class="pre">replicaId</span></code> to distinguish its instances (more on that later). The <code class="docutils literal"><span class="pre">eventLog</span></code> actor reference is used by an sourced actor to write events to and read events from an <a class="reference internal" href="reference/event-log.html#event-log"><span>Event log</span></a>.</p>
+<p>The <code class="docutils literal"><span class="pre">ExampleActor</span></code> also implements an optional <code class="docutils literal"><span class="pre">aggregateId</span></code> and the mandatory <code class="docutils literal"><span class="pre">replicaId</span></code> to distinguish its instances (more on that later). The <code class="docutils literal"><span class="pre">eventLog</span></code> actor reference is used by an sourced actor to write events to and read events from an event log.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Section <a class="reference internal" href="reference/event-log.html#event-log"><span>Event log</span></a> explains how to create <code class="docutils literal"><span class="pre">eventLog</span></code> actor references.</p>
+</div>
 <div class="section" id="creating-a-single-instance">
 <h3>Creating a single instance<a class="headerlink" href="#creating-a-single-instance" title="Permalink to this headline">¶</a></h3>
 <p>In the following, a single instance of <code class="docutils literal"><span class="pre">ExampleActor</span></code> is created and two <code class="docutils literal"><span class="pre">Append</span></code> commands are sent to it:</p>
@@ -242,7 +246,7 @@
 <span class="n">ea1_r1</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;b&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
-<p>Section <a class="reference internal" href="reference/event-log.html#event-log"><span>Event log</span></a> explains how to create <code class="docutils literal"><span class="pre">eventLog</span></code> actor references. Sending a <code class="docutils literal"><span class="pre">Print</span></code> command</p>
+<p>Sending a <code class="docutils literal"><span class="pre">Print</span></code> command</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">ea1_r1</span> <span class="o">!</span> <span class="nc">Print</span>
 </pre></div>
 </div>

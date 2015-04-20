@@ -280,43 +280,6 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
                           views with an undefined <code>aggregateId</code>.</p></dd><dt class="param">customRoutingDestinations</dt><dd class="cmt"><p>Aggregate ids of additional, custom routing destinations. If non-empty, the event is
                                  additionally routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actors and views with a matching <code>aggregateId</code>.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Source log id from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></dd><dt class="param">targetLogId</dt><dd class="cmt"><p>Target log id from last replication.</p></dd><dt class="param">sourceLogSequenceNr</dt><dd class="cmt"><p>Source log sequence number from last replication.</p></dd><dt class="param">targetLogSequenceNr</dt><dd class="cmt"><p>Target log sequence number from last replication.
 </p></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.DurableEventFormats" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="DurableEventFormatsextendsObject"></a>
-      <a id="DurableEventFormats:DurableEventFormats"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="DurableEventFormats.html"><span class="name">DurableEventFormats</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@DurableEventFormatsextendsObject" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.DurableEventSerializer" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="DurableEventSerializerextendsSerializer"></a>
-      <a id="DurableEventSerializer:DurableEventSerializer"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="DurableEventSerializer.html"><span class="name">DurableEventSerializer</span></a><span class="result"> extends <span class="extype" name="akka.serialization.Serializer">Serializer</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@DurableEventSerializerextendsSerializer" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">A <a href="https://developers.google.com/protocol-buffers/" target="_blank">Protocol Buffers</a> based serializer for <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s.</p><div class="fullcomment"><div class="comment cmt"><p>A <a href="https://developers.google.com/protocol-buffers/" target="_blank">Protocol Buffers</a> based serializer for <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s.
-Serialization of <code>DurableEvent</code>'s <code>payload</code> is delegated to a serializer that is configured with Akka's
-<a href="http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html" target="_blank">serialization extension</a> mechanism.
-</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EventsourcedextendsActor"></a>
       <a id="Eventsourced:Eventsourced"></a>
@@ -660,6 +623,23 @@ replicated only between event logs with matching names.
       </a>
     </span>
       
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationFilter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReplicationFilter"></a>
+      <a id="ReplicationFilter:ReplicationFilter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ReplicationFilter$.html"><span class="name">ReplicationFilter</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@ReplicationFilter" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicationProtocol"></a>
       <a id="ReplicationProtocol:ReplicationProtocol"></a>
@@ -741,6 +721,23 @@ replicated only between event logs with matching names.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.package@log" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.serializer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="serializer"></a>
+      <a id="serializer:serializer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="serializer/package.html"><span class="name">serializer</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@serializer" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>

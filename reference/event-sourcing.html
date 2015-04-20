@@ -401,23 +401,38 @@
 </div>
 <div class="section" id="custom-serialization">
 <h1>Custom serialization<a class="headerlink" href="#custom-serialization" title="Permalink to this headline">¶</a></h1>
-<p>Custom serializers for application-defined events can be configured with Akka&#8217;s <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html">serialization extension</a> mechanism. For example, an application that wants to use a custom <code class="docutils literal"><span class="pre">DomainEventSerializer</span></code> for events of type <code class="docutils literal"><span class="pre">DomainEvent</span></code> (both defined in package <code class="docutils literal"><span class="pre">com.example</span></code>) should add the following configuration to <code class="docutils literal"><span class="pre">application.conf</span></code>:</p>
+<div class="section" id="custom-event-serialization">
+<h2>Custom event serialization<a class="headerlink" href="#custom-event-serialization" title="Permalink to this headline">¶</a></h2>
+<p>Custom serializers for application-defined events can be configured with Akka&#8217;s <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html">serialization extension</a> mechanism. For example, an application that wants to use a custom <code class="docutils literal"><span class="pre">MyDomainEventSerializer</span></code> for events of type <code class="docutils literal"><span class="pre">MyDomainEvent</span></code> (both defined in package <code class="docutils literal"><span class="pre">com.example</span></code>) should add the following configuration to <code class="docutils literal"><span class="pre">application.conf</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span><span class="o">.</span><span class="n">actor</span> <span class="o">{</span>
   <span class="n">serializers</span> <span class="o">{</span>
-    <span class="n">domain</span><span class="o">-</span><span class="n">event</span><span class="o">-</span><span class="n">serializer</span> <span class="k">=</span> <span class="s">&quot;com.example.DomainEventSerializer&quot;</span>
+    <span class="n">domain</span><span class="o">-</span><span class="n">event</span><span class="o">-</span><span class="n">serializer</span> <span class="k">=</span> <span class="s">&quot;com.example.MyDomainEventSerializer&quot;</span>
   <span class="o">}</span>
 
   <span class="n">serialization</span><span class="o">-</span><span class="n">bindings</span> <span class="o">{</span>
-    <span class="s">&quot;com.example.DomainEvent&quot;</span> <span class="k">=</span> <span class="n">domain</span><span class="o">-</span><span class="n">event</span><span class="o">-</span><span class="n">serializer</span>
+    <span class="s">&quot;com.example.MyDomainEvent&quot;</span> <span class="k">=</span> <span class="n">domain</span><span class="o">-</span><span class="n">event</span><span class="o">-</span><span class="n">serializer</span>
   <span class="o">}</span>
 <span class="o">}</span>
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">DomainEventSerializer</span></code> must extend Akka’s <a class="reference external" href="http://doc.akka.io/api/akka/2.3.9/#akka.serialization.Serializer">Serializer</a> trait. Please refer to Akka’s <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html">serialization extension</a> documentation for further details.</p>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">Eventuate stores application-defined events as <code class="docutils literal"><span class="pre">payload</span></code> of <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s. <code class="docutils literal"><span class="pre">DurableEvent</span></code> itself is serialized with <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEventSerializer">DurableEventSerializer</a>, a <a class="reference external" href="https://developers.google.com/protocol-buffers/">Protocol Buffers</a> serializer that delegates <code class="docutils literal"><span class="pre">payload</span></code> serialization to a custom serializer. If no custom serializer is configured, one of Akka’s default serializer is used.</p>
+<p><code class="docutils literal"><span class="pre">MyDomainEventSerializer</span></code> must extend Akka’s <a class="reference external" href="http://doc.akka.io/api/akka/2.3.9/#akka.serialization.Serializer">Serializer</a> trait. Please refer to Akka’s <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html">serialization extension</a> documentation for further details.</p>
+<p>Eventuate stores application-defined events as <code class="docutils literal"><span class="pre">payload</span></code> of <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s. <code class="docutils literal"><span class="pre">DurableEvent</span></code> itself is serialized with <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEventSerializer">DurableEventSerializer</a>, a <a class="reference external" href="https://developers.google.com/protocol-buffers/">Protocol Buffers</a> serializer that delegates <code class="docutils literal"><span class="pre">payload</span></code> serialization to a custom serializer. If no custom serializer is configured, one of Akka’s default serializers is used.</p>
 </div>
+<div class="section" id="custom-replication-filter-serialization">
+<span id="replication-filter-serialization"></span><h2>Custom replication filter serialization<a class="headerlink" href="#custom-replication-filter-serialization" title="Permalink to this headline">¶</a></h2>
+<p>in the same way as application-defined events, custom serializers for <a class="reference internal" href="event-log.html#replication-filters"><span>Replication filters</span></a> can also be configured via Akka&#8217;s <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html">serialization extension</a> mechanism. For example, an application that wants to use a custom <code class="docutils literal"><span class="pre">MyReplicationFilterSerializer</span></code> for replication filters of type <code class="docutils literal"><span class="pre">MyReplicationFilter</span></code> (both defined in package <code class="docutils literal"><span class="pre">com.example</span></code>) should add the following configuration to <code class="docutils literal"><span class="pre">application.conf</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span><span class="o">.</span><span class="n">actor</span> <span class="o">{</span>
+  <span class="n">serializers</span> <span class="o">{</span>
+    <span class="n">custom</span><span class="o">-</span><span class="n">filter</span><span class="o">-</span><span class="n">serializer</span> <span class="k">=</span> <span class="s">&quot;com.example.MyReplicationFilterSerializer&quot;</span>
+  <span class="o">}</span>
+
+  <span class="n">serialization</span><span class="o">-</span><span class="n">bindings</span> <span class="o">{</span>
+    <span class="s">&quot;com.example.MyReplicationFilter&quot;</span> <span class="k">=</span> <span class="n">custom</span><span class="o">-</span><span class="n">filter</span><span class="o">-</span><span class="n">serializer</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Custom replication filter serialization also works if the custom filter is part of a composite filter that has been created with <code class="docutils literal"><span class="pre">and</span></code> or <code class="docutils literal"><span class="pre">or</span></code> combinators (see <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> API). If no custom filter serializer is configured, one of Akka’s default serializers is used.</p>
 <table class="docutils footnote" frame="void" id="id12" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
@@ -460,6 +475,7 @@
 <tr><td class="label"><a class="fn-backref" href="#id9">[7]</a></td><td>The routing destinations of a <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a> can be obtained with method <code class="docutils literal"><span class="pre">routingDestinations</span></code>.</td></tr>
 </tbody>
 </table>
+</div>
 </div>
 
 
