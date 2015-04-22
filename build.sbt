@@ -23,12 +23,17 @@ parallelExecution in Test := false
 
 fork in Test := true
 
+resolvers += "krasserm at bintray" at "http://dl.bintray.com/krasserm/maven"
+
 libraryDependencies ++= Seq(
+  "com.github.krasserm"             %% "akka-persistence-kafka"        % "0.3.4" intransitive(),
   "com.google.protobuf"              % "protobuf-java"                 % "2.5.0",
   "com.typesafe.akka"               %% "akka-remote"                   % akkaVersion,
   "com.typesafe.akka"               %% "akka-testkit"                  % akkaVersion  % "test,it",
   "com.typesafe.akka"               %% "akka-multi-node-testkit"       % akkaVersion  % "test",
   "commons-io"                       % "commons-io"                    % "2.4",
+  "org.apache.curator"               % "curator-test"                  % "2.7.1"      % "test,it",
+  "org.apache.kafka"                %% "kafka"                         % "0.8.2.1",
   "org.functionaljava"               % "functionaljava"                % "4.2-beta-1" % "test",
   "org.functionaljava"               % "functionaljava-java8"          % "4.2-beta-1" % "test,it",
   "org.fusesource.leveldbjni"        % "leveldbjni-all"                % "1.7",
@@ -39,8 +44,6 @@ libraryDependencies ++= Seq(
 // ----------------------------------------------------------------------
 //  Documentation
 // ----------------------------------------------------------------------
-
-import com.typesafe.sbt.site.SphinxSupport.Sphinx
 
 site.settings
 

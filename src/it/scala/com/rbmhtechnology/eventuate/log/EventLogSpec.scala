@@ -16,6 +16,7 @@
 
 package com.rbmhtechnology.eventuate.log
 
+
 import scala.collection.immutable.Seq
 
 import akka.actor._
@@ -23,12 +24,17 @@ import akka.testkit.{TestProbe, TestKit}
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.DurableEvent._
-import com.rbmhtechnology.eventuate.log.EventLogSupport._
-import com.typesafe.config.ConfigFactory
 
 import org.scalatest._
 
 object EventLogSpec {
+  case object GetSequenceNr
+  case class GetSequenceNrSuccess(sequenceNr: Long)
+
+  case class SetReplicationProgress(logId: String, progress: Long)
+  case class GetReplicationProgress(logId: String)
+  case class GetReplicationProgressSuccess(progress: Long)
+
   val replicaIdA = "A"
   val replicaIdB = "B"
   val replicaIdC = "C"
@@ -47,7 +53,7 @@ object EventLogSpec {
     VectorTime(processId(replicaIdA) -> timeA, processId(replicaIdB) -> timeB)
 }
 
-class EventLogSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with EventLogSupport {
+abstract class EventLogSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach {
   import EventsourcingProtocol._
   import ReplicationProtocol._
   import EventLogSpec._
@@ -59,9 +65,10 @@ class EventLogSpec extends TestKit(ActorSystem("test")) with WordSpecLike with M
   var generatedEvents: Vector[DurableEvent] = Vector.empty
   var replicatedEvents: Vector[DurableEvent] = Vector.empty
 
-  override def beforeEach(): Unit = {
-    super.beforeEach()
+  def logId: String
+  def log: ActorRef
 
+  override def beforeEach(): Unit = {
     requestorProbe = TestProbe()
     replicatorProbe = TestProbe()
     notificationProbe = TestProbe()
@@ -72,6 +79,7 @@ class EventLogSpec extends TestKit(ActorSystem("test")) with WordSpecLike with M
   override def afterEach(): Unit = {
     generatedEvents = Vector.empty
     replicatedEvents = Vector.empty
+
     system.eventStream.unsubscribe(notificationProbe.ref, classOf[Updated])
   }
 

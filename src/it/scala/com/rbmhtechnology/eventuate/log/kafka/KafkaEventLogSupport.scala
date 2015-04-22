@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.eventuate.log
+package com.rbmhtechnology.eventuate.log.kafka
 
 import java.io.File
-
-import scala.collection.immutable.Seq
 
 import akka.actor._
 import akka.testkit.TestKit
 
-import org.apache.commons.io.FileUtils
-import org.iq80.leveldb.WriteBatch
+import com.rbmhtechnology.eventuate._
 import org.scalatest._
 
-import com.rbmhtechnology.eventuate._
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.ReadResult
+import scala.collection.immutable.Seq
+import scala.concurrent.Future
 
-object EventLogSupport {
+object KafkaEventLogSupport {
   case object GetSequenceNr
   case class GetSequenceNrSuccess(sequenceNr: Long)
 
@@ -39,25 +35,27 @@ object EventLogSupport {
   case class GetReplicationProgress(logId: String)
   case class GetReplicationProgressSuccess(progress: Long)
 
-  class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") {
-    override def replay(from: Long, classifier: Int)(f: (DurableEvent) => Unit): Unit =
-      if (from == -1L) throw boom else super.replay(from, classifier)(f)
-
-    override def read(from: Long, max: Int, filter: ReplicationFilter): ReadResult =
-      if (from == -1L) throw boom else super.read(from, max, filter)
-
-    override def write(events: Seq[DurableEvent], batch: WriteBatch): Unit = events match {
-      case es if es.map(_.payload).contains("boom") => throw boom
-      case _ => super.write(events, batch)
+  class TestEventLog(id: String) extends KafkaEventLog(id) {
+    override def writeAsync(events: Seq[DurableEvent]): Future[Seq[DurableEvent]] = events match {
+      case es if es.map(_.payload).contains("boom") => Future.failed(boom)
+      case _ => super.writeAsync(events)
     }
 
+    override def replay(from: Long)(f: (DurableEvent) => Unit): Unit =
+      if (from == -1L) throw boom else super.replay(from)(f)
+
+    /*
+    override def read(from: Long, max: Int, filter: ReplicationFilter): ReadResult =
+      if (from == -1L) throw boom else super.read(from, max, filter)
+    */
+
     override def unhandled(message: Any): Unit = message match {
-      case GetSequenceNr =>
-        sender() ! GetSequenceNrSuccess(sequenceNr)
-      case GetReplicationProgress(logId) =>
-        sender() ! GetReplicationProgressSuccess(replicationProgressMap.readReplicationProgress(logId))
-      case SetReplicationProgress(logId, sequenceNr) =>
-        withBatch(batch => replicationProgressMap.writeReplicationProgress(logId, sequenceNr, batch))
+      //case GetSequenceNr =>
+      //  sender() ! GetSequenceNrSuccess(sequenceNr)
+      //case GetReplicationProgress(logId) =>
+      //  sender() ! GetReplicationProgressSuccess(replicationProgressMap.readReplicationProgress(logId))
+      //case SetReplicationProgress(logId, sequenceNr) =>
+      //  withBatch(batch => replicationProgressMap.writeReplicationProgress(logId, sequenceNr, batch))
       case "boom" =>
         throw boom
       case _ =>
@@ -66,9 +64,10 @@ object EventLogSupport {
   }
 }
 
-trait EventLogSupport extends BeforeAndAfterAll with BeforeAndAfterEach { this: Suite =>
-  import EventLogSupport._
+trait KafkaEventLogSupport extends BeforeAndAfterAll with BeforeAndAfterEach { this: Suite =>
+  import KafkaEventLogSupport._
 
+  private var _server: KafkaServer = _
   private var _logCtr: Int = 0
   private var _log: ActorRef = _
 
@@ -76,18 +75,20 @@ trait EventLogSupport extends BeforeAndAfterAll with BeforeAndAfterEach { this: 
     List("eventuate.log.leveldb.dir").map(s => new File(system.settings.config.getString(s)))
 
   override def beforeEach(): Unit = {
+    super.beforeEach()
+
     _logCtr += 1
     _log = system.actorOf(logProps(logId))
   }
 
   override def beforeAll(): Unit = {
-    storageLocations.foreach(FileUtils.deleteDirectory)
-    storageLocations.foreach(_.mkdirs())
+    _server = new KafkaServer("target/logs")
   }
 
   override def afterAll(): Unit = {
     TestKit.shutdownActorSystem(system)
-    storageLocations.foreach(FileUtils.deleteDirectory)
+    _server.stop()
+    _server.cleanup()
   }
 
   def log: ActorRef =
@@ -97,7 +98,7 @@ trait EventLogSupport extends BeforeAndAfterAll with BeforeAndAfterEach { this: 
     _logCtr.toString
 
   def logProps(logId: String): Props =
-    Props(new BatchingEventLog(Props(new TestEventLog(logId)).withDispatcher("eventuate.log.leveldb.write-dispatcher")))
+    Props(new TestEventLog(logId)).withDispatcher("eventuate.log.kafka.write-dispatcher")
 
   def system: ActorSystem
 }

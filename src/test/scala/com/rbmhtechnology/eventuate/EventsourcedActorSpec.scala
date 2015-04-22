@@ -436,13 +436,11 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         actor ! CmdDelayed("b")
         actor ! Cmd("c")
         val write1 = logProbe.expectMsgClass(classOf[Write])
-        val delay = logProbe.expectMsgClass(classOf[Delay])
         val write2 = logProbe.expectMsgClass(classOf[Write])
         actor ! WriteSuccess(write1.events(0).copy(targetLogSequenceNr = 1L), instanceId)
-        actor ! DelayComplete(delay.commands(0), instanceId)
-        actor ! WriteSuccess(write2.events(0).copy(targetLogSequenceNr = 2L), instanceId)
         dstProbe.expectMsg(("a-1", timestampA(2), timestampA(1), 1))
         dstProbe.expectMsg(("b", timestampA(2), timestampA(1), 1))
+        actor ! WriteSuccess(write2.events(0).copy(targetLogSequenceNr = 2L), instanceId)
         dstProbe.expectMsg(("c-1", timestampA(2), timestampA(2), 2))
       }
     }

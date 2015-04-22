@@ -94,5 +94,14 @@ class DurableEventSerializerSpec extends WordSpec with Matchers with BeforeAndAf
 
       serialization.deserialize(serialization.serialize(event).get, classOf[DurableEvent]).get should be(expected)
     }
+    "support custom event batch serialization" in {
+      val serialization = SerializationExtension(system2)
+
+      val batch = DurableEventBatch(List(event, event))
+      val expectedEvent = event.copy(ExamplePayload("bar", "foo"))
+      val expectedBatch = DurableEventBatch(List(expectedEvent, expectedEvent))
+
+      serialization.deserialize(serialization.serialize(batch).get, classOf[DurableEventBatch]).get should be(expectedBatch)
+    }
   }
 }

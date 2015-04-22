@@ -16,15 +16,12 @@
 
 package com.rbmhtechnology.eventuate
 
-import com.rbmhtechnology.eventuate.EventsourcedActorIntegrationSpec.RouteeActor
-
 import scala.util._
 
 import akka.actor._
 import akka.testkit._
 
-import com.rbmhtechnology.eventuate.log.EventLogSupport
-import com.typesafe.config.ConfigFactory
+import com.rbmhtechnology.eventuate.log.kafka.KafkaEventLogSupport
 
 import org.scalatest._
 
@@ -62,7 +59,10 @@ object EventsourcedActorIntegrationSpec {
 
     override val onCommand: Receive = {
       case "get-acc" => sender() ! acc
-      case s: String => persist(s)(r => onEvent(r.get))
+      case s: String => persist(s) {
+        case Success(r) => onEvent(r)
+        case Failure(e) => throw e
+      }
     }
 
     override val onEvent: Receive = {
@@ -160,7 +160,7 @@ object EventsourcedActorIntegrationSpec {
   }
 }
 
-class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with EventLogSupport {
+class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with KafkaEventLogSupport {
   import EventsourcedActorIntegrationSpec._
 
   var probe: TestProbe = _
@@ -251,8 +251,7 @@ class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test")) with
       actor ! "delay"
       actor ! "persist"
       probe.expectMsg("a")
-      probe.expectMsg("b")
-      probe.expectMsg("a")
+      probe.expectMsgAllOf("a", "b")
     }
     "route events to custom destinations" in {
       val probe1 = TestProbe()

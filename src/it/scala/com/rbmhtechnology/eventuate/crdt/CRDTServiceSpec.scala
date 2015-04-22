@@ -3,15 +3,14 @@ package com.rbmhtechnology.eventuate.crdt
 import akka.actor._
 import akka.testkit._
 
-import com.rbmhtechnology.eventuate.log.EventLogSupport
-import com.typesafe.config.ConfigFactory
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSupport
 
 import org.scalatest._
 
 import scala.concurrent._
 import scala.concurrent.duration._
 
-class CRDTServiceSpec  extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with EventLogSupport {
+class CRDTServiceSpec  extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with LeveldbEventLogSupport {
   implicit class AwaitHelper[T](w: Awaitable[T]) {
     def await: T = Await.result(w, 3.seconds)
   }

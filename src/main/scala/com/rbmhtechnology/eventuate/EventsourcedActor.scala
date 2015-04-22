@@ -37,12 +37,11 @@ import akka.actor._
  */
 trait EventsourcedActor extends Eventsourced with ConditionalCommands with InternalStash {
   import EventsourcingProtocol._
+  import EventsourcedActor._
 
   type Handler[A] = Try[A] => Unit
 
   private var clock: VectorClock = _
-  private var delayRequests: Vector[Any] = Vector.empty
-  private var delayHandlers: Vector[Any => Unit] = Vector.empty
   private var writeRequests: Vector[DurableEvent] = Vector.empty
   private var writeHandlers: Vector[Handler[Any]] = Vector.empty
   private var writing: Boolean = false
@@ -75,18 +74,15 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
   //#
 
   /**
-   * Delays the given command, by looping it through the event log actor, and asynchronously
-   * calls `handler` with the command. This allows applications to delay command handling to
-   * that point in the future where all previously called `persist` or `persistN` operations
-   * completed. This method can only be used if this actor's `stateSync` is set to `false`.
-   * The `handler` is called during a separate message dispatch by this actor, hence, it is
-   * safe to access internal state within `handler`.
+   * Delays handling of `command` to that point in the future where all previously called `persist`
+   * or `persistN` operations completed. Therefore, using this method only makes sense if `stateSync`
+   * is set to `false`. The `handler` is called during a separate message dispatch by this actor,
+   * hence, it is safe to access internal state within `handler`.
+   *
+   * @see [[ConditionalCommand]]
    */
-  final def delay[A](command: A)(handler: A => Unit): Unit = {
-    if (stateSync) throw new DelayException("delay not supported with stateSync = true")
-    delayRequests = delayRequests :+ command
-    delayHandlers = delayHandlers :+ handler.asInstanceOf[Any => Unit]
-  }
+  final def delay[A](command: A)(handler: A => Unit): Unit =
+    self ! ConditionalCommand(currentTime, Delayed(command, handler, instanceId))
 
   /**
    * Persists a sequence of `events` and asynchronously calls `handler` with the persist
@@ -151,16 +147,8 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
   private[eventuate] def currentTime: VectorTime =
     clock.currentTime
 
-  private def delayPending: Boolean =
-    delayRequests.nonEmpty
-
   private def writePending: Boolean =
     writeRequests.nonEmpty
-
-  private def delay(): Unit = {
-    eventLog ! Delay(delayRequests, sender(), self, instanceId)
-    delayRequests = Vector.empty
-  }
 
   private def write(): Unit = {
     eventLog ! Write(writeRequests, sender(), self, instanceId)
@@ -209,9 +197,8 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
     //   (low prio, local communication at the moment)
     //
 
-    case DelayComplete(command, iid) => if (iid == instanceId) {
-      delayHandlers.head(command)
-      delayHandlers = delayHandlers.tail
+    case Delayed(command: Any, handler: Function1[Any, Unit], iid) => if (iid == instanceId) {
+      handler(command)
     }
     case WriteSuccess(event, iid) => if (iid == instanceId) {
       onLastConsumed(event)
@@ -241,14 +228,7 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
       if (writing) internalStash() else {
         onCommand(cmd)
 
-        val dPending = delayPending
         val wPending = writePending
-
-        if (dPending && wPending) throw new DelayException("""
-          |delay cannot be used in combination with persist.
-          |This limitation will be removed in later versions.""".stripMargin)
-
-        if (dPending) delay()
         if (wPending) write()
         if (wPending && stateSync) writing = true else if (stateSync) internalUnstash()
       }
@@ -265,10 +245,12 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
   }
 }
 
-/**
- * Thrown to indicate illegal use of method `delay` in [[EventsourcedActor]].
- */
-class DelayException(msg: String) extends RuntimeException(msg)
+private object EventsourcedActor {
+  /**
+   * Wraps a command that has been delayed with `EventsourcedActor.delay`.
+   */
+  case class Delayed[A](command: A, handler: A => Unit, instanceId: Int)
+}
 
 /**
  * Java API.

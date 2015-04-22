@@ -107,8 +107,6 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor {
           eventStream.publish(r)
           syslog.error(cause, "ReplicationRead failure")
       }
-    case Delay(commands, commandsSender, requestor, iid) =>
-      commands.foreach(cmd => requestor.tell(DelayComplete(cmd, iid), commandsSender))
     case WriteN(writes) =>
       val updated = writes.map(w => w.copy(events = prepareWrite(w.events)))
       val result = Try(withBatch(batch => updated.foreach(w => write(w.events, batch))))

@@ -21,6 +21,10 @@
 option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
+message DurableEventBatchFormat {
+  repeated DurableEventFormat events = 1;
+}
+
 message DurableEventFormat {
   optional PayloadFormat payload = 1;
   optional int64 systemTimestamp = 2;

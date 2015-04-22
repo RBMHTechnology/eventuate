@@ -18,6 +18,8 @@ package com.rbmhtechnology.eventuate
 
 import DurableEvent._
 
+import scala.collection.immutable.Seq
+
 /**
  * Provider API.
  *
@@ -95,3 +97,5 @@ object DurableEvent {
   def processId(replicaId: String, aggregateId: Option[String]): String =
     aggregateId.map(id => s"${replicaId}-${id}").getOrElse(replicaId)
 }
+
+case class DurableEventBatch(events: Seq[DurableEvent])

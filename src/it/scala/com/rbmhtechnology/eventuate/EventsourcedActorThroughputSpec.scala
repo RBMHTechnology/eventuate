@@ -22,8 +22,7 @@ import scala.util._
 import akka.actor._
 import akka.testkit._
 
-import com.rbmhtechnology.eventuate.log.EventLogSupport
-import com.typesafe.config.ConfigFactory
+import com.rbmhtechnology.eventuate.log.kafka.KafkaEventLogSupport
 
 import org.scalatest._
 
@@ -88,7 +87,7 @@ object EventsourcedActorThroughputSpec {
   }
 }
 
-class EventsourcedActorThroughputSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with EventLogSupport {
+class EventsourcedActorThroughputSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with KafkaEventLogSupport {
   import EventsourcedActorThroughputSpec._
 
   var probe: TestProbe = _
