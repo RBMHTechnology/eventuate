@@ -192,7 +192,9 @@
 
 <span class="n">eventuate</span> <span class="o">{</span>
   <span class="n">log</span><span class="o">.</span><span class="n">write</span> <span class="o">{</span>
-    <span class="k">#</span> <span class="nc">Maximum</span> <span class="n">write</span> <span class="n">batch</span> <span class="n">size</span> <span class="k">for</span> <span class="n">emitted</span> <span class="n">events</span> <span class="n">by</span> <span class="n">event</span><span class="o">-</span><span class="n">sourced</span> <span class="n">actors</span><span class="o">.</span>
+    <span class="k">#</span> <span class="nc">Maximum</span> <span class="n">write</span> <span class="n">batch</span> <span class="n">size</span> <span class="k">for</span> <span class="n">emitted</span> <span class="n">events</span> <span class="n">by</span> <span class="n">event</span><span class="o">-</span><span class="n">sourced</span> <span class="n">actors</span><span class="o">.</span> <span class="nc">It</span>
+    <span class="k">#</span> <span class="n">is</span> <span class="n">exceeded</span> <span class="k">if</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="n">events</span> <span class="n">in</span> <span class="n">a</span> <span class="n">single</span> <span class="n">write</span> <span class="n">request</span> <span class="n">is</span> <span class="n">higher</span>
+    <span class="k">#</span> <span class="n">than</span> <span class="n">batch</span><span class="o">-</span><span class="n">size</span><span class="o">-</span><span class="n">max</span><span class="o">.</span>
     <span class="n">batch</span><span class="o">-</span><span class="n">size</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">200</span>
   <span class="o">}</span>
 
