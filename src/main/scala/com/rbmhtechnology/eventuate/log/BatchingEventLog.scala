@@ -79,7 +79,7 @@ class BatchingEventLog(eventLogProps: Props) extends Actor {
     var num = 0
     val (w, r) = batch.span { w =>
       num += w.events.size
-      num <= batchSizeLimit
+      num <= batchSizeLimit || num == w.events.size
     }
     eventLog ! WriteN(w)
     batch = r
