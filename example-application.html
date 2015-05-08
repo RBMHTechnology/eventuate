@@ -171,6 +171,10 @@
   <div class="section" id="example-application">
 <span id="id1"></span><h1>Example application<a class="headerlink" href="#example-application" title="Permalink to this headline">¶</a></h1>
 <p>The example application is an over-simplified order management application that allows users to add and remove items from orders via a command-line interface. Order instances are replicated across locations and can be updated at any location. Orders remain writeable during partitions and conflicting updates can be resolved interactively when the partition heals. The example application source code is available as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example">Scala version</a> and as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/japi">Java 8 version</a>.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">There is a tutorial-style <a class="reference external" href="https://www.typesafe.com/community/core-tools/activator-and-sbt">activator</a> template for the scala-version that guides you through the code: <a class="reference external" href="https://www.typesafe.com/activator/template/akka-eventuate-scala">akka-eventuate-scala</a>.</p>
+</div>
 <div class="section" id="domain">
 <h2>Domain<a class="headerlink" href="#domain" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">Order</span></code> domain object is defined as follows:</p>
