@@ -6,6 +6,9 @@ Example application
 
 The example application is an over-simplified order management application that allows users to add and remove items from orders via a command-line interface. Order instances are replicated across locations and can be updated at any location. Orders remain writeable during partitions and conflicting updates can be resolved interactively when the partition heals. The example application source code is available as `Scala version`_ and as `Java 8 version`_.
 
+.. hint::
+   There is a tutorial-style `activator`_ template for the scala-version that guides you through the code: `akka-eventuate-scala`_.
+
 Domain
 ------
 
@@ -86,3 +89,5 @@ both updates propagate to all other locations which are then displayed as confli
 
 .. _Scala version: https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example
 .. _Java 8 version: https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/japi
+.. _activator: https://www.typesafe.com/community/core-tools/activator-and-sbt
+.. _akka-eventuate-scala: https://www.typesafe.com/activator/template/akka-eventuate-scala
