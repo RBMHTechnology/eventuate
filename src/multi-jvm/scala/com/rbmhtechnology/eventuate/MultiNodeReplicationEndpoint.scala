@@ -16,20 +16,12 @@
 
 package com.rbmhtechnology.eventuate
 
-import java.io.File
-
-import akka.actor.{ActorRef, Address}
+import akka.actor._
 import akka.remote.testkit.MultiNodeSpec
 
-import org.apache.commons.io.FileUtils
 import org.scalatest.BeforeAndAfterAll
 
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
-
 trait MultiNodeReplicationEndpoint extends BeforeAndAfterAll { this: MultiNodeSpec with MultiNodeWordSpec =>
-  private val logPrefix = "log"
-  private var logId = ""
-
   def logName: String = {
     val cn = getClass.getSimpleName
     cn.substring(0, cn.lastIndexOf("MultiJvm"))
@@ -39,7 +31,7 @@ trait MultiNodeReplicationEndpoint extends BeforeAndAfterAll { this: MultiNodeSp
     createEndpoint(endpointId, Set(logName), connections)
 
   def createEndpoint(endpointId: String, logNames: Set[String], connections: Set[ReplicationConnection]): ReplicationEndpoint = {
-    new ReplicationEndpoint(endpointId, logNames, id => { logId = id; LeveldbEventLog.props(id, logPrefix) }, connections)
+    new ReplicationEndpoint(endpointId, logNames, id => logProps(id), connections)
   }
 
   implicit class RichAddress(address: Address) {
@@ -52,15 +44,5 @@ trait MultiNodeReplicationEndpoint extends BeforeAndAfterAll { this: MultiNodeSp
       endpoint.logs(logName)
   }
 
-  override def afterAll(): Unit = {
-    // get all config data before shutting down node
-    val logRootDir = new File(system.settings.config.getString("eventuate.log.leveldb.dir"))
-    val logDir = new File(logRootDir, s"${logPrefix}-${logId}")
-
-    // shut down node
-    super.afterAll()
-
-    // delete log files
-    FileUtils.deleteDirectory(logDir)
-  }
+  def logProps(logId: String): Props
 }

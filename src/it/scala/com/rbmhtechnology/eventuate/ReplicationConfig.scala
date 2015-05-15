@@ -19,7 +19,7 @@ package com.rbmhtechnology.eventuate
 import com.typesafe.config._
 
 object ReplicationConfig {
-  def create(node: String = "A", port: Int = 2552, customConfig: String = ""): Config = {
+  def create(port: Int = 2552, customConfig: String = ""): Config = {
     val defaultConfig = ConfigFactory.parseString(
       s"""
          |akka.actor.provider = "akka.remote.RemoteActorRefProvider"
@@ -30,7 +30,9 @@ object ReplicationConfig {
          |akka.test.single-expect-default = 10s
          |akka.loglevel = "ERROR"
          |
-         |eventuate.log.leveldb.dir = target/logs-system-${node}
+         |eventuate.log.leveldb.dir = target/test
+         |eventuate.log.cassandra.default-port = 9142
+         |eventuate.log.cassandra.index-update-limit = 3
          |eventuate.log.replication.batch-size-max = 3
          |eventuate.log.replication.retry-interval = 1s
          |eventuate.log.replication.failure-detection-limit = 3s

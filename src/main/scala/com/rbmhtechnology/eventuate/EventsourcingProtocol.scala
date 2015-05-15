@@ -22,19 +22,6 @@ import scala.collection.immutable.Seq
 
 object EventsourcingProtocol {
   /**
-   * Instructs an event log to loop the given `commands` to the given `requestor`, preserving
-   * the relative order to events being written by that event log. Commands are looped to the
-   * `requestor` one-by-one within a [[DelayComplete]] message with `commandSender` as the
-   * message sender.
-   */
-  case class Delay(commands: Seq[Any], commandsSender: ActorRef, requestor: ActorRef, instanceId: Int)
-
-  /**
-   * Completion reply after a [[Delay]].
-   */
-  case class DelayComplete(command: Any, instanceId: Int)
-
-  /**
    * Instructs an event log to batch-execute the given `writes`.
    */
   case class WriteN(writes: Seq[Write])

@@ -61,10 +61,6 @@ class BatchingEventLog(eventLogProps: Props) extends Actor {
       writeAll() // ensures that Replay commands are properly ordered relative to Write commands
       eventLog forward r
       context.become(idle)
-    case d: Delay =>
-      writeAll() // ensures that Delay commands are properly ordered relative to Write commands
-      eventLog forward d
-      context.become(idle)
     case cmd =>
       eventLog forward cmd
   }

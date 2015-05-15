@@ -23,11 +23,13 @@ import com.rbmhtechnology.eventuate.VersionedAggregate._
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
 import com.typesafe.config.ConfigFactory
 
+import scala.io.Source
+
 class OrderExample(manager: ActorRef, view: ActorRef) extends Actor {
   import OrderActor._
   import OrderView._
 
-  val lines = io.Source.stdin.getLines
+  val lines = Source.stdin.getLines
 
   def receive = {
     case GetStateSuccess(state) =>

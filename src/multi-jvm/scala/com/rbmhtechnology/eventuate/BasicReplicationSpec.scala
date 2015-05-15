@@ -17,15 +17,28 @@
 package com.rbmhtechnology.eventuate
 
 import akka.actor._
+import akka.remote.testconductor.RoleName
 import akka.remote.testkit._
 import akka.testkit.TestProbe
+
+import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogMultiNodeSupport
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogMultiNodeSupport
 
 import scala.collection.immutable.Seq
 import scala.util._
 
-class BasicReplicationSpecMultiJvmNode1 extends BasicReplicationSpec
-class BasicReplicationSpecMultiJvmNode2 extends BasicReplicationSpec
-class BasicReplicationSpecMultiJvmNode3 extends BasicReplicationSpec
+class BasicReplicationSpecLeveldb extends BasicReplicationSpec with LeveldbEventLogMultiNodeSupport
+class BasicReplicationSpecLeveldbMultiJvmNode1 extends BasicReplicationSpecLeveldb
+class BasicReplicationSpecLeveldbMultiJvmNode2 extends BasicReplicationSpecLeveldb
+class BasicReplicationSpecLeveldbMultiJvmNode3 extends BasicReplicationSpecLeveldb
+
+class BasicReplicationSpecCassandra extends BasicReplicationSpec with CassandraEventLogMultiNodeSupport {
+  override def coordinator: RoleName = BasicReplicationConfig.nodeA
+  override def logName = "br"
+}
+class BasicReplicationSpecCassandraMultiJvmNode1 extends BasicReplicationSpecCassandra
+class BasicReplicationSpecCassandraMultiJvmNode2 extends BasicReplicationSpecCassandra
+class BasicReplicationSpecCassandraMultiJvmNode3 extends BasicReplicationSpecCassandra
 
 object BasicReplicationConfig extends MultiNodeConfig {
   val nodeA = role("nodeA")
@@ -50,10 +63,9 @@ object BasicReplicationSpec {
   }
 }
 
-class BasicReplicationSpec extends MultiNodeSpec(BasicReplicationConfig) with MultiNodeWordSpec with MultiNodeReplicationEndpoint {
+abstract class BasicReplicationSpec extends MultiNodeSpec(BasicReplicationConfig) with MultiNodeWordSpec with MultiNodeReplicationEndpoint {
   import BasicReplicationConfig._
   import BasicReplicationSpec._
-  import ReplicationEndpoint._
 
   def initialParticipants: Int =
     roles.size

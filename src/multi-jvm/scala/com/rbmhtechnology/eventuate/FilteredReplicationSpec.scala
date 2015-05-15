@@ -17,13 +17,25 @@
 package com.rbmhtechnology.eventuate
 
 import akka.actor._
+import akka.remote.testconductor.RoleName
 import akka.remote.testkit._
 import akka.testkit.TestProbe
 
+import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogMultiNodeSupport
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogMultiNodeSupport
+
 import scala.util._
 
-class FilteredReplicationSpecMultiJvmNode1 extends FilteredReplicationSpec
-class FilteredReplicationSpecMultiJvmNode2 extends FilteredReplicationSpec
+class FilteredReplicationSpecLeveldb extends FilteredReplicationSpec with LeveldbEventLogMultiNodeSupport
+class FilteredReplicationSpecLeveldbMultiJvmNode1 extends FilteredReplicationSpecLeveldb
+class FilteredReplicationSpecLeveldbMultiJvmNode2 extends FilteredReplicationSpecLeveldb
+
+class FilteredReplicationSpecCassandra extends FilteredReplicationSpec with CassandraEventLogMultiNodeSupport {
+  override def coordinator: RoleName = FilteredReplicationConfig.nodeA
+  override def logName = "fr"
+}
+class FilteredReplicationSpecCassandraMultiJvmNode1 extends FilteredReplicationSpecCassandra
+class FilteredReplicationSpecCassandraMultiJvmNode2 extends FilteredReplicationSpecCassandra
 
 object FilteredReplicationConfig extends MultiNodeConfig {
   val nodeA = role("nodeA")
@@ -53,10 +65,9 @@ object FilteredReplicationSpec {
   }
 }
 
-class FilteredReplicationSpec extends MultiNodeSpec(FilteredReplicationConfig) with MultiNodeWordSpec with MultiNodeReplicationEndpoint {
+abstract class FilteredReplicationSpec extends MultiNodeSpec(FilteredReplicationConfig) with MultiNodeWordSpec with MultiNodeReplicationEndpoint {
   import FilteredReplicationConfig._
   import FilteredReplicationSpec._
-  import ReplicationEndpoint._
 
   def initialParticipants: Int =
     roles.size

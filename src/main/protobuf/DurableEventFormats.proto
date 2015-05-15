@@ -21,6 +21,12 @@
 option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
+message DurableEventBatchFormat {
+  repeated DurableEventFormat events = 1;
+  optional string sourceLogId = 2;
+  optional int64 lastSourceLogSequenceNrRead = 3;
+}
+
 message DurableEventFormat {
   optional PayloadFormat payload = 1;
   optional int64 systemTimestamp = 2;

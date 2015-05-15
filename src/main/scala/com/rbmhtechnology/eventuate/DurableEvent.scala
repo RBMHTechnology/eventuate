@@ -18,6 +18,8 @@ package com.rbmhtechnology.eventuate
 
 import DurableEvent._
 
+import scala.collection.immutable.Seq
+
 /**
  * Provider API.
  *
@@ -89,9 +91,37 @@ object DurableEvent {
   val UndefinedLogId = ""
   val UndefinedSequenceNr = 1L
 
+  /**
+   * Returns a process id for given `replicaId`.
+   */
   def processId(replicaId: String): String =
     processId(replicaId, None)
 
+  /**
+   * Returns a process id for given `replicaId` and optional `aggregateId`.
+   */
   def processId(replicaId: String, aggregateId: Option[String]): String =
     aggregateId.map(id => s"${replicaId}-${id}").getOrElse(replicaId)
+}
+
+/**
+ * Event batch storage format.
+ *
+ * @param events Event batch.
+ * @param sourceLogId Source log id if the batch was read from a source log (= replicated).
+ * @param lastSourceLogSequenceNrRead Last source log sequence number read after reading this batch from the source log.
+ */
+case class DurableEventBatch(events: Seq[DurableEvent], sourceLogId: Option[String] = None, lastSourceLogSequenceNrRead: Option[Long] = None) {
+
+  /**
+   * `true` if this batch was replicated.
+   */
+  def replicated: Boolean =
+    sourceLogId.isDefined
+
+  /**
+   * Highest event sequence number contained in the event batch.
+   */
+  def highestSequenceNr: Option[Long] =
+    events.lastOption.map(_.sequenceNr)
 }

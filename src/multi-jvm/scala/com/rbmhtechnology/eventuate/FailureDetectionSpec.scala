@@ -16,12 +16,24 @@
 
 package com.rbmhtechnology.eventuate
 
+import akka.remote.testconductor.RoleName
 import akka.remote.testkit.{MultiNodeSpec, MultiNodeConfig}
 import akka.remote.transport.ThrottlerTransportAdapter.Direction
 import akka.testkit.TestProbe
 
-class FailureDetectionSpecMultiJvmNode1 extends FailureDetectionSpec
-class FailureDetectionSpecMultiJvmNode2 extends FailureDetectionSpec
+import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogMultiNodeSupport
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogMultiNodeSupport
+
+class FailureDetectionSpecLeveldb extends FailureDetectionSpec with LeveldbEventLogMultiNodeSupport
+class FailureDetectionSpecLeveldbMultiJvmNode1 extends FailureDetectionSpecLeveldb
+class FailureDetectionSpecLeveldbMultiJvmNode2 extends FailureDetectionSpecLeveldb
+
+class FailureDetectionSpecCassandra extends FailureDetectionSpec with CassandraEventLogMultiNodeSupport {
+  override def coordinator: RoleName = FailureDetectionConfig.nodeA
+  override def logName = "fd"
+}
+class FailureDetectionSpecCassandraMultiJvmNode1 extends FailureDetectionSpecCassandra
+class FailureDetectionSpecCassandraMultiJvmNode2 extends FailureDetectionSpecCassandra
 
 object FailureDetectionConfig extends MultiNodeConfig {
   val nodeA = role("nodeA")
@@ -32,7 +44,7 @@ object FailureDetectionConfig extends MultiNodeConfig {
   commonConfig(MultiNodeReplicationConfig.create("eventuate.log.replication.failure-detection-limit = 3s"))
 }
 
-class FailureDetectionSpec extends MultiNodeSpec(FailureDetectionConfig) with MultiNodeWordSpec with MultiNodeReplicationEndpoint {
+abstract class FailureDetectionSpec extends MultiNodeSpec(FailureDetectionConfig) with MultiNodeWordSpec with MultiNodeReplicationEndpoint {
   import FailureDetectionConfig._
   import ReplicationEndpoint._
 
@@ -56,10 +68,8 @@ class FailureDetectionSpec extends MultiNodeSpec(FailureDetectionConfig) with Mu
         createEndpoint(nodeA.name, Set(node(nodeB).address.toReplicationConnection))
         probeAvailable1.expectMsg(Available(nodeB.name, logName))
 
-        // network partition
+        enterBarrier("connected")
         testConductor.blackhole(nodeA, nodeB, Direction.Both).await
-
-        enterBarrier("broken")
         probeUnavailable.expectMsg(Unavailable(nodeB.name, logName))
         system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
 
@@ -72,7 +82,7 @@ class FailureDetectionSpec extends MultiNodeSpec(FailureDetectionConfig) with Mu
         createEndpoint(nodeB.name, Set(node(nodeA).address.toReplicationConnection))
         probeAvailable1.expectMsg(Available(nodeA.name, logName))
 
-        enterBarrier("broken")
+        enterBarrier("connected")
         probeUnavailable.expectMsg(Unavailable(nodeA.name, logName))
         system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
 

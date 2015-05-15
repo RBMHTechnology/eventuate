@@ -16,13 +16,20 @@
 
 package com.rbmhtechnology.eventuate
 
-import scala.collection.immutable.Seq
-import scala.util._
+import java.io.File
 
 import akka.actor._
 import akka.testkit.TestProbe
 
+import com.rbmhtechnology.eventuate.log.cassandra._
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
+
+import org.apache.commons.io.FileUtils
 import org.scalatest._
+
+import scala.collection.immutable.Seq
+import scala.concurrent.duration._
+import scala.util._
 
 object ReplicationIntegrationSpec {
   class PayloadEqualityFilter(payload: String) extends ReplicationFilter {
@@ -48,15 +55,21 @@ object ReplicationIntegrationSpec {
     ReplicationConnection("127.0.0.1", port, filters)
 }
 
-class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAfterEach {
+abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAfterEach {
   import ReplicationIntegrationSpec._
 
-  var nodes: List[ReplicationNode] = Nil
+  implicit def factory: String => Props
 
-  override protected def afterEach(): Unit = {
+  var nodes: List[ReplicationNode] = Nil
+  var ctr: Int = 0
+
+  override def beforeEach(): Unit = {
+    ctr += 1
+  }
+
+  override def afterEach(): Unit = {
     nodes.foreach(_.shutdown())
     nodes.foreach(_.awaitTermination())
-    nodes.foreach(_.cleanup())
   }
 
   def register(node: ReplicationNode): ReplicationNode = {
@@ -69,11 +82,17 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
     assert(indices == indices.sorted)
   }
 
+  def nodeId(node: String): String =
+    s"${node}_${ctr}"
+
+  def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection])(implicit factory: String => Props): ReplicationNode =
+    register(new ReplicationNode(nodeId(nodeName), logNames, port, connections))
+
   "Event log replication" must {
     "replicate all events by default" in {
-      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, Set(localConnection(2553))))
-      val nodeB = register(new ReplicationNode("B", Set("L1"), 2553, Set(localConnection(2552), localConnection(2554))))
-      val nodeC = register(new ReplicationNode("C", Set("L1"), 2554, Set(localConnection(2553))))
+      val nodeA = node("A", Set("L1"), 2552, Set(localConnection(2553)))
+      val nodeB = node("B", Set("L1"), 2553, Set(localConnection(2552), localConnection(2554)))
+      val nodeC = node("C", Set("L1"), 2554, Set(localConnection(2553)))
 
       val probeA = new TestProbe(nodeA.system)
       val probeB = new TestProbe(nodeB.system)
@@ -112,8 +131,8 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
       assertPartialOrderOnAllReplicas("c1", "c2", "c3")
     }
     "replicate events based on filter criteria" in {
-      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, Set(localConnection(2553, Map("L1" -> new PayloadEqualityFilter("b2"))))))
-      val nodeB = register(new ReplicationNode("B", Set("L1"), 2553, Set(localConnection(2552, Map("L1" -> new PayloadEqualityFilter("a2"))))))
+      val nodeA = node("A", Set("L1"), 2552, Set(localConnection(2553, Map("L1" -> new PayloadEqualityFilter("b2")))))
+      val nodeB = node("B", Set("L1"), 2553, Set(localConnection(2552, Map("L1" -> new PayloadEqualityFilter("a2")))))
 
       val probeA = new TestProbe(nodeA.system)
       val probeB = new TestProbe(nodeB.system)
@@ -133,8 +152,8 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
       val eventsB = probeB.expectMsgAllOf("b1", "b2", "b3", "a2")
     }
     "immediately attempt next batch if last replicated batch was not empty" in {
-      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, Set(localConnection(2553))))
-      val nodeB = register(new ReplicationNode("B", Set("L1"), 2553, Set(localConnection(2552))))
+      val nodeA = node("A", Set("L1"), 2552, Set(localConnection(2553)))
+      val nodeB = node("B", Set("L1"), 2553, Set(localConnection(2552)))
 
       val probeB = new TestProbe(nodeB.system)
 
@@ -149,8 +168,8 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
     "detect replication server availability" in {
       import ReplicationEndpoint._
 
-      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, Set(localConnection(2553))))
-      val nodeB = register(new ReplicationNode("B", Set("L1"), 2553, Set(localConnection(2552))))
+      val nodeA = node("A", Set("L1"), 2552, Set(localConnection(2553)))
+      val nodeB = node("B", Set("L1"), 2553, Set(localConnection(2552)))
 
       val probeA = new TestProbe(nodeA.system)
       val probeB = new TestProbe(nodeB.system)
@@ -158,14 +177,14 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
       nodeA.system.eventStream.subscribe(probeA.ref, classOf[Available])
       nodeB.system.eventStream.subscribe(probeB.ref, classOf[Available])
 
-      probeA.expectMsg(Available("B", "L1"))
-      probeB.expectMsg(Available("A", "L1"))
+      probeA.expectMsg(Available(nodeId("B"), "L1"))
+      probeB.expectMsg(Available(nodeId("A"), "L1"))
     }
     "detect replication server unavailability" in {
       import ReplicationEndpoint._
 
-      val nodeA = register(new ReplicationNode("A", Set("L1"), 2552, Set(localConnection(2553))))
-      val nodeB1 = register(new ReplicationNode("B", Set("L1"), 2553, Set(localConnection(2552))))
+      val nodeA = node("A", Set("L1"), 2552, Set(localConnection(2553)))
+      val nodeB1 = node("B", Set("L1"), 2553, Set(localConnection(2552)))
 
       val probeAvailable1 = new TestProbe(nodeA.system)
       val probeAvailable2 = new TestProbe(nodeA.system)
@@ -174,21 +193,21 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
       nodeA.system.eventStream.subscribe(probeAvailable1.ref, classOf[Available])
       nodeA.system.eventStream.subscribe(probeUnavailable.ref, classOf[Unavailable])
 
-      probeAvailable1.expectMsg(Available("B", "L1"))
+      probeAvailable1.expectMsg(Available(nodeId("B"), "L1"))
       nodeB1.shutdown()
-      probeUnavailable.expectMsg(Unavailable("B", "L1"))
+      probeUnavailable.expectMsg(Unavailable(nodeId("B"), "L1"))
 
       // start replication node B again
-      register(new ReplicationNode("B", Set("L1"), 2553, Set(localConnection(2552))))
+      node("B", Set("L1"), 2553, Set(localConnection(2552)))
 
       nodeA.system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
-      probeAvailable2.expectMsg(Available("B", "L1"))
+      probeAvailable2.expectMsg(Available(nodeId("B"), "L1"))
     }
     "support multiple logs per replication endpoint" in {
       val logNames = Set("L1", "L2")
 
-      val nodeA = register(new ReplicationNode("A", logNames, 2552, Set(localConnection(2553))))
-      val nodeB = register(new ReplicationNode("B", logNames, 2553, Set(localConnection(2552))))
+      val nodeA = node("A", logNames, 2552, Set(localConnection(2553)))
+      val nodeB = node("B", logNames, 2553, Set(localConnection(2552)))
 
       val probeAL1 = new TestProbe(nodeA.system)
       val probeAL2 = new TestProbe(nodeA.system)
@@ -216,8 +235,8 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
       val logNamesA = Set("L1", "L2")
       val logNamesB = Set("L2", "L3")
 
-      val nodeA = register(new ReplicationNode("A", logNamesA, 2552, Set(localConnection(2553))))
-      val nodeB = register(new ReplicationNode("B", logNamesB, 2553, Set(localConnection(2552))))
+      val nodeA = node("A", logNamesA, 2552, Set(localConnection(2553)))
+      val nodeB = node("B", logNamesB, 2553, Set(localConnection(2552)))
 
       val probeAL1 = new TestProbe(nodeA.system)
       val probeAL2 = new TestProbe(nodeA.system)
@@ -243,3 +262,36 @@ class ReplicationIntegrationSpec extends WordSpec with Matchers with BeforeAndAf
     }
   }
 }
+
+class ReplicationIntegrationSpecLeveldb extends ReplicationIntegrationSpec with BeforeAndAfterAll {
+  override val factory: String => Props = id => LeveldbEventLog.props(id)
+
+  val storageLocation = new File(ReplicationConfig.create().getString("eventuate.log.leveldb.dir"))
+
+  def cleanup(): Unit = {
+    FileUtils.deleteDirectory(storageLocation)
+  }
+
+  override def beforeAll(): Unit =
+    cleanup()
+
+  override def afterAll(): Unit =
+    cleanup()
+}
+
+class ReplicationIntegrationSpecCassandra extends ReplicationIntegrationSpec with BeforeAndAfterAll {
+  override val factory: String => Props = id => CassandraEventLog.props(id)
+
+  override def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection])(implicit factory: String => Props): ReplicationNode = {
+    val node = super.node(nodeName, logNames, port, connections)
+    Cassandra(node.system) // enforce keyspace/schema setup
+    node
+  }
+
+  override def beforeAll(): Unit =
+    CassandraServer.start(60.seconds)
+
+  override def afterAll(): Unit =
+    CassandraServer.stop()
+}
+

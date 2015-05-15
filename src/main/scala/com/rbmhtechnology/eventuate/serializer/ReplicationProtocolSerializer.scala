@@ -90,6 +90,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
 
   private def subscribeReplicatorFormatBuilder(message: SubscribeReplicator): SubscribeReplicatorFormat.Builder = {
     val builder = SubscribeReplicatorFormat.newBuilder()
+    builder.setSourceLogId(message.sourceLogId)
     builder.setTargetLogId(message.targetLogId)
     builder.setReplicator(Serialization.serializedActorPath(message.replicator))
     builder.setFilter(filterSerializer.filterTreeFormatBuilder(message.filter))
@@ -100,7 +101,6 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     val builder = ReplicationReadFailureFormat.newBuilder()
     builder.setCause(message.cause)
     builder.setTargetLogId(message.targetLogId)
-    builder.setCorrelationId(message.correlationId)
     builder
   }
 
@@ -109,7 +109,6 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     message.events.foreach(event => builder.addEvents(eventSerializer.durableEventFormatBuilder(event)))
     builder.setLastSourceLogSequenceNrRead(message.lastSourceLogSequenceNrRead)
     builder.setTargetLogId(message.targetLogId)
-    builder.setCorrelationId(message.correlationId)
     builder
   }
 
@@ -119,7 +118,6 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     builder.setMaxNumEvents(message.maxNumEvents)
     builder.setFilter(filterSerializer.filterTreeFormatBuilder(message.filter))
     builder.setTargetLogId(message.targetLogId)
-    builder.setCorrelationId(message.correlationId)
     builder
   }
 
@@ -139,6 +137,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
 
   private def subscribeReplicator(messageFormat: SubscribeReplicatorFormat): SubscribeReplicator =
     SubscribeReplicator(
+      messageFormat.getSourceLogId,
       messageFormat.getTargetLogId,
       system.provider.resolveActorRef(messageFormat.getReplicator),
       filterSerializer.filterTree(messageFormat.getFilter))
@@ -146,8 +145,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   private def replicationReadFailure(messageFormat: ReplicationReadFailureFormat): ReplicationReadFailure =
     ReplicationReadFailure(
       messageFormat.getCause,
-      messageFormat.getTargetLogId,
-      messageFormat.getCorrelationId)
+      messageFormat.getTargetLogId)
 
   private def replicationReadSuccess(messageFormat: ReplicationReadSuccessFormat): ReplicationReadSuccess = {
     val builder = new VectorBuilder[DurableEvent]
@@ -159,8 +157,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     ReplicationReadSuccess(
       builder.result(),
       messageFormat.getLastSourceLogSequenceNrRead,
-      messageFormat.getTargetLogId,
-      messageFormat.getCorrelationId)
+      messageFormat.getTargetLogId)
   }
 
   private def replicationRead(messageFormat: ReplicationReadFormat): ReplicationRead =
@@ -168,8 +165,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
       messageFormat.getFromSequenceNr,
       messageFormat.getMaxNumEvents,
       filterSerializer.filterTree(messageFormat.getFilter),
-      messageFormat.getTargetLogId,
-      messageFormat.getCorrelationId)
+      messageFormat.getTargetLogId)
 
   private def getReplicationEndpointInfoSuccess(messageFormat: GetReplicationEndpointInfoSuccessFormat) =
     GetReplicationEndpointInfoSuccess(replicationEndpointInfo(messageFormat.getInfo))

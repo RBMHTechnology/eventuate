@@ -17,19 +17,35 @@
 package com.rbmhtechnology.eventuate
 
 import akka.actor._
+import akka.remote.testconductor.RoleName
 import akka.remote.testkit._
 import akka.testkit.TestProbe
+
+import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogMultiNodeSupport
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogMultiNodeSupport
 
 import scala.collection.immutable.Seq
 import scala.concurrent.duration._
 import scala.util._
 
-class BasicReplicationThroughputSpecMultiJvmNode1 extends BasicReplicationThroughputSpec
-class BasicReplicationThroughputSpecMultiJvmNode2 extends BasicReplicationThroughputSpec
-class BasicReplicationThroughputSpecMultiJvmNode3 extends BasicReplicationThroughputSpec
-class BasicReplicationThroughputSpecMultiJvmNode4 extends BasicReplicationThroughputSpec
-class BasicReplicationThroughputSpecMultiJvmNode5 extends BasicReplicationThroughputSpec
-class BasicReplicationThroughputSpecMultiJvmNode6 extends BasicReplicationThroughputSpec
+class BasicReplicationThroughputSpecLeveldb extends BasicReplicationThroughputSpec with LeveldbEventLogMultiNodeSupport
+class BasicReplicationThroughputSpecLeveldbMultiJvmNode1 extends BasicReplicationThroughputSpecLeveldb
+class BasicReplicationThroughputSpecLeveldbMultiJvmNode2 extends BasicReplicationThroughputSpecLeveldb
+class BasicReplicationThroughputSpecLeveldbMultiJvmNode3 extends BasicReplicationThroughputSpecLeveldb
+class BasicReplicationThroughputSpecLeveldbMultiJvmNode4 extends BasicReplicationThroughputSpecLeveldb
+class BasicReplicationThroughputSpecLeveldbMultiJvmNode5 extends BasicReplicationThroughputSpecLeveldb
+class BasicReplicationThroughputSpecLeveldbMultiJvmNode6 extends BasicReplicationThroughputSpecLeveldb
+
+class BasicReplicationThroughputSpecCassandra extends BasicReplicationThroughputSpec with CassandraEventLogMultiNodeSupport {
+  override def coordinator: RoleName = BasicReplicationThroughputConfig.nodeA
+  override def logName = "brt"
+}
+class BasicReplicationThroughputSpecCassandraMultiJvmNode1 extends BasicReplicationThroughputSpecCassandra
+class BasicReplicationThroughputSpecCassandraMultiJvmNode2 extends BasicReplicationThroughputSpecCassandra
+class BasicReplicationThroughputSpecCassandraMultiJvmNode3 extends BasicReplicationThroughputSpecCassandra
+class BasicReplicationThroughputSpecCassandraMultiJvmNode4 extends BasicReplicationThroughputSpecCassandra
+class BasicReplicationThroughputSpecCassandraMultiJvmNode5 extends BasicReplicationThroughputSpecCassandra
+class BasicReplicationThroughputSpecCassandraMultiJvmNode6 extends BasicReplicationThroughputSpecCassandra
 
 object BasicReplicationThroughputConfig extends MultiNodeConfig {
   val nodeA = role("nodeA")
@@ -42,10 +58,10 @@ object BasicReplicationThroughputConfig extends MultiNodeConfig {
   commonConfig(MultiNodeReplicationConfig.create(
     s"""
       |akka.remote.netty.tcp.maximum-frame-size = 512000b
-      |akka.testconductor.barrier-timeout = 60s
       |
       |eventuate.log.replication.batch-size-max = 2000
       |eventuate.log.replication.retry-interval = 10s
+      |eventuate.log.cassandra.index-update-limit = 200
     """.stripMargin))
 }
 
@@ -78,10 +94,9 @@ object BasicReplicationThroughputSpec {
   }
 }
 
-class BasicReplicationThroughputSpec extends MultiNodeSpec(BasicReplicationThroughputConfig) with MultiNodeWordSpec with MultiNodeReplicationEndpoint {
+abstract class BasicReplicationThroughputSpec extends MultiNodeSpec(BasicReplicationThroughputConfig) with MultiNodeWordSpec with MultiNodeReplicationEndpoint {
   import BasicReplicationThroughputConfig._
   import BasicReplicationThroughputSpec._
-  import ReplicationEndpoint._
 
   def initialParticipants: Int =
     roles.size

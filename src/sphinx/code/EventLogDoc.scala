@@ -16,8 +16,8 @@
 
 package doc
 
-trait LocalEventLogDoc {
-  //#local-log
+trait LocalEventLogLeveldbDoc {
+  //#local-log-leveldb
   import akka.actor.ActorSystem
   import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
 
@@ -25,8 +25,22 @@ trait LocalEventLogDoc {
   //#
     ActorSystem("location")
 
-  //#local-log
-  val log = system.actorOf(LeveldbEventLog.props(id = "L1", prefix = "log"))
+  //#local-log-leveldb
+  val log = system.actorOf(LeveldbEventLog.props(logId = "L1", prefix = "log"))
+  //#
+}
+
+trait LocalEventLogCassandraDoc {
+  //#local-log-cassandra
+  import akka.actor.ActorSystem
+  import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog
+
+  val system: ActorSystem = // ...
+  //#
+    ActorSystem("location")
+
+  //#local-log-cassandra
+  val log = system.actorOf(CassandraEventLog.props(logId = "L1"))
   //#
 }
 
