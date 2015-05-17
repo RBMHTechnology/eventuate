@@ -73,8 +73,8 @@ class DurableEventSerializerSpec extends WordSpec with Matchers with BeforeAndAf
     """.stripMargin
 
   val support = new SerializerSpecSupport(
-    ReplicationConfig.create("A", 2552),
-    ReplicationConfig.create("B", 2553, config))
+    ReplicationConfig.create(2552),
+    ReplicationConfig.create(2553, config))
 
   override def afterAll(): Unit =
     support.shutdown()
@@ -93,6 +93,24 @@ class DurableEventSerializerSpec extends WordSpec with Matchers with BeforeAndAf
       val expected = event.copy(ExamplePayload("bar", "foo"))
 
       serialization.deserialize(serialization.serialize(event).get, classOf[DurableEvent]).get should be(expected)
+    }
+    "support custom replicated event batch serialization" in {
+      val serialization = SerializationExtension(system2)
+
+      val batch = DurableEventBatch(List(event, event), Some("X"), Some(22L))
+      val expectedEvent = event.copy(ExamplePayload("bar", "foo"))
+      val expectedBatch = batch.copy(events = (List(expectedEvent, expectedEvent)))
+
+      serialization.deserialize(serialization.serialize(batch).get, classOf[DurableEventBatch]).get should be(expectedBatch)
+    }
+    "support custom emitted event batch serialization" in {
+      val serialization = SerializationExtension(system2)
+
+      val batch = DurableEventBatch(List(event, event))
+      val expectedEvent = event.copy(ExamplePayload("bar", "foo"))
+      val expectedBatch = batch.copy(events = (List(expectedEvent, expectedEvent)))
+
+      serialization.deserialize(serialization.serialize(batch).get, classOf[DurableEventBatch]).get should be(expectedBatch)
     }
   }
 }

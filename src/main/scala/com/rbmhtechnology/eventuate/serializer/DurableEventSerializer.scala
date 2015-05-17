@@ -20,10 +20,11 @@ import akka.actor._
 import akka.serialization._
 
 import com.google.protobuf.ByteString
-import com.rbmhtechnology.eventuate.{DurableEvent, VectorTime}
+import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.serializer.DurableEventFormats._
 
 import scala.collection.JavaConverters._
+import scala.collection.immutable.VectorBuilder
 import scala.language.existentials
 
 /**
@@ -33,26 +34,44 @@ import scala.language.existentials
  */
 class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
   val DurableEventClass = classOf[DurableEvent]
+  val DurableEventBatchClass = classOf[DurableEventBatch]
 
   override def identifier: Int = 22563
   override def includeManifest: Boolean = true
 
   override def toBinary(o: AnyRef): Array[Byte] = o match {
-    case m: DurableEvent => durableEventFormatBuilder(m).build().toByteArray
-    case _               => throw new IllegalArgumentException(s"can't serialize object of type ${o.getClass}")
+    case m: DurableEvent =>
+      durableEventFormatBuilder(m).build().toByteArray
+    case m: DurableEventBatch =>
+      durableEventBatchFormatBuilder(m).build().toByteArray
+    case _ =>
+      throw new IllegalArgumentException(s"can't serialize object of type ${o.getClass}")
   }
 
   override def fromBinary(bytes: Array[Byte], manifest: Option[Class[_]]): AnyRef = manifest match {
-    case None => durableEvent(DurableEventFormat.parseFrom(bytes))
+    case None =>
+      durableEvent(DurableEventFormat.parseFrom(bytes))
     case Some(c) => c match {
-      case DurableEventClass => durableEvent(DurableEventFormat.parseFrom(bytes))
-      case _                 => throw new IllegalArgumentException(s"can't deserialize object of type ${c}")
+      case DurableEventClass =>
+        durableEvent(DurableEventFormat.parseFrom(bytes))
+      case DurableEventBatchClass =>
+        durableEventBatch(DurableEventBatchFormat.parseFrom(bytes))
+      case _ =>
+        throw new IllegalArgumentException(s"can't deserialize object of type ${c}")
     }
   }
 
   // --------------------------------------------------------------------------------
   //  toBinary helpers
   // --------------------------------------------------------------------------------
+
+  private def durableEventBatchFormatBuilder(durableEventBatch: DurableEventBatch): DurableEventBatchFormat.Builder = {
+    val builder = DurableEventBatchFormat.newBuilder()
+    durableEventBatch.events.foreach(event => builder.addEvents(durableEventFormatBuilder(event)))
+    durableEventBatch.sourceLogId.foreach(builder.setSourceLogId)
+    durableEventBatch.lastSourceLogSequenceNrRead.foreach(builder.setLastSourceLogSequenceNrRead)
+    builder
+  }
 
   private[eventuate] def durableEventFormatBuilder(durableEvent: DurableEvent): DurableEventFormat.Builder = {
     val builder = DurableEventFormat.newBuilder
@@ -101,6 +120,19 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
   // --------------------------------------------------------------------------------
   //  fromBinary helpers
   // --------------------------------------------------------------------------------
+
+  private def durableEventBatch(durableEventBatchFormat: DurableEventBatchFormat): DurableEventBatch = {
+    val builder = new VectorBuilder[DurableEvent]
+
+    durableEventBatchFormat.getEventsList.iterator().asScala.foreach { durableEventFormat =>
+      builder += durableEvent(durableEventFormat)
+    }
+
+    DurableEventBatch(
+      builder.result(),
+      if (durableEventBatchFormat.hasSourceLogId) Some(durableEventBatchFormat.getSourceLogId) else None,
+      if (durableEventBatchFormat.hasLastSourceLogSequenceNrRead) Some(durableEventBatchFormat.getLastSourceLogSequenceNrRead) else None)
+  }
 
   private[eventuate] def durableEvent(durableEventFormat: DurableEventFormat): DurableEvent = {
     val emitterAggregateId: Option[String] =

@@ -20,8 +20,12 @@ import java.util.concurrent.TimeUnit
 import java.util.function.{Function => JFunction}
 
 import akka.actor._
+import akka.pattern.ask
+import akka.pattern.pipe
+import akka.util.Timeout
 
 import scala.collection.JavaConverters._
+import scala.collection.immutable.Seq
 import scala.concurrent.duration._
 
 import ReplicationProtocol._
@@ -36,6 +40,12 @@ private class ReplicationSettings(system: ActorSystem) {
 
   val replicationRetryInterval: FiniteDuration =
     config.getDuration("retry-interval", TimeUnit.MILLISECONDS).millis
+
+  val replicationReadTimeout: FiniteDuration =
+    config.getDuration("read-timeout", TimeUnit.MILLISECONDS).millis
+
+  val replicationWriteTimeout: FiniteDuration =
+    config.getDuration("write-timeout", TimeUnit.MILLISECONDS).millis
 
   val replicationBatchSize: Int =
     config.getInt("batch-size-max")
@@ -243,11 +253,20 @@ private class TargetReplicationConnector(targetEndpoint: ReplicationEndpoint, co
 }
 
 /**
- * Replicates events from a source log to a target log.
+ * Replicates events from a remote source log to a local target log. This replicator guarantees that
+ *
+ *  - the ordering of replicated events is preserved
+ *  - no duplicates are written to the target log
+ *
+ *  The second guarantee requires the target log to store the replication progress (`lastSourceLogSequenceNrStored`)
+ *  with read-your-write consistency to the target log. Whenever writing to the target log fails, the replication
+ *  progress is recovered by this replicator and replication is resumed from that state.
  */
-private class Replicator(source: ReplicationSource, target: ReplicationTarget, filter: Option[ReplicationFilter], notificationChannel: ActorSelection) extends Actor {
+private class Replicator(source: ReplicationSource, target: ReplicationTarget, filter: Option[ReplicationFilter], notificationChannel: ActorSelection) extends Actor with ActorLogging {
   import ReplicationServerFailureDetector._
   import context.dispatcher
+
+  val scheduler = context.system.scheduler
 
   val replicationSettings = ReplicationSettings(context.system)
   val replicationFilter = filter match {
@@ -257,63 +276,93 @@ private class Replicator(source: ReplicationSource, target: ReplicationTarget, f
 
   val failureDetector = context.actorOf(Props(new ReplicationServerFailureDetector(source.endpointId, source.logName)))
   val registrationSchedule = context.system.scheduler.schedule(0.seconds, replicationSettings.replicationRetryInterval, new Runnable {
-    override def run() = notificationChannel ! SubscribeReplicator(target.logId, self, replicationFilter)
+    override def run() = notificationChannel ! SubscribeReplicator(source.logId, target.logId, self, replicationFilter)
   })
 
-  var correlationId = 0
+  var lastSourceLogSequenceNrStored = 0L
+  var readSchedule: Option[Cancellable] = None
+
+  val initializing: Receive = {
+    case GetLastSourceLogReadPositionSuccess(_, lastSourceLogSequenceNrStored) =>
+      this.lastSourceLogSequenceNrStored = lastSourceLogSequenceNrStored
+      context.become(idle)
+      self ! ReplicationDue
+    case GetLastSourceLogReadPositionFailure(cause) =>
+      log.error(cause, s"replication progress read failed")
+      scheduleFetch()
+  }
 
   val idle: Receive = {
     case ReplicationDue =>
-      val correlationId = nextCorrelationId()
-      target.log ! GetLastSourceLogReadPosition(source.logId, correlationId)
-      context.become(replicating(correlationId))
-      failureDetector ! Tick
-    case ReceiveTimeout =>
-      val correlationId = nextCorrelationId()
-      target.log ! GetLastSourceLogReadPosition(source.logId, correlationId)
-      context.become(replicating(correlationId))
+      readSchedule.foreach(_.cancel()) // if it's a server-side notification that is concurrent to a scheduled read
+      context.become(reading)
+      read()
   }
 
-  def replicating(correlationId: Int): Receive = {
-    case GetLastSourceLogReadPositionSuccess(sourceLogId, lastSourceLogSequenceNrStored, `correlationId`) =>
-      source.log ! ReplicationRead(lastSourceLogSequenceNrStored + 1, replicationSettings.replicationBatchSize, replicationFilter, target.logId, correlationId)
-    case GetLastSourceLogReadPositionFailure(cause, `correlationId`) =>
-      // TODO: log cause
-      context.become(idle)
-    case ReplicationReadSuccess(events, lastSourceLogSequenceNrRead, _, `correlationId`) =>
-      target.log ! ReplicationWrite(events, source.logId, lastSourceLogSequenceNrRead, correlationId)
+  val reading: Receive = {
+    case ReplicationReadSuccess(events, lastSourceLogSequenceNrRead, _) =>
+      assert(lastSourceLogSequenceNrRead >= lastSourceLogSequenceNrStored,
+        "illegal reply with lastSourceLogSequenceNrRead < lastSourceLogSequenceNrStored")
       failureDetector ! Tick
-    case ReplicationReadFailure(cause, _, `correlationId`) =>
-      // TODO: log cause
+      context.become(writing)
+      write(events, lastSourceLogSequenceNrRead)
+    case ReplicationReadFailure(cause, _) =>
+      log.error(s"replication read failed: $cause")
       context.become(idle)
-      failureDetector ! Tick
-    case ReplicationWriteSuccess(num, lastSourceLogSequenceNrStored, `correlationId`) if num > 0 =>
-      val correlationId = nextCorrelationId()
-      source.log ! ReplicationRead(lastSourceLogSequenceNrStored + 1, replicationSettings.replicationBatchSize, replicationFilter, target.logId, correlationId)
-      context.become(replicating(correlationId))
-    case ReplicationWriteSuccess(_, _, `correlationId`) =>
-      context.become(idle)
-    case ReplicationWriteFailure(cause, `correlationId`) =>
-      // TODO: log cause
-      context.become(idle)
-    case ReceiveTimeout =>
-      context.become(idle)
+      scheduleRead()
   }
 
-  def receive = idle
+  val writing: Receive = {
+    case ReplicationWriteSuccess(num, lastSourceLogSequenceNrStored) if num == 0 =>
+      this.lastSourceLogSequenceNrStored = lastSourceLogSequenceNrStored
+      context.become(idle)
+      scheduleRead()
+    case ReplicationWriteSuccess(num, lastSourceLogSequenceNrStored) =>
+      this.lastSourceLogSequenceNrStored = lastSourceLogSequenceNrStored
+      context.become(reading)
+      read()
+    case ReplicationWriteFailure(cause) =>
+      log.error(cause, s"replication write failed")
+      context.become(initializing)
+      fetch()
+  }
+
+  def receive = initializing
+
+  private def scheduleFetch(): Unit = {
+    scheduler.scheduleOnce(replicationSettings.replicationRetryInterval)(fetch())
+  }
+
+  private def scheduleRead(): Unit = {
+    readSchedule = Some(scheduler.scheduleOnce(replicationSettings.replicationRetryInterval, self, ReplicationDue))
+  }
+
+  private def fetch(): Unit = {
+    implicit val timeout = Timeout(replicationSettings.replicationReadTimeout)
+
+    target.log ? GetLastSourceLogReadPosition(source.logId) recover {
+      case t => GetLastSourceLogReadPositionFailure(t)
+    } pipeTo self
+  }
+
+  private def read(): Unit = {
+    implicit val timeout = Timeout(replicationSettings.replicationReadTimeout)
+
+    source.log ? ReplicationRead(lastSourceLogSequenceNrStored + 1, replicationSettings.replicationBatchSize, replicationFilter, target.logId) recover {
+      case t => ReplicationReadFailure(t.getMessage, target.logId)
+    } pipeTo self
+  }
+
+  private def write(events: Seq[DurableEvent], lastSourceLogSequenceNrRead: Long): Unit = {
+    implicit val timeout = Timeout(replicationSettings.replicationWriteTimeout)
+
+    target.log ? ReplicationWrite(events, source.logId, lastSourceLogSequenceNrRead) recover {
+      case t => ReplicationWriteFailure(t)
+    } pipeTo self
+  }
 
   override def preStart(): Unit = {
-    context.setReceiveTimeout(replicationSettings.replicationRetryInterval)
-    self ! ReplicationDue
-  }
-
-  override def postStop(): Unit = {
-    registrationSchedule.cancel()
-  }
-
-  private def nextCorrelationId(): Int = {
-    correlationId += 1
-    correlationId
+    fetch()
   }
 }
 
@@ -358,11 +407,11 @@ private class NotificationChannel extends Actor {
   var reading: Set[String] = Set.empty
 
   def receive = {
-    case r @ SubscribeReplicator(targetLogId, _, _) =>
+    case r @ SubscribeReplicator(_, targetLogId, _, _) =>
       registry += (targetLogId -> r)
-    case Updated(events) =>
+    case Updated(sourceLogId, events) =>
       registry.foreach {
-        case (targetLogId, reg) => if (events.exists(reg.filter.apply)) {
+        case (targetLogId, reg) => if (sourceLogId == reg.sourceLogId && events.exists(reg.filter.apply)) {
           if (!reading.contains(targetLogId)) reg.replicator ! ReplicationDue
           else { /* skip sending a notification, read is in progress anyway */ }
         }

@@ -31,29 +31,29 @@ object ReplicationProtocolSerializerSpec {
     GetReplicationEndpointInfoSuccess(ReplicationEndpointInfo("A", Set("B", "C")))
 
   val replicationRead1 =
-    ReplicationRead(17L, 10, filter1(), "A", 1)
+    ReplicationRead(17L, 10, filter1(), "A")
 
   val replicationRead2 =
-    ReplicationRead(17L, 10, filter3, "A", 1)
+    ReplicationRead(17L, 10, filter3, "A")
 
   val replicationReadSuccess =
     ReplicationReadSuccess(List(
       DurableEvent("a", 12L, VectorTime(), "r1"),
-      DurableEvent("b", 13L, VectorTime(), "r2")), 27L, "B", 3)
+      DurableEvent("b", 13L, VectorTime(), "r2")), 27L, "B")
 
   val replicationReadFailure =
-    ReplicationReadFailure("test", "B", 3)
+    ReplicationReadFailure("test", "B")
 
   def subscribeReplicator(replicator: ActorRef) =
-    SubscribeReplicator("B", replicator, filter1())
+    SubscribeReplicator("A", "B", replicator, filter1())
 }
 
 class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   import ReplicationProtocolSerializerSpec._
 
   val support = new SerializerSpecSupport(
-    ReplicationConfig.create("A", 2552),
-    ReplicationConfig.create("B", 2553))
+    ReplicationConfig.create(2552),
+    ReplicationConfig.create(2553))
 
   override def afterAll(): Unit =
     support.shutdown()

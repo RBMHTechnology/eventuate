@@ -24,7 +24,7 @@ The following is a list of known limitations that are going to be addressed in f
 
 - Replication network topologies must be statically defined at the moment. Dynamic changes, such add adding new locations at runtime, will be supported in future versions. We also think about an integration with `Akka Cluster`_.
 
-- The only supported event log storage backend at the moment is LevelDB_. There will be a plugin API in the future together with a default implementation of a replicated storage backend.
+- The storage plugin API is not public yet. Applications can currently choose between a LevelDB_ and Cassandra_ storage backend. The drivers for these backends are packaged with Eventuate and section :ref:`event-log` describes their usage.
 
 - Event routing is limited at the moment. In addition to event broadcast and ``aggregateId``-based collaboration groups, there is `direct event routing`_ supported but `advanced event routing`_ will come in a later release.
 
@@ -36,6 +36,7 @@ The following is a list of known limitations that are going to be addressed in f
 
 .. _Akka Cluster: http://doc.akka.io/docs/akka/2.3.9/scala/cluster-usage.html
 .. _Akka Remoting: http://doc.akka.io/docs/akka/2.3.9/scala/remoting.html
+.. _Cassandra: http://cassandra.apache.org/
 .. _LevelDB: https://github.com/google/leveldb
 .. _NAT: http://de.wikipedia.org/wiki/Network_Address_Translation
 .. _let us know: https://groups.google.com/forum/#!forum/eventuate

@@ -81,8 +81,8 @@ class ReplicationFilterSerializerSpec extends WordSpec with Matchers with Before
     """.stripMargin
 
   val support = new SerializerSpecSupport(
-    ReplicationConfig.create("A", 2552),
-    ReplicationConfig.create("B", 2553, config))
+    ReplicationConfig.create(2552),
+    ReplicationConfig.create(2553, config))
 
   override def afterAll(): Unit =
     support.shutdown()

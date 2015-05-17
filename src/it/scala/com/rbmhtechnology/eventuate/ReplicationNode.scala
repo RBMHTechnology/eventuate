@@ -16,23 +16,14 @@
 
 package com.rbmhtechnology.eventuate
 
-import java.io.File
-
 import akka.actor._
 
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
-
-import org.apache.commons.io.FileUtils
-
-class ReplicationNode(nodeId: String, logIds: Set[String], port: Int, connections: Set[ReplicationConnection]) {
+class ReplicationNode(nodeId: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection])(implicit factory: String => Props) {
   val system: ActorSystem =
-    ActorSystem(ReplicationConnection.DefaultRemoteSystemName, ReplicationConfig.create(nodeId, port))
-
-  cleanup()
-  storageLocation.mkdirs()
+    ActorSystem(ReplicationConnection.DefaultRemoteSystemName, ReplicationConfig.create(port))
 
   val endpoint: ReplicationEndpoint =
-    new ReplicationEndpoint(nodeId, logIds, id => LeveldbEventLog.props(id), connections)(system)
+    new ReplicationEndpoint(nodeId, logNames, factory, connections)(system)
 
   def logs: Map[String, ActorRef] =
     endpoint.logs
@@ -44,13 +35,6 @@ class ReplicationNode(nodeId: String, logIds: Set[String], port: Int, connection
   def awaitTermination(): Unit = {
     system.awaitTermination()
   }
-
-  def cleanup(): Unit = {
-    FileUtils.deleteDirectory(storageLocation)
-  }
-
-  private def storageLocation: File =
-    new File(system.settings.config.getString("eventuate.log.leveldb.dir"))
 
   private def localEndpoint(port: Int) =
     s"127.0.0.1:${port}"

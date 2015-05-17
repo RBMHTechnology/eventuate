@@ -14,31 +14,26 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.eventuate.log
+package com.rbmhtechnology.eventuate.log.leveldb
 
 import java.io.File
 
-import scala.collection.immutable.Seq
-
 import akka.actor._
 import akka.testkit.TestKit
+
+import com.rbmhtechnology.eventuate._
+import com.rbmhtechnology.eventuate.ReplicationProtocol._
+import com.rbmhtechnology.eventuate.log.{EventLogSpec, BatchingEventLog}
+import com.rbmhtechnology.eventuate.log.EventLogSpec._
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.ReadResult
 
 import org.apache.commons.io.FileUtils
 import org.iq80.leveldb.WriteBatch
 import org.scalatest._
 
-import com.rbmhtechnology.eventuate._
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.ReadResult
+import scala.collection.immutable.Seq
 
-object EventLogSupport {
-  case object GetSequenceNr
-  case class GetSequenceNrSuccess(sequenceNr: Long)
-
-  case class SetReplicationProgress(logId: String, progress: Long)
-  case class GetReplicationProgress(logId: String)
-  case class GetReplicationProgressSuccess(progress: Long)
-
+object LeveldbEventLogSupport {
   class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") {
     override def replay(from: Long, classifier: Int)(f: (DurableEvent) => Unit): Unit =
       if (from == -1L) throw boom else super.replay(from, classifier)(f)
@@ -54,8 +49,8 @@ object EventLogSupport {
     override def unhandled(message: Any): Unit = message match {
       case GetSequenceNr =>
         sender() ! GetSequenceNrSuccess(sequenceNr)
-      case GetReplicationProgress(logId) =>
-        sender() ! GetReplicationProgressSuccess(replicationProgressMap.readReplicationProgress(logId))
+      case GetReplicationProgress =>
+        sender() ! GetReplicationProgressSuccess(progressMap)
       case SetReplicationProgress(logId, sequenceNr) =>
         withBatch(batch => replicationProgressMap.writeReplicationProgress(logId, sequenceNr, batch))
       case "boom" =>
@@ -63,11 +58,17 @@ object EventLogSupport {
       case _ =>
         super.unhandled(message)
     }
+
+    private def progressMap = List(EventLogSpec.remoteLogId, "x", "y").foldLeft[Map[String, Long]](Map.empty) {
+      case (map, logId) =>
+        val progress = replicationProgressMap.readReplicationProgress(logId)
+        if (progress == 0L) map else map + (logId -> progress)
+    }
   }
 }
 
-trait EventLogSupport extends BeforeAndAfterAll with BeforeAndAfterEach { this: Suite =>
-  import EventLogSupport._
+trait LeveldbEventLogSupport extends Suite with BeforeAndAfterAll with BeforeAndAfterEach {
+  import LeveldbEventLogSupport._
 
   private var _logCtr: Int = 0
   private var _log: ActorRef = _
@@ -76,6 +77,8 @@ trait EventLogSupport extends BeforeAndAfterAll with BeforeAndAfterEach { this: 
     List("eventuate.log.leveldb.dir").map(s => new File(system.settings.config.getString(s)))
 
   override def beforeEach(): Unit = {
+    super.beforeEach()
+
     _logCtr += 1
     _log = system.actorOf(logProps(logId))
   }
@@ -96,8 +99,13 @@ trait EventLogSupport extends BeforeAndAfterAll with BeforeAndAfterEach { this: 
   def logId: String =
     _logCtr.toString
 
-  def logProps(logId: String): Props =
-    Props(new BatchingEventLog(Props(new TestEventLog(logId)).withDispatcher("eventuate.log.leveldb.write-dispatcher")))
+  def logProps(logId: String): Props = {
+    val logProps = Props(new TestEventLog(logId)).withDispatcher("eventuate.log.leveldb.write-dispatcher")
+    if (batching) Props(new BatchingEventLog(logProps)) else logProps
+  }
+
+  def batching: Boolean =
+    true
 
   def system: ActorSystem
 }

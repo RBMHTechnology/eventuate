@@ -23,11 +23,16 @@ object MultiNodeReplicationConfig {
     val defaultConfig = ConfigFactory.parseString(
       s"""
          |akka.test.single-expect-default = 10s
+         |akka.testconductor.barrier-timeout = 60s
          |akka.loglevel = "ERROR"
          |
          |eventuate.log.replication.batch-size-max = 3
          |eventuate.log.replication.retry-interval = 1s
          |eventuate.log.replication.failure-detection-limit = 60s
+         |
+         |eventuate.log.cassandra.default-port = 9142
+         |eventuate.log.cassandra.index-update-limit = 3
+         |eventuate.log.cassandra.table-prefix = mnt
        """.stripMargin)
 
     ConfigFactory.parseString(customConfig).withFallback(defaultConfig)

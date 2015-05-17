@@ -17,14 +17,25 @@
 package com.rbmhtechnology.eventuate.crdt
 
 import akka.actor._
+import akka.remote.testconductor.RoleName
 import akka.remote.testkit._
 import akka.remote.transport.ThrottlerTransportAdapter.Direction
 import akka.testkit.TestProbe
 
 import com.rbmhtechnology.eventuate._
+import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogMultiNodeSupport
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogMultiNodeSupport
 
-class ReplicatedORSetSpecMultiJvmNode1 extends ReplicatedORSetSpec
-class ReplicatedORSetSpecMultiJvmNode2 extends ReplicatedORSetSpec
+class ReplicatedORSetSpecLeveldb extends ReplicatedORSetSpec with LeveldbEventLogMultiNodeSupport
+class ReplicatedORSetSpecLeveldbMultiJvmNode1 extends ReplicatedORSetSpecLeveldb
+class ReplicatedORSetSpecLeveldbMultiJvmNode2 extends ReplicatedORSetSpecLeveldb
+
+class ReplicatedORSetSpecCassandra extends ReplicatedORSetSpec with CassandraEventLogMultiNodeSupport {
+  override def coordinator: RoleName = ReplicatedORSetConfig.nodeA
+  override def logName = "ros"
+}
+class ReplicatedORSetSpecCassandraMultiJvmNode1 extends ReplicatedORSetSpecCassandra
+class ReplicatedORSetSpecCassandraMultiJvmNode2 extends ReplicatedORSetSpecCassandra
 
 object ReplicatedORSetConfig extends MultiNodeConfig {
   val nodeA = role("nodeA")
@@ -32,12 +43,15 @@ object ReplicatedORSetConfig extends MultiNodeConfig {
 
   testTransport(on = true)
 
-  commonConfig(MultiNodeReplicationConfig.create("eventuate.log.replication.batch-size-max = 200"))
+  commonConfig(MultiNodeReplicationConfig.create(
+    """
+      |eventuate.log.replication.batch-size-max = 200
+      |eventuate.log.replication.read-timeout = 2s
+    """.stripMargin))
 }
 
-class ReplicatedORSetSpec extends MultiNodeSpec(ReplicatedORSetConfig) with MultiNodeWordSpec with MultiNodeReplicationEndpoint {
+abstract class ReplicatedORSetSpec extends MultiNodeSpec(ReplicatedORSetConfig) with MultiNodeWordSpec with MultiNodeReplicationEndpoint {
   import BasicReplicationConfig._
-  import ReplicationEndpoint._
 
   def initialParticipants: Int =
     roles.size

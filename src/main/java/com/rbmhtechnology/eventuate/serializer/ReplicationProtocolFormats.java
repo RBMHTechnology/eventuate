@@ -1579,16 +1579,6 @@ public final class ReplicationProtocolFormats {
      */
     com.google.protobuf.ByteString
         getTargetLogIdBytes();
-
-    // optional int32 correlationId = 5;
-    /**
-     * <code>optional int32 correlationId = 5;</code>
-     */
-    boolean hasCorrelationId();
-    /**
-     * <code>optional int32 correlationId = 5;</code>
-     */
-    int getCorrelationId();
   }
   /**
    * Protobuf type {@code ReplicationReadFormat}
@@ -1667,11 +1657,6 @@ public final class ReplicationProtocolFormats {
             case 34: {
               bitField0_ |= 0x00000008;
               targetLogId_ = input.readBytes();
-              break;
-            }
-            case 40: {
-              bitField0_ |= 0x00000010;
-              correlationId_ = input.readInt32();
               break;
             }
           }
@@ -1811,28 +1796,11 @@ public final class ReplicationProtocolFormats {
       }
     }
 
-    // optional int32 correlationId = 5;
-    public static final int CORRELATIONID_FIELD_NUMBER = 5;
-    private int correlationId_;
-    /**
-     * <code>optional int32 correlationId = 5;</code>
-     */
-    public boolean hasCorrelationId() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
-    }
-    /**
-     * <code>optional int32 correlationId = 5;</code>
-     */
-    public int getCorrelationId() {
-      return correlationId_;
-    }
-
     private void initFields() {
       fromSequenceNr_ = 0L;
       maxNumEvents_ = 0;
       filter_ = com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.getDefaultInstance();
       targetLogId_ = "";
-      correlationId_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1864,9 +1832,6 @@ public final class ReplicationProtocolFormats {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBytes(4, getTargetLogIdBytes());
       }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeInt32(5, correlationId_);
-      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1891,10 +1856,6 @@ public final class ReplicationProtocolFormats {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(4, getTargetLogIdBytes());
-      }
-      if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(5, correlationId_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2025,8 +1986,6 @@ public final class ReplicationProtocolFormats {
         bitField0_ = (bitField0_ & ~0x00000004);
         targetLogId_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
-        correlationId_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -2075,10 +2034,6 @@ public final class ReplicationProtocolFormats {
           to_bitField0_ |= 0x00000008;
         }
         result.targetLogId_ = targetLogId_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
-        }
-        result.correlationId_ = correlationId_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2108,9 +2063,6 @@ public final class ReplicationProtocolFormats {
           bitField0_ |= 0x00000008;
           targetLogId_ = other.targetLogId_;
           onChanged();
-        }
-        if (other.hasCorrelationId()) {
-          setCorrelationId(other.getCorrelationId());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2402,39 +2354,6 @@ public final class ReplicationProtocolFormats {
         return this;
       }
 
-      // optional int32 correlationId = 5;
-      private int correlationId_ ;
-      /**
-       * <code>optional int32 correlationId = 5;</code>
-       */
-      public boolean hasCorrelationId() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <code>optional int32 correlationId = 5;</code>
-       */
-      public int getCorrelationId() {
-        return correlationId_;
-      }
-      /**
-       * <code>optional int32 correlationId = 5;</code>
-       */
-      public Builder setCorrelationId(int value) {
-        bitField0_ |= 0x00000010;
-        correlationId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int32 correlationId = 5;</code>
-       */
-      public Builder clearCorrelationId() {
-        bitField0_ = (bitField0_ & ~0x00000010);
-        correlationId_ = 0;
-        onChanged();
-        return this;
-      }
-
       // @@protoc_insertion_point(builder_scope:ReplicationReadFormat)
     }
 
@@ -2498,16 +2417,6 @@ public final class ReplicationProtocolFormats {
      */
     com.google.protobuf.ByteString
         getTargetLogIdBytes();
-
-    // optional int32 correlationId = 4;
-    /**
-     * <code>optional int32 correlationId = 4;</code>
-     */
-    boolean hasCorrelationId();
-    /**
-     * <code>optional int32 correlationId = 4;</code>
-     */
-    int getCorrelationId();
   }
   /**
    * Protobuf type {@code ReplicationReadSuccessFormat}
@@ -2576,11 +2485,6 @@ public final class ReplicationProtocolFormats {
             case 26: {
               bitField0_ |= 0x00000002;
               targetLogId_ = input.readBytes();
-              break;
-            }
-            case 32: {
-              bitField0_ |= 0x00000004;
-              correlationId_ = input.readInt32();
               break;
             }
           }
@@ -2721,27 +2625,10 @@ public final class ReplicationProtocolFormats {
       }
     }
 
-    // optional int32 correlationId = 4;
-    public static final int CORRELATIONID_FIELD_NUMBER = 4;
-    private int correlationId_;
-    /**
-     * <code>optional int32 correlationId = 4;</code>
-     */
-    public boolean hasCorrelationId() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    /**
-     * <code>optional int32 correlationId = 4;</code>
-     */
-    public int getCorrelationId() {
-      return correlationId_;
-    }
-
     private void initFields() {
       events_ = java.util.Collections.emptyList();
       lastSourceLogSequenceNrRead_ = 0L;
       targetLogId_ = "";
-      correlationId_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -2770,9 +2657,6 @@ public final class ReplicationProtocolFormats {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(3, getTargetLogIdBytes());
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeInt32(4, correlationId_);
-      }
       getUnknownFields().writeTo(output);
     }
 
@@ -2793,10 +2677,6 @@ public final class ReplicationProtocolFormats {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(3, getTargetLogIdBytes());
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(4, correlationId_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2925,8 +2805,6 @@ public final class ReplicationProtocolFormats {
         bitField0_ = (bitField0_ & ~0x00000002);
         targetLogId_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
-        correlationId_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -2972,10 +2850,6 @@ public final class ReplicationProtocolFormats {
           to_bitField0_ |= 0x00000002;
         }
         result.targetLogId_ = targetLogId_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.correlationId_ = correlationId_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3025,9 +2899,6 @@ public final class ReplicationProtocolFormats {
           bitField0_ |= 0x00000004;
           targetLogId_ = other.targetLogId_;
           onChanged();
-        }
-        if (other.hasCorrelationId()) {
-          setCorrelationId(other.getCorrelationId());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -3409,39 +3280,6 @@ public final class ReplicationProtocolFormats {
         return this;
       }
 
-      // optional int32 correlationId = 4;
-      private int correlationId_ ;
-      /**
-       * <code>optional int32 correlationId = 4;</code>
-       */
-      public boolean hasCorrelationId() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <code>optional int32 correlationId = 4;</code>
-       */
-      public int getCorrelationId() {
-        return correlationId_;
-      }
-      /**
-       * <code>optional int32 correlationId = 4;</code>
-       */
-      public Builder setCorrelationId(int value) {
-        bitField0_ |= 0x00000008;
-        correlationId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int32 correlationId = 4;</code>
-       */
-      public Builder clearCorrelationId() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        correlationId_ = 0;
-        onChanged();
-        return this;
-      }
-
       // @@protoc_insertion_point(builder_scope:ReplicationReadSuccessFormat)
     }
 
@@ -3485,16 +3323,6 @@ public final class ReplicationProtocolFormats {
      */
     com.google.protobuf.ByteString
         getTargetLogIdBytes();
-
-    // optional int32 correlationId = 3;
-    /**
-     * <code>optional int32 correlationId = 3;</code>
-     */
-    boolean hasCorrelationId();
-    /**
-     * <code>optional int32 correlationId = 3;</code>
-     */
-    int getCorrelationId();
   }
   /**
    * Protobuf type {@code ReplicationReadFailureFormat}
@@ -3555,11 +3383,6 @@ public final class ReplicationProtocolFormats {
             case 18: {
               bitField0_ |= 0x00000002;
               targetLogId_ = input.readBytes();
-              break;
-            }
-            case 24: {
-              bitField0_ |= 0x00000004;
-              correlationId_ = input.readInt32();
               break;
             }
           }
@@ -3688,26 +3511,9 @@ public final class ReplicationProtocolFormats {
       }
     }
 
-    // optional int32 correlationId = 3;
-    public static final int CORRELATIONID_FIELD_NUMBER = 3;
-    private int correlationId_;
-    /**
-     * <code>optional int32 correlationId = 3;</code>
-     */
-    public boolean hasCorrelationId() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    /**
-     * <code>optional int32 correlationId = 3;</code>
-     */
-    public int getCorrelationId() {
-      return correlationId_;
-    }
-
     private void initFields() {
       cause_ = "";
       targetLogId_ = "";
-      correlationId_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3727,9 +3533,6 @@ public final class ReplicationProtocolFormats {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getTargetLogIdBytes());
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeInt32(3, correlationId_);
-      }
       getUnknownFields().writeTo(output);
     }
 
@@ -3746,10 +3549,6 @@ public final class ReplicationProtocolFormats {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, getTargetLogIdBytes());
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, correlationId_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3871,8 +3670,6 @@ public final class ReplicationProtocolFormats {
         bitField0_ = (bitField0_ & ~0x00000001);
         targetLogId_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
-        correlationId_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -3909,10 +3706,6 @@ public final class ReplicationProtocolFormats {
           to_bitField0_ |= 0x00000002;
         }
         result.targetLogId_ = targetLogId_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.correlationId_ = correlationId_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -3938,9 +3731,6 @@ public final class ReplicationProtocolFormats {
           bitField0_ |= 0x00000002;
           targetLogId_ = other.targetLogId_;
           onChanged();
-        }
-        if (other.hasCorrelationId()) {
-          setCorrelationId(other.getCorrelationId());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -4117,39 +3907,6 @@ public final class ReplicationProtocolFormats {
         return this;
       }
 
-      // optional int32 correlationId = 3;
-      private int correlationId_ ;
-      /**
-       * <code>optional int32 correlationId = 3;</code>
-       */
-      public boolean hasCorrelationId() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>optional int32 correlationId = 3;</code>
-       */
-      public int getCorrelationId() {
-        return correlationId_;
-      }
-      /**
-       * <code>optional int32 correlationId = 3;</code>
-       */
-      public Builder setCorrelationId(int value) {
-        bitField0_ |= 0x00000004;
-        correlationId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int32 correlationId = 3;</code>
-       */
-      public Builder clearCorrelationId() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        correlationId_ = 0;
-        onChanged();
-        return this;
-      }
-
       // @@protoc_insertion_point(builder_scope:ReplicationReadFailureFormat)
     }
 
@@ -4164,47 +3921,62 @@ public final class ReplicationProtocolFormats {
   public interface SubscribeReplicatorFormatOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // optional string targetLogId = 1;
+    // optional string sourceLogId = 1;
     /**
-     * <code>optional string targetLogId = 1;</code>
+     * <code>optional string sourceLogId = 1;</code>
+     */
+    boolean hasSourceLogId();
+    /**
+     * <code>optional string sourceLogId = 1;</code>
+     */
+    java.lang.String getSourceLogId();
+    /**
+     * <code>optional string sourceLogId = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getSourceLogIdBytes();
+
+    // optional string targetLogId = 2;
+    /**
+     * <code>optional string targetLogId = 2;</code>
      */
     boolean hasTargetLogId();
     /**
-     * <code>optional string targetLogId = 1;</code>
+     * <code>optional string targetLogId = 2;</code>
      */
     java.lang.String getTargetLogId();
     /**
-     * <code>optional string targetLogId = 1;</code>
+     * <code>optional string targetLogId = 2;</code>
      */
     com.google.protobuf.ByteString
         getTargetLogIdBytes();
 
-    // optional string replicator = 2;
+    // optional string replicator = 3;
     /**
-     * <code>optional string replicator = 2;</code>
+     * <code>optional string replicator = 3;</code>
      */
     boolean hasReplicator();
     /**
-     * <code>optional string replicator = 2;</code>
+     * <code>optional string replicator = 3;</code>
      */
     java.lang.String getReplicator();
     /**
-     * <code>optional string replicator = 2;</code>
+     * <code>optional string replicator = 3;</code>
      */
     com.google.protobuf.ByteString
         getReplicatorBytes();
 
-    // optional .ReplicationFilterTreeFormat filter = 3;
+    // optional .ReplicationFilterTreeFormat filter = 4;
     /**
-     * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+     * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
      */
     boolean hasFilter();
     /**
-     * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+     * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
      */
     com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat getFilter();
     /**
-     * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+     * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
      */
     com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormatOrBuilder getFilterOrBuilder();
   }
@@ -4261,17 +4033,22 @@ public final class ReplicationProtocolFormats {
             }
             case 10: {
               bitField0_ |= 0x00000001;
-              targetLogId_ = input.readBytes();
+              sourceLogId_ = input.readBytes();
               break;
             }
             case 18: {
               bitField0_ |= 0x00000002;
-              replicator_ = input.readBytes();
+              targetLogId_ = input.readBytes();
               break;
             }
             case 26: {
+              bitField0_ |= 0x00000004;
+              replicator_ = input.readBytes();
+              break;
+            }
+            case 34: {
               com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000004) == 0x00000004)) {
+              if (((bitField0_ & 0x00000008) == 0x00000008)) {
                 subBuilder = filter_.toBuilder();
               }
               filter_ = input.readMessage(com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.PARSER, extensionRegistry);
@@ -4279,7 +4056,7 @@ public final class ReplicationProtocolFormats {
                 subBuilder.mergeFrom(filter_);
                 filter_ = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000004;
+              bitField0_ |= 0x00000008;
               break;
             }
           }
@@ -4322,17 +4099,60 @@ public final class ReplicationProtocolFormats {
     }
 
     private int bitField0_;
-    // optional string targetLogId = 1;
-    public static final int TARGETLOGID_FIELD_NUMBER = 1;
-    private java.lang.Object targetLogId_;
+    // optional string sourceLogId = 1;
+    public static final int SOURCELOGID_FIELD_NUMBER = 1;
+    private java.lang.Object sourceLogId_;
     /**
-     * <code>optional string targetLogId = 1;</code>
+     * <code>optional string sourceLogId = 1;</code>
      */
-    public boolean hasTargetLogId() {
+    public boolean hasSourceLogId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>optional string targetLogId = 1;</code>
+     * <code>optional string sourceLogId = 1;</code>
+     */
+    public java.lang.String getSourceLogId() {
+      java.lang.Object ref = sourceLogId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          sourceLogId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string sourceLogId = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSourceLogIdBytes() {
+      java.lang.Object ref = sourceLogId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        sourceLogId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional string targetLogId = 2;
+    public static final int TARGETLOGID_FIELD_NUMBER = 2;
+    private java.lang.Object targetLogId_;
+    /**
+     * <code>optional string targetLogId = 2;</code>
+     */
+    public boolean hasTargetLogId() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional string targetLogId = 2;</code>
      */
     public java.lang.String getTargetLogId() {
       java.lang.Object ref = targetLogId_;
@@ -4349,7 +4169,7 @@ public final class ReplicationProtocolFormats {
       }
     }
     /**
-     * <code>optional string targetLogId = 1;</code>
+     * <code>optional string targetLogId = 2;</code>
      */
     public com.google.protobuf.ByteString
         getTargetLogIdBytes() {
@@ -4365,17 +4185,17 @@ public final class ReplicationProtocolFormats {
       }
     }
 
-    // optional string replicator = 2;
-    public static final int REPLICATOR_FIELD_NUMBER = 2;
+    // optional string replicator = 3;
+    public static final int REPLICATOR_FIELD_NUMBER = 3;
     private java.lang.Object replicator_;
     /**
-     * <code>optional string replicator = 2;</code>
+     * <code>optional string replicator = 3;</code>
      */
     public boolean hasReplicator() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+      return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>optional string replicator = 2;</code>
+     * <code>optional string replicator = 3;</code>
      */
     public java.lang.String getReplicator() {
       java.lang.Object ref = replicator_;
@@ -4392,7 +4212,7 @@ public final class ReplicationProtocolFormats {
       }
     }
     /**
-     * <code>optional string replicator = 2;</code>
+     * <code>optional string replicator = 3;</code>
      */
     public com.google.protobuf.ByteString
         getReplicatorBytes() {
@@ -4408,29 +4228,30 @@ public final class ReplicationProtocolFormats {
       }
     }
 
-    // optional .ReplicationFilterTreeFormat filter = 3;
-    public static final int FILTER_FIELD_NUMBER = 3;
+    // optional .ReplicationFilterTreeFormat filter = 4;
+    public static final int FILTER_FIELD_NUMBER = 4;
     private com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat filter_;
     /**
-     * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+     * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
      */
     public boolean hasFilter() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+      return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+     * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
      */
     public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat getFilter() {
       return filter_;
     }
     /**
-     * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+     * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
      */
     public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormatOrBuilder getFilterOrBuilder() {
       return filter_;
     }
 
     private void initFields() {
+      sourceLogId_ = "";
       targetLogId_ = "";
       replicator_ = "";
       filter_ = com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.getDefaultInstance();
@@ -4454,13 +4275,16 @@ public final class ReplicationProtocolFormats {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getTargetLogIdBytes());
+        output.writeBytes(1, getSourceLogIdBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getReplicatorBytes());
+        output.writeBytes(2, getTargetLogIdBytes());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeMessage(3, filter_);
+        output.writeBytes(3, getReplicatorBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeMessage(4, filter_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -4473,15 +4297,19 @@ public final class ReplicationProtocolFormats {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getTargetLogIdBytes());
+          .computeBytesSize(1, getSourceLogIdBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getReplicatorBytes());
+          .computeBytesSize(2, getTargetLogIdBytes());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, filter_);
+          .computeBytesSize(3, getReplicatorBytes());
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, filter_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4600,16 +4428,18 @@ public final class ReplicationProtocolFormats {
 
       public Builder clear() {
         super.clear();
-        targetLogId_ = "";
+        sourceLogId_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        replicator_ = "";
+        targetLogId_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
+        replicator_ = "";
+        bitField0_ = (bitField0_ & ~0x00000004);
         if (filterBuilder_ == null) {
           filter_ = com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.getDefaultInstance();
         } else {
           filterBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -4641,13 +4471,17 @@ public final class ReplicationProtocolFormats {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.targetLogId_ = targetLogId_;
+        result.sourceLogId_ = sourceLogId_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.replicator_ = replicator_;
+        result.targetLogId_ = targetLogId_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
+        }
+        result.replicator_ = replicator_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
         }
         if (filterBuilder_ == null) {
           result.filter_ = filter_;
@@ -4670,13 +4504,18 @@ public final class ReplicationProtocolFormats {
 
       public Builder mergeFrom(com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat other) {
         if (other == com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat.getDefaultInstance()) return this;
-        if (other.hasTargetLogId()) {
+        if (other.hasSourceLogId()) {
           bitField0_ |= 0x00000001;
+          sourceLogId_ = other.sourceLogId_;
+          onChanged();
+        }
+        if (other.hasTargetLogId()) {
+          bitField0_ |= 0x00000002;
           targetLogId_ = other.targetLogId_;
           onChanged();
         }
         if (other.hasReplicator()) {
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000004;
           replicator_ = other.replicator_;
           onChanged();
         }
@@ -4716,16 +4555,90 @@ public final class ReplicationProtocolFormats {
       }
       private int bitField0_;
 
-      // optional string targetLogId = 1;
-      private java.lang.Object targetLogId_ = "";
+      // optional string sourceLogId = 1;
+      private java.lang.Object sourceLogId_ = "";
       /**
-       * <code>optional string targetLogId = 1;</code>
+       * <code>optional string sourceLogId = 1;</code>
        */
-      public boolean hasTargetLogId() {
+      public boolean hasSourceLogId() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>optional string targetLogId = 1;</code>
+       * <code>optional string sourceLogId = 1;</code>
+       */
+      public java.lang.String getSourceLogId() {
+        java.lang.Object ref = sourceLogId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          sourceLogId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string sourceLogId = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSourceLogIdBytes() {
+        java.lang.Object ref = sourceLogId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          sourceLogId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string sourceLogId = 1;</code>
+       */
+      public Builder setSourceLogId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        sourceLogId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string sourceLogId = 1;</code>
+       */
+      public Builder clearSourceLogId() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        sourceLogId_ = getDefaultInstance().getSourceLogId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string sourceLogId = 1;</code>
+       */
+      public Builder setSourceLogIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        sourceLogId_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional string targetLogId = 2;
+      private java.lang.Object targetLogId_ = "";
+      /**
+       * <code>optional string targetLogId = 2;</code>
+       */
+      public boolean hasTargetLogId() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string targetLogId = 2;</code>
        */
       public java.lang.String getTargetLogId() {
         java.lang.Object ref = targetLogId_;
@@ -4739,7 +4652,7 @@ public final class ReplicationProtocolFormats {
         }
       }
       /**
-       * <code>optional string targetLogId = 1;</code>
+       * <code>optional string targetLogId = 2;</code>
        */
       public com.google.protobuf.ByteString
           getTargetLogIdBytes() {
@@ -4755,51 +4668,51 @@ public final class ReplicationProtocolFormats {
         }
       }
       /**
-       * <code>optional string targetLogId = 1;</code>
+       * <code>optional string targetLogId = 2;</code>
        */
       public Builder setTargetLogId(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  bitField0_ |= 0x00000002;
         targetLogId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string targetLogId = 1;</code>
+       * <code>optional string targetLogId = 2;</code>
        */
       public Builder clearTargetLogId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         targetLogId_ = getDefaultInstance().getTargetLogId();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string targetLogId = 1;</code>
+       * <code>optional string targetLogId = 2;</code>
        */
       public Builder setTargetLogIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000001;
+  bitField0_ |= 0x00000002;
         targetLogId_ = value;
         onChanged();
         return this;
       }
 
-      // optional string replicator = 2;
+      // optional string replicator = 3;
       private java.lang.Object replicator_ = "";
       /**
-       * <code>optional string replicator = 2;</code>
+       * <code>optional string replicator = 3;</code>
        */
       public boolean hasReplicator() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>optional string replicator = 2;</code>
+       * <code>optional string replicator = 3;</code>
        */
       public java.lang.String getReplicator() {
         java.lang.Object ref = replicator_;
@@ -4813,7 +4726,7 @@ public final class ReplicationProtocolFormats {
         }
       }
       /**
-       * <code>optional string replicator = 2;</code>
+       * <code>optional string replicator = 3;</code>
        */
       public com.google.protobuf.ByteString
           getReplicatorBytes() {
@@ -4829,53 +4742,53 @@ public final class ReplicationProtocolFormats {
         }
       }
       /**
-       * <code>optional string replicator = 2;</code>
+       * <code>optional string replicator = 3;</code>
        */
       public Builder setReplicator(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000004;
         replicator_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string replicator = 2;</code>
+       * <code>optional string replicator = 3;</code>
        */
       public Builder clearReplicator() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         replicator_ = getDefaultInstance().getReplicator();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string replicator = 2;</code>
+       * <code>optional string replicator = 3;</code>
        */
       public Builder setReplicatorBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000004;
         replicator_ = value;
         onChanged();
         return this;
       }
 
-      // optional .ReplicationFilterTreeFormat filter = 3;
+      // optional .ReplicationFilterTreeFormat filter = 4;
       private com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat filter_ = com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
           com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormatOrBuilder> filterBuilder_;
       /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
        */
       public boolean hasFilter() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
        */
       public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat getFilter() {
         if (filterBuilder_ == null) {
@@ -4885,7 +4798,7 @@ public final class ReplicationProtocolFormats {
         }
       }
       /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
        */
       public Builder setFilter(com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat value) {
         if (filterBuilder_ == null) {
@@ -4897,11 +4810,11 @@ public final class ReplicationProtocolFormats {
         } else {
           filterBuilder_.setMessage(value);
         }
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         return this;
       }
       /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
        */
       public Builder setFilter(
           com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder builderForValue) {
@@ -4911,15 +4824,15 @@ public final class ReplicationProtocolFormats {
         } else {
           filterBuilder_.setMessage(builderForValue.build());
         }
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         return this;
       }
       /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
        */
       public Builder mergeFilter(com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat value) {
         if (filterBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004) &&
+          if (((bitField0_ & 0x00000008) == 0x00000008) &&
               filter_ != com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.getDefaultInstance()) {
             filter_ =
               com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.newBuilder(filter_).mergeFrom(value).buildPartial();
@@ -4930,11 +4843,11 @@ public final class ReplicationProtocolFormats {
         } else {
           filterBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         return this;
       }
       /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
        */
       public Builder clearFilter() {
         if (filterBuilder_ == null) {
@@ -4943,19 +4856,19 @@ public final class ReplicationProtocolFormats {
         } else {
           filterBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
        */
       public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder getFilterBuilder() {
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         onChanged();
         return getFilterFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
        */
       public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormatOrBuilder getFilterOrBuilder() {
         if (filterBuilder_ != null) {
@@ -4965,7 +4878,7 @@ public final class ReplicationProtocolFormats {
         }
       }
       /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 3;</code>
+       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
           com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormatOrBuilder> 
@@ -5366,22 +5279,21 @@ public final class ReplicationProtocolFormats {
       "\022\020\n\010logNames\030\002 \003(\t\"\"\n GetReplicationEndp" +
       "ointInfoFormat\"W\n\'GetReplicationEndpoint" +
       "InfoSuccessFormat\022,\n\004info\030\001 \002(\0132\036.Replic" +
-      "ationEndpointInfoFormat\"\237\001\n\025ReplicationR" +
+      "ationEndpointInfoFormat\"\210\001\n\025ReplicationR" +
       "eadFormat\022\026\n\016fromSequenceNr\030\001 \001(\003\022\024\n\014max",
       "NumEvents\030\002 \001(\005\022,\n\006filter\030\003 \001(\0132\034.Replic" +
       "ationFilterTreeFormat\022\023\n\013targetLogId\030\004 \001" +
-      "(\t\022\025\n\rcorrelationId\030\005 \001(\005\"\224\001\n\034Replicatio" +
-      "nReadSuccessFormat\022#\n\006events\030\001 \003(\0132\023.Dur" +
-      "ableEventFormat\022#\n\033lastSourceLogSequence" +
-      "NrRead\030\002 \001(\003\022\023\n\013targetLogId\030\003 \001(\t\022\025\n\rcor" +
-      "relationId\030\004 \001(\005\"Y\n\034ReplicationReadFailu" +
-      "reFormat\022\r\n\005cause\030\001 \001(\t\022\023\n\013targetLogId\030\002" +
-      " \001(\t\022\025\n\rcorrelationId\030\003 \001(\005\"r\n\031Subscribe" +
-      "ReplicatorFormat\022\023\n\013targetLogId\030\001 \001(\t\022\022\n",
-      "\nreplicator\030\002 \001(\t\022,\n\006filter\030\003 \001(\0132\034.Repl" +
-      "icationFilterTreeFormat\"\026\n\024ReplicationDu" +
-      "eFormatB+\n\'com.rbmhtechnology.eventuate." +
-      "serializerH\001"
+      "(\t\"}\n\034ReplicationReadSuccessFormat\022#\n\006ev" +
+      "ents\030\001 \003(\0132\023.DurableEventFormat\022#\n\033lastS" +
+      "ourceLogSequenceNrRead\030\002 \001(\003\022\023\n\013targetLo" +
+      "gId\030\003 \001(\t\"B\n\034ReplicationReadFailureForma" +
+      "t\022\r\n\005cause\030\001 \001(\t\022\023\n\013targetLogId\030\002 \001(\t\"\207\001" +
+      "\n\031SubscribeReplicatorFormat\022\023\n\013sourceLog" +
+      "Id\030\001 \001(\t\022\023\n\013targetLogId\030\002 \001(\t\022\022\n\nreplica" +
+      "tor\030\003 \001(\t\022,\n\006filter\030\004 \001(\0132\034.ReplicationF",
+      "ilterTreeFormat\"\026\n\024ReplicationDueFormatB" +
+      "+\n\'com.rbmhtechnology.eventuate.serializ" +
+      "erH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5411,25 +5323,25 @@ public final class ReplicationProtocolFormats {
           internal_static_ReplicationReadFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationReadFormat_descriptor,
-              new java.lang.String[] { "FromSequenceNr", "MaxNumEvents", "Filter", "TargetLogId", "CorrelationId", });
+              new java.lang.String[] { "FromSequenceNr", "MaxNumEvents", "Filter", "TargetLogId", });
           internal_static_ReplicationReadSuccessFormat_descriptor =
             getDescriptor().getMessageTypes().get(4);
           internal_static_ReplicationReadSuccessFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationReadSuccessFormat_descriptor,
-              new java.lang.String[] { "Events", "LastSourceLogSequenceNrRead", "TargetLogId", "CorrelationId", });
+              new java.lang.String[] { "Events", "LastSourceLogSequenceNrRead", "TargetLogId", });
           internal_static_ReplicationReadFailureFormat_descriptor =
             getDescriptor().getMessageTypes().get(5);
           internal_static_ReplicationReadFailureFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationReadFailureFormat_descriptor,
-              new java.lang.String[] { "Cause", "TargetLogId", "CorrelationId", });
+              new java.lang.String[] { "Cause", "TargetLogId", });
           internal_static_SubscribeReplicatorFormat_descriptor =
             getDescriptor().getMessageTypes().get(6);
           internal_static_SubscribeReplicatorFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SubscribeReplicatorFormat_descriptor,
-              new java.lang.String[] { "TargetLogId", "Replicator", "Filter", });
+              new java.lang.String[] { "SourceLogId", "TargetLogId", "Replicator", "Filter", });
           internal_static_ReplicationDueFormat_descriptor =
             getDescriptor().getMessageTypes().get(7);
           internal_static_ReplicationDueFormat_fieldAccessorTable = new

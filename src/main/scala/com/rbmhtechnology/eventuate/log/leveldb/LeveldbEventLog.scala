@@ -50,7 +50,6 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor {
 
   val serialization = SerializationExtension(context.system)
   val eventStream = context.system.eventStream
-  val syslog = Logging(context.system, this)
 
   val leveldbConfig = context.system.settings.config.getConfig("eventuate.log.leveldb")
   val leveldbRootDir = leveldbConfig.getString("dir")
@@ -60,8 +59,8 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor {
   val leveldbWriteOptions = new WriteOptions().sync(leveldbFsync).snapshot(false)
   def leveldbReadOptions = new ReadOptions().verifyChecksums(false)
 
-  val leveldbDir = new File(leveldbRootDir, s"${prefix}-${id}")
-  var leveldb = factory.open(leveldbDir, leveldbOptions)
+  val leveldbDir = new File(leveldbRootDir, s"${prefix}-${id}"); leveldbDir.mkdirs()
+  val leveldb = factory.open(leveldbDir, leveldbOptions)
 
   implicit val dispatcher = context.system.dispatchers.lookup("eventuate.log.leveldb.read-dispatcher")
 
@@ -75,94 +74,73 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor {
   val replicationProgressMap = new ReplicationProgressMap(leveldb, -3, eventLogIdMap.numericId)
 
   final def receive = {
-    case GetLastSourceLogReadPosition(sourceLogId, correlationId) =>
+    case GetLastSourceLogReadPosition(sourceLogId) =>
       Try(replicationProgressMap.readReplicationProgress(sourceLogId)) match {
-        case Success(r) => sender() ! GetLastSourceLogReadPositionSuccess(sourceLogId, r, correlationId)
-        case Failure(e) => sender() ! GetLastSourceLogReadPositionFailure(e, correlationId); syslog.error(e, "GetLastSourceLogReadPosition failure")
+        case Success(r) => sender() ! GetLastSourceLogReadPositionSuccess(sourceLogId, r)
+        case Failure(e) => sender() ! GetLastSourceLogReadPositionFailure(e)
       }
     case Replay(from, requestor, None, iid) =>
       defaultRegistry = defaultRegistry + context.watch(requestor)
       Future(replay(from, EventKey.DefaultClassifier)(event => requestor ! Replaying(event, iid))) onComplete {
         case Success(_) => requestor ! ReplaySuccess(iid)
-        case Failure(e) => requestor ! ReplayFailure(e, iid); syslog.error(e, "Replay failure")
+        case Failure(e) => requestor ! ReplayFailure(e, iid)
       }
     case Replay(from, requestor, Some(sourceAggregateId), iid) =>
       val nid = aggregateIdMap.numericId(sourceAggregateId)
       aggregateRegistry = aggregateRegistry.add(context.watch(requestor), sourceAggregateId)
       Future(replay(from, nid)(event => requestor ! Replaying(event, iid))) onComplete {
         case Success(_) => requestor ! ReplaySuccess(iid)
-        case Failure(e) => requestor ! ReplayFailure(e, iid); syslog.error(e, "Replay failure")
+        case Failure(e) => requestor ! ReplayFailure(e, iid)
       }
-    case r @ ReplicationRead(from, max, filter, correlationId, targetLogId) =>
+    case r @ ReplicationRead(from, max, filter, targetLogId) =>
       val sdr = sender()
       eventStream.publish(r)
       Future(read(from, max, filter)) onComplete {
         case Success(result) =>
-          val r = ReplicationReadSuccess(result.events, result.to, correlationId, targetLogId)
+          val r = ReplicationReadSuccess(result.events, result.to, targetLogId)
           sdr ! r
           eventStream.publish(r)
         case Failure(cause)  =>
-          val r = ReplicationReadFailure(cause.getMessage, correlationId, targetLogId)
+          val r = ReplicationReadFailure(cause.getMessage, targetLogId)
           sdr ! r
           eventStream.publish(r)
-          syslog.error(cause, "ReplicationRead failure")
       }
-    case Delay(commands, commandsSender, requestor, iid) =>
-      commands.foreach(cmd => requestor.tell(DelayComplete(cmd, iid), commandsSender))
     case WriteN(writes) =>
-      val updated = writes.map(w => w.copy(events = prepareWrite(w.events)))
-      val result = Try(withBatch(batch => updated.foreach(w => write(w.events, batch))))
-      sender() ! WriteNComplete // notify batch layer that write completed
-      result match {
-        case Failure(e) =>
-          updated.foreach {
-            case Write(events, eventsSender, requestor, iid) =>
-              pushWriteFailure(events, eventsSender, requestor, iid, e)
-          }
-          syslog.error(e, "WriteN failure")
+      val updatedWrites = writes.map(w => w.copy(events = prepareWrite(w.events)))
+      val updatedEvents = updatedWrites.map(_.events).flatten
+      Try(withBatch(batch => write(updatedEvents, batch))) match {
         case Success(_) =>
-          updated.foreach {
-            case Write(events, eventsSender, requestor, iid) =>
-              pushWriteSuccess(events, eventsSender, requestor, iid)
-          }
-          publishUpdateNotification(updated.flatMap(_.events))
+          updatedWrites.foreach(w => pushWriteSuccess(w.events, w.eventsSender, w.requestor, w.instanceId))
+          publishUpdateNotification(updatedEvents)
+        case Failure(e) =>
+          updatedWrites.foreach(w => pushWriteFailure(w.events, w.eventsSender, w.requestor, w.instanceId, e))
       }
+      sender() ! WriteNComplete // notify batch layer that write completed
     case Write(events, eventsSender, requestor, iid) =>
       val updated = prepareWrite(events)
       val result = Try(write(updated))
       result match {
         case Failure(e) =>
           pushWriteFailure(updated, eventsSender, requestor, iid, e)
-          syslog.error(e, "Write failure")
         case Success(_) =>
           pushWriteSuccess(updated, eventsSender, requestor, iid)
           publishUpdateNotification(updated)
       }
-    case ReplicationWrite(events, sourceLogId, lastSourceLogSequenceNrRead, correlationId) =>
-      Try(replicationProgressMap.readReplicationProgress(sourceLogId)) match {
-        case Failure(e) => sender() ! ReplicationWriteFailure(e, correlationId)
-        case Success(lastSourceLogSequenceNrStored) =>
-          if (lastSourceLogSequenceNrRead > lastSourceLogSequenceNrStored) {
-            val updated = prepareReplicate(events)
-            val result = Try {
-              withBatch { batch =>
-                // atomic write of events and replication progress
-                replicationProgressMap.writeReplicationProgress(sourceLogId, lastSourceLogSequenceNrRead, batch)
-                write(updated, batch)
-              }
-            }
-            result match {
-              case Failure(e) =>
-                sender() ! ReplicationWriteFailure(e, correlationId)
-                syslog.error(e, "ReplicationWrite failure")
-              case Success(_) =>
-                sender() ! ReplicationWriteSuccess(events.size, lastSourceLogSequenceNrRead, correlationId)
-                pushReplicateSuccess(updated)
-                publishUpdateNotification(updated)
-            }
-          } else {
-            sender() ! ReplicationWriteSuccess(0, lastSourceLogSequenceNrStored, correlationId)
-          }
+    case ReplicationWrite(events, sourceLogId, lastSourceLogSequenceNrRead) =>
+      val updated = prepareReplicate(events)
+      Try {
+        withBatch { batch =>
+          // atomic write of events and replication progress
+          replicationProgressMap.writeReplicationProgress(sourceLogId, lastSourceLogSequenceNrRead, batch)
+          write(updated, batch)
+        }
+      } match {
+        case Failure(e) =>
+          sender() ! ReplicationWriteFailure(e)
+        case Success(_) =>
+          sender() ! ReplicationWriteSuccess(events.size, lastSourceLogSequenceNrRead)
+          pushReplicateSuccess(updated)
+          publishUpdateNotification(updated)
       }
     case Terminated(requestor) =>
       aggregateRegistry.aggregateId(requestor) match {
@@ -172,7 +150,7 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor {
   }
 
   def publishUpdateNotification(update: Seq[DurableEvent] = Seq()): Unit = {
-    if (update.nonEmpty) eventStream.publish(Updated(update))
+    if (update.nonEmpty) eventStream.publish(Updated(id, update))
   }
 
   def pushReplicateSuccess(events: Seq[DurableEvent]): Unit = {
@@ -367,12 +345,12 @@ object LeveldbEventLog {
   /**
    * Creates a [[LeveldbEventLog]] configuration object.
    *
-   * @param id unique log id.
+   * @param logId unique log id.
    * @param prefix prefix of the directory that contains the LevelDB files
    * @param batching `true` if write-batching shall be enabled (recommended).
    */
-  def props(id: String, prefix: String = "log", batching: Boolean = true): Props = {
-    val logProps = Props(new LeveldbEventLog(id, prefix)).withDispatcher("eventuate.log.leveldb.write-dispatcher")
+  def props(logId: String, prefix: String = "log", batching: Boolean = true): Props = {
+    val logProps = Props(new LeveldbEventLog(logId, prefix)).withDispatcher("eventuate.log.leveldb.write-dispatcher")
     if (batching) Props(new BatchingEventLog(logProps)) else logProps
   }
 }

@@ -16,15 +16,13 @@
 
 package com.rbmhtechnology.eventuate
 
-import com.rbmhtechnology.eventuate.EventsourcedActorIntegrationSpec.RouteeActor
-
 import scala.util._
 
 import akka.actor._
 import akka.testkit._
 
-import com.rbmhtechnology.eventuate.log.EventLogSupport
-import com.typesafe.config.ConfigFactory
+import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSupport
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSupport
 
 import org.scalatest._
 
@@ -62,7 +60,10 @@ object EventsourcedActorIntegrationSpec {
 
     override val onCommand: Receive = {
       case "get-acc" => sender() ! acc
-      case s: String => persist(s)(r => onEvent(r.get))
+      case s: String => persist(s) {
+        case Success(r) => onEvent(r)
+        case Failure(e) => throw e
+      }
     }
 
     override val onEvent: Receive = {
@@ -160,9 +161,10 @@ object EventsourcedActorIntegrationSpec {
   }
 }
 
-class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with EventLogSupport {
+abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach {
   import EventsourcedActorIntegrationSpec._
 
+  def log: ActorRef
   var probe: TestProbe = _
 
   override def beforeEach(): Unit = {
@@ -251,8 +253,7 @@ class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test")) with
       actor ! "delay"
       actor ! "persist"
       probe.expectMsg("a")
-      probe.expectMsg("b")
-      probe.expectMsg("a")
+      probe.expectMsgAllOf("a", "b")
     }
     "route events to custom destinations" in {
       val probe1 = TestProbe()
@@ -327,4 +328,12 @@ class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test")) with
       probe.expectMsgAllOf("delayed-1", "delayed-2", "delayed")
     }
   }
+}
+
+class EventsourcedActorIntegrationSpecLeveldb extends EventsourcedActorIntegrationSpec with LeveldbEventLogSupport {
+  override def batching = false
+}
+
+class EventsourcedActorIntegrationSpecCassandra extends EventsourcedActorIntegrationSpec with CassandraEventLogSupport {
+  override def batching = false
 }

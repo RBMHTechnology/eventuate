@@ -23,12 +23,17 @@ parallelExecution in Test := false
 
 fork in Test := true
 
+resolvers += "krasserm at bintray" at "http://dl.bintray.com/krasserm/maven"
+
 libraryDependencies ++= Seq(
+  "com.datastax.cassandra"           % "cassandra-driver-core"         % "2.1.5",
+  "com.google.guava"                 % "guava"                         % "16.0",
   "com.google.protobuf"              % "protobuf-java"                 % "2.5.0",
   "com.typesafe.akka"               %% "akka-remote"                   % akkaVersion,
   "com.typesafe.akka"               %% "akka-testkit"                  % akkaVersion  % "test,it",
   "com.typesafe.akka"               %% "akka-multi-node-testkit"       % akkaVersion  % "test",
   "commons-io"                       % "commons-io"                    % "2.4",
+  "org.cassandraunit"                % "cassandra-unit"                % "2.0.2.2"    % "test,it" excludeAll(ExclusionRule(organization = "ch.qos.logback")),
   "org.functionaljava"               % "functionaljava"                % "4.2-beta-1" % "test",
   "org.functionaljava"               % "functionaljava-java8"          % "4.2-beta-1" % "test,it",
   "org.fusesource.leveldbjni"        % "leveldbjni-all"                % "1.7",
@@ -39,8 +44,6 @@ libraryDependencies ++= Seq(
 // ----------------------------------------------------------------------
 //  Documentation
 // ----------------------------------------------------------------------
-
-import com.typesafe.sbt.site.SphinxSupport.Sphinx
 
 site.settings
 

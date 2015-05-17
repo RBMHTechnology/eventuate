@@ -24,6 +24,932 @@ public final class DurableEventFormats {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
+  public interface DurableEventBatchFormatOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // repeated .DurableEventFormat events = 1;
+    /**
+     * <code>repeated .DurableEventFormat events = 1;</code>
+     */
+    java.util.List<com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat> 
+        getEventsList();
+    /**
+     * <code>repeated .DurableEventFormat events = 1;</code>
+     */
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat getEvents(int index);
+    /**
+     * <code>repeated .DurableEventFormat events = 1;</code>
+     */
+    int getEventsCount();
+    /**
+     * <code>repeated .DurableEventFormat events = 1;</code>
+     */
+    java.util.List<? extends com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormatOrBuilder> 
+        getEventsOrBuilderList();
+    /**
+     * <code>repeated .DurableEventFormat events = 1;</code>
+     */
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormatOrBuilder getEventsOrBuilder(
+        int index);
+
+    // optional string sourceLogId = 2;
+    /**
+     * <code>optional string sourceLogId = 2;</code>
+     */
+    boolean hasSourceLogId();
+    /**
+     * <code>optional string sourceLogId = 2;</code>
+     */
+    java.lang.String getSourceLogId();
+    /**
+     * <code>optional string sourceLogId = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getSourceLogIdBytes();
+
+    // optional int64 lastSourceLogSequenceNrRead = 3;
+    /**
+     * <code>optional int64 lastSourceLogSequenceNrRead = 3;</code>
+     */
+    boolean hasLastSourceLogSequenceNrRead();
+    /**
+     * <code>optional int64 lastSourceLogSequenceNrRead = 3;</code>
+     */
+    long getLastSourceLogSequenceNrRead();
+  }
+  /**
+   * Protobuf type {@code DurableEventBatchFormat}
+   */
+  public static final class DurableEventBatchFormat extends
+      com.google.protobuf.GeneratedMessage
+      implements DurableEventBatchFormatOrBuilder {
+    // Use DurableEventBatchFormat.newBuilder() to construct.
+    private DurableEventBatchFormat(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private DurableEventBatchFormat(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final DurableEventBatchFormat defaultInstance;
+    public static DurableEventBatchFormat getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public DurableEventBatchFormat getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private DurableEventBatchFormat(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                events_ = new java.util.ArrayList<com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              events_.add(input.readMessage(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.PARSER, extensionRegistry));
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000001;
+              sourceLogId_ = input.readBytes();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000002;
+              lastSourceLogSequenceNrRead_ = input.readInt64();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          events_ = java.util.Collections.unmodifiableList(events_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.rbmhtechnology.eventuate.serializer.DurableEventFormats.internal_static_DurableEventBatchFormat_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.rbmhtechnology.eventuate.serializer.DurableEventFormats.internal_static_DurableEventBatchFormat_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat.class, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<DurableEventBatchFormat> PARSER =
+        new com.google.protobuf.AbstractParser<DurableEventBatchFormat>() {
+      public DurableEventBatchFormat parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new DurableEventBatchFormat(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<DurableEventBatchFormat> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // repeated .DurableEventFormat events = 1;
+    public static final int EVENTS_FIELD_NUMBER = 1;
+    private java.util.List<com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat> events_;
+    /**
+     * <code>repeated .DurableEventFormat events = 1;</code>
+     */
+    public java.util.List<com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat> getEventsList() {
+      return events_;
+    }
+    /**
+     * <code>repeated .DurableEventFormat events = 1;</code>
+     */
+    public java.util.List<? extends com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormatOrBuilder> 
+        getEventsOrBuilderList() {
+      return events_;
+    }
+    /**
+     * <code>repeated .DurableEventFormat events = 1;</code>
+     */
+    public int getEventsCount() {
+      return events_.size();
+    }
+    /**
+     * <code>repeated .DurableEventFormat events = 1;</code>
+     */
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat getEvents(int index) {
+      return events_.get(index);
+    }
+    /**
+     * <code>repeated .DurableEventFormat events = 1;</code>
+     */
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormatOrBuilder getEventsOrBuilder(
+        int index) {
+      return events_.get(index);
+    }
+
+    // optional string sourceLogId = 2;
+    public static final int SOURCELOGID_FIELD_NUMBER = 2;
+    private java.lang.Object sourceLogId_;
+    /**
+     * <code>optional string sourceLogId = 2;</code>
+     */
+    public boolean hasSourceLogId() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional string sourceLogId = 2;</code>
+     */
+    public java.lang.String getSourceLogId() {
+      java.lang.Object ref = sourceLogId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          sourceLogId_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string sourceLogId = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSourceLogIdBytes() {
+      java.lang.Object ref = sourceLogId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        sourceLogId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional int64 lastSourceLogSequenceNrRead = 3;
+    public static final int LASTSOURCELOGSEQUENCENRREAD_FIELD_NUMBER = 3;
+    private long lastSourceLogSequenceNrRead_;
+    /**
+     * <code>optional int64 lastSourceLogSequenceNrRead = 3;</code>
+     */
+    public boolean hasLastSourceLogSequenceNrRead() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional int64 lastSourceLogSequenceNrRead = 3;</code>
+     */
+    public long getLastSourceLogSequenceNrRead() {
+      return lastSourceLogSequenceNrRead_;
+    }
+
+    private void initFields() {
+      events_ = java.util.Collections.emptyList();
+      sourceLogId_ = "";
+      lastSourceLogSequenceNrRead_ = 0L;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      for (int i = 0; i < getEventsCount(); i++) {
+        if (!getEvents(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      for (int i = 0; i < events_.size(); i++) {
+        output.writeMessage(1, events_.get(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(2, getSourceLogIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt64(3, lastSourceLogSequenceNrRead_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < events_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, events_.get(i));
+      }
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getSourceLogIdBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(3, lastSourceLogSequenceNrRead_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code DurableEventBatchFormat}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormatOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.rbmhtechnology.eventuate.serializer.DurableEventFormats.internal_static_DurableEventBatchFormat_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.rbmhtechnology.eventuate.serializer.DurableEventFormats.internal_static_DurableEventBatchFormat_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat.class, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat.Builder.class);
+      }
+
+      // Construct using com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getEventsFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        if (eventsBuilder_ == null) {
+          events_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          eventsBuilder_.clear();
+        }
+        sourceLogId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000002);
+        lastSourceLogSequenceNrRead_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.rbmhtechnology.eventuate.serializer.DurableEventFormats.internal_static_DurableEventBatchFormat_descriptor;
+      }
+
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat getDefaultInstanceForType() {
+        return com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat.getDefaultInstance();
+      }
+
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat build() {
+        com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat buildPartial() {
+        com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat result = new com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (eventsBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            events_ = java.util.Collections.unmodifiableList(events_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.events_ = events_;
+        } else {
+          result.events_ = eventsBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.sourceLogId_ = sourceLogId_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.lastSourceLogSequenceNrRead_ = lastSourceLogSequenceNrRead_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat) {
+          return mergeFrom((com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat other) {
+        if (other == com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat.getDefaultInstance()) return this;
+        if (eventsBuilder_ == null) {
+          if (!other.events_.isEmpty()) {
+            if (events_.isEmpty()) {
+              events_ = other.events_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureEventsIsMutable();
+              events_.addAll(other.events_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.events_.isEmpty()) {
+            if (eventsBuilder_.isEmpty()) {
+              eventsBuilder_.dispose();
+              eventsBuilder_ = null;
+              events_ = other.events_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              eventsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getEventsFieldBuilder() : null;
+            } else {
+              eventsBuilder_.addAllMessages(other.events_);
+            }
+          }
+        }
+        if (other.hasSourceLogId()) {
+          bitField0_ |= 0x00000002;
+          sourceLogId_ = other.sourceLogId_;
+          onChanged();
+        }
+        if (other.hasLastSourceLogSequenceNrRead()) {
+          setLastSourceLogSequenceNrRead(other.getLastSourceLogSequenceNrRead());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        for (int i = 0; i < getEventsCount(); i++) {
+          if (!getEvents(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventBatchFormat) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // repeated .DurableEventFormat events = 1;
+      private java.util.List<com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat> events_ =
+        java.util.Collections.emptyList();
+      private void ensureEventsIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          events_ = new java.util.ArrayList<com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat>(events_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormatOrBuilder> eventsBuilder_;
+
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public java.util.List<com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat> getEventsList() {
+        if (eventsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(events_);
+        } else {
+          return eventsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public int getEventsCount() {
+        if (eventsBuilder_ == null) {
+          return events_.size();
+        } else {
+          return eventsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat getEvents(int index) {
+        if (eventsBuilder_ == null) {
+          return events_.get(index);
+        } else {
+          return eventsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public Builder setEvents(
+          int index, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat value) {
+        if (eventsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEventsIsMutable();
+          events_.set(index, value);
+          onChanged();
+        } else {
+          eventsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public Builder setEvents(
+          int index, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.Builder builderForValue) {
+        if (eventsBuilder_ == null) {
+          ensureEventsIsMutable();
+          events_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          eventsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public Builder addEvents(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat value) {
+        if (eventsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEventsIsMutable();
+          events_.add(value);
+          onChanged();
+        } else {
+          eventsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public Builder addEvents(
+          int index, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat value) {
+        if (eventsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureEventsIsMutable();
+          events_.add(index, value);
+          onChanged();
+        } else {
+          eventsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public Builder addEvents(
+          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.Builder builderForValue) {
+        if (eventsBuilder_ == null) {
+          ensureEventsIsMutable();
+          events_.add(builderForValue.build());
+          onChanged();
+        } else {
+          eventsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public Builder addEvents(
+          int index, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.Builder builderForValue) {
+        if (eventsBuilder_ == null) {
+          ensureEventsIsMutable();
+          events_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          eventsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public Builder addAllEvents(
+          java.lang.Iterable<? extends com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat> values) {
+        if (eventsBuilder_ == null) {
+          ensureEventsIsMutable();
+          super.addAll(values, events_);
+          onChanged();
+        } else {
+          eventsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public Builder clearEvents() {
+        if (eventsBuilder_ == null) {
+          events_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          eventsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public Builder removeEvents(int index) {
+        if (eventsBuilder_ == null) {
+          ensureEventsIsMutable();
+          events_.remove(index);
+          onChanged();
+        } else {
+          eventsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.Builder getEventsBuilder(
+          int index) {
+        return getEventsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormatOrBuilder getEventsOrBuilder(
+          int index) {
+        if (eventsBuilder_ == null) {
+          return events_.get(index);  } else {
+          return eventsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public java.util.List<? extends com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormatOrBuilder> 
+           getEventsOrBuilderList() {
+        if (eventsBuilder_ != null) {
+          return eventsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(events_);
+        }
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.Builder addEventsBuilder() {
+        return getEventsFieldBuilder().addBuilder(
+            com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.Builder addEventsBuilder(
+          int index) {
+        return getEventsFieldBuilder().addBuilder(
+            index, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .DurableEventFormat events = 1;</code>
+       */
+      public java.util.List<com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.Builder> 
+           getEventsBuilderList() {
+        return getEventsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormatOrBuilder> 
+          getEventsFieldBuilder() {
+        if (eventsBuilder_ == null) {
+          eventsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormatOrBuilder>(
+                  events_,
+                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
+          events_ = null;
+        }
+        return eventsBuilder_;
+      }
+
+      // optional string sourceLogId = 2;
+      private java.lang.Object sourceLogId_ = "";
+      /**
+       * <code>optional string sourceLogId = 2;</code>
+       */
+      public boolean hasSourceLogId() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional string sourceLogId = 2;</code>
+       */
+      public java.lang.String getSourceLogId() {
+        java.lang.Object ref = sourceLogId_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          sourceLogId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string sourceLogId = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSourceLogIdBytes() {
+        java.lang.Object ref = sourceLogId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          sourceLogId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string sourceLogId = 2;</code>
+       */
+      public Builder setSourceLogId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        sourceLogId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string sourceLogId = 2;</code>
+       */
+      public Builder clearSourceLogId() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        sourceLogId_ = getDefaultInstance().getSourceLogId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string sourceLogId = 2;</code>
+       */
+      public Builder setSourceLogIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        sourceLogId_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional int64 lastSourceLogSequenceNrRead = 3;
+      private long lastSourceLogSequenceNrRead_ ;
+      /**
+       * <code>optional int64 lastSourceLogSequenceNrRead = 3;</code>
+       */
+      public boolean hasLastSourceLogSequenceNrRead() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional int64 lastSourceLogSequenceNrRead = 3;</code>
+       */
+      public long getLastSourceLogSequenceNrRead() {
+        return lastSourceLogSequenceNrRead_;
+      }
+      /**
+       * <code>optional int64 lastSourceLogSequenceNrRead = 3;</code>
+       */
+      public Builder setLastSourceLogSequenceNrRead(long value) {
+        bitField0_ |= 0x00000004;
+        lastSourceLogSequenceNrRead_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int64 lastSourceLogSequenceNrRead = 3;</code>
+       */
+      public Builder clearLastSourceLogSequenceNrRead() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        lastSourceLogSequenceNrRead_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:DurableEventBatchFormat)
+    }
+
+    static {
+      defaultInstance = new DurableEventBatchFormat(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:DurableEventBatchFormat)
+  }
+
   public interface DurableEventFormatOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
@@ -3606,6 +4532,11 @@ public final class DurableEventFormats {
   }
 
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_DurableEventBatchFormat_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_DurableEventBatchFormat_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_DurableEventFormat_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -3635,47 +4566,56 @@ public final class DurableEventFormats {
   static {
     java.lang.String[] descriptorData = {
       "\n+src/main/protobuf/DurableEventFormats." +
-      "proto\"\267\002\n\022DurableEventFormat\022\037\n\007payload\030" +
-      "\001 \001(\0132\016.PayloadFormat\022\027\n\017systemTimestamp" +
-      "\030\002 \001(\003\022*\n\017vectorTimestamp\030\003 \001(\0132\021.Vector" +
-      "TimeFormat\022\030\n\020emitterReplicaId\030\004 \001(\t\022\032\n\022" +
-      "emitterAggregateId\030\005 \001(\t\022!\n\031customRoutin" +
-      "gDestinations\030\006 \003(\t\022\023\n\013sourceLogId\030\007 \001(\t" +
-      "\022\023\n\013targetLogId\030\010 \001(\t\022\033\n\023sourceLogSequen" +
-      "ceNr\030\t \001(\003\022\033\n\023targetLogSequenceNr\030\n \001(\003\"" +
-      "O\n\rPayloadFormat\022\024\n\014serializerId\030\001 \001(\005\022\017",
-      "\n\007payload\030\002 \001(\014\022\027\n\017payloadManifest\030\003 \001(\014" +
-      "\"?\n\025VectorTimeEntryFormat\022\021\n\tprocessId\030\001" +
-      " \002(\t\022\023\n\013logicalTime\030\002 \002(\003\";\n\020VectorTimeF" +
-      "ormat\022\'\n\007entries\030\001 \003(\0132\026.VectorTimeEntry" +
-      "FormatB+\n\'com.rbmhtechnology.eventuate.s" +
-      "erializerH\001"
+      "proto\"x\n\027DurableEventBatchFormat\022#\n\006even" +
+      "ts\030\001 \003(\0132\023.DurableEventFormat\022\023\n\013sourceL" +
+      "ogId\030\002 \001(\t\022#\n\033lastSourceLogSequenceNrRea" +
+      "d\030\003 \001(\003\"\267\002\n\022DurableEventFormat\022\037\n\007payloa" +
+      "d\030\001 \001(\0132\016.PayloadFormat\022\027\n\017systemTimesta" +
+      "mp\030\002 \001(\003\022*\n\017vectorTimestamp\030\003 \001(\0132\021.Vect" +
+      "orTimeFormat\022\030\n\020emitterReplicaId\030\004 \001(\t\022\032" +
+      "\n\022emitterAggregateId\030\005 \001(\t\022!\n\031customRout" +
+      "ingDestinations\030\006 \003(\t\022\023\n\013sourceLogId\030\007 \001",
+      "(\t\022\023\n\013targetLogId\030\010 \001(\t\022\033\n\023sourceLogSequ" +
+      "enceNr\030\t \001(\003\022\033\n\023targetLogSequenceNr\030\n \001(" +
+      "\003\"O\n\rPayloadFormat\022\024\n\014serializerId\030\001 \001(\005" +
+      "\022\017\n\007payload\030\002 \001(\014\022\027\n\017payloadManifest\030\003 \001" +
+      "(\014\"?\n\025VectorTimeEntryFormat\022\021\n\tprocessId" +
+      "\030\001 \002(\t\022\023\n\013logicalTime\030\002 \002(\003\";\n\020VectorTim" +
+      "eFormat\022\'\n\007entries\030\001 \003(\0132\026.VectorTimeEnt" +
+      "ryFormatB+\n\'com.rbmhtechnology.eventuate" +
+      ".serializerH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;
-          internal_static_DurableEventFormat_descriptor =
+          internal_static_DurableEventBatchFormat_descriptor =
             getDescriptor().getMessageTypes().get(0);
+          internal_static_DurableEventBatchFormat_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_DurableEventBatchFormat_descriptor,
+              new java.lang.String[] { "Events", "SourceLogId", "LastSourceLogSequenceNrRead", });
+          internal_static_DurableEventFormat_descriptor =
+            getDescriptor().getMessageTypes().get(1);
           internal_static_DurableEventFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_DurableEventFormat_descriptor,
               new java.lang.String[] { "Payload", "SystemTimestamp", "VectorTimestamp", "EmitterReplicaId", "EmitterAggregateId", "CustomRoutingDestinations", "SourceLogId", "TargetLogId", "SourceLogSequenceNr", "TargetLogSequenceNr", });
           internal_static_PayloadFormat_descriptor =
-            getDescriptor().getMessageTypes().get(1);
+            getDescriptor().getMessageTypes().get(2);
           internal_static_PayloadFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_PayloadFormat_descriptor,
               new java.lang.String[] { "SerializerId", "Payload", "PayloadManifest", });
           internal_static_VectorTimeEntryFormat_descriptor =
-            getDescriptor().getMessageTypes().get(2);
+            getDescriptor().getMessageTypes().get(3);
           internal_static_VectorTimeEntryFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_VectorTimeEntryFormat_descriptor,
               new java.lang.String[] { "ProcessId", "LogicalTime", });
           internal_static_VectorTimeFormat_descriptor =
-            getDescriptor().getMessageTypes().get(3);
+            getDescriptor().getMessageTypes().get(4);
           internal_static_VectorTimeFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_VectorTimeFormat_descriptor,
