@@ -36,7 +36,7 @@ With this configuration, the absolute path of the LevelDB directory in the above
 Cassandra storage backend
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A local event log actor with a Cassandra storage backend writes events to a Cassandra cluster. The event log actor can be created with:
+Eventuate also provides an event log actor implementation that writes events to a Cassandra cluster. That actor can be created with:
 
 .. includecode:: ../code/EventLogDoc.scala
    :snippet: local-log-cassandra
