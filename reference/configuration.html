@@ -174,68 +174,127 @@
   <div class="section" id="configuration">
 <span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <p>This is the reference configuration of Eventuate. It is processed by Typesafe&#8217;s <a class="reference external" href="https://github.com/typesafehub/config">config</a> library and can be overridden by applications:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span> <span class="o">{</span>
-  <span class="n">actor</span> <span class="o">{</span>
-    <span class="n">serializers</span> <span class="o">{</span>
-      <span class="n">eventuate</span><span class="o">-</span><span class="n">durable</span><span class="o">-</span><span class="n">event</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.DurableEventSerializer&quot;</span>
-      <span class="n">eventuate</span><span class="o">-</span><span class="n">replication</span><span class="o">-</span><span class="n">filter</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer&quot;</span>
-      <span class="n">eventuate</span><span class="o">-</span><span class="n">replication</span><span class="o">-</span><span class="n">protocol</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.ReplicationProtocolSerializer&quot;</span>
-    <span class="o">}</span>
+<div class="highlight-scala"><div class="highlight"><pre>akka {
+  actor {
+    serializers {
+      eventuate-durable-event = &quot;com.rbmhtechnology.eventuate.serializer.DurableEventSerializer&quot;
+      eventuate-replication-filter = &quot;com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer&quot;
+      eventuate-replication-protocol = &quot;com.rbmhtechnology.eventuate.serializer.ReplicationProtocolSerializer&quot;
+    }
 
-    <span class="n">serialization</span><span class="o">-</span><span class="n">bindings</span> <span class="o">{</span>
-      <span class="s">&quot;com.rbmhtechnology.eventuate.DurableEvent&quot;</span> <span class="k">=</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">durable</span><span class="o">-</span><span class="n">event</span>
-      <span class="s">&quot;com.rbmhtechnology.eventuate.ReplicationFilter$Format&quot;</span> <span class="k">=</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">replication</span><span class="o">-</span><span class="n">filter</span>
-      <span class="s">&quot;com.rbmhtechnology.eventuate.ReplicationProtocol$Format&quot;</span> <span class="k">=</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">replication</span><span class="o">-</span><span class="n">protocol</span>
-    <span class="o">}</span>
-  <span class="o">}</span>
-<span class="o">}</span>
+    serialization-bindings {
+      &quot;com.rbmhtechnology.eventuate.DurableEvent&quot; = eventuate-durable-event
+      &quot;com.rbmhtechnology.eventuate.DurableEventBatch&quot; = eventuate-durable-event
+      &quot;com.rbmhtechnology.eventuate.ReplicationFilter$Format&quot; = eventuate-replication-filter
+      &quot;com.rbmhtechnology.eventuate.ReplicationProtocol$Format&quot; = eventuate-replication-protocol
+    }
+  }
+}
 
-<span class="n">eventuate</span> <span class="o">{</span>
-  <span class="n">log</span><span class="o">.</span><span class="n">write</span> <span class="o">{</span>
-    <span class="k">#</span> <span class="nc">Maximum</span> <span class="n">write</span> <span class="n">batch</span> <span class="n">size</span> <span class="k">for</span> <span class="n">emitted</span> <span class="n">events</span> <span class="n">by</span> <span class="n">event</span><span class="o">-</span><span class="n">sourced</span> <span class="n">actors</span><span class="o">.</span> <span class="nc">It</span>
-    <span class="k">#</span> <span class="n">is</span> <span class="n">exceeded</span> <span class="k">if</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="n">events</span> <span class="n">in</span> <span class="n">a</span> <span class="n">single</span> <span class="n">write</span> <span class="n">request</span> <span class="n">is</span> <span class="n">higher</span>
-    <span class="k">#</span> <span class="n">than</span> <span class="n">batch</span><span class="o">-</span><span class="n">size</span><span class="o">-</span><span class="n">max</span><span class="o">.</span>
-    <span class="n">batch</span><span class="o">-</span><span class="n">size</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">200</span>
-  <span class="o">}</span>
+eventuate {
+  log.write {
+    # Maximum write batch size for emitted events by event-sourced actors. It
+    # is exceeded if the number of events in a single write request is higher
+    # than batch-size-max.
+    batch-size-max = 200
+  }
 
-  <span class="n">log</span><span class="o">.</span><span class="n">replication</span> <span class="o">{</span>
-    <span class="k">#</span> <span class="nc">Maximum</span> <span class="n">batch</span> <span class="n">size</span> <span class="k">for</span> <span class="n">event</span> <span class="n">replication</span> <span class="n">and</span> <span class="n">event</span> <span class="n">writing</span> <span class="n">to</span> <span class="n">the</span> <span class="n">target</span>
-    <span class="k">#</span> <span class="n">event</span> <span class="n">log</span><span class="o">.</span>
-    <span class="n">batch</span><span class="o">-</span><span class="n">size</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">200</span>
+  log.replication {
+    # Maximum batch size for event replication and event writing to the target
+    # event log.
+    batch-size-max = 200
 
-    <span class="k">#</span> <span class="nc">Event</span> <span class="n">replication</span> <span class="n">retry</span> <span class="n">interval</span><span class="o">.</span> <span class="nc">Event</span> <span class="n">replication</span> <span class="n">is</span> <span class="n">re</span><span class="o">-</span><span class="n">tried</span> <span class="n">at</span> <span class="k">this</span>
-    <span class="k">#</span> <span class="n">interval</span> <span class="k">if</span> <span class="n">previous</span> <span class="n">transfer</span> <span class="n">batch</span> <span class="n">was</span> <span class="n">empty</span><span class="o">.</span>
-    <span class="n">retry</span><span class="o">-</span><span class="n">interval</span> <span class="k">=</span> <span class="mi">5</span><span class="n">s</span>
+    # Event replication retry interval. Event replication is re-tried at this
+    # interval if previous transfer batch was empty or failed.
+    retry-interval = 5s
 
-    <span class="k">#</span> <span class="nc">Maximum</span> <span class="n">duration</span> <span class="n">of</span> <span class="n">missing</span> <span class="n">heartbeats</span> <span class="n">from</span> <span class="n">a</span> <span class="n">remote</span> <span class="n">location</span> <span class="n">until</span>
-    <span class="k">#</span> <span class="n">that</span> <span class="n">location</span> <span class="n">is</span> <span class="n">considered</span> <span class="n">unavailable</span><span class="o">.</span>
-    <span class="n">failure</span><span class="o">-</span><span class="n">detection</span><span class="o">-</span><span class="n">limit</span> <span class="k">=</span> <span class="mi">60</span><span class="n">s</span>
-  <span class="o">}</span>
+    # Timeout for reading events from the remote source log.
+    read-timeout = 10s
 
-  <span class="n">log</span><span class="o">.</span><span class="n">leveldb</span> <span class="o">{</span>
-    <span class="k">#</span> <span class="nc">Root</span> <span class="n">directory</span> <span class="k">for</span> <span class="n">storing</span> <span class="n">the</span> <span class="n">log</span> <span class="n">directories</span> <span class="n">of</span> <span class="n">individual</span> <span class="n">event</span> <span class="n">logs</span><span class="o">.</span>
-    <span class="n">dir</span> <span class="k">=</span> <span class="n">target</span>
+    # Timeout for writing events to the local target log.
+    write-timeout = 10s
 
-    <span class="k">#</span> <span class="nc">Use</span> <span class="n">fsync</span> <span class="n">on</span> <span class="n">write</span><span class="o">.</span>
-    <span class="n">fsync</span> <span class="k">=</span> <span class="n">on</span>
+    # Maximum duration of missing heartbeats from a remote location until
+    # that location is considered unavailable.
+    failure-detection-limit = 60s
+  }
 
-    <span class="k">#</span> <span class="nc">Dispatcher</span> <span class="k">for</span> <span class="n">writes</span><span class="o">.</span>
-    <span class="n">write</span><span class="o">-</span><span class="n">dispatcher</span> <span class="o">{</span>
-      <span class="n">executor</span> <span class="k">=</span> <span class="s">&quot;thread-pool-executor&quot;</span>
-      <span class="k">type</span> <span class="o">=</span> <span class="nc">PinnedDispatcher</span>
-    <span class="o">}</span>
+  log.leveldb {
+    # Root directory for storing the log directories of individual event logs.
+    dir = target
 
-    <span class="k">#</span> <span class="nc">Dispatcher</span> <span class="k">for</span> <span class="n">reads</span><span class="o">.</span>
-    <span class="n">read</span><span class="o">-</span><span class="n">dispatcher</span> <span class="o">{</span>
-      <span class="k">type</span> <span class="o">=</span> <span class="nc">Dispatcher</span>
-      <span class="n">executor</span> <span class="k">=</span> <span class="s">&quot;fork-join-executor&quot;</span>
-      <span class="n">fork</span><span class="o">-</span><span class="n">join</span><span class="o">-</span><span class="n">executor</span> <span class="o">{</span>
-        <span class="n">parallelism</span><span class="o">-</span><span class="n">min</span> <span class="k">=</span> <span class="mi">2</span>
-        <span class="n">parallelism</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">8</span>
-      <span class="o">}</span>
-    <span class="o">}</span>
-  <span class="o">}</span>
-<span class="o">}</span>
+    # Use fsync on write.
+    fsync = on
+
+    write-dispatcher {
+      executor = &quot;thread-pool-executor&quot;
+      type = PinnedDispatcher
+    }
+
+    read-dispatcher {
+      type = Dispatcher
+      executor = &quot;fork-join-executor&quot;
+      fork-join-executor {
+        parallelism-min = 2
+        parallelism-max = 8
+      }
+    }
+  }
+
+  log.cassandra {
+    # Comma-separated list of contact points in the cluster (comma-separated
+    # hostname or hostname:port list).
+    contact-points = [&quot;127.0.0.1&quot;]
+
+    # Default port of contact points in the cluster. Ports defined in
+    # contact-points override this setting.
+    default-port = 9042
+
+    # Name of the keyspace created/used by Eventuate.
+    keyspace = &quot;eventuate&quot;
+
+    # Whether or not to auto-create the keyspace.
+    keyspace-autocreate = true
+
+    # Prefix of all tables created/used by Eventuate.
+    table-prefix = &quot;log&quot;
+
+    # Replication factor to use when creating the keyspace.
+    replication-factor = 1
+
+    # Write consistency level
+    write-consistency = &quot;QUORUM&quot;
+
+    # Read consistency level
+    read-consistency = &quot;QUORUM&quot;
+
+    # Maximum number of rows in a result set.
+    max-result-set-size = 1000
+
+    # Retry backoff for event log initialization. Initialization requires
+    # reading the last indexed sequence number and indexing of not yet
+    # indexed log entries.
+    init-retry-backoff = 5s
+
+    # Number of new events that must have been written before another index
+    # update is triggered.
+    index-update-limit = 100
+
+    write-dispatcher {
+      executor = &quot;thread-pool-executor&quot;
+      type = PinnedDispatcher
+    }
+
+    read-dispatcher {
+      type = Dispatcher
+      executor = &quot;fork-join-executor&quot;
+      fork-join-executor {
+        parallelism-min = 2
+        parallelism-max = 16
+      }
+    }
+  }
+}
 </pre></div>
 </div>
 </div>

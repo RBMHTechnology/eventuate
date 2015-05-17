@@ -43,13 +43,13 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">Updated</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Updated</span><span class="params">(<span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Published by event logs to the actor system's event stream whenever new events have been written,
 either by replication or by event-sourced actors.
-</p></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>Written events.
+</p></div><dl class="paramcmts block"><dt class="param">logId</dt><dd class="cmt"><p>id of the event log that published the update notification.</p></dd><dt class="param">events</dt><dd class="cmt"><p>Written events.
 </p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -91,7 +91,7 @@ either by replication or by event-sourced actors.
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.Updated#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]):com.rbmhtechnology.eventuate.ReplicationProtocol.Updated"></a>
+      <a id="&lt;init&gt;(logId:String,events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]):com.rbmhtechnology.eventuate.ReplicationProtocol.Updated"></a>
       <a id="&lt;init&gt;:Updated"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -99,14 +99,14 @@ either by replication or by event-sourced actors.
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Updated</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>)</span>
+        <span class="name">Updated</span><span class="params">(<span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$Updated@&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]):com.rbmhtechnology.eventuate.ReplicationProtocol.Updated" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$Updated@&lt;init&gt;(logId:String,events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]):com.rbmhtechnology.eventuate.ReplicationProtocol.Updated" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>Written events.
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">logId</dt><dd class="cmt"><p>id of the event log that published the update notification.</p></dd><dt class="param">events</dt><dd class="cmt"><p>Written events.
 </p></dd></dl></div>
     </li></ol>
             </div>
@@ -299,6 +299,23 @@ either by replication or by event-sourced actors.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.Updated#logId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="logId:String"></a>
+      <a id="logId:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">logId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$Updated@logId:String" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">id of the event log that published the update notification.</p>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>

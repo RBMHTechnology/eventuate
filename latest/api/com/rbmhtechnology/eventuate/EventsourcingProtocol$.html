@@ -89,46 +89,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delay" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="DelayextendsProductwithSerializable"></a>
-      <a id="Delay:Delay"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="EventsourcingProtocol$$Delay.html"><span class="name">Delay</span></a><span class="params">(<span name="commands">commands: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<span class="extype" name="scala.Any">Any</span>]</span>, <span name="commandsSender">commandsSender: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DelayextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Instructs an event log to loop the given <code>commands</code> to the given <code>requestor</code>, preserving
-the relative order to events being written by that event log.</p><div class="fullcomment"><div class="comment cmt"><p>Instructs an event log to loop the given <code>commands</code> to the given <code>requestor</code>, preserving
-the relative order to events being written by that event log. Commands are looped to the
-<code>requestor</code> one-by-one within a <a href="EventsourcingProtocol$$DelayComplete.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DelayComplete">DelayComplete</a> message with <code>commandSender</code> as the
-message sender.
-</p></div></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DelayComplete" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="DelayCompleteextendsProductwithSerializable"></a>
-      <a id="DelayComplete:DelayComplete"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="EventsourcingProtocol$$DelayComplete.html"><span class="name">DelayComplete</span></a><span class="params">(<span name="command">command: <span class="extype" name="scala.Any">Any</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DelayCompleteextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Completion reply after a <a href="EventsourcingProtocol$$Delay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delay">Delay</a>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ReplayextendsProductwithSerializable"></a>
       <a id="Replay:Replay"></a>
       <h4 class="signature">

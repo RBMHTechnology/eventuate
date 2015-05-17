@@ -51,7 +51,7 @@ If a sender sends an update command followed by a read command to an event-sourc
    .. includecode:: ../code/EventSourcingDoc.scala
       :snippet: delay-signature
 
-   It delays processing of a command to that point in the future where all previously ``persist``\ ed events have been handled. The delayed command is passed as argument to the delay ``handler``\ [#]_. A delay handler must not call ``persist`` or related methods.
+   It delays processing of a command to that point in the future where all previously ``persist``\ ed events have been handled. The delayed command is passed as argument to the delay ``handler``. A delay handler must not call ``persist`` or related methods.
 
 .. hint::
    For details about the ``delay`` method, refer to the EventsourcedActor_ API documentation. 
@@ -169,7 +169,6 @@ Custom replication filter serialization also works if the custom filter is part 
 .. [#] An explicit ``onEvent`` call may become obsolete in future releases.
 .. [#] The ``customRoutingDestinations`` parameter is described in section :ref:`event-routing`.
 .. [#] Writes from different event-sourced actors that have ``stateSync`` set to ``true`` are still batched, but not the writes from a single event-sourced actor.
-.. [#] This mechanism of delaying commands might the replaced with something that is closer related to :ref:`conditional-commands` in future releases.
 .. [#] Event replay can optionally start from :ref:`snapshots` of actor state.
 .. [#] :ref:`processors` can additionally route events between event logs.
 .. [#] The routing destinations of a DurableEvent_ can be obtained with method ``routingDestinations``.

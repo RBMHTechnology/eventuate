@@ -240,23 +240,6 @@ messages can be redelivered by calling <code>redeliverUnconfirmed</code>. This i
 command handler by processing scheduler messages. Redelivery occurs automatically when the
 <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> successfully recovered after initial start or a re-start.
 </p></div></div>
-    </li><li name="com.rbmhtechnology.eventuate.DelayException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="DelayExceptionextendsRuntimeException"></a>
-      <a id="DelayException:DelayException"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="DelayException.html"><span class="name">DelayException</span></a><span class="result"> extends <span class="extype" name="scala.RuntimeException">RuntimeException</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@DelayExceptionextendsRuntimeException" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Thrown to indicate illegal use of method <code>delay</code> in <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>.</p>
     </li><li name="com.rbmhtechnology.eventuate.DurableEvent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="DurableEventextendsProductwithSerializable"></a>
       <a id="DurableEvent:DurableEvent"></a>
@@ -279,6 +262,25 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
                           matching <code>aggregateId</code>. In any case, the event is routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actors and
                           views with an undefined <code>aggregateId</code>.</p></dd><dt class="param">customRoutingDestinations</dt><dd class="cmt"><p>Aggregate ids of additional, custom routing destinations. If non-empty, the event is
                                  additionally routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actors and views with a matching <code>aggregateId</code>.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Source log id from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></dd><dt class="param">targetLogId</dt><dd class="cmt"><p>Target log id from last replication.</p></dd><dt class="param">sourceLogSequenceNr</dt><dd class="cmt"><p>Source log sequence number from last replication.</p></dd><dt class="param">targetLogSequenceNr</dt><dd class="cmt"><p>Target log sequence number from last replication.
+</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.DurableEventBatch" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="DurableEventBatchextendsProductwithSerializable"></a>
+      <a id="DurableEventBatch:DurableEventBatch"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="DurableEventBatch.html"><span class="name">DurableEventBatch</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="lastSourceLogSequenceNrRead">lastSourceLogSequenceNrRead: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Long">Long</span>] = <span class="symbol">None</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@DurableEventBatchextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Event batch storage format.</p><div class="fullcomment"><div class="comment cmt"><p>Event batch storage format.
+</p></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>Event batch.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Source log id if the batch was read from a source log (= replicated).</p></dd><dt class="param">lastSourceLogSequenceNrRead</dt><dd class="cmt"><p>Last source log sequence number read after reading this batch from the source log.
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.Eventsourced" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EventsourcedextendsActor"></a>

@@ -397,14 +397,13 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Delays the given command, by looping it through the event log actor, and asynchronously
-calls <code>handler</code> with the command.</p><div class="fullcomment"><div class="comment cmt"><p>Delays the given command, by looping it through the event log actor, and asynchronously
-calls <code>handler</code> with the command. This allows applications to delay command handling to
-that point in the future where all previously called <code>persist</code> or <code>persistN</code> operations
-completed. This method can only be used if this actor's <code>stateSync</code> is set to <code>false</code>.
-The <code>handler</code> is called during a separate message dispatch by this actor, hence, it is
-safe to access internal state within <code>handler</code>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></dd></dl></div>
+      <p class="shortcomment cmt">Delays handling of <code>command</code> to that point in the future where all previously called <code>persist</code>
+or <code>persistN</code> operations completed.</p><div class="fullcomment"><div class="comment cmt"><p>Delays handling of <code>command</code> to that point in the future where all previously called <code>persist</code>
+or <code>persistN</code> operations completed. Therefore, using this method only makes sense if <code>stateSync</code>
+is set to <code>false</code>. The <code>handler</code> is called during a separate message dispatch by this actor,
+hence, it is safe to access internal state within <code>handler</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="ConditionalCommand.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommand">ConditionalCommand</a>
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ConfirmedDelivery#deliver" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="deliver(deliveryId:String,message:Any,destination:akka.actor.ActorPath):Unit"></a>
       <a id="deliver(String,Any,ActorPath):Unit"></a>

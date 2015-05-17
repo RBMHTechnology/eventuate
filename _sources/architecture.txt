@@ -20,7 +20,7 @@ Eventuate applications store events in event logs. An event log can be replicate
 
    An event log, replicated across locations 1, 2 and 3.
 
-Events within a local log are totally ordered. This total order however is likely to differ among locations, as events can be written concurrently. The strongest ordering guarantee that can be given across locations is `causal ordering`_\ [#]_ which is tracked with `vector clocks`_. Causal ordering is guaranteed to be consistent with total ordering in local event logs. 
+Events within a local log are totally ordered. This total order however is likely to differ among locations, as events can be written concurrently. The strongest ordering guarantee that can be given across locations is `causal ordering`_\ [#]_ which is tracked with `vector clocks`_. Causal ordering is guaranteed to be consistent with total ordering in local event logs. Eventuate chooses write-availability over strong consistency for replicated event logs, giving up global total ordering for causal ordering.
 
 A replication endpoint can also manage more than one local event log. Event logs are indexed by name and replication occurs only between logs of the same name. Logs with different names are isolated from each other\ [#]_ and their distribution across locations may differ, as shown in the following figure.
 
@@ -31,9 +31,7 @@ A replication endpoint can also manage more than one local event log. Event logs
 
    Three replicated event logs. Log X (blue) is replicated across locations 1, 2 and 3. Log Y (red) is replicated across locations 1 and 2 and log Z (green) is replicated across locations 1 and 3.
 
-Eventuate event logs are comparable to `Apache Kafka`_ topics. The main difference is that Kafka chooses consistency over write-availability for replicated topics whereas Eventuate chooses write-availability over consistency for replicated event logs, giving up total ordering for causal ordering.
-
-Event storage backends at individual locations are pluggable. A location that requires strong durability guarantees should use a storage backend that is (synchronously) replicated within that location (`Apache Kafka`_ is an good fit here), others may use a more lightweight, non-replicated storage backend in case of weaker durability requirements.
+Event storage backends at individual locations are pluggable (see also :ref:`current-limitations`). A location that requires strong durability guarantees should use a storage backend that synchronously replicates events within that location (like the :ref:`cassandra-storage-backend`), others may use a more lightweight, non-replicated storage backend in case of weaker durability requirements (like the :ref:`leveldb-storage-backend`).
 
 Event replication across locations is reliable. Should a location crash or a network partition occur, replication automatically resumes when crashed location recovers and/or the partition heals. Built-in failure detectors inform applications about (un)availability of other locations. Replication endpoints also ensure that no duplicates are ever written to target event logs.
 
