@@ -24,7 +24,13 @@ object EventsourcingProtocol {
   /**
    * Instructs an event log to batch-execute the given `writes`.
    */
-  case class WriteN(writes: Seq[Write])
+  case class WriteN(writes: Seq[Write]) {
+
+    /**
+     * Number of events in this batch write request.
+     */
+    def size: Int = writes.map(_.events.size).sum
+  }
 
   /**
    * Completion reply after a [[WriteN]].

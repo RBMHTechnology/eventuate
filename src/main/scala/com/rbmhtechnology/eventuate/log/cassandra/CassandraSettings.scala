@@ -19,59 +19,65 @@ package com.rbmhtechnology.eventuate.log.cassandra
 import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 
+import akka.util.Helpers.Requiring
+
 import com.datastax.driver.core.{Cluster, ConsistencyLevel}
 import com.typesafe.config.Config
+
+import com.rbmhtechnology.eventuate.ReplicationSettings
+import com.rbmhtechnology.eventuate.log.BatchingSettings
 
 import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 
-private[eventuate] class CassandraConfig(config: Config) {
-  import CassandraConfig._
+private[eventuate] class CassandraSettings(config: Config) {
+  import CassandraSettings._
+
+  private val batchingSettings = new BatchingSettings(config)
+  private val replicationSettings = new ReplicationSettings(config)
 
   val keyspace: String =
-    config.getString("keyspace")
+    config.getString("eventuate.log.cassandra.keyspace")
 
   val keyspaceAutoCreate: Boolean =
-    config.getBoolean("keyspace-autocreate")
+    config.getBoolean("eventuate.log.cassandra.keyspace-autocreate")
 
   val replicationFactor: Int =
-    config.getInt("replication-factor")
+    config.getInt("eventuate.log.cassandra.replication-factor")
 
   val tablePrefix: String =
-    config.getString("table-prefix")
+    config.getString("eventuate.log.cassandra.table-prefix")
 
   val readConsistency: ConsistencyLevel =
-    ConsistencyLevel.valueOf(config.getString("read-consistency"))
+    ConsistencyLevel.valueOf(config.getString("eventuate.log.cassandra.read-consistency"))
 
   val writeConsistency: ConsistencyLevel =
-    ConsistencyLevel.valueOf(config.getString("write-consistency"))
+    ConsistencyLevel.valueOf(config.getString("eventuate.log.cassandra.write-consistency"))
 
   val defaultPort: Int =
-    config.getInt("default-port")
+    config.getInt("eventuate.log.cassandra.default-port")
 
   val contactPoints =
-    getContactPoints(config.getStringList("contact-points").asScala, defaultPort)
+    getContactPoints(config.getStringList("eventuate.log.cassandra.contact-points").asScala, defaultPort)
 
-  val maxResultSetSize: Int =
-    config.getInt("max-result-set-size")
+  val partitionSizeMax: Int =
+    config.getInt("eventuate.log.cassandra.partition-size-max")
+      .requiring(_ > batchingSettings.batchSizeLimit,
+        s"eventuate.log.cassandra.partition-size-max must be greater than eventuate.log.batching.batch-size-limit (${batchingSettings.batchSizeLimit})")
+      .requiring(_ > replicationSettings.batchSizeMax,
+        s"eventuate.log.cassandra.partition-size-max must be greater than eventuate.log.replication.batch-size-max (${replicationSettings.batchSizeMax})")
 
   val initRetryBackoff: FiniteDuration =
-    config.getDuration("init-retry-backoff", TimeUnit.MILLISECONDS).millis
+    config.getDuration("eventuate.log.cassandra.init-retry-backoff", TimeUnit.MILLISECONDS).millis
 
   val indexUpdateLimit: Int =
-    config.getInt("index-update-limit")
+    config.getInt("eventuate.log.cassandra.index-update-limit")
 
   val clusterBuilder: Cluster.Builder =
     Cluster.builder.addContactPointsWithPorts(contactPoints.asJava)
-
-  if (config.hasPath("authentication")) {
-    clusterBuilder.withCredentials(
-      config.getString("authentication.username"),
-      config.getString("authentication.password"))
-  }
 }
 
-private object CassandraConfig {
+private object CassandraSettings {
   def getContactPoints(contactPoints: Seq[String], defaultPort: Int): Seq[InetSocketAddress] = {
     contactPoints match {
       case null | Nil => throw new IllegalArgumentException("a contact point list cannot be empty.")

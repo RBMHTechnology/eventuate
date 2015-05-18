@@ -24,7 +24,6 @@ import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.serializer.DurableEventFormats._
 
 import scala.collection.JavaConverters._
-import scala.collection.immutable.VectorBuilder
 import scala.language.existentials
 
 /**
@@ -34,7 +33,6 @@ import scala.language.existentials
  */
 class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
   val DurableEventClass = classOf[DurableEvent]
-  val DurableEventBatchClass = classOf[DurableEventBatch]
 
   override def identifier: Int = 22563
   override def includeManifest: Boolean = true
@@ -42,8 +40,6 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
   override def toBinary(o: AnyRef): Array[Byte] = o match {
     case m: DurableEvent =>
       durableEventFormatBuilder(m).build().toByteArray
-    case m: DurableEventBatch =>
-      durableEventBatchFormatBuilder(m).build().toByteArray
     case _ =>
       throw new IllegalArgumentException(s"can't serialize object of type ${o.getClass}")
   }
@@ -54,8 +50,6 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
     case Some(c) => c match {
       case DurableEventClass =>
         durableEvent(DurableEventFormat.parseFrom(bytes))
-      case DurableEventBatchClass =>
-        durableEventBatch(DurableEventBatchFormat.parseFrom(bytes))
       case _ =>
         throw new IllegalArgumentException(s"can't deserialize object of type ${c}")
     }
@@ -65,20 +59,13 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
   //  toBinary helpers
   // --------------------------------------------------------------------------------
 
-  private def durableEventBatchFormatBuilder(durableEventBatch: DurableEventBatch): DurableEventBatchFormat.Builder = {
-    val builder = DurableEventBatchFormat.newBuilder()
-    durableEventBatch.events.foreach(event => builder.addEvents(durableEventFormatBuilder(event)))
-    durableEventBatch.sourceLogId.foreach(builder.setSourceLogId)
-    durableEventBatch.lastSourceLogSequenceNrRead.foreach(builder.setLastSourceLogSequenceNrRead)
-    builder
-  }
-
   private[eventuate] def durableEventFormatBuilder(durableEvent: DurableEvent): DurableEventFormat.Builder = {
     val builder = DurableEventFormat.newBuilder
     builder.setPayload(payloadFormatBuilder(durableEvent.payload.asInstanceOf[AnyRef]))
     builder.setSystemTimestamp(durableEvent.systemTimestamp)
     builder.setVectorTimestamp(vectorTimeFormatBuilder(durableEvent.vectorTimestamp))
     builder.setEmitterReplicaId(durableEvent.emitterReplicaId)
+    builder.setSourceLogReadPosition(durableEvent.sourceLogReadPosition)
     builder.setSourceLogId(durableEvent.sourceLogId)
     builder.setTargetLogId(durableEvent.targetLogId)
     builder.setSourceLogSequenceNr(durableEvent.sourceLogSequenceNr)
@@ -121,19 +108,6 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
   //  fromBinary helpers
   // --------------------------------------------------------------------------------
 
-  private def durableEventBatch(durableEventBatchFormat: DurableEventBatchFormat): DurableEventBatch = {
-    val builder = new VectorBuilder[DurableEvent]
-
-    durableEventBatchFormat.getEventsList.iterator().asScala.foreach { durableEventFormat =>
-      builder += durableEvent(durableEventFormat)
-    }
-
-    DurableEventBatch(
-      builder.result(),
-      if (durableEventBatchFormat.hasSourceLogId) Some(durableEventBatchFormat.getSourceLogId) else None,
-      if (durableEventBatchFormat.hasLastSourceLogSequenceNrRead) Some(durableEventBatchFormat.getLastSourceLogSequenceNrRead) else None)
-  }
-
   private[eventuate] def durableEvent(durableEventFormat: DurableEventFormat): DurableEvent = {
     val emitterAggregateId: Option[String] =
       if (durableEventFormat.hasEmitterAggregateId) Some(durableEventFormat.getEmitterAggregateId) else None
@@ -149,6 +123,7 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
       emitterReplicaId = durableEventFormat.getEmitterReplicaId,
       emitterAggregateId = emitterAggregateId,
       customRoutingDestinations = customRoutingDestinations,
+      sourceLogReadPosition = durableEventFormat.getSourceLogReadPosition,
       sourceLogId = durableEventFormat.getSourceLogId,
       targetLogId = durableEventFormat.getTargetLogId,
       sourceLogSequenceNr = durableEventFormat.getSourceLogSequenceNr,

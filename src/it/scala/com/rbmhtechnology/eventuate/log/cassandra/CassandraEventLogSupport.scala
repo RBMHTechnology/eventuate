@@ -23,9 +23,9 @@ import akka.util.Timeout
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
-import com.rbmhtechnology.eventuate.log.cassandra.CassandraIndex.IndexIncrement
 import com.rbmhtechnology.eventuate.log.{EventLogSpec, BatchingEventLog}
 import com.rbmhtechnology.eventuate.log.EventLogSpec._
+import com.rbmhtechnology.eventuate.log.cassandra.CassandraIndex._
 
 import org.scalatest._
 
@@ -45,9 +45,9 @@ object CassandraEventLogSupport {
 
     private var index: ActorRef = _
 
-    override def write(batch: DurableEventBatch): Unit = batch.events match {
+    override def write(partition: Long, events: Seq[DurableEvent]): Unit = events match {
       case es if es.map(_.payload).contains("boom") => throw boom
-      case _ => super.write(batch)
+      case _ => super.write(partition, events)
     }
 
     override def unhandled(message: Any): Unit = message match {
@@ -106,17 +106,17 @@ object CassandraEventLogSupport {
     private var writeIndexIncrementFailed = false
     private var readSequenceNumberFailed = false
 
-    override def writeIndexIncrementAsync(increment: IndexIncrement)(implicit executor: ExecutionContext): Future[Long] =
+    override def writeAsync(replicationProgress: ReplicationProgress, aggregateEvents: AggregateEvents, sequenceNr: Long)(implicit executor: ExecutionContext): Future[Long] =
       if (failureSpec.failBeforeIndexIncrementWrite && !writeIndexIncrementFailed) {
         writeIndexIncrementFailed = true
         Future.failed(boom)
       } else if (failureSpec.failAfterIndexIncrementWrite && !writeIndexIncrementFailed) {
         writeIndexIncrementFailed = true
         for {
-          _ <- super.writeIndexIncrementAsync(increment)
+          _ <- super.writeAsync(replicationProgress, aggregateEvents, sequenceNr)
           r <- Future.failed(boom)
         } yield r
-      } else super.writeIndexIncrementAsync(increment)
+      } else super.writeAsync(replicationProgress, aggregateEvents, sequenceNr)
 
     override def readSequenceNumberAsync: Future[Long] =
       if (failureSpec.failOnSequenceNrRead && !readSequenceNumberFailed) {

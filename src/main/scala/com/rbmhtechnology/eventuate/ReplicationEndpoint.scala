@@ -24,34 +24,29 @@ import akka.pattern.ask
 import akka.pattern.pipe
 import akka.util.Timeout
 
+import com.typesafe.config.Config
+
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Seq
 import scala.concurrent.duration._
 
 import ReplicationProtocol._
 
-private object ReplicationSettings {
-  def apply(system: ActorSystem): ReplicationSettings =
-    new ReplicationSettings(system)
-}
+private[eventuate] class ReplicationSettings(config: Config) {
+  val retryInterval: FiniteDuration =
+    config.getDuration("eventuate.log.replication.retry-interval", TimeUnit.MILLISECONDS).millis
 
-private class ReplicationSettings(system: ActorSystem) {
-  val config = system.settings.config.getConfig("eventuate.log.replication")
+  val readTimeout: FiniteDuration =
+    config.getDuration("eventuate.log.replication.read-timeout", TimeUnit.MILLISECONDS).millis
 
-  val replicationRetryInterval: FiniteDuration =
-    config.getDuration("retry-interval", TimeUnit.MILLISECONDS).millis
+  val writeTimeout: FiniteDuration =
+    config.getDuration("eventuate.log.replication.write-timeout", TimeUnit.MILLISECONDS).millis
 
-  val replicationReadTimeout: FiniteDuration =
-    config.getDuration("read-timeout", TimeUnit.MILLISECONDS).millis
-
-  val replicationWriteTimeout: FiniteDuration =
-    config.getDuration("write-timeout", TimeUnit.MILLISECONDS).millis
-
-  val replicationBatchSize: Int =
-    config.getInt("batch-size-max")
+  val batchSizeMax: Int =
+    config.getInt("eventuate.log.replication.batch-size-max")
 
   val failureDetectionLimit =
-    config.getDuration("failure-detection-limit", TimeUnit.MILLISECONDS).millis
+    config.getDuration("eventuate.log.replication.failure-detection-limit", TimeUnit.MILLISECONDS).millis
 }
 
 object ReplicationEndpoint {
@@ -159,6 +154,12 @@ class ReplicationEndpoint(val id: String, val logNames: Set[String], logFactory:
     ReplicationEndpointInfo(id, logNames)
 
   /**
+   * The actor system's replication settings.
+   */
+  private[eventuate] val settings =
+    new ReplicationSettings(system.settings.config)
+
+  /**
    * The log actors managed by this endpoint, indexed by their name.
    */
   val logs: Map[String, ActorRef] =
@@ -191,7 +192,7 @@ private case class ReplicationSource(
  * References a local replication target.
  */
 private case class ReplicationTarget(
-  endpointId: String,
+  endpoint: ReplicationEndpoint,
   logName: String,
   logId: String,
   log: ActorRef)
@@ -219,7 +220,7 @@ private class TargetReplicationConnector(targetEndpoint: ReplicationEndpoint, co
   import context.dispatcher
 
   private val connector = selection(SourceReplicationConnector.Name)
-  private val schedule = context.system.scheduler.schedule(0.seconds, ReplicationSettings(context.system).replicationRetryInterval, new Runnable {
+  private val schedule = context.system.scheduler.schedule(0.seconds, targetEndpoint.settings.retryInterval, new Runnable {
     override def run() = connector ! GetReplicationEndpointInfo
   })
 
@@ -230,7 +231,7 @@ private class TargetReplicationConnector(targetEndpoint: ReplicationEndpoint, co
       info.logNames.intersect(targetEndpoint.logNames).foreach { logName =>
         val sourceLogId = info.logId(logName)
         val source = ReplicationSource(info.endpointId, logName, sourceLogId, selection(sourceLogId))
-        val target = ReplicationTarget(targetEndpoint.id, logName, targetEndpoint.logId(logName), targetEndpoint.logs(logName))
+        val target = ReplicationTarget(targetEndpoint, logName, targetEndpoint.logId(logName), targetEndpoint.logs(logName))
         context.actorOf(Props(new Replicator(source, target, connection.filters.get(logName), selection(NotificationChannel.Name))))
       }
       connected = true
@@ -264,18 +265,17 @@ private class TargetReplicationConnector(targetEndpoint: ReplicationEndpoint, co
  */
 private class Replicator(source: ReplicationSource, target: ReplicationTarget, filter: Option[ReplicationFilter], notificationChannel: ActorSelection) extends Actor with ActorLogging {
   import ReplicationServerFailureDetector._
+  import target.endpoint.settings
   import context.dispatcher
 
   val scheduler = context.system.scheduler
-
-  val replicationSettings = ReplicationSettings(context.system)
   val replicationFilter = filter match {
     case Some(f) => SourceLogIdExclusionFilter(target.logId).and(f)
     case None    => SourceLogIdExclusionFilter(target.logId)
   }
 
-  val failureDetector = context.actorOf(Props(new ReplicationServerFailureDetector(source.endpointId, source.logName)))
-  val registrationSchedule = context.system.scheduler.schedule(0.seconds, replicationSettings.replicationRetryInterval, new Runnable {
+  val failureDetector = context.actorOf(Props(new ReplicationServerFailureDetector(source.endpointId, source.logName, settings.failureDetectionLimit)))
+  val registrationSchedule = context.system.scheduler.schedule(0.seconds, settings.retryInterval, new Runnable {
     override def run() = notificationChannel ! SubscribeReplicator(source.logId, target.logId, self, replicationFilter)
   })
 
@@ -330,15 +330,15 @@ private class Replicator(source: ReplicationSource, target: ReplicationTarget, f
   def receive = initializing
 
   private def scheduleFetch(): Unit = {
-    scheduler.scheduleOnce(replicationSettings.replicationRetryInterval)(fetch())
+    scheduler.scheduleOnce(settings.retryInterval)(fetch())
   }
 
   private def scheduleRead(): Unit = {
-    readSchedule = Some(scheduler.scheduleOnce(replicationSettings.replicationRetryInterval, self, ReplicationDue))
+    readSchedule = Some(scheduler.scheduleOnce(settings.retryInterval, self, ReplicationDue))
   }
 
   private def fetch(): Unit = {
-    implicit val timeout = Timeout(replicationSettings.replicationReadTimeout)
+    implicit val timeout = Timeout(settings.readTimeout)
 
     target.log ? GetLastSourceLogReadPosition(source.logId) recover {
       case t => GetLastSourceLogReadPositionFailure(t)
@@ -346,15 +346,15 @@ private class Replicator(source: ReplicationSource, target: ReplicationTarget, f
   }
 
   private def read(): Unit = {
-    implicit val timeout = Timeout(replicationSettings.replicationReadTimeout)
+    implicit val timeout = Timeout(settings.readTimeout)
 
-    source.log ? ReplicationRead(lastSourceLogSequenceNrStored + 1, replicationSettings.replicationBatchSize, replicationFilter, target.logId) recover {
+    source.log ? ReplicationRead(lastSourceLogSequenceNrStored + 1, settings.batchSizeMax, replicationFilter, target.logId) recover {
       case t => ReplicationReadFailure(t.getMessage, target.logId)
     } pipeTo self
   }
 
   private def write(events: Seq[DurableEvent], lastSourceLogSequenceNrRead: Long): Unit = {
-    implicit val timeout = Timeout(replicationSettings.replicationWriteTimeout)
+    implicit val timeout = Timeout(settings.writeTimeout)
 
     target.log ? ReplicationWrite(events, source.logId, lastSourceLogSequenceNrRead) recover {
       case t => ReplicationWriteFailure(t)
@@ -370,20 +370,20 @@ private object ReplicationServerFailureDetector {
   case object Tick
 }
 
-private class ReplicationServerFailureDetector(sourceEndpointId: String, logName: String) extends Actor {
+private class ReplicationServerFailureDetector(sourceEndpointId: String, logName: String, failureDetectionLimit: FiniteDuration) extends Actor {
   import ReplicationServerFailureDetector._
   import ReplicationEndpoint._
 
-  val limit = ReplicationSettings(context.system).failureDetectionLimit.toMillis
+  val failureDetectionLimitMillis = failureDetectionLimit.toMillis
   var lastTick: Long = 0L
 
-  context.setReceiveTimeout(limit.millis)
+  context.setReceiveTimeout(failureDetectionLimit)
 
   def receive = {
     case Tick =>
       val currentTime = System.currentTimeMillis
       val lastInterval =  currentTime - lastTick
-      if (lastInterval >= limit) {
+      if (lastInterval >= failureDetectionLimitMillis) {
         context.system.eventStream.publish(Available(sourceEndpointId, logName))
         lastTick = currentTime
       }

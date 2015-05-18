@@ -112,10 +112,10 @@ object EventsourcedActorSpec {
   }
 
   def eventA(payload: Any, sequenceNr: Long, timestamp: VectorTime): DurableEvent =
-    DurableEvent(payload, 0L, timestamp, replicaIdA, None, Set(), logId, logId, sequenceNr, sequenceNr)
+    DurableEvent(payload, 0L, timestamp, replicaIdA, None, Set(), 0L, logId, logId, sequenceNr, sequenceNr)
 
   def eventB(payload: Any, sequenceNr: Long, timestamp: VectorTime): DurableEvent =
-    DurableEvent(payload, 0L, timestamp, replicaIdB, None, Set(), logId, logId, sequenceNr, sequenceNr)
+    DurableEvent(payload, 0L, timestamp, replicaIdB, None, Set(), 0L, logId, logId, sequenceNr, sequenceNr)
 
   def timestampA(timeA: Long): VectorTime =
     VectorTime(processIdA -> timeA)

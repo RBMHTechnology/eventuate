@@ -51,15 +51,12 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor {
   val serialization = SerializationExtension(context.system)
   val eventStream = context.system.eventStream
 
-  val leveldbConfig = context.system.settings.config.getConfig("eventuate.log.leveldb")
-  val leveldbRootDir = leveldbConfig.getString("dir")
-  val leveldbFsync = leveldbConfig.getBoolean("fsync")
-
+  val leveldbSettings = new LeveldbSettings(context.system.settings.config)
   val leveldbOptions = new Options().createIfMissing(true)
-  val leveldbWriteOptions = new WriteOptions().sync(leveldbFsync).snapshot(false)
+  val leveldbWriteOptions = new WriteOptions().sync(leveldbSettings.fsync).snapshot(false)
   def leveldbReadOptions = new ReadOptions().verifyChecksums(false)
 
-  val leveldbDir = new File(leveldbRootDir, s"${prefix}-${id}"); leveldbDir.mkdirs()
+  val leveldbDir = new File(leveldbSettings.rootDir, s"${prefix}-${id}"); leveldbDir.mkdirs()
   val leveldb = factory.open(leveldbDir, leveldbOptions)
 
   implicit val dispatcher = context.system.dispatchers.lookup("eventuate.log.leveldb.read-dispatcher")
@@ -105,29 +102,31 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor {
           sdr ! r
           eventStream.publish(r)
       }
+    case Write(events, eventsSender, requestor, iid) =>
+      val updated = prepareWrite(events)
+
+      Try(write(updated)) match {
+        case Success(_) =>
+          pushWriteSuccess(updated, eventsSender, requestor, iid)
+          publishUpdateNotification(updated)
+        case Failure(e) =>
+          pushWriteFailure(events, eventsSender, requestor, iid, e)
+      }
     case WriteN(writes) =>
       val updatedWrites = writes.map(w => w.copy(events = prepareWrite(w.events)))
       val updatedEvents = updatedWrites.map(_.events).flatten
+
       Try(withBatch(batch => write(updatedEvents, batch))) match {
         case Success(_) =>
           updatedWrites.foreach(w => pushWriteSuccess(w.events, w.eventsSender, w.requestor, w.instanceId))
           publishUpdateNotification(updatedEvents)
         case Failure(e) =>
-          updatedWrites.foreach(w => pushWriteFailure(w.events, w.eventsSender, w.requestor, w.instanceId, e))
+          writes.foreach(w => pushWriteFailure(w.events, w.eventsSender, w.requestor, w.instanceId, e))
       }
       sender() ! WriteNComplete // notify batch layer that write completed
-    case Write(events, eventsSender, requestor, iid) =>
-      val updated = prepareWrite(events)
-      val result = Try(write(updated))
-      result match {
-        case Failure(e) =>
-          pushWriteFailure(updated, eventsSender, requestor, iid, e)
-        case Success(_) =>
-          pushWriteSuccess(updated, eventsSender, requestor, iid)
-          publishUpdateNotification(updated)
-      }
     case ReplicationWrite(events, sourceLogId, lastSourceLogSequenceNrRead) =>
-      val updated = prepareReplicate(events)
+      val updated = prepareReplicate(events, lastSourceLogSequenceNrRead)
+
       Try {
         withBatch { batch =>
           // atomic write of events and replication progress
@@ -135,12 +134,12 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor {
           write(updated, batch)
         }
       } match {
-        case Failure(e) =>
-          sender() ! ReplicationWriteFailure(e)
         case Success(_) =>
           sender() ! ReplicationWriteSuccess(events.size, lastSourceLogSequenceNrRead)
           pushReplicateSuccess(updated)
           publishUpdateNotification(updated)
+        case Failure(e) =>
+          sender() ! ReplicationWriteFailure(e)
       }
     case Terminated(requestor) =>
       aggregateRegistry.aggregateId(requestor) match {
@@ -195,12 +194,13 @@ class LeveldbEventLog(id: String, prefix: String) extends Actor {
     }
   }
 
-  def prepareReplicate(events: Seq[DurableEvent]): Seq[DurableEvent] = {
+  def prepareReplicate(events: Seq[DurableEvent], lastSourceLogSequenceNrRead: Long): Seq[DurableEvent] = {
     events.map { event =>
       val snr = nextSequenceNr()
       event.copy(
         sourceLogId = event.targetLogId,
         targetLogId = id,
+        sourceLogReadPosition = lastSourceLogSequenceNrRead,
         sourceLogSequenceNr = event.targetLogSequenceNr,
         targetLogSequenceNr = snr)
     }
