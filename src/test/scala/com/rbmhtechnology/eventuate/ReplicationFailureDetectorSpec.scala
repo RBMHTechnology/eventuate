@@ -19,23 +19,18 @@ package com.rbmhtechnology.eventuate
 import akka.actor._
 import akka.testkit._
 
-import com.typesafe.config.ConfigFactory
-
 import org.scalatest._
 
-import ReplicationEndpoint._
-import ReplicationServerFailureDetector._
-import ReplicationFailureDetectorSpec._
+import scala.concurrent.duration._
 
-object ReplicationFailureDetectorSpec {
-  val config = ConfigFactory.parseString("eventuate.log.replication.failure-detection-limit = 1s")
-}
+class ReplicationFailureDetectorSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach with BeforeAndAfterAll {
+  import ReplicationEndpoint._
+  import ReplicationServerFailureDetector._
 
-class ReplicationFailureDetectorSpec extends TestKit(ActorSystem("test", config)) with WordSpecLike with Matchers with BeforeAndAfterEach with BeforeAndAfterAll {
   var failureDetector: ActorRef = _
 
   override def beforeEach(): Unit = {
-    failureDetector = system.actorOf(Props(new ReplicationServerFailureDetector("A", "L1")))
+    failureDetector = system.actorOf(Props(new ReplicationServerFailureDetector("A", "L1", 1.second)))
   }
 
   override def afterEach(): Unit = {

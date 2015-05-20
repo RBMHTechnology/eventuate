@@ -17,15 +17,15 @@
 package com.rbmhtechnology.eventuate.log.cassandra
 
 private[eventuate] trait CassandraStatements {
-  def config: CassandraConfig
+  def settings: CassandraSettings
 
   def createKeySpaceStatement = s"""
-      CREATE KEYSPACE IF NOT EXISTS ${config.keyspace}
-      WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : ${config.replicationFactor} }
+      CREATE KEYSPACE IF NOT EXISTS ${settings.keyspace}
+      WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : ${settings.replicationFactor} }
     """
 
   def table(suffix: String): String =
-    s"${config.keyspace}.${config.tablePrefix}_${suffix}"
+    s"${settings.keyspace}.${settings.tablePrefix}_${suffix}"
 }
 
 private[eventuate] trait CassandraEventStatements extends CassandraStatements {
@@ -33,33 +33,21 @@ private[eventuate] trait CassandraEventStatements extends CassandraStatements {
       CREATE TABLE IF NOT EXISTS ${eventTable(logId)} (
         partition_nr bigint,
         sequence_nr bigint,
-        marker text,
-        eventBatch blob,
-        PRIMARY KEY (partition_nr, sequence_nr, marker))
+        event blob,
+        PRIMARY KEY (partition_nr, sequence_nr))
         WITH COMPACT STORAGE
     """
 
-  def writeEventHeaderStatement(logId: String) = s"""
-      INSERT INTO ${eventTable(logId)} (partition_nr, sequence_nr, marker, eventBatch)
-      VALUES (?, 0, 'H', 0x00)
+  def writeEventStatement(logId: String) = s"""
+      INSERT INTO ${eventTable(logId)} (partition_nr, sequence_nr, event)
+      VALUES (?, ?, ?)
     """
 
-  def writeEventBatchStatement(logId: String) = s"""
-      INSERT INTO ${eventTable(logId)} (partition_nr, sequence_nr, marker, eventBatch)
-      VALUES (?, ?, 'E', ?)
-    """
-
-  def readEventHeaderStatement(logId: String) = s"""
-      SELECT * FROM ${eventTable(logId)} WHERE
-        partition_nr = ? AND
-        sequence_nr = 0
-    """
-
-  def readEventBatchesStatement(logId: String) = s"""
+  def readEventsStatement(logId: String) = s"""
       SELECT * FROM ${eventTable(logId)} WHERE
         partition_nr = ? AND
         sequence_nr >= ?
-      LIMIT ${config.maxResultSetSize}
+      LIMIT ${settings.partitionSizeMax}
     """
 
   def eventTable(logId: String) = table(logId)
@@ -70,21 +58,21 @@ private[eventuate] trait CassandraAggregateEventStatements extends CassandraStat
       CREATE TABLE IF NOT EXISTS ${aggregateEventTable(logId)} (
         aggregate_id text,
         sequence_nr bigint,
-        eventBatch blob,
+        event blob,
         PRIMARY KEY (aggregate_id, sequence_nr))
         WITH COMPACT STORAGE
     """
 
-  def writeAggregateEventBatchStatement(logId: String) = s"""
-      INSERT INTO ${aggregateEventTable(logId)} (aggregate_id, sequence_nr, eventBatch)
+  def writeAggregateEventStatement(logId: String) = s"""
+      INSERT INTO ${aggregateEventTable(logId)} (aggregate_id, sequence_nr, event)
       VALUES (?, ?, ?)
     """
 
-  def readAggregateEventBatchesStatement(logId: String) = s"""
+  def readAggregateEventsStatement(logId: String) = s"""
       SELECT * FROM ${aggregateEventTable(logId)} WHERE
         aggregate_id = ? AND
         sequence_nr >= ?
-      LIMIT ${config.maxResultSetSize}
+      LIMIT ${settings.partitionSizeMax}
     """
 
   def aggregateEventTable(logId: String) = s"${table(logId)}_agg"

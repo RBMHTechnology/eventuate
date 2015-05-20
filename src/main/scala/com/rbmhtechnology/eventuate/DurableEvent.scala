@@ -35,10 +35,11 @@ import scala.collection.immutable.Seq
  *                           views with an undefined `aggregateId`.
  * @param customRoutingDestinations Aggregate ids of additional, custom routing destinations. If non-empty, the event is
  *                                  additionally routed to [[Eventsourced]] actors and views with a matching `aggregateId`.
+ * @param sourceLogReadPosition Highest source log read position from last replication.
  * @param sourceLogId Source log id from last replication. Equal to `targetLogId` if not replicated yet.
  * @param targetLogId Target log id from last replication.
  * @param sourceLogSequenceNr Source log sequence number from last replication.
- * @param targetLogSequenceNr Target log sequence number from last replication.
+ * @param targetLogSequenceNr Target log sequence number.
  */
 case class DurableEvent(
   payload: Any,
@@ -47,10 +48,17 @@ case class DurableEvent(
   emitterReplicaId: String,
   emitterAggregateId: Option[String] = None,
   customRoutingDestinations: Set[String] = Set(),
+  sourceLogReadPosition: Long = 0L,
   sourceLogId: String = UndefinedLogId,
   targetLogId: String = UndefinedLogId,
   sourceLogSequenceNr: Long = UndefinedSequenceNr,
   targetLogSequenceNr: Long = UndefinedSequenceNr) {
+
+  /**
+   * `true` if this is a replicated event.
+   */
+  def replicated: Boolean =
+    targetLogId != sourceLogId
 
   /**
    * Local sequence number (= `targetLogSequenceNr`).
@@ -102,26 +110,4 @@ object DurableEvent {
    */
   def processId(replicaId: String, aggregateId: Option[String]): String =
     aggregateId.map(id => s"${replicaId}-${id}").getOrElse(replicaId)
-}
-
-/**
- * Event batch storage format.
- *
- * @param events Event batch.
- * @param sourceLogId Source log id if the batch was read from a source log (= replicated).
- * @param lastSourceLogSequenceNrRead Last source log sequence number read after reading this batch from the source log.
- */
-case class DurableEventBatch(events: Seq[DurableEvent], sourceLogId: Option[String] = None, lastSourceLogSequenceNrRead: Option[Long] = None) {
-
-  /**
-   * `true` if this batch was replicated.
-   */
-  def replicated: Boolean =
-    sourceLogId.isDefined
-
-  /**
-   * Highest event sequence number contained in the event batch.
-   */
-  def highestSequenceNr: Option[Long] =
-    events.lastOption.map(_.sequenceNr)
 }

@@ -25,9 +25,9 @@ import akka.serialization.SerializationExtension
 import com.datastax.driver.core._
 import com.datastax.driver.core.utils.Bytes
 
-import com.rbmhtechnology.eventuate.DurableEventBatch
+import com.rbmhtechnology.eventuate.DurableEvent
 
-import scala.concurrent.duration._
+import scala.concurrent.Future
 import scala.util._
 
 object Cassandra extends ExtensionId[Cassandra] with ExtensionIdProvider {
@@ -98,10 +98,10 @@ object Cassandra extends ExtensionId[Cassandra] with ExtensionIdProvider {
 class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =>
 
   /**
-   * Configuration used by the Cassandra storage backend. Closed when the `ActorSystem` of
+   * Settings used by the Cassandra storage backend. Closed when the `ActorSystem` of
    * this extension terminates.
    */
-  private[eventuate] val config = new CassandraConfig(system.settings.config.getConfig("eventuate.log.cassandra"))
+  private[eventuate] val settings = new CassandraSettings(system.settings.config)
 
   /**
    * Serializer used by the Cassandra storage backend. Closed when the `ActorSystem` of
@@ -115,11 +115,11 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
     with CassandraSequenceNumberStatements
     with CassandraReplicationProgressStatements {
 
-    override def config: CassandraConfig =
-      extension.config
+    override def settings: CassandraSettings =
+      extension.settings
   }
 
-  import config._
+  import settings._
   import statements._
 
   private var _cluster: Cluster = _
@@ -129,8 +129,8 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
     _cluster = clusterBuilder.build
     _session = _cluster.connect()
 
-    if (config.keyspaceAutoCreate)
-      session.execute(createKeySpaceStatement)
+    if (keyspaceAutoCreate)
+      _session.execute(createKeySpaceStatement)
 
     _session.execute(createSequenceNumberTableStatement)
     _session.execute(createReplicationProgressTableStatement)
@@ -163,35 +163,47 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   private[eventuate] def createAggregateEventTable(logId: String): Unit =
     session.execute(createAggregateEventTableStatement(logId))
 
-  private[eventuate] def prepareWriteEventBatch(logId: String): PreparedStatement =
-    session.prepare(writeEventBatchStatement(logId)).setConsistencyLevel(config.writeConsistency)
+  private[eventuate] def prepareWriteEvent(logId: String): PreparedStatement =
+    session.prepare(writeEventStatement(logId)).setConsistencyLevel(writeConsistency)
 
-  private[eventuate] def prepareReadEventBatches(logId: String): PreparedStatement =
-    session.prepare(readEventBatchesStatement(logId)).setConsistencyLevel(config.readConsistency)
+  private[eventuate] def prepareReadEvents(logId: String): PreparedStatement =
+    session.prepare(readEventsStatement(logId)).setConsistencyLevel(readConsistency)
 
-  private[eventuate] def prepareWriteAggregateEventBatch(logId: String): PreparedStatement =
-    session.prepare(writeAggregateEventBatchStatement(logId)).setConsistencyLevel(config.writeConsistency)
+  private[eventuate] def prepareWriteAggregateEvent(logId: String): PreparedStatement =
+    session.prepare(writeAggregateEventStatement(logId)).setConsistencyLevel(writeConsistency)
 
-  private[eventuate] def prepareReadAggregateEventBatches(logId: String): PreparedStatement =
-    session.prepare(readAggregateEventBatchesStatement(logId)).setConsistencyLevel(config.readConsistency)
+  private[eventuate] def prepareReadAggregateEvents(logId: String): PreparedStatement =
+    session.prepare(readAggregateEventsStatement(logId)).setConsistencyLevel(readConsistency)
 
   private[eventuate] val preparedWriteSequenceNumberStatement: PreparedStatement =
-    session.prepare(writeSequenceNumberStatement).setConsistencyLevel(config.writeConsistency)
+    session.prepare(writeSequenceNumberStatement).setConsistencyLevel(writeConsistency)
 
   private[eventuate] val preparedReadSequenceNumberStatement: PreparedStatement =
-    session.prepare(readSequenceNumberStatement).setConsistencyLevel(config.readConsistency)
+    session.prepare(readSequenceNumberStatement).setConsistencyLevel(readConsistency)
 
   private[eventuate] val preparedWriteReplicationProgressStatement: PreparedStatement =
-    session.prepare(writeReplicationProgressStatement).setConsistencyLevel(config.writeConsistency)
+    session.prepare(writeReplicationProgressStatement).setConsistencyLevel(writeConsistency)
 
   private[eventuate] val preparedReadReplicationProgressStatement: PreparedStatement =
-    session.prepare(readReplicationProgressStatement).setConsistencyLevel(config.readConsistency)
+    session.prepare(readReplicationProgressStatement).setConsistencyLevel(readConsistency)
 
-  private[eventuate] def eventBatchToByteBuffer(b: DurableEventBatch): ByteBuffer =
-    ByteBuffer.wrap(serializer.serialize(b).get)
+  private[eventuate] def eventToByteBuffer(event: DurableEvent): ByteBuffer =
+    ByteBuffer.wrap(serializer.serialize(event).get)
 
-  private[eventuate] def eventBatchFromByteBuffer(b: ByteBuffer): DurableEventBatch =
-    serializer.deserialize(Bytes.getArray(b), classOf[DurableEventBatch]).get
+  private[eventuate] def eventFromByteBuffer(buffer: ByteBuffer): DurableEvent =
+    serializer.deserialize(Bytes.getArray(buffer), classOf[DurableEvent]).get
+
+  private[eventuate] def executeBatch(body: BatchStatement => Unit): Unit =
+    session.execute(withBatch(body))
+
+  private[eventuate] def executeBatchAsync(body: BatchStatement => Unit): Future[Unit] =
+    session.executeAsync(withBatch(body)).map(_ => ())
+
+  private def withBatch(body: BatchStatement => Unit): BatchStatement = {
+    val batch = new BatchStatement().setConsistencyLevel(writeConsistency).asInstanceOf[BatchStatement]
+    body(batch)
+    batch
+  }
 
   private def exit(): Unit =
     system.shutdown()

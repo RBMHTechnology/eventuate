@@ -29,9 +29,10 @@ import scala.concurrent.Future
 
 private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: String) extends CassandraEventIteratorLeasing {
   import CassandraEventReader._
+  import CassandraEventLog._
 
   val statement: PreparedStatement =
-    cassandra.prepareReadEventBatches(logId)
+    cassandra.prepareReadEvents(logId)
 
   def replayAsync(fromSequenceNr: Long)(f: DurableEvent => Unit): Future[Unit] =
     Future(replay(fromSequenceNr)(f))(cassandra.readDispatcher)
@@ -59,43 +60,43 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
     ReadResult(builder.result(), iterator.lastSequenceNrRead)
   }
 
-  def eventIterator(fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] = for {
-    batch <- eventBatchIterator(fromSequenceNr, toSequenceNr)
-    event <- batch.events if event.sequenceNr >= fromSequenceNr && event.sequenceNr <= toSequenceNr
-  } yield event
+  def eventIterator(fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] =
+    new EventIterator(fromSequenceNr, toSequenceNr)
 
-  def eventBatchIterator(fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEventBatch] =
-    new EventBatchIterator(fromSequenceNr, toSequenceNr)
+  private class EventIterator(fromSequenceNr: Long, toSequenceNr: Long) extends Iterator[DurableEvent] {
+    import cassandra.settings._
 
-  private class EventBatchIterator(fromSequenceNr: Long, toSequenceNr: Long) extends Iterator[DurableEventBatch] {
-    var currentSnr = fromSequenceNr
+    var currentSequenceNr = math.max(fromSequenceNr, 1L)
+    var currentPartition = partitionOf(currentSequenceNr, partitionSizeMax)
+
     var currentIter = newIter()
-    var rowCount = 0
+    var read = true
 
     def newIter(): Iterator[Row] =
-      if (currentSnr > toSequenceNr) Iterator.empty else cassandra.session.execute(statement.bind(0L: JLong, currentSnr: JLong)).iterator.asScala
+      if (currentSequenceNr > toSequenceNr) Iterator.empty else cassandra.session.execute(statement.bind(currentPartition: JLong, currentSequenceNr: JLong)).iterator.asScala
 
     @annotation.tailrec
     final def hasNext: Boolean = {
       if (currentIter.hasNext) {
         true
-      } else if (rowCount < cassandra.config.maxResultSetSize) {
-        // all batches consumed
-        false
-      } else {
-        // max result set size reached, fetch again
-        currentSnr += 1L
+      } else if (read) {
+        // some events read from current partition, try next partition
+        currentPartition += 1
+        currentSequenceNr = firstSequenceNr(currentPartition, partitionSizeMax)
         currentIter = newIter()
-        rowCount = 0
+        read = false
         hasNext
+      } else /* rowCount == 0 */ {
+        // no events read from current partition, we're done
+        false
       }
     }
 
-    def next(): DurableEventBatch = {
+    def next(): DurableEvent = {
       val row = currentIter.next()
-      currentSnr = row.getLong("sequence_nr")
-      rowCount += 1
-      cassandra.eventBatchFromByteBuffer(row.getBytes("eventBatch"))
+      currentSequenceNr = row.getLong("sequence_nr")
+      read = true
+      cassandra.eventFromByteBuffer(row.getBytes("event"))
     }
   }
 }

@@ -22,7 +22,7 @@ import akka.actor._
 import akka.pattern.pipe
 
 import com.datastax.driver.core.{Row, PreparedStatement}
-import com.rbmhtechnology.eventuate.{DurableEvent, DurableEventBatch}
+import com.rbmhtechnology.eventuate.DurableEvent
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 
@@ -96,9 +96,9 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
     case r @ Replay(fromSequenceNr, requestor, Some(emitterAggregateId), iid) =>
       val isnr = lastIndexedSequenceNr
       val replay = for {
-        rsnr <- indexStore.replayAsync(emitterAggregateId, fromSequenceNr)(event =>requestor ! Replaying(event, iid))
+        rsnr <- indexStore.replayAsync(emitterAggregateId, fromSequenceNr)(event => requestor ! Replaying(event, iid))
         nsnr = math.max(isnr, rsnr) + 1L
-        s    <- eventReader.replayAsync(nsnr)(event => if (event.routingDestinations.contains(emitterAggregateId))requestor ! Replaying(event, iid))
+        s    <- eventReader.replayAsync(nsnr)(event => if (event.routingDestinations.contains(emitterAggregateId)) requestor ! Replaying(event, iid))
       } yield s
 
       replay onComplete {
@@ -106,13 +106,13 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
         case Failure(e) => requestor ! ReplayFailure(e, iid)
       }
     case GetLastSourceLogReadPosition(sourceLogId) =>
-      val inc = IndexIncrement(lastIndexedSequenceNr, bufferedReplicationProgress)
+      val inc = IndexIncrement(bufferedReplicationProgress, AggregateEvents(), sequenceNr = lastIndexedSequenceNr)
       val sdr = sender()
 
       val ftr = for {
         prg <- indexStore.readReplicationProgressAsync
         res <- updateIncrementAsync(inc.update(prg))
-      } yield res.replicationProgress(sourceLogId)
+      } yield res.replicationProgress.readPosition(sourceLogId)
 
       ftr onComplete {
         case Success(snr) => sdr ! GetLastSourceLogReadPositionSuccess(sourceLogId, snr)
@@ -127,14 +127,14 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
     new CassandraIndexStore(cassandra, logId)
 
   private def scheduleReadSequenceNr(): Unit =
-    scheduler.scheduleOnce(cassandra.config.initRetryBackoff, self, ReadSequenceNr)
+    scheduler.scheduleOnce(cassandra.settings.initRetryBackoff, self, ReadSequenceNr)
 
   private def updateIncrementAsync(increment: IndexIncrement): Future[IndexIncrement] =
     Future(updateIncrement(increment))(cassandra.readDispatcher)
   
   private def updateIncrement(increment: IndexIncrement): IndexIncrement = {
-    eventReader.eventBatchIterator(increment.sequenceNr + 1L, Long.MaxValue).foldLeft(increment) {
-      case (inc, batch) => inc.update(batch)
+    eventReader.eventIterator(increment.sequenceNr + 1L, Long.MaxValue).foldLeft(increment) {
+      case (inc, event) => inc.update(event)
     }
   }
 
@@ -157,56 +157,50 @@ private[eventuate] object CassandraIndex {
   case class UpdateIndexSuccess(lastIndexedSequenceNr: Long, numWrites: Int)
   case class UpdateIndexFailure(cause: Throwable)
 
-  case class ReplicationProgress(lastSourceLogSequenceNrs: Map[String, Long] = Map.empty) {
-    def apply(sourceLogId: String): Long =
-      lastSourceLogSequenceNrs.getOrElse(sourceLogId, 0L)
+  case class ReplicationProgress(sourceLogReadPositions: Map[String, Long] = Map.empty) {
+    def nonEmpty(): Boolean =
+      sourceLogReadPositions.nonEmpty
+
+    def readPosition(sourceLogId: String): Long =
+      sourceLogReadPositions.getOrElse(sourceLogId, 0L)
+
+    def update(event: DurableEvent): ReplicationProgress =
+      if (!event.replicated) this else update(event.sourceLogId, event.sourceLogReadPosition)
 
     def update(progress: ReplicationProgress): ReplicationProgress =
-      progress.lastSourceLogSequenceNrs.foldLeft(this) {
-        case (progress, (sourceLogId, lastSourceSequenceNrRead)) => progress.update(sourceLogId, lastSourceSequenceNrRead)
+      progress.sourceLogReadPositions.foldLeft(this) {
+        case (progress, (sourceLogId, position)) => progress.update(sourceLogId, position)
       }
 
-    def update(sourceLogId: String, lastSourceLogSequenceNrRead: Long): ReplicationProgress =
-      lastSourceLogSequenceNrs.get(sourceLogId) match {
-        case Some(lastSourceLogSequenceNrStored) if lastSourceLogSequenceNrRead < lastSourceLogSequenceNrStored => this
-        case _ => copy(lastSourceLogSequenceNrs + (sourceLogId -> lastSourceLogSequenceNrRead))
+    def update(sourceLogId: String, sourceLogReadPosition: Long): ReplicationProgress =
+      sourceLogReadPositions.get(sourceLogId) match {
+        case Some(position) if sourceLogReadPosition <= position => this
+        case _ => copy(sourceLogReadPositions + (sourceLogId -> sourceLogReadPosition))
       }
   }
 
-  case class IndexUpdateProgress(increment: IndexIncrement, pendingEvents: Int = 0, writes: Vector[Future[Long]] = Vector.empty) {
-    def update(batch: DurableEventBatch): IndexUpdateProgress =
-      copy(increment.update(batch), pendingEvents + batch.events.size)
-
-    def writeIncrement(writer: IndexIncrement => Future[Long]): IndexUpdateProgress =
-      copy(IndexIncrement(increment.sequenceNr), 0, writes = writes :+ writer(increment))
-  }
-
-  case class IndexIncrement(sequenceNr: Long, replicationProgress: ReplicationProgress = ReplicationProgress(), aggregateEvents: Map[String, Vector[DurableEvent]] = Map.empty) {
-    def update(progress: ReplicationProgress): IndexIncrement =
-      copy(replicationProgress = replicationProgress.update(progress))
-
-    def update(batch: DurableEventBatch): IndexIncrement = {
-      val events = addAggregateEvents(batch)
-      val hsnr = batch.highestSequenceNr.get
-
-      val updated = for {
-        slid <- batch.sourceLogId
-        rsnr <- batch.lastSourceLogSequenceNrRead
-      } yield copy(hsnr, replicationProgress.update(slid, rsnr), events)
-
-      updated.getOrElse(copy(hsnr, aggregateEvents = events))
-    }
-
-    private def addAggregateEvents(batch: DurableEventBatch): Map[String, Vector[DurableEvent]] =
-      batch.events.foldLeft(aggregateEvents)(addAggregateEvent)
-
-    private def addAggregateEvent(aggregateEvents: Map[String, Vector[DurableEvent]], event: DurableEvent): Map[String, Vector[DurableEvent]] =
-      event.routingDestinations.foldLeft(aggregateEvents) {
+  case class AggregateEvents(events: Map[String, Vector[DurableEvent]] = Map.empty) {
+    def update(event: DurableEvent): AggregateEvents =
+      if (event.routingDestinations.isEmpty) this else copy(event.routingDestinations.foldLeft(events) {
         case (acc, dst) => acc.get(dst) match {
           case Some(events) => acc + (dst -> (events :+ event))
           case None         => acc + (dst -> Vector(event))
         }
-      }
+      })
+  }
+
+  case class IndexIncrement(replicationProgress: ReplicationProgress, aggregateEvents: AggregateEvents, sequenceNr: Long) {
+    def update(events: scala.collection.Seq[DurableEvent]): IndexIncrement =
+      events.foldLeft(this) { case (acc, event) => acc.update(event) }
+
+    def update(event: DurableEvent): IndexIncrement =
+      copy(replicationProgress.update(event), aggregateEvents.update(event), event.sequenceNr)
+
+    def update(progress: ReplicationProgress): IndexIncrement =
+      copy(replicationProgress.update(progress), aggregateEvents, sequenceNr)
+
+    def clearAggregateEvents: IndexIncrement =
+      copy(replicationProgress, AggregateEvents(), sequenceNr)
   }
 
   def props(cassandra: Cassandra, eventReader: CassandraEventReader, logId: String): Props =
@@ -238,28 +232,22 @@ private[eventuate] class CassandraIndexUpdater(cassandra: Cassandra, eventReader
 
   def receive = idle
 
-  private def runIndexUpdate(lastIndexedSequenceNr: Long, bufferedReplicationProgress: ReplicationProgress): Unit = {
-    val increment = IndexIncrement(lastIndexedSequenceNr, bufferedReplicationProgress)
+  def writeIncrement(increment: IndexIncrement): Future[Long] =
+    indexStore.writeAsync(increment.replicationProgress, increment.aggregateEvents, increment.sequenceNr)
+
+  def runIndexUpdate(lastIndexedSequenceNr: Long, bufferedReplicationProgress: ReplicationProgress): Unit = {
+    val initialIncrement = IndexIncrement(bufferedReplicationProgress, AggregateEvents(), lastIndexedSequenceNr)
+    val initialWrites = if (bufferedReplicationProgress.nonEmpty()) List(writeIncrement(initialIncrement)) else Nil
+
     val update: Future[(Long, Int)] = Future {
-      val initialProgress = eventReader.eventBatchIterator(increment.sequenceNr + 1L, Long.MaxValue).foldLeft(IndexUpdateProgress(increment)) {
-        case (progress, batch) =>
-          val updatedProgress = progress.update(batch)
-          if (updatedProgress.pendingEvents >= cassandra.config.indexUpdateLimit) {
-            // Enough data read from log. Write accumulated increment
-            // so that we don't consume too much memory and continue
-            // with an empty increment.
-            updatedProgress.writeIncrement(indexStore.writeIndexIncrementAsync)
-          } else updatedProgress
+      val (increment, writes) = eventReader.eventIterator(lastIndexedSequenceNr + 1L, Long.MaxValue).grouped(cassandra.settings.indexUpdateLimit).foldLeft((initialIncrement, initialWrites)) {
+        case ((increment, writes), events) =>
+          val update = increment.update(events)
+          (update.clearAggregateEvents, writeIncrement(update) :: writes)
       }
 
-      val finalProgress = if (initialProgress.pendingEvents > 0) {
-        // Some log entries have been processed since last write
-        // which must be finally written to the index.
-        initialProgress.writeIncrement(indexStore.writeIndexIncrementAsync)
-      } else initialProgress
-
-      Future.sequence(finalProgress.writes).map {
-        case Seq() => (finalProgress.increment.sequenceNr, 0)
+      Future.sequence(writes).map {
+        case Seq() => (increment.sequenceNr, 0)
         case snrs  => (snrs.max, snrs.size)
       }
     }.flatMap(identity)(cassandra.readDispatcher)
@@ -275,24 +263,18 @@ private[eventuate] class CassandraIndexUpdater(cassandra: Cassandra, eventReader
 private[eventuate] class CassandraIndexStore(cassandra: Cassandra, logId: String) {
   import CassandraIndex._
 
-  private val aggregateEventWriteStatement: PreparedStatement = cassandra.prepareWriteAggregateEventBatch(logId)
-  private val aggregateEventReadStatement: PreparedStatement = cassandra.prepareReadAggregateEventBatches(logId)
+  private val aggregateEventWriteStatement: PreparedStatement = cassandra.prepareWriteAggregateEvent(logId)
+  private val aggregateEventReadStatement: PreparedStatement = cassandra.prepareReadAggregateEvents(logId)
 
   def replayAsync(aggregateId: String, fromSequenceNr: Long)(f: DurableEvent => Unit): Future[Long] = {
     import cassandra.readDispatcher
     Future(replay(aggregateId, fromSequenceNr)(f))
   }
 
-  def replay(aggregateId: String, fromSequenceNr: Long)(f: DurableEvent => Unit): Long = {
-    var highWatermark = fromSequenceNr - 1L
-    aggregateEventIterator(aggregateId, fromSequenceNr, Long.MaxValue).foreach { event =>
-      if (event.sequenceNr > highWatermark) {
-        highWatermark = event.sequenceNr
-        f(event)
-      } else { /* this is a duplicate */ }
+  def replay(aggregateId: String, fromSequenceNr: Long)(f: DurableEvent => Unit): Long =
+    aggregateEventIterator(aggregateId, fromSequenceNr, Long.MaxValue).foldLeft(fromSequenceNr - 1L) {
+      case (_, event) => f(event); event.sequenceNr
     }
-    highWatermark
-  }
 
   def readReplicationProgressAsync: Future[ReplicationProgress] = {
     import cassandra.readDispatcher
@@ -310,27 +292,28 @@ private[eventuate] class CassandraIndexStore(cassandra: Cassandra, logId: String
     }
   }
 
-  def writeIndexIncrementAsync(increment: IndexIncrement)(implicit executor: ExecutionContext): Future[Long] = {
-    val f1 = writeAggregateEventsAsync(increment.aggregateEvents)
-    val f2 = writeReplicationProgressAsync(increment.replicationProgress)
+  def writeAsync(replicationProgress: ReplicationProgress, aggregateEvents: AggregateEvents, sequenceNr: Long)(implicit executor: ExecutionContext): Future[Long] = {
+    val f1 = writeAggregateEventsAsync(aggregateEvents)
+    val f2 = writeReplicationProgressAsync(replicationProgress)
 
     for {
       _   <- f1
       _   <- f2
-      snr <- writeSequenceNrAsync(increment.sequenceNr)
+      snr <- writeSequenceNrAsync(sequenceNr)
     } yield snr
   }
 
-  private def writeAggregateEventsAsync(aggregateEvents: Map[String, Vector[DurableEvent]])(implicit executor: ExecutionContext): Future[Unit] =
-    Future.sequence(aggregateEvents.map {
-      case (aggregateId, events) => writeAggregateEventsAsync(aggregateId, DurableEventBatch(events))
+  private def writeAggregateEventsAsync(aggregateEvents: AggregateEvents)(implicit executor: ExecutionContext): Future[Unit] =
+    Future.sequence(aggregateEvents.events.map {
+      case (aggregateId, events) => writeAggregateEventsAsync(aggregateId, events)
     }).map(_ => ())
 
-  private def writeAggregateEventsAsync(aggregateId: String, batch: DurableEventBatch)(implicit executor: ExecutionContext): Future[Unit] =
-    cassandra.session.executeAsync(aggregateEventWriteStatement.bind(aggregateId, batch.highestSequenceNr.get: JLong, cassandra.eventBatchToByteBuffer(batch))).map(_ => ())
+  private def writeAggregateEventsAsync(aggregateId: String, events: Seq[DurableEvent])(implicit executor: ExecutionContext): Future[Unit] = cassandra.executeBatchAsync { batch =>
+    events.foreach(event => batch.add(aggregateEventWriteStatement.bind(aggregateId, event.sequenceNr: JLong, cassandra.eventToByteBuffer(event))))
+  }
 
   private def writeReplicationProgressAsync(progress: ReplicationProgress)(implicit executor: ExecutionContext): Future[Unit] =
-    Future.sequence(progress.lastSourceLogSequenceNrs.map {
+    Future.sequence(progress.sourceLogReadPositions.map {
       case (sourceLogId, lastRead) => writeReplicationProgressAsync(sourceLogId, lastRead)
     }).map(_ => ())
 
@@ -340,43 +323,38 @@ private[eventuate] class CassandraIndexStore(cassandra: Cassandra, logId: String
   private def writeSequenceNrAsync(sequenceNr: Long)(implicit executor: ExecutionContext): Future[Long] =
     cassandra.session.executeAsync(cassandra.preparedWriteSequenceNumberStatement.bind(logId, sequenceNr: JLong)).map(_ => sequenceNr)
 
-  private def aggregateEventIterator(aggregateId: String, fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] = for {
-    batch <- aggregateEventBatchIterator(aggregateId, fromSequenceNr, toSequenceNr)
-    event <- batch.events if event.sequenceNr >= fromSequenceNr && event.sequenceNr <= toSequenceNr
-  } yield event
+  private def aggregateEventIterator(aggregateId: String, fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] =
+    new AggregateEventIterator(aggregateId, fromSequenceNr, toSequenceNr)
 
-  private def aggregateEventBatchIterator(aggregateId: String, fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEventBatch] =
-    new AggregateEventBatchIterator(aggregateId, fromSequenceNr, toSequenceNr)
-
-  private class AggregateEventBatchIterator(aggregateId: String, fromSequenceNr: Long, toSequenceNr: Long) extends Iterator[DurableEventBatch] {
-    var currentSnr = fromSequenceNr
+  private class AggregateEventIterator(aggregateId: String, fromSequenceNr: Long, toSequenceNr: Long) extends Iterator[DurableEvent] {
+    var currentSequenceNr = fromSequenceNr
     var currentIter = newIter()
     var rowCount = 0
 
     def newIter(): Iterator[Row] =
-      if (currentSnr > toSequenceNr) Iterator.empty else cassandra.session.execute(aggregateEventReadStatement.bind(aggregateId, currentSnr: JLong)).iterator.asScala
+      if (currentSequenceNr > toSequenceNr) Iterator.empty else cassandra.session.execute(aggregateEventReadStatement.bind(aggregateId, currentSequenceNr: JLong)).iterator.asScala
 
     @annotation.tailrec
     final def hasNext: Boolean = {
       if (currentIter.hasNext) {
         true
-      } else if (rowCount < cassandra.config.maxResultSetSize) {
-        // all batches consumed
+      } else if (rowCount < cassandra.settings.partitionSizeMax) {
+        // all events consumed
         false
       } else {
         // max result set size reached, fetch again
-        currentSnr += 1L
+        currentSequenceNr += 1L
         currentIter = newIter()
         rowCount = 0
         hasNext
       }
     }
 
-    def next(): DurableEventBatch = {
+    def next(): DurableEvent = {
       val row = currentIter.next()
-      currentSnr = row.getLong("sequence_nr")
+      currentSequenceNr = row.getLong("sequence_nr")
       rowCount += 1
-      cassandra.eventBatchFromByteBuffer(row.getBytes("eventBatch"))
+      cassandra.eventFromByteBuffer(row.getBytes("event"))
     }
   }
 }

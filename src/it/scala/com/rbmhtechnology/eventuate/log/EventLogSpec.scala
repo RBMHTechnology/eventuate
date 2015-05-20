@@ -28,7 +28,7 @@ import com.rbmhtechnology.eventuate.DurableEvent._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSupport
-import com.rbmhtechnology.eventuate.log.cassandra.{CassandraServer, CassandraIndex, CassandraEventLogSupport}
+import com.rbmhtechnology.eventuate.log.cassandra.{CassandraIndex, CassandraEventLogSupport}
 
 import com.typesafe.config.{ConfigFactory, Config}
 
@@ -82,30 +82,39 @@ object EventLogSpec {
     VectorTime(processId(replicaIdA) -> timeA, processId(replicaIdB) -> timeB)
 }
 
-abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.config)) with WordSpecLike with Matchers with BeforeAndAfterEach {
+trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfterEach {
+  implicit val system: ActorSystem
+
   import EventLogSpec._
 
-  var requestorProbe: TestProbe = _
-  var replicatorProbe: TestProbe = _
-  var notificationProbe: TestProbe = _
+  var _requestorProbe: TestProbe = _
+  var _replicatorProbe: TestProbe = _
+  var _notificationProbe: TestProbe = _
 
-  var emittedEvents: Vector[DurableEvent] = Vector.empty
-  var replicatedEvents: Vector[DurableEvent] = Vector.empty
+  var _emittedEvents: Vector[DurableEvent] = Vector.empty
+  var _replicatedEvents: Vector[DurableEvent] = Vector.empty
+
+  def requestorProbe: TestProbe = _requestorProbe
+  def replicatorProbe: TestProbe = _replicatorProbe
+  def notificationProbe: TestProbe = _notificationProbe
+
+  def emittedEvents: Vector[DurableEvent] = _emittedEvents
+  def replicatedEvents: Vector[DurableEvent] = _replicatedEvents
 
   def logId: String
   def log: ActorRef
 
   override def beforeEach(): Unit = {
-    requestorProbe = TestProbe()
-    replicatorProbe = TestProbe()
-    notificationProbe = TestProbe()
+    _requestorProbe = TestProbe()
+    _replicatorProbe = TestProbe()
+    _notificationProbe = TestProbe()
 
     system.eventStream.subscribe(notificationProbe.ref, classOf[Updated])
   }
 
   override def afterEach(): Unit = {
-    emittedEvents = Vector.empty
-    replicatedEvents = Vector.empty
+    _emittedEvents = Vector.empty
+    _replicatedEvents = Vector.empty
 
     system.eventStream.unsubscribe(notificationProbe.ref, classOf[Updated])
   }
@@ -132,6 +141,11 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
     if (events.nonEmpty) notificationProbe.expectMsgClass(classOf[Updated])
   }
 
+  def writeReplicationProgress(lastSourceLogSequenceNrRead: Long, expectedLastSourceLogSequenceNrReplicated: Long, remoteLogId: String = remoteLogId): Unit = {
+    log.tell(ReplicationWrite(Seq(), remoteLogId, lastSourceLogSequenceNrRead), replicatorProbe.ref)
+    replicatorProbe.expectMsg(ReplicationWriteSuccess(0, expectedLastSourceLogSequenceNrReplicated))
+  }
+
   def generateEmittedEvents(offset: Long = 0L, emitterAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): Unit = {
     val events: Vector[DurableEvent] = Vector(
       event("a", timestampAB(1 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds),
@@ -139,11 +153,11 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
       event("c", timestampAB(3 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds))
 
     val emitted = Vector(
-      DurableEvent("a", 0L, timestampAB(1 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds, logId, logId, 1 + offset, 1 + offset),
-      DurableEvent("b", 0L, timestampAB(2 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds, logId, logId, 2 + offset, 2 + offset),
-      DurableEvent("c", 0L, timestampAB(3 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds, logId, logId, 3 + offset, 3 + offset))
+      DurableEvent("a", 0L, timestampAB(1 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds, 0L, logId, logId, 1 + offset, 1 + offset),
+      DurableEvent("b", 0L, timestampAB(2 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds, 0L, logId, logId, 2 + offset, 2 + offset),
+      DurableEvent("c", 0L, timestampAB(3 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds, 0L, logId, logId, 3 + offset, 3 + offset))
 
-    emittedEvents ++= emitted
+    _emittedEvents ++= emitted
 
     log ! Write(events, system.deadLetters, requestorProbe.ref, 0)
     requestorProbe.expectMsg(WriteSuccess(emitted(0), 0))
@@ -154,26 +168,25 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
 
   def generateReplicateEvents(offset: Long, remoteLogId: String = remoteLogId, emitterAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): Unit = {
     val events: Vector[DurableEvent] = Vector(
-      DurableEvent("i", 0L, timestampAB(0, 7 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, remoteLogId, remoteLogId, 7 + offset, 7 + offset),
-      DurableEvent("j", 0L, timestampAB(0, 8 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, remoteLogId, remoteLogId, 8 + offset, 8 + offset),
-      DurableEvent("k", 0L, timestampAB(0, 9 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, remoteLogId, remoteLogId, 9 + offset, 9 + offset))
+      DurableEvent("i", 0L, timestampAB(0, 7 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, 0L, remoteLogId, remoteLogId, 7 + offset, 7 + offset),
+      DurableEvent("j", 0L, timestampAB(0, 8 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, 0L, remoteLogId, remoteLogId, 8 + offset, 8 + offset),
+      DurableEvent("k", 0L, timestampAB(0, 9 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, 0L, remoteLogId, remoteLogId, 9 + offset, 9 + offset))
 
     val replicated = Vector(
-      DurableEvent("i", 0L, timestampAB(0, 7 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, remoteLogId, logId, 7 + offset, 1 + offset),
-      DurableEvent("j", 0L, timestampAB(0, 8 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, remoteLogId, logId, 8 + offset, 2 + offset),
-      DurableEvent("k", 0L, timestampAB(0, 9 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, remoteLogId, logId, 9 + offset, 3 + offset))
+      DurableEvent("i", 0L, timestampAB(0, 7 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, 9 + offset, remoteLogId, logId, 7 + offset, 1 + offset),
+      DurableEvent("j", 0L, timestampAB(0, 8 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, 9 + offset, remoteLogId, logId, 8 + offset, 2 + offset),
+      DurableEvent("k", 0L, timestampAB(0, 9 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, 9 + offset, remoteLogId, logId, 9 + offset, 3 + offset))
 
-    replicatedEvents ++= replicated
+    _replicatedEvents ++= replicated
 
     log.tell(ReplicationWrite(events, remoteLogId, 9 + offset), replicatorProbe.ref)
     replicatorProbe.expectMsg(ReplicationWriteSuccess(events.length, 9 + offset))
     notificationProbe.expectMsg(Updated(logId, replicated))
   }
+}
 
-  def replicateNone(lastSourceLogSequenceNrRead: Long, expectedLastSourceLogSequenceNrReplicated: Long, remoteLogId: String = remoteLogId): Unit = {
-    log.tell(ReplicationWrite(Seq(), remoteLogId, lastSourceLogSequenceNrRead), replicatorProbe.ref)
-    replicatorProbe.expectMsg(ReplicationWriteSuccess(0, expectedLastSourceLogSequenceNrReplicated))
-  }
+abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.config)) with EventLogSpecSupport {
+  import EventLogSpec._
 
   "An event log" must {
     "write local events and send them to the requestor" in {
@@ -262,8 +275,8 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
         event("okay", timestampAB(2, 0), replicaIdA))
 
       log ! Write(events, system.deadLetters, requestorProbe.ref, 0)
-      requestorProbe.expectMsg(WriteFailure(DurableEvent("boom", 0L, timestampAB(1, 0), replicaIdA, None, Set(), logId, logId, 1, 1), boom, 0))
-      requestorProbe.expectMsg(WriteFailure(DurableEvent("okay", 0L, timestampAB(2, 0), replicaIdA, None, Set(), logId, logId, 2, 2), boom, 0))
+      requestorProbe.expectMsg(WriteFailure(DurableEvent("boom", 0L, timestampAB(1, 0), replicaIdA), boom, 0))
+      requestorProbe.expectMsg(WriteFailure(DurableEvent("okay", 0L, timestampAB(2, 0), replicaIdA), boom, 0))
     }
     "write replicated events" in {
       generateReplicateEvents(offset = 0)
@@ -354,8 +367,8 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
     }
     "reply with a failure message if replication fails" in {
       val events: Vector[DurableEvent] = Vector(
-        DurableEvent("boom", 0L, timestampAB(0, 7), replicaIdB, None, Set(), remoteLogId, remoteLogId, 7, 7),
-        DurableEvent("okay", 0L, timestampAB(0, 8), replicaIdB, None, Set(), remoteLogId, remoteLogId, 8, 8))
+        DurableEvent("boom", 0L, timestampAB(0, 7), replicaIdB, None, Set(), 0L, remoteLogId, remoteLogId, 7, 7),
+        DurableEvent("okay", 0L, timestampAB(0, 8), replicaIdB, None, Set(), 0L, remoteLogId, remoteLogId, 8, 8))
 
       log.tell(ReplicationWrite(events, remoteLogId, 8), replicatorProbe.ref)
       replicatorProbe.expectMsg(ReplicationWriteFailure(boom))
@@ -506,7 +519,7 @@ class EventLogSpecLeveldb extends EventLogSpec with LeveldbEventLogSupport {
       // -------------------------------------------------------------------------------------
       log.tell(GetReplicationProgress, requestorProbe.ref)
       requestorProbe.expectMsg(GetReplicationProgressSuccess(Map()))
-      replicateNone(19, 19)
+      writeReplicationProgress(19, 19)
       log.tell(GetReplicationProgress, requestorProbe.ref)
       requestorProbe.expectMsg(GetReplicationProgressSuccess(Map(EventLogSpec.remoteLogId -> 19L)))
     }
@@ -550,154 +563,154 @@ class EventLogSpecCassandra extends EventLogSpec with CassandraEventLogSupport {
         probe.expectMsgClass(classOf[ReplicationReadSuccess])
       }
     }
+  }
 
-    "A Cassandra event log and its index" must {
-      "run an index update on initialization" in {
-        writeEmittedEvents(event("a"), event("b"))
-        log ! "boom"
-        indexProbe.expectMsg(UpdateIndexSuccess(2L, 1))
-      }
-      "retry an index update on initialization if sequence number read fails" in {
-        val failureLog = createLog(TestFailureSpec(failOnSequenceNrRead = true), indexProbe.ref)
-        indexProbe.expectMsg(ReadSequenceNrFailure(boom))
-        indexProbe.expectMsg(UpdateIndexSuccess(0L, 0))
-      }
-      "retry an index update on initialization if index update fails" in {
-        val failureLog = createLog(TestFailureSpec(failBeforeIndexIncrementWrite = true), indexProbe.ref)
-        indexProbe.expectMsg(UpdateIndexSuccess(0L, 0))
-        writeEmittedEvents(List(event("a"), event("b")), failureLog)
-        failureLog ! "boom"
-        indexProbe.expectMsg(UpdateIndexFailure(boom))
-        indexProbe.expectMsg(UpdateIndexSuccess(2L, 1))
-      }
-      "run an index update after reaching the update limit with a single event batch" in {
-        writeEmittedEvents(event("a"), event("b"), event("c"), event("d"))
-        indexProbe.expectMsg(UpdateIndexSuccess(4L, 1))
-      }
-      "run an index update after reaching the update limit with a several event batches" in {
-        writeEmittedEvents(event("a"), event("b"))
-        writeEmittedEvents(event("c"), event("d"))
-        indexProbe.expectMsg(UpdateIndexSuccess(4L, 1))
-      }
-      "run an index update on initialization and after reaching the update limit" in {
-        writeEmittedEvents(event("a"), event("b"))
-        log ! "boom"
-        indexProbe.expectMsg(UpdateIndexSuccess(2L, 1))
-        writeEmittedEvents(event("d"), event("e"), event("f"))
-        indexProbe.expectMsg(UpdateIndexSuccess(5L, 1))
-      }
-      "return the initial value for a replication progress" in {
-        log.tell(GetLastSourceLogReadPosition(remoteLogId), probe.ref)
-        probe.expectMsg(GetLastSourceLogReadPositionSuccess(remoteLogId, 0L))
-      }
-      "return the logged value for a replication progress" in {
-        writeReplicatedEvents(List(event("a"), event("b")), 4L)
-        log.tell(GetLastSourceLogReadPosition(remoteLogId), probe.ref)
-        probe.expectMsg(GetLastSourceLogReadPositionSuccess(remoteLogId, 4L))
-      }
-      "return the index value for a replication progress" in {
-        writeReplicatedEvents(List(event("a"), event("b"), event("c")), 4L)
-        indexProbe.expectMsg(UpdateIndexSuccess(3L, 1))
-        log.tell(GetLastSourceLogReadPosition(remoteLogId), probe.ref)
-        probe.expectMsg(GetLastSourceLogReadPositionSuccess(remoteLogId, 4L))
-      }
-      "return the index value updated with the logged value for a replication progress" in {
-        writeReplicatedEvents(List(event("a"), event("b"), event("c")), 4L)
-        indexProbe.expectMsg(UpdateIndexSuccess(3L, 1))
-        writeReplicatedEvents(List(event("d"), event("e")), 8L)
-        log.tell(GetLastSourceLogReadPosition(remoteLogId), probe.ref)
-        probe.expectMsg(GetLastSourceLogReadPositionSuccess(remoteLogId, 8L))
-      }
-      "buffer empty replication progress writes" in {
-        writeReplicatedEvents(Nil, 4L, "extra")
-        log.tell(GetLastSourceLogReadPosition("extra"), probe.ref)
-        probe.expectMsg(GetLastSourceLogReadPositionSuccess("extra", 4L))
-        log ! "boom"
-        log.tell(GetLastSourceLogReadPosition("extra"), probe.ref)
-        probe.expectMsg(GetLastSourceLogReadPositionSuccess("extra", 0L))
-      }
-      "persist empty replication progress writes" in {
-        writeReplicatedEvents(Nil, 4L, "extra")
-        writeReplicatedEvents(List(event("a"), event("b"), event("c")), 7L)
-        indexProbe.expectMsg(UpdateIndexSuccess(3L, 1))
-        log.tell(GetLastSourceLogReadPosition("extra"), probe.ref)
-        probe.expectMsg(GetLastSourceLogReadPositionSuccess("extra", 4L))
-        log ! "boom"
-        log.tell(GetLastSourceLogReadPosition("extra"), probe.ref)
-        probe.expectMsg(GetLastSourceLogReadPositionSuccess("extra", 4L))
-      }
-      "add events with emitter aggregate id to index" in {
-        writeEmittedEvents(
-          event("a", None),
-          event("b", Some("a1")),
-          event("c", None),
-          event("d", Some("a1")),
-          event("e", None),
-          event("f", Some("a1")))
+  "A Cassandra event log and its index" must {
+    "run an index update on initialization" in {
+      writeEmittedEvents(event("a"), event("b"))
+      log ! "boom"
+      indexProbe.expectMsg(UpdateIndexSuccess(2L, 1))
+    }
+    "retry an index update on initialization if sequence number read fails" in {
+      val failureLog = createLog(TestFailureSpec(failOnSequenceNrRead = true), indexProbe.ref)
+      indexProbe.expectMsg(ReadSequenceNrFailure(boom))
+      indexProbe.expectMsg(UpdateIndexSuccess(0L, 0))
+    }
+    "retry an index update on initialization if index update fails" in {
+      val failureLog = createLog(TestFailureSpec(failBeforeIndexIncrementWrite = true), indexProbe.ref)
+      indexProbe.expectMsg(UpdateIndexSuccess(0L, 0))
+      writeEmittedEvents(List(event("a"), event("b")), failureLog)
+      failureLog ! "boom"
+      indexProbe.expectMsg(UpdateIndexFailure(boom))
+      indexProbe.expectMsg(UpdateIndexSuccess(2L, 1))
+    }
+    "run an index update after reaching the update limit with a single event batch" in {
+      writeEmittedEvents(event("a"), event("b"), event("c"), event("d"))
+      indexProbe.expectMsg(UpdateIndexSuccess(4L, 2))
+    }
+    "run an index update after reaching the update limit with a several event batches" in {
+      writeEmittedEvents(event("a"), event("b"))
+      writeEmittedEvents(event("c"), event("d"))
+      indexProbe.expectMsg(UpdateIndexSuccess(4L, 2))
+    }
+    "run an index update on initialization and after reaching the update limit" in {
+      writeEmittedEvents(event("a"), event("b"))
+      log ! "boom"
+      indexProbe.expectMsg(UpdateIndexSuccess(2L, 1))
+      writeEmittedEvents(event("d"), event("e"), event("f"))
+      indexProbe.expectMsg(UpdateIndexSuccess(5L, 1))
+    }
+    "return the initial value for a replication progress" in {
+      log.tell(GetLastSourceLogReadPosition(remoteLogId), probe.ref)
+      probe.expectMsg(GetLastSourceLogReadPositionSuccess(remoteLogId, 0L))
+    }
+    "return the logged value for a replication progress" in {
+      writeReplicatedEvents(List(event("a"), event("b")), 4L)
+      log.tell(GetLastSourceLogReadPosition(remoteLogId), probe.ref)
+      probe.expectMsg(GetLastSourceLogReadPositionSuccess(remoteLogId, 4L))
+    }
+    "return the index value for a replication progress" in {
+      writeReplicatedEvents(List(event("a"), event("b"), event("c")), 4L)
+      indexProbe.expectMsg(UpdateIndexSuccess(3L, 1))
+      log.tell(GetLastSourceLogReadPosition(remoteLogId), probe.ref)
+      probe.expectMsg(GetLastSourceLogReadPositionSuccess(remoteLogId, 4L))
+    }
+    "return the index value updated with the logged value for a replication progress" in {
+      writeReplicatedEvents(List(event("a"), event("b"), event("c")), 4L)
+      indexProbe.expectMsg(UpdateIndexSuccess(3L, 1))
+      writeReplicatedEvents(List(event("d"), event("e")), 8L)
+      log.tell(GetLastSourceLogReadPosition(remoteLogId), probe.ref)
+      probe.expectMsg(GetLastSourceLogReadPositionSuccess(remoteLogId, 8L))
+    }
+    "buffer empty replication progress writes" in {
+      writeReplicatedEvents(Nil, 4L, "extra")
+      log.tell(GetLastSourceLogReadPosition("extra"), probe.ref)
+      probe.expectMsg(GetLastSourceLogReadPositionSuccess("extra", 4L))
+      log ! "boom"
+      log.tell(GetLastSourceLogReadPosition("extra"), probe.ref)
+      probe.expectMsg(GetLastSourceLogReadPositionSuccess("extra", 0L))
+    }
+    "persist empty replication progress writes" in {
+      writeReplicatedEvents(Nil, 4L, "extra")
+      writeReplicatedEvents(List(event("a"), event("b"), event("c")), 7L)
+      indexProbe.expectMsg(UpdateIndexSuccess(3L, 2))
+      log.tell(GetLastSourceLogReadPosition("extra"), probe.ref)
+      probe.expectMsg(GetLastSourceLogReadPositionSuccess("extra", 4L))
+      log ! "boom"
+      log.tell(GetLastSourceLogReadPosition("extra"), probe.ref)
+      probe.expectMsg(GetLastSourceLogReadPositionSuccess("extra", 4L))
+    }
+    "add events with emitter aggregate id to index" in {
+      writeEmittedEvents(
+        event("a", None),
+        event("b", Some("a1")),
+        event("c", None),
+        event("d", Some("a1")),
+        event("e", None),
+        event("f", Some("a1")))
 
-        expectReplay(None, "a", "b", "c", "d", "e", "f")
-        expectReplay(Some("a1"), "b", "d", "f")
-      }
-      "add events with custom routing destinations to index" in {
-        writeEmittedEvents(
-          event("a", None),
-          event("b", None, Set("a1")),
-          event("c", None),
-          event("d", None, Set("a1")),
-          event("e", None),
-          event("f", None, Set("a1", "a2")))
+      expectReplay(None, "a", "b", "c", "d", "e", "f")
+      expectReplay(Some("a1"), "b", "d", "f")
+    }
+    "add events with custom routing destinations to index" in {
+      writeEmittedEvents(
+        event("a", None),
+        event("b", None, Set("a1")),
+        event("c", None),
+        event("d", None, Set("a1")),
+        event("e", None),
+        event("f", None, Set("a1", "a2")))
 
-        expectReplay(None, "a", "b", "c", "d", "e", "f")
-        expectReplay(Some("a1"), "b", "d", "f")
-        expectReplay(Some("a2"), "f")
-      }
-      "add events with emitter aggregate id and custom routing destinations to index" in {
-        writeEmittedEvents(
-          event("a", None),
-          event("b", Some("a1"), Set("a2")),
-          event("c", None),
-          event("d", Some("a1"), Set("a2")),
-          event("e", None),
-          event("f", Some("a1"), Set("a3")))
+      expectReplay(None, "a", "b", "c", "d", "e", "f")
+      expectReplay(Some("a1"), "b", "d", "f")
+      expectReplay(Some("a2"), "f")
+    }
+    "add events with emitter aggregate id and custom routing destinations to index" in {
+      writeEmittedEvents(
+        event("a", None),
+        event("b", Some("a1"), Set("a2")),
+        event("c", None),
+        event("d", Some("a1"), Set("a2")),
+        event("e", None),
+        event("f", Some("a1"), Set("a3")))
 
-        expectReplay(None, "a", "b", "c", "d", "e", "f")
-        expectReplay(Some("a1"), "b", "d", "f")
-        expectReplay(Some("a2"), "b", "d")
-        expectReplay(Some("a3"), "f")
-      }
-      "replay aggregate events from log" in {
-        writeEmittedEvents(
-          event("a", Some("a1")),
-          event("b", Some("a1")))
+      expectReplay(None, "a", "b", "c", "d", "e", "f")
+      expectReplay(Some("a1"), "b", "d", "f")
+      expectReplay(Some("a2"), "b", "d")
+      expectReplay(Some("a3"), "f")
+    }
+    "replay aggregate events from log" in {
+      writeEmittedEvents(
+        event("a", Some("a1")),
+        event("b", Some("a1")))
 
-        expectReplay(Some("a1"), "a", "b")
-      }
-      "replay aggregate events from index and log" in {
-        writeEmittedEvents(
-          event("a", Some("a1")),
-          event("b", Some("a1")),
-          event("c", Some("a1")))
+      expectReplay(Some("a1"), "a", "b")
+    }
+    "replay aggregate events from index and log" in {
+      writeEmittedEvents(
+        event("a", Some("a1")),
+        event("b", Some("a1")),
+        event("c", Some("a1")))
 
-        indexProbe.expectMsg(UpdateIndexSuccess(3L, 1))
+      indexProbe.expectMsg(UpdateIndexSuccess(3L, 1))
 
-        writeEmittedEvents(
-          event("d", Some("a1")))
+      writeEmittedEvents(
+        event("d", Some("a1")))
 
-        expectReplay(Some("a1"), "a", "b", "c", "d")
-      }
-      "replay aggregate events from index and log with a lower sequence number bound" in {
-        writeEmittedEvents(
-          event("a", Some("a1")),
-          event("b", Some("a1")),
-          event("c", Some("a1")))
+      expectReplay(Some("a1"), "a", "b", "c", "d")
+    }
+    "replay aggregate events from index and log with a lower sequence number bound" in {
+      writeEmittedEvents(
+        event("a", Some("a1")),
+        event("b", Some("a1")),
+        event("c", Some("a1")))
 
-        indexProbe.expectMsg(UpdateIndexSuccess(3L, 1))
+      indexProbe.expectMsg(UpdateIndexSuccess(3L, 1))
 
-        writeEmittedEvents(
-          event("d", Some("a1")))
+      writeEmittedEvents(
+        event("d", Some("a1")))
 
-        expectReplay(3L, Some("a1"), "c", "d")
-      }
+      expectReplay(3L, Some("a1"), "c", "d")
     }
   }
 }
