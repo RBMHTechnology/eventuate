@@ -43,7 +43,7 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">DurableEvent</span><span class="params">(<span name="payload">payload: <span class="extype" name="scala.Any">Any</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="emitterReplicaId">emitterReplicaId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="emitterAggregateId">emitterAggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="customRoutingDestinations">customRoutingDestinations: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="sourceLogSequenceNr">sourceLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>, <span name="targetLogSequenceNr">targetLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">DurableEvent</span><span class="params">(<span name="payload">payload: <span class="extype" name="scala.Any">Any</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="emitterReplicaId">emitterReplicaId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="emitterAggregateId">emitterAggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="customRoutingDestinations">customRoutingDestinations: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>, <span name="sourceLogReadPosition">sourceLogReadPosition: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="sourceLogSequenceNr">sourceLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>, <span name="targetLogSequenceNr">targetLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
@@ -52,7 +52,7 @@
                           of this event. If defined, the event is routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actors and views with a
                           matching <code>aggregateId</code>. In any case, the event is routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actors and
                           views with an undefined <code>aggregateId</code>.</p></dd><dt class="param">customRoutingDestinations</dt><dd class="cmt"><p>Aggregate ids of additional, custom routing destinations. If non-empty, the event is
-                                 additionally routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actors and views with a matching <code>aggregateId</code>.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Source log id from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></dd><dt class="param">targetLogId</dt><dd class="cmt"><p>Target log id from last replication.</p></dd><dt class="param">sourceLogSequenceNr</dt><dd class="cmt"><p>Source log sequence number from last replication.</p></dd><dt class="param">targetLogSequenceNr</dt><dd class="cmt"><p>Target log sequence number from last replication.
+                                 additionally routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actors and views with a matching <code>aggregateId</code>.</p></dd><dt class="param">sourceLogReadPosition</dt><dd class="cmt"><p>Highest source log read position from last replication.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Source log id from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></dd><dt class="param">targetLogId</dt><dd class="cmt"><p>Target log id from last replication.</p></dd><dt class="param">sourceLogSequenceNr</dt><dd class="cmt"><p>Source log sequence number from last replication.</p></dd><dt class="param">targetLogSequenceNr</dt><dd class="cmt"><p>Target log sequence number.
 </p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -94,7 +94,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.DurableEvent#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(payload:Any,systemTimestamp:Long,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime,emitterReplicaId:String,emitterAggregateId:Option[String],customRoutingDestinations:Set[String],sourceLogId:String,targetLogId:String,sourceLogSequenceNr:Long,targetLogSequenceNr:Long):com.rbmhtechnology.eventuate.DurableEvent"></a>
+      <a id="&lt;init&gt;(payload:Any,systemTimestamp:Long,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime,emitterReplicaId:String,emitterAggregateId:Option[String],customRoutingDestinations:Set[String],sourceLogReadPosition:Long,sourceLogId:String,targetLogId:String,sourceLogSequenceNr:Long,targetLogSequenceNr:Long):com.rbmhtechnology.eventuate.DurableEvent"></a>
       <a id="&lt;init&gt;:DurableEvent"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -102,10 +102,10 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">DurableEvent</span><span class="params">(<span name="payload">payload: <span class="extype" name="scala.Any">Any</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="emitterReplicaId">emitterReplicaId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="emitterAggregateId">emitterAggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="customRoutingDestinations">customRoutingDestinations: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="sourceLogSequenceNr">sourceLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>, <span name="targetLogSequenceNr">targetLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>)</span>
+        <span class="name">DurableEvent</span><span class="params">(<span name="payload">payload: <span class="extype" name="scala.Any">Any</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="emitterReplicaId">emitterReplicaId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="emitterAggregateId">emitterAggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="customRoutingDestinations">customRoutingDestinations: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>, <span name="sourceLogReadPosition">sourceLogReadPosition: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="sourceLogSequenceNr">sourceLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>, <span name="targetLogSequenceNr">targetLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@&lt;init&gt;(payload:Any,systemTimestamp:Long,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime,emitterReplicaId:String,emitterAggregateId:Option[String],customRoutingDestinations:Set[String],sourceLogId:String,targetLogId:String,sourceLogSequenceNr:Long,targetLogSequenceNr:Long):com.rbmhtechnology.eventuate.DurableEvent" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@&lt;init&gt;(payload:Any,systemTimestamp:Long,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime,emitterReplicaId:String,emitterAggregateId:Option[String],customRoutingDestinations:Set[String],sourceLogReadPosition:Long,sourceLogId:String,targetLogId:String,sourceLogSequenceNr:Long,targetLogSequenceNr:Long):com.rbmhtechnology.eventuate.DurableEvent" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -113,7 +113,7 @@
                           of this event. If defined, the event is routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actors and views with a
                           matching <code>aggregateId</code>. In any case, the event is routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actors and
                           views with an undefined <code>aggregateId</code>.</p></dd><dt class="param">customRoutingDestinations</dt><dd class="cmt"><p>Aggregate ids of additional, custom routing destinations. If non-empty, the event is
-                                 additionally routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actors and views with a matching <code>aggregateId</code>.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Source log id from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></dd><dt class="param">targetLogId</dt><dd class="cmt"><p>Target log id from last replication.</p></dd><dt class="param">sourceLogSequenceNr</dt><dd class="cmt"><p>Source log sequence number from last replication.</p></dd><dt class="param">targetLogSequenceNr</dt><dd class="cmt"><p>Target log sequence number from last replication.
+                                 additionally routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.eventuate.Eventsourced">Eventsourced</a> actors and views with a matching <code>aggregateId</code>.</p></dd><dt class="param">sourceLogReadPosition</dt><dd class="cmt"><p>Highest source log read position from last replication.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Source log id from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></dd><dt class="param">targetLogId</dt><dd class="cmt"><p>Target log id from last replication.</p></dd><dt class="param">sourceLogSequenceNr</dt><dd class="cmt"><p>Source log sequence number from last replication.</p></dd><dt class="param">targetLogSequenceNr</dt><dd class="cmt"><p>Target log sequence number.
 </p></dd></dl></div>
     </li></ol>
             </div>
@@ -468,6 +468,23 @@ routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.ev
       </a>
     </span>
       <p class="shortcomment cmt">Custom, application-defined event.</p>
+    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#replicated" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="replicated:Boolean"></a>
+      <a id="replicated:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">replicated</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@replicated:Boolean" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"><code>true</code> if this is a replicated event.</p>
     </li><li name="com.rbmhtechnology.eventuate.DurableEvent#routingDestinations" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="routingDestinations:Set[String]"></a>
       <a id="routingDestinations:Set[String]"></a>
@@ -519,6 +536,23 @@ routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.ev
       </a>
     </span>
       <p class="shortcomment cmt">Source log id from last replication.</p><div class="fullcomment"><div class="comment cmt"><p>Source log id from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#sourceLogReadPosition" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="sourceLogReadPosition:Long"></a>
+      <a id="sourceLogReadPosition:Long"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">sourceLogReadPosition</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@sourceLogReadPosition:Long" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Highest source log read position from last replication.</p>
     </li><li name="com.rbmhtechnology.eventuate.DurableEvent#sourceLogSequenceNr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="sourceLogSequenceNr:Long"></a>
       <a id="sourceLogSequenceNr:Long"></a>
@@ -603,7 +637,7 @@ routed to <a href="Eventsourced.html" class="extype" name="com.rbmhtechnology.ev
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Target log sequence number from last replication.</p>
+      <p class="shortcomment cmt">Target log sequence number.</p>
     </li><li name="com.rbmhtechnology.eventuate.DurableEvent#vectorTimestamp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime"></a>
       <a id="vectorTimestamp:VectorTime"></a>

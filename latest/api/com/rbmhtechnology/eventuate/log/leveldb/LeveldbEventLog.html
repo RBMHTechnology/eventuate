@@ -591,23 +591,6 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#leveldbConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="leveldbConfig:com.typesafe.config.Config"></a>
-      <a id="leveldbConfig:Config"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">leveldbConfig</span><span class="result">: <span class="extype" name="com.typesafe.config.Config">Config</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@leveldbConfig:com.typesafe.config.Config" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#leveldbDir" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="leveldbDir:java.io.File"></a>
       <a id="leveldbDir:File"></a>
@@ -621,23 +604,6 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </span>
       </h4><span class="permalink">
       <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@leveldbDir:java.io.File" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#leveldbFsync" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="leveldbFsync:Boolean"></a>
-      <a id="leveldbFsync:Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">leveldbFsync</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@leveldbFsync:Boolean" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
@@ -676,19 +642,19 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#leveldbRootDir" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="leveldbRootDir:String"></a>
-      <a id="leveldbRootDir:String"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#leveldbSettings" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="leveldbSettings:com.rbmhtechnology.eventuate.log.leveldb.LeveldbSettings"></a>
+      <a id="leveldbSettings:LeveldbSettings"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">leveldbRootDir</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+        <span class="name">leveldbSettings</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbSettings">LeveldbSettings</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@leveldbRootDir:String" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@leveldbSettings:com.rbmhtechnology.eventuate.log.leveldb.LeveldbSettings" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
@@ -842,18 +808,18 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#prepareReplicate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="prepareReplicate(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]):scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]"></a>
-      <a id="prepareReplicate(Seq[DurableEvent]):Seq[DurableEvent]"></a>
+      <a id="prepareReplicate(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],lastSourceLogSequenceNrRead:Long):scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]"></a>
+      <a id="prepareReplicate(Seq[DurableEvent],Long):Seq[DurableEvent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">prepareReplicate</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>)</span><span class="result">: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>
+        <span class="name">prepareReplicate</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="lastSourceLogSequenceNrRead">lastSourceLogSequenceNrRead: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@prepareReplicate(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]):scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@prepareReplicate(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],lastSourceLogSequenceNrRead:Long):scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>

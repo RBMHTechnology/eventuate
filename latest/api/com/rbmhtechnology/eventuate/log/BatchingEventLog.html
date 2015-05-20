@@ -48,9 +48,10 @@
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>An event log wrapper that batches <a href="../EventsourcingProtocol$$Write.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">EventsourcingProtocol.Write</a> commands. Batched write commands are
-sent as <a href="../EventsourcingProtocol$$WriteN.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteN">EventsourcingProtocol.WriteN</a> batch to the wrapped event log.</p><p>Batch sizes dynamically increase up to a configurable maximum under increasing load. The maximum batch
-size can be configured with <code>log.write-batch-size-max</code>. If there is no current write operation in progress,
-a new <code>Write</code> command is served immediately (as <code>WriteN</code> batch of size 1), keeping latency at a minimum.
+sent as <a href="../EventsourcingProtocol$$WriteN.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteN">EventsourcingProtocol.WriteN</a> batch to the wrapped event log.</p><p>Batch sizes dynamically increase to a configurable limit under increasing load. The batch size limit can
+be configured with <code>eventuate.log.write-batch-size-limit</code>. If there is no current write operation in
+progress, a new <code>Write</code> command is served immediately (as <code>WriteN</code> batch of size 1), keeping latency at
+a minimum.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -305,23 +306,6 @@ a new <code>Write</code> command is served immediately (as <code>WriteN</code> b
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchingEventLog@batch:Vector[com.rbmhtechnology.eventuate.EventsourcingProtocol.Write]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.log.BatchingEventLog#batchSizeLimit" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="batchSizeLimit:Int"></a>
-      <a id="batchSizeLimit:Int"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">batchSizeLimit</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchingEventLog@batchSizeLimit:Int" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -702,6 +686,23 @@ a new <code>Write</code> command is served immediately (as <code>WriteN</code> b
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.BatchingEventLog#settings" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="settings:com.rbmhtechnology.eventuate.log.BatchingSettings"></a>
+      <a id="settings:BatchingSettings"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">settings</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.log.BatchingSettings">BatchingSettings</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchingEventLog@settings:com.rbmhtechnology.eventuate.log.BatchingSettings" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="akka.actor.Actor#supervisorStrategy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="supervisorStrategy:akka.actor.SupervisorStrategy"></a>
       <a id="supervisorStrategy:SupervisorStrategy"></a>
