@@ -66,7 +66,7 @@ class OrderExample(manager: ActorRef, view: ActorRef) extends Actor {
 
   def prompt(): Unit = {
     if (lines.hasNext) lines.next() match {
-      case "exit" => context.system.shutdown()
+      case "exit" => context.system.terminate()
       case line   => self ! line
     }
   }

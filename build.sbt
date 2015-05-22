@@ -6,7 +6,7 @@ version := "0.2-SNAPSHOT"
 
 scalaVersion := "2.11.4"
 
-val akkaVersion = "2.3.9"
+val akkaVersion = "2.4-M1"
 
 scalacOptions in (Compile, doc) := List("-skip-packages", "akka")
 

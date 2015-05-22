@@ -22,6 +22,7 @@ import akka.testkit.TestProbe
 
 import com.typesafe.config.Config
 
+import scala.concurrent.Await
 import scala.concurrent.duration._
 
 object SerializerSpecSupport {
@@ -52,10 +53,7 @@ class SerializerSpecSupport(config1: Config, config2: Config) {
   val senderActor = system1.actorOf(Props(new SenderActor(system1.actorSelection("akka.tcp://test-system-2@127.0.0.1:2553/user/receiver"))))
 
   def shutdown(): Unit = {
-    system1.shutdown()
-    system2.shutdown()
-
-    system1.awaitTermination(10.seconds)
-    system2.awaitTermination(10.seconds)
+    Await.result(system1.terminate(), 10.seconds)
+    Await.result(system2.terminate(), 10.seconds)
   }
 }

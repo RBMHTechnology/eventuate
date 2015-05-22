@@ -102,7 +102,7 @@ public class OrderExample extends AbstractActor {
         Matcher mResolve = pResolve.matcher(cmd);
 
         if (mExit.matches()) {
-            getContext().system().shutdown();
+            getContext().system().terminate();
         } else if (mState.matches()) {
             manager.tell(GetState.instance, self());
         } else if (mCount.matches()) {

@@ -18,6 +18,8 @@ package com.rbmhtechnology.eventuate
 
 import akka.actor._
 
+import scala.concurrent.Future
+
 class ReplicationNode(nodeId: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection])(implicit factory: String => Props) {
   val system: ActorSystem =
     ActorSystem(ReplicationConnection.DefaultRemoteSystemName, ReplicationConfig.create(port))
@@ -28,12 +30,8 @@ class ReplicationNode(nodeId: String, logNames: Set[String], port: Int, connecti
   def logs: Map[String, ActorRef] =
     endpoint.logs
 
-  def shutdown(): Unit = {
-    system.shutdown()
-  }
-
-  def awaitTermination(): Unit = {
-    system.awaitTermination()
+  def terminate(): Future[Terminated] = {
+    system.terminate()
   }
 
   private def localEndpoint(port: Int) =
