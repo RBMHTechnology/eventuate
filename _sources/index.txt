@@ -33,5 +33,6 @@ Eventuate is a toolkit for building distributed, highly-available and partition-
    developers
    project
    articles
+   faq
    example-application
    current-limitations

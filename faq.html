@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Introduction &mdash; Eventuate</title>
+  <title>FAQ &mdash; Eventuate</title>
   
 
   
@@ -32,8 +32,8 @@
 
   
     <link rel="top" title="Eventuate" href="index.html"/>
-        <link rel="next" title="Architecture" href="architecture.html"/>
-        <link rel="prev" title="Getting started" href="getting-started.html"/> 
+        <link rel="next" title="Example application" href="example-application.html"/>
+        <link rel="prev" title="Articles" href="articles.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -75,7 +75,7 @@
           
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-logs">Event logs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-actors">Event-sourced actors</a></li>
@@ -126,8 +126,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="articles.html">Articles</a></li>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#how-does-eventuate-compare-to-akka-persistence">How does Eventuate compare to Akka Persistence?</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#how-does-eventuate-compare-to-akka-persistence">How does Eventuate compare to Akka Persistence?</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="example-application.html">Example application</a><ul>
@@ -163,7 +163,7 @@
 		<a href="index.html"><h2><span class="breadcrumbicon rbicons topfront"><i class="fa fa-calendar"></i></span>Eventuate</h2></a> &raquo;
 	</li>
     
-    <li>Introduction</li>
+    <li>FAQ</li>
       <li class="wy-breadcrumbs-aside">
         
       </li>
@@ -172,21 +172,17 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="introduction">
-<span id="id1"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>Eventuate is a toolkit for building distributed, highly-available and partition-tolerant event-sourced applications. It is written in <a class="reference external" href="http://www.scala-lang.org/">Scala</a> and built on top of <a class="reference external" href="http://akka.io">Akka</a>, a toolkit for building highly concurrent, distributed, and resilient message-driven applications on the JVM.</p>
-<p><a class="reference external" href="http://martinfowler.com/eaaDev/EventSourcing.html">Event sourcing</a> captures all changes to application state as a sequence of events. These events are persisted in an event log and can be replayed to recover application state. Events are immutable facts that are only ever appended to a log which allows for very high transaction rates and efficient replication.</p>
-<p>Eventuate supports replication of application state through asynchronous event replication across <em>locations</em>. These can be geographically distinct locations, nodes within a data center or even processes on the same node, for example. Locations consume replicated events to re-construct application state locally. Eventuate allows multiple locations to concurrently update replicated application state (multi-master setup) and supports automated and interactive conflict resolution strategies in case of conflicting updates. This is known as operation-based <a class="reference external" href="http://en.wikipedia.org/wiki/Optimistic_replication">optimistic replication</a> where operations are represented by application-defined events.</p>
-<p>Events captured at a location are stored in a local event log and replicated asynchronously to other locations based on a replication protocol that preserves a <a class="reference external" href="http://krasserm.github.io/2015/01/13/event-sourcing-at-global-scale/#event-log">causal ordering</a> of events. Causality is tracked with <a class="reference external" href="http://en.wikipedia.org/wiki/Vector_clock">vector clocks</a>. For any two events, applications can determine if they have a causal relationship or if they are concurrent by comparing their vector timestamps. This is important to achieve <a class="reference external" href="http://en.wikipedia.org/wiki/Causal_consistency">causal consistency</a> which is the strongest possible consistency for “always-on” applications i.e. applications that should remain available for writes during network partitions<a class="footnote-reference" href="#id3" id="id2">[1]</a>.</p>
-<p>Individual locations remain available for local writes during inter-location network partitions. Events that have been captured locally during a network partition are replicated later when the partition heals. Storing events locally and replicating them later can also be useful for distributed applications deployed on temporarily connected devices, for example.</p>
-<p>Storage technologies at individual locations are pluggable (see also <a class="reference internal" href="current-limitations.html#current-limitations"><span>Current limitations</span></a>). A location deployed on a mobile device, for example, will probably choose to write a filtered subset of events to the local filesystem whereas a location deployed in a data center could choose to write events to a <a class="reference external" href="http://cassandra.apache.org/">Cassandra</a> cluster. Event replication across locations is independent of the storage technologies used at individual locations, so that distributed applications with hybrid event stores are possible.</p>
-<p>To model application state, any custom data type can be used. Applications just need to ensure that projecting events from a causally ordered event stream onto these data types yield a consistent result. This may involve detection of conflicts from concurrent events, selecting one of the conflicting versions as the winner or even merging them, for which Eventuate provides utilities. Eventuate also provides <a class="reference external" href="https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/">implementations</a> of operation-based <a class="reference external" href="http://en.wikipedia.org/wiki/Conflict-free_replicated_data_type">CRDT</a>s, specially-designed data structures used to achieve <a class="reference external" href="http://en.wikipedia.org/wiki/Eventual_consistency#Strong_eventual_consistency">strong eventual consistency</a>.</p>
-<table class="docutils footnote" frame="void" id="id3" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>Wyatt Lloyd et al, <a class="reference external" href="https://www.cs.cmu.edu/~dga/papers/cops-sosp2011.pdf">Don’t settle for Eventual</a>: Scalable Causal Consistency for Wide-Area Storage with COPS</td></tr>
-</tbody>
-</table>
+  <div class="section" id="faq">
+<span id="id1"></span><h1>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><a class="reference internal" href="#how-does-eventuate-compare-to-akka-persistence" id="id2">How does Eventuate compare to Akka Persistence?</a></li>
+</ul>
+</div>
+<div class="section" id="how-does-eventuate-compare-to-akka-persistence">
+<h2><a class="toc-backref" href="#id2">How does Eventuate compare to Akka Persistence?</a><a class="headerlink" href="#how-does-eventuate-compare-to-akka-persistence" title="Permalink to this headline">¶</a></h2>
+<p>A detailed comparison of Akka Persistence with Eventuate is given in <a class="reference external" href="https://krasserm.github.io/2015/05/25/akka-persistence-eventuate-comparison/">this article</a>.</p>
+</div>
 </div>
 
 
@@ -194,10 +190,10 @@
 		    
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="architecture.html" class="float-right" title="Architecture">Next</a>
+        <a href="example-application.html" class="float-right" title="Example application">Next</a>
       
       
-        <a href="getting-started.html" title="Getting started">Previous</a>
+        <a href="articles.html" title="Articles">Previous</a>
       
     </div>
   
