@@ -25,14 +25,14 @@ object EventRouting {
   case class ExampleEvent(data: String)
   case class ExampleCommand(data: String)
 
-  class ExampleActor(override val replicaId: String,
+  class ExampleActor(override val id: String,
                      override val eventLog: ActorRef) extends EventsourcedActor {
 
     override def aggregateId: Option[String] = Some("a1")
 
     override val onCommand: Receive = {
       case ExampleCommand(data) =>
-        persist(ExampleEvent(data), customRoutingDestinations = Set("a2", "a3")) {
+        persist(ExampleEvent(data), customDestinationAggregateIds = Set("a2", "a3")) {
           case Success(evt)   => // ...
           case Failure(cause) => // ...
         }

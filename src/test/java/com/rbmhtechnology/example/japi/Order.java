@@ -35,7 +35,7 @@ public class Order {
         this(id, List.nil(), false);
     }
 
-    private Order(String id, List<String> items, boolean cancelled) {
+    public Order(String id, List<String> items, boolean cancelled) {
         this.id = id;
         this.items = items;
         this.cancelled = cancelled;

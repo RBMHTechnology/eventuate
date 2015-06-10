@@ -21,15 +21,11 @@ import akka.remote.testkit.{MultiNodeSpec, MultiNodeConfig}
 import akka.remote.transport.ThrottlerTransportAdapter.Direction
 import akka.testkit.TestProbe
 
-import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogMultiNodeSupport
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogMultiNodeSupport
-
-class FailureDetectionSpecLeveldb extends FailureDetectionSpec with LeveldbEventLogMultiNodeSupport
+class FailureDetectionSpecLeveldb extends FailureDetectionSpec with MultiNodeSupportLeveldb
 class FailureDetectionSpecLeveldbMultiJvmNode1 extends FailureDetectionSpecLeveldb
 class FailureDetectionSpecLeveldbMultiJvmNode2 extends FailureDetectionSpecLeveldb
 
-class FailureDetectionSpecCassandra extends FailureDetectionSpec with CassandraEventLogMultiNodeSupport {
-  override def coordinator: RoleName = FailureDetectionConfig.nodeA
+class FailureDetectionSpecCassandra extends FailureDetectionSpec with MultiNodeSupportCassandra {
   override def logName = "fd"
 }
 class FailureDetectionSpecCassandraMultiJvmNode1 extends FailureDetectionSpecCassandra

@@ -90,9 +90,9 @@ trait CRDTService[A, B] {
   private var worker: Option[ActorRef] = None
 
   /**
-   * CRDT replica id.
+   * CRDT service id.
    */
-  def replicaId: String
+  def serviceId: String
 
   /**
    * Event log.
@@ -112,7 +112,7 @@ trait CRDTService[A, B] {
     val aggregateId: String = ops.zero.getClass.getSimpleName
 
     this.system = Some(system)
-    this.worker = Some(system.actorOf(Props(new CRDTActor(log, replicaId, Some(aggregateId)))))
+    this.worker = Some(system.actorOf(Props(new CRDTActor(serviceId, Some(aggregateId), log))))
   }
 
   /**
@@ -153,9 +153,9 @@ trait CRDTService[A, B] {
   private case class UpdateValueReply(id: String, value: B)
 
   private class CRDTActor(
-      override val eventLog: ActorRef,
-      override val replicaId: String,
-      override val aggregateId: Option[String]) extends EventsourcedActor {
+      override val id: String,
+      override val aggregateId: Option[String],
+      override val eventLog: ActorRef) extends EventsourcedActor {
 
     var crdts: Map[String, A] = Map.empty.withDefault(_ => ops.zero)
 

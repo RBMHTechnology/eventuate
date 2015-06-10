@@ -103,6 +103,12 @@ abstract class ConcurrentVersionsSpec extends WordSpec with Matchers with Before
   }
 }
 
+object ConcurrentVersionsTreeSpec {
+  implicit class ConcurrentVersionsTreeHelper(tree: ConcurrentVersionsTree[String, String]) {
+    def nodeTuples = tree.nodes.map { node => (node.versioned, node.rejected) }
+  }
+}
+
 class ConcurrentVersionsTreeSpec extends ConcurrentVersionsSpec {
   type Projection = (String, String) => String
 
@@ -155,6 +161,31 @@ class ConcurrentVersionsTreeSpec extends ConcurrentVersionsSpec {
 
       result.conflict should be(false)
       result.all(0) should be(Versioned("abd", vectorTime(3,2,0)))
+    }
+    "create a deep copy of itself" in {
+      val tree = ConcurrentVersionsTree(append)
+        .update("a", vectorTime(1,0,0))
+        .update("b", vectorTime(2,0,0))
+        .update("c", vectorTime(1,1,0))
+
+      val upd1 = tree.copy().resolve(
+        vectorTime(2,0,0),
+        vectorTime(2,2,0))
+
+      val upd2 = tree.copy().resolve(
+        vectorTime(1,1,0),
+        vectorTime(2,2,0))
+
+      tree.conflict should be(true)
+      upd1.conflict should be(false)
+      upd2.conflict should be(false)
+
+      tree.all should be(Seq(
+        Versioned("ab", vectorTime(2,0,0)),
+        Versioned("ac", vectorTime(1,1,0))))
+
+      upd1.all should be(Seq(Versioned("ab", vectorTime(2,2,0))))
+      upd2.all should be(Seq(Versioned("ac", vectorTime(2,2,0))))
     }
   }
 }

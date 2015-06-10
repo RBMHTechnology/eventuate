@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.eventuate.log.cassandra
+package com.rbmhtechnology.eventuate.log
+
+import java.io.File
 
 import akka.actor._
 import akka.pattern.ask
@@ -23,10 +25,15 @@ import akka.util.Timeout
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
-import com.rbmhtechnology.eventuate.log.{EventLogSpec, BatchingEventLog}
 import com.rbmhtechnology.eventuate.log.EventLogSpec._
+import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.log.cassandra.CassandraIndex._
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.ReadResult
 
+import org.apache.commons.io.FileUtils
+import org.cassandraunit.utils.EmbeddedCassandraServerHelper
+import org.iq80.leveldb.WriteBatch
 import org.scalatest._
 
 import scala.collection.immutable.Seq
@@ -34,7 +41,84 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 import scala.util._
 
-object CassandraEventLogSupport {
+object EventLogLifecycleLeveldb {
+  class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") {
+    override def replay(from: Long, classifier: Int)(f: (DurableEvent) => Unit): Unit =
+      if (from == -1L) throw boom else super.replay(from, classifier)(f)
+
+    override def read(from: Long, max: Int, filter: ReplicationFilter): ReadResult =
+      if (from == -1L) throw boom else super.read(from, max, filter)
+
+    override def write(events: Seq[DurableEvent], batch: WriteBatch): Unit = events match {
+      case es if es.map(_.payload).contains("boom") => throw boom
+      case _ => super.write(events, batch)
+    }
+
+    override def unhandled(message: Any): Unit = message match {
+      case GetSequenceNr =>
+        sender() ! GetSequenceNrSuccess(generator.sequenceNr)
+      case GetReplicationProgress =>
+        sender() ! GetReplicationProgressSuccess(progressMap)
+      case SetReplicationProgress(logId, sequenceNr) =>
+        withBatch(batch => replicationProgressMap.writeReplicationProgress(logId, sequenceNr, batch))
+      case "boom" =>
+        throw boom
+      case _ =>
+        super.unhandled(message)
+    }
+
+    private def progressMap = List(EventLogSpec.remoteLogId, "x", "y").foldLeft[Map[String, Long]](Map.empty) {
+      case (map, logId) =>
+        val progress = replicationProgressMap.readReplicationProgress(logId)
+        if (progress == 0L) map else map + (logId -> progress)
+    }
+  }
+}
+
+trait EventLogLifecycleLeveldb extends Suite with BeforeAndAfterAll with BeforeAndAfterEach {
+  import EventLogLifecycleLeveldb._
+
+  private var _logCtr: Int = 0
+  private var _log: ActorRef = _
+
+  private lazy val storageLocations: List[File] =
+    List("eventuate.log.leveldb.dir", "eventuate.snapshot.filesystem.dir").map(s => new File(system.settings.config.getString(s)))
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+
+    _logCtr += 1
+    _log = system.actorOf(logProps(logId))
+  }
+
+  override def beforeAll(): Unit = {
+    storageLocations.foreach(FileUtils.deleteDirectory)
+    storageLocations.foreach(_.mkdirs())
+  }
+
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    storageLocations.foreach(FileUtils.deleteDirectory)
+  }
+
+  def log: ActorRef =
+    _log
+
+  def logId: String =
+    _logCtr.toString
+
+  def logProps(logId: String): Props = {
+    val logProps = Props(new TestEventLog(logId)).withDispatcher("eventuate.log.leveldb.write-dispatcher")
+    if (batching) Props(new BatchingEventLog(logProps)) else logProps
+  }
+
+  def batching: Boolean =
+    true
+
+  def system: ActorSystem
+}
+
+object EventLogLifecycleCassandra {
   case class TestFailureSpec(
     failOnSequenceNrRead: Boolean = false,
     failBeforeIndexIncrementWrite: Boolean = false,
@@ -52,7 +136,7 @@ object CassandraEventLogSupport {
 
     override def unhandled(message: Any): Unit = message match {
       case GetSequenceNr =>
-        sender() ! GetSequenceNrSuccess(currentSequenceNr)
+        sender() ! GetSequenceNrSuccess(generator.sequenceNr)
       case GetReplicationProgress =>
         val sdr = sender()
         getReplicationProgress(List(EventLogSpec.remoteLogId, "x", "y")) onComplete {
@@ -126,11 +210,14 @@ object CassandraEventLogSupport {
   }
 }
 
-trait CassandraEventLogSupport extends Suite with BeforeAndAfterAll with BeforeAndAfterEach {
-  import CassandraEventLogSupport._
+trait EventLogLifecycleCassandra extends Suite with BeforeAndAfterAll with BeforeAndAfterEach {
+  import EventLogLifecycleCassandra._
 
   private var _logCtr: Int = 0
   private var _log: ActorRef = _
+
+  private lazy val storageLocations: List[File] =
+    List("eventuate.snapshot.filesystem.dir").map(s => new File(system.settings.config.getString(s)))
 
   var indexProbe: TestProbe = _
 
@@ -144,12 +231,13 @@ trait CassandraEventLogSupport extends Suite with BeforeAndAfterAll with BeforeA
   }
 
   override def beforeAll(): Unit = {
-    CassandraServer.start(60.seconds)
+    EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
   }
 
   override def afterAll(): Unit = {
     TestKit.shutdownActorSystem(system)
-    CassandraServer.stop()
+    EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
+    storageLocations.foreach(FileUtils.deleteDirectory)
   }
 
   def createLog(failureSpec: TestFailureSpec, indexProbe: ActorRef): ActorRef =

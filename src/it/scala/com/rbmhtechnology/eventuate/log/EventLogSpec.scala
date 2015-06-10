@@ -16,8 +16,6 @@
 
 package com.rbmhtechnology.eventuate.log
 
-import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSupport.TestFailureSpec
-
 import scala.collection.immutable.Seq
 
 import akka.actor._
@@ -27,8 +25,8 @@ import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.DurableEvent._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSupport
-import com.rbmhtechnology.eventuate.log.cassandra.{CassandraIndex, CassandraEventLogSupport}
+import com.rbmhtechnology.eventuate.log.EventLogLifecycleCassandra.TestFailureSpec
+import com.rbmhtechnology.eventuate.log.cassandra._
 
 import com.typesafe.config.{ConfigFactory, Config}
 
@@ -49,37 +47,39 @@ object EventLogSpec {
       |akka.loglevel = "ERROR"
       |akka.test.single-expect-default = 10s
       |
-      |eventuate.log.leveldb.dir = target/test
+      |eventuate.snapshot.filesystem.dir = target/test-snapshot
+      |
+      |eventuate.log.leveldb.dir = target/test-log
       |eventuate.log.cassandra.default-port = 9142
       |eventuate.log.cassandra.index-update-limit = 3
       |eventuate.log.cassandra.init-retry-backoff = 1s
     """.stripMargin)
 
-  val replicaIdA = "A"
-  val replicaIdB = "B"
-  val replicaIdC = "C"
+  val idA = "A"
+  val idB = "B"
+  val idC = "C"
   val remoteLogId = "R1"
 
   val remoteLogIdFilter = SourceLogIdExclusionFilter(remoteLogId)
   val undefinedLogIdFilter = SourceLogIdExclusionFilter(UndefinedLogId)
 
   def event(payload: Any): DurableEvent =
-    event(payload, VectorTime(), replicaIdA)
+    event(payload, VectorTime(), idA)
 
   def event(payload: Any, emitterAggregateId: Option[String]): DurableEvent =
-    event(payload, VectorTime(), replicaIdA, emitterAggregateId, Set())
+    event(payload, VectorTime(), idA, emitterAggregateId, Set())
 
   def event(payload: Any, emitterAggregateId: Option[String], customRoutingDestinations: Set[String]): DurableEvent =
-    event(payload, VectorTime(), replicaIdA, emitterAggregateId, customRoutingDestinations)
+    event(payload, VectorTime(), idA, emitterAggregateId, customRoutingDestinations)
 
-  def event(payload: Any, timestamp: VectorTime, replicaId: String, emitterAggregateId: Option[String] = None, customRoutingDestinations: Set[String] = Set()): DurableEvent =
-    DurableEvent(payload, 0L, timestamp, replicaId, emitterAggregateId, customRoutingDestinations)
+  def event(payload: Any, timestamp: VectorTime, emitterId: String, emitterAggregateId: Option[String] = None, customRoutingDestinations: Set[String] = Set()): DurableEvent =
+    DurableEvent(payload, 0L, timestamp, emitterId, emitterAggregateId, customRoutingDestinations)
 
   def timestampA(timeA: Long): VectorTime =
-    VectorTime(processId(replicaIdA) -> timeA)
+    VectorTime(idA -> timeA)
 
   def timestampAB(timeA: Long, timeB: Long): VectorTime =
-    VectorTime(processId(replicaIdA) -> timeA, processId(replicaIdB) -> timeB)
+    VectorTime(idA -> timeA, idB -> timeB)
 }
 
 trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfterEach {
@@ -148,14 +148,14 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfter
 
   def generateEmittedEvents(offset: Long = 0L, emitterAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): Unit = {
     val events: Vector[DurableEvent] = Vector(
-      event("a", timestampAB(1 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds),
-      event("b", timestampAB(2 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds),
-      event("c", timestampAB(3 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds))
+      event("a", timestampAB(1 + offset, 0), idA, emitterAggregateId, destinationAggregateIds),
+      event("b", timestampAB(2 + offset, 0), idA, emitterAggregateId, destinationAggregateIds),
+      event("c", timestampAB(3 + offset, 0), idA, emitterAggregateId, destinationAggregateIds))
 
     val emitted = Vector(
-      DurableEvent("a", 0L, timestampAB(1 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds, 0L, logId, logId, 1 + offset, 1 + offset),
-      DurableEvent("b", 0L, timestampAB(2 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds, 0L, logId, logId, 2 + offset, 2 + offset),
-      DurableEvent("c", 0L, timestampAB(3 + offset, 0), replicaIdA, emitterAggregateId, destinationAggregateIds, 0L, logId, logId, 3 + offset, 3 + offset))
+      DurableEvent("a", 0L, timestampAB(1 + offset, 0), idA, emitterAggregateId, destinationAggregateIds, 0L, logId, logId, 1 + offset, 1 + offset),
+      DurableEvent("b", 0L, timestampAB(2 + offset, 0), idA, emitterAggregateId, destinationAggregateIds, 0L, logId, logId, 2 + offset, 2 + offset),
+      DurableEvent("c", 0L, timestampAB(3 + offset, 0), idA, emitterAggregateId, destinationAggregateIds, 0L, logId, logId, 3 + offset, 3 + offset))
 
     _emittedEvents ++= emitted
 
@@ -168,14 +168,14 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfter
 
   def generateReplicateEvents(offset: Long, remoteLogId: String = remoteLogId, emitterAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): Unit = {
     val events: Vector[DurableEvent] = Vector(
-      DurableEvent("i", 0L, timestampAB(0, 7 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, 0L, remoteLogId, remoteLogId, 7 + offset, 7 + offset),
-      DurableEvent("j", 0L, timestampAB(0, 8 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, 0L, remoteLogId, remoteLogId, 8 + offset, 8 + offset),
-      DurableEvent("k", 0L, timestampAB(0, 9 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, 0L, remoteLogId, remoteLogId, 9 + offset, 9 + offset))
+      DurableEvent("i", 0L, timestampAB(0, 7 + offset), idB, emitterAggregateId, destinationAggregateIds, 0L, remoteLogId, remoteLogId, 7 + offset, 7 + offset),
+      DurableEvent("j", 0L, timestampAB(0, 8 + offset), idB, emitterAggregateId, destinationAggregateIds, 0L, remoteLogId, remoteLogId, 8 + offset, 8 + offset),
+      DurableEvent("k", 0L, timestampAB(0, 9 + offset), idB, emitterAggregateId, destinationAggregateIds, 0L, remoteLogId, remoteLogId, 9 + offset, 9 + offset))
 
     val replicated = Vector(
-      DurableEvent("i", 0L, timestampAB(0, 7 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, 9 + offset, remoteLogId, logId, 7 + offset, 1 + offset),
-      DurableEvent("j", 0L, timestampAB(0, 8 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, 9 + offset, remoteLogId, logId, 8 + offset, 2 + offset),
-      DurableEvent("k", 0L, timestampAB(0, 9 + offset), replicaIdB, emitterAggregateId, destinationAggregateIds, 9 + offset, remoteLogId, logId, 9 + offset, 3 + offset))
+      DurableEvent("i", 0L, timestampAB(0, 7 + offset), idB, emitterAggregateId, destinationAggregateIds, 9 + offset, remoteLogId, logId, 7 + offset, 1 + offset),
+      DurableEvent("j", 0L, timestampAB(0, 8 + offset), idB, emitterAggregateId, destinationAggregateIds, 9 + offset, remoteLogId, logId, 8 + offset, 2 + offset),
+      DurableEvent("k", 0L, timestampAB(0, 9 + offset), idB, emitterAggregateId, destinationAggregateIds, 9 + offset, remoteLogId, logId, 9 + offset, 3 + offset))
 
     _replicatedEvents ++= replicated
 
@@ -271,12 +271,12 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
     }
     "reply with a failure message if write fails" in {
       val events = Vector(
-        event("boom", timestampAB(1, 0), replicaIdA),
-        event("okay", timestampAB(2, 0), replicaIdA))
+        event("boom", timestampAB(1, 0), idA),
+        event("okay", timestampAB(2, 0), idA))
 
       log ! Write(events, system.deadLetters, requestorProbe.ref, 0)
-      requestorProbe.expectMsg(WriteFailure(DurableEvent("boom", 0L, timestampAB(1, 0), replicaIdA), boom, 0))
-      requestorProbe.expectMsg(WriteFailure(DurableEvent("okay", 0L, timestampAB(2, 0), replicaIdA), boom, 0))
+      requestorProbe.expectMsg(WriteFailure(DurableEvent("boom", 0L, timestampAB(1, 0), idA), boom, 0))
+      requestorProbe.expectMsg(WriteFailure(DurableEvent("okay", 0L, timestampAB(2, 0), idA), boom, 0))
     }
     "write replicated events" in {
       generateReplicateEvents(offset = 0)
@@ -367,8 +367,8 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
     }
     "reply with a failure message if replication fails" in {
       val events: Vector[DurableEvent] = Vector(
-        DurableEvent("boom", 0L, timestampAB(0, 7), replicaIdB, None, Set(), 0L, remoteLogId, remoteLogId, 7, 7),
-        DurableEvent("okay", 0L, timestampAB(0, 8), replicaIdB, None, Set(), 0L, remoteLogId, remoteLogId, 8, 8))
+        DurableEvent("boom", 0L, timestampAB(0, 7), idB, None, Set(), 0L, remoteLogId, remoteLogId, 7, 7),
+        DurableEvent("okay", 0L, timestampAB(0, 8), idB, None, Set(), 0L, remoteLogId, remoteLogId, 8, 8))
 
       log.tell(ReplicationWrite(events, remoteLogId, 8), replicatorProbe.ref)
       replicatorProbe.expectMsg(ReplicationWriteFailure(boom))
@@ -434,7 +434,7 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
       requestorProbe.expectMsg(Replaying(emittedEvents(5), 0))
       requestorProbe.expectMsg(ReplaySuccess(0))
     }
-    "not replay events with non-matching replicaId if request replicaId is defined" in {
+    "not replay events with non-matching aggregateId if request aggregateId is defined" in {
       generateEmittedEvents(destinationAggregateIds = Set("a1"))
       log ! Replay(1L, requestorProbe.ref, Some("a2"), 0)
       requestorProbe.expectMsg(ReplaySuccess(0))
@@ -500,7 +500,7 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
   }
 }
 
-class EventLogSpecLeveldb extends EventLogSpec with LeveldbEventLogSupport {
+class EventLogSpecLeveldb extends EventLogSpec with EventLogLifecycleLeveldb {
   import EventLogSpec._
 
   "A LevelDB event log" must {
@@ -526,7 +526,7 @@ class EventLogSpecLeveldb extends EventLogSpec with LeveldbEventLogSupport {
   }
 }
 
-class EventLogSpecCassandra extends EventLogSpec with CassandraEventLogSupport {
+class EventLogSpecCassandra extends EventLogSpec with EventLogLifecycleCassandra {
   import EventLogSpec._
   import CassandraIndex._
 
@@ -553,7 +553,7 @@ class EventLogSpecCassandra extends EventLogSpec with CassandraEventLogSupport {
       val num = 1000
 
       val events = 1 to num map { i =>
-        event(s"e-$i", timestampAB(i, 0), replicaIdA)
+        event(s"e-$i", timestampAB(i, 0), idA)
       }
 
       writeEmittedEvents(events)

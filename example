@@ -10,7 +10,7 @@ do
         if command -v xterm >/dev/null 2>&1; then
             xterm -title $site -e "./example-location $location $*" &
         else
-            echo "Neiter osascript nor xterm were found";
+            echo "Neither osascript nor xterm were found";
         fi
     fi
 done

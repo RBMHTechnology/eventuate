@@ -23,7 +23,8 @@ import akka.actor._
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
-import com.rbmhtechnology.eventuate.log.{BatchingEventLog, AggregateRegistry}
+import com.rbmhtechnology.eventuate.log._
+import com.rbmhtechnology.eventuate.snapshot.filesystem._
 
 import scala.collection.immutable.Seq
 import scala.language.implicitConversions
@@ -52,37 +53,36 @@ import scala.util._
  *
  *  - `log_example` which represents the local event log.
  *  - `log_example_agg` which is an index of the local event log for those events that have non-empty
- *    [[DurableEvent#routingDestinations routingDestinations]] set. It is used for fast recovery of
- *    event-sourced actors or views that have an [[Eventsourced#aggregateId aggregateId]] defined.
+ *    [[DurableEvent#destinationAggregateIds destinationAggregateIds]] set. It is used for fast recovery
+ *    of event-sourced actors or views that have an [[EventsourcedView#aggregateId aggregateId]] defined.
  *
  * @param id unique log id.
  *
  * @see [[Cassandra]]
  * @see [[DurableEvent]]
  */
-class CassandraEventLog(id: String) extends Actor with Stash {
+class CassandraEventLog(val id: String) extends Actor with Stash {
   import CassandraEventLog._
 
-  private val eventStream = context.system.eventStream
-  private val cassandra: Cassandra = Cassandra(context.system)
+  val eventStream = context.system.eventStream
+  val cassandra: Cassandra = Cassandra(context.system)
 
   cassandra.createEventTable(id)
   cassandra.createAggregateEventTable(id)
 
   private val statement = cassandra.prepareWriteEvent(id)
 
+  private val snapshotStore = new FilesystemSnapshotStore(new FilesystemSnapshotStoreSettings(context.system))
   private val reader = createReader(cassandra, id)
   private val index = createIndex(cassandra, reader, id)
+  private var registry = SubscriberRegistry()
 
-  private var sequenceNrUpdates: Long = 0L
-  private var sequenceNr: Long = 0L
-
-  private var defaultRegistry: Set[ActorRef] = Set.empty
-  private var aggregateRegistry: AggregateRegistry = AggregateRegistry()
+  private[eventuate] val generator =
+    new SequenceNumberGenerator(cassandra.settings.partitionSizeMax)
 
   def initializing: Receive = {
     case Initialize(snr) =>
-      sequenceNr = snr
+      generator.sequenceNr = snr
       unstashAll()
       context.become(initialized)
     case other =>
@@ -93,21 +93,19 @@ class CassandraEventLog(id: String) extends Actor with Stash {
     case cmd: GetLastSourceLogReadPosition =>
       index.forward(cmd)
     case cmd @ Replay(_, requestor, Some(emitterAggregateId), _) =>
-      aggregateRegistry = aggregateRegistry.add(context.watch(requestor), emitterAggregateId)
+      registry = registry.registerAggregateSubscriber(context.watch(requestor), emitterAggregateId)
       index.forward(cmd)
     case Replay(from, requestor, None, iid) =>
-      defaultRegistry = defaultRegistry + context.watch(requestor)
-
       import cassandra.readDispatcher
+      registry = registry.registerDefaultSubscriber(context.watch(requestor))
       reader.replayAsync(from)(event => requestor ! Replaying(event, iid) ) onComplete {
         case Success(_) => requestor ! ReplaySuccess(iid)
         case Failure(e) => requestor ! ReplayFailure(e, iid)
       }
     case r @ ReplicationRead(from, max, filter, targetLogId) =>
+      import cassandra.readDispatcher
       val sdr = sender()
       eventStream.publish(r)
-
-      import cassandra.readDispatcher
       reader.readAsync(from, max, filter, targetLogId) onComplete {
         case Success(result) =>
           val r = ReplicationReadSuccess(result.events, result.to, targetLogId)
@@ -118,61 +116,70 @@ class CassandraEventLog(id: String) extends Actor with Stash {
           sdr ! r
           eventStream.publish(r)
       }
-    case Write(events, eventsSender, requestor, iid) =>
+    case Write(events, initiator, requestor, iid) =>
       val result = for {
-        partition <- Try(adjustSequenceNr(events.size))
-        updated    = prepareWrite(events)
+        partition <- Try(generator.adjustSequenceNr(events.size))
+        updated    = prepareWrite(id, events, generator.nextSequenceNr())
         _         <- Try(write(partition, updated))
       } yield updated
 
       result match {
         case Success(updated) =>
-          pushWriteSuccess(updated, eventsSender, requestor, iid)
+          registry.pushWriteSuccess(updated, initiator, requestor, iid)
           publishUpdateNotification(updated)
           requestIndexUpdate()
         case Failure(e) =>
-          pushWriteFailure(events, eventsSender, requestor, iid, e)
+          registry.pushWriteFailure(events, initiator, requestor, iid, e)
       }
     case r @ WriteN(writes) =>
       val result = for {
-        partition     <- Try(adjustSequenceNr(r.size))
-        updatedWrites  = writes.map(w => w.copy(prepareWrite(w.events)))
-        updatedEvents  = updatedWrites.map(_.events).flatten
+        partition     <- Try(generator.adjustSequenceNr(r.size))
+        updatedWrites  = writes.map(w => w.copy(prepareWrite(id, w.events, generator.nextSequenceNr())))
+        updatedEvents  = updatedWrites.flatMap(_.events)
         _             <- Try(write(partition, updatedEvents))
       } yield (updatedWrites, updatedEvents)
 
       result match {
         case Success((updatedWrites, updatedEvents)) =>
-          updatedWrites.foreach(w => pushWriteSuccess(w.events, w.eventsSender, w.requestor, w.instanceId))
+          updatedWrites.foreach(w => registry.pushWriteSuccess(w.events, w.initiator, w.requestor, w.instanceId))
           publishUpdateNotification(updatedEvents)
           requestIndexUpdate()
         case Failure(e) =>
-          writes.foreach(w => pushWriteFailure(w.events, w.eventsSender, w.requestor, w.instanceId, e))
+          writes.foreach(w => registry.pushWriteFailure(w.events, w.initiator, w.requestor, w.instanceId, e))
       }
       sender() ! WriteNComplete // notify batch layer that write completed
     case r @ ReplicationWrite(Seq(), _, _) =>
       index.forward(r)
     case ReplicationWrite(events, sourceLogId, lastSourceLogSequenceNrRead) =>
       val result = for {
-        partition <- Try(adjustSequenceNr(events.size))
-        updated    = prepareReplicate(events, lastSourceLogSequenceNrRead)
+        partition <- Try(generator.adjustSequenceNr(events.size))
+        updated    = prepareReplicate(id, events, lastSourceLogSequenceNrRead, generator.nextSequenceNr())
         _         <- Try(write(partition, updated))
       } yield updated
 
       result match {
         case Success(updated) =>
           sender() ! ReplicationWriteSuccess(events.size, lastSourceLogSequenceNrRead)
-          pushReplicateSuccess(updated)
+          registry.pushReplicateSuccess(updated)
           publishUpdateNotification(updated)
           requestIndexUpdate()
         case Failure(e) =>
           sender() ! ReplicationWriteFailure(e)
       }
-    case Terminated(requestor) =>
-      aggregateRegistry.aggregateId(requestor) match {
-        case Some(aggregateId) => aggregateRegistry = aggregateRegistry.remove(requestor, aggregateId)
-        case None              => defaultRegistry = defaultRegistry - requestor
+    case LoadSnapshot(emitterId, requestor, iid) =>
+      import cassandra.readDispatcher
+      snapshotStore.loadAsync(emitterId) onComplete {
+        case Success(s) => requestor ! LoadSnapshotSuccess(s, iid)
+        case Failure(e) => requestor ! LoadSnapshotFailure(e, iid)
       }
+    case SaveSnapshot(snapshot, initiator, requestor, iid) =>
+      import context.dispatcher
+      snapshotStore.saveAsync(snapshot) onComplete {
+        case Success(_) => requestor.tell(SaveSnapshotSuccess(snapshot.metadata, iid), initiator)
+        case Failure(e) => requestor.tell(SaveSnapshotFailure(snapshot.metadata, e, iid), initiator)
+      }
+    case Terminated(requestor) =>
+      registry = registry.unregisterSubscriber(requestor)
   }
 
   override def receive =
@@ -188,123 +195,18 @@ class CassandraEventLog(id: String) extends Actor with Stash {
     events.foreach(event => batch.add(statement.bind(partition: JLong, event.sequenceNr: JLong, cassandra.eventToByteBuffer(event))))
   }
 
-  // ---------------------------------------------------------------------------
-  //  Notifications for writers, subscribers, listeners and index
-  // ---------------------------------------------------------------------------
-
-  private def requestIndexUpdate(): Unit = {
-    if (sequenceNrUpdates >= cassandra.settings.indexUpdateLimit) {
-      index ! CassandraIndex.UpdateIndex()
-      sequenceNrUpdates = 0L
-    }
-  }
-
   private def publishUpdateNotification(events: Seq[DurableEvent] = Seq()): Unit =
     if (events.nonEmpty) eventStream.publish(Updated(id, events))
 
-  private def pushReplicateSuccess(events: Seq[DurableEvent]): Unit = {
-    events.foreach { event =>
-      // in any case, notify all default subscribers
-      defaultRegistry.foreach(_ ! Written(event))
-      // notify subscribers with matching aggregate id
-      for {
-        aggregateId <- event.routingDestinations
-        aggregate <- aggregateRegistry(aggregateId)
-      } aggregate ! Written(event)
+  private def requestIndexUpdate(): Unit =
+    if (generator.sequenceNrUpdates >= cassandra.settings.indexUpdateLimit) {
+      index ! CassandraIndex.UpdateIndex()
+      generator.resetSequenceNumberUpdates()
     }
-  }
-
-  private def pushWriteSuccess(events: Seq[DurableEvent], eventsSender: ActorRef, requestor: ActorRef, instanceId: Int): Unit =
-    events.foreach { event =>
-      requestor.tell(WriteSuccess(event, instanceId), eventsSender)
-      // in any case, notify all default subscribers (except requestor)
-      defaultRegistry.foreach(r => if (r != requestor) r ! Written(event))
-      // notify subscribers with matching aggregate id (except requestor)
-      for {
-        aggregateId <- event.routingDestinations
-        aggregate <- aggregateRegistry(aggregateId) if aggregate != requestor
-      } aggregate ! Written(event)
-    }
-
-  private def pushWriteFailure(events: Seq[DurableEvent], eventsSender: ActorRef, requestor: ActorRef, instanceId: Int, cause: Throwable): Unit =
-    events.foreach { event =>
-      requestor.tell(WriteFailure(event, cause, instanceId), eventsSender)
-    }
-
-  // ---------------------------------------------------------------------------
-  //  ...
-  // ---------------------------------------------------------------------------
-
-  private def prepareWrite(events: Seq[DurableEvent]): Seq[DurableEvent] = {
-    events.map { event =>
-      val snr = nextSequenceNr()
-      event.copy(
-        sourceLogId = id,
-        targetLogId = id,
-        sourceLogSequenceNr = snr,
-        targetLogSequenceNr = snr)
-    }
-  }
-
-  private def prepareReplicate(events: Seq[DurableEvent], lastSourceLogSequenceNrRead: Long): Seq[DurableEvent] = {
-    events.map { event =>
-      val snr = nextSequenceNr()
-      event.copy(
-        sourceLogId = event.targetLogId,
-        targetLogId = id,
-        sourceLogReadPosition = lastSourceLogSequenceNrRead,
-        sourceLogSequenceNr = event.targetLogSequenceNr,
-        targetLogSequenceNr = snr)
-    }
-  }
-
-  private def adjustSequenceNr(batchSize: Long): Long = {
-    import cassandra.settings._
-
-    require(batchSize <= partitionSizeMax, s"write batch size (${batchSize}) must not be greater than eventuate.log.cassandra.partition-size-max (${partitionSizeMax})")
-
-    val currentPartition = partitionOf(sequenceNr, partitionSizeMax)
-    val remainingPartitionSize = partitionSize(sequenceNr, partitionSizeMax)
-    if (remainingPartitionSize < batchSize) {
-      sequenceNr += remainingPartitionSize
-      currentPartition + 1L
-    } else {
-      currentPartition
-    }
-  }
-
-  private def nextSequenceNr(): Long = {
-    sequenceNr += 1L
-    sequenceNrUpdates += 1
-    sequenceNr
-  }
-
-  private[eventuate] def currentSequenceNr: Long =
-    sequenceNr
 }
 
 object CassandraEventLog {
   private[eventuate] case class Initialize(sequenceNr: Long)
-
-  /**
-   * Partition number for given `sequenceNr`.
-   */
-  private[eventuate] def partitionOf(sequenceNr: Long, partitionSizeMax: Long): Long =
-    if (sequenceNr == 0L) -1L else (sequenceNr - 1L) / partitionSizeMax
-
-  /**
-   * Remaining partition size given the current `sequenceNr`.
-   */
-  private[eventuate] def partitionSize(sequenceNr: Long, partitionSizeMax: Long): Long = {
-    val m = sequenceNr % partitionSizeMax
-    if (m == 0L) m else partitionSizeMax - m
-  }
-
-  /**
-   * First sequence number of given partition.
-   */
-  private[eventuate] def firstSequenceNr(partition: Long, partitionSizeMax: Long): Long =
-    partition * partitionSizeMax + 1L
 
   /**
    * Creates a [[CassandraEventLog]] configuration object.

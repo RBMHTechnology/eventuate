@@ -23,15 +23,12 @@ import akka.remote.transport.ThrottlerTransportAdapter.Direction
 import akka.testkit.TestProbe
 
 import com.rbmhtechnology.eventuate._
-import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogMultiNodeSupport
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogMultiNodeSupport
 
-class ReplicatedORSetSpecLeveldb extends ReplicatedORSetSpec with LeveldbEventLogMultiNodeSupport
+class ReplicatedORSetSpecLeveldb extends ReplicatedORSetSpec with MultiNodeSupportLeveldb
 class ReplicatedORSetSpecLeveldbMultiJvmNode1 extends ReplicatedORSetSpecLeveldb
 class ReplicatedORSetSpecLeveldbMultiJvmNode2 extends ReplicatedORSetSpecLeveldb
 
-class ReplicatedORSetSpecCassandra extends ReplicatedORSetSpec with CassandraEventLogMultiNodeSupport {
-  override def coordinator: RoleName = ReplicatedORSetConfig.nodeA
+class ReplicatedORSetSpecCassandra extends ReplicatedORSetSpec with MultiNodeSupportCassandra {
   override def logName = "ros"
 }
 class ReplicatedORSetSpecCassandraMultiJvmNode1 extends ReplicatedORSetSpecCassandra

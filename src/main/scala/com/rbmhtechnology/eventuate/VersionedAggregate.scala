@@ -74,6 +74,9 @@ case class VersionedAggregate[S, C: DomainCmd, E: DomainEvt](
   def doValidateResolve(selected: Int, origin: String): Resolved =
     validateResolve(selected, origin).get // FIXME
 
+  def withAggregate(aggregate: ConcurrentVersions[S, E]): VersionedAggregate[S, C, E] =
+    copy(aggregate = Some(aggregate))
+
   def versions: Seq[Versioned[S]] = aggregate match {
     case Some(versions) =>
       versions.all

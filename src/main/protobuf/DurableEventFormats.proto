@@ -25,9 +25,9 @@ message DurableEventFormat {
   optional PayloadFormat payload = 1;
   optional int64 systemTimestamp = 2;
   optional VectorTimeFormat vectorTimestamp = 3;
-  optional string emitterReplicaId = 4;
+  optional string emitterId = 4;
   optional string emitterAggregateId = 5;
-  repeated string customRoutingDestinations = 6;
+  repeated string customDestinationAggregateIds = 6;
   optional int64 sourceLogReadPosition = 7;
   optional string sourceLogId = 8;
   optional string targetLogId = 9;

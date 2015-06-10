@@ -42,6 +42,7 @@ public class OrderExample extends AbstractActor {
     private static Pattern pCount   = Pattern.compile("^count\\s+(\\w+)\\s*");
     private static Pattern pCreate  = Pattern.compile("^create\\s+(\\w+)\\s*");
     private static Pattern pCancel  = Pattern.compile("^cancel\\s+(\\w+)\\s*");
+    private static Pattern pSave  =   Pattern.compile("^save\\s+(\\w+)\\s*");
     private static Pattern pAdd     = Pattern.compile("^add\\s+(\\w+)\\s+(\\w+)\\s*");
     private static Pattern pRemove  = Pattern.compile("^remove\\s+(\\w+)\\s+(\\w+)\\s*");
     private static Pattern pResolve = Pattern.compile("^resolve\\s+(\\w+)\\s+(\\d+)\\s*");
@@ -66,12 +67,20 @@ public class OrderExample extends AbstractActor {
                     System.out.println(r.getCause().getMessage());
                     prompt();
                 })
+                .match(SaveSnapshotSuccess.class, r -> {
+                    System.out.println(String.format("[%s] saved snapshot at sequence number %d", r.getOrderId(), r.getMetadata().sequenceNr()));
+                    prompt();
+                })
+                .match(SaveSnapshotFailure.class, r -> {
+                    System.out.println(String.format("[%s] saved snapshot failed: %s", r.getOrderId(), r.getCause()));
+                    prompt();
+                })
                 .match(GetUpdateCountSuccess.class, r -> {
                     System.out.println("[" + r.getOrderId() + "]" + " update count = " + r.getCount());
                     prompt();
                 })
                 .match(CommandFailure.class, r -> r.getCause() instanceof ConflictDetectedException, r -> {
-                    ConflictDetectedException cause = (ConflictDetectedException)r.getCause();
+                    ConflictDetectedException cause = (ConflictDetectedException) r.getCause();
                     System.out.println(cause.getMessage() + ", select one of the following versions to resolve conflict");
                     OrderActor.printOrder(cause.getVersions());
                     prompt();
@@ -97,6 +106,7 @@ public class OrderExample extends AbstractActor {
         Matcher mCount   = pCount.matcher(cmd);
         Matcher mCreate  = pCreate.matcher(cmd);
         Matcher mCancel  = pCancel.matcher(cmd);
+        Matcher mSave    = pSave.matcher(cmd);
         Matcher mAdd     = pAdd.matcher(cmd);
         Matcher mRemove  = pRemove.matcher(cmd);
         Matcher mResolve = pResolve.matcher(cmd);
@@ -111,6 +121,8 @@ public class OrderExample extends AbstractActor {
             manager.tell(new CreateOrder(mCreate.group(1)), self());
         } else if (mCancel.matches()) {
             manager.tell(new CancelOrder(mCancel.group(1)), self());
+        } else if (mSave.matches()) {
+            manager.tell(new SaveSnapshot(mSave.group(1)), self());
         } else if (mAdd.matches()) {
             manager.tell(new AddOrderItem(mAdd.group(1), mAdd.group(2)), self());
         } else if (mRemove.matches()) {
@@ -135,10 +147,10 @@ public class OrderExample extends AbstractActor {
 
     public static void main(String[] args) {
         ActorSystem system = ActorSystem.create(ReplicationConnection.DefaultRemoteSystemName(), ConfigFactory.load(args[0]));
-        ReplicationEndpoint endpoint = ReplicationEndpoint.create(id -> LeveldbEventLog.props(id, "java", true), system);
+        ReplicationEndpoint endpoint = ReplicationEndpoint.create(id -> LeveldbEventLog.props(id, "j", true), system);
 
         ActorRef manager = system.actorOf(Props.create(OrderManager.class, endpoint.id(), endpoint.logs().apply(ReplicationEndpoint.DefaultLogName())));
-        ActorRef view = system.actorOf(Props.create(OrderView.class, endpoint.logs().apply(ReplicationEndpoint.DefaultLogName())));
+        ActorRef view = system.actorOf(Props.create(OrderView.class, endpoint.id(), endpoint.logs().apply(ReplicationEndpoint.DefaultLogName())));
         ActorRef driver = system.actorOf(Props.create(OrderExample.class, manager, view));
     }
 }

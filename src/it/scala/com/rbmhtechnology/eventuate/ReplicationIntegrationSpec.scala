@@ -25,6 +25,7 @@ import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
 
 import org.apache.commons.io.FileUtils
+import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import org.scalatest._
 
 import scala.collection.immutable.Seq
@@ -39,7 +40,7 @@ object ReplicationIntegrationSpec {
     }
   }
 
-  class ReplicatedActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class ReplicatedActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     val onCommand: Receive = {
       case s: String => persist(s) {
         case Success(e) => onEvent(e)
@@ -265,11 +266,13 @@ abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with Be
 class ReplicationIntegrationSpecLeveldb extends ReplicationIntegrationSpec with BeforeAndAfterAll {
   override val factory: String => Props = id => LeveldbEventLog.props(id)
 
-  val storageLocation = new File(ReplicationConfig.create().getString("eventuate.log.leveldb.dir"))
-
-  def cleanup(): Unit = {
-    FileUtils.deleteDirectory(storageLocation)
+  private lazy val storageLocations: List[File] = {
+    val config = ReplicationConfig.create()
+    List("eventuate.log.leveldb.dir", "eventuate.snapshot.filesystem.dir").map(s => new File(config.getString(s)))
   }
+
+  def cleanup(): Unit =
+    storageLocations.foreach(FileUtils.deleteDirectory)
 
   override def beforeAll(): Unit =
     cleanup()
@@ -288,9 +291,9 @@ class ReplicationIntegrationSpecCassandra extends ReplicationIntegrationSpec wit
   }
 
   override def beforeAll(): Unit =
-    CassandraServer.start(60.seconds)
+    EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
 
   override def afterAll(): Unit =
-    CassandraServer.stop()
+    EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
 }
 

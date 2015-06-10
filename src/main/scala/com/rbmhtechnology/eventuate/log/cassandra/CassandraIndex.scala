@@ -98,7 +98,7 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
       val replay = for {
         rsnr <- indexStore.replayAsync(emitterAggregateId, fromSequenceNr)(event => requestor ! Replaying(event, iid))
         nsnr = math.max(isnr, rsnr) + 1L
-        s    <- eventReader.replayAsync(nsnr)(event => if (event.routingDestinations.contains(emitterAggregateId)) requestor ! Replaying(event, iid))
+        s    <- eventReader.replayAsync(nsnr)(event => if (event.destinationAggregateIds.contains(emitterAggregateId)) requestor ! Replaying(event, iid))
       } yield s
 
       replay onComplete {
@@ -181,7 +181,7 @@ private[eventuate] object CassandraIndex {
 
   case class AggregateEvents(events: Map[String, Vector[DurableEvent]] = Map.empty) {
     def update(event: DurableEvent): AggregateEvents =
-      if (event.routingDestinations.isEmpty) this else copy(event.routingDestinations.foldLeft(events) {
+      if (event.destinationAggregateIds.isEmpty) this else copy(event.destinationAggregateIds.foldLeft(events) {
         case (acc, dst) => acc.get(dst) match {
           case Some(events) => acc + (dst -> (events :+ event))
           case None         => acc + (dst -> Vector(event))

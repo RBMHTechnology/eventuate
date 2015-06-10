@@ -38,6 +38,13 @@ class OrderExample(manager: ActorRef, view: ActorRef) extends Actor {
     case GetStateFailure(cause) =>
       println(cause.getMessage)
       prompt()
+    case SaveSnapshotSuccess(orderId, metadata) =>
+      println(s"[${orderId}] saved snapshot at sequence number ${metadata.sequenceNr}")
+      prompt()
+    case SaveSnapshotFailure(orderId, cause) =>
+      println(s"[${orderId}] save snapshot failed: ${cause}")
+      cause.printStackTrace()
+      prompt()
     case GetUpdateCountSuccess(orderId, count) =>
       println(s"[${orderId}] update count = ${count}")
       prompt()
@@ -55,6 +62,7 @@ class OrderExample(manager: ActorRef, view: ActorRef) extends Actor {
       case "count"   :: id         :: Nil => view    ! GetUpdateCount(id)
       case "create"  :: id         :: Nil => manager ! CreateOrder(id)
       case "cancel"  :: id         :: Nil => manager ! CancelOrder(id)
+      case "save"    :: id         :: Nil => manager ! SaveSnapshot(id)
       case "add"     :: id :: item :: Nil => manager ! AddOrderItem(id, item)
       case "remove"  :: id :: item :: Nil => manager ! RemoveOrderItem(id, item)
       case "resolve" :: id :: idx  :: Nil => manager ! Resolve(id, idx.toInt)
@@ -77,9 +85,9 @@ class OrderExample(manager: ActorRef, view: ActorRef) extends Actor {
 
 object OrderExample extends App {
   val system = ActorSystem(ReplicationConnection.DefaultRemoteSystemName, ConfigFactory.load(args(0)))
-  val endpoint = ReplicationEndpoint(id => LeveldbEventLog.props(id, "scala"))(system)
+  val endpoint = ReplicationEndpoint(id => LeveldbEventLog.props(id, "s"))(system)
   val manager = system.actorOf(Props(new OrderManager(endpoint.id, endpoint.logs(ReplicationEndpoint.DefaultLogName))))
-  val view = system.actorOf(Props(new OrderView(endpoint.logs(ReplicationEndpoint.DefaultLogName))))
+  val view = system.actorOf(Props(new OrderView(endpoint.id, endpoint.logs(ReplicationEndpoint.DefaultLogName))))
   val driver = system.actorOf(Props(new OrderExample(manager, view)).withDispatcher("eventuate.cli-dispatcher"))
 }
 

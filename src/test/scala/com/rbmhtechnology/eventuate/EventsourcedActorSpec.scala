@@ -16,28 +16,31 @@
 
 package com.rbmhtechnology.eventuate
 
-import scala.util._
-
 import akka.actor._
 import akka.testkit._
 
+import com.rbmhtechnology.eventuate.ConfirmedDelivery._
+
 import org.scalatest._
 
+import scala.util._
+
 object EventsourcedActorSpec {
-  import DurableEvent._
-
-  val replicaIdA = "A"
-  val replicaIdB = "B"
-
-  val processIdA = processId(replicaIdA)
-  val processIdB = processId(replicaIdB)
+  val idA = "A"
+  val idB = "B"
 
   val logId = "log"
 
   case class Cmd(payload: Any, num: Int = 1)
   case class CmdDelayed(payload: Any)
+
+  case class Deliver(payload: Any)
+  case class DeliverRequested(payload: Any)
+
   case class Ping(i: Int)
   case class Pong(i: Int)
+
+  case class State(state: Vector[String])
 
   class TestEventsourcedActor(
       val logProbe: ActorRef,
@@ -45,7 +48,7 @@ object EventsourcedActorSpec {
       val errProbe: ActorRef,
       override val stateSync: Boolean) extends EventsourcedActor {
 
-    val replicaId = EventsourcedActorSpec.replicaIdA
+    val id = idA
     val eventLog = logProbe
 
     override val onCommand: Receive = {
@@ -80,7 +83,7 @@ object EventsourcedActorSpec {
       val errProbe: ActorRef,
       override val stateSync: Boolean) extends EventsourcedActor {
 
-    val replicaId = EventsourcedActorSpec.replicaIdA
+    val id = idA
     val eventLog = logProbe
 
     var stashing = false
@@ -111,17 +114,65 @@ object EventsourcedActorSpec {
     }
   }
 
+  class TestSnapshotActor(
+    val logProbe: ActorRef,
+    val dstProbe: ActorRef,
+    val errProbe: ActorRef) extends EventsourcedActor with ConfirmedDelivery {
+
+    val id = idA
+    val eventLog = logProbe
+
+    var state: Vector[String] = Vector.empty
+
+    override val onCommand: Receive = {
+      case "boom" =>
+        throw boom
+      case "snap" =>
+        save(State(state)) {
+          case Success(md) => dstProbe ! md
+          case Failure(err) => errProbe ! err
+        }
+      case Cmd(p: String, _) =>
+        persist(p) {
+          case Success(evt) => onEvent(evt)
+          case Failure(err) => errProbe ! err
+        }
+      case Deliver(p) =>
+        persist(DeliverRequested(p)) {
+          case Success(evt) => onEvent(evt)
+          case Failure(err) => errProbe ! err
+        }
+    }
+
+    override val onEvent: Receive = {
+      case evt: String =>
+        state = state :+ evt
+        dstProbe ! message(state)
+      case DeliverRequested(p: String) =>
+        deliver(lastSequenceNr.toString, message(p), dstProbe.path)
+    }
+
+    override val onSnapshot: Receive = {
+      case State(s) =>
+        state = s
+        dstProbe ! message(s)
+    }
+
+    private def message(payload: Any) =
+      (payload, currentTime, lastVectorTimestamp, lastSequenceNr)
+  }
+
   def eventA(payload: Any, sequenceNr: Long, timestamp: VectorTime): DurableEvent =
-    DurableEvent(payload, 0L, timestamp, replicaIdA, None, Set(), 0L, logId, logId, sequenceNr, sequenceNr)
+    DurableEvent(payload, 0L, timestamp, idA, None, Set(), 0L, logId, logId, sequenceNr, sequenceNr)
 
   def eventB(payload: Any, sequenceNr: Long, timestamp: VectorTime): DurableEvent =
-    DurableEvent(payload, 0L, timestamp, replicaIdB, None, Set(), 0L, logId, logId, sequenceNr, sequenceNr)
+    DurableEvent(payload, 0L, timestamp, idB, None, Set(), 0L, logId, logId, sequenceNr, sequenceNr)
 
   def timestampA(timeA: Long): VectorTime =
-    VectorTime(processIdA -> timeA)
+    VectorTime(idA -> timeA)
 
   def timestampAB(timeA: Long, timeB: Long): VectorTime =
-    VectorTime(processIdA -> timeA, processIdB -> timeB)
+    VectorTime(idA -> timeA, idB -> timeB)
 }
 
 class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -134,7 +185,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
   var errProbe: TestProbe = _
 
   override def beforeEach(): Unit = {
-    instanceId = Eventsourced.instanceIdCounter.get
+    instanceId = EventsourcedView.instanceIdCounter.get
     logProbe = TestProbe()
     dstProbe = TestProbe()
     errProbe = TestProbe()
@@ -146,8 +197,11 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
   def unrecoveredActor(stateSync: Boolean = true): ActorRef =
     system.actorOf(Props(new TestEventsourcedActor(logProbe.ref, dstProbe.ref, errProbe.ref, stateSync)))
 
+
   def recoveredActor(stateSync: Boolean = true): ActorRef = {
     val actor = unrecoveredActor(stateSync)
+    logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId))
+    actor ! LoadSnapshotSuccess(None, instanceId)
     logProbe.expectMsg(Replay(1, actor, instanceId))
     actor ! ReplaySuccess(instanceId)
     actor
@@ -155,6 +209,20 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
 
   def stashingActor(stateSync: Boolean = true): ActorRef = {
     val actor = system.actorOf(Props(new TestStashingActor(logProbe.ref, dstProbe.ref, errProbe.ref, stateSync)))
+    logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId))
+    actor ! LoadSnapshotSuccess(None, instanceId)
+    logProbe.expectMsg(Replay(1, actor, instanceId))
+    actor ! ReplaySuccess(instanceId)
+    actor
+  }
+
+  def unrecoveredSnapshotActor(): ActorRef =
+    system.actorOf(Props(new TestSnapshotActor(logProbe.ref, dstProbe.ref, errProbe.ref)))
+
+  def recoveredSnapshotActor(): ActorRef = {
+    val actor = system.actorOf(Props(new TestSnapshotActor(logProbe.ref, dstProbe.ref, errProbe.ref)))
+    logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId))
+    actor ! LoadSnapshotSuccess(None, instanceId)
     logProbe.expectMsg(Replay(1, actor, instanceId))
     actor ! ReplaySuccess(instanceId)
     actor
@@ -168,6 +236,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
   "An EventsourcedActor" must {
     "recover from replayed local events" in {
       val actor = unrecoveredActor()
+      logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId))
+      actor ! LoadSnapshotSuccess(None, instanceId)
       logProbe.expectMsg(Replay(1, actor, instanceId))
       actor ! Replaying(eventA("a", 1, timestampAB(1, 0)), instanceId)
       actor ! Replaying(eventA("b", 2, timestampAB(2, 0)), instanceId)
@@ -199,11 +269,15 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
     }
     "retry recovery on failure" in {
       val actor = unrecoveredActor()
+      logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId))
+      actor ! LoadSnapshotSuccess(None, instanceId)
       logProbe.expectMsg(Replay(1, actor, instanceId))
       actor ! Replaying(eventA("a", 1, timestampAB(1, 0)), instanceId)
       actor ! Replaying(eventA("boom", 2, timestampAB(3, 0)), instanceId)
       actor ! Replaying(eventA("c", 3, timestampAB(2, 0)), instanceId)
       actor ! ReplaySuccess(instanceId)
+      logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId + 1))
+      actor ! LoadSnapshotSuccess(None, instanceId + 1)
       logProbe.expectMsg(Replay(1, actor, instanceId + 1))
       actor ! Replaying(eventA("a", 1, timestampAB(1, 0)), instanceId + 1)
       actor ! Replaying(eventA("b", 2, timestampAB(2, 0)), instanceId + 1)
@@ -230,6 +304,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
     }
     "stash commands during recovery and handle them after retried recovery" in {
       val actor = unrecoveredActor()
+      logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId))
+      actor ! LoadSnapshotSuccess(None, instanceId)
       logProbe.expectMsg(Replay(1, actor, instanceId))
       actor ! Replaying(eventA("a", 1, timestampAB(1, 0)), instanceId)
       actor ! Ping(1)
@@ -237,6 +313,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
       actor ! Ping(2)
       actor ! Replaying(eventA("c", 3, timestampAB(1, 0)), instanceId)
       actor ! ReplaySuccess(instanceId)
+      logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId + 1))
+      actor ! LoadSnapshotSuccess(None, instanceId + 1)
       logProbe.expectMsg(Replay(1, actor, instanceId + 1))
       actor ! Replaying(eventA("a", 1, timestampAB(1, 0)), instanceId + 1)
       actor ! Replaying(eventA("b", 2, timestampAB(2, 0)), instanceId + 1)
@@ -290,8 +368,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
     }
   }
 
-
-    "An EventsourcedActor" when {
+  "An EventsourcedActor" when {
     "in stateSync = true mode" must {
       "stash further commands while persistence is in progress" in {
         val actor = recoveredActor(stateSync = true)
@@ -317,6 +394,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         val write1 = logProbe.expectMsgClass(classOf[Write])
         actor ! WriteSuccess(write1.events(0).copy(targetLogSequenceNr = 1L, payload = "boom"), instanceId)
         actor ! WriteSuccess(write1.events(1).copy(targetLogSequenceNr = 2L), instanceId)
+        logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId + 1))
+        actor ! LoadSnapshotSuccess(None, instanceId + 1)
         logProbe.expectMsg(Replay(1, actor, instanceId + 1))
         actor ! Replaying(write1.events(0).copy(targetLogSequenceNr = 1L), instanceId + 1)
         actor ! Replaying(write1.events(1).copy(targetLogSequenceNr = 2L), instanceId + 1)
@@ -383,6 +462,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         processWrite(actor, 1)
         dstProbe.expectMsg("a-1")
 
+        logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId + 1))
+        actor ! LoadSnapshotSuccess(None, instanceId + 1)
         logProbe.expectMsg(Replay(1, actor, instanceId + 1))
         actor ! Replaying(eventA("a-1", 1, timestampAB(1, 0)), instanceId + 1)
         actor ! ReplaySuccess(instanceId + 1)
@@ -416,6 +497,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         val write1 = logProbe.expectMsgClass(classOf[Write])
         actor ! WriteSuccess(write1.events(0).copy(targetLogSequenceNr = 1L, payload = "boom"), instanceId)
         actor ! WriteSuccess(write1.events(1).copy(targetLogSequenceNr = 2L), instanceId)
+        logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId + 1))
+        actor ! LoadSnapshotSuccess(None, instanceId + 1)
         logProbe.expectMsg(Replay(1, actor, instanceId + 1))
         actor ! Replaying(write1.events(0).copy(targetLogSequenceNr = 1L), instanceId + 1)
         actor ! Replaying(write1.events(1).copy(targetLogSequenceNr = 2L), instanceId + 1)
@@ -513,8 +596,115 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         val write = logProbe.expectMsgClass(classOf[Write])
         write.events(0).systemTimestamp should be >= now
         write.events(1).systemTimestamp should be >= now
-
       }
+    }
+  }
+
+  "An EventsourcedActor" must {
+    "recover from a snapshot" in {
+      val actor = unrecoveredSnapshotActor()
+      val snapshot = Snapshot(SnapshotMetadata(idA, 2, 17, timestampA(2)), payload = State(Vector("a", "b")))
+
+      logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId))
+      actor ! LoadSnapshotSuccess(Some(snapshot), instanceId)
+      logProbe.expectMsg(Replay(3, actor, instanceId))
+      actor ! ReplaySuccess(instanceId)
+      dstProbe.expectMsg((Vector("a", "b"), timestampA(2), timestampA(2), 2))
+    }
+    "recover from a snapshot and remaining events" in {
+      val actor = unrecoveredSnapshotActor()
+      val snapshot = Snapshot(SnapshotMetadata(idA, 2, 17, timestampA(2)), payload = State(Vector("a", "b")))
+
+      logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId))
+      actor ! LoadSnapshotSuccess(Some(snapshot), instanceId)
+      logProbe.expectMsg(Replay(3, actor, instanceId))
+      actor ! Replaying(eventA("c", 3, timestampA(3)), instanceId)
+      actor ! Replaying(eventA("d", 4, timestampA(4)), instanceId)
+      actor ! ReplaySuccess(instanceId)
+      dstProbe.expectMsg((Vector("a", "b"), timestampA(2), timestampA(2), 2))
+      dstProbe.expectMsg((Vector("a", "b", "c"), timestampA(3), timestampA(3), 3))
+      dstProbe.expectMsg((Vector("a", "b", "c", "d"), timestampA(4), timestampA(4), 4))
+    }
+    "recover from a snapshot and deliver unconfirmed messages" in {
+      val actor = unrecoveredSnapshotActor()
+      val unconfirmed = Vector(
+        DeliveryAttempt("3", "x", dstProbe.ref.path),
+        DeliveryAttempt("4", "y", dstProbe.ref.path))
+      val snapshot = Snapshot(SnapshotMetadata(idA, 2, 17, timestampA(2)), unconfirmed, State(Vector("a", "b")))
+
+      logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId))
+      actor ! LoadSnapshotSuccess(Some(snapshot), instanceId)
+      logProbe.expectMsg(Replay(3, actor, instanceId))
+      actor ! ReplaySuccess(instanceId)
+      dstProbe.expectMsg((Vector("a", "b"), timestampA(2), timestampA(2), 2))
+      dstProbe.expectMsg("x")
+      dstProbe.expectMsg("y")
+    }
+    "recover from scratch if onSnapshot doesn't handle loaded snapshot" in {
+      val actor = unrecoveredSnapshotActor()
+      val snapshot = Snapshot(SnapshotMetadata(idA, 2, 17, timestampA(2)), payload = "foo")
+
+      logProbe.expectMsg(LoadSnapshot(idA, actor, instanceId))
+      actor ! LoadSnapshotSuccess(Some(snapshot), instanceId)
+      logProbe.expectMsg(Replay(1, actor, instanceId))
+      actor ! Replaying(eventA("a", 1, timestampA(1)), instanceId)
+      actor ! Replaying(eventA("b", 2, timestampA(2)), instanceId)
+      actor ! ReplaySuccess(instanceId)
+      dstProbe.expectMsg((Vector("a"), timestampA(1), timestampA(1), 1))
+      dstProbe.expectMsg((Vector("a", "b"), timestampA(2), timestampA(2), 2))
+    }
+    "save a snapshot" in {
+      val actor = recoveredSnapshotActor()
+      actor ! Cmd("a")
+      actor ! Cmd("b")
+      val event1 = logProbe.expectMsgClass(classOf[Write]).events(0)
+      actor ! WriteSuccess(event1.copy(targetLogSequenceNr = 1L), instanceId)
+      val event2 = logProbe.expectMsgClass(classOf[Write]).events(0)
+      actor ! WriteSuccess(event2.copy(targetLogSequenceNr = 2L), instanceId)
+      dstProbe.expectMsg((Vector("a"), timestampA(1), timestampA(1), 1))
+      dstProbe.expectMsg((Vector("a", "b"), timestampA(2), timestampA(2), 2))
+      actor ! "snap"
+
+      val metadata = SnapshotMetadata(idA, 2, event2.systemTimestamp, event2.vectorTimestamp)
+      val snapshot = Snapshot(metadata, payload = State(Vector("a", "b")))
+      logProbe.expectMsg(SaveSnapshot(snapshot, system.deadLetters, actor, instanceId))
+      actor ! SaveSnapshotSuccess(metadata, instanceId)
+      dstProbe.expectMsg(metadata)
+    }
+    "save a snapshot with unconfirmed messages" in {
+      val actor = recoveredSnapshotActor()
+      actor ! Cmd("a")
+      actor ! Cmd("b")
+      actor ! Deliver("x")
+      actor ! Deliver("y")
+      val event1 = logProbe.expectMsgClass(classOf[Write]).events(0)
+      actor ! WriteSuccess(event1.copy(targetLogSequenceNr = 1L), instanceId)
+      val event2 = logProbe.expectMsgClass(classOf[Write]).events(0)
+      actor ! WriteSuccess(event2.copy(targetLogSequenceNr = 2L), instanceId)
+      val event3 = logProbe.expectMsgClass(classOf[Write]).events(0)
+      actor ! WriteSuccess(event3.copy(targetLogSequenceNr = 3L), instanceId)
+      val event4 = logProbe.expectMsgClass(classOf[Write]).events(0)
+      actor ! WriteSuccess(event4.copy(targetLogSequenceNr = 4L), instanceId)
+      dstProbe.expectMsg((Vector("a"), timestampA(1), timestampA(1), 1))
+      dstProbe.expectMsg((Vector("a", "b"), timestampA(2), timestampA(2), 2))
+      dstProbe.expectMsg(("x", timestampA(3), timestampA(3), 3))
+      dstProbe.expectMsg(("y", timestampA(4), timestampA(4), 4))
+      actor ! "snap"
+
+      val metadata = SnapshotMetadata(idA, 4, event4.systemTimestamp, event4.vectorTimestamp)
+      val unconfirmed = Vector(
+        DeliveryAttempt("3", ("x", timestampA(3), timestampA(3), 3), dstProbe.ref.path),
+        DeliveryAttempt("4", ("y", timestampA(4), timestampA(4), 4), dstProbe.ref.path))
+      val snapshot = Snapshot(metadata, unconfirmed, State(Vector("a", "b")))
+      logProbe.expectMsg(SaveSnapshot(snapshot, system.deadLetters, actor, instanceId))
+      actor ! SaveSnapshotSuccess(metadata, instanceId)
+      dstProbe.expectMsg(metadata)
+    }
+    "not save the same snapshot concurrently" in {
+      val actor = recoveredSnapshotActor()
+      actor ! "snap"
+      actor ! "snap"
+      errProbe.expectMsgClass(classOf[IllegalStateException])
     }
   }
 }

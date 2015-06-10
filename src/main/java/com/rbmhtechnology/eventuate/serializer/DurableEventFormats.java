@@ -65,20 +65,20 @@ public final class DurableEventFormats {
      */
     com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getVectorTimestampOrBuilder();
 
-    // optional string emitterReplicaId = 4;
+    // optional string emitterId = 4;
     /**
-     * <code>optional string emitterReplicaId = 4;</code>
+     * <code>optional string emitterId = 4;</code>
      */
-    boolean hasEmitterReplicaId();
+    boolean hasEmitterId();
     /**
-     * <code>optional string emitterReplicaId = 4;</code>
+     * <code>optional string emitterId = 4;</code>
      */
-    java.lang.String getEmitterReplicaId();
+    java.lang.String getEmitterId();
     /**
-     * <code>optional string emitterReplicaId = 4;</code>
+     * <code>optional string emitterId = 4;</code>
      */
     com.google.protobuf.ByteString
-        getEmitterReplicaIdBytes();
+        getEmitterIdBytes();
 
     // optional string emitterAggregateId = 5;
     /**
@@ -95,25 +95,25 @@ public final class DurableEventFormats {
     com.google.protobuf.ByteString
         getEmitterAggregateIdBytes();
 
-    // repeated string customRoutingDestinations = 6;
+    // repeated string customDestinationAggregateIds = 6;
     /**
-     * <code>repeated string customRoutingDestinations = 6;</code>
+     * <code>repeated string customDestinationAggregateIds = 6;</code>
      */
     java.util.List<java.lang.String>
-    getCustomRoutingDestinationsList();
+    getCustomDestinationAggregateIdsList();
     /**
-     * <code>repeated string customRoutingDestinations = 6;</code>
+     * <code>repeated string customDestinationAggregateIds = 6;</code>
      */
-    int getCustomRoutingDestinationsCount();
+    int getCustomDestinationAggregateIdsCount();
     /**
-     * <code>repeated string customRoutingDestinations = 6;</code>
+     * <code>repeated string customDestinationAggregateIds = 6;</code>
      */
-    java.lang.String getCustomRoutingDestinations(int index);
+    java.lang.String getCustomDestinationAggregateIds(int index);
     /**
-     * <code>repeated string customRoutingDestinations = 6;</code>
+     * <code>repeated string customDestinationAggregateIds = 6;</code>
      */
     com.google.protobuf.ByteString
-        getCustomRoutingDestinationsBytes(int index);
+        getCustomDestinationAggregateIdsBytes(int index);
 
     // optional int64 sourceLogReadPosition = 7;
     /**
@@ -259,7 +259,7 @@ public final class DurableEventFormats {
             }
             case 34: {
               bitField0_ |= 0x00000008;
-              emitterReplicaId_ = input.readBytes();
+              emitterId_ = input.readBytes();
               break;
             }
             case 42: {
@@ -269,10 +269,10 @@ public final class DurableEventFormats {
             }
             case 50: {
               if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
-                customRoutingDestinations_ = new com.google.protobuf.LazyStringArrayList();
+                customDestinationAggregateIds_ = new com.google.protobuf.LazyStringArrayList();
                 mutable_bitField0_ |= 0x00000020;
               }
-              customRoutingDestinations_.add(input.readBytes());
+              customDestinationAggregateIds_.add(input.readBytes());
               break;
             }
             case 56: {
@@ -309,7 +309,7 @@ public final class DurableEventFormats {
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
-          customRoutingDestinations_ = new com.google.protobuf.UnmodifiableLazyStringList(customRoutingDestinations_);
+          customDestinationAggregateIds_ = new com.google.protobuf.UnmodifiableLazyStringList(customDestinationAggregateIds_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -403,20 +403,20 @@ public final class DurableEventFormats {
       return vectorTimestamp_;
     }
 
-    // optional string emitterReplicaId = 4;
-    public static final int EMITTERREPLICAID_FIELD_NUMBER = 4;
-    private java.lang.Object emitterReplicaId_;
+    // optional string emitterId = 4;
+    public static final int EMITTERID_FIELD_NUMBER = 4;
+    private java.lang.Object emitterId_;
     /**
-     * <code>optional string emitterReplicaId = 4;</code>
+     * <code>optional string emitterId = 4;</code>
      */
-    public boolean hasEmitterReplicaId() {
+    public boolean hasEmitterId() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>optional string emitterReplicaId = 4;</code>
+     * <code>optional string emitterId = 4;</code>
      */
-    public java.lang.String getEmitterReplicaId() {
-      java.lang.Object ref = emitterReplicaId_;
+    public java.lang.String getEmitterId() {
+      java.lang.Object ref = emitterId_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -424,22 +424,22 @@ public final class DurableEventFormats {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          emitterReplicaId_ = s;
+          emitterId_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string emitterReplicaId = 4;</code>
+     * <code>optional string emitterId = 4;</code>
      */
     public com.google.protobuf.ByteString
-        getEmitterReplicaIdBytes() {
-      java.lang.Object ref = emitterReplicaId_;
+        getEmitterIdBytes() {
+      java.lang.Object ref = emitterId_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        emitterReplicaId_ = b;
+        emitterId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -489,34 +489,34 @@ public final class DurableEventFormats {
       }
     }
 
-    // repeated string customRoutingDestinations = 6;
-    public static final int CUSTOMROUTINGDESTINATIONS_FIELD_NUMBER = 6;
-    private com.google.protobuf.LazyStringList customRoutingDestinations_;
+    // repeated string customDestinationAggregateIds = 6;
+    public static final int CUSTOMDESTINATIONAGGREGATEIDS_FIELD_NUMBER = 6;
+    private com.google.protobuf.LazyStringList customDestinationAggregateIds_;
     /**
-     * <code>repeated string customRoutingDestinations = 6;</code>
+     * <code>repeated string customDestinationAggregateIds = 6;</code>
      */
     public java.util.List<java.lang.String>
-        getCustomRoutingDestinationsList() {
-      return customRoutingDestinations_;
+        getCustomDestinationAggregateIdsList() {
+      return customDestinationAggregateIds_;
     }
     /**
-     * <code>repeated string customRoutingDestinations = 6;</code>
+     * <code>repeated string customDestinationAggregateIds = 6;</code>
      */
-    public int getCustomRoutingDestinationsCount() {
-      return customRoutingDestinations_.size();
+    public int getCustomDestinationAggregateIdsCount() {
+      return customDestinationAggregateIds_.size();
     }
     /**
-     * <code>repeated string customRoutingDestinations = 6;</code>
+     * <code>repeated string customDestinationAggregateIds = 6;</code>
      */
-    public java.lang.String getCustomRoutingDestinations(int index) {
-      return customRoutingDestinations_.get(index);
+    public java.lang.String getCustomDestinationAggregateIds(int index) {
+      return customDestinationAggregateIds_.get(index);
     }
     /**
-     * <code>repeated string customRoutingDestinations = 6;</code>
+     * <code>repeated string customDestinationAggregateIds = 6;</code>
      */
     public com.google.protobuf.ByteString
-        getCustomRoutingDestinationsBytes(int index) {
-      return customRoutingDestinations_.getByteString(index);
+        getCustomDestinationAggregateIdsBytes(int index) {
+      return customDestinationAggregateIds_.getByteString(index);
     }
 
     // optional int64 sourceLogReadPosition = 7;
@@ -657,9 +657,9 @@ public final class DurableEventFormats {
       payload_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.PayloadFormat.getDefaultInstance();
       systemTimestamp_ = 0L;
       vectorTimestamp_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
-      emitterReplicaId_ = "";
+      emitterId_ = "";
       emitterAggregateId_ = "";
-      customRoutingDestinations_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      customDestinationAggregateIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       sourceLogReadPosition_ = 0L;
       sourceLogId_ = "";
       targetLogId_ = "";
@@ -694,13 +694,13 @@ public final class DurableEventFormats {
         output.writeMessage(3, vectorTimestamp_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBytes(4, getEmitterReplicaIdBytes());
+        output.writeBytes(4, getEmitterIdBytes());
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBytes(5, getEmitterAggregateIdBytes());
       }
-      for (int i = 0; i < customRoutingDestinations_.size(); i++) {
-        output.writeBytes(6, customRoutingDestinations_.getByteString(i));
+      for (int i = 0; i < customDestinationAggregateIds_.size(); i++) {
+        output.writeBytes(6, customDestinationAggregateIds_.getByteString(i));
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         output.writeInt64(7, sourceLogReadPosition_);
@@ -740,7 +740,7 @@ public final class DurableEventFormats {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getEmitterReplicaIdBytes());
+          .computeBytesSize(4, getEmitterIdBytes());
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
@@ -748,12 +748,12 @@ public final class DurableEventFormats {
       }
       {
         int dataSize = 0;
-        for (int i = 0; i < customRoutingDestinations_.size(); i++) {
+        for (int i = 0; i < customDestinationAggregateIds_.size(); i++) {
           dataSize += com.google.protobuf.CodedOutputStream
-            .computeBytesSizeNoTag(customRoutingDestinations_.getByteString(i));
+            .computeBytesSizeNoTag(customDestinationAggregateIds_.getByteString(i));
         }
         size += dataSize;
-        size += 1 * getCustomRoutingDestinationsList().size();
+        size += 1 * getCustomDestinationAggregateIdsList().size();
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
@@ -907,11 +907,11 @@ public final class DurableEventFormats {
           vectorTimestampBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000004);
-        emitterReplicaId_ = "";
+        emitterId_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
         emitterAggregateId_ = "";
         bitField0_ = (bitField0_ & ~0x00000010);
-        customRoutingDestinations_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        customDestinationAggregateIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000020);
         sourceLogReadPosition_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000040);
@@ -974,17 +974,17 @@ public final class DurableEventFormats {
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.emitterReplicaId_ = emitterReplicaId_;
+        result.emitterId_ = emitterId_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
         result.emitterAggregateId_ = emitterAggregateId_;
         if (((bitField0_ & 0x00000020) == 0x00000020)) {
-          customRoutingDestinations_ = new com.google.protobuf.UnmodifiableLazyStringList(
-              customRoutingDestinations_);
+          customDestinationAggregateIds_ = new com.google.protobuf.UnmodifiableLazyStringList(
+              customDestinationAggregateIds_);
           bitField0_ = (bitField0_ & ~0x00000020);
         }
-        result.customRoutingDestinations_ = customRoutingDestinations_;
+        result.customDestinationAggregateIds_ = customDestinationAggregateIds_;
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000020;
         }
@@ -1030,9 +1030,9 @@ public final class DurableEventFormats {
         if (other.hasVectorTimestamp()) {
           mergeVectorTimestamp(other.getVectorTimestamp());
         }
-        if (other.hasEmitterReplicaId()) {
+        if (other.hasEmitterId()) {
           bitField0_ |= 0x00000008;
-          emitterReplicaId_ = other.emitterReplicaId_;
+          emitterId_ = other.emitterId_;
           onChanged();
         }
         if (other.hasEmitterAggregateId()) {
@@ -1040,13 +1040,13 @@ public final class DurableEventFormats {
           emitterAggregateId_ = other.emitterAggregateId_;
           onChanged();
         }
-        if (!other.customRoutingDestinations_.isEmpty()) {
-          if (customRoutingDestinations_.isEmpty()) {
-            customRoutingDestinations_ = other.customRoutingDestinations_;
+        if (!other.customDestinationAggregateIds_.isEmpty()) {
+          if (customDestinationAggregateIds_.isEmpty()) {
+            customDestinationAggregateIds_ = other.customDestinationAggregateIds_;
             bitField0_ = (bitField0_ & ~0x00000020);
           } else {
-            ensureCustomRoutingDestinationsIsMutable();
-            customRoutingDestinations_.addAll(other.customRoutingDestinations_);
+            ensureCustomDestinationAggregateIdsIsMutable();
+            customDestinationAggregateIds_.addAll(other.customDestinationAggregateIds_);
           }
           onChanged();
         }
@@ -1369,76 +1369,76 @@ public final class DurableEventFormats {
         return vectorTimestampBuilder_;
       }
 
-      // optional string emitterReplicaId = 4;
-      private java.lang.Object emitterReplicaId_ = "";
+      // optional string emitterId = 4;
+      private java.lang.Object emitterId_ = "";
       /**
-       * <code>optional string emitterReplicaId = 4;</code>
+       * <code>optional string emitterId = 4;</code>
        */
-      public boolean hasEmitterReplicaId() {
+      public boolean hasEmitterId() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>optional string emitterReplicaId = 4;</code>
+       * <code>optional string emitterId = 4;</code>
        */
-      public java.lang.String getEmitterReplicaId() {
-        java.lang.Object ref = emitterReplicaId_;
+      public java.lang.String getEmitterId() {
+        java.lang.Object ref = emitterId_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          emitterReplicaId_ = s;
+          emitterId_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>optional string emitterReplicaId = 4;</code>
+       * <code>optional string emitterId = 4;</code>
        */
       public com.google.protobuf.ByteString
-          getEmitterReplicaIdBytes() {
-        java.lang.Object ref = emitterReplicaId_;
+          getEmitterIdBytes() {
+        java.lang.Object ref = emitterId_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          emitterReplicaId_ = b;
+          emitterId_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string emitterReplicaId = 4;</code>
+       * <code>optional string emitterId = 4;</code>
        */
-      public Builder setEmitterReplicaId(
+      public Builder setEmitterId(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000008;
-        emitterReplicaId_ = value;
+        emitterId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string emitterReplicaId = 4;</code>
+       * <code>optional string emitterId = 4;</code>
        */
-      public Builder clearEmitterReplicaId() {
+      public Builder clearEmitterId() {
         bitField0_ = (bitField0_ & ~0x00000008);
-        emitterReplicaId_ = getDefaultInstance().getEmitterReplicaId();
+        emitterId_ = getDefaultInstance().getEmitterId();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string emitterReplicaId = 4;</code>
+       * <code>optional string emitterId = 4;</code>
        */
-      public Builder setEmitterReplicaIdBytes(
+      public Builder setEmitterIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000008;
-        emitterReplicaId_ = value;
+        emitterId_ = value;
         onChanged();
         return this;
       }
@@ -1517,95 +1517,95 @@ public final class DurableEventFormats {
         return this;
       }
 
-      // repeated string customRoutingDestinations = 6;
-      private com.google.protobuf.LazyStringList customRoutingDestinations_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      private void ensureCustomRoutingDestinationsIsMutable() {
+      // repeated string customDestinationAggregateIds = 6;
+      private com.google.protobuf.LazyStringList customDestinationAggregateIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureCustomDestinationAggregateIdsIsMutable() {
         if (!((bitField0_ & 0x00000020) == 0x00000020)) {
-          customRoutingDestinations_ = new com.google.protobuf.LazyStringArrayList(customRoutingDestinations_);
+          customDestinationAggregateIds_ = new com.google.protobuf.LazyStringArrayList(customDestinationAggregateIds_);
           bitField0_ |= 0x00000020;
          }
       }
       /**
-       * <code>repeated string customRoutingDestinations = 6;</code>
+       * <code>repeated string customDestinationAggregateIds = 6;</code>
        */
       public java.util.List<java.lang.String>
-          getCustomRoutingDestinationsList() {
-        return java.util.Collections.unmodifiableList(customRoutingDestinations_);
+          getCustomDestinationAggregateIdsList() {
+        return java.util.Collections.unmodifiableList(customDestinationAggregateIds_);
       }
       /**
-       * <code>repeated string customRoutingDestinations = 6;</code>
+       * <code>repeated string customDestinationAggregateIds = 6;</code>
        */
-      public int getCustomRoutingDestinationsCount() {
-        return customRoutingDestinations_.size();
+      public int getCustomDestinationAggregateIdsCount() {
+        return customDestinationAggregateIds_.size();
       }
       /**
-       * <code>repeated string customRoutingDestinations = 6;</code>
+       * <code>repeated string customDestinationAggregateIds = 6;</code>
        */
-      public java.lang.String getCustomRoutingDestinations(int index) {
-        return customRoutingDestinations_.get(index);
+      public java.lang.String getCustomDestinationAggregateIds(int index) {
+        return customDestinationAggregateIds_.get(index);
       }
       /**
-       * <code>repeated string customRoutingDestinations = 6;</code>
+       * <code>repeated string customDestinationAggregateIds = 6;</code>
        */
       public com.google.protobuf.ByteString
-          getCustomRoutingDestinationsBytes(int index) {
-        return customRoutingDestinations_.getByteString(index);
+          getCustomDestinationAggregateIdsBytes(int index) {
+        return customDestinationAggregateIds_.getByteString(index);
       }
       /**
-       * <code>repeated string customRoutingDestinations = 6;</code>
+       * <code>repeated string customDestinationAggregateIds = 6;</code>
        */
-      public Builder setCustomRoutingDestinations(
+      public Builder setCustomDestinationAggregateIds(
           int index, java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  ensureCustomRoutingDestinationsIsMutable();
-        customRoutingDestinations_.set(index, value);
+  ensureCustomDestinationAggregateIdsIsMutable();
+        customDestinationAggregateIds_.set(index, value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string customRoutingDestinations = 6;</code>
+       * <code>repeated string customDestinationAggregateIds = 6;</code>
        */
-      public Builder addCustomRoutingDestinations(
+      public Builder addCustomDestinationAggregateIds(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  ensureCustomRoutingDestinationsIsMutable();
-        customRoutingDestinations_.add(value);
+  ensureCustomDestinationAggregateIdsIsMutable();
+        customDestinationAggregateIds_.add(value);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string customRoutingDestinations = 6;</code>
+       * <code>repeated string customDestinationAggregateIds = 6;</code>
        */
-      public Builder addAllCustomRoutingDestinations(
+      public Builder addAllCustomDestinationAggregateIds(
           java.lang.Iterable<java.lang.String> values) {
-        ensureCustomRoutingDestinationsIsMutable();
-        super.addAll(values, customRoutingDestinations_);
+        ensureCustomDestinationAggregateIdsIsMutable();
+        super.addAll(values, customDestinationAggregateIds_);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string customRoutingDestinations = 6;</code>
+       * <code>repeated string customDestinationAggregateIds = 6;</code>
        */
-      public Builder clearCustomRoutingDestinations() {
-        customRoutingDestinations_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      public Builder clearCustomDestinationAggregateIds() {
+        customDestinationAggregateIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000020);
         onChanged();
         return this;
       }
       /**
-       * <code>repeated string customRoutingDestinations = 6;</code>
+       * <code>repeated string customDestinationAggregateIds = 6;</code>
        */
-      public Builder addCustomRoutingDestinationsBytes(
+      public Builder addCustomDestinationAggregateIdsBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  ensureCustomRoutingDestinationsIsMutable();
-        customRoutingDestinations_.add(value);
+  ensureCustomDestinationAggregateIdsIsMutable();
+        customDestinationAggregateIds_.add(value);
         onChanged();
         return this;
       }
@@ -3716,22 +3716,21 @@ public final class DurableEventFormats {
   static {
     java.lang.String[] descriptorData = {
       "\n+src/main/protobuf/DurableEventFormats." +
-      "proto\"\326\002\n\022DurableEventFormat\022\037\n\007payload\030" +
+      "proto\"\323\002\n\022DurableEventFormat\022\037\n\007payload\030" +
       "\001 \001(\0132\016.PayloadFormat\022\027\n\017systemTimestamp" +
       "\030\002 \001(\003\022*\n\017vectorTimestamp\030\003 \001(\0132\021.Vector" +
-      "TimeFormat\022\030\n\020emitterReplicaId\030\004 \001(\t\022\032\n\022" +
-      "emitterAggregateId\030\005 \001(\t\022!\n\031customRoutin" +
-      "gDestinations\030\006 \003(\t\022\035\n\025sourceLogReadPosi" +
-      "tion\030\007 \001(\003\022\023\n\013sourceLogId\030\010 \001(\t\022\023\n\013targe" +
-      "tLogId\030\t \001(\t\022\033\n\023sourceLogSequenceNr\030\n \001(" +
-      "\003\022\033\n\023targetLogSequenceNr\030\013 \001(\003\"O\n\rPayloa",
-      "dFormat\022\024\n\014serializerId\030\001 \001(\005\022\017\n\007payload" +
-      "\030\002 \001(\014\022\027\n\017payloadManifest\030\003 \001(\014\"?\n\025Vecto" +
-      "rTimeEntryFormat\022\021\n\tprocessId\030\001 \002(\t\022\023\n\013l" +
-      "ogicalTime\030\002 \002(\003\";\n\020VectorTimeFormat\022\'\n\007" +
-      "entries\030\001 \003(\0132\026.VectorTimeEntryFormatB+\n" +
-      "\'com.rbmhtechnology.eventuate.serializer" +
-      "H\001"
+      "TimeFormat\022\021\n\temitterId\030\004 \001(\t\022\032\n\022emitter" +
+      "AggregateId\030\005 \001(\t\022%\n\035customDestinationAg" +
+      "gregateIds\030\006 \003(\t\022\035\n\025sourceLogReadPositio" +
+      "n\030\007 \001(\003\022\023\n\013sourceLogId\030\010 \001(\t\022\023\n\013targetLo" +
+      "gId\030\t \001(\t\022\033\n\023sourceLogSequenceNr\030\n \001(\003\022\033" +
+      "\n\023targetLogSequenceNr\030\013 \001(\003\"O\n\rPayloadFo",
+      "rmat\022\024\n\014serializerId\030\001 \001(\005\022\017\n\007payload\030\002 " +
+      "\001(\014\022\027\n\017payloadManifest\030\003 \001(\014\"?\n\025VectorTi" +
+      "meEntryFormat\022\021\n\tprocessId\030\001 \002(\t\022\023\n\013logi" +
+      "calTime\030\002 \002(\003\";\n\020VectorTimeFormat\022\'\n\007ent" +
+      "ries\030\001 \003(\0132\026.VectorTimeEntryFormatB+\n\'co" +
+      "m.rbmhtechnology.eventuate.serializerH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -3743,7 +3742,7 @@ public final class DurableEventFormats {
           internal_static_DurableEventFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_DurableEventFormat_descriptor,
-              new java.lang.String[] { "Payload", "SystemTimestamp", "VectorTimestamp", "EmitterReplicaId", "EmitterAggregateId", "CustomRoutingDestinations", "SourceLogReadPosition", "SourceLogId", "TargetLogId", "SourceLogSequenceNr", "TargetLogSequenceNr", });
+              new java.lang.String[] { "Payload", "SystemTimestamp", "VectorTimestamp", "EmitterId", "EmitterAggregateId", "CustomDestinationAggregateIds", "SourceLogReadPosition", "SourceLogId", "TargetLogId", "SourceLogSequenceNr", "TargetLogSequenceNr", });
           internal_static_PayloadFormat_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_PayloadFormat_fieldAccessorTable = new

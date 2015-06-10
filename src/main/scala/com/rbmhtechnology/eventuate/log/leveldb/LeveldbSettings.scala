@@ -16,12 +16,16 @@
 
 package com.rbmhtechnology.eventuate.log.leveldb
 
-import com.typesafe.config.Config
+import akka.actor.ActorSystem
+import akka.dispatch.MessageDispatcher
 
-private[leveldb] class LeveldbSettings(config: Config) {
+private[leveldb] class LeveldbSettings(system: ActorSystem) {
+  implicit val readDispatcher: MessageDispatcher =
+    system.dispatchers.lookup("eventuate.log.leveldb.read-dispatcher")
+
   val rootDir: String =
-    config.getString("eventuate.log.leveldb.dir")
+    system.settings.config.getString("eventuate.log.leveldb.dir")
 
   val fsync: Boolean =
-    config.getBoolean("eventuate.log.leveldb.fsync")
+    system.settings.config.getBoolean("eventuate.log.leveldb.fsync")
 }

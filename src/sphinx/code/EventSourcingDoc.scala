@@ -27,7 +27,7 @@ object EventSourcing {
   case class ExampleCommandSuccess(data: String)
   case class ExampleCommandFailure(cause: Throwable)
 
-  class ExampleActor(override val replicaId: String,
+  class ExampleActor(override val id: String,
                      override val eventLog: ActorRef) extends EventsourcedActor {
 
     /** Command handler */
@@ -38,7 +38,7 @@ object EventSourcing {
 
         // derive event
         val event = ExampleEvent(data)
-        // persist event
+        // persist event (asynchronously)
         persist(event) {
           case Success(evt) =>
             // handle event
@@ -69,7 +69,7 @@ object EventSourcing {
 
   class EventsourcedActorAPIImpl extends EventsourcedActorAPI with EventsourcedActor {
     override def eventLog: ActorRef = ???
-    override def replicaId: String = ???
+    override def id: String = ???
     override def onCommand: Receive = ???
     //#event-handler
     /** Event handler */
@@ -84,4 +84,74 @@ object EventSourcing {
     }
     //#
   }
+}
+
+object SaveSnapshot {
+  //#snapshot-save
+  import scala.util._
+  import akka.actor._
+  import com.rbmhtechnology.eventuate.EventsourcedActor
+  import com.rbmhtechnology.eventuate.SnapshotMetadata
+
+  case object Save
+  case class SaveSuccess(metadata: SnapshotMetadata)
+  case class SaveFailure(cause: Throwable)
+  case class ExampleState(components: Vector[String] = Vector.empty)
+
+  class ExampleActor(override val id: String,
+                     override val eventLog: ActorRef) extends EventsourcedActor {
+
+    var state: ExampleState = ExampleState()
+
+    override val onCommand: Receive = {
+      case Save =>
+        // save snapshot of internal state (asynchronously)
+        save(state) {
+          case Success(metadata) =>
+            // success reply
+            sender() ! SaveSuccess(metadata)
+          case Failure(cause) =>
+            // failure reply
+            sender() ! SaveFailure(cause)
+        }
+      case cmd => // ...
+    }
+
+    override val onEvent: Receive = {
+      case evt => // update state ...
+    }
+  }
+  //#
+}
+
+object LoadSnapshot {
+  import akka.actor._
+  import com.rbmhtechnology.eventuate.EventsourcedActor
+
+  case object Save
+  case class ExampleState(components: Vector[String] = Vector.empty)
+
+  //#snapshot-load
+  class ExampleActor(override val id: String,
+                     override val eventLog: ActorRef) extends EventsourcedActor {
+
+    var state: ExampleState = ExampleState()
+
+    override val onCommand: Receive = {
+      case Save => // ...
+      case cmd => // ...
+    }
+
+    override val onEvent: Receive = {
+      case evt => // update state ...
+    }
+
+    /** Snapshot handler */
+    override val onSnapshot: Receive = {
+      case s: ExampleState =>
+        // initialize internal state from loaded snapshot
+        state = s
+    }
+  }
+  //#
 }

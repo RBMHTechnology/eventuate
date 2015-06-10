@@ -23,9 +23,9 @@ import scala.util._
 import akka.actor._
 
 /**
- * An [[Eventsourced]] actor that can also produce (= emit) new events to its event log. New events
- * can be produced with methods `persist`, `persistN` and `persistWithLocalTime`. They must
- * only be used within the `onCommand` command handler. The command handler may only read
+ * An `EventsourcedActor` is an [[EventsourcedView]] that can also produce (= emit) new events to its
+ * event log. New events can be produced with methods `persist`, `persistN` and `persistWithLocalTime`.
+ * They must only be used within the `onCommand` command handler. The command handler may only read
  * internal state but must not modify it. Internal state may only be modified within `onEvent`.
  *
  * An `EventsourcedActor` maintains a [[VectorClock]] used to time-stamp the events it emits
@@ -33,31 +33,23 @@ import akka.actor._
  * Events that are pushed from the `eventLog` actor but not handled by `onEvent` do not
  * update the vector clock.
  *
- * @see [[Eventsourced]]
+ * @see [[EventsourcedView]]
  */
-trait EventsourcedActor extends Eventsourced with ConditionalCommands with InternalStash {
+trait EventsourcedActor extends EventsourcedView {
   import EventsourcingProtocol._
   import EventsourcedActor._
 
-  type Handler[A] = Try[A] => Unit
+  //
+  // TODO: clock initialization from snapshot
+  //
+  // - snapshot contains lastVectorTimestamp
+  // - clock = clock.update(lastVectorTimestamp)
+  //
 
   private var clock: VectorClock = _
   private var writeRequests: Vector[DurableEvent] = Vector.empty
   private var writeHandlers: Vector[Handler[Any]] = Vector.empty
   private var writing: Boolean = false
-
-  /**
-   * Unique process id, used to store this actor's logical time in its vector clock.
-   */
-  final lazy val processId: String =
-    DurableEvent.processId(replicaId, aggregateId)
-
-  /**
-   * The replica id distinguishes replicas of an `EventsourcedActor` with a given `aggregateId`.
-   * It must be unique in context of a given `aggregateId` but can be reused in context of a
-   * different `aggregateId`.
-   */
-  def replicaId: String
 
   /**
    * State synchronization. If set to `true`, commands see internal state that is
@@ -85,65 +77,137 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
     self ! ConditionalCommand(currentTime, Delayed(command, handler, instanceId))
 
   /**
-   * Persists a sequence of `events` and asynchronously calls `handler` with the persist
+   * Asynchronously persists a sequence of `events` and calls `handler` with the persist
    * results. The `handler` is called for each event in the sequence during a separate
    * message dispatch by this actor, hence, it is safe to modify internal state within
-   * `handler`. The `onLast` handler is additionally called for the last event in the
-   * sequence.
+   * `handler`. The `handler` can also obtain a reference to the initial command sender
+   * via `sender()`. The `onLast` handler is additionally called for the last event in
+   * the sequence.
    *
-   * By default, the event is routed to [[Eventsourced]] destinations with an undefined `aggregateId`.
-   * If this actor's `aggregateId` is defined it is additionally routed to this actor's replicas.
-   * Further routing destinations can be defined with the `customRoutingDestinations` parameter.
-   * If non-empty, the event is additionally routed to [[Eventsourced]] destinations with a matching
-   * `aggregateId`.
+   * By default, the event is routed to event-sourced destinations with an undefined `aggregateId`.
+   * If this actor's `aggregateId` is defined it is additionally routed to all actors with the same
+   * `aggregateId`. Further routing destinations can be defined with the `customDestinationAggregateIds`
+   * parameter.
    */
-  final def persistN[A](events: Seq[A], onLast: Handler[A] = (_: Try[A]) => (), customRoutingDestinations: Set[String] = Set())(handler: Handler[A]): Unit = events match {
+  final def persistN[A](events: Seq[A], onLast: Handler[A] = (_: Try[A]) => (), customDestinationAggregateIds: Set[String] = Set())(handler: Handler[A]): Unit = events match {
     case Seq()   =>
     case es :+ e =>
       es.foreach { event =>
-        persist(event, customRoutingDestinations)(handler)
+        persist(event, customDestinationAggregateIds)(handler)
       }
-      persist(e, customRoutingDestinations) { r =>
+      persist(e, customDestinationAggregateIds) { r =>
         handler(r)
         onLast(r)
       }
   }
 
   /**
-   * Persists the given `event` and asynchronously calls `handler` with the persist result.
-   * The `handler` is called during a separate message dispatch by this actor, hence, it
-   * is safe to modify internal state within `handler`.
+   * Asynchronously persists the given `event` and calls `handler` with the persist result.
+   * The `handler` is called during a separate message dispatch by this actor, hence, it is
+   * safe to modify internal state within `handler`. The `handler` can also obtain a reference
+   * to the initial command sender via `sender()`.
    *
-   * By default, the event is routed to [[Eventsourced]] destinations with an undefined `aggregateId`.
-   * If this actor's `aggregateId` is defined it is additionally routed to this actor's replicas.
-   * Further routing destinations can be defined with the `customRoutingDestinations` parameter.
-   * If non-empty, the event is additionally routed to [[Eventsourced]] destinations with a matching
-   * `aggregateId`.
+   * By default, the event is routed to event-sourced destinations with an undefined `aggregateId`.
+   * If this actor's `aggregateId` is defined it is additionally routed to all actors with the same
+   * `aggregateId`. Further routing destinations can be defined with the `customDestinationAggregateIds`
+   * parameter.
    */
-  final def persist[A](event: A, customRoutingDestinations: Set[String] = Set())(handler: Handler[A]): Unit =
-    persistWithLocalTime(_ => event, customRoutingDestinations)(handler)
+  final def persist[A](event: A, customDestinationAggregateIds: Set[String] = Set())(handler: Handler[A]): Unit =
+    persistWithLocalTime(_ => event, customDestinationAggregateIds)(handler)
 
   /**
-   * Persists the event returned by  `f` and asynchronously calls `handler` with the persist
+   * Asynchronously persists the event returned by  `f` and calls `handler` with the persist
    * result. The input parameter to `f` is the current local time which is the actor's logical
    * time, taken from its internal vector clock, and not the current system time. The `handler`
    * is called during a separate message dispatch by this actor, hence, it is safe to modify
-   * internal state within `handler`.
+   * internal state within `handler`. The `handler` can also obtain a reference to the initial
+   * command sender via `sender()`.
    *
-   * By default, the event is routed to [[Eventsourced]] destinations with an undefined `aggregateId`.
-   * If this actor's `aggregateId` is defined it is additionally routed to this actor's replicas.
-   * Further routing destinations can be defined with the `customRoutingDestinations` parameter.
-   * If non-empty, the event is additionally routed to [[Eventsourced]] destinations with a matching
-   * `aggregateId`.
+   * By default, the event is routed to event-sourced destinations with an undefined `aggregateId`.
+   * If this actor's `aggregateId` is defined it is additionally routed to all actors with the same
+   * `aggregateId`. Further routing destinations can be defined with the `customDestinationAggregateIds`
+   * parameter.
    */
-  final def persistWithLocalTime[A](f: Long => A, customRoutingDestinations: Set[String] = Set())(handler: Handler[A]): A = {
+  final def persistWithLocalTime[A](f: Long => A, customDestinationAggregateIds: Set[String] = Set())(handler: Handler[A]): A = {
     clock = clock.tick()
     val event = f(clock.currentLocalTime())
-    writeRequests = writeRequests :+ DurableEvent(event, System.currentTimeMillis, clock.currentTime, replicaId, aggregateId, customRoutingDestinations)
+    writeRequests = writeRequests :+ DurableEvent(event, System.currentTimeMillis, clock.currentTime, id, aggregateId, customDestinationAggregateIds)
     writeHandlers = writeHandlers :+ handler.asInstanceOf[Try[Any] => Unit]
     event
   }
 
+  /**
+   * Internal API.
+   */
+  override private[eventuate] def unhandledMessage(msg: Any): Unit = msg match {
+
+    //
+    // TODO: reliability improvements
+    //
+    // - response timeout for communication with log
+    //   (low prio, local communication at the moment)
+    //
+
+    case Delayed(command: Any, handler: (Any => Unit), iid) => if (iid == instanceId) {
+      handler(command)
+    }
+    case WriteSuccess(event, iid) => if (iid == instanceId) {
+      lastEvent = event
+      conditionChanged(lastVectorTimestamp)
+      writeHandlers.head(Success(event.payload))
+      writeHandlers = writeHandlers.tail
+      if (stateSync && writeHandlers.isEmpty) {
+        writing = false
+        internalUnstash()
+      }
+    }
+    case WriteFailure(event, cause, iid) => if (iid == instanceId) {
+      lastEvent = event
+      writeHandlers.head(Failure(cause))
+      writeHandlers = writeHandlers.tail
+      if (stateSync && writeHandlers.isEmpty) {
+        writing = false
+        internalUnstash()
+      }
+    }
+    case cmd =>
+      if (writing) internalStash() else {
+        onCommand(cmd)
+
+        val wPending = writePending
+        if (wPending) write()
+        if (wPending && stateSync) writing = true else if (stateSync) internalUnstash()
+      }
+  }
+
+  /**
+   * Internal API.
+   */
+  override private[eventuate] def unhandledEvent(event: DurableEvent): Unit =
+    if (event.emitterId == id) {
+      // Event not handled but it has been previously emitted by this
+      // actor. So we need to recover local time, otherwise, we could
+      // end up in the past after recovery ....
+      clock = clock.merge(event.vectorTimestamp.localCopy(id))
+    }
+
+  /**
+   * Internal API.
+   */
+  override private[eventuate] def preOnSnapshot(snapshot: Snapshot): Unit = {
+    super.preOnSnapshot(snapshot)
+    clock = clock.update(snapshot.metadata.vectorTimestamp)
+  }
+
+  /**
+   * Internal API.
+   */
+  override private[eventuate] def preOnEvent(event: DurableEvent): Unit =
+    clock = clock.update(event.vectorTimestamp)
+
+  /**
+   * Internal API.
+   */
   private[eventuate] def currentTime: VectorTime =
     clock.currentTime
 
@@ -155,97 +219,13 @@ trait EventsourcedActor extends Eventsourced with ConditionalCommands with Inter
     writeRequests = Vector.empty
   }
 
-  private def onDurableEvent(event: DurableEvent, handled: DurableEvent => Unit = _ => ()): Unit = {
-    if (onEvent.isDefinedAt(event.payload)) {
-      clock = clock.update(event.vectorTimestamp)
-      onLastConsumed(event)
-      onEvent(event.payload)
-      handled(event)
-    } else if (event.emitterProcessId == processId) {
-      // Event not handled but it has been previously emitted by this
-      // actor. So we need to recover local time, otherwise, we could
-      // end up in the past after recovery ....
-      clock = clock.merge(event.vectorTimestamp.localCopy(processId))
-    } else {
-      // Ignore unhandled event that has been emitted by another actor.
-    }
-  }
-
-  private val initiating: Receive = {
-    case Replaying(event, iid) => if (iid == instanceId) {
-      onDurableEvent(event)
-    }
-    case ReplaySuccess(iid) => if (iid == instanceId) {
-      context.become(initiated)
-      conditionChanged(lastVectorTimestamp)
-      onRecoverySuccess()
-      internalUnstashAll()
-    }
-    case ReplayFailure(cause, iid) => if (iid == instanceId) {
-      context.stop(self)
-    }
-    case other =>
-      internalStash()
-  }
-
-  private val initiated: Receive = {
-
-    //
-    // TODO: reliability improvements
-    //
-    // - response timeout for communication with log
-    //   (low prio, local communication at the moment)
-    //
-
-    case Delayed(command: Any, handler: Function1[Any, Unit], iid) => if (iid == instanceId) {
-      handler(command)
-    }
-    case WriteSuccess(event, iid) => if (iid == instanceId) {
-      onLastConsumed(event)
-      conditionChanged(lastVectorTimestamp)
-      writeHandlers.head(Success(event.payload))
-      writeHandlers = writeHandlers.tail
-      if (stateSync && writeHandlers.isEmpty) {
-        writing = false
-        internalUnstash()
-      }
-    }
-    case WriteFailure(event, cause, iid) => if (iid == instanceId) {
-      onLastConsumed(event)
-      writeHandlers.head(Failure(cause))
-      writeHandlers = writeHandlers.tail
-      if (stateSync && writeHandlers.isEmpty) {
-        writing = false
-        internalUnstash()
-      }
-    }
-    case Written(event) => if (event.sequenceNr > lastSequenceNr) {
-      onDurableEvent(event, e => conditionChanged(e.vectorTimestamp))
-    }
-    case ConditionalCommand(condition, cmd) =>
-      conditionalSend(condition, cmd)
-    case cmd =>
-      if (writing) internalStash() else {
-        onCommand(cmd)
-
-        val wPending = writePending
-        if (wPending) write()
-        if (wPending && stateSync) writing = true else if (stateSync) internalUnstash()
-      }
-  }
-
-  final def receive = initiating
-
-  /**
-   * Initiates recovery by sending a [[EventsourcingProtocol.Replay]] request to the event log.
-   */
   override def preStart(): Unit = {
-    clock = VectorClock(processId)
-    replay()
+    clock = VectorClock(id)
+    super.preStart()
   }
 }
 
-private object EventsourcedActor {
+private[eventuate] object EventsourcedActor {
   /**
    * Wraps a command that has been delayed with `EventsourcedActor.delay`.
    */
@@ -257,7 +237,7 @@ private object EventsourcedActor {
  *
  * @see [[EventsourcedActor]]
  */
-abstract class AbstractEventsourcedActor(val replicaId: String, val eventLog: ActorRef) extends AbstractEventsourced with EventsourcedActor with ConfirmedDelivery {
+abstract class AbstractEventsourcedActor(id: String, eventLog: ActorRef) extends AbstractEventsourcedView(id, eventLog) with EventsourcedActor with ConfirmedDelivery {
   /**
    * Persists the given `event` and asynchronously calls `handler` with the persist result.
    * The `handler` is called during a separate message dispatch by this actor, hence, it

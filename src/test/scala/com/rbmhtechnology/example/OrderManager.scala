@@ -40,15 +40,18 @@ import scala.util._
  *  been logged. This is usually not necessary but we do it here to see the console
  *  output of all [[OrderActor]]s at each location immediately.
  */
-class OrderManager(val replicaId: String, val eventLog: ActorRef) extends EventsourcedView {
+class OrderManager(replicaId: String, val eventLog: ActorRef) extends EventsourcedView {
   import OrderActor._
   import context.dispatcher
 
   private implicit val timeout = Timeout(10.seconds)
   private var orderActors: Map[String, ActorRef] = Map.empty
 
+  override val id = s"s-om-$replicaId"
+
   override val onCommand: Receive = {
     case c: OrderCommand => orderActor(c.orderId) forward c
+    case c: SaveSnapshot    => orderActor(c.orderId) forward c
     case r: Resolve      => orderActor(r.id) forward r
     case GetState if orderActors.isEmpty =>
       sender() ! GetStateSuccess(Map.empty)

@@ -16,8 +16,14 @@
 
 package com.rbmhtechnology
 
+import scala.concurrent._
+import scala.concurrent.duration._
 import scala.util.control.NoStackTrace
 
 package object eventuate {
+  implicit class AwaitHelper[T](w: Awaitable[T]) {
+    def await: T = Await.result(w, 10.seconds)
+  }
+
   val boom = new Exception("boom") with NoStackTrace
 }

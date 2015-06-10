@@ -21,14 +21,11 @@ import akka.remote.testconductor.RoleName
 import akka.remote.testkit._
 import akka.testkit.TestProbe
 
-import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogMultiNodeSupport
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogMultiNodeSupport
-
 import scala.collection.immutable.Seq
 import scala.concurrent.duration._
 import scala.util._
 
-class BasicReplicationThroughputSpecLeveldb extends BasicReplicationThroughputSpec with LeveldbEventLogMultiNodeSupport
+class BasicReplicationThroughputSpecLeveldb extends BasicReplicationThroughputSpec with MultiNodeSupportLeveldb
 class BasicReplicationThroughputSpecLeveldbMultiJvmNode1 extends BasicReplicationThroughputSpecLeveldb
 class BasicReplicationThroughputSpecLeveldbMultiJvmNode2 extends BasicReplicationThroughputSpecLeveldb
 class BasicReplicationThroughputSpecLeveldbMultiJvmNode3 extends BasicReplicationThroughputSpecLeveldb
@@ -36,8 +33,7 @@ class BasicReplicationThroughputSpecLeveldbMultiJvmNode4 extends BasicReplicatio
 class BasicReplicationThroughputSpecLeveldbMultiJvmNode5 extends BasicReplicationThroughputSpecLeveldb
 class BasicReplicationThroughputSpecLeveldbMultiJvmNode6 extends BasicReplicationThroughputSpecLeveldb
 
-class BasicReplicationThroughputSpecCassandra extends BasicReplicationThroughputSpec with CassandraEventLogMultiNodeSupport {
-  override def coordinator: RoleName = BasicReplicationThroughputConfig.nodeA
+class BasicReplicationThroughputSpecCassandra extends BasicReplicationThroughputSpec with MultiNodeSupportCassandra {
   override def logName = "brt"
 }
 class BasicReplicationThroughputSpecCassandraMultiJvmNode1 extends BasicReplicationThroughputSpecCassandra
@@ -66,7 +62,7 @@ object BasicReplicationThroughputConfig extends MultiNodeConfig {
 }
 
 object BasicReplicationThroughputSpec {
-  class ReplicatedActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class ReplicatedActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     override val stateSync = false
 
     var events: Vector[String] = Vector.empty

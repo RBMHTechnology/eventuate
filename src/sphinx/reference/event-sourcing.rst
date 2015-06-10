@@ -79,25 +79,67 @@ Event-sourced views
 
 An introduction to event-sourced views is already given in :ref:`architecture` and the :ref:`user-guide`. Applications use event-sourced views for consuming events from an event log and for maintaining state on the query side (Q) of CQRS_ based applications. 
 
-Like event-sourced actors, event-sourced views distinguish command processing from event processing. They must implement the EventsourcedView_ trait. ``EventsourcedView`` is a functional subset of ``EventsourcedActor`` that can neither ``persist`` events nor ``delay`` commands. Furthermore, views don’t need to define a ``replicaId``.
+Like event-sourced actors, event-sourced views distinguish command processing from event processing. They must implement the EventsourcedView_ trait. ``EventsourcedView`` is a functional subset of ``EventsourcedActor`` that can neither ``persist`` events nor ``delay`` commands.
 
 State recovery
 --------------
 
 When an event-sourced actor or view is started or re-started, events are replayed to its ``onEvent`` handler so that internal state can be recovered\ [#]_. Event replay is initiated by sending a ``Replay`` message to the ``eventLog`` actor:
 
-.. includecode:: ../../main/scala/com/rbmhtechnology/eventuate/Eventsourced.scala
+.. includecode:: ../../main/scala/com/rbmhtechnology/eventuate/EventsourcedView.scala
    :snippet: replay
 
-The ``replay`` method is defined by the Eventsourced_ trait and called internally by ``EventsourcedActor`` and ``EventsourcedView``. Both, ``EventsourcedActor`` and ``EventsourcedView``, extend ``Eventsourced``.
+The ``replay`` method is defined by the EventsourcedView_ trait and inherited by ``EventsourcedActor``. It is called when an ``EventsourcedActor`` and ``EventsourcedView`` is started or re-started.
 
 Sending a ``Replay`` message automatically registers the sending actor at its event log, so that newly written events can be immediately routed to that actor. If the actor is stopped it is automatically de-registered.
 
-While an event-sourced actor or view is recovering i.e. replaying messages, its ``recovering`` method returns ``true``. If recovery successfully completes, its empty ``recovered()`` method is called which can be overridden by applications. 
+While an event-sourced actor or view is recovering i.e. replaying messages, its ``recovering`` method returns ``true``. If recovery successfully completes, its empty ``onRecovered()`` method is called which can be overridden by applications.
 
 During recovery, new commands are stashed_ and dispatched to ``onCommand`` after recovery successfully completed. This ensures that new commands never see partially recovered state.
 
+.. _snapshots:
+
+Snapshots
+---------
+
+Recovery times linearly grow with the number of events that are replayed to an event-sourced actor or view. Recovery times can be reduced by starting event replay from a previously saved snapshot of internal state rather than replaying events from scratch. Event-sourced actors and views can save snapshots by calling ``save`` within their command handler:
+
+.. includecode:: ../code/EventSourcingDoc.scala
+   :snippet: snapshot-save
+
+Snapshots are saved asynchronously. On completion, a user-defined handler of type ``Try[SnapshotMetadata] => Unit`` is called. Like a ``persist`` handler, a ``save`` handler may also close over actor state and can reply to the initial command sender using the ``sender()`` reference. 
+
+An event-sourced actor that is :ref:`tracking-conflicting-versions` of application state can also save ``ConcurrentVersions[A, B]`` instances directly. One can even configure custom serializers for type parameter ``A`` as explained in section :ref:`snapshot-serialization`.
+
+During recovery, the latest snapshot saved by an event-sourced actor or view is loaded and can be handled with the ``onSnapshot`` handler. This handler should initialize internal actor state from the loaded snapshot: 
+
+.. includecode:: ../code/EventSourcingDoc.scala
+   :snippet: snapshot-load
+
+If ``onSnapshot`` is not defined at the loaded snapshot or not overridden at all, event replay starts from scratch. If ``onSnapshot`` is defined at the loaded snapshot, only events that are not covered by that snapshot will be replayed. 
+
+Event-sourced actors that implement ``ConfirmedDelivery`` for :ref:`reliable-delivery` automatically include unconfirmed messages into state snapshots. These are restored on recovery and re-delivered on recovery completion.
+
+.. note::
+   State objects passed as argument to ``save`` should be *immutable objects*. If this is not the case, the caller is responsible for creating a defensive copy before passing it as argument to ``save``.
+
+Storage locations
+~~~~~~~~~~~~~~~~~
+
+Snapshots are currently stored in a directory that can be configured with
+
+.. includecode:: ../conf/snapshot.conf
+   :snippet: snapshot-dir
+
+in ``application.conf``. The maximum number of stored snapshots per event-sourced actor or view can be configured with
+
+.. includecode:: ../conf/snapshot.conf
+   :snippet: snapshot-num
+
+If this number is exceeded, older snapshots are automatically deleted.
+
 .. _event-routing:
+
 
 Event routing
 -------------
@@ -107,7 +149,7 @@ An event that is emitted by an event-sourced actor can be routed to other event-
 - If an event-sourced actor or view has an undefined ``aggregateId``, all events are routed to it. It may choose to handle only a subset of them though.
 - If an event-sourced actor or view has a defined ``aggregateId``, only events emitted by event-sourced actors with the same ``aggregateId`` are routed to it.
 
-Routing destinations are defined during emission of an event and are persisted together with the event\ [#]_. This makes routing decisions repeatable during event replay and allows for routing rule changes without affecting past routing decisions. Applications can define additional routing destinations with the ``customRoutingDestinations`` parameter of ``persist``:
+Routing destinations are defined during emission of an event and are persisted together with the event\ [#]_. This makes routing decisions repeatable during event replay and allows for routing rule changes without affecting past routing decisions. Applications can define additional routing destinations with the ``customDestinationAggregateIds`` parameter of ``persist``:
 
 .. includecode:: ../code/EventRoutingDoc.scala
    :snippet: custom-routing
@@ -132,15 +174,10 @@ The destination confirms the delivery of the message by sending a ``Confirmation
 
 When the actor is re-started, unconfirmed ``ReliableMessage``\ s are automatically re-delivered to their ``destination``\ s. The example actor additionally schedules ``redeliverUnconfirmed`` calls to periodically re-deliver unconfirmed messages. This is done within the actor’s command handler.
 
-.. _snapshots:
-
-Snapshots
----------
-
-Snapshots of internal state can be taken from event-sourced actors and views. Snapshotting is an optimization to reduce recovery times. It is not implemented yet but coming soon.
-
 Custom serialization
 --------------------
+
+.. _event-serialization:
 
 Custom event serialization
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -166,12 +203,21 @@ in the same way as application-defined events, custom serializers for :ref:`repl
 
 Custom replication filter serialization also works if the custom filter is part of a composite filter that has been created with ``and`` or ``or`` combinators (see ReplicationFilter_ API). If no custom filter serializer is configured, one of Akka’s default serializers is used.
 
+.. _snapshot-serialization:
+
+Custom snapshot serialization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Applications can also configure custom serializers for snapshots in the same way as for application-defined events and replication filters (see sections :ref:`event-serialization` and :ref:`replication-filter-serialization`). 
+
+Custom snapshot serialization also works for state managed with ``ConcurrentVersions[A, B]``. A custom serializer configured for type parameter ``A`` is used whenever a snapshot of type ``ConcurrentVersions[A, B]`` is saved.
+
 .. [#] An explicit ``onEvent`` call may become obsolete in future releases.
-.. [#] The ``customRoutingDestinations`` parameter is described in section :ref:`event-routing`.
+.. [#] The ``customDestinationAggregateIds`` parameter is described in section :ref:`event-routing`.
 .. [#] Writes from different event-sourced actors that have ``stateSync`` set to ``true`` are still batched, but not the writes from a single event-sourced actor.
 .. [#] Event replay can optionally start from :ref:`snapshots` of actor state.
 .. [#] :ref:`processors` can additionally route events between event logs.
-.. [#] The routing destinations of a DurableEvent_ can be obtained with method ``routingDestinations``.
+.. [#] The routing destinations of a DurableEvent_ can be obtained with method ``destinationAggregateIds``.
 
 .. _CQRS: http://martinfowler.com/bliki/CQRS.html
 .. _stashed: http://doc.akka.io/docs/akka/2.3.9/scala/actors.html#stash
@@ -182,7 +228,6 @@ Custom replication filter serialization also works if the custom filter is part 
 .. _ConfirmedDelivery: ../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery
 .. _DurableEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent
 .. _DurableEventSerializer: ../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEventSerializer
-.. _Eventsourced: ../latest/api/index.html#com.rbmhtechnology.eventuate.Eventsourced
 .. _EventsourcedActor: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor
 .. _EventsourcedView: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedView
 .. _ReplicationFilter: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationFilter

@@ -21,19 +21,15 @@ import akka.remote.testconductor.RoleName
 import akka.remote.testkit._
 import akka.testkit.TestProbe
 
-import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogMultiNodeSupport
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogMultiNodeSupport
-
 import scala.collection.immutable.Seq
 import scala.util._
 
-class BasicReplicationSpecLeveldb extends BasicReplicationSpec with LeveldbEventLogMultiNodeSupport
+class BasicReplicationSpecLeveldb extends BasicReplicationSpec with MultiNodeSupportLeveldb
 class BasicReplicationSpecLeveldbMultiJvmNode1 extends BasicReplicationSpecLeveldb
 class BasicReplicationSpecLeveldbMultiJvmNode2 extends BasicReplicationSpecLeveldb
 class BasicReplicationSpecLeveldbMultiJvmNode3 extends BasicReplicationSpecLeveldb
 
-class BasicReplicationSpecCassandra extends BasicReplicationSpec with CassandraEventLogMultiNodeSupport {
-  override def coordinator: RoleName = BasicReplicationConfig.nodeA
+class BasicReplicationSpecCassandra extends BasicReplicationSpec with MultiNodeSupportCassandra {
   override def logName = "br"
 }
 class BasicReplicationSpecCassandraMultiJvmNode1 extends BasicReplicationSpecCassandra
@@ -49,7 +45,7 @@ object BasicReplicationConfig extends MultiNodeConfig {
 }
 
 object BasicReplicationSpec {
-  class ReplicatedActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class ReplicatedActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     val onCommand: Receive = {
       case s: String => persist(s) {
         case Success(e) => onEvent(e)
