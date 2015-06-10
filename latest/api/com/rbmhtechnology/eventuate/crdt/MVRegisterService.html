@@ -90,7 +90,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.crdt.MVRegisterService#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(replicaId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.MVRegister[A],Set[A]]):com.rbmhtechnology.eventuate.crdt.MVRegisterService[A]"></a>
+      <a id="&lt;init&gt;(serviceId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.MVRegister[A],Set[A]]):com.rbmhtechnology.eventuate.crdt.MVRegisterService[A]"></a>
       <a id="&lt;init&gt;:MVRegisterService[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -98,14 +98,14 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">MVRegisterService</span><span class="params">(<span name="replicaId">replicaId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="log">log: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>, <span name="ops">ops: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegisterService.A">A</span>], <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegisterService.A">A</span>]]</span>)</span>
+        <span class="name">MVRegisterService</span><span class="params">(<span name="serviceId">serviceId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="log">log: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>, <span name="ops">ops: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegisterService.A">A</span>], <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegisterService.A">A</span>]]</span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.MVRegisterService@&lt;init&gt;(replicaId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.MVRegister[A],Set[A]]):com.rbmhtechnology.eventuate.crdt.MVRegisterService[A]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.MVRegisterService@&lt;init&gt;(serviceId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.MVRegister[A],Set[A]]):com.rbmhtechnology.eventuate.crdt.MVRegisterService[A]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">replicaId</dt><dd class="cmt"><p>Unique replica id of this service replica.</p></dd><dt class="param">log</dt><dd class="cmt"><p>Event log.</p></dd></dl></div>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">serviceId</dt><dd class="cmt"><p>Unique id of this service.</p></dd><dt class="param">log</dt><dd class="cmt"><p>Event log.</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -419,23 +419,23 @@ Returns the updated value of the CRDT.
     </span>
       <p class="shortcomment cmt">CRDT service operations.</p><div class="fullcomment"><div class="comment cmt"><p>CRDT service operations.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegisterService">MVRegisterService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegisterService#replicaId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="replicaId:String"></a>
-      <a id="replicaId:String"></a>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegisterService#serviceId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="serviceId:String"></a>
+      <a id="serviceId:String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">replicaId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">serviceId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.MVRegisterService@replicaId:String" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.MVRegisterService@serviceId:String" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Unique replica id of this service replica.</p><div class="fullcomment"><div class="comment cmt"><p>Unique replica id of this service replica.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegisterService">MVRegisterService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
+      <p class="shortcomment cmt">Unique id of this service.</p><div class="fullcomment"><div class="comment cmt"><p>Unique id of this service.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegisterService">MVRegisterService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegisterService#set" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="set(id:String,value:A):scala.concurrent.Future[Set[A]]"></a>
       <a id="set(String,A):Future[Set[A]]"></a>

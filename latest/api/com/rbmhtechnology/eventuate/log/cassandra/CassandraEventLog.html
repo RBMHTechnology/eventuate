@@ -54,8 +54,8 @@ of this actor using the <code>props</code> method of the <code>CassandraEventLog
 
 <span class="kw">val</span> log = factory.actorOf(CassandraEventLog.props(logId))</pre><p>Each event log actor creates two tables in the configured keyspace (see also <a href="Cassandra.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.Cassandra">Cassandra</a>). Assuming
 the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span class="lit">"log"</span></pre><p>and a log <code>id</code> with value <code>example</code>, the names of these two tables are</p><ul><li><code>log_example</code> which represents the local event log.</li><li><code>log_example_agg</code> which is an index of the local event log for those events that have non-empty
-   <a href="../../DurableEvent.html#routingDestinations:Set[String]" class="extmbr" name="com.rbmhtechnology.eventuate.DurableEvent#routingDestinations">routingDestinations</a> set. It is used for fast recovery of
-   event-sourced actors or views that have an <a href="../../Eventsourced.html#aggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.Eventsourced#aggregateId">aggregateId</a> defined.
+   <a href="../../DurableEvent.html#destinationAggregateIds:Set[String]" class="extmbr" name="com.rbmhtechnology.eventuate.DurableEvent#destinationAggregateIds">destinationAggregateIds</a> set. It is used for fast recovery
+   of event-sourced actors or views that have an <a href="../../EventsourcedView.html#aggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#aggregateId">aggregateId</a> defined.
 </li></ul></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>
 </p></span><span class="cmt"><p><a href="Cassandra.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.Cassandra">Cassandra</a></p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
@@ -297,6 +297,23 @@ the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span 
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#cassandra" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="cassandra:com.rbmhtechnology.eventuate.log.cassandra.Cassandra"></a>
+      <a id="cassandra:Cassandra"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">cassandra</span><span class="result">: <a href="Cassandra.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.Cassandra">Cassandra</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@cassandra:com.rbmhtechnology.eventuate.log.cassandra.Cassandra" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -371,6 +388,23 @@ the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span 
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#eventStream" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="eventStream:akka.event.EventStream"></a>
+      <a id="eventStream:EventStream"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eventStream</span><span class="result">: <span class="extype" name="akka.event.EventStream">EventStream</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@eventStream:akka.event.EventStream" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -428,6 +462,23 @@ the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span 
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#id" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="id:String"></a>
+      <a id="id:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">id</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@id:String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">unique log id.</p>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#initialized" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="initialized:CassandraEventLog.this.Receive"></a>
       <a id="initialized:Receive"></a>

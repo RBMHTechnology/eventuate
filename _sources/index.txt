@@ -14,12 +14,13 @@ Eventuate is a toolkit for building distributed, highly-available and partition-
 - provides implementations of operation-based CRDTs
 - supports distribution up to global scale.
 
-.. note::
-   This project has **early access** status (see also :ref:`current-limitations`).
-
 .. _Scala: http://www.scala-lang.org/
 .. _Akka: http://akka.io
 .. _event sourcing: http://martinfowler.com/eaaDev/EventSourcing.html
+
+-----------------
+Table of contents
+-----------------
 
 .. toctree::
    :maxdepth: 1

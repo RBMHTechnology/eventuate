@@ -26,11 +26,9 @@ The following is a list of known limitations that are going to be addressed in f
 
 - The storage plugin API is not public yet. Applications can currently choose between a LevelDB_ and Cassandra_ storage backend. The drivers for these backends are packaged with Eventuate and section :ref:`event-log` describes their usage.
 
-- Event routing is limited at the moment. In addition to event broadcast and ``aggregateId``-based collaboration groups, there is `direct event routing`_ supported but `advanced event routing`_ will come in a later release.
+- :ref:`snapshots` are written to the local filesystem at the moment. Applications that need to share snapshots across nodes should consider storing them on NFS or replicate stored snapshots with ``rsync``, for example. Saving smaller snapshots to replicated event log storage backends might also be an option for later releases. 
 
 - No performance optimizations have been made yet.
-
-- :ref:`snapshots` are not supported yet.
 
 .. [#] In the example figures, a line between two locations represents a bi-directional replication link. Such a link is not considered to be a cycle here.
 

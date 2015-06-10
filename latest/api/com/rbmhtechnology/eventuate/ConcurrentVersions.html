@@ -43,7 +43,7 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">ConcurrentVersions</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">ConcurrentVersions</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
@@ -51,7 +51,7 @@
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Versioned value type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>Update type
 </p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
             <span class="toggle">Known Subclasses</span>
             <div class="subClasses hiddenContent"><a href="ConcurrentVersionsList.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsList">ConcurrentVersionsList</a>, <a href="ConcurrentVersionsTree.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a></div>
@@ -72,7 +72,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.ConcurrentVersions"><span>ConcurrentVersions</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.ConcurrentVersions"><span>ConcurrentVersions</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -153,7 +153,7 @@ successful, one of the concurrent versions must have a <code>creationTimestamp</
 be concurrent to other updates).
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersions#update" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="update(b:B,updateTimestamp:com.rbmhtechnology.eventuate.VectorTime,replicaId:String):com.rbmhtechnology.eventuate.ConcurrentVersions[A,B]"></a>
+      <a id="update(b:B,updateTimestamp:com.rbmhtechnology.eventuate.VectorTime,creator:String):com.rbmhtechnology.eventuate.ConcurrentVersions[A,B]"></a>
       <a id="update(B,VectorTime,String):ConcurrentVersions[A,B]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -161,10 +161,10 @@ be concurrent to other updates).
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">update</span><span class="params">(<span name="b">b: <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.B">B</span></span>, <span name="updateTimestamp">updateTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="replicaId">replicaId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.B">B</span>]</span>
+        <span class="name">update</span><span class="params">(<span name="b">b: <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.B">B</span></span>, <span name="updateTimestamp">updateTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="creator">creator: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions">ConcurrentVersions</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersions.B">B</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConcurrentVersions@update(b:B,updateTimestamp:com.rbmhtechnology.eventuate.VectorTime,replicaId:String):com.rbmhtechnology.eventuate.ConcurrentVersions[A,B]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConcurrentVersions@update(b:B,updateTimestamp:com.rbmhtechnology.eventuate.VectorTime,creator:String):com.rbmhtechnology.eventuate.ConcurrentVersions[A,B]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -610,7 +610,11 @@ concurrent (= conflicting) versions.
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
+        <div class="parent" name="scala.Serializable">
+              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="java.io.Serializable">
+              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>

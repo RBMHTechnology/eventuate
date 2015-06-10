@@ -108,9 +108,9 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#state-recovery">State recovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-routing">Event routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
@@ -220,6 +220,7 @@
 <li><code class="docutils literal"><span class="pre">add</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;item&gt;</span></code> adds <code class="docutils literal"><span class="pre">item</span></code> to an order&#8217;s items list.</li>
 <li><code class="docutils literal"><span class="pre">remove</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;item&gt;</span></code> removes <code class="docutils literal"><span class="pre">item</span></code> from an order&#8217;s items list.</li>
 <li><code class="docutils literal"><span class="pre">cancel</span> <span class="pre">&lt;order-id&gt;</span></code> cancels an order.</li>
+<li><code class="docutils literal"><span class="pre">save</span> <span class="pre">&lt;order-id&gt;</span></code> saves a snapshot of an order.</li>
 </ul>
 <p>If there’s a conflict from a concurrent update, the conflict must be resolved by selecting one of the conflicting versions:</p>
 <ul class="simple">

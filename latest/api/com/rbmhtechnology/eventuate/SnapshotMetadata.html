@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>Eventsourced - com.rbmhtechnology.eventuate.Eventsourced</title>
-          <meta name="description" content="Eventsourced - com.rbmhtechnology.eventuate.Eventsourced" />
-          <meta name="keywords" content="Eventsourced com.rbmhtechnology.eventuate.Eventsourced" />
+          <title>SnapshotMetadata - com.rbmhtechnology.eventuate.SnapshotMetadata</title>
+          <meta name="description" content="SnapshotMetadata - com.rbmhtechnology.eventuate.SnapshotMetadata" />
+          <meta name="keywords" content="SnapshotMetadata com.rbmhtechnology.eventuate.SnapshotMetadata" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.Eventsourced$';
+            var hash = 'com.rbmhtechnology.eventuate.SnapshotMetadata';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -26,12 +26,12 @@
    	  </script>
     
         </head>
-        <body class="value">
+        <body class="type">
       <div id="definition">
-        <a href="Eventsourced.html" title="Go to companion"><img src="../../../lib/object_to_trait_big.png" /></a>
+        <img src="../../../lib/class_big.png" />
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a></p>
-        <h1><a href="Eventsourced.html" title="Go to companion">Eventsourced</a></h1> <span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$" title="Permalink" target="_top">
+        <h1>SnapshotMetadata</h1> <span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -40,16 +40,19 @@
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">object</span>
+        <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">Eventsourced</span>
+        <span class="name">SnapshotMetadata</span><span class="params">(<span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Snapshot metadata.
+</p></div><dl class="paramcmts block"><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that saves the snapshot.</p></dd><dt class="param">sequenceNr</dt><dd class="cmt"><p>The latest event sequence number covered by the snapshot.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>The latest event system timestamp covered by the snapshot.</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>The latest event vector timestamp covered by the snapshot.
+</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html#lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastVectorTimestamp">EventsourcedView#lastVectorTimestamp</a>
+</p></span><span class="cmt"><p><a href="EventsourcedView.html#lastSystemTimestamp:Long" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastSystemTimestamp">EventsourcedView#lastSystemTimestamp</a></p></span><span class="cmt"><p><a href="EventsourcedView.html#lastSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastSequenceNr">EventsourcedView#lastSequenceNr</a></p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -67,7 +70,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.Eventsourced"><span>Eventsourced</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.SnapshotMetadata"><span>SnapshotMetadata</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -85,7 +88,28 @@
 
       <div id="template">
         <div id="allMembers">
-        
+        <div id="constructors" class="members">
+              <h3>Instance Constructors</h3>
+              <ol><li name="com.rbmhtechnology.eventuate.SnapshotMetadata#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(emitterId:String,sequenceNr:Long,systemTimestamp:Long,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.SnapshotMetadata"></a>
+      <a id="&lt;init&gt;:SnapshotMetadata"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">new</span>
+      </span>
+      <span class="symbol">
+        <span class="name">SnapshotMetadata</span><span class="params">(<span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@&lt;init&gt;(emitterId:String,sequenceNr:Long,systemTimestamp:Long,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.SnapshotMetadata" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that saves the snapshot.</p></dd><dt class="param">sequenceNr</dt><dd class="cmt"><p>The latest event sequence number covered by the snapshot.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>The latest event system timestamp covered by the snapshot.</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>The latest event vector timestamp covered by the snapshot.
+</p></dd></dl></div>
+    </li></ol>
+            </div>
 
         
 
@@ -105,7 +129,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -122,7 +146,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@##():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@##():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -139,7 +163,7 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -156,7 +180,7 @@
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -173,7 +197,7 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@clone():Object" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@clone():Object" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -184,6 +208,23 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.SnapshotMetadata#emitterId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="emitterId:String"></a>
+      <a id="emitterId:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">emitterId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@emitterId:String" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that saves the snapshot.</p>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -196,28 +237,11 @@
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(x$1:Any):Boolean"></a>
-      <a id="equals(Any):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@equals(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -230,7 +254,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -253,45 +277,11 @@
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="hashCode():Int"></a>
-      <a id="hashCode():Int"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@hashCode():Int" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.Eventsourced#instanceIdCounter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="instanceIdCounter:java.util.concurrent.atomic.AtomicInteger"></a>
-      <a id="instanceIdCounter:AtomicInteger"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">instanceIdCounter</span><span class="result">: <span class="extype" name="java.util.concurrent.atomic.AtomicInteger">AtomicInteger</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@instanceIdCounter:java.util.concurrent.atomic.AtomicInteger" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -304,7 +294,7 @@
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -321,7 +311,7 @@
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -338,7 +328,7 @@
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@notify():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -355,11 +345,28 @@
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.SnapshotMetadata#sequenceNr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="sequenceNr:Long"></a>
+      <a id="sequenceNr:Long"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">sequenceNr</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@sequenceNr:Long" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The latest event sequence number covered by the snapshot.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -372,28 +379,45 @@
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="toString():String"></a>
-      <a id="toString():String"></a>
+    </li><li name="com.rbmhtechnology.eventuate.SnapshotMetadata#systemTimestamp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="systemTimestamp:Long"></a>
+      <a id="systemTimestamp:Long"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+        <span class="name">systemTimestamp</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@toString():String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@systemTimestamp:Long" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+      <p class="shortcomment cmt">The latest event system timestamp covered by the snapshot.</p>
+    </li><li name="com.rbmhtechnology.eventuate.SnapshotMetadata#vectorTimestamp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime"></a>
+      <a id="vectorTimestamp:VectorTime"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">vectorTimestamp</span><span class="result">: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The latest event vector timestamp covered by the snapshot.</p>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -406,7 +430,7 @@
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@wait():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -429,7 +453,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -452,7 +476,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.Eventsourced$@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -472,7 +496,15 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
+        <div class="parent" name="scala.Serializable">
+              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="java.io.Serializable">
+              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="scala.Product">
+              <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
+            </div><div class="parent" name="scala.Equals">
+              <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
+            </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>

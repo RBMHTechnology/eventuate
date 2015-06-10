@@ -107,9 +107,9 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#state-recovery">State recovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-routing">Event routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
@@ -196,11 +196,9 @@
 </li>
 <li><p class="first">The storage plugin API is not public yet. Applications can currently choose between a <a class="reference external" href="https://github.com/google/leveldb">LevelDB</a> and <a class="reference external" href="http://cassandra.apache.org/">Cassandra</a> storage backend. The drivers for these backends are packaged with Eventuate and section <a class="reference internal" href="reference/event-log.html#event-log"><span>Event log</span></a> describes their usage.</p>
 </li>
-<li><p class="first">Event routing is limited at the moment. In addition to event broadcast and <code class="docutils literal"><span class="pre">aggregateId</span></code>-based collaboration groups, there is <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/45">direct event routing</a> supported but <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/46">advanced event routing</a> will come in a later release.</p>
+<li><p class="first"><a class="reference internal" href="reference/event-sourcing.html#snapshots"><span>Snapshots</span></a> are written to the local filesystem at the moment. Applications that need to share snapshots across nodes should consider storing them on NFS or replicate stored snapshots with <code class="docutils literal"><span class="pre">rsync</span></code>, for example. Saving smaller snapshots to replicated event log storage backends might also be an option for later releases.</p>
 </li>
 <li><p class="first">No performance optimizations have been made yet.</p>
-</li>
-<li><p class="first"><a class="reference internal" href="reference/event-sourcing.html#snapshots"><span>Snapshots</span></a> are not supported yet.</p>
 </li>
 </ul>
 <table class="docutils footnote" frame="void" id="id3" rules="none">

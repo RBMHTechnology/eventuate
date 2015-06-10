@@ -47,13 +47,36 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"></div>
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
         
 
       <div id="mbrsel">
         <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
-        
-        
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="com.rbmhtechnology.eventuate.log"><span>log</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show all</span></li>
+            </ol>
+            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
+          </div>
         <div id="visbl">
             <span class="filtertype">Visibility</span>
             <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
@@ -66,24 +89,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.log.AggregateRegistry" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="AggregateRegistryextendsProductwithSerializable"></a>
-      <a id="AggregateRegistry:AggregateRegistry"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="AggregateRegistry.html"><span class="name">AggregateRegistry</span></a><span class="params">(<span name="aggregateRegistry">aggregateRegistry: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="akka.actor.ActorRef">ActorRef</span>]] = <span class="symbol">Map.empty</span></span>, <span name="aggregateRegistryIndex">aggregateRegistryIndex: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="akka.actor.ActorRef">ActorRef</span>, <span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Map.empty</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@AggregateRegistryextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.log.BatchingEventLog" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.log.BatchingEventLog" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="BatchingEventLogextendsActor"></a>
       <a id="BatchingEventLog:BatchingEventLog"></a>
       <h4 class="signature">
@@ -146,6 +152,42 @@ a minimum.
       </a>
     </span>
       
+    </li><li name="com.rbmhtechnology.eventuate.log#prepareReplicate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="prepareReplicate(logId:String,events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],lastSourceLogSequenceNrRead:Long,nextSequenceNr:=&gt;Long):scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]"></a>
+      <a id="prepareReplicate(String,Seq[DurableEvent],Long,⇒Long):Seq[DurableEvent]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">prepareReplicate</span><span class="params">(<span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="lastSourceLogSequenceNrRead">lastSourceLogSequenceNrRead: <span class="extype" name="scala.Long">Long</span></span>, <span name="nextSequenceNr">nextSequenceNr: ⇒ <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@prepareReplicate(logId:String,events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],lastSourceLogSequenceNrRead:Long,nextSequenceNr:=&gt;Long):scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Prepares given replicated <code>events</code> to be written to log identified by <code>logId</code>
+using the given <code>nextSequenceNr</code> generator.</p>
+    </li><li name="com.rbmhtechnology.eventuate.log#prepareWrite" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="prepareWrite(logId:String,events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],nextSequenceNr:=&gt;Long):scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]"></a>
+      <a id="prepareWrite(String,Seq[DurableEvent],⇒Long):Seq[DurableEvent]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">prepareWrite</span><span class="params">(<span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="nextSequenceNr">nextSequenceNr: ⇒ <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@prepareWrite(logId:String,events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],nextSequenceNr:=&gt;Long):scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Prepares given emitted <code>events</code> to be written to log identified by <code>logId</code>
+using the given <code>nextSequenceNr</code> generator.</p>
     </li></ol>
             </div>
 
@@ -155,7 +197,11 @@ a minimum.
         </div>
 
         <div id="inheritedMembers">
-        
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
         
         </div>
 

@@ -43,13 +43,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">ConcurrentVersionsTree</span>
+        <span class="name">ConcurrentVersionsTree</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -67,7 +67,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree"><span>ConcurrentVersionsTree</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree"><span>ConcurrentVersionsTree</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -145,27 +145,6 @@
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="apply[A,B](initial:A,f:(A,B)=&gt;A):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]"></a>
-      <a id="apply[A,B](A,(A,B)⇒A):ConcurrentVersionsTree[A,B]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">apply</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span><span class="params">(<span name="initial">initial: <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.apply.A">A</span></span>, <span name="f">f: (<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.apply.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.apply.B">B</span>) ⇒ <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.apply.A">A</span></span>)</span><span class="result">: <a href="ConcurrentVersionsTree.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.apply.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.apply.B">B</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConcurrentVersionsTree$@apply[A,B](initial:A,f:(A,B)=&gt;A):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Creates a new <a href="ConcurrentVersionsTree.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a> that uses projection function <code>f</code> to compute
-new (potentially concurrent) versions from a parent version.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a new <a href="ConcurrentVersionsTree.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a> that uses projection function <code>f</code> to compute
-new (potentially concurrent) versions from a parent version.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Versioned value type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>Update type
-</p></dd><dt class="param">initial</dt><dd class="cmt"><p>Value of the initial version.</p></dd><dt class="param">f</dt><dd class="cmt"><p>Projection function for updates.</p></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="apply[A,B](f:(A,B)=&gt;A):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]"></a>
       <a id="apply[A,B]((A,B)⇒A):ConcurrentVersionsTree[A,B]"></a>
       <h4 class="signature">
@@ -186,6 +165,27 @@ new (potentially concurrent) versions from a parent version.</p><div class="full
 new (potentially concurrent) versions from a parent version.
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Versioned value type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>Update type
 </p></dd><dt class="param">f</dt><dd class="cmt"><p>Projection function for updates.</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="apply[A,B](initial:A)(f:(A,B)=&gt;A):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]"></a>
+      <a id="apply[A,B](A)((A,B)⇒A):ConcurrentVersionsTree[A,B]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">apply</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span><span class="params">(<span name="initial">initial: <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.apply.A">A</span></span>)</span><span class="params">(<span name="f">f: (<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.apply.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.apply.B">B</span>) ⇒ <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.apply.A">A</span></span>)</span><span class="result">: <a href="ConcurrentVersionsTree.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.apply.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree.apply.B">B</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConcurrentVersionsTree$@apply[A,B](initial:A)(f:(A,B)=&gt;A):com.rbmhtechnology.eventuate.ConcurrentVersionsTree[A,B]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Creates a new <a href="ConcurrentVersionsTree.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a> that uses projection function <code>f</code> to compute
+new (potentially concurrent) versions from a parent version.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a new <a href="ConcurrentVersionsTree.html" class="extype" name="com.rbmhtechnology.eventuate.ConcurrentVersionsTree">ConcurrentVersionsTree</a> that uses projection function <code>f</code> to compute
+new (potentially concurrent) versions from a parent version.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Versioned value type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>Update type
+</p></dd><dt class="param">initial</dt><dd class="cmt"><p>Value of the initial version.</p></dd><dt class="param">f</dt><dd class="cmt"><p>Projection function for updates.</p></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -517,7 +517,11 @@ new (potentially concurrent) versions from a parent version.
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
+        <div class="parent" name="scala.Serializable">
+              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="java.io.Serializable">
+              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>

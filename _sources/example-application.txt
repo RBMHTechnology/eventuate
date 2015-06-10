@@ -43,6 +43,7 @@ Each location of the example application has a simple command-line interface to 
 - ``add <order-id> <item>`` adds ``item`` to an order's items list.
 - ``remove <order-id> <item>`` removes ``item`` from an order's items list.
 - ``cancel <order-id>`` cancels an order.
+- ``save <order-id>`` saves a snapshot of an order.
 
 If there’s a conflict from a concurrent update, the conflict must be resolved by selecting one of the conflicting versions:
 
