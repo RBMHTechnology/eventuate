@@ -36,7 +36,7 @@ libraryDependencies ++= Seq(
   "org.cassandraunit"                % "cassandra-unit"                % "2.0.2.2"    % "test,it" excludeAll(ExclusionRule(organization = "ch.qos.logback")),
   "org.functionaljava"               % "functionaljava"                % "4.2-beta-1" % "test",
   "org.functionaljava"               % "functionaljava-java8"          % "4.2-beta-1" % "test,it",
-  "org.fusesource.leveldbjni"        % "leveldbjni-all"                % "1.7",
+  "org.fusesource.leveldbjni"        % "leveldbjni-all"                % "1.8",
   "org.scalatest"                   %% "scalatest"                     % "2.1.4"      % "test,it",
   "org.scalaz"                      %% "scalaz-core"                   % "7.1.0"
 )
