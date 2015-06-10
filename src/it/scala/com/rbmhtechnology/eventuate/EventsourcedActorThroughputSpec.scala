@@ -22,13 +22,13 @@ import scala.util._
 import akka.actor._
 import akka.testkit._
 
-import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSupport
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSupport
+import com.rbmhtechnology.eventuate.log.EventLogLifecycleCassandra
+import com.rbmhtechnology.eventuate.log.EventLogLifecycleLeveldb
 
 import org.scalatest._
 
 object EventsourcedActorThroughputSpec {
-  class Writer1(val replicaId: String, val eventLog: ActorRef, override val stateSync: Boolean, probe: ActorRef) extends EventsourcedActor {
+  class Writer1(val id: String, val eventLog: ActorRef, override val stateSync: Boolean, probe: ActorRef) extends EventsourcedActor {
     var startTime: Long = 0L
     var stopTime: Long = 0L
     var num: Int = 0
@@ -53,7 +53,7 @@ object EventsourcedActorThroughputSpec {
     }
   }
 
-  class Writer2(val replicaId: String, val eventLog: ActorRef, collector: ActorRef) extends EventsourcedActor {
+  class Writer2(val id: String, val eventLog: ActorRef, collector: ActorRef) extends EventsourcedActor {
     val onCommand: Receive = {
       case s: String =>
         persist(s) {
@@ -154,5 +154,5 @@ abstract class EventsourcedActorThroughputSpec extends TestKit(ActorSystem("test
   }
 }
 
-class EventsourcedActorThroughputSpecLeveldb extends EventsourcedActorThroughputSpec with LeveldbEventLogSupport
-class EventsourcedActorThroughputSpecCassandra extends EventsourcedActorThroughputSpec with CassandraEventLogSupport
+class EventsourcedActorThroughputSpecLeveldb extends EventsourcedActorThroughputSpec with EventLogLifecycleLeveldb
+class EventsourcedActorThroughputSpecCassandra extends EventsourcedActorThroughputSpec with EventLogLifecycleCassandra

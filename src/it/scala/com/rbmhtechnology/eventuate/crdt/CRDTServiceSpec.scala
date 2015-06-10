@@ -3,18 +3,12 @@ package com.rbmhtechnology.eventuate.crdt
 import akka.actor._
 import akka.testkit._
 
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSupport
+import com.rbmhtechnology.eventuate.AwaitHelper
+import com.rbmhtechnology.eventuate.log.EventLogLifecycleLeveldb
 
 import org.scalatest._
 
-import scala.concurrent._
-import scala.concurrent.duration._
-
-class CRDTServiceSpec  extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with LeveldbEventLogSupport {
-  implicit class AwaitHelper[T](w: Awaitable[T]) {
-    def await: T = Await.result(w, 3.seconds)
-  }
-
+class CRDTServiceSpec  extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with EventLogLifecycleLeveldb {
   "A CRDTService" must {
     "manage multiple CRDTs identified by name" in {
       val service = new CounterService[Int]("a", log)
@@ -25,7 +19,7 @@ class CRDTServiceSpec  extends TestKit(ActorSystem("test")) with WordSpecLike wi
     }
     "ignore events from CRDT services of different type" in {
       val service1 = new CounterService[Int]("a", log)
-      val service2 = new MVRegisterService[Int]("a", log)
+      val service2 = new MVRegisterService[Int]("b", log)
       service1.update("a", 1).await should be(1)
       service2.set("a", 1).await should be(Set(1))
     }

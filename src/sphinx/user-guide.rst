@@ -11,7 +11,7 @@ This is a brief user guide to Eventuate. It is recommended to read sections :ref
 - detect concurrent updates to replicated state
 - track conflicts from concurrent updates
 - resolve conflicts automatically and interactively
-- avoid conflicts with operation-based CRDTs
+- resolve conflicts with operation-based CRDTs
 - implement an event-sourced view over all event-sourced actors and
 - achieve read-your-write consistency across event-sourced actors and views.
 
@@ -33,7 +33,7 @@ For modifying ``currentState``, applications can send ``Append`` commands which 
 
 The ``onEvent`` handler modifies ``currentState`` from successfully persisted events. If the actor is re-started, either after a crash or during normal application start, persisted events are replayed to ``onEvent`` so that internal state is automatically recovered before new commands are processed.
 
-The ``ExampleActor`` also implements an optional ``aggregateId`` and the mandatory ``replicaId`` to distinguish its instances (more on that later). The ``eventLog`` actor reference is used by an sourced actor to write events to and read events from an event log. 
+``EventsourcedActor`` implementations must define a global unique ``id`` and require an ``eventLog`` actor reference for writing events to and reading events from an event log. An event-sourced actor may also define an optional ``aggregateId`` which has an impact how events are routed between event-sourced actors (more on that later).
 
 .. hint::
    Section :ref:`event-log` explains how to create ``eventLog`` actor references. 
@@ -53,15 +53,15 @@ Sending a ``Print`` command
 
 should print::
 
-    [id = ea1, replica id = r1] a,b
+    [id = 1, aggregate id = a] a,b
 
 When the application is re-started, persisted events are replayed to ``onEvent`` so that ``currentState`` is recovered. Sending another ``Print`` command should print again::
 
-    [id = ea1, replica id = r1] a,b
+    [id = 1, aggregate id = a] a,b
 
 In the following sections, several instances of ``ExampleActor`` are created. They *share* an event log which can be either a :ref:`local-event-log` or a :ref:`replicated-event-log`, depending on their distribution across *locations*. 
 
-A shared event log is a pre-requisite for event-sourced actors to consume each other’s events. However, sharing an event log doesn’t necessarily mean broadcast communication between all actors on the same log. It is their ``aggreagteId`` and ``replicaId`` that determine which actors consume each other’s events. The underlying :ref:`event-routing` rules can be customized by applications.
+A shared event log is a pre-requisite for event-sourced actors to consume each other’s events. However, sharing an event log doesn’t necessarily mean broadcast communication between all actors on the same log. It is the ``aggreagteId`` that determines which actors consume each other’s events. The underlying :ref:`event-routing` rules can be customized by applications.
 
 Creating two isolated instances
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,31 +78,31 @@ Sending two ``Print`` commands
 
 should print::
 
-    [id = ea2, replica id = r1] a,b
-    [id = ea3, replica id = r1] x,y
+    [id = 2, aggregate id = b] a,b
+    [id = 3, aggregate id = c] x,y
 
 Creating two replica instances
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When creating two ``ExampleActor`` instances with the same ``aggregateId`` but different ``replicaId``\ s, they consume each other’s events [#]_. They are usually created at different locations (but can also be created at the same location, for example, for testing purposes).
+When creating two ``ExampleActor`` instances with the same ``aggregateId``, they consume each other’s events [#]_. They are usually created at different locations (but can also be created at the same location, for example, for testing purposes).
 
 .. includecode:: code/UserGuideDoc.scala
    :snippet: create-replica-instances
 
-Here, ``ea4_r1`` processes an ``Append`` command and persists an ``Appended`` event. This event this then consumed by both, ``ea4_r1`` and ``ea4_r2``, so that they can update their internal state. After waiting a bit for convergence, sending a ``Print`` command to both actors should print::
+Here, ``d4`` processes an ``Append`` command and persists an ``Appended`` event. This event this then consumed by both, ``d4`` and ``d5``, so that they can update their internal state. After waiting a bit for convergence, sending a ``Print`` command to both actors should print::
 
-    [id = ea4, replica id = r1] a
-    [id = ea4, replica id = r2] a
+    [id = 4, aggregate id = d] a
+    [id = 5, aggregate id = d] a
 
-After both replicas have converged, another ``Append`` is sent to ``ea4_r2``. 
+After both replicas have converged, another ``Append`` is sent to ``d5``. 
 
 .. includecode:: code/UserGuideDoc.scala
    :snippet: send-another-append
 
 Again both actors consume the event and sending another ``Print`` command should print::
 
-    [id = ea4, replica id = r1] a,b
-    [id = ea4, replica id = r2] a,b
+    [id = 4, aggregate id = d] a,b
+    [id = 5, aggregate id = d] a,b
 
 .. warning::
    As you have probably recognized, replica convergence in this example can only be achieved if the second ``Append`` command is sent after both actors have processed the ``Appended`` event from the first ``Append`` command. In this case, the second ``Appended`` event causally depends on the first one. Since events are guaranteed to be delivered in causal order to all replicas, they can converge to the same state.
@@ -125,10 +125,12 @@ The vector timestamp of an event can be obtained with ``lastVectorTimestamp`` du
 
 Attaching update timestamps to current state and comparing them with vector timestamps of new events can be easily abstracted so that applications don’t have to deal with these low level details, as shown in the next section. 
 
+.. _tracking-conflicting-versions:
+
 Tracking conflicting versions
 -----------------------------
 
-If state update operations from concurrent events do not commute, conflicting versions of actor state arise that must be tracked and resolved. This can be done with Eventuate’s ``ConcurrentVersions[S, A]`` abstraction and an application-defined *update function* of type ``(S, A) => S`` where ``S`` is the type of actor state and ``A`` the update type. In our example the ``ConcurrentVersions`` type is ``ConcurrentVersions[Vector[String], String]`` and the update function ``(s, a) => s :+ a``:
+If state update operations from concurrent events do not commute, conflicting versions of actor state arise which must be tracked and resolved. This can be done with Eventuate’s ``ConcurrentVersions[S, A]`` abstraction and an application-defined *update function* of type ``(S, A) => S`` where ``S`` is the type of actor state and ``A`` the update type. In our example the ``ConcurrentVersions`` type is ``ConcurrentVersions[Vector[String], String]`` and the update function ``(s, a) => s :+ a``:
 
 .. includecode:: code/UserGuideDoc.scala
    :snippet: tracking-conflicting-versions
@@ -152,19 +154,19 @@ Resolving conflicting versions
 Automated conflict resolution
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The following is a very simple example of automated conflict resolution: if a conflict has been detected, the writer with the lower ``replicaId`` is selected to be the winner. The ``replicaId`` of an event writer can be obtained with ``lastEmitterReplicaId`` during event handling.
+The following is a very simple example of automated conflict resolution: if a conflict has been detected, the emitter with the lower ``id`` is selected to be the winner. The emitter id of an event can be obtained with ``lastEmitterId`` during event handling.
 
 .. includecode:: code/UserGuideDoc.scala
    :snippet: automated-conflict-resolution
 
-The conflicting versions are sorted by ascending ``emitterReplicaId`` and the first version is selected as the winner. Its update timestamp is passed as argument to ``resolve`` which selects this version and discards all other versions.
+The conflicting versions are sorted by ascending emitter id (tracked internally as ``creator``) and the first version is selected as the winner. Its update timestamp is passed as argument to ``resolve`` which selects this version and discards all other versions.
 
-Alternatively, we could also have used POSIX timestamps to let the *last* writer win. In case of equal timestamps, the lower ``emitterReplicaId`` wins. This requires synchronized system clocks to give reasonable result, however, convergence does not depend on proper synchronization. If system clock synchronization is not an option, `Lamport timestamps`_ can also be used to consistently resolve the conflict.
+Alternatively, we could also have used POSIX timestamps to let the *last* writer win. In case of equal timestamps, the lower emitter id wins. This requires synchronized system clocks to give reasonable result, however, convergence does not depend on proper synchronization. If system clock synchronization is not an option, `Lamport timestamps`_ can also be used to consistently resolve the conflict.
 
 More advanced conflict resolution examples could use logic that depends on the actual values of concurrent versions. After selecting a winner, an application could even update the winner version with *merged* content from all conflicting versions\ [#]_.
 
 .. note::
-   For replicas to converge, it is important that winner selection does not depend on the order of conflicting events. In our example, this is the case because ``replicaId`` comparison is transitive.
+   For replicas to converge, it is important that winner selection does not depend on the order of conflicting events. In our example, this is the case because emitter id comparison is transitive.
 
 Interactive conflict resolution
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -207,14 +209,14 @@ New operation-based CRDTs and their service interfaces can be implemented with t
 Event-sourced views
 -------------------
 
-Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. A view that doesn’t define an ``aggregateId`` can consume events from all event-sourced actors on the same event log. If it defines an ``aggregateId`` it can only consume events from event-sourced actors with the same ``aggregateId`` (assuming the default event routing rules).
-
-Concrete event-sourced views must implement the ``EventsourcedView`` trait. In the following example, the view counts all ``Appended`` and ``Resolved`` events emitted by all event-sourced actors on the same ``eventLog``. It doesn’t define an ``aggregateId``:
+Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. Concrete event-sourced views must implement the ``EventsourcedView`` trait. In the following example, the view counts all ``Appended`` and ``Resolved`` events emitted by all event-sourced actors on the same ``eventLog``:
 
 .. includecode:: code/UserGuideDoc.scala
    :snippet: event-sourced-view
 
 Event-sourced views handle events in the same way as event-sourced actors by implementing an ``onEvent`` handler. The ``onCommand`` handler in the example processes the read commands ``GetAppendCount`` and ``GetResolveCount``.
+
+``ExampleView`` implements the mandatory global unique ``id`` but doesn’t define an ``aggregateId``. A view that doesn’t define an ``aggregateId`` can consume events from all event-sourced actors on the same event log. If it defines an ``aggregateId`` it can only consume events from event-sourced actors with the same ``aggregateId`` (assuming the default :ref:`event-routing` rules). 
 
 .. _conditional-commands:
 

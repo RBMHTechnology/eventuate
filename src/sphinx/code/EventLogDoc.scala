@@ -76,7 +76,7 @@ trait ReplicationFilterDoc {
 
   case class AggregateIdFilter(aggregateId: String) extends ReplicationFilter {
     override def apply(event: DurableEvent): Boolean =
-      event.emitterAggregateId.map(_ == aggregateId).getOrElse(false)
+      event.emitterAggregateId.contains(aggregateId)
   }
   //#
 

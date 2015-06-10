@@ -19,14 +19,14 @@ package com.rbmhtechnology.eventuate
 import akka.actor._
 
 /**
- * A conditional command is a command to an [[Eventsourced]] actor whose delivery
- * to the actor's command handler is delayed until the following condition is met:
- * the merge result of all timestamps of events, that have been previously handled
+ * A conditional command is a command to an [[EventsourcedActor]] or [[EventsourcedView]]
+ * whose delivery to the actor's command handler is delayed until the following condition
+ * is met: the merge result of all timestamps of events, that have been previously handled
  * by that actor, must be `>=` the given `condition` timestamp.
  *
- * For example, this condition is met by an [[Eventsourced]] actor if the `condition`
- * timestamp is the vector timestamp of an event and that event has been handled by
- * the actor.
+ * For example, this condition is met by an [[EventsourcedActor]] or [[EventsourcedView]]
+ * if the `condition` timestamp is the vector timestamp of an event and that event has been
+ * handled by the actor.
  */
 case class ConditionalCommand(condition: VectorTime, cmd: Any)
 

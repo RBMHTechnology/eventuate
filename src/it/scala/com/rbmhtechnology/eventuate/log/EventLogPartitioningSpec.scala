@@ -19,9 +19,7 @@ package com.rbmhtechnology.eventuate.log
 import akka.actor.ActorSystem
 import akka.testkit.{TestProbe, TestKit}
 
-import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
-import com.rbmhtechnology.eventuate.log.cassandra._
 
 import com.typesafe.config._
 
@@ -33,6 +31,8 @@ object EventLogPartitioningSpecCassandra {
       |akka.loglevel = "ERROR"
       |akka.test.single-expect-default = 10s
       |
+      |eventuate.snapshot.filesystem.dir = target/test-snapshot
+      |
       |eventuate.log.batching.batch-size-limit = 3
       |eventuate.log.replication.batch-size-max = 3
       |eventuate.log.cassandra.partition-size-max = 5
@@ -40,7 +40,7 @@ object EventLogPartitioningSpecCassandra {
     """.stripMargin)
 }
 
-class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", EventLogPartitioningSpecCassandra.config)) with EventLogSpecSupport with CassandraEventLogSupport {
+class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", EventLogPartitioningSpecCassandra.config)) with EventLogSpecSupport with EventLogLifecycleCassandra {
   import EventLogSpec._
 
   def replay(fromSequenceNr: Long): Seq[(Any, Long)] = {

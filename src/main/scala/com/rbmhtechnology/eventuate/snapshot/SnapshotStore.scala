@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.eventuate.log.cassandra
+package com.rbmhtechnology.eventuate.snapshot
 
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper
+import com.rbmhtechnology.eventuate.Snapshot
 
-import scala.concurrent.duration._
+import scala.concurrent.Future
 
-object CassandraServer {
-  def start(timeout: FiniteDuration = 10.seconds): Unit =
-    EmbeddedCassandraServerHelper.startEmbeddedCassandra(timeout.toMillis)
+/**
+ * Snapshot store provider interface.
+ */
+trait SnapshotStore {
+  /**
+   * Asynchronously saves the given `snapshot`.
+   */
+  def saveAsync(snapshot: Snapshot): Future[Unit]
 
-  def stop(): Unit =
-    EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
-}
-
-object CassandraServerApp extends App {
-  CassandraServer.start(60.seconds)
+  /**
+   * Asynchronously loads the latest snapshot saved by an event-sourced actor or view identified by `emitterId`.
+   */
+  def loadAsync(emitterId: String): Future[Option[Snapshot]]
 }

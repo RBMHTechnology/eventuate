@@ -33,16 +33,15 @@ object EventsourcedActors extends App {
   // Event
   case class Appended(entry: String)
 
-  class ExampleActor(id: String,
-                     override val replicaId: String,
+  class ExampleActor(override val id: String,
+                     override val aggregateId: Option[String],
                      override val eventLog: ActorRef) extends EventsourcedActor {
 
     private var currentState: Vector[String] = Vector.empty
 
-    override val aggregateId = Some(id)
-
     override val onCommand: Receive = {
-      case Print => println(s"[id = $id, replica id = $replicaId] ${currentState.mkString(",")}")
+      case Print =>
+        println(s"[id = $id, aggregate id = ${aggregateId.getOrElse("<undefined>")}] ${currentState.mkString(",")}")
       case Append(entry) => persist(Appended(entry)) {
         case Success(evt) =>
           onEvent(evt)
@@ -73,55 +72,55 @@ object EventsourcedActors extends App {
 
   //#create-one-instance
 
-  val ea1_r1 = system.actorOf(Props(new ExampleActor("ea1", "r1", eventLog)))
+  val ea1 = system.actorOf(Props(new ExampleActor("1", Some("a"), eventLog)))
 
-  ea1_r1 ! Append("a")
-  ea1_r1 ! Append("b")
+  ea1 ! Append("a")
+  ea1 ! Append("b")
   //#
 
   //#print-one-instance
-  ea1_r1 ! Print
+  ea1 ! Print
   //#
 
   //#create-two-instances
-  val ea2_r1 = system.actorOf(Props(new ExampleActor("ea2", "r1", eventLog)))
-  val ea3_r1 = system.actorOf(Props(new ExampleActor("ea3", "r1", eventLog)))
+  val b2 = system.actorOf(Props(new ExampleActor("2", Some("b"), eventLog)))
+  val c3 = system.actorOf(Props(new ExampleActor("3", Some("c"), eventLog)))
 
-  ea2_r1 ! Append("a")
-  ea2_r1 ! Append("b")
+  b2 ! Append("a")
+  b2 ! Append("b")
 
-  ea3_r1 ! Append("x")
-  ea3_r1 ! Append("y")
+  c3 ! Append("x")
+  c3 ! Append("y")
   //#
 
   //#print-two-instances
-  ea2_r1 ! Print
-  ea3_r1 ! Print
+  b2 ! Print
+  c3 ! Print
   //#
 
   //#create-replica-instances
   // created at location 1
-  val ea4_r1 = system.actorOf(Props(new ExampleActor("ea4", "r1", eventLog)))
+  val d4 = system.actorOf(Props(new ExampleActor("4", Some("d"), eventLog)))
 
   // created at location 2
-  val ea4_r2 = system.actorOf(Props(new ExampleActor("ea4", "r2", eventLog)))
+  val d5 = system.actorOf(Props(new ExampleActor("5", Some("d"), eventLog)))
 
-  ea4_r1 ! Append("a")
+  d4 ! Append("a")
   //#
 
   Thread.sleep(1000)
 
-  ea4_r1 ! Print
-  ea4_r2 ! Print
+  d4 ! Print
+  d5 ! Print
 
   //#send-another-append
-  ea4_r2 ! Append("b")
+  d5 ! Append("b")
   //#
 
   Thread.sleep(1000)
 
-  ea4_r1 ! Print
-  ea4_r2 ! Print
+  d4 ! Print
+  d5 ! Print
 }
 
 object EventsourcedActorsUpdated {
@@ -139,14 +138,12 @@ object EventsourcedActorsUpdated {
     import com.rbmhtechnology.eventuate.EventsourcedActor
     import com.rbmhtechnology.eventuate.VectorTime
 
-    class ExampleActor(id: String,
-                       override val replicaId: String,
+    class ExampleActor(override val id: String,
+                       override val aggregateId: Option[String],
                        override val eventLog: ActorRef) extends EventsourcedActor {
 
       private var currentState: Vector[String] = Vector.empty
       private var updateTimestamp: VectorTime = VectorTime()
-
-      override val aggregateId = Some(id)
 
       override val onCommand: Receive = {
         // ...
@@ -176,14 +173,12 @@ object EventsourcedActorsUpdated {
     import com.rbmhtechnology.eventuate.{ConcurrentVersions, Versioned}
     import com.rbmhtechnology.eventuate.EventsourcedActor
 
-    class ExampleActor(id: String,
-                       override val replicaId: String,
+    class ExampleActor(override val id: String,
+                       override val aggregateId: Option[String],
                        override val eventLog: ActorRef) extends EventsourcedActor {
 
       private var versionedState: ConcurrentVersions[Vector[String], String] =
         ConcurrentVersions(Vector.empty, (s, a) => s :+ a)
-
-      override val aggregateId = Some(id)
 
       override val onCommand: Receive = {
         // ...
@@ -211,14 +206,12 @@ object EventsourcedActorsUpdated {
     import com.rbmhtechnology.eventuate._
 
     //#automated-conflict-resolution
-    class ExampleActor(id: String,
-                       override val replicaId: String,
+    class ExampleActor(override val id: String,
+                       override val aggregateId: Option[String],
                        override val eventLog: ActorRef) extends EventsourcedActor {
 
       private var versionedState: ConcurrentVersions[Vector[String], String] =
         ConcurrentVersions(Vector.empty, (s, a) => s :+ a)
-
-      override val aggregateId = Some(id)
 
       override val onCommand: Receive = {
         // ...
@@ -229,9 +222,9 @@ object EventsourcedActorsUpdated {
 
       override val onEvent: Receive = {
         case Appended(entry) =>
-          versionedState = versionedState.update(entry, lastVectorTimestamp, lastEmitterReplicaId)
+          versionedState = versionedState.update(entry, lastVectorTimestamp, creator = lastEmitterId)
           if (versionedState.conflict) {
-            val conflictingVersions = versionedState.all.sortBy(_.emitterReplicaId)
+            val conflictingVersions = versionedState.all.sortBy(_.creator)
             val winnerTimestamp: VectorTime = conflictingVersions.head.updateTimestamp
             versionedState = versionedState.resolve(winnerTimestamp)
           }
@@ -251,14 +244,12 @@ object EventsourcedActorsUpdated {
     case class Resolve(selectedTimestamp: VectorTime)
     case class Resolved(selectedTimestamp: VectorTime)
 
-    class ExampleActor(id: String,
-                       override val replicaId: String,
+    class ExampleActor(override val id: String,
+                       override val aggregateId: Option[String],
                        override val eventLog: ActorRef) extends EventsourcedActor {
 
       private var versionedState: ConcurrentVersions[Vector[String], String] =
         ConcurrentVersions(Vector.empty, (s, a) => s :+ a)
-
-      override val aggregateId = Some(id)
 
       override val onCommand: Receive = {
         case Append(entry) if versionedState.conflict =>
@@ -276,7 +267,7 @@ object EventsourcedActorsUpdated {
 
       override val onEvent: Receive = {
         case Appended(entry) =>
-          versionedState = versionedState.update(entry, lastVectorTimestamp, lastEmitterReplicaId)
+          versionedState = versionedState.update(entry, lastVectorTimestamp, lastEmitterId)
         case Resolved(selectedTimestamp) =>
           versionedState = versionedState.resolve(selectedTimestamp, lastVectorTimestamp)
       }
@@ -300,7 +291,7 @@ object EventsourcedViews {
   case object GetResolveCount
   case class GetResolveCountReply(count: Long)
 
-  class ExampleView(override val eventLog: ActorRef) extends EventsourcedView {
+  class ExampleView(override val id: String, override val eventLog: ActorRef) extends EventsourcedView {
     private var appendCount: Long = 0L
     private var resolveCount: Long = 0L
 
@@ -338,8 +329,7 @@ object ConditionalCommands extends App {
   case class Append(entry: String)
   case class AppendSuccess(entry: String, updateTimestamp: VectorTime)
 
-  class ExampleActor(id: String,
-                     override val replicaId: String,
+  class ExampleActor(override val id: String,
                      override val eventLog: ActorRef) extends EventsourcedActor {
 
     private var currentState: Vector[String] = Vector.empty
@@ -361,8 +351,8 @@ object ConditionalCommands extends App {
     }
   }
 
-  val ea = system.actorOf(Props(new ExampleActor("ea", "r1", eventLog)))
-  val ev = system.actorOf(Props(new ExampleView(eventLog)))
+  val ea = system.actorOf(Props(new ExampleActor("ea", eventLog)))
+  val ev = system.actorOf(Props(new ExampleView("ev", eventLog)))
 
   import system.dispatcher
   implicit val timeout = Timeout(5.seconds)

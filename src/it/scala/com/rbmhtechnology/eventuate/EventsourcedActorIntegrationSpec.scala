@@ -21,15 +21,16 @@ import scala.util._
 import akka.actor._
 import akka.testkit._
 
-import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSupport
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSupport
+import com.rbmhtechnology.eventuate.log.EventLogLifecycleCassandra
+import com.rbmhtechnology.eventuate.log.EventLogLifecycleLeveldb
 
 import org.scalatest._
 
 object EventsourcedActorIntegrationSpec {
   case class Cmd(payloads: String*)
+  case class State(state: Vector[String])
 
-  class SampleActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class SampleActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     override val onCommand: Receive = {
       case "reply-success" => persist("okay") {
         case Success(r) => sender() ! r
@@ -55,7 +56,7 @@ object EventsourcedActorIntegrationSpec {
     }
   }
   
-  class AccActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class AccActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     var acc: Vector[String] = Vector.empty
 
     override val onCommand: Receive = {
@@ -73,7 +74,7 @@ object EventsourcedActorIntegrationSpec {
     }
   }
 
-  class ConfirmedDeliveryActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor with ConfirmedDelivery {
+  class ConfirmedDeliveryActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor with ConfirmedDelivery {
     override val onCommand: Receive = {
       case "boom" => throw boom
       case "end" => probe ! "end"
@@ -88,7 +89,7 @@ object EventsourcedActorIntegrationSpec {
     }
   }
 
-  class DelayActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class DelayActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     override def stateSync: Boolean = false
 
     override val onCommand: Receive = {
@@ -101,7 +102,7 @@ object EventsourcedActorIntegrationSpec {
     }
   }
 
-  class ConditionalActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class ConditionalActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     override val onCommand: Receive = {
       case "persist"      => persist("a")(r => probe ! r.get)
       case "persist-mute" => persist("a")(_ => ())
@@ -113,7 +114,7 @@ object EventsourcedActorIntegrationSpec {
     }
   }
 
-  class ConditionalView(val eventLog: ActorRef, probe: ActorRef) extends EventsourcedView {
+  class ConditionalView(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedView {
     override val onCommand: Receive = {
       case other => probe ! other
     }
@@ -126,25 +127,25 @@ object EventsourcedActorIntegrationSpec {
   case class CollabCmd(to: String)
   case class CollabEvt(to: String, from: String)
 
-  class CollabActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
-    var initiated = false
+  class CollabActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+    var initialized = false
 
     override val onCommand: Receive = {
       case CollabCmd(to) =>
-        persist(CollabEvt(to, replicaId))(_ => ())
-        initiated = true
+        persist(CollabEvt(to, id))(_ => ())
+        initialized = true
     }
 
     override val onEvent: Receive = {
-      case evt @ CollabEvt(`replicaId`, from) =>
-        if (initiated) probe ! lastVectorTimestamp else self ! CollabCmd(from)
+      case evt @ CollabEvt(`id`, from) =>
+        if (initialized) probe ! lastVectorTimestamp else self ! CollabCmd(from)
     }
   }
 
   case class Route(s: String, destinations: Set[String])
 
-  class RouteeActor(override val aggregateId: Option[String],
-                    override val replicaId: String,
+  class RouteeActor(override val id: String,
+                    override val aggregateId: Option[String],
                     override val eventLog: ActorRef,
                     probe: ActorRef) extends EventsourcedActor {
 
@@ -157,6 +158,60 @@ object EventsourcedActorIntegrationSpec {
 
     override val onEvent: Receive = {
       case s: String => probe ! s
+    }
+  }
+
+  class SnapshotActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+    var state: Vector[String] = Vector.empty
+
+    override val onCommand: Receive = {
+      case "boom" =>
+        throw boom
+      case "snap" => save(State(state)) {
+        case Success(m) => sender() ! m.sequenceNr
+        case Failure(e) => throw e
+      }
+      case s: String => persist(s) {
+        case Success(r) => onEvent(r)
+        case Failure(e) => throw e
+      }
+    }
+
+    override val onEvent: Receive = {
+      case s: String =>
+        state = state :+ s
+        probe ! state
+    }
+
+    override val onSnapshot: Receive = {
+      case State(s) =>
+        this.state = s
+        probe ! state
+    }
+  }
+
+  class SnapshotView(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedView {
+    var state: Vector[String] = Vector.empty
+
+    override val onCommand: Receive = {
+      case "boom" =>
+        throw boom
+      case "snap" => save(State(state)) {
+        case Success(m) => sender() ! m.sequenceNr
+        case Failure(e) => throw e
+      }
+    }
+
+    override val onEvent: Receive = {
+      case s: String =>
+        state = state :+ s"v-${s}"
+        probe ! state
+    }
+
+    override val onSnapshot: Receive = {
+      case State(s) =>
+        this.state = s
+        probe ! state
     }
   }
 }
@@ -260,9 +315,9 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
       val probe2 = TestProbe()
       val probe3 = TestProbe()
 
-      val a1r1 = system.actorOf(Props(new RouteeActor(Some("a1"), "r1", log, probe1.ref)))
-      val a1r2 = system.actorOf(Props(new RouteeActor(Some("a1"), "r2", log, probe2.ref)))
-      val a2r1 = system.actorOf(Props(new RouteeActor(Some("a2"), "r1", log, probe3.ref)))
+      val a1r1 = system.actorOf(Props(new RouteeActor("1", Some("a1"), log, probe1.ref)))
+      val a1r2 = system.actorOf(Props(new RouteeActor("2", Some("a1"), log, probe2.ref)))
+      val a2r1 = system.actorOf(Props(new RouteeActor("3", Some("a2"), log, probe3.ref)))
 
       a1r1 ! Route("x", Set())
 
@@ -298,13 +353,13 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
 
   "Eventsourced actors and views" must {
     "support conditional command processing" in {
-      val viewProps = Props(new ConditionalView(log, probe.ref))
       val act1Props = Props(new ConditionalActor("1", log, probe.ref))
       val act2Props = Props(new ConditionalActor("2", log, probe.ref))
+      val viewProps = Props(new ConditionalView("3", log, probe.ref))
 
-      val view = system.actorOf(viewProps, "view")
       val act1 = system.actorOf(act1Props, "act1")
       val act2 = system.actorOf(act2Props, "act2")
+      val view = system.actorOf(viewProps, "view")
 
       val condition = VectorTime("1" -> 3L)
 
@@ -327,13 +382,49 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
 
       probe.expectMsgAllOf("delayed-1", "delayed-2", "delayed")
     }
+    "support snapshots" in {
+      val actorProbe = TestProbe()
+      val viewProbe = TestProbe()
+
+      val actor = system.actorOf(Props(new SnapshotActor("1", log, actorProbe.ref)))
+      val view = system.actorOf(Props(new SnapshotView("2", log, viewProbe.ref)))
+
+      actor ! "a"
+      actor ! "b"
+
+      actorProbe.expectMsg(Vector("a"))
+      actorProbe.expectMsg(Vector("a", "b"))
+
+      viewProbe.expectMsg(Vector("v-a"))
+      viewProbe.expectMsg(Vector("v-a", "v-b"))
+
+      actor.tell("snap", actorProbe.ref)
+      view.tell("snap", viewProbe.ref)
+
+      actorProbe.expectMsg(2)
+      viewProbe.expectMsg(2)
+
+      actor ! "c"
+
+      actorProbe.expectMsg(Vector("a", "b", "c"))
+      viewProbe.expectMsg(Vector("v-a", "v-b", "v-c"))
+
+      actor ! "boom"
+      view ! "boom"
+
+      actorProbe.expectMsg(Vector("a", "b"))
+      actorProbe.expectMsg(Vector("a", "b", "c"))
+
+      viewProbe.expectMsg(Vector("v-a", "v-b"))
+      viewProbe.expectMsg(Vector("v-a", "v-b", "v-c"))
+    }
   }
 }
 
-class EventsourcedActorIntegrationSpecLeveldb extends EventsourcedActorIntegrationSpec with LeveldbEventLogSupport {
+class EventsourcedActorIntegrationSpecLeveldb extends EventsourcedActorIntegrationSpec with EventLogLifecycleLeveldb {
   override def batching = false
 }
 
-class EventsourcedActorIntegrationSpecCassandra extends EventsourcedActorIntegrationSpec with CassandraEventLogSupport {
+class EventsourcedActorIntegrationSpecCassandra extends EventsourcedActorIntegrationSpec with EventLogLifecycleCassandra {
   override def batching = false
 }

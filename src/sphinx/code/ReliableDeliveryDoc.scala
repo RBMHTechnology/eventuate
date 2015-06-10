@@ -34,7 +34,7 @@ object ReliableDelivery extends App {
   case object Redeliver
 
   class ExampleActor(destination: ActorPath,
-                     override val replicaId: String,
+                     override val id: String,
                      override val eventLog: ActorRef)
     extends EventsourcedActor with ConfirmedDelivery {
 

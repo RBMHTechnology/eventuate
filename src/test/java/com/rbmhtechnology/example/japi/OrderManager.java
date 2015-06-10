@@ -45,12 +45,13 @@ public class OrderManager extends AbstractEventsourcedView {
 
 
     public OrderManager(String replicaId, ActorRef eventLog) {
-        super(eventLog);
+        super(String.format("j-om-%s", replicaId), eventLog);
         this.replicaId = replicaId;
         this.orderActors = new HashMap<>();
 
         onReceiveCommand(ReceiveBuilder
                 .match(OrderCommand.class, c -> orderActor(c.getOrderId()).tell(c, sender()))
+                .match(SaveSnapshot.class, c -> orderActor(c.getOrderId()).tell(c, sender()))
                 .match(Resolve.class, c -> orderActor(c.id()).tell(c, sender()))
                 .match(GetState.class, c -> orderActors.isEmpty(), c -> replyStateZero(sender()))
                 .match(GetState.class, c -> !orderActors.isEmpty(), c -> replyState(sender())).build());

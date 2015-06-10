@@ -28,8 +28,8 @@ import com.rbmhtechnology.example.japi.OrderActor.*;
 public class OrderView extends AbstractEventsourcedView {
     private Map<String, Integer> updateCounts;
 
-    public OrderView(ActorRef eventLog) {
-        super(eventLog);
+    public OrderView(String replicaId, ActorRef eventLog) {
+        super(String.format("j-ov-%s", replicaId), eventLog);
         this.updateCounts = new HashMap<>();
 
         onReceiveCommand(ReceiveBuilder.match(GetUpdateCount.class, this::handleGetUpdateCount).build());

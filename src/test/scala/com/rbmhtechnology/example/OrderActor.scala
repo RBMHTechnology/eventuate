@@ -54,6 +54,11 @@ object OrderActor {
   case class CommandSuccess(orderId: String)
   case class CommandFailure(orderId: String, cause: Throwable)
 
+  // Snapshot command and replies
+  case class SaveSnapshot(orderId: String)
+  case class SaveSnapshotSuccess(orderId: String, metadata: SnapshotMetadata)
+  case class SaveSnapshotFailure(orderId: String, cause: Throwable)
+
   implicit object OrderDomainCmd extends DomainCmd[OrderCommand] {
     override def origin(cmd: OrderCommand): String = ""
   }
@@ -67,12 +72,14 @@ object OrderActor {
 }
 
 /**
- * An event-sourced actor that manager a single order aggregate, identified by `orderId`.
+ * An event-sourced actor that manages a single order aggregate, identified by `orderId`.
  */
-class OrderActor(orderId: String, val replicaId: String, val eventLog: ActorRef) extends EventsourcedActor {
+class OrderActor(orderId: String, replicaId: String, val eventLog: ActorRef) extends EventsourcedActor {
   import OrderActor._
 
+  override val id = s"s-${orderId}-${replicaId}"
   override val aggregateId = Some(orderId)
+
   private var order = VersionedAggregate(orderId, commandValidation, eventProjection)
 
   override val onCommand: Receive = {
@@ -88,6 +95,15 @@ class OrderActor(orderId: String, val replicaId: String, val eventLog: ActorRef)
         case None            => GetStateSuccess(Map.empty)
       }
       sender() ! reply
+    case c: SaveSnapshot => order.aggregate match {
+      case None =>
+        sender() ! SaveSnapshotFailure(orderId, new AggregateDoesNotExistException(orderId))
+      case Some(aggregate) =>
+        save(aggregate) {
+          case Success(m) => sender() ! SaveSnapshotSuccess(orderId, m)
+          case Failure(e) => sender() ! SaveSnapshotFailure(orderId, e)
+        }
+    }
   }
 
   override val onEvent: Receive = {
@@ -102,8 +118,17 @@ class OrderActor(orderId: String, val replicaId: String, val eventLog: ActorRef)
       if (!recovering) printOrder(order.versions)
   }
 
-  override def recovered(): Unit =
+  override val onSnapshot: Receive = {
+    case aggregate: ConcurrentVersionsTree[Order, OrderEvent] =>
+      order = order.withAggregate(aggregate.withProjection(eventProjection))
+      println(s"[$orderId] Snapshot loaded:")
+      printOrder(order.versions)
+  }
+
+  override def onRecovered(): Unit = {
+    println(s"[$orderId] Recovery complete:")
     printOrder(order.versions)
+  }
 
   private def processValidationResult(orderId: String, result: Try[Any]): Unit = result match {
     case Failure(err) =>

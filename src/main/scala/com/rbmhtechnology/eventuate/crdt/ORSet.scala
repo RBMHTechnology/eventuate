@@ -91,11 +91,11 @@ object ORSet {
 /**
  * Replicated [[ORSet]] CRDT service.
  *
- * @param replicaId Unique replica id of this service replica.
+ * @param serviceId Unique id of this service.
  * @param log Event log
  * @tparam A [[ORSet]] entry type
  */
-class ORSetService[A](val replicaId: String, val log: ActorRef)(implicit system: ActorSystem, val ops: CRDTServiceOps[ORSet[A], Set[A]])
+class ORSetService[A](val serviceId: String, val log: ActorRef)(implicit system: ActorSystem, val ops: CRDTServiceOps[ORSet[A], Set[A]])
   extends CRDTService[ORSet[A], Set[A]] {
 
   /**

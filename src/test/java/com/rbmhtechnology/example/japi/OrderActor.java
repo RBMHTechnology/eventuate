@@ -16,6 +16,7 @@
 
 package com.rbmhtechnology.example.japi;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,20 +28,19 @@ import java.util.stream.IntStream;
 import akka.actor.ActorRef;
 import akka.japi.pf.ReceiveBuilder;
 
-import com.rbmhtechnology.eventuate.AbstractEventsourcedActor;
-import com.rbmhtechnology.eventuate.ConcurrentVersions;
-import com.rbmhtechnology.eventuate.Versioned;
-import com.rbmhtechnology.eventuate.VersionedAggregate;
+import com.rbmhtechnology.eventuate.*;
 
 import static com.rbmhtechnology.eventuate.VersionedAggregate.*;
 
 public class OrderActor extends AbstractEventsourcedActor {
     private String orderId;
+    private String replicaId;
+
     private VersionedAggregate<Order, OrderCommand, OrderEvent> order;
 
     private BiFunction<Order, OrderCommand, OrderEvent> commandValidation = (o, c) -> {
         if (c instanceof CreateOrder)
-            return ((CreateOrder)c).createEvent().withCreator(replicaId());
+            return ((CreateOrder)c).createEvent().withCreator(replicaId);
         else
             return c.createEvent();
     };
@@ -58,8 +58,9 @@ public class OrderActor extends AbstractEventsourcedActor {
     };
 
     public OrderActor(String orderId, String replicaId, ActorRef eventLog) {
-        super(replicaId, eventLog);
+        super(String.format("j-%s-%s", orderId, replicaId), eventLog);
         this.orderId = orderId;
+        this.replicaId = replicaId;
         this.order = VersionedAggregate.create(
                 orderId,
                 commandValidation,
@@ -68,10 +69,11 @@ public class OrderActor extends AbstractEventsourcedActor {
                 OrderDomainEvt.instance);
 
         onReceiveCommand(ReceiveBuilder
-                .match(CreateOrder.class, c -> processCommand(c.getOrderId(), () -> order.doValidateCreate(c)))
-                .match(OrderCommand.class, c -> processCommand(c.getOrderId(), () -> order.doValidateUpdate(c)))
-                .match(Resolve.class, c -> processCommand(c.id(), () -> order.doValidateResolve(c.selected(), replicaId())))
-                .match(GetState.class, c -> sender().tell(new GetStateSuccess(ordersVersions()), self())).build());
+                .match(CreateOrder.class, c -> processCommand(() -> order.doValidateCreate(c)))
+                .match(OrderCommand.class, c -> processCommand(() -> order.doValidateUpdate(c)))
+                .match(Resolve.class, c -> processCommand(() -> order.doValidateResolve(c.selected(), replicaId)))
+                .match(GetState.class, c -> sender().tell(new GetStateSuccess(ordersVersions()), self()))
+                .match(SaveSnapshot.class, c -> saveState()).build());
 
         onReceiveEvent(ReceiveBuilder
                 .match(OrderCreated.class, e -> {
@@ -87,6 +89,13 @@ public class OrderActor extends AbstractEventsourcedActor {
                     if (!recovering()) printOrder(order.getVersions());
                 })
                 .build());
+
+        onReceiveSnapshot(ReceiveBuilder
+                .match(ConcurrentVersionsTree.class, s -> {
+                    order = order.withAggregate(((ConcurrentVersionsTree<Order, OrderEvent>)s).withProjection(eventProjection));
+                    System.out.println(String.format("[%s] Snapshot loaded:", orderId));
+                    printOrder(order.getVersions());
+                }).build());
     }
 
     @Override
@@ -95,19 +104,20 @@ public class OrderActor extends AbstractEventsourcedActor {
     }
 
     @Override
-    public void recovered() {
+    public void onRecovered() {
+        System.out.println(String.format("[%s] Recovery complete:", orderId));
         printOrder(order.getVersions());
     }
 
-    private <E> void processCommand(String orderId, Supplier<E> cmdValidation) {
+    private <E> void processCommand(Supplier<E> cmdValidation) {
         try {
-            processEvent(orderId, cmdValidation.get());
+            processEvent(cmdValidation.get());
         } catch (Throwable err) {
             sender().tell(new CommandFailure(orderId, err), self());
         }
     }
 
-    private <E> void processEvent(String orderId, E event) {
+    private <E> void processEvent(E event) {
         persist(event, (evt, err) -> {
             if (err == null) {
                 onEvent().apply(evt);
@@ -116,6 +126,20 @@ public class OrderActor extends AbstractEventsourcedActor {
                 sender().tell(new CommandFailure(orderId, err), self());
             }
         });
+    }
+
+    private void saveState() {
+        if (order.getAggregate().isPresent()) {
+            save(order.getAggregate().get(), (metadata, err) -> {
+               if (err == null) {
+                   sender().tell(new SaveSnapshotSuccess(orderId, metadata), self());
+               } else {
+                   sender().tell(new SaveSnapshotFailure(orderId, err), self());
+               }
+            });
+        } else {
+            sender().tell(new SaveSnapshotFailure(orderId, new AggregateDoesNotExistException(orderId)), self());
+        }
     }
 
     private Map<String, List<Versioned<Order>>> ordersVersions() {
@@ -344,6 +368,38 @@ public class OrderActor extends AbstractEventsourcedActor {
         private Throwable cause;
 
         public GetStateFailure(Throwable cause) {
+            this.cause = cause;
+        }
+
+        public Throwable getCause() {
+            return cause;
+        }
+    }
+
+    public static class SaveSnapshot extends OrderId {
+        public SaveSnapshot(String orderId) {
+            super(orderId);
+        }
+    }
+
+    public static class SaveSnapshotSuccess extends OrderId {
+        private SnapshotMetadata metadata;
+
+        public SaveSnapshotSuccess(String orderId, SnapshotMetadata metadata) {
+            super(orderId);
+            this.metadata = metadata;
+        }
+
+        public SnapshotMetadata getMetadata() {
+            return metadata;
+        }
+    }
+
+    public static class SaveSnapshotFailure extends OrderId {
+        private Throwable cause;
+
+        public SaveSnapshotFailure(String orderId, Throwable cause) {
+            super(orderId);
             this.cause = cause;
         }
 

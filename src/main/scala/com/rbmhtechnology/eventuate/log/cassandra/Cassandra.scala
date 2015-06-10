@@ -27,7 +27,8 @@ import com.datastax.driver.core.utils.Bytes
 
 import com.rbmhtechnology.eventuate.DurableEvent
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration.Duration
 import scala.util._
 
 object Cassandra extends ExtensionId[Cassandra] with ExtensionIdProvider {
@@ -136,7 +137,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
     _session.execute(createReplicationProgressTableStatement)
   } match {
     case Success(_) => logging.info("Cassandra extension initialized")
-    case Failure(e) => logging.error(e, "Cassandra extension initialization failed."); terminate() // TODO: retry
+    case Failure(e) => logging.error(e, "Cassandra extension initialization failed."); Await.result(terminate(), Duration.Inf) // TODO: retry
   }
 
   /**
@@ -205,7 +206,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
     batch
   }
 
-  private def terminate(): Unit =
+  private def terminate(): Future[Terminated] =
     system.terminate()
 
   system.registerOnTermination {

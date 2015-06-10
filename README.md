@@ -16,4 +16,4 @@ Eventuate is a toolkit for building distributed, highly-available and partition-
 - provides implementations of operation-based CRDTs
 - supports distribution up to global scale.
 
-Find out more in the [introduction](http://rbmhtechnology.github.io/eventuate/introduction.html) and the [project documentation](http://rbmhtechnology.github.io/eventuate/). This project has **early access** status (see also [current limitations](http://rbmhtechnology.github.io/eventuate/current-limitations.html)).
+Find out more in the [introduction](http://rbmhtechnology.github.io/eventuate/introduction.html) and the [project documentation](http://rbmhtechnology.github.io/eventuate/).

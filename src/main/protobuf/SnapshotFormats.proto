@@ -1,0 +1,60 @@
+/*
+ * Copyright (C) 2015 Red Bull Media House GmbH <http://www.redbullmediahouse.com> - all rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// ------------------------------------------------------------------------
+//  Run 'build.proto' from the project's root directory for compilation
+// ------------------------------------------------------------------------
+
+option java_package = "com.rbmhtechnology.eventuate.serializer";
+option optimize_for = SPEED;
+
+import "src/main/protobuf/DurableEventFormats.proto";
+
+message SnapshotFormat {
+  optional SnapshotMetadataFormat metadata = 1;
+  repeated DeliveryAttemptFormat deliveryAttempts = 2;
+  optional PayloadFormat payload = 3;
+}
+
+message SnapshotMetadataFormat {
+  optional string emitterId = 1;
+  optional int64 sequenceNr = 2;
+  optional int64 systemTimestamp = 3;
+  optional VectorTimeFormat vectorTimestamp = 4;
+}
+
+message DeliveryAttemptFormat {
+  optional string deliveryId = 1;
+  optional PayloadFormat message = 2;
+  optional string destination = 3;
+}
+
+message ConcurrentVersionsTreeFormat {
+  optional ConcurrentVersionsTreeNodeFormat root = 1;
+  optional string owner = 2;
+}
+
+message ConcurrentVersionsTreeNodeFormat {
+  optional VersionedFormat versioned = 1;
+  optional bool rejected = 2;
+  repeated ConcurrentVersionsTreeNodeFormat children = 3;
+}
+
+message VersionedFormat {
+  optional VectorTimeFormat updateTimestamp = 1;
+  optional string creator = 2;
+  optional PayloadFormat payload = 3;
+}

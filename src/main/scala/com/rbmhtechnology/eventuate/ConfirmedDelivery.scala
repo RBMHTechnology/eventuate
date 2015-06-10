@@ -20,8 +20,8 @@ import scala.collection.immutable.SortedMap
 
 import akka.actor._
 
-private object ConfirmedDelivery {
-  case class DeliveryAttempt(message: Any, destination: ActorPath)
+object ConfirmedDelivery {
+  case class DeliveryAttempt(deliveryId: String, message: Any, destination: ActorPath)
 }
 
 /**
@@ -35,7 +35,7 @@ private object ConfirmedDelivery {
  * command handler by processing scheduler messages. Redelivery occurs automatically when the
  * [[EventsourcedActor]] successfully recovered after initial start or a re-start.
  */
-trait ConfirmedDelivery extends Eventsourced { this: EventsourcedActor =>
+trait ConfirmedDelivery extends EventsourcedActor {
   import ConfirmedDelivery._
 
   private var _unconfirmed: SortedMap[String, DeliveryAttempt] = SortedMap.empty
@@ -47,7 +47,7 @@ trait ConfirmedDelivery extends Eventsourced { this: EventsourcedActor =>
    * `deliveryId`.
    */
   def deliver(deliveryId: String, message: Any, destination: ActorPath): Unit = {
-    _unconfirmed = _unconfirmed + (deliveryId -> DeliveryAttempt(message, destination))
+    _unconfirmed = _unconfirmed + (deliveryId -> DeliveryAttempt(deliveryId, message, destination))
     if (!recovering) send(message, destination)
   }
 
@@ -55,7 +55,7 @@ trait ConfirmedDelivery extends Eventsourced { this: EventsourcedActor =>
    * Redelivers all unconfirmed messages.
    */
   def redeliverUnconfirmed(): Unit = _unconfirmed.foreach {
-    case (_, DeliveryAttempt(m, d)) => send(m, d)
+    case (_, DeliveryAttempt(_, m, d)) => send(m, d)
   }
 
   /**
@@ -73,8 +73,24 @@ trait ConfirmedDelivery extends Eventsourced { this: EventsourcedActor =>
   /**
    * Internal API.
    */
-  private[eventuate] override def onRecoverySuccess(): Unit = {
-    super.onRecoverySuccess()
+  override private[eventuate] def enrich(snapshot: Snapshot): Snapshot =
+    _unconfirmed.values.foldLeft(snapshot) { case (s, da) => s.add(da) }
+
+  /**
+   * Internal API.
+   */
+  override private[eventuate] def preOnSnapshot(snapshot: Snapshot): Unit = {
+    super.preOnSnapshot(snapshot)
+    snapshot.deliveryAttempts.foreach { da =>
+      _unconfirmed = _unconfirmed + (da.deliveryId -> da)
+    }
+  }
+
+  /**
+   * Internal API.
+   */
+  private[eventuate] override def recovered(): Unit = {
+    super.recovered()
     redeliverUnconfirmed()
   }
 

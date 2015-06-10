@@ -61,7 +61,7 @@ class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serialize
   //  toBinary helpers
   // --------------------------------------------------------------------------------
 
-  private[eventuate] def filterTreeFormatBuilder(filterTree: ReplicationFilter): ReplicationFilterTreeFormat.Builder = {
+  def filterTreeFormatBuilder(filterTree: ReplicationFilter): ReplicationFilterTreeFormat.Builder = {
     val builder = ReplicationFilterTreeFormat.newBuilder()
     filterTree match {
       case AndFilter(filters) =>
@@ -100,7 +100,7 @@ class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serialize
   //  fromBinary helpers
   // --------------------------------------------------------------------------------
 
-  private[eventuate] def filterTree(filterTreeFormat: ReplicationFilterTreeFormat): ReplicationFilter = {
+  def filterTree(filterTreeFormat: ReplicationFilterTreeFormat): ReplicationFilter = {
     filterTreeFormat.getNodeType match {
       case AND => AndFilter(filterTreeFormat.getChildrenList.asScala.map(filterTree).toList)
       case OR => OrFilter(filterTreeFormat.getChildrenList.asScala.map(filterTree).toList)

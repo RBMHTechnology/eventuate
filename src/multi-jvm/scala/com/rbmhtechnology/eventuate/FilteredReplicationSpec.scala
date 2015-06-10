@@ -21,17 +21,13 @@ import akka.remote.testconductor.RoleName
 import akka.remote.testkit._
 import akka.testkit.TestProbe
 
-import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogMultiNodeSupport
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogMultiNodeSupport
-
 import scala.util._
 
-class FilteredReplicationSpecLeveldb extends FilteredReplicationSpec with LeveldbEventLogMultiNodeSupport
+class FilteredReplicationSpecLeveldb extends FilteredReplicationSpec with MultiNodeSupportLeveldb
 class FilteredReplicationSpecLeveldbMultiJvmNode1 extends FilteredReplicationSpecLeveldb
 class FilteredReplicationSpecLeveldbMultiJvmNode2 extends FilteredReplicationSpecLeveldb
 
-class FilteredReplicationSpecCassandra extends FilteredReplicationSpec with CassandraEventLogMultiNodeSupport {
-  override def coordinator: RoleName = FilteredReplicationConfig.nodeA
+class FilteredReplicationSpecCassandra extends FilteredReplicationSpec with MultiNodeSupportCassandra {
   override def logName = "fr"
 }
 class FilteredReplicationSpecCassandraMultiJvmNode1 extends FilteredReplicationSpecCassandra
@@ -51,7 +47,7 @@ object FilteredReplicationSpec {
     }
   }
 
-  class ReplicatedActor(val replicaId: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class ReplicatedActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     val onCommand: Receive = {
       case s: String => persist(s) {
         case Success(e) => onEvent(e)

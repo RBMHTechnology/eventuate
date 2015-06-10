@@ -40,9 +40,9 @@ object EventsourcingProtocol {
   /**
    * Instructs an event log to write the given `events` and send the written events one-by-one
    * to the given `requestor`. In case of a successful write, events are sent within [[WriteSuccess]]
-   * messages, otherwise within [[WriteFailure]] messages with `eventSender` as message sender.
+   * messages, otherwise within [[WriteFailure]] messages with `initiator` as message sender.
    */
-  case class Write(events: Seq[DurableEvent], eventsSender: ActorRef, requestor: ActorRef, instanceId: Int)
+  case class Write(events: Seq[DurableEvent], initiator: ActorRef, requestor: ActorRef, instanceId: Int)
 
   /**
    * Success reply after a [[Write]].
@@ -93,4 +93,34 @@ object EventsourcingProtocol {
    * Failure reply after a [[Replay]].
    */
   case class ReplayFailure(cause: Throwable, instanceId: Int)
+
+  /**
+   * Instructs an event log to save the given `snapshot`.
+   */
+  case class SaveSnapshot(snapshot: Snapshot, initiator: ActorRef, requestor: ActorRef, instanceId: Int)
+
+  /**
+   * Success reply after a [[SaveSnapshot]].
+   */
+  case class SaveSnapshotSuccess(metadata: SnapshotMetadata, instanceId: Int)
+
+  /**
+   * Failure reply after a [[SaveSnapshot]].
+   */
+  case class SaveSnapshotFailure(metadata: SnapshotMetadata, cause: Throwable, instanceId: Int)
+
+  /**
+   * Instructs an event log to load the most recent snapshot for `requestor` identified by `emitterId`.
+   */
+  case class LoadSnapshot(emitterId: String, requestor: ActorRef, instanceId: Int)
+
+  /**
+   * Success reply after a [[LoadSnapshot]].
+   */
+  case class LoadSnapshotSuccess(snapshot: Option[Snapshot], instanceId: Int)
+
+  /**
+   * Failure reply after a [[LoadSnapshot]].
+   */
+  case class LoadSnapshotFailure(cause: Throwable, instanceId: Int)
 }
