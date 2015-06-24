@@ -29,6 +29,12 @@ and run the tests with::
 
     sbt test
 
+which runs unit, integration and multi-jvm tests. You can run them separately with::
+
+   sbt test:testOnly
+   sbt it:testOnly
+   sbt multi-jvm:test
+
 To publish the binaries to the local Ivy repository, run::
 
     sbt publishLocal

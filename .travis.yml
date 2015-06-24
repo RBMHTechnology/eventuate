@@ -1,14 +1,25 @@
+sudo:
+  false
 language:
   - scala
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot/
 before_install:
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then ./deploy.prep; fi
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then eval `ssh-agent`; fi
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then ssh-add deploy; fi
 before_script:
-  - sudo pip install sphinx
-  - sudo pip install sphinx_rtd_theme
+  - pip install --user sphinx
+  - pip install --user sphinx_rtd_theme
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION test makeSite
+  - sbt ++$TRAVIS_SCALA_VERSION test:testOnly
+  - sbt ++$TRAVIS_SCALA_VERSION it:testOnly
+  - sbt ++$TRAVIS_SCALA_VERSION multi-jvm:test
+  - sbt ++$TRAVIS_SCALA_VERSION makeSite
+  - find $HOME/.sbt -name "*.lock" | xargs rm
+  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
 after_success:
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then sbt ++$TRAVIS_SCALA_VERSION publish ghpagesPushSite; fi
 scala:
