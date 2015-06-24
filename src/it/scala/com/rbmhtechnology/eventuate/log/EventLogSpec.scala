@@ -578,6 +578,7 @@ class EventLogSpecCassandra extends EventLogSpec with EventLogLifecycleCassandra
     }
     "retry an index update on initialization if index update fails" in {
       val failureLog = createLog(TestFailureSpec(failBeforeIndexIncrementWrite = true), indexProbe.ref)
+      indexProbe.expectMsg(UpdateIndexFailure(boom))
       indexProbe.expectMsg(UpdateIndexSuccess(0L, 0))
       writeEmittedEvents(List(event("a"), event("b")), failureLog)
       failureLog ! "boom"
@@ -633,7 +634,7 @@ class EventLogSpecCassandra extends EventLogSpec with EventLogLifecycleCassandra
     "persist empty replication progress writes" in {
       writeReplicatedEvents(Nil, 4L, "extra")
       writeReplicatedEvents(List(event("a"), event("b"), event("c")), 7L)
-      indexProbe.expectMsg(UpdateIndexSuccess(3L, 2))
+      indexProbe.expectMsg(UpdateIndexSuccess(3L, 1))
       log.tell(GetLastSourceLogReadPosition("extra"), probe.ref)
       probe.expectMsg(GetLastSourceLogReadPositionSuccess("extra", 4L))
       log ! "boom"
