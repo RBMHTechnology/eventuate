@@ -97,3 +97,13 @@ private[eventuate] case class SourceLogIdExclusionFilter(sourceLogId: String) ex
   def apply(event: DurableEvent): Boolean =
     event.sourceLogId != sourceLogId
 }
+
+/**
+ * Replication filter that evaluates to `true` for all events.
+ */
+private[eventuate] object NoFilter extends ReplicationFilter {
+  /**
+   * Evaluates to `true`.
+   */
+  def apply(event: DurableEvent): Boolean = true
+}

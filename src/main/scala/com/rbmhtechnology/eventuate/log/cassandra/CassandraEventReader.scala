@@ -40,9 +40,11 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
   def replay(fromSequenceNr: Long)(f: DurableEvent => Unit): Unit =
     eventIterator(fromSequenceNr, Long.MaxValue).foreach(f)
 
-  def readAsync(fromSequenceNr: Long, max: Int, filter: ReplicationFilter, targetLogId: String): Future[ReadResult] = {
+  def readAsync(fromSequenceNr: Long, max: Int): Future[ReadResult] =
+    readAsync(fromSequenceNr, max, NoFilter, logId)
+
+  def readAsync(fromSequenceNr: Long, max: Int, filter: ReplicationFilter, targetLogId: String): Future[ReadResult] =
     Future(read(fromSequenceNr, max, filter, targetLogId))(cassandra.readDispatcher)
-  }
 
   def read(fromSequenceNr: Long, max: Int, filter: ReplicationFilter, targetLogId: String): ReadResult = {
     val builder = new VectorBuilder[DurableEvent]
