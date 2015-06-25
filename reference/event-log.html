@@ -216,6 +216,11 @@
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">cassandra</span><span class="o">.</span><span class="n">default</span><span class="o">-</span><span class="n">port</span> <span class="k">=</span> <span class="mi">9042</span>
 </pre></div>
 </div>
+<p>If Cassandra requires authentication, the default username used by Eventuate is <code class="docutils literal"><span class="pre">cassandra</span></code>, the default password is <code class="docutils literal"><span class="pre">cassandra</span></code> (which corresponds to Cassandra&#8217;s default superuser). This can be changed with</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">cassandra</span><span class="o">.</span><span class="n">username</span> <span class="k">=</span> <span class="s">&quot;my-username&quot;</span>
+<span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">cassandra</span><span class="o">.</span><span class="n">password</span> <span class="k">=</span> <span class="s">&quot;my-password&quot;</span>
+</pre></div>
+</div>
 <p>Further details are described in the API docs of the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.log.cassandra.Cassandra">Cassandra extension</a> and the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> actor. A complete reference of <code class="docutils literal"><span class="pre">eventuate.log.cassandra</span></code> configuration options is given in section <a class="reference internal" href="configuration.html#configuration"><span>Configuration</span></a>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
