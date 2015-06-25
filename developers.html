@@ -193,6 +193,12 @@
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">test</span>
 </pre></div>
 </div>
+<p>which runs unit, integration and multi-jvm tests. You can run them separately with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">test</span><span class="k">:</span><span class="kt">testOnly</span>
+<span class="n">sbt</span> <span class="n">it</span><span class="k">:</span><span class="kt">testOnly</span>
+<span class="n">sbt</span> <span class="n">multi</span><span class="o">-</span><span class="n">jvm</span><span class="k">:</span><span class="kt">test</span>
+</pre></div>
+</div>
 <p>To publish the binaries to the local Ivy repository, run:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">publishLocal</span>
 </pre></div>
