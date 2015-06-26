@@ -51,6 +51,11 @@ Ports are optional and default to ``9042`` according to
 .. includecode:: ../conf/common.conf
    :snippet: cassandra-default-port
 
+If Cassandra requires authentication, the default username used by Eventuate is ``cassandra``, the default password is ``cassandra`` (which corresponds to Cassandra's default superuser). This can be changed with
+
+.. includecode:: ../conf/common.conf
+   :snippet: cassandra-authentication
+
 Further details are described in the API docs of the `Cassandra extension`_ and the CassandraEventLog_ actor. A complete reference of ``eventuate.log.cassandra`` configuration options is given in section :ref:`configuration`.
 
 .. note::

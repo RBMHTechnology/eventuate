@@ -19,7 +19,6 @@ package com.rbmhtechnology.eventuate.log.cassandra
 import java.lang.{Long => JLong}
 
 import akka.actor._
-import akka.pattern.pipe
 
 import com.datastax.driver.core.{Row, PreparedStatement}
 import com.rbmhtechnology.eventuate.DurableEvent
@@ -62,7 +61,7 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
       }
     case ReadSequenceNrSuccess(snr) =>
       indexUpdater ! UpdateIndex(snr)
-    case u @ UpdateIndexSuccess(snr, numWrites) =>
+    case u @ UpdateIndexSuccess(snr, _) =>
       this.lastIndexedSequenceNr = snr
       eventLog ! Initialize(snr)
       context.become(initialized)
@@ -84,7 +83,7 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
     case UpdateIndex(_, _) =>
       indexUpdater ! UpdateIndex(lastIndexedSequenceNr, bufferedReplicationProgress)
       bufferedReplicationProgress = ReplicationProgress()
-    case u @ UpdateIndexSuccess(snr, numWrites) =>
+    case u @ UpdateIndexSuccess(snr, _) =>
       this.lastIndexedSequenceNr = snr
       onIndexEvent(u)
     case u @ UpdateIndexFailure(cause) =>
@@ -154,13 +153,11 @@ private[eventuate] object CassandraIndex {
   case class ReadSequenceNrFailure(cause: Throwable)
 
   case class UpdateIndex(lastIndexedSequenceNr: Long = 0L, bufferedReplicationProgress: ReplicationProgress = ReplicationProgress())
-  case class UpdateIndexSuccess(lastIndexedSequenceNr: Long, numWrites: Int)
+  case class UpdateIndexProgress(increment: IndexIncrement)
+  case class UpdateIndexSuccess(lastIndexedSequenceNr: Long, steps: Int = 0)
   case class UpdateIndexFailure(cause: Throwable)
 
   case class ReplicationProgress(sourceLogReadPositions: Map[String, Long] = Map.empty) {
-    def nonEmpty(): Boolean =
-      sourceLogReadPositions.nonEmpty
-
     def readPosition(sourceLogId: String): Long =
       sourceLogReadPositions.getOrElse(sourceLogId, 0L)
 
@@ -190,7 +187,7 @@ private[eventuate] object CassandraIndex {
   }
 
   case class IndexIncrement(replicationProgress: ReplicationProgress, aggregateEvents: AggregateEvents, sequenceNr: Long) {
-    def update(events: scala.collection.Seq[DurableEvent]): IndexIncrement =
+    def update(events: Seq[DurableEvent]): IndexIncrement =
       events.foldLeft(this) { case (acc, event) => acc.update(event) }
 
     def update(event: DurableEvent): IndexIncrement =
@@ -199,8 +196,9 @@ private[eventuate] object CassandraIndex {
     def update(progress: ReplicationProgress): IndexIncrement =
       copy(replicationProgress.update(progress), aggregateEvents, sequenceNr)
 
-    def clearAggregateEvents: IndexIncrement =
+    def clearAggregateEvents: IndexIncrement = {
       copy(replicationProgress, AggregateEvents(), sequenceNr)
+    }
   }
 
   def props(cassandra: Cassandra, eventReader: CassandraEventReader, logId: String): Props =
@@ -215,49 +213,39 @@ private[eventuate] class CassandraIndexUpdater(cassandra: Cassandra, eventReader
 
   val idle: Receive = {
     case UpdateIndex(lastIndexedSequenceNr, bufferedReplicationProgress) =>
-      runIndexUpdate(lastIndexedSequenceNr, bufferedReplicationProgress)
-      context.become(updating)
+      update(lastIndexedSequenceNr + 1L, IndexIncrement(bufferedReplicationProgress, AggregateEvents(), lastIndexedSequenceNr))
+      context.become(updating(0))
   }
 
-  val updating: Receive = {
-    case r: UpdateIndexSuccess =>
-      index ! r
+  def updating(steps: Int): Receive = {
+    case UpdateIndexFailure(err) =>
+      index ! UpdateIndexFailure(err)
       context.become(idle)
-    case r: UpdateIndexFailure =>
-      index ! r
+    case UpdateIndexSuccess(snr, _) =>
+      index ! UpdateIndexSuccess(snr, steps)
       context.become(idle)
-    case UpdateIndex =>
-      // ignore
+    case UpdateIndexProgress(inc) =>
+      update(inc.sequenceNr + 1L, inc.clearAggregateEvents)
+      context.become(updating(steps + 1))
   }
 
   def receive = idle
 
-  def writeIncrement(increment: IndexIncrement): Future[Long] =
-    indexStore.writeAsync(increment.replicationProgress, increment.aggregateEvents, increment.sequenceNr)
+  def update(fromSequenceNr: Long, increment: IndexIncrement): Unit =
+    updateAsync(fromSequenceNr, increment) onComplete {
+      case Success((inc, true))  => self ! UpdateIndexProgress(inc)
+      case Success((inc, false)) => self ! UpdateIndexSuccess(inc.sequenceNr)
+      case Failure(err)          => self ! UpdateIndexFailure(err)
+    }
+  
+  def updateAsync(fromSequenceNr: Long, increment: IndexIncrement): Future[(IndexIncrement, Boolean)] =
+    for {
+      res <- eventReader.readAsync(fromSequenceNr, cassandra.settings.indexUpdateLimit)
+      inc <- writeAsync(increment.update(res.events))
+    } yield (inc, res.events.nonEmpty)
 
-  def runIndexUpdate(lastIndexedSequenceNr: Long, bufferedReplicationProgress: ReplicationProgress): Unit = {
-    val initialIncrement = IndexIncrement(bufferedReplicationProgress, AggregateEvents(), lastIndexedSequenceNr)
-    val initialWrites = if (bufferedReplicationProgress.nonEmpty()) List(writeIncrement(initialIncrement)) else Nil
-
-    val update: Future[(Long, Int)] = Future {
-      val (increment, writes) = eventReader.eventIterator(lastIndexedSequenceNr + 1L, Long.MaxValue).grouped(cassandra.settings.indexUpdateLimit).foldLeft((initialIncrement, initialWrites)) {
-        case ((increment, writes), events) =>
-          val update = increment.update(events)
-          (update.clearAggregateEvents, writeIncrement(update) :: writes)
-      }
-
-      Future.sequence(writes).map {
-        case Seq() => (increment.sequenceNr, 0)
-        case snrs  => (snrs.max, snrs.size)
-      }
-    }.flatMap(identity)(cassandra.readDispatcher)
-
-    update map {
-      case (snr, numWrites) => UpdateIndexSuccess(snr, numWrites)
-    } recover {
-      case t => UpdateIndexFailure(t)
-    } pipeTo self
-  }
+  def writeAsync(increment: IndexIncrement): Future[IndexIncrement] =
+    indexStore.writeAsync(increment.replicationProgress, increment.aggregateEvents, increment.sequenceNr).map(_ => increment)
 }
 
 private[eventuate] class CassandraIndexStore(cassandra: Cassandra, logId: String) {

@@ -74,7 +74,9 @@ private[eventuate] class CassandraSettings(config: Config) {
     config.getInt("eventuate.log.cassandra.index-update-limit")
 
   val clusterBuilder: Cluster.Builder =
-    Cluster.builder.addContactPointsWithPorts(contactPoints.asJava)
+    Cluster.builder.addContactPointsWithPorts(contactPoints.asJava).withCredentials(
+      config.getString("eventuate.log.cassandra.username"),
+      config.getString("eventuate.log.cassandra.password"))
 }
 
 private object CassandraSettings {
