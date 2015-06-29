@@ -4,9 +4,9 @@ name := "eventuate"
 
 version := "0.3-SNAPSHOT"
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.7"
 
-val akkaVersion = "2.4-M1"
+val akkaVersion = "2.4-M2"
 
 scalacOptions in (Compile, doc) := List("-skip-packages", "akka")
 
