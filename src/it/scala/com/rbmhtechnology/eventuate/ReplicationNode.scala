@@ -18,14 +18,17 @@ package com.rbmhtechnology.eventuate
 
 import akka.actor._
 
-import scala.concurrent.Future
+import org.scalatest._
 
-class ReplicationNode(nodeId: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection])(implicit factory: String => Props) {
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
+
+class ReplicationNode(val id: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection])(implicit logFactory: String => Props) {
   val system: ActorSystem =
     ActorSystem(ReplicationConnection.DefaultRemoteSystemName, ReplicationConfig.create(port))
 
   val endpoint: ReplicationEndpoint =
-    new ReplicationEndpoint(nodeId, logNames, factory, connections)(system)
+    new ReplicationEndpoint(id, logNames, logFactory, connections)(system)
 
   def logs: Map[String, ActorRef] =
     endpoint.logs
@@ -36,4 +39,16 @@ class ReplicationNode(nodeId: String, logNames: Set[String], port: Int, connecti
 
   private def localEndpoint(port: Int) =
     s"127.0.0.1:${port}"
+}
+
+trait ReplicationNodeRegistry extends BeforeAndAfterEach { this: Suite =>
+  var nodes: List[ReplicationNode] = Nil
+
+  override def afterEach(): Unit =
+    nodes.foreach(node => Await.result(node.terminate(), 10.seconds))
+
+  def register(node: ReplicationNode): ReplicationNode = {
+    nodes = node :: nodes
+    node
+  }
 }

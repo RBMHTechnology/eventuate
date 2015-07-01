@@ -30,6 +30,7 @@ import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.log.cassandra.CassandraIndex._
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.ReadResult
+import com.typesafe.config.Config
 
 import org.apache.commons.io.FileUtils
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper
@@ -40,6 +41,58 @@ import scala.collection.immutable.Seq
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 import scala.util._
+
+trait EventLogCleanupLeveldb extends Suite with BeforeAndAfterAll {
+  def config: Config
+
+  def storageLocations: List[File] =
+    List("eventuate.log.leveldb.dir", "eventuate.snapshot.filesystem.dir").map(s => new File(config.getString(s)))
+
+  override def beforeAll(): Unit = {
+    storageLocations.foreach(FileUtils.deleteDirectory)
+    storageLocations.foreach(_.mkdirs())
+  }
+
+  override def afterAll(): Unit = {
+    storageLocations.foreach(FileUtils.deleteDirectory)
+  }
+}
+
+trait EventLogLifecycleLeveldb extends EventLogCleanupLeveldb with BeforeAndAfterEach {
+  private var _logCtr: Int = 0
+  private var _log: ActorRef = _
+
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+
+    _logCtr += 1
+    _log = system.actorOf(logProps(logId))
+  }
+
+  def system: ActorSystem
+
+  def config: Config =
+    system.settings.config
+
+  def batching: Boolean =
+    true
+
+  def log: ActorRef =
+    _log
+
+  def logId: String =
+    _logCtr.toString
+
+  def logProps(logId: String): Props = {
+    val logProps = Props(new EventLogLifecycleLeveldb.TestEventLog(logId)).withDispatcher("eventuate.log.leveldb.write-dispatcher")
+    if (batching) Props(new BatchingEventLog(logProps)) else logProps
+  }
+}
 
 object EventLogLifecycleLeveldb {
   class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") {
@@ -75,21 +128,11 @@ object EventLogLifecycleLeveldb {
   }
 }
 
-trait EventLogLifecycleLeveldb extends Suite with BeforeAndAfterAll with BeforeAndAfterEach {
-  import EventLogLifecycleLeveldb._
+trait EventLogCleanupCassandra extends Suite with BeforeAndAfterAll {
+  def config: Config
 
-  private var _logCtr: Int = 0
-  private var _log: ActorRef = _
-
-  private lazy val storageLocations: List[File] =
-    List("eventuate.log.leveldb.dir", "eventuate.snapshot.filesystem.dir").map(s => new File(system.settings.config.getString(s)))
-
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-
-    _logCtr += 1
-    _log = system.actorOf(logProps(logId))
-  }
+  def storageLocations: List[File] =
+    List("eventuate.snapshot.filesystem.dir").map(s => new File(config.getString(s)))
 
   override def beforeAll(): Unit = {
     storageLocations.foreach(FileUtils.deleteDirectory)
@@ -97,9 +140,48 @@ trait EventLogLifecycleLeveldb extends Suite with BeforeAndAfterAll with BeforeA
   }
 
   override def afterAll(): Unit = {
-    TestKit.shutdownActorSystem(system)
+    EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
     storageLocations.foreach(FileUtils.deleteDirectory)
   }
+}
+
+trait EventLogLifecycleCassandra extends EventLogCleanupCassandra with BeforeAndAfterEach {
+  import EventLogLifecycleCassandra._
+
+  private var _logCtr: Int = 0
+  private var _log: ActorRef = _
+
+  var indexProbe: TestProbe = _
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+
+    indexProbe = new TestProbe(system)
+
+    _logCtr += 1
+    _log = createLog(TestFailureSpec(), indexProbe.ref)
+  }
+
+  override def beforeAll(): Unit = {
+    super.beforeAll()
+    EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
+  }
+
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
+
+  def createLog(failureSpec: TestFailureSpec, indexProbe: ActorRef): ActorRef =
+    system.actorOf(logProps(logId, failureSpec, indexProbe))
+
+  def system: ActorSystem
+
+  def config: Config =
+    system.settings.config
+
+  def batching: Boolean =
+    true
 
   def log: ActorRef =
     _log
@@ -107,15 +189,10 @@ trait EventLogLifecycleLeveldb extends Suite with BeforeAndAfterAll with BeforeA
   def logId: String =
     _logCtr.toString
 
-  def logProps(logId: String): Props = {
-    val logProps = Props(new TestEventLog(logId)).withDispatcher("eventuate.log.leveldb.write-dispatcher")
+  def logProps(logId: String, failureSpec: TestFailureSpec, indexProbe: ActorRef): Props = {
+    val logProps = Props(new TestEventLog(logId, failureSpec, indexProbe)).withDispatcher("eventuate.log.cassandra.write-dispatcher")
     if (batching) Props(new BatchingEventLog(logProps)) else logProps
   }
-
-  def batching: Boolean =
-    true
-
-  def system: ActorSystem
 }
 
 object EventLogLifecycleCassandra {
@@ -208,54 +285,4 @@ object EventLogLifecycleCassandra {
         Future.failed(boom)
       } else super.readSequenceNumberAsync
   }
-}
-
-trait EventLogLifecycleCassandra extends Suite with BeforeAndAfterAll with BeforeAndAfterEach {
-  import EventLogLifecycleCassandra._
-
-  private var _logCtr: Int = 0
-  private var _log: ActorRef = _
-
-  private lazy val storageLocations: List[File] =
-    List("eventuate.snapshot.filesystem.dir").map(s => new File(system.settings.config.getString(s)))
-
-  var indexProbe: TestProbe = _
-
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-
-    indexProbe = TestProbe()
-
-    _logCtr += 1
-    _log = createLog(TestFailureSpec(), indexProbe.ref)
-  }
-
-  override def beforeAll(): Unit = {
-    EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
-  }
-
-  override def afterAll(): Unit = {
-    TestKit.shutdownActorSystem(system)
-    EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
-    storageLocations.foreach(FileUtils.deleteDirectory)
-  }
-
-  def createLog(failureSpec: TestFailureSpec, indexProbe: ActorRef): ActorRef =
-    system.actorOf(logProps(logId, failureSpec, indexProbe))
-
-  def log: ActorRef =
-    _log
-
-  def logId: String =
-    _logCtr.toString
-
-  def logProps(logId: String, failureSpec: TestFailureSpec, indexProbe: ActorRef): Props = {
-    val logProps = Props(new TestEventLog(logId, failureSpec, indexProbe)).withDispatcher("eventuate.log.cassandra.write-dispatcher")
-    if (batching) Props(new BatchingEventLog(logProps)) else logProps
-  }
-
-  def batching: Boolean =
-    true
-
-  implicit def system: ActorSystem
 }
