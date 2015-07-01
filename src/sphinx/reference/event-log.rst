@@ -61,6 +61,42 @@ Further details are described in the API docs of the `Cassandra extension`_ and 
 .. note::
    Eventuate requires Cassandra version 2.1 or higher.
 
+Cassandra development cluster
+.............................
+
+For running automated integration tests, Eventuate uses `cassandra-unit`_ for starting an embedded Cassandra instance. So there’s no need for a separate Cassandra installation when running the tests. If you want to have a separate Cassandra installation in your development environment for testing your application, either follow the installation instructions in the Cassandra `Getting Started`_ guide or start Cassandra in one or more Docker containers as described here. It is assumed that you have Docker_ installed in your development environment. 
+
+For starting a single Cassandra instance run\ [#]_ ::
+
+    docker run --name cassandra-1 -p 9042:9042 -d cassandra:2.1.6
+
+On Linux, you are now ready to access Cassandra on ``127.0.0.1:9042``. On Mac OS X, the Docker host is running in the boot2docker_ virtual machine whose IP address can be obtained with ::
+
+    boot2docker ip
+
+Assuming this returns ``192.168.59.103`` you can access Cassandra on ``192.168.59.103:9042``. The container can be stopped with ::
+
+    docker stop cassandra-1
+
+and started again with ::
+
+    docker start cassandra-1
+
+This will keep previously stored data. For removing the container including all stored data run ::
+
+    docker rm cassandra-1
+
+For running a three node Cassandra cluster start two additional containers with ::
+
+    docker run --name cassandra-2 -p 9043:9042 -d -e CASSANDRA_SEEDS="$(docker inspect --format='{{ .NetworkSettings.IPAddress }}' cassandra-1)" cassandra:2.1.6
+    docker run --name cassandra-3 -p 9044:9042 -d -e CASSANDRA_SEEDS="$(docker inspect --format='{{ .NetworkSettings.IPAddress }}' cassandra-1)" cassandra:2.1.6
+
+For connecting to this cluster from Eventuate, add ::
+
+    log.cassandra.contact-points = [“<hostname>:9042", "<hostname>:9043", "<hostname>:9044"]
+
+to ``application.conf`` where ``<hostname>`` must be replaced with the proper IP address as described above.
+
 .. _replicated-event-log:
 
 Replicated event log
@@ -179,9 +215,13 @@ Both messages are defined in ReplicationEndpoint_. Their ``endpointId`` paramete
 It instructs the failure detector to publish an ``Unavailable`` message if there is no heartbeat from the remote replication endpoint within 60 seconds. ``Available`` and ``Unavailable`` messages are published periodically at intervals of ``eventuate.log.replication.failure-detection-limit``.
 
 .. _Cassandra: http://cassandra.apache.org/
+.. _Getting Started: https://wiki.apache.org/cassandra/GettingStarted
+.. _cassandra-unit: https://github.com/jsevellec/cassandra-unit/wiki
 .. _LevelDB: https://github.com/google/leveldb
 .. _Akka Remoting: http://doc.akka.io/docs/akka/2.3.9/scala/remoting.html
 .. _event stream: http://doc.akka.io/docs/akka/2.3.9/scala/event-bus.html#event-stream
+.. _Docker: https://www.docker.com/
+.. _boot2docker: http://boot2docker.io/
 
 .. _EventsourcingProtocol: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$
 .. _ReplicationEndpoint: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint$
@@ -192,4 +232,5 @@ It instructs the failure detector to publish an ``Unavailable`` message if there
 .. _CassandraEventLog: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog
 
 .. [#] A location can be a whole data center, a node within a data center or even a process on a single node, for example.
+.. [#] When running the command for the first time, it will download all required Docker images which may take a while.
 .. [#] Log names must be unique per replication endpoint. Replication connections are only established between logs of the same name.
