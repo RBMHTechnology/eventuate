@@ -28,11 +28,11 @@
         </head>
         <body class="value">
       <div id="definition">
-        <img alt="Package" src="../../../../lib/package_big.png" />
+        <img src="../../../../lib/package_big.png" />
         <p id="owner"><a href="../../../package.html" class="extype" name="com">com</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a></p>
-        <h1>crdt</h1><span class="permalink">
+        <h1>crdt</h1> <span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
+        <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       </div>
@@ -79,13 +79,14 @@
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@CRDTService[A,B]extendsAnyRef" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
+        <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">A generic, replicated CRDT service that manages a map of CRDTs identified by name.</p><div class="fullcomment"><div class="comment cmt"><p>A generic, replicated CRDT service that manages a map of CRDTs identified by name.
 Replication is based on the replicated event <code>log</code> that preserves causal ordering
 of events.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>CRDT type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>CRDT value type</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>CRDT type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>CRDT value type
+</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="CRDTServiceOps[A,B]extendsAnyRef"></a>
       <a id="CRDTServiceOps[A,B]:CRDTServiceOps[A,B]"></a>
@@ -99,12 +100,13 @@ of events.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@CRDTServiceOps[A,B]extendsAnyRef" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
+        <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Typeclass to be implemented by CRDTs if they shall be managed by <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>
 </p><div class="fullcomment"><div class="comment cmt"><p>Typeclass to be implemented by CRDTs if they shall be managed by <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>CRDT type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>CRDT value type</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>CRDT type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>CRDT value type
+</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.Counter" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Counter[A]extendsProductwithSerializable"></a>
       <a id="Counter[A]:Counter[A]"></a>
@@ -118,11 +120,13 @@ of events.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@Counter[A]extendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
+        <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Replicated counter.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated counter.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Counter value type.</p></dd><dt class="param">value</dt><dd class="cmt"><p>Current counter value.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a></p></span></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Counter value type.
+</p></dd><dt class="param">value</dt><dd class="cmt"><p>Current counter value.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.CounterService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CounterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.Counter[A],A]"></a>
       <a id="CounterService[A]:CounterService[A]"></a>
@@ -136,11 +140,12 @@ of events.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@CounterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.Counter[A],A]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
+        <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Replicated <a href="Counter.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Counter">Counter</a> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <a href="Counter.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Counter">Counter</a> CRDT service.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Counter value type.</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Counter value type.
+</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegister" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MVRegister[A]extendsProductwithSerializable"></a>
       <a id="MVRegister[A]:MVRegister[A]"></a>
@@ -154,14 +159,16 @@ of events.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@MVRegister[A]extendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
+        <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Replicated MV-Register.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated MV-Register. Has several <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values assigned in case of concurrent assignments,
 otherwise, a single <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value. Concurrent assignments can be reduced to a single assignment
 by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with a timestamp that is greater than those of the currently assigned
 <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>MV-Register value type.</p></dd><dt class="param">versionedValues</dt><dd class="cmt"><p>Assigned, versioned values. Initially empty.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a></p></span></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>MV-Register value type.
+</p></dd><dt class="param">versionedValues</dt><dd class="cmt"><p>Assigned, versioned values. Initially empty.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegisterService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MVRegisterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.MVRegister[A],Set[A]]"></a>
       <a id="MVRegisterService[A]:MVRegisterService[A]"></a>
@@ -175,11 +182,12 @@ by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnolo
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@MVRegisterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.MVRegister[A],Set[A]]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
+        <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Replicated <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> CRDT service.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> value type.</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> value type.
+</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSet" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ORSet[A]extendsProductwithSerializable"></a>
       <a id="ORSet[A]:ORSet[A]"></a>
@@ -193,11 +201,13 @@ by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnolo
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@ORSet[A]extendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
+        <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Replicated OR-Set.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated OR-Set. In case of a concurrent <code>add</code> and <code>remove</code>, <code>add</code> has precedence.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Entry value type.</p></dd><dt class="param">versionedEntries</dt><dd class="cmt"><p><a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a></p></span></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Entry value type.
+</p></dd><dt class="param">versionedEntries</dt><dd class="cmt"><p><a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSetService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ORSetService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.ORSet[A],Set[A]]"></a>
       <a id="ORSetService[A]:ORSetService[A]"></a>
@@ -211,11 +221,12 @@ by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnolo
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@ORSetService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.ORSet[A],Set[A]]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
+        <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Replicated <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> CRDT service.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> entry type</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> entry type
+</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -236,7 +247,7 @@ by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnolo
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@CRDTService" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
+        <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       
@@ -253,7 +264,7 @@ by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnolo
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@Counter" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
+        <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       
@@ -270,7 +281,7 @@ by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnolo
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@MVRegister" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
+        <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       
@@ -287,7 +298,7 @@ by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnolo
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@ORSet" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
+        <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       

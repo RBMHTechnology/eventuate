@@ -179,7 +179,7 @@ $(document).ready(function(){
 
         filter();
     });
-    $("#order > ol > li.alpha").click(function() {
+    $("#visbl > ol > li.public").click(function() {
         if ($(this).hasClass("out")) {
             orderAlpha();
         }
