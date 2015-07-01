@@ -246,7 +246,6 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor {
   override def preStart(): Unit = {
     withIterator(iter => aggregateIdMap.readIdMap(iter))
     withIterator(iter => eventLogIdMap.readIdMap(iter))
-    withIterator(iter => replicationProgressMap.readRpMap(iter))
     leveldb.put(eventKeyEndBytes, Array.empty[Byte])
     leveldb.get(counterKeyBytes) match {
       case null => generator.sequenceNr = 0L

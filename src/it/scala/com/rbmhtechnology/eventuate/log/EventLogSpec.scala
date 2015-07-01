@@ -166,7 +166,7 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfter
     notificationProbe.expectMsg(Updated(logId, emitted))
   }
 
-  def generateReplicateEvents(offset: Long, remoteLogId: String = remoteLogId, emitterAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): Unit = {
+  def generateReplicatedEvents(offset: Long, remoteLogId: String = remoteLogId, emitterAggregateId: Option[String] = None, destinationAggregateIds: Set[String] = Set()): Unit = {
     val events: Vector[DurableEvent] = Vector(
       DurableEvent("i", 0L, timestampAB(0, 7 + offset), idB, emitterAggregateId, destinationAggregateIds, 0L, remoteLogId, remoteLogId, 7 + offset, 7 + offset),
       DurableEvent("j", 0L, timestampAB(0, 8 + offset), idB, emitterAggregateId, destinationAggregateIds, 0L, remoteLogId, remoteLogId, 8 + offset, 8 + offset),
@@ -279,32 +279,32 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
       requestorProbe.expectMsg(WriteFailure(DurableEvent("okay", 0L, timestampAB(2, 0), idA), boom, 0))
     }
     "write replicated events" in {
-      generateReplicateEvents(offset = 0)
+      generateReplicatedEvents(offset = 0)
     }
     "write replicated events with undefined defaultRoutingDestination and undefined customRoutingDestinations and route them to collaborators with undefined aggregateId" in {
       val collaborator = registerCollaborator(aggregateId = None)
-      generateReplicateEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set())
+      generateReplicatedEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set())
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(1)))
       collaborator.expectMsg(Written(replicatedEvents(2)))
     }
     "write replicated events with undefined defaultRoutingDestination and defined customRoutingDestinations and route them to collaborators with undefined aggregateId" in {
       val collaborator = registerCollaborator(aggregateId = None)
-      generateReplicateEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set("a1"))
+      generateReplicatedEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set("a1"))
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(1)))
       collaborator.expectMsg(Written(replicatedEvents(2)))
     }
     "write replicated events with defined defaultRoutingDestination and undefined customRoutingDestinations and route them to collaborators with undefined aggregateId" in {
       val collaborator = registerCollaborator(aggregateId = None)
-      generateReplicateEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set())
+      generateReplicatedEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set())
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(1)))
       collaborator.expectMsg(Written(replicatedEvents(2)))
     }
     "write replicated events with defined defaultRoutingDestination and defined customRoutingDestinations and route them to collaborators with undefined aggregateId" in {
       val collaborator = registerCollaborator(aggregateId = None)
-      generateReplicateEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set("a2"))
+      generateReplicatedEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set("a2"))
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(1)))
       collaborator.expectMsg(Written(replicatedEvents(2)))
@@ -313,7 +313,7 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
       val collaborator = TestProbe()
       registerCollaborator(aggregateId = Some("a1"), collaborator = collaborator)
       registerCollaborator(aggregateId = None, collaborator = collaborator)
-      generateReplicateEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set())
+      generateReplicatedEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set())
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(1)))
       collaborator.expectMsg(Written(replicatedEvents(2)))
@@ -322,7 +322,7 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
       val collaborator = TestProbe()
       registerCollaborator(aggregateId = Some("a1"), collaborator = collaborator)
       registerCollaborator(aggregateId = None, collaborator = collaborator)
-      generateReplicateEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set("a1"))
+      generateReplicatedEvents(offset = 0, emitterAggregateId = None, destinationAggregateIds = Set("a1"))
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(1)))
@@ -334,7 +334,7 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
       val collaborator = TestProbe()
       registerCollaborator(aggregateId = Some("a1"), collaborator = collaborator)
       registerCollaborator(aggregateId = None, collaborator = collaborator)
-      generateReplicateEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set())
+      generateReplicatedEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set())
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(1)))
@@ -347,7 +347,7 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
       registerCollaborator(aggregateId = Some("a1"), collaborator = collaborator)
       registerCollaborator(aggregateId = Some("a2"), collaborator = collaborator)
       registerCollaborator(aggregateId = None, collaborator = collaborator)
-      generateReplicateEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set("a2"))
+      generateReplicatedEvents(offset = 0, emitterAggregateId = Some("a1"), destinationAggregateIds = Set("a2"))
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(0)))
       collaborator.expectMsg(Written(replicatedEvents(0)))
@@ -361,7 +361,7 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
     "write replicated events and update the replication progress map" in {
       log.tell(GetReplicationProgress, requestorProbe.ref)
       requestorProbe.expectMsg(GetReplicationProgressSuccess(Map()))
-      generateReplicateEvents(offset = 0)
+      generateReplicatedEvents(offset = 0)
       log.tell(GetReplicationProgress, requestorProbe.ref)
       requestorProbe.expectMsg(GetReplicationProgressSuccess(Map(remoteLogId -> 9L)))
     }
@@ -372,6 +372,18 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
 
       log.tell(ReplicationWrite(events, remoteLogId, 8), replicatorProbe.ref)
       replicatorProbe.expectMsg(ReplicationWriteFailure(boom))
+    }
+    "reply with a failure message if replication fails and not update the replication progress map" in {
+      log.tell(GetReplicationProgress, requestorProbe.ref)
+      requestorProbe.expectMsg(GetReplicationProgressSuccess(Map()))
+      val events: Vector[DurableEvent] = Vector(
+        DurableEvent("boom", 0L, timestampAB(0, 7), idB, None, Set(), 0L, remoteLogId, remoteLogId, 7, 7),
+        DurableEvent("okay", 0L, timestampAB(0, 8), idB, None, Set(), 0L, remoteLogId, remoteLogId, 8, 8))
+
+      log.tell(ReplicationWrite(events, remoteLogId, 8), replicatorProbe.ref)
+      replicatorProbe.expectMsg(ReplicationWriteFailure(boom))
+      log.tell(GetReplicationProgress, requestorProbe.ref)
+      requestorProbe.expectMsg(GetReplicationProgressSuccess(Map()))
     }
     "replay events from scratch" in {
       generateEmittedEvents()
@@ -450,7 +462,7 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
     }
     "batch-read local and replicated events" in {
       generateEmittedEvents()
-      generateReplicateEvents(offset = 3)
+      generateReplicatedEvents(offset = 3)
       log.tell(ReplicationRead(1, Int.MaxValue, undefinedLogIdFilter, UndefinedLogId), requestorProbe.ref)
       requestorProbe.expectMsg(ReplicationReadSuccess(emittedEvents ++ replicatedEvents, 6, UndefinedLogId))
     }
@@ -473,7 +485,7 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
     }
     "batch-read events with exclusion" in {
       generateEmittedEvents()
-      generateReplicateEvents(offset = 3)
+      generateReplicatedEvents(offset = 3)
       log.tell(ReplicationRead(1, Int.MaxValue, SourceLogIdExclusionFilter(logId), UndefinedLogId), requestorProbe.ref)
       requestorProbe.expectMsg(ReplicationReadSuccess(replicatedEvents, 6, UndefinedLogId))
       log.tell(ReplicationRead(1, Int.MaxValue, SourceLogIdExclusionFilter(remoteLogId), UndefinedLogId), requestorProbe.ref)
