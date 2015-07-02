@@ -40,17 +40,6 @@ private[leveldb] class ReplicationProgressMap(leveldb: DB, classifier: Int, nume
     if (progress == null) 0L else LeveldbEventLog.longFromBytes(progress)
   }
 
-  private def readRpMap(rpMap: Map[Int, Long], iter: DBIterator): Map[Int, Long] = {
-    if (!iter.hasNext) rpMap else {
-      val nextEntry = iter.next()
-      val nextKey = rpKey(nextEntry.getKey)
-      if (nextKey == rpKeyEnd) rpMap else {
-        val nextVal = LeveldbEventLog.longFromBytes(nextEntry.getValue)
-        readRpMap(rpMap + (nextKey -> nextVal), iter)
-      }
-    }
-  }
-
   private def rpKeyBytes(nid: Int): Array[Byte] = {
     val bb = ByteBuffer.allocate(8)
     bb.putInt(classifier)

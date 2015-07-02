@@ -124,7 +124,6 @@ abstract class CRDTChaosSpec extends WordSpec with Matchers with ReplicationNode
   }
 }
 
-@Ignore
 class CRDTChaosSpecLeveldb extends CRDTChaosSpec with EventLogCleanupLeveldb {
   import CRDTChaosSpec._
 
