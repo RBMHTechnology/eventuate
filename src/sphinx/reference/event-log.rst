@@ -199,6 +199,21 @@ For the definition of filter logic based on application-defined events, replicat
 .. hint::
    Serialization of replication filters can be customized as described in section :ref:`replication-filter-serialization`.
 
+Batch replication
+^^^^^^^^^^^^^^^^^
+
+Events are replicated in batches. The maximum number of events per batch can be configured with
+
+.. includecode:: ../conf/common.conf
+   :snippet: replication-batch-size
+
+Applications that increase the maximum batch size and/or store rather large events should also increase
+
+.. includecode:: ../conf/common.conf
+   :snippet: maximum-frame-size
+
+otherwise, replication will fail.
+
 Failure detection
 ^^^^^^^^^^^^^^^^^
 
