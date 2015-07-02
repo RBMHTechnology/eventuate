@@ -27,7 +27,7 @@ object ReplicationConfig {
          |akka.remote.netty.tcp.hostname = "127.0.0.1"
          |akka.remote.netty.tcp.port = ${port}
          |akka.remote.retry-gate-closed-for = 300ms
-         |akka.test.single-expect-default = 10s
+         |akka.test.single-expect-default = 20s
          |akka.loglevel = "ERROR"
          |
          |eventuate.snapshot.filesystem.dir = target/test-snapshot
