@@ -179,7 +179,7 @@
 <span id="id1"></span><h1>Event log<a class="headerlink" href="#event-log" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="local-event-log">
 <span id="id2"></span><h2>Local event log<a class="headerlink" href="#local-event-log" title="Permalink to this headline">¶</a></h2>
-<p>A local event log belongs to a given <em>location</em><a class="footnote-reference" href="#id10" id="id3">[1]</a> and a location can have one or more local event logs. Depending on the storage backend, a local event log may optionally be replicated within that location for stronger durability guarantees but this is rather an implementation details of the local event log. From Eventuate’s perspective, event replication occurs between different locations which is further described in section <a class="reference internal" href="#replicated-event-log"><span>Replicated event log</span></a>.</p>
+<p>A local event log belongs to a given <em>location</em><a class="footnote-reference" href="#id9" id="id3">[1]</a> and a location can have one or more local event logs. Depending on the storage backend, a local event log may optionally be replicated within that location for stronger durability guarantees but this is rather an implementation details of the local event log. From Eventuate’s perspective, event replication occurs between different locations which is further described in section <a class="reference internal" href="#replicated-event-log"><span>Replicated event log</span></a>.</p>
 <p>To an application, an event log is represented by an event log actor. Producers and consumer interact with that actor to write events to and read events from an event log. They can also register at the event log actor to be notified about newly written events. The messages that can be exchanged with an event log actor are defined in <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$">EventsourcingProtocol</a>.</p>
 <p>At the moment, two storage backends are supported by Eventuate, <a class="reference external" href="https://github.com/google/leveldb">LevelDB</a> and <a class="reference external" href="http://cassandra.apache.org/">Cassandra</a>. The corresponding event log actors are provided by Eventuate and their usage is explained in the following sections.</p>
 <div class="section" id="leveldb-storage-backend">
@@ -226,44 +226,14 @@
 <p class="first admonition-title">Note</p>
 <p class="last">Eventuate requires Cassandra version 2.1 or higher.</p>
 </div>
-<div class="section" id="cassandra-development-cluster">
-<h4>Cassandra development cluster<a class="headerlink" href="#cassandra-development-cluster" title="Permalink to this headline">¶</a></h4>
-<p>For running automated integration tests, Eventuate uses <a class="reference external" href="https://github.com/jsevellec/cassandra-unit/wiki">cassandra-unit</a> for starting an embedded Cassandra instance. So there’s no need for a separate Cassandra installation when running the tests. If you want to have a separate Cassandra installation in your development environment for testing your application, either follow the installation instructions in the Cassandra <a class="reference external" href="https://wiki.apache.org/cassandra/GettingStarted">Getting Started</a> guide or start Cassandra in one or more Docker containers as described here. It is assumed that you have <a class="reference external" href="https://www.docker.com/">Docker</a> installed in your development environment.</p>
-<p>For starting a single Cassandra instance run<a class="footnote-reference" href="#id11" id="id6">[2]</a></p>
-<div class="highlight-scala"><div class="highlight"><pre>docker run --name cassandra-1 -p 9042:9042 -d cassandra:2.1.6
-</pre></div>
-</div>
-<p>On Linux, you are now ready to access Cassandra on <code class="docutils literal"><span class="pre">127.0.0.1:9042</span></code>. On Mac OS X, the Docker host is running in the <a class="reference external" href="http://boot2docker.io/">boot2docker</a> virtual machine whose IP address can be obtained with</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">boot2docker</span> <span class="n">ip</span>
-</pre></div>
-</div>
-<p>Assuming this returns <code class="docutils literal"><span class="pre">192.168.59.103</span></code> you can access Cassandra on <code class="docutils literal"><span class="pre">192.168.59.103:9042</span></code>. The container can be stopped with</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">docker</span> <span class="n">stop</span> <span class="n">cassandra</span><span class="o">-</span><span class="mi">1</span>
-</pre></div>
-</div>
-<p>and started again with</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">docker</span> <span class="n">start</span> <span class="n">cassandra</span><span class="o">-</span><span class="mi">1</span>
-</pre></div>
-</div>
-<p>This will keep previously stored data. For removing the container including all stored data run</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">docker</span> <span class="n">rm</span> <span class="n">cassandra</span><span class="o">-</span><span class="mi">1</span>
-</pre></div>
-</div>
-<p>For running a three node Cassandra cluster start two additional containers with</p>
-<div class="highlight-scala"><div class="highlight"><pre>docker run --name cassandra-2 -p 9043:9042 -d -e CASSANDRA_SEEDS=&quot;$(docker inspect --format=&#39;{{ .NetworkSettings.IPAddress }}&#39; cassandra-1)&quot; cassandra:2.1.6
-docker run --name cassandra-3 -p 9044:9042 -d -e CASSANDRA_SEEDS=&quot;$(docker inspect --format=&#39;{{ .NetworkSettings.IPAddress }}&#39; cassandra-1)&quot; cassandra:2.1.6
-</pre></div>
-</div>
-<p>For connecting to this cluster from Eventuate, add</p>
-<div class="highlight-scala"><div class="highlight"><pre>log.cassandra.contact-points = [“&lt;hostname&gt;:9042&quot;, &quot;&lt;hostname&gt;:9043&quot;, &quot;&lt;hostname&gt;:9044&quot;]
-</pre></div>
-</div>
-<p>to <code class="docutils literal"><span class="pre">application.conf</span></code> where <code class="docutils literal"><span class="pre">&lt;hostname&gt;</span></code> must be replaced with the proper IP address as described above.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">For instructions how to run a local Cassandra cluster you may want to read the article <a class="reference external" href="http://rbmhtechnology.github.io/chaos-testing-with-docker-and-cassandra/">Chaos testing with Docker and Cassandra on Mac OS X</a>.</p>
 </div>
 </div>
 </div>
 <div class="section" id="replicated-event-log">
-<span id="id7"></span><h2>Replicated event log<a class="headerlink" href="#replicated-event-log" title="Permalink to this headline">¶</a></h2>
+<span id="id6"></span><h2>Replicated event log<a class="headerlink" href="#replicated-event-log" title="Permalink to this headline">¶</a></h2>
 <p>Local event logs from different locations can be connected for event replication. For example, when connecting a local event log <code class="docutils literal"><span class="pre">L1</span></code> at location <code class="docutils literal"><span class="pre">1</span></code> with a local event log <code class="docutils literal"><span class="pre">L2</span></code> at location <code class="docutils literal"><span class="pre">2</span></code>, then the events written to <code class="docutils literal"><span class="pre">L1</span></code> are asynchronously replicated to location <code class="docutils literal"><span class="pre">2</span></code> and merged into to <code class="docutils literal"><span class="pre">L2</span></code>. Also, events written to <code class="docutils literal"><span class="pre">L2</span></code> are asynchronously replicated to location <code class="docutils literal"><span class="pre">1</span></code> and merged into <code class="docutils literal"><span class="pre">L1</span></code>. Merging preserves the causal ordering of events which is tracked with vector timestamps. Setting up a bi-directional replication connection between local event logs <code class="docutils literal"><span class="pre">L1</span></code> and <code class="docutils literal"><span class="pre">L2</span></code> yields a <em>replicated event log</em> <code class="docutils literal"><span class="pre">L</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">L1</span> <span class="o">----</span> <span class="n">L2</span>
 </pre></div>
@@ -327,7 +297,7 @@ akka.remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
   <span class="n">connections</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">(</span><span class="nc">ReplicationConnection</span><span class="o">(</span><span class="s">&quot;127.0.0.1&quot;</span><span class="o">,</span> <span class="mi">2553</span><span class="o">)))</span>
 </pre></div>
 </div>
-<p>A <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> must have a global unique <code class="docutils literal"><span class="pre">id</span></code>. Here, the location identifier <code class="docutils literal"><span class="pre">1</span></code> is used to identify the replication endpoint. Furthermore, the <code class="docutils literal"><span class="pre">logNames</span></code><a class="footnote-reference" href="#id12" id="id8">[3]</a> of the replicated event logs (<code class="docutils literal"><span class="pre">L</span></code> and <code class="docutils literal"><span class="pre">M</span></code>) and a <code class="docutils literal"><span class="pre">logFactory</span></code> for creating the local event log actors are provided. Input parameter of the <code class="docutils literal"><span class="pre">logFactory</span></code> is a unique <code class="docutils literal"><span class="pre">logId</span></code> that is generated by the replication endpoint from a combination of the provided <code class="docutils literal"><span class="pre">logNames</span></code> and the endpoint <code class="docutils literal"><span class="pre">id</span></code>.</p>
+<p>A <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> must have a global unique <code class="docutils literal"><span class="pre">id</span></code>. Here, the location identifier <code class="docutils literal"><span class="pre">1</span></code> is used to identify the replication endpoint. Furthermore, the <code class="docutils literal"><span class="pre">logNames</span></code><a class="footnote-reference" href="#id10" id="id7">[2]</a> of the replicated event logs (<code class="docutils literal"><span class="pre">L</span></code> and <code class="docutils literal"><span class="pre">M</span></code>) and a <code class="docutils literal"><span class="pre">logFactory</span></code> for creating the local event log actors are provided. Input parameter of the <code class="docutils literal"><span class="pre">logFactory</span></code> is a unique <code class="docutils literal"><span class="pre">logId</span></code> that is generated by the replication endpoint from a combination of the provided <code class="docutils literal"><span class="pre">logNames</span></code> and the endpoint <code class="docutils literal"><span class="pre">id</span></code>.</p>
 <p>The last <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> constructor parameter is a set of <code class="docutils literal"><span class="pre">ReplicationConnection</span></code>s. Here, it is a single replication connection that connects to the remote replication endpoint at location <code class="docutils literal"><span class="pre">2</span></code>. With this replication connection, events are replicated from location <code class="docutils literal"><span class="pre">2</span></code> to location <code class="docutils literal"><span class="pre">1</span></code>. For replicating events in the other direction, a corresponding <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> and <code class="docutils literal"><span class="pre">ReplicationConnection</span></code> must be set up at location <code class="docutils literal"><span class="pre">2</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">val</span> <span class="n">endpoint2</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ReplicationEndpoint</span><span class="o">(</span><span class="n">id</span> <span class="k">=</span> <span class="s">&quot;2&quot;</span><span class="o">,</span> <span class="n">logNames</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">(</span><span class="s">&quot;L&quot;</span><span class="o">,</span> <span class="s">&quot;M&quot;</span><span class="o">),</span>
   <span class="n">logFactory</span> <span class="k">=</span> <span class="n">logId</span> <span class="k">=&gt;</span> <span class="nc">LeveldbEventLog</span><span class="o">.</span><span class="n">props</span><span class="o">(</span><span class="n">logId</span><span class="o">),</span>
@@ -345,7 +315,7 @@ akka.remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
 </div>
 </div>
 <div class="section" id="replication-filters">
-<span id="id9"></span><h3>Replication filters<a class="headerlink" href="#replication-filters" title="Permalink to this headline">¶</a></h3>
+<span id="id8"></span><h3>Replication filters<a class="headerlink" href="#replication-filters" title="Permalink to this headline">¶</a></h3>
 <p>By default, all events are replicated. Applications may provide <code class="docutils literal"><span class="pre">ReplicationFilter</span></code>s to limit replication to a subset of events. A custom replication filter can be defined, by extending <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> and implementing a filter predicate (method <code class="docutils literal"><span class="pre">apply</span></code>). For example, the following replication filter selects <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s with a matching <code class="docutils literal"><span class="pre">emitterAggregateId</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate._</span>
 
@@ -395,22 +365,22 @@ akka.remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
 </pre></div>
 </div>
 <p>It instructs the failure detector to publish an <code class="docutils literal"><span class="pre">Unavailable</span></code> message if there is no heartbeat from the remote replication endpoint within 60 seconds. <code class="docutils literal"><span class="pre">Available</span></code> and <code class="docutils literal"><span class="pre">Unavailable</span></code> messages are published periodically at intervals of <code class="docutils literal"><span class="pre">eventuate.log.replication.failure-detection-limit</span></code>.</p>
-<table class="docutils footnote" frame="void" id="id10" rules="none">
+<table class="docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id3">[1]</a></td><td>A location can be a whole data center, a node within a data center or even a process on a single node, for example.</td></tr>
 </tbody>
 </table>
+<table class="docutils footnote" frame="void" id="id10" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id7">[2]</a></td><td>When running the command for the first time, it will download all required Docker images which may take a while.</td></tr>
+</tbody>
+</table>
 <table class="docutils footnote" frame="void" id="id11" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id6">[2]</a></td><td>When running the command for the first time, it will download all required Docker images which may take a while.</td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="id12" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id8">[3]</a></td><td>Log names must be unique per replication endpoint. Replication connections are only established between logs of the same name.</td></tr>
+<tr><td class="label">[3]</td><td>Log names must be unique per replication endpoint. Replication connections are only established between logs of the same name.</td></tr>
 </tbody>
 </table>
 </div>
