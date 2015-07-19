@@ -97,12 +97,12 @@ Like event-sourced actors, event-sourced views distinguish command processing fr
 State recovery
 --------------
 
-When an event-sourced actor or view is started or re-started, events are replayed to its ``onEvent`` handler so that internal state can be recovered\ [#]_. Event replay is initiated by sending a ``Replay`` message to the ``eventLog`` actor:
+When an event-sourced actor or view is started or re-started, events are replayed to its ``onEvent`` handler so that internal state can be recovered\ [#]_. Event replay is initiated internally by sending a ``Replay`` message to the ``eventLog`` actor:
 
 .. includecode:: ../../main/scala/com/rbmhtechnology/eventuate/EventsourcedView.scala
    :snippet: replay
 
-The ``replay`` method is defined by the EventsourcedView_ trait and inherited by ``EventsourcedActor``. It is called when an ``EventsourcedActor`` and ``EventsourcedView`` is started or re-started.
+The ``replay`` method is defined by EventsourcedView_ and automatically called when an ``EventsourcedView`` or ``EventsourcedActor`` is started or re-started.
 
 Sending a ``Replay`` message automatically registers the sending actor at its event log, so that newly written events can be immediately routed to that actor. If the actor is stopped it is automatically de-registered.
 
@@ -115,7 +115,7 @@ During recovery, new commands are stashed_ and dispatched to ``onCommand`` after
 Snapshots
 ---------
 
-Recovery times linearly grow with the number of events that are replayed to an event-sourced actor or view. Recovery times can be reduced by starting event replay from a previously saved snapshot of internal state rather than replaying events from scratch. Event-sourced actors and views can save snapshots by calling ``save`` within their command handler:
+Recovery time linearly grows with the number of events that are replayed to an event-sourced actor or view. It can be reduced by starting event replay from a previously saved snapshot of internal state rather than replaying events from scratch. Event-sourced actors and views can save snapshots by calling ``save`` within their command handler:
 
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: snapshot-save

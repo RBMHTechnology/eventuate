@@ -24,16 +24,13 @@ option optimize_for = SPEED;
 import "src/main/protobuf/DurableEventFormats.proto";
 
 message SnapshotFormat {
-  optional SnapshotMetadataFormat metadata = 1;
-  repeated DeliveryAttemptFormat deliveryAttempts = 2;
-  optional PayloadFormat payload = 3;
-}
-
-message SnapshotMetadataFormat {
-  optional string emitterId = 1;
-  optional int64 sequenceNr = 2;
-  optional int64 systemTimestamp = 3;
-  optional VectorTimeFormat vectorTimestamp = 4;
+  optional PayloadFormat payload = 1;
+  optional string emitterId = 2;
+  optional DurableEventFormat highestReceivedEvent = 3;
+  optional DurableEventFormat lastDeliveredEvent = 4;
+  repeated DeliveryAttemptFormat deliveryAttempts = 5;
+  repeated DurableEventFormat stashedEvents = 6;
+  optional VectorTimeFormat timestamp = 7;
 }
 
 message DeliveryAttemptFormat {

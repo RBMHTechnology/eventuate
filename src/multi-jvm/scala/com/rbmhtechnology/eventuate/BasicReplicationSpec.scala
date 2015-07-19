@@ -17,7 +17,6 @@
 package com.rbmhtechnology.eventuate
 
 import akka.actor._
-import akka.remote.testconductor.RoleName
 import akka.remote.testkit._
 import akka.testkit.TestProbe
 

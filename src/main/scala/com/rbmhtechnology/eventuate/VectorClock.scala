@@ -51,6 +51,21 @@ case class VectorClock(processId: String, currentTime: VectorTime = VectorTime()
    */
   def tick(): VectorClock =
     copy(processId, currentTime.increase(processId))
+
+  /**
+   * Checks whether the owner process is in agreement with an emitter process about
+   * the state of all other processes contained in `emitterTime`. Return `false` if the
+   * emitter process has seen one or more events that the owner process hasn't seen,
+   * `true` otherwise.
+   *
+   * @param emitterTimestamp vector time of the emitter process.
+   * @param emitterProcessId id of the emitter process.
+   */
+  def covers(emitterTimestamp: VectorTime, emitterProcessId: String): Boolean =
+    !emitterTimestamp.value.exists {
+      case (pid, time) if pid != processId && pid != emitterProcessId => currentTime.localTime(pid) < time
+      case _ => false
+    }
 }
 
 /**

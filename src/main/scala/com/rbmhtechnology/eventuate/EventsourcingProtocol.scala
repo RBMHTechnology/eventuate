@@ -123,4 +123,9 @@ object EventsourcingProtocol {
    * Failure reply after a [[LoadSnapshot]].
    */
   case class LoadSnapshotFailure(cause: Throwable, instanceId: Int)
+
+  /**
+   * Events that have been unstashed from the internal event stash are dispatched as `Unstashed` messages.
+   */
+  case class Unstashed(event: DurableEvent, instanceId: Int)
 }

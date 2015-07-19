@@ -39,10 +39,16 @@ trait EventsourcedActor extends EventsourcedView {
   import EventsourcingProtocol._
   import EventsourcedActor._
 
-  private var clock: VectorClock = _
   private var writeRequests: Vector[DurableEvent] = Vector.empty
   private var writeHandlers: Vector[Handler[Any]] = Vector.empty
   private var writing: Boolean = false
+
+  /**
+   * Whether to deliver received events in causal order to the event handler. Defaults to `true`
+   * and can be overriden by implementations.
+   */
+  override def causalDelivery: Boolean =
+    true
 
   /**
    * State synchronization. If set to `true`, commands see internal state that is
@@ -121,88 +127,51 @@ trait EventsourcedActor extends EventsourcedView {
    * `aggregateId`. Further routing destinations can be defined with the `customDestinationAggregateIds`
    * parameter.
    */
-  final def persistWithLocalTime[A](f: Long => A, customDestinationAggregateIds: Set[String] = Set())(handler: Handler[A]): A = {
-    clock = clock.tick()
-    val event = f(clock.currentLocalTime())
-    writeRequests = writeRequests :+ DurableEvent(event, System.currentTimeMillis, clock.currentTime, id, aggregateId, customDestinationAggregateIds)
-    writeHandlers = writeHandlers :+ handler.asInstanceOf[Try[Any] => Unit]
-    event
-  }
+  final def persistWithLocalTime[A](f: Long => A, customDestinationAggregateIds: Set[String] = Set())(handler: Handler[A]): A =
+    advanceClock { clock =>
+      val event = f(clock.currentLocalTime())
+      writeRequests = writeRequests :+ DurableEvent(event, System.currentTimeMillis, clock.currentTime, id, aggregateId, customDestinationAggregateIds)
+      writeHandlers = writeHandlers :+ handler.asInstanceOf[Try[Any] => Unit]
+      event
+    }
 
   /**
    * Internal API.
    */
   override private[eventuate] def unhandledMessage(msg: Any): Unit = msg match {
-
-    //
-    // TODO: reliability improvements
-    //
-    // - response timeout for communication with log
-    //   (low prio, local communication at the moment)
-    //
-
     case Delayed(command: Any, handler: (Any => Unit), iid) => if (iid == instanceId) {
       handler(command)
     }
     case WriteSuccess(event, iid) => if (iid == instanceId) {
-      lastEvent = event
+      highestReceivedEvent = event
+      lastDeliveredEvent = event
       conditionChanged(lastVectorTimestamp)
       writeHandlers.head(Success(event.payload))
       writeHandlers = writeHandlers.tail
       if (stateSync && writeHandlers.isEmpty) {
         writing = false
-        internalUnstash()
+        commandStash.unstash()
       }
     }
     case WriteFailure(event, cause, iid) => if (iid == instanceId) {
-      lastEvent = event
+      highestReceivedEvent = event
+      lastDeliveredEvent = event
       writeHandlers.head(Failure(cause))
       writeHandlers = writeHandlers.tail
       if (stateSync && writeHandlers.isEmpty) {
         writing = false
-        internalUnstash()
+        commandStash.unstash()
       }
     }
     case cmd =>
-      if (writing) internalStash() else {
+      if (writing) commandStash.stash() else {
         onCommand(cmd)
 
         val wPending = writePending
         if (wPending) write()
-        if (wPending && stateSync) writing = true else if (stateSync) internalUnstash()
+        if (wPending && stateSync) writing = true else if (stateSync) commandStash.unstash()
       }
   }
-
-  /**
-   * Internal API.
-   */
-  override private[eventuate] def unhandledEvent(event: DurableEvent): Unit =
-    if (event.emitterId == id) {
-      // Event not handled but it has been previously emitted by this
-      // actor. So we need to recover local time, otherwise, we could
-      // end up in the past after recovery ....
-      clock = clock.merge(event.vectorTimestamp.localCopy(id))
-    }
-
-  /**
-   * Internal API.
-   */
-  override private[eventuate] def preOnSnapshot(snapshot: Snapshot): Unit = {
-    super.preOnSnapshot(snapshot)
-    clock = clock.update(snapshot.metadata.vectorTimestamp)
-  }
-
-  /**
-   * Internal API.
-   */
-  override private[eventuate] def preOnEvent(event: DurableEvent): Unit =
-    clock = clock.update(event.vectorTimestamp)
-
-  /**
-   * Internal API.
-   */
-  private[eventuate] def currentTime: VectorTime =
-    clock.currentTime
 
   private def writePending: Boolean =
     writeRequests.nonEmpty
@@ -210,11 +179,6 @@ trait EventsourcedActor extends EventsourcedView {
   private def write(): Unit = {
     eventLog ! Write(writeRequests, sender(), self, instanceId)
     writeRequests = Vector.empty
-  }
-
-  override def preStart(): Unit = {
-    clock = VectorClock(id)
-    super.preStart()
   }
 }
 

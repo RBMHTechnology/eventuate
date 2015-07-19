@@ -22,25 +22,41 @@ import com.rbmhtechnology.eventuate.ConfirmedDelivery.DeliveryAttempt
  * Snapshot metadata.
  *
  * @param emitterId Id of the [[EventsourcedActor]] or [[EventsourcedView]] that saves the snapshot.
- * @param sequenceNr The latest event sequence number covered by the snapshot.
- * @param systemTimestamp The latest event system timestamp covered by the snapshot.
- * @param vectorTimestamp The latest event vector timestamp covered by the snapshot.
- *
- * @see [[EventsourcedView#lastSequenceNr]]
- * @see [[EventsourcedView#lastSystemTimestamp]]
- * @see [[EventsourcedView#lastVectorTimestamp]]
+ * @param sequenceNr The highest event sequence number covered by the snapshot.
  */
-case class SnapshotMetadata(emitterId: String, sequenceNr: Long, systemTimestamp: Long, vectorTimestamp: VectorTime)
+case class SnapshotMetadata(emitterId: String, sequenceNr: Long)
 
 /**
  * Represents a snapshot of internal state of an [[EventsourcedActor]] or [[EventsourcedView]].
  *
- * @param metadata Snapshot metadata.
- * @param deliveryAttempts Unconfirmed delivery attempts of an [[EventsourcedActor]] that implements
- *                         [[ConfirmedDelivery]].
- * @param payload The actual user-defined snapshot passed as argument to [[EventsourcedActor#save]]
- *                or [[EventsourcedView#save]].
+ * @param payload The actual user-defined snapshot passed as argument to [[EventsourcedActor#save]] or [[EventsourcedView#save]].
+ * @param emitterId Id of the actor that saves the snapshot.
+ * @param highestReceivedEvent Event with the highest sequence number that has ever been received by an actor (delivered or not).
+ * @param lastDeliveredEvent Last event that has actually been delivered to an actor's event handler.
+ * @param deliveryAttempts Unconfirmed delivery attempts of an actor (when implementing [[ConfirmedDelivery]]).
+ * @param stashedEvents Events on the internal event stash of an actor.
+ * @param timestamp Vector time when the snapshot has been taken.
  */
-case class Snapshot(metadata: SnapshotMetadata, deliveryAttempts: Vector[DeliveryAttempt] = Vector.empty, payload: Any) {
-  def add(deliveryAttempt: DeliveryAttempt): Snapshot = copy(deliveryAttempts = deliveryAttempts :+ deliveryAttempt)
+case class Snapshot(
+    payload: Any,
+    emitterId: String,
+    highestReceivedEvent: DurableEvent,
+    lastDeliveredEvent: DurableEvent,
+    stashedEvents: Vector[DurableEvent] = Vector.empty,
+    deliveryAttempts: Vector[DeliveryAttempt] = Vector.empty,
+    timestamp: VectorTime = VectorTime()) {
+
+  def metadata: SnapshotMetadata =
+    SnapshotMetadata(emitterId, highestReceivedEvent.sequenceNr)
+
+  def add(deliveryAttempt: DeliveryAttempt): Snapshot =
+    copy(deliveryAttempts = deliveryAttempts :+ deliveryAttempt)
+
+  def add(stashedEvent: DurableEvent): Snapshot =
+    copy(stashedEvents = stashedEvents :+ stashedEvent)
+}
+
+object Snapshot {
+  def apply(payload: Any, emitterId: String): Snapshot =
+    new Snapshot(payload, emitterId, DurableEvent(emitterId), DurableEvent(emitterId))
 }

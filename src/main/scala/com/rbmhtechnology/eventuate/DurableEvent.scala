@@ -18,8 +18,6 @@ package com.rbmhtechnology.eventuate
 
 import DurableEvent._
 
-import scala.collection.immutable.Seq
-
 /**
  * Provider API.
  *
@@ -92,4 +90,7 @@ case class DurableEvent(
 object DurableEvent {
   val UndefinedLogId = ""
   val UndefinedSequenceNr = 1L
+
+  def apply(emitterId: String): DurableEvent =
+    DurableEvent(payload = null, systemTimestamp = 0L, vectorTimestamp = VectorTime(), emitterId = emitterId, targetLogSequenceNr = 0L)
 }

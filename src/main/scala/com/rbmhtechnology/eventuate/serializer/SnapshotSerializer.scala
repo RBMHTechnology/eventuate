@@ -62,22 +62,19 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
 
   private def snapshotFormatBuilder(snapshot: Snapshot): SnapshotFormat.Builder = {
     val builder = SnapshotFormat.newBuilder
-    builder.setMetadata(snapshotMetadataFormatBuilder(snapshot.metadata))
     builder.setPayload(eventSerializer.payloadFormatBuilder(snapshot.payload.asInstanceOf[AnyRef]))
+    builder.setEmitterId(snapshot.emitterId)
+    builder.setHighestReceivedEvent(eventSerializer.durableEventFormatBuilder(snapshot.highestReceivedEvent))
+    builder.setLastDeliveredEvent(eventSerializer.durableEventFormatBuilder(snapshot.lastDeliveredEvent))
+    builder.setTimestamp(eventSerializer.vectorTimeFormatBuilder(snapshot.timestamp))
 
     snapshot.deliveryAttempts.foreach { da =>
       builder.addDeliveryAttempts(deliveryAttemptFormatBuilder(da))
     }
+    snapshot.stashedEvents.foreach { se =>
+      builder.addStashedEvents(eventSerializer.durableEventFormatBuilder(se))
+    }
 
-    builder
-  }
-
-  private def snapshotMetadataFormatBuilder(snapshotMetadata: SnapshotMetadata): SnapshotMetadataFormat.Builder = {
-    val builder = SnapshotMetadataFormat.newBuilder
-    builder.setEmitterId(snapshotMetadata.emitterId)
-    builder.setSequenceNr(snapshotMetadata.sequenceNr)
-    builder.setSystemTimestamp(snapshotMetadata.systemTimestamp)
-    builder.setVectorTimestamp(eventSerializer.vectorTimeFormatBuilder(snapshotMetadata.vectorTimestamp))
     builder
   }
 
@@ -121,25 +118,24 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
   // --------------------------------------------------------------------------------
 
   private def snapshot(snapshotFormat: SnapshotFormat): Snapshot = {
-    val builder = new VectorBuilder[DeliveryAttempt]
+    val seBuilder = new VectorBuilder[DurableEvent]
+    val daBuilder = new VectorBuilder[DeliveryAttempt]
 
+    snapshotFormat.getStashedEventsList.iterator().asScala.foreach { eventFormat =>
+      seBuilder += eventSerializer.durableEvent(eventFormat)
+    }
     snapshotFormat.getDeliveryAttemptsList.asScala.iterator.foreach { daf =>
-      builder += deliveryAttempt(daf)
+      daBuilder += deliveryAttempt(daf)
     }
 
     Snapshot(
-      snapshotMetadata(snapshotFormat.getMetadata),
-      builder.result(),
-      eventSerializer.payload(snapshotFormat.getPayload))
-  }
-
-  private def snapshotMetadata(snapshotMetadataFormat: SnapshotMetadataFormat): SnapshotMetadata = {
-    SnapshotMetadata(
-      snapshotMetadataFormat.getEmitterId,
-      snapshotMetadataFormat.getSequenceNr,
-      snapshotMetadataFormat.getSystemTimestamp,
-      eventSerializer.vectorTime(snapshotMetadataFormat.getVectorTimestamp)
-    )
+      eventSerializer.payload(snapshotFormat.getPayload),
+      snapshotFormat.getEmitterId,
+      eventSerializer.durableEvent(snapshotFormat.getHighestReceivedEvent),
+      eventSerializer.durableEvent(snapshotFormat.getLastDeliveredEvent),
+      seBuilder.result(),
+      daBuilder.result(),
+      eventSerializer.vectorTime(snapshotFormat.getTimestamp))
   }
 
   private def deliveryAttempt(deliveryAttemptFormat: DeliveryAttemptFormat): DeliveryAttempt = {

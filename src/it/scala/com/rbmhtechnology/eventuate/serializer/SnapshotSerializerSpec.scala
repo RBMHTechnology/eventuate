@@ -22,7 +22,7 @@ import akka.testkit.TestProbe
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.ConfirmedDelivery.DeliveryAttempt
-import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.ExamplePayload
+import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.{event, ExamplePayload}
 
 import org.scalatest._
 
@@ -31,15 +31,27 @@ object SnapshotSerializerSpec {
     def nodeTuples = tree.nodes.map { node => (node.versioned, node.rejected) }
   }
 
-  def metadata =
-    SnapshotMetadata("abc", 17, 19, VectorTime("A" -> 1L, "B" -> 2L))
+  def highestReceived(payload: Any) =
+    event.copy(payload = payload, targetLogSequenceNr = 27L)
+
+  def lastDelivered(payload: Any) =
+    event.copy(payload = payload, targetLogSequenceNr = 28L)
+
+  def stashed(payload: Any) = Vector(
+    event.copy(payload = payload, targetLogSequenceNr = 17L),
+    event.copy(payload = payload, targetLogSequenceNr = 18L))
 
   def unconfirmed(payload: Any, destination: ActorPath) = Vector(
     DeliveryAttempt("3", payload, destination),
     DeliveryAttempt("4", payload, destination))
 
   def snapshot(payload: Any, destination: ActorPath) =
-    Snapshot(metadata, unconfirmed(payload, destination), payload)
+    Snapshot(payload,  "emitter",
+      highestReceived(payload),
+      lastDelivered(payload),
+      stashed(payload),
+      unconfirmed(payload, destination),
+      VectorTime("A" -> 37L, "B" -> 38L))
 
   def vectorTime(t1: Long, t2: Long): VectorTime =
     VectorTime("p1" -> t1, "p2" -> t2)
