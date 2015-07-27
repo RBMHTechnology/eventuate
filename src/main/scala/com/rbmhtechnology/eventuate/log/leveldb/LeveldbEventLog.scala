@@ -232,10 +232,12 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor {
   def withIterator[R](body: DBIterator => R): R = {
     val so = snapshotOptions()
     val iter = leveldb.iterator(so)
+    addActiveIterator(iter)
     try {
       body(iter)
     } finally {
       iter.close()
+      removeActiveIterator(iter)
       so.snapshot().close()
     }
   }
@@ -246,7 +248,6 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor {
   override def preStart(): Unit = {
     withIterator(iter => aggregateIdMap.readIdMap(iter))
     withIterator(iter => eventLogIdMap.readIdMap(iter))
-    withIterator(iter => replicationProgressMap.readRpMap(iter))
     leveldb.put(eventKeyEndBytes, Array.empty[Byte])
     leveldb.get(counterKeyBytes) match {
       case null => generator.sequenceNr = 0L
@@ -255,9 +256,42 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor {
   }
 
   override def postStop(): Unit = {
+    while(activeIterators.get.size > 0) {
+      // Wait a bit for all concurrent read iterators to be closed
+      // See https://github.com/RBMHTechnology/eventuate/issues/87
+      Thread.sleep(500)
+    }
     leveldb.close()
     super.postStop()
   }
+
+  // -------------------------------------------------------------------
+  //  Support for tracking active iterators used by concurrent readers.
+  //  It helps to avoid `pthread lock: invalid argument` errors raised
+  //  by native code when closing the leveldb instance maintained by
+  //  this event log actor, mainly during integration tests.
+  // -------------------------------------------------------------------
+
+  import java.util.concurrent.atomic._
+  import java.util.function._
+
+  private var activeIterators = new AtomicReference[Set[DBIterator]](Set())
+
+  private val addAccumulator = new BinaryOperator[Set[DBIterator]] {
+    override def apply(acc: Set[DBIterator], u: Set[DBIterator]): Set[DBIterator] =
+      acc + u.head
+  }
+
+  private val removeAccumulator = new BinaryOperator[Set[DBIterator]] {
+    override def apply(acc: Set[DBIterator], u: Set[DBIterator]): Set[DBIterator] =
+      acc - u.head
+  }
+
+  def addActiveIterator(iter: DBIterator): Unit =
+    activeIterators.accumulateAndGet(Set(iter), addAccumulator)
+
+  def removeActiveIterator(iter: DBIterator): Unit =
+    activeIterators.accumulateAndGet(Set(iter), removeAccumulator)
 }
 
 object LeveldbEventLog {

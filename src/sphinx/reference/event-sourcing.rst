@@ -30,6 +30,17 @@ The persist handler is called during a normal actor message dispatch. It can the
 .. note::
    A command handler should not modify persistent actor state i.e. state that is derived from events. 
 
+Handling persistence failures
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Persistence may fail for several reasons. For example, event serialization may fail or writing to the storage backend may fail, to mention only two examples.
+
+In general, a persist handler that is called with a ``Failure`` argument should not make any assumptions whether the corresponding event has been persisted or not. For example, an event could have been actually written to the storage backend but the ACK was lost which causes ``persist`` to complete with a failure.
+
+One way to deal with this situation is to restart the event-sourced actor and inspect the recovered state whether that event has been processed or not. If it has been processed, the application can continue with the next command, otherwise it should re-send the failed command. This strategy avoids duplicates in the event log.
+
+Duplicates are not an issue if state update operations executed by an :ref:`event-handler` are idempotent. In this case, an application may simply re-send a failed command without restarting the event-sourced actor. 
+
 State synchronization
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -58,6 +69,8 @@ If a sender sends an update command followed by a read command to an event-sourc
 
 .. note::
    State synchronization settings only apply to a single actor instance. Events that are emitted concurrently by other actors and handled by that instance can arrive at any time and modify actor state. Anyway, concurrent events are not relevant for achieving read-your-write consistency and should be handled as described in the :ref:`user-guide`.
+
+.. _event-handler:
 
 Event handler
 ~~~~~~~~~~~~~

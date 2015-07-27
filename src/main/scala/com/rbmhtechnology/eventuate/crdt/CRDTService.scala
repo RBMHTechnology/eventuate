@@ -187,10 +187,10 @@ trait CRDTService[A, B] {
           case None       => ops.zero
         }
         crdts = crdts + (id -> ops.update(crdt, operation, lastVectorTimestamp, lastSystemTimestamp))
-        onChange(crdts(id)) // TODO: make onChange callbacks configurable (needed in tests only)
+        onChange(crdts(id), operation) // TODO: make onChange callbacks configurable (needed in tests only)
     }
   }
 
   /** For testing purposes only */
-  private[crdt] def onChange(crdt: A): Unit = ()
+  private[crdt] def onChange(crdt: A, operation: Any): Unit = ()
 }

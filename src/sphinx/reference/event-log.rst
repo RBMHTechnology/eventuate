@@ -61,6 +61,9 @@ Further details are described in the API docs of the `Cassandra extension`_ and 
 .. note::
    Eventuate requires Cassandra version 2.1 or higher.
 
+.. hint::
+   For instructions how to run a local Cassandra cluster you may want to read the article `Chaos testing with Docker and Cassandra on Mac OS X`_.
+
 .. _replicated-event-log:
 
 Replicated event log
@@ -163,6 +166,21 @@ For the definition of filter logic based on application-defined events, replicat
 .. hint::
    Serialization of replication filters can be customized as described in section :ref:`replication-filter-serialization`.
 
+Batch replication
+^^^^^^^^^^^^^^^^^
+
+Events are replicated in batches. The maximum number of events per batch can be configured with
+
+.. includecode:: ../conf/common.conf
+   :snippet: replication-batch-size
+
+Applications that increase the maximum batch size and/or store rather large events should also increase
+
+.. includecode:: ../conf/common.conf
+   :snippet: maximum-frame-size
+
+otherwise, replication will fail.
+
 Failure detection
 ^^^^^^^^^^^^^^^^^
 
@@ -179,9 +197,12 @@ Both messages are defined in ReplicationEndpoint_. Their ``endpointId`` paramete
 It instructs the failure detector to publish an ``Unavailable`` message if there is no heartbeat from the remote replication endpoint within 60 seconds. ``Available`` and ``Unavailable`` messages are published periodically at intervals of ``eventuate.log.replication.failure-detection-limit``.
 
 .. _Cassandra: http://cassandra.apache.org/
+.. _Getting Started: https://wiki.apache.org/cassandra/GettingStarted
+.. _cassandra-unit: https://github.com/jsevellec/cassandra-unit/wiki
 .. _LevelDB: https://github.com/google/leveldb
 .. _Akka Remoting: http://doc.akka.io/docs/akka/2.3.9/scala/remoting.html
 .. _event stream: http://doc.akka.io/docs/akka/2.3.9/scala/event-bus.html#event-stream
+.. _Chaos testing with Docker and Cassandra on Mac OS X: http://rbmhtechnology.github.io/chaos-testing-with-docker-and-cassandra/
 
 .. _EventsourcingProtocol: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$
 .. _ReplicationEndpoint: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint$
@@ -192,4 +213,5 @@ It instructs the failure detector to publish an ``Unavailable`` message if there
 .. _CassandraEventLog: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog
 
 .. [#] A location can be a whole data center, a node within a data center or even a process on a single node, for example.
+.. [#] When running the command for the first time, it will download all required Docker images which may take a while.
 .. [#] Log names must be unique per replication endpoint. Replication connections are only established between logs of the same name.

@@ -39,13 +39,6 @@ trait EventsourcedActor extends EventsourcedView {
   import EventsourcingProtocol._
   import EventsourcedActor._
 
-  //
-  // TODO: clock initialization from snapshot
-  //
-  // - snapshot contains lastVectorTimestamp
-  // - clock = clock.update(lastVectorTimestamp)
-  //
-
   private var clock: VectorClock = _
   private var writeRequests: Vector[DurableEvent] = Vector.empty
   private var writeHandlers: Vector[Handler[Any]] = Vector.empty
