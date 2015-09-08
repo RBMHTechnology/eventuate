@@ -62,14 +62,15 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
   def durableEventFormatBuilder(durableEvent: DurableEvent): DurableEventFormat.Builder = {
     val builder = DurableEventFormat.newBuilder
     builder.setPayload(payloadFormatBuilder(durableEvent.payload.asInstanceOf[AnyRef]))
+    builder.setEmitterId(durableEvent.emitterId)
     builder.setSystemTimestamp(durableEvent.systemTimestamp)
     builder.setVectorTimestamp(vectorTimeFormatBuilder(durableEvent.vectorTimestamp))
-    builder.setEmitterId(durableEvent.emitterId)
-    builder.setSourceLogReadPosition(durableEvent.sourceLogReadPosition)
+    builder.setPersistLogId(durableEvent.persistLogId)
     builder.setSourceLogId(durableEvent.sourceLogId)
     builder.setTargetLogId(durableEvent.targetLogId)
     builder.setSourceLogSequenceNr(durableEvent.sourceLogSequenceNr)
     builder.setTargetLogSequenceNr(durableEvent.targetLogSequenceNr)
+    builder.setSourceLogReadPosition(durableEvent.sourceLogReadPosition)
 
     durableEvent.emitterAggregateId.foreach { id =>
       builder.setEmitterAggregateId(id)
@@ -118,16 +119,17 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
 
     DurableEvent(
       payload = payload(durableEventFormat.getPayload),
-      systemTimestamp = durableEventFormat.getSystemTimestamp,
-      vectorTimestamp = vectorTime(durableEventFormat.getVectorTimestamp),
       emitterId = durableEventFormat.getEmitterId,
       emitterAggregateId = emitterAggregateId,
       customDestinationAggregateIds = customDestinationAggregateIds,
-      sourceLogReadPosition = durableEventFormat.getSourceLogReadPosition,
+      systemTimestamp = durableEventFormat.getSystemTimestamp,
+      vectorTimestamp = vectorTime(durableEventFormat.getVectorTimestamp),
+      persistLogId = durableEventFormat.getPersistLogId,
       sourceLogId = durableEventFormat.getSourceLogId,
       targetLogId = durableEventFormat.getTargetLogId,
       sourceLogSequenceNr = durableEventFormat.getSourceLogSequenceNr,
-      targetLogSequenceNr = durableEventFormat.getTargetLogSequenceNr)
+      targetLogSequenceNr = durableEventFormat.getTargetLogSequenceNr,
+      sourceLogReadPosition = durableEventFormat.getSourceLogReadPosition)
   }
 
   def payload(payloadFormat: PayloadFormat): Any = {

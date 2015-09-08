@@ -23,16 +23,17 @@ option optimize_for = SPEED;
 
 message DurableEventFormat {
   optional PayloadFormat payload = 1;
-  optional int64 systemTimestamp = 2;
-  optional VectorTimeFormat vectorTimestamp = 3;
-  optional string emitterId = 4;
-  optional string emitterAggregateId = 5;
-  repeated string customDestinationAggregateIds = 6;
-  optional int64 sourceLogReadPosition = 7;
+  optional string emitterId = 2;
+  optional string emitterAggregateId = 3;
+  repeated string customDestinationAggregateIds = 4;
+  optional int64 systemTimestamp = 5;
+  optional VectorTimeFormat vectorTimestamp = 6;
+  optional string persistLogId = 7;
   optional string sourceLogId = 8;
   optional string targetLogId = 9;
   optional int64 sourceLogSequenceNr = 10;
   optional int64 targetLogSequenceNr = 11;
+  optional int64 sourceLogReadPosition = 12;
 }
 
 message PayloadFormat {

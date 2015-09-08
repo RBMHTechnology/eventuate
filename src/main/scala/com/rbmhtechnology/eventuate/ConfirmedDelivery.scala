@@ -73,14 +73,17 @@ trait ConfirmedDelivery extends EventsourcedActor {
   /**
    * Internal API.
    */
-  override private[eventuate] def enrich(snapshot: Snapshot): Snapshot =
-    _unconfirmed.values.foldLeft(snapshot) { case (s, da) => s.add(da) }
+  override private[eventuate] def capturedSnapshot(snapshot: Snapshot): Snapshot = {
+    _unconfirmed.values.foldLeft(super.capturedSnapshot(snapshot)) {
+      case (s, da) => s.add(da)
+    }
+  }
 
   /**
    * Internal API.
    */
-  override private[eventuate] def preOnSnapshot(snapshot: Snapshot): Unit = {
-    super.preOnSnapshot(snapshot)
+  override private[eventuate] def loadedSnapshot(snapshot: Snapshot): Unit = {
+    super.loadedSnapshot(snapshot)
     snapshot.deliveryAttempts.foreach { da =>
       _unconfirmed = _unconfirmed + (da.deliveryId -> da)
     }

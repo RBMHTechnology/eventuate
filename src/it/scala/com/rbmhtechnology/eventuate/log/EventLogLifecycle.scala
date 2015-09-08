@@ -59,6 +59,8 @@ trait EventLogCleanupLeveldb extends Suite with BeforeAndAfterAll {
 }
 
 trait EventLogLifecycleLeveldb extends EventLogCleanupLeveldb with BeforeAndAfterEach {
+  import EventLogLifecycleLeveldb._
+
   private var _logCtr: Int = 0
   private var _log: ActorRef = _
 
@@ -88,14 +90,22 @@ trait EventLogLifecycleLeveldb extends EventLogCleanupLeveldb with BeforeAndAfte
   def logId: String =
     _logCtr.toString
 
-  def logProps(logId: String): Props = {
-    val logProps = Props(new EventLogLifecycleLeveldb.TestEventLog(logId)).withDispatcher("eventuate.log.leveldb.write-dispatcher")
-    if (batching) Props(new BatchingEventLog(logProps)) else logProps
-  }
+  def logProps(logId: String): Props =
+    TestEventLog.props(logId, batching)
 }
 
 object EventLogLifecycleLeveldb {
+  object TestEventLog {
+    def props(logId: String, batching: Boolean): Props = {
+      val logProps = Props(new EventLogLifecycleLeveldb.TestEventLog(logId)).withDispatcher("eventuate.log.leveldb.write-dispatcher")
+      if (batching) Props(new BatchingEventLog(logProps)) else logProps
+    }
+  }
+
   class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") {
+    override def currentSystemTime: Long =
+      0L
+
     override def replay(from: Long, classifier: Int)(f: (DurableEvent) => Unit): Unit =
       if (from == -1L) throw boom else super.replay(from, classifier)(f)
 
@@ -109,7 +119,7 @@ object EventLogLifecycleLeveldb {
 
     override def unhandled(message: Any): Unit = message match {
       case GetSequenceNr =>
-        sender() ! GetSequenceNrSuccess(generator.sequenceNr)
+        sender() ! GetSequenceNrSuccess(sequenceManager.currentSequenceNr)
       case GetReplicationProgress =>
         sender() ! GetReplicationProgressSuccess(progressMap)
       case SetReplicationProgress(logId, sequenceNr) =>
@@ -189,10 +199,8 @@ trait EventLogLifecycleCassandra extends EventLogCleanupCassandra with BeforeAnd
   def logId: String =
     _logCtr.toString
 
-  def logProps(logId: String, failureSpec: TestFailureSpec, indexProbe: ActorRef): Props = {
-    val logProps = Props(new TestEventLog(logId, failureSpec, indexProbe)).withDispatcher("eventuate.log.cassandra.write-dispatcher")
-    if (batching) Props(new BatchingEventLog(logProps)) else logProps
-  }
+  def logProps(logId: String, failureSpec: TestFailureSpec, indexProbe: ActorRef): Props =
+    TestEventLog.props(logId, failureSpec, indexProbe, batching)
 }
 
 object EventLogLifecycleCassandra {
@@ -201,10 +209,26 @@ object EventLogLifecycleCassandra {
     failBeforeIndexIncrementWrite: Boolean = false,
     failAfterIndexIncrementWrite: Boolean = false)
 
-  class TestEventLog(id: String, failureSpec: TestFailureSpec, indexProbe: ActorRef) extends CassandraEventLog(id) {
+  object TestEventLog {
+    def props(logId: String, batching: Boolean): Props =
+      props(logId, TestFailureSpec(), None, batching)
+
+    def props(logId: String, failureSpec: TestFailureSpec, indexProbe: ActorRef, batching: Boolean): Props =
+      props(logId, failureSpec, Some(indexProbe), batching)
+
+    def props(logId: String, failureSpec: TestFailureSpec, indexProbe: Option[ActorRef], batching: Boolean): Props = {
+      val logProps = Props(new TestEventLog(logId, failureSpec, indexProbe)).withDispatcher("eventuate.log.cassandra.write-dispatcher")
+      if (batching) Props(new BatchingEventLog(logProps)) else logProps
+    }
+  }
+
+  class TestEventLog(id: String, failureSpec: TestFailureSpec, indexProbe: Option[ActorRef]) extends CassandraEventLog(id) {
     import context.dispatcher
 
     private var index: ActorRef = _
+
+    override def currentSystemTime: Long =
+      0L
 
     override def write(partition: Long, events: Seq[DurableEvent]): Unit = events match {
       case es if es.map(_.payload).contains("boom") => throw boom
@@ -213,7 +237,7 @@ object EventLogLifecycleCassandra {
 
     override def unhandled(message: Any): Unit = message match {
       case GetSequenceNr =>
-        sender() ! GetSequenceNrSuccess(generator.sequenceNr)
+        sender() ! GetSequenceNrSuccess(sequenceManager.currentSequenceNr)
       case GetReplicationProgress =>
         val sdr = sender()
         getReplicationProgress(List(EventLogSpec.remoteLogId, "x", "y")) onComplete {
@@ -253,14 +277,14 @@ object EventLogLifecycleCassandra {
       if (from == -1L) throw boom else super.read(from, max, filter, targetLogId)
   }
 
-  class TestIndex(cassandra: Cassandra, eventReader: CassandraEventReader, logId: String, failureSpec: TestFailureSpec, indexProbe: ActorRef) extends CassandraIndex(cassandra, eventReader, logId) {
+  class TestIndex(cassandra: Cassandra, eventReader: CassandraEventReader, logId: String, failureSpec: TestFailureSpec, indexProbe: Option[ActorRef]) extends CassandraIndex(cassandra, eventReader, logId) {
     val stream = context.system.eventStream
 
     override private[eventuate] def createIndexStore(cassandra: Cassandra, logId: String) =
       new TestIndexStore(cassandra, logId, failureSpec)
 
     override def onIndexEvent(event: Any): Unit =
-      indexProbe ! event
+      indexProbe.foreach(_ ! event)
   }
 
   class TestIndexStore(cassandra: Cassandra, logId: String, failureSpec: TestFailureSpec) extends CassandraIndexStore(cassandra, logId) {

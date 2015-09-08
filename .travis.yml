@@ -14,9 +14,9 @@ before_script:
   - pip install --user sphinx
   - pip install --user sphinx_rtd_theme
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION test:testOnly
-  - sbt ++$TRAVIS_SCALA_VERSION it:testOnly
   - sbt ++$TRAVIS_SCALA_VERSION multi-jvm:test
+  - sbt ++$TRAVIS_SCALA_VERSION it:testOnly
+  - sbt ++$TRAVIS_SCALA_VERSION test:testOnly
   - sbt ++$TRAVIS_SCALA_VERSION makeSite
   - find $HOME/.sbt -name "*.lock" | xargs rm
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm

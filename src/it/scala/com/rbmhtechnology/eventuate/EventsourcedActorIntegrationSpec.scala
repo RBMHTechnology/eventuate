@@ -89,19 +89,6 @@ object EventsourcedActorIntegrationSpec {
     }
   }
 
-  class DelayActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
-    override def stateSync: Boolean = false
-
-    override val onCommand: Receive = {
-      case "persist" => persist("a")(r => probe ! r.get)
-      case "delay" => delay("b")(r => probe ! r)
-    }
-
-    override val onEvent: Receive = {
-      case _ =>
-    }
-  }
-
   class ConditionalActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     override val onCommand: Receive = {
       case "persist"      => persist("a")(r => probe ! r.get)
@@ -220,6 +207,8 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
   import EventsourcedActorIntegrationSpec._
 
   def log: ActorRef
+  def logId: String
+
   var probe: TestProbe = _
 
   override def beforeEach(): Unit = {
@@ -302,14 +291,6 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
       actor ! "end"
       probe.expectMsg("end")
     }
-    "delay commands" in {
-      val actor = system.actorOf(Props(new DelayActor("1", log, probe.ref)))
-      actor ! "persist"
-      actor ! "delay"
-      actor ! "persist"
-      probe.expectMsg("a")
-      probe.expectMsgAllOf("a", "b")
-    }
     "route events to custom destinations" in {
       val probe1 = TestProbe()
       val probe2 = TestProbe()
@@ -332,25 +313,6 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
     }
   }
 
-  "An EventsourcedActor's vector clock size" must {
-    "scale with the number of its collaboration partners" in {
-      val probeAB = TestProbe()
-      val probeCD = TestProbe()
-
-      val actorA = system.actorOf(Props(new CollabActor("A", log, probeAB.ref)))
-      val actorC = system.actorOf(Props(new CollabActor("C", log, probeCD.ref)))
-
-      val actorB = system.actorOf(Props(new CollabActor("B", log, system.deadLetters)))
-      val actorD = system.actorOf(Props(new CollabActor("D", log, system.deadLetters)))
-
-      actorA ! CollabCmd("B")
-      actorC ! CollabCmd("D")
-
-      probeAB.expectMsg(VectorTime("A" -> 1, "B" -> 2))
-      probeCD.expectMsg(VectorTime("C" -> 1, "D" -> 2))
-    }
-  }
-
   "Eventsourced actors and views" must {
     "support conditional command processing" in {
       val act1Props = Props(new ConditionalActor("1", log, probe.ref))
@@ -361,7 +323,7 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
       val act2 = system.actorOf(act2Props, "act2")
       val view = system.actorOf(viewProps, "view")
 
-      val condition = VectorTime("1" -> 3L)
+      val condition = VectorTime(logId -> 3L)
 
       view ! ConditionalCommand(condition, "delayed")
       act1 ! ConditionalCommand(condition, "delayed-1")

@@ -62,22 +62,15 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
 
   private def snapshotFormatBuilder(snapshot: Snapshot): SnapshotFormat.Builder = {
     val builder = SnapshotFormat.newBuilder
-    builder.setMetadata(snapshotMetadataFormatBuilder(snapshot.metadata))
     builder.setPayload(eventSerializer.payloadFormatBuilder(snapshot.payload.asInstanceOf[AnyRef]))
+    builder.setEmitterId(snapshot.emitterId)
+    builder.setLastEvent(eventSerializer.durableEventFormatBuilder(snapshot.lastEvent))
+    builder.setLastHandledTime(eventSerializer.vectorTimeFormatBuilder(snapshot.lastHandledTime))
 
     snapshot.deliveryAttempts.foreach { da =>
       builder.addDeliveryAttempts(deliveryAttemptFormatBuilder(da))
     }
 
-    builder
-  }
-
-  private def snapshotMetadataFormatBuilder(snapshotMetadata: SnapshotMetadata): SnapshotMetadataFormat.Builder = {
-    val builder = SnapshotMetadataFormat.newBuilder
-    builder.setEmitterId(snapshotMetadata.emitterId)
-    builder.setSequenceNr(snapshotMetadata.sequenceNr)
-    builder.setSystemTimestamp(snapshotMetadata.systemTimestamp)
-    builder.setVectorTimestamp(eventSerializer.vectorTimeFormatBuilder(snapshotMetadata.vectorTimestamp))
     builder
   }
 
@@ -128,18 +121,11 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
     }
 
     Snapshot(
-      snapshotMetadata(snapshotFormat.getMetadata),
-      builder.result(),
-      eventSerializer.payload(snapshotFormat.getPayload))
-  }
-
-  private def snapshotMetadata(snapshotMetadataFormat: SnapshotMetadataFormat): SnapshotMetadata = {
-    SnapshotMetadata(
-      snapshotMetadataFormat.getEmitterId,
-      snapshotMetadataFormat.getSequenceNr,
-      snapshotMetadataFormat.getSystemTimestamp,
-      eventSerializer.vectorTime(snapshotMetadataFormat.getVectorTimestamp)
-    )
+      eventSerializer.payload(snapshotFormat.getPayload),
+      snapshotFormat.getEmitterId,
+      eventSerializer.durableEvent(snapshotFormat.getLastEvent),
+      eventSerializer.vectorTime(snapshotFormat.getLastHandledTime),
+      builder.result())
   }
 
   private def deliveryAttempt(deliveryAttemptFormat: DeliveryAttemptFormat): DeliveryAttempt = {

@@ -16,7 +16,6 @@
 
 package com.rbmhtechnology.eventuate
 
-import akka.remote.testconductor.RoleName
 import akka.remote.testkit.{MultiNodeSpec, MultiNodeConfig}
 import akka.remote.transport.ThrottlerTransportAdapter.Direction
 import akka.testkit.TestProbe

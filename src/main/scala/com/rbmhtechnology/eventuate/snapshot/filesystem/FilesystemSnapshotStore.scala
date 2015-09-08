@@ -47,14 +47,11 @@ class FilesystemSnapshotStore(settings: FilesystemSnapshotStoreSettings) extends
 
   override def saveAsync(snapshot: Snapshot): Future[Unit] = {
     import settings.writeDispatcher
-    import snapshot.metadata._
-
-    Future(withOutputStream(dstDir(emitterId), sequenceNr)(serialize(_, snapshot)))
+    Future(withOutputStream(dstDir(snapshot.metadata.emitterId), snapshot.metadata.sequenceNr)(serialize(_, snapshot)))
   }
 
   override def loadAsync(emitterId: String): Future[Option[Snapshot]] = {
-    import settings.writeDispatcher
-
+    import settings.readDispatcher
     Future(load(dstDir(emitterId)))
   }
 

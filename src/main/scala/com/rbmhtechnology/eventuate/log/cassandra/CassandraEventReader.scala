@@ -22,7 +22,6 @@ import java.util.function.BinaryOperator
 
 import com.datastax.driver.core.{PreparedStatement, Row}
 import com.rbmhtechnology.eventuate._
-import com.rbmhtechnology.eventuate.log.partition._
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable.{VectorBuilder, Seq}
@@ -30,6 +29,7 @@ import scala.concurrent.Future
 
 private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: String) extends CassandraEventIteratorLeasing {
   import CassandraEventReader._
+  import CassandraEventLog._
 
   val statement: PreparedStatement =
     cassandra.prepareReadEvents(logId)

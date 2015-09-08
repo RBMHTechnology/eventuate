@@ -59,11 +59,7 @@ object EventSourcing {
 
   trait EventsourcedActorAPI {
     //#persist-signature
-    def persist[A](event: A, customRoutingDestinations: Set[String] = Set())(handler: Try[A] => Unit): Unit
-    //#
-
-    //#delay-signature
-    def delay[A](command: A)(handler: A => Unit): Unit
+    def persist[A](event: A, customDestinationAggregateIds: Set[String] = Set())(handler: Try[A] => Unit): Unit
     //#
   }
 

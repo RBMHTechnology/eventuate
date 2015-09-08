@@ -48,16 +48,17 @@ object DurableEventSerializerSpec {
 
   val event = DurableEvent(
     payload = ExamplePayload("foo", "bar"),
-    systemTimestamp = 1L,
-    vectorTimestamp = VectorTime("A" -> 1L, "B" -> 2L),
     emitterId = "r",
     emitterAggregateId = Some("a"),
     customDestinationAggregateIds = Set("x", "y"),
-    sourceLogReadPosition = 22L,
-    sourceLogId = "X",
-    targetLogId = "Y",
+    systemTimestamp = 2L,
+    vectorTimestamp = VectorTime("p1" -> 1L, "p2" -> 2L),
+    persistLogId = "p4",
+    sourceLogId = "p3",
+    targetLogId = "p4",
     sourceLogSequenceNr = 17L,
-    targetLogSequenceNr = 18L)
+    targetLogSequenceNr = 18L,
+    sourceLogReadPosition = 22L)
 }
 
 class DurableEventSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
