@@ -30,9 +30,8 @@ trait MultiNodeReplicationEndpoint extends BeforeAndAfterAll { this: MultiNodeSp
   def createEndpoint(endpointId: String, connections: Set[ReplicationConnection]): ReplicationEndpoint =
     createEndpoint(endpointId, Set(logName), connections)
 
-  def createEndpoint(endpointId: String, logNames: Set[String], connections: Set[ReplicationConnection]): ReplicationEndpoint = {
+  def createEndpoint(endpointId: String, logNames: Set[String], connections: Set[ReplicationConnection]): ReplicationEndpoint =
     new ReplicationEndpoint(endpointId, logNames, id => logProps(id), connections)
-  }
 
   implicit class RichAddress(address: Address) {
     def toReplicationConnection: ReplicationConnection =
@@ -42,6 +41,9 @@ trait MultiNodeReplicationEndpoint extends BeforeAndAfterAll { this: MultiNodeSp
   implicit class RichReplicationEndpoint(endpoint: ReplicationEndpoint) {
     def log: ActorRef =
       endpoint.logs(logName)
+
+    def logId: String =
+      endpoint.logId(logName)
   }
 
   def logProps(logId: String): Props

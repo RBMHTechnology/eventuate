@@ -20,6 +20,7 @@ import akka.actor.ActorSystem
 import akka.testkit.{TestProbe, TestKit}
 
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
+import com.rbmhtechnology.eventuate.ReplicationProtocol._
 
 import com.typesafe.config._
 
@@ -53,29 +54,59 @@ class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", Even
 
   "A Cassandra event log" must {
     "fill a partition with a single batch" in {
-      writeEmittedEvents(event("a"), event("b"), event("c"), event("d"), event("e"))
+      writeEmittedEvents(List(event("a"), event("b"), event("c"), event("d"), event("e")))
       replay(1L) should be (List(("a", 1L), ("b", 2L), ("c", 3L), ("d", 4L), ("e", 5L)))
       replay(4L) should be (List(("d", 4L), ("e", 5L)))
       replay(5L) should be (List(("e", 5L)))
       replay(6L) should be (List())
     }
     "fill a partition with more than one batch" in {
-      writeEmittedEvents(event("a"), event("b"), event("c"))
-      writeEmittedEvents(event("d"), event("e"))
+      writeEmittedEvents(List(event("a"), event("b"), event("c")))
+      writeEmittedEvents(List(event("d"), event("e")))
       replay(1L) should be (List(("a", 1L), ("b", 2L), ("c", 3L), ("d", 4L), ("e", 5L)))
       replay(5L) should be (List(("e", 5L)))
       replay(6L) should be (List())
     }
     "switch to the next partition if the current partition is full" in {
-      writeEmittedEvents(event("a"), event("b"), event("c"), event("d"), event("e"))
-      writeEmittedEvents(event("f"), event("g"))
+      writeEmittedEvents(List(event("a"), event("b"), event("c"), event("d"), event("e")))
+      writeEmittedEvents(List(event("f"), event("g")))
       replay(1L) should be (List(("a", 1L), ("b", 2L), ("c", 3L), ("d", 4L), ("e", 5L), ("f", 6L), ("g", 7L)))
       replay(5L) should be (List(("e", 5L), ("f", 6L), ("g", 7L)))
       replay(6L) should be (List(("f", 6L), ("g", 7L)))
     }
     "switch to the next partition if the current partition isn't full but doesn't provide enough remaining space for a batch" in {
-      writeEmittedEvents(event("a"), event("b"), event("c"), event("d"))
-      writeEmittedEvents(event("f"), event("g"))
+      val eventsA = List(event("a"), event("b"), event("c"), event("d"))
+      val eventsB = List(event("f"), event("g"))
+
+      log ! Write(eventsA, system.deadLetters, requestorProbe.ref, 0)
+      log ! Write(eventsB, system.deadLetters, requestorProbe.ref, 0)
+
+      val expectedA = eventsA.zipWithIndex.map {
+        case (event, idx) => event.copy(
+          vectorTimestamp = timestamp(1L + idx),
+          persistLogId = logId,
+          sourceLogId = logId,
+          targetLogId = logId,
+          sourceLogSequenceNr = 1L + idx,
+          targetLogSequenceNr = 1L + idx)
+      }
+
+      val expectedB = eventsB.zipWithIndex.map {
+        case (event, idx) => event.copy(
+          vectorTimestamp = timestamp(6L + idx),
+          persistLogId = logId,
+          sourceLogId = logId,
+          targetLogId = logId,
+          sourceLogSequenceNr = 6L + idx,
+          targetLogSequenceNr = 6L + idx)
+      }
+
+      notificationProbe.expectMsg(Updated(logId, expectedA))
+      notificationProbe.expectMsg(Updated(logId, expectedB))
+
+      expectedA.foreach(event => requestorProbe.expectMsg(WriteSuccess(event, 0)))
+      expectedB.foreach(event => requestorProbe.expectMsg(WriteSuccess(event, 0)))
+
       replay(1L) should be (List(("a", 1L), ("b", 2L), ("c", 3L), ("d", 4L), ("f", 6L), ("g", 7L)))
       replay(5L) should be (List(("f", 6L), ("g", 7L)))
       replay(6L) should be (List(("f", 6L), ("g", 7L)))

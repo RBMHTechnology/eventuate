@@ -17,7 +17,6 @@
 package com.rbmhtechnology.eventuate
 
 import akka.actor._
-import akka.remote.testconductor.RoleName
 import akka.remote.testkit._
 import akka.testkit.TestProbe
 
@@ -53,7 +52,7 @@ object BasicReplicationThroughputConfig extends MultiNodeConfig {
 
   commonConfig(MultiNodeReplicationConfig.create(
     s"""
-      |akka.remote.netty.tcp.maximum-frame-size = 512000b
+      |akka.remote.netty.tcp.maximum-frame-size = 1048576b
       |
       |eventuate.log.replication.batch-size-max = 2000
       |eventuate.log.replication.retry-interval = 10s

@@ -61,7 +61,7 @@ import scala.util._
  * @see [[Cassandra]]
  * @see [[DurableEvent]]
  */
-class CassandraEventLog(val id: String) extends Actor with Stash {
+class CassandraEventLog(val id: String) extends Actor with Stash with ActorLogging {
   import CassandraEventLog._
 
   val eventStream = context.system.eventStream
@@ -70,6 +70,7 @@ class CassandraEventLog(val id: String) extends Actor with Stash {
   cassandra.createEventTable(id)
   cassandra.createAggregateEventTable(id)
 
+  private val scheduler = context.system.scheduler
   private val statement = cassandra.prepareWriteEvent(id)
 
   private val snapshotStore = new FilesystemSnapshotStore(new FilesystemSnapshotStoreSettings(context.system))
@@ -77,12 +78,14 @@ class CassandraEventLog(val id: String) extends Actor with Stash {
   private val index = createIndex(cassandra, reader, id)
   private var registry = SubscriberRegistry()
 
-  private[eventuate] val generator =
-    new SequenceNumberGenerator(cassandra.settings.partitionSizeMax)
+  private[eventuate] val sequenceManager: SequenceManager =
+    new SequenceManager(id)
+
+  import sequenceManager._
 
   def initializing: Receive = {
     case Initialize(snr) =>
-      generator.sequenceNr = snr
+      setSequenceNr(snr)
       unstashAll()
       context.become(initialized)
     case other =>
@@ -118,8 +121,8 @@ class CassandraEventLog(val id: String) extends Actor with Stash {
       }
     case Write(events, initiator, requestor, iid) =>
       val result = for {
-        partition <- Try(generator.adjustSequenceNr(events.size))
-        updated    = prepareWrite(id, events, generator.nextSequenceNr())
+        partition <- Try(adjustSequenceNr(events.size))
+        updated    = prepareWrite(events, currentSystemTime)
         _         <- Try(write(partition, updated))
       } yield updated
 
@@ -133,8 +136,8 @@ class CassandraEventLog(val id: String) extends Actor with Stash {
       }
     case r @ WriteN(writes) =>
       val result = for {
-        partition     <- Try(generator.adjustSequenceNr(r.size))
-        updatedWrites  = writes.map(w => w.copy(prepareWrite(id, w.events, generator.nextSequenceNr())))
+        partition     <- Try(adjustSequenceNr(r.size))
+        updatedWrites  = writes.map(w => w.copy(prepareWrite(w.events, currentSystemTime)))
         updatedEvents  = updatedWrites.flatMap(_.events)
         _             <- Try(write(partition, updatedEvents))
       } yield (updatedWrites, updatedEvents)
@@ -152,8 +155,8 @@ class CassandraEventLog(val id: String) extends Actor with Stash {
       index.forward(r)
     case ReplicationWrite(events, sourceLogId, lastSourceLogSequenceNrRead) =>
       val result = for {
-        partition <- Try(generator.adjustSequenceNr(events.size))
-        updated    = prepareReplicate(id, events, lastSourceLogSequenceNrRead, generator.nextSequenceNr())
+        partition <- Try(adjustSequenceNr(events.size))
+        updated    = prepareReplicate(events, lastSourceLogSequenceNrRead)
         _         <- Try(write(partition, updated))
       } yield updated
 
@@ -185,6 +188,9 @@ class CassandraEventLog(val id: String) extends Actor with Stash {
   override def receive =
     initializing
 
+  private[eventuate] def currentSystemTime: Long =
+    System.currentTimeMillis
+
   private[eventuate] def createReader(cassandra: Cassandra, logId: String) =
     new CassandraEventReader(cassandra, logId)
 
@@ -199,14 +205,47 @@ class CassandraEventLog(val id: String) extends Actor with Stash {
     if (events.nonEmpty) eventStream.publish(Updated(id, events))
 
   private def requestIndexUpdate(): Unit =
-    if (generator.sequenceNrUpdates >= cassandra.settings.indexUpdateLimit) {
+    if (currentSequenceNrUpdates >= cassandra.settings.indexUpdateLimit) {
       index ! CassandraIndex.UpdateIndex()
-      generator.resetSequenceNumberUpdates()
+      resetSequenceNrUpdates()
     }
+
+  private def adjustSequenceNr(batchSize: Long, maxBatchSize: Long = cassandra.settings.partitionSizeMax): Long = { // move to Cassandra
+    require(batchSize <= maxBatchSize, s"write batch size (${batchSize}) must not be greater than maximum partition size (${maxBatchSize})")
+
+    val currentPartition = partitionOf(currentSequenceNr, maxBatchSize)
+    val remainingPartitionSize = partitionSize(currentSequenceNr, maxBatchSize)
+    if (remainingPartitionSize < batchSize) {
+      advanceSequenceNr(remainingPartitionSize)
+      currentPartition + 1L
+    } else {
+      currentPartition
+    }
+  }
 }
 
 object CassandraEventLog {
   private[eventuate] case class Initialize(sequenceNr: Long)
+
+  /**
+   * Partition number for given `sequenceNr`.
+   */
+  def partitionOf(sequenceNr: Long, partitionSizeMax: Long): Long =
+    if (sequenceNr == 0L) -1L else (sequenceNr - 1L) / partitionSizeMax
+
+  /**
+   * Remaining partition size given the current `sequenceNr`.
+   */
+  def partitionSize(sequenceNr: Long, partitionSizeMax: Long): Long = {
+    val m = sequenceNr % partitionSizeMax
+    if (m == 0L) m else partitionSizeMax - m
+  }
+
+  /**
+   * First sequence number of given `partition`.
+   */
+  def firstSequenceNr(partition: Long, partitionSizeMax: Long): Long =
+    partition * partitionSizeMax + 1L
 
   /**
    * Creates a [[CassandraEventLog]] configuration object.

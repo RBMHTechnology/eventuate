@@ -68,11 +68,11 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
       unstashAll()
       onIndexEvent(u)
     case u @ UpdateIndexFailure(cause) =>
-      log.error(cause, "UpdateIndex failure")
+      log.error(cause, "UpdateIndex failure. Retry ...")
       scheduleReadSequenceNr()
       onIndexEvent(u)
     case r @ ReadSequenceNrFailure(cause) =>
-      log.error(cause, "ReadSequenceNr failed")
+      log.error(cause, "ReadSequenceNr failed. Retry ...")
       scheduleReadSequenceNr()
       onIndexEvent(r)
     case other =>

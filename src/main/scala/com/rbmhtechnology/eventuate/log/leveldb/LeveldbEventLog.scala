@@ -56,8 +56,8 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor {
   private val leveldbWriteOptions = new WriteOptions().sync(leveldbSettings.fsync).snapshot(false)
   private def leveldbReadOptions = new ReadOptions().verifyChecksums(false)
 
-  private val leveldbDir = new File(leveldbSettings.rootDir, s"${prefix}-${id}"); leveldbDir.mkdirs()
-  private val leveldb = factory.open(leveldbDir, leveldbOptions)
+  private[eventuate] val leveldbDir = new File(leveldbSettings.rootDir, s"${prefix}-${id}"); leveldbDir.mkdirs()
+  private[eventuate] val leveldb = factory.open(leveldbDir, leveldbOptions)
 
   private var registry = SubscriberRegistry()
   private var replicated: Map[String, Long] = Map.empty
@@ -69,8 +69,10 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor {
   private[eventuate] val replicationProgressMap =
     new ReplicationProgressMap(leveldb, -3, eventLogIdMap.numericId)
 
-  private[eventuate] val generator =
-    new SequenceNumberGenerator(Long.MaxValue)
+  private[eventuate] val sequenceManager: SequenceManager =
+    new SequenceManager(id)
+
+  import sequenceManager._
 
   final def receive = {
     case GetLastSourceLogReadPosition(sourceLogId) =>
@@ -108,7 +110,7 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor {
           eventStream.publish(r)
       }
     case Write(events, initiator, requestor, iid) =>
-      val updated = prepareWrite(id, events, generator.nextSequenceNr())
+      val updated = prepareWrite(events, currentSystemTime)
 
       Try(write(updated)) match {
         case Success(_) =>
@@ -118,7 +120,7 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor {
           registry.pushWriteFailure(events, initiator, requestor, iid, e)
       }
     case WriteN(writes) =>
-      val updatedWrites = writes.map(w => w.copy(events = prepareWrite(id, w.events, generator.nextSequenceNr())))
+      val updatedWrites = writes.map(w => w.copy(events = prepareWrite(w.events, currentSystemTime)))
       val updatedEvents = updatedWrites.flatMap(_.events)
 
       Try(withBatch(batch => write(updatedEvents, batch))) match {
@@ -130,7 +132,7 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor {
       }
       sender() ! WriteNComplete // notify batch layer that write completed
     case ReplicationWrite(events, sourceLogId, lastSourceLogSequenceNrRead) =>
-      val updated = prepareReplicate(id, events, lastSourceLogSequenceNrRead, generator.nextSequenceNr())
+      val updated = prepareReplicate(events, lastSourceLogSequenceNrRead)
 
       Try {
         withBatch { batch =>
@@ -162,6 +164,9 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor {
       registry = registry.unregisterSubscriber(requestor)
   }
 
+  def currentSystemTime: Long =
+    System.currentTimeMillis
+
   def publishUpdateNotification(events: Seq[DurableEvent] = Seq()): Unit =
     if (events.nonEmpty) eventStream.publish(Updated(id, events))
 
@@ -171,7 +176,6 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor {
   def write(events: Seq[DurableEvent], batch: WriteBatch): Unit = events.foreach { event =>
     val sequenceNr = event.sequenceNr
     val eventBytes = this.eventBytes(event)
-
     batch.put(counterKeyBytes, longBytes(sequenceNr))
     batch.put(eventKeyBytes(EventKey.DefaultClassifier, sequenceNr), eventBytes)
     event.destinationAggregateIds.foreach { id => // additionally index events by aggregate id
@@ -250,8 +254,8 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor {
     withIterator(iter => eventLogIdMap.readIdMap(iter))
     leveldb.put(eventKeyEndBytes, Array.empty[Byte])
     leveldb.get(counterKeyBytes) match {
-      case null => generator.sequenceNr = 0L
-      case cval => generator.sequenceNr = longFromBytes(cval)
+      case null => setSequenceNr(0L)
+      case cval => setSequenceNr(longFromBytes(cval))
     }
   }
 

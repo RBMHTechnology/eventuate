@@ -22,8 +22,11 @@ class VectorClockSpec extends WordSpec with Matchers with BeforeAndAfterEach {
   var clock: VectorClock = _
 
   override protected def beforeEach(): Unit = {
-    clock = VectorClock("test")
+    clock = VectorClock("p1")
   }
+
+  def vectorTime(t1: Long = 0L, t2: Long = 0L, t3: Long = 0L, t4: Long = 0L): VectorTime =
+    VectorTime(clock.processId -> t1, "p2" -> t2, "p3" -> t3, "p4" -> t4)
 
   "A vector clock" must {
     "increment local time on tick" in {
@@ -34,15 +37,25 @@ class VectorClockSpec extends WordSpec with Matchers with BeforeAndAfterEach {
     }
     "update itself with tick and merge" in {
       clock
-        .copy(currentTime =    VectorTime(clock.processId -> 3L, "p2" -> 1L, "p3" -> 2L))
-        .update(               VectorTime(clock.processId -> 1L,             "p3" -> 2L, "p4" -> 8L))
-        .currentTime should be(VectorTime(clock.processId -> 4L, "p2" -> 1L, "p3" -> 2L, "p4" -> 8L))
+        .copy(currentTime = vectorTime(3, 1, 2, 0))
+        .update(vectorTime(1, 0, 2, 8))
+        .currentTime should be(vectorTime(4, 1, 2, 8))
     }
     "not modify remote times on tick" in {
       clock
-        .copy(currentTime =    VectorTime(clock.processId -> 3L, "p2" -> 1L, "p3" -> 2L))
+        .copy(currentTime = vectorTime(3, 1, 2))
         .tick()
-        .currentTime should be(VectorTime(clock.processId -> 4L, "p2" -> 1L, "p3" -> 2L))
+        .currentTime should be(vectorTime(4, 1, 2))
+    }
+    "be able to tell whether it agrees with a sender process about states of all other processes" in {
+      clock.covers(vectorTime(1, 0, 0), "p1") should be(true)
+      clock.covers(vectorTime(0, 1, 0), "p2") should be(true)
+      clock.covers(vectorTime(0, 1, 1), "p2") should be(false)
+
+      clock.update(vectorTime(0, 0, 1))
+        .covers(vectorTime(0, 1, 1), "p2") should be(true)
+      clock.update(vectorTime(0, 0, 1))
+        .covers(vectorTime(0, 1, 2), "p2") should be(false)
     }
   }
 }

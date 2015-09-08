@@ -107,3 +107,11 @@ private[eventuate] object NoFilter extends ReplicationFilter {
    */
   def apply(event: DurableEvent): Boolean = true
 }
+
+/**
+ * Replication filter that evaluates to `true` for non-replicated events.
+ */
+private[eventuate] case object NonReplicatedFilter extends ReplicationFilter {
+  def apply(event: DurableEvent): Boolean =
+    !event.replicated
+}

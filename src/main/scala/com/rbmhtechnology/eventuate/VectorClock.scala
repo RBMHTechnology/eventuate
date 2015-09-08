@@ -35,7 +35,7 @@ case class VectorClock(processId: String, currentTime: VectorTime = VectorTime()
     currentTime.localTime(processId)
 
   /**
-   * Updates current time with `t` (tick and merge).
+   * Updates current time with `t` (single tick and merge).
    */
   def update(t: VectorTime): VectorClock =
     tick().merge(t)
@@ -47,16 +47,37 @@ case class VectorClock(processId: String, currentTime: VectorTime = VectorTime()
     copy(processId, currentTime.merge(t))
 
   /**
-   * Advances local time by a single tick.
+   * Advances local time by a single `count` ticks.
    */
   def tick(): VectorClock =
-    copy(processId, currentTime.increase(processId))
+    copy(processId, currentTime.increment(processId))
+
+  /**
+   * Checks whether the owner process is in agreement with an emitter process about
+   * the state of all other processes contained in `emitterTime`. Return `false` if the
+   * emitter process has seen one or more events that the owner process hasn't seen,
+   * `true` otherwise.
+   *
+   * @param emitterTimestamp vector time of the emitter process.
+   * @param emitterProcessId id of the emitter process.
+   */
+  def covers(emitterTimestamp: VectorTime, emitterProcessId: String): Boolean =
+    !emitterTimestamp.value.exists {
+      case (pid, time) if pid != processId && pid != emitterProcessId => currentTime.localTime(pid) < time
+      case _ => false
+    }
 }
 
 /**
  * Vector time, represented as ''process id'' -> ''logical time'' map.
  */
 case class VectorTime(value: Map[String, Long] = Map.empty) {
+  /**
+   * Sets the local time of `processId`.
+   */
+  def setLocalTime(processId: String, localTime: Long): VectorTime =
+    copy(value.updated(processId, localTime))
+
   /**
    * Returns the local time of `processId`.
    */
@@ -72,11 +93,11 @@ case class VectorTime(value: Map[String, Long] = Map.empty) {
   }
 
   /**
-   * Increases local time of given `processId` by `1L`.
+   * Increments local time of given `processId` by `count`.
    */
-  def increase(processId: String): VectorTime = value.get(processId) match {
-    case Some(v) => copy(value + (processId -> (v + 1)))
-    case None    => copy(value + (processId -> 1))
+  def increment(processId: String): VectorTime = value.get(processId) match {
+    case Some(v) => copy(value + (processId -> (v + 1L)))
+    case None    => copy(value + (processId -> 1L))
   }
 
   /**
@@ -96,7 +117,7 @@ case class VectorTime(value: Map[String, Long] = Map.empty) {
    * Returns `true` if this vector time is concurrent to `that`.
    */
   def conc(that: VectorTime)(implicit ordering: PartialOrdering[VectorTime]): Boolean =
-    ordering.tryCompare(this, that) == None
+    ordering.tryCompare(this, that).isEmpty
 
   /**
    * Returns `true` if this vector time is less than or equal to `that`.
