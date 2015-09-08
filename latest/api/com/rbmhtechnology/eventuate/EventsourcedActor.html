@@ -48,16 +48,13 @@
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>An <code>EventsourcedActor</code> is an <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that can also produce (= emit) new events to its
-event log. New events can be produced with methods <code>persist</code>, <code>persistN</code> and <code>persistWithLocalTime</code>.
-They must only be used within the <code>onCommand</code> command handler. The command handler may only read
-internal state but must not modify it. Internal state may only be modified within <code>onEvent</code>.</p><p>An <code>EventsourcedActor</code> maintains a <a href="VectorClock.html" class="extype" name="com.rbmhtechnology.eventuate.VectorClock">VectorClock</a> used to time-stamp the events it emits
-to the event log. Events that are handled by its event handler update the vector clock.
-Events that are pushed from the <code>eventLog</code> actor but not handled by <code>onEvent</code> do not
-update the vector clock.
+event log. New events can be emitted with methods <code>persist</code> and <code>persistN</code>. They must only be used
+within the <code>onCommand</code> command handler. The command handler may only read internal state but must
+not modify it. Internal state may only be modified within <code>onEvent</code>.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
 </p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.InternalStash">InternalStash</span>, <span class="extype" name="akka.actor.StashFactory">StashFactory</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
             <span class="toggle">Known Subclasses</span>
             <div class="subClasses hiddenContent"><a href="AbstractEventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor">AbstractEventsourcedActor</a>, <a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a></div>
@@ -78,7 +75,7 @@ update the vector clock.
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.EventsourcedActor"><span>EventsourcedActor</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.ActorLogging"><span>ActorLogging</span></li><li class="in" name="akka.actor.InternalStash"><span>InternalStash</span></li><li class="in" name="akka.actor.StashFactory"><span>StashFactory</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="com.rbmhtechnology.eventuate.ConditionalCommands"><span>ConditionalCommands</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.EventsourcedActor"><span>EventsourcedActor</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.ActorLogging"><span>ActorLogging</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="com.rbmhtechnology.eventuate.ConditionalCommands"><span>ConditionalCommands</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -431,29 +428,6 @@ is defined it will only receive events with a matching aggregate id in
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#delay" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="delay[A](command:A)(handler:A=&gt;Unit):Unit"></a>
-      <a id="delay[A](A)((A)⇒Unit):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">delay</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="command">command: <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.delay.A">A</span></span>)</span><span class="params">(<span name="handler">handler: (<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.delay.A">A</span>) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@delay[A](command:A)(handler:A=&gt;Unit):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Delays handling of <code>command</code> to that point in the future where all previously called <code>persist</code>
-or <code>persistN</code> operations completed.</p><div class="fullcomment"><div class="comment cmt"><p>Delays handling of <code>command</code> to that point in the future where all previously called <code>persist</code>
-or <code>persistN</code> operations completed. Therefore, using this method only makes sense if <code>stateSync</code>
-is set to <code>false</code>. The <code>handler</code> is called during a separate message dispatch by this actor,
-hence, it is safe to access internal state within <code>handler</code>.
-</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="ConditionalCommand.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommand">ConditionalCommand</a>
-</p></span></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -562,60 +536,6 @@ hence, it is safe to access internal state within <code>handler</code>.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="akka.actor.InternalStash#internalStash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="internalStash():Unit"></a>
-      <a id="internalStash():Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">internalStash</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@internalStash():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Internal API.</p><div class="fullcomment"><div class="comment cmt"><p>Internal API.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>InternalStash</dd></dl></div>
-    </li><li name="akka.actor.InternalStash#internalUnstash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="internalUnstash():Unit"></a>
-      <a id="internalUnstash():Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">internalUnstash</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@internalUnstash():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Internal API.</p><div class="fullcomment"><div class="comment cmt"><p>Internal API.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>InternalStash</dd></dl></div>
-    </li><li name="akka.actor.InternalStash#internalUnstashAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="internalUnstashAll():Unit"></a>
-      <a id="internalUnstashAll():Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">internalUnstashAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@internalUnstashAll():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Internal API.</p><div class="fullcomment"><div class="comment cmt"><p>Internal API.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>InternalStash</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -722,25 +642,6 @@ hence, it is safe to access internal state within <code>handler</code>.
       </a>
     </span>
       <p class="shortcomment cmt">Vector timestamp of the last handled event.</p><div class="fullcomment"><div class="comment cmt"><p>Vector timestamp of the last handled event.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#load" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="load():Unit"></a>
-      <a id="load():Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">load</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@load():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Sends a <a href="EventsourcingProtocol$$LoadSnapshot.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.LoadSnapshot">LoadSnapshot</a> command to the event log.</p><div class="fullcomment"><div class="comment cmt"><p>Sends a <a href="EventsourcingProtocol$$LoadSnapshot.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.LoadSnapshot">LoadSnapshot</a> command to the event log.
-Can be overridden by implementations to customize snapshot loading.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="akka.actor.ActorLogging#log" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="log:akka.event.LoggingAdapter"></a>
@@ -897,33 +798,6 @@ If this actor's <code>aggregateId</code> is defined it is additionally routed to
 <code>aggregateId</code>. Further routing destinations can be defined with the <code>customDestinationAggregateIds</code>
 parameter.
 </p></div></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#persistWithLocalTime" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="persistWithLocalTime[A](f:Long=&gt;A,customDestinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):A"></a>
-      <a id="persistWithLocalTime[A]((Long)⇒A,Set[String])(Handler[A]):A"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">persistWithLocalTime</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="scala.Long">Long</span>) ⇒ <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistWithLocalTime.A">A</span></span>, <span name="customDestinationAggregateIds">customDestinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistWithLocalTime.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistWithLocalTime.A">A</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@persistWithLocalTime[A](f:Long=&gt;A,customDestinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):A" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Asynchronously persists the event returned by  <code>f</code> and calls <code>handler</code> with the persist
-result.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously persists the event returned by  <code>f</code> and calls <code>handler</code> with the persist
-result. The input parameter to <code>f</code> is the current local time which is the actor's logical
-time, taken from its internal vector clock, and not the current system time. The <code>handler</code>
-is called during a separate message dispatch by this actor, hence, it is safe to modify
-internal state within <code>handler</code>. The <code>handler</code> can also obtain a reference to the initial
-command sender via <code>sender()</code>.</p><p>By default, the event is routed to event-sourced destinations with an undefined <code>aggregateId</code>.
-If this actor's <code>aggregateId</code> is defined it is additionally routed to all actors with the same
-<code>aggregateId</code>. Further routing destinations can be defined with the <code>customDestinationAggregateIds</code>
-parameter.
-</p></div></div>
     </li><li name="akka.actor.Actor#postRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="postRestart(reason:Throwable):Unit"></a>
       <a id="postRestart(Throwable):Unit"></a>
@@ -947,7 +821,7 @@ parameter.
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="akka.actor.InternalStash#postStop" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#postStop" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="postStop():Unit"></a>
       <a id="postStop():Unit"></a>
       <h4 class="signature">
@@ -963,8 +837,9 @@ parameter.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>InternalStash → UnrestrictedStash → Actor</dd></dl></div>
-    </li><li name="akka.actor.InternalStash#preRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <p class="shortcomment cmt">Unstashes all commands from internal stash and calls <code>super.postStop</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Unstashes all commands from internal stash and calls <code>super.postStop</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → UnrestrictedStash → Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#preRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="preRestart(reason:Throwable,message:Option[Any]):Unit"></a>
       <a id="preRestart(Throwable,Option[Any]):Unit"></a>
       <h4 class="signature">
@@ -980,8 +855,9 @@ parameter.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>InternalStash → UnrestrictedStash → Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#preStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <p class="shortcomment cmt">Unstashes all commands from internal stash and calls <code>super.preRestart</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Unstashes all commands from internal stash and calls <code>super.preRestart</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → UnrestrictedStash → Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#preStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="preStart():Unit"></a>
       <a id="preStart():Unit"></a>
       <h4 class="signature">
@@ -997,8 +873,8 @@ parameter.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Initiates recovery by calling <a href="#load():Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor#load">load</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Initiates recovery by calling <a href="#load():Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor#load">load</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
+      <p class="shortcomment cmt">Initiates recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Initiates recovery.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="receive:EventsourcedView.this.Receive"></a>
       <a id="receive:Receive"></a>
@@ -1037,25 +913,6 @@ parameter.
 replayed events from the event log.</p><div class="fullcomment"><div class="comment cmt"><p>Returns <code>true</code> if this actor is currently recovering internal state by consuming
 replayed events from the event log. Returns <code>false</code> after recovery completed and
 the actor switches to consuming live events.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#replay" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="replay(fromSequenceNr:Long):Unit"></a>
-      <a id="replay(Long):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">replay</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">1L</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@replay(fromSequenceNr:Long):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Sends a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">Replay</a> command to the event log.</p><div class="fullcomment"><div class="comment cmt"><p>Sends a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">Replay</a> command to the event log. Can be overridden
-by implementations to customize replay.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#save" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit"></a>
@@ -1145,12 +1002,10 @@ sender via <code>sender()</code>.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">State synchronization.</p><div class="fullcomment"><div class="comment cmt"><p>State synchronization. If set to <code>true</code>, commands see internal state that is
-consistent with the event log. This is achieved by stashing new commands if this actor
-is currently writing events.</p><p>If set to <code>false</code>, commands see internal state that might be stale. To see state updates
-from any previously persisted events, applications can <code>delay</code> these commands. In this mode,
-commands are not stashed and events can be batched for write which significantly increases
-write throughput.
+      <p class="shortcomment cmt">State synchronization.</p><div class="fullcomment"><div class="comment cmt"><p>State synchronization. If set to <code>true</code>, commands see internal state that is consistent
+with the event log. This is achieved by stashing new commands if this actor is currently
+writing events. If set to <code>false</code>, commands see internal state that is eventually
+consistent with the event log.
 </p></div></div>
     </li><li name="akka.actor.Actor#supervisorStrategy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="supervisorStrategy:akka.actor.SupervisorStrategy"></a>
@@ -1319,10 +1174,6 @@ write throughput.
               <h3>Inherited from <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></h3>
             </div><div class="parent" name="akka.actor.ActorLogging">
               <h3>Inherited from <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></h3>
-            </div><div class="parent" name="akka.actor.InternalStash">
-              <h3>Inherited from <span class="extype" name="akka.actor.InternalStash">InternalStash</span></h3>
-            </div><div class="parent" name="akka.actor.StashFactory">
-              <h3>Inherited from <span class="extype" name="akka.actor.StashFactory">StashFactory</span></h3>
             </div><div class="parent" name="akka.actor.Stash">
               <h3>Inherited from <span class="extype" name="akka.actor.Stash">Stash</span></h3>
             </div><div class="parent" name="akka.dispatch.RequiresMessageQueue">

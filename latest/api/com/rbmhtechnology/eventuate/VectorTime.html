@@ -364,23 +364,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.VectorTime#increase" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="increase(processId:String):com.rbmhtechnology.eventuate.VectorTime"></a>
-      <a id="increase(String):VectorTime"></a>
+    </li><li name="com.rbmhtechnology.eventuate.VectorTime#increment" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="increment(processId:String):com.rbmhtechnology.eventuate.VectorTime"></a>
+      <a id="increment(String):VectorTime"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">increase</span><span class="params">(<span name="processId">processId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
+        <span class="name">increment</span><span class="params">(<span name="processId">processId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VectorTime@increase(processId:String):com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VectorTime@increment(processId:String):com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Increases local time of given <code>processId</code> by <code>1L</code>.</p>
+      <p class="shortcomment cmt">Increments local time of given <code>processId</code> by <code>count</code>.</p>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -501,6 +501,23 @@ the corresponding local times.</p>
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.VectorTime#setLocalTime" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setLocalTime(processId:String,localTime:Long):com.rbmhtechnology.eventuate.VectorTime"></a>
+      <a id="setLocalTime(String,Long):VectorTime"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setLocalTime</span><span class="params">(<span name="processId">processId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="localTime">localTime: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VectorTime@setLocalTime(processId:String,localTime:Long):com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Sets the local time of <code>processId</code>.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

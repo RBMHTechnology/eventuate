@@ -173,7 +173,7 @@
             
   <div class="section" id="current-limitations">
 <span id="id1"></span><h1>Current limitations<a class="headerlink" href="#current-limitations" title="Permalink to this headline">¶</a></h1>
-<p>The following is a list of known limitations that are going to be addressed in future versions. If any of these limitations are particularly painful to you, please <a class="reference external" href="https://groups.google.com/forum/#!forum/eventuate">let us know</a> so that we can target them accordingly.</p>
+<p>The following is a list of known limitations that are going to be addressed in future versions. If some of these limitations are particularly painful to you, please <a class="reference external" href="https://groups.google.com/forum/#!forum/eventuate">let us know</a> so that we can target them accordingly.</p>
 <ul>
 <li><p class="first">The current version of Eventuate does not support cycles in the replication network<a class="footnote-reference" href="#id3" id="id2">[1]</a>. An example of a valid replication network topology is:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">A</span>        <span class="n">E</span>
@@ -196,7 +196,7 @@
 </li>
 <li><p class="first">The storage plugin API is not public yet. Applications can currently choose between a <a class="reference external" href="https://github.com/google/leveldb">LevelDB</a> and <a class="reference external" href="http://cassandra.apache.org/">Cassandra</a> storage backend. The drivers for these backends are packaged with Eventuate and section <a class="reference internal" href="reference/event-log.html#event-log"><span>Event log</span></a> describes their usage.</p>
 </li>
-<li><p class="first"><a class="reference internal" href="reference/event-sourcing.html#snapshots"><span>Snapshots</span></a> are written to the local filesystem at the moment. Applications that need to share snapshots across nodes should consider storing them on NFS or replicate stored snapshots with <code class="docutils literal"><span class="pre">rsync</span></code>, for example. Saving smaller snapshots to replicated event log storage backends might also be an option for later releases.</p>
+<li><p class="first"><a class="reference internal" href="reference/event-sourcing.html#snapshots"><span>Snapshots</span></a> are written to the local filesystem at the moment. Applications that need to share snapshots across nodes should consider storing them on NFS or replicate them with <code class="docutils literal"><span class="pre">rsync</span></code>, for example.</p>
 </li>
 <li><p class="first">No performance optimizations have been made yet.</p>
 </li>
@@ -204,7 +204,7 @@
 <table class="docutils footnote" frame="void" id="id3" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>In the example figures, a line between two locations represents a bi-directional replication link. Such a link is not considered to be a cycle here.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>In the example figures, a line between two locations represents a bi-directional replication link. Such a link is not considered to be a cycle.</td></tr>
 </tbody>
 </table>
 </div>

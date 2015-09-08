@@ -43,14 +43,13 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">SnapshotMetadata</span><span class="params">(<span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">SnapshotMetadata</span><span class="params">(<span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Snapshot metadata.
-</p></div><dl class="paramcmts block"><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that saves the snapshot.</p></dd><dt class="param">sequenceNr</dt><dd class="cmt"><p>The latest event sequence number covered by the snapshot.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>The latest event system timestamp covered by the snapshot.</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>The latest event vector timestamp covered by the snapshot.
-</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html#lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastVectorTimestamp">EventsourcedView#lastVectorTimestamp</a>
-</p></span><span class="cmt"><p><a href="EventsourcedView.html#lastSystemTimestamp:Long" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastSystemTimestamp">EventsourcedView#lastSystemTimestamp</a></p></span><span class="cmt"><p><a href="EventsourcedView.html#lastSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastSequenceNr">EventsourcedView#lastSequenceNr</a></p></span></dd></dl><div class="toggleContainer block">
+</p></div><dl class="paramcmts block"><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that saves the snapshot.</p></dd><dt class="param">sequenceNr</dt><dd class="cmt"><p>The highest event sequence number covered by the snapshot.
+</p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -91,7 +90,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.SnapshotMetadata#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(emitterId:String,sequenceNr:Long,systemTimestamp:Long,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.SnapshotMetadata"></a>
+      <a id="&lt;init&gt;(emitterId:String,sequenceNr:Long):com.rbmhtechnology.eventuate.SnapshotMetadata"></a>
       <a id="&lt;init&gt;:SnapshotMetadata"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -99,14 +98,14 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">SnapshotMetadata</span><span class="params">(<span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span>
+        <span class="name">SnapshotMetadata</span><span class="params">(<span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@&lt;init&gt;(emitterId:String,sequenceNr:Long,systemTimestamp:Long,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.SnapshotMetadata" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@&lt;init&gt;(emitterId:String,sequenceNr:Long):com.rbmhtechnology.eventuate.SnapshotMetadata" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that saves the snapshot.</p></dd><dt class="param">sequenceNr</dt><dd class="cmt"><p>The latest event sequence number covered by the snapshot.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>The latest event system timestamp covered by the snapshot.</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>The latest event vector timestamp covered by the snapshot.
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that saves the snapshot.</p></dd><dt class="param">sequenceNr</dt><dd class="cmt"><p>The highest event sequence number covered by the snapshot.
 </p></dd></dl></div>
     </li></ol>
             </div>
@@ -366,7 +365,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">The latest event sequence number covered by the snapshot.</p>
+      <p class="shortcomment cmt">The highest event sequence number covered by the snapshot.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -384,40 +383,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.SnapshotMetadata#systemTimestamp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="systemTimestamp:Long"></a>
-      <a id="systemTimestamp:Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">systemTimestamp</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@systemTimestamp:Long" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">The latest event system timestamp covered by the snapshot.</p>
-    </li><li name="com.rbmhtechnology.eventuate.SnapshotMetadata#vectorTimestamp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime"></a>
-      <a id="vectorTimestamp:VectorTime"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">vectorTimestamp</span><span class="result">: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.SnapshotMetadata@vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">The latest event vector timestamp covered by the snapshot.</p>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

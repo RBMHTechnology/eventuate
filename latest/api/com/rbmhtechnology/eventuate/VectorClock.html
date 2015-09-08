@@ -207,6 +207,29 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.VectorClock#covers" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="covers(emitterTimestamp:com.rbmhtechnology.eventuate.VectorTime,emitterProcessId:String):Boolean"></a>
+      <a id="covers(VectorTime,String):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">covers</span><span class="params">(<span name="emitterTimestamp">emitterTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="emitterProcessId">emitterProcessId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VectorClock@covers(emitterTimestamp:com.rbmhtechnology.eventuate.VectorTime,emitterProcessId:String):Boolean" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Checks whether the owner process is in agreement with an emitter process about
+the state of all other processes contained in <code>emitterTime</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Checks whether the owner process is in agreement with an emitter process about
+the state of all other processes contained in <code>emitterTime</code>. Return <code>false</code> if the
+emitter process has seen one or more events that the owner process hasn't seen,
+<code>true</code> otherwise.
+</p></div><dl class="paramcmts block"><dt class="param">emitterTimestamp</dt><dd class="cmt"><p>vector time of the emitter process.</p></dd><dt class="param">emitterProcessId</dt><dd class="cmt"><p>id of the emitter process.
+</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.VectorClock#currentLocalTime" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="currentLocalTime():Long"></a>
       <a id="currentLocalTime():Long"></a>
@@ -433,7 +456,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Advances local time by a single tick.</p>
+      <p class="shortcomment cmt">Advances local time by a single <code>count</code> ticks.</p>
     </li><li name="com.rbmhtechnology.eventuate.VectorClock#update" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="update(t:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.VectorClock"></a>
       <a id="update(VectorTime):VectorClock"></a>
@@ -450,7 +473,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Updates current time with <code>t</code> (tick and merge).</p>
+      <p class="shortcomment cmt">Updates current time with <code>t</code> (single tick and merge).</p>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

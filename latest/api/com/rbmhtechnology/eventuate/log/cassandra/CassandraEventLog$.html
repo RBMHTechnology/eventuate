@@ -241,6 +241,23 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#firstSequenceNr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="firstSequenceNr(partition:Long,partitionSizeMax:Long):Long"></a>
+      <a id="firstSequenceNr(Long,Long):Long"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">firstSequenceNr</span><span class="params">(<span name="partition">partition: <span class="extype" name="scala.Long">Long</span></span>, <span name="partitionSizeMax">partitionSizeMax: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog$@firstSequenceNr(partition:Long,partitionSizeMax:Long):Long" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">First sequence number of given <code>partition</code>.</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -343,6 +360,40 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#partitionOf" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="partitionOf(sequenceNr:Long,partitionSizeMax:Long):Long"></a>
+      <a id="partitionOf(Long,Long):Long"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">partitionOf</span><span class="params">(<span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="partitionSizeMax">partitionSizeMax: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog$@partitionOf(sequenceNr:Long,partitionSizeMax:Long):Long" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Partition number for given <code>sequenceNr</code>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#partitionSize" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="partitionSize(sequenceNr:Long,partitionSizeMax:Long):Long"></a>
+      <a id="partitionSize(Long,Long):Long"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">partitionSize</span><span class="params">(<span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="partitionSizeMax">partitionSizeMax: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog$@partitionSize(sequenceNr:Long,partitionSizeMax:Long):Long" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Remaining partition size given the current <code>sequenceNr</code>.</p>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#props" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="props(logId:String,batching:Boolean):akka.actor.Props"></a>
       <a id="props(String,Boolean):Props"></a>

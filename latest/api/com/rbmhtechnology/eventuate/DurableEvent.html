@@ -43,16 +43,18 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">DurableEvent</span><span class="params">(<span name="payload">payload: <span class="extype" name="scala.Any">Any</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="emitterAggregateId">emitterAggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="customDestinationAggregateIds">customDestinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>, <span name="sourceLogReadPosition">sourceLogReadPosition: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="sourceLogSequenceNr">sourceLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>, <span name="targetLogSequenceNr">targetLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">DurableEvent</span><span class="params">(<span name="payload">payload: <span class="extype" name="scala.Any">Any</span></span>, <span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="emitterAggregateId">emitterAggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="customDestinationAggregateIds">customDestinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a> = <span class="symbol"><span class="name"><a href="VectorTime$.html">VectorTime()</a></span></span></span>, <span name="persistLogId">persistLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="sourceLogSequenceNr">sourceLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>, <span name="targetLogSequenceNr">targetLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>, <span name="sourceLogReadPosition">sourceLogReadPosition: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Provider API.</p><p>Event storage format.
-</p></div><dl class="paramcmts block"><dt class="param">payload</dt><dd class="cmt"><p>Custom, application-defined event.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>Wall-clock timestamp, generated by emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>Vector timestamp, generated by emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>Id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">emitterAggregateId</dt><dd class="cmt"><p>Aggregate id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>). This is also the default routing destination
+</p></div><dl class="paramcmts block"><dt class="param">payload</dt><dd class="cmt"><p>Application-defined event.</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>Id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">emitterAggregateId</dt><dd class="cmt"><p>Aggregate id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>). This is also the default routing destination
                           of this event. If defined, the event is routed to event-sourced actors or views with a matching
                           <code>aggregateId</code>. In any case, the event is routed to event-sourced actors and views with an
                           undefined <code>aggregateId</code>.</p></dd><dt class="param">customDestinationAggregateIds</dt><dd class="cmt"><p>Aggregate ids of additional, custom routing destinations. If non-empty, the event is
-                                     additionally routed to event-sourced actors and views with a matching <code>aggregateId</code>.</p></dd><dt class="param">sourceLogReadPosition</dt><dd class="cmt"><p>Highest source log read position from last replication.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Source log id from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></dd><dt class="param">targetLogId</dt><dd class="cmt"><p>Target log id from last replication.</p></dd><dt class="param">sourceLogSequenceNr</dt><dd class="cmt"><p>Source log sequence number from last replication.</p></dd><dt class="param">targetLogSequenceNr</dt><dd class="cmt"><p>Target log sequence number.
+                                     additionally routed to event-sourced actors and views with a matching <code>aggregateId</code>.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>Wall-clock timestamp, generated by the log that initially persisted the emitted event. The id of
+                       that log is <code>persistLogId</code>.</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>Vector timestamp, generated by the log that initially persisted the emitted event. The id of
+                       that log is <code>persistLogId</code>.</p></dd><dt class="param">persistLogId</dt><dd class="cmt"><p>Id of the log to which the emitted event has been initially written.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Id of the source log from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></dd><dt class="param">targetLogId</dt><dd class="cmt"><p>Id of the target log from last replication.</p></dd><dt class="param">sourceLogSequenceNr</dt><dd class="cmt"><p>Sequence number in source log from last replication.</p></dd><dt class="param">targetLogSequenceNr</dt><dd class="cmt"><p>Sequence number in target log from last replication.</p></dd><dt class="param">sourceLogReadPosition</dt><dd class="cmt"><p>Highest source log read position from last replication.
 </p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -94,7 +96,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.DurableEvent#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(payload:Any,systemTimestamp:Long,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime,emitterId:String,emitterAggregateId:Option[String],customDestinationAggregateIds:Set[String],sourceLogReadPosition:Long,sourceLogId:String,targetLogId:String,sourceLogSequenceNr:Long,targetLogSequenceNr:Long):com.rbmhtechnology.eventuate.DurableEvent"></a>
+      <a id="&lt;init&gt;(payload:Any,emitterId:String,emitterAggregateId:Option[String],customDestinationAggregateIds:Set[String],systemTimestamp:Long,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime,persistLogId:String,sourceLogId:String,targetLogId:String,sourceLogSequenceNr:Long,targetLogSequenceNr:Long,sourceLogReadPosition:Long):com.rbmhtechnology.eventuate.DurableEvent"></a>
       <a id="&lt;init&gt;:DurableEvent"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -102,18 +104,20 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">DurableEvent</span><span class="params">(<span name="payload">payload: <span class="extype" name="scala.Any">Any</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="emitterAggregateId">emitterAggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="customDestinationAggregateIds">customDestinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>, <span name="sourceLogReadPosition">sourceLogReadPosition: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="sourceLogSequenceNr">sourceLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>, <span name="targetLogSequenceNr">targetLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>)</span>
+        <span class="name">DurableEvent</span><span class="params">(<span name="payload">payload: <span class="extype" name="scala.Any">Any</span></span>, <span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="emitterAggregateId">emitterAggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="customDestinationAggregateIds">customDestinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a> = <span class="symbol"><span class="name"><a href="VectorTime$.html">VectorTime()</a></span></span></span>, <span name="persistLogId">persistLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedLogId</a></span></span></span>, <span name="sourceLogSequenceNr">sourceLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>, <span name="targetLogSequenceNr">targetLogSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">UndefinedSequenceNr</a></span></span></span>, <span name="sourceLogReadPosition">sourceLogReadPosition: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@&lt;init&gt;(payload:Any,systemTimestamp:Long,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime,emitterId:String,emitterAggregateId:Option[String],customDestinationAggregateIds:Set[String],sourceLogReadPosition:Long,sourceLogId:String,targetLogId:String,sourceLogSequenceNr:Long,targetLogSequenceNr:Long):com.rbmhtechnology.eventuate.DurableEvent" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@&lt;init&gt;(payload:Any,emitterId:String,emitterAggregateId:Option[String],customDestinationAggregateIds:Set[String],systemTimestamp:Long,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime,persistLogId:String,sourceLogId:String,targetLogId:String,sourceLogSequenceNr:Long,targetLogSequenceNr:Long,sourceLogReadPosition:Long):com.rbmhtechnology.eventuate.DurableEvent" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">payload</dt><dd class="cmt"><p>Custom, application-defined event.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>Wall-clock timestamp, generated by emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>Vector timestamp, generated by emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>Id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">emitterAggregateId</dt><dd class="cmt"><p>Aggregate id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>). This is also the default routing destination
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">payload</dt><dd class="cmt"><p>Application-defined event.</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>Id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">emitterAggregateId</dt><dd class="cmt"><p>Aggregate id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>). This is also the default routing destination
                           of this event. If defined, the event is routed to event-sourced actors or views with a matching
                           <code>aggregateId</code>. In any case, the event is routed to event-sourced actors and views with an
                           undefined <code>aggregateId</code>.</p></dd><dt class="param">customDestinationAggregateIds</dt><dd class="cmt"><p>Aggregate ids of additional, custom routing destinations. If non-empty, the event is
-                                     additionally routed to event-sourced actors and views with a matching <code>aggregateId</code>.</p></dd><dt class="param">sourceLogReadPosition</dt><dd class="cmt"><p>Highest source log read position from last replication.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Source log id from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></dd><dt class="param">targetLogId</dt><dd class="cmt"><p>Target log id from last replication.</p></dd><dt class="param">sourceLogSequenceNr</dt><dd class="cmt"><p>Source log sequence number from last replication.</p></dd><dt class="param">targetLogSequenceNr</dt><dd class="cmt"><p>Target log sequence number.
+                                     additionally routed to event-sourced actors and views with a matching <code>aggregateId</code>.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>Wall-clock timestamp, generated by the log that initially persisted the emitted event. The id of
+                       that log is <code>persistLogId</code>.</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>Vector timestamp, generated by the log that initially persisted the emitted event. The id of
+                       that log is <code>persistLogId</code>.</p></dd><dt class="param">persistLogId</dt><dd class="cmt"><p>Id of the log to which the emitted event has been initially written.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Id of the source log from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></dd><dt class="param">targetLogId</dt><dd class="cmt"><p>Id of the target log from last replication.</p></dd><dt class="param">sourceLogSequenceNr</dt><dd class="cmt"><p>Sequence number in source log from last replication.</p></dd><dt class="param">targetLogSequenceNr</dt><dd class="cmt"><p>Sequence number in target log from last replication.</p></dd><dt class="param">sourceLogReadPosition</dt><dd class="cmt"><p>Highest source log read position from last replication.
 </p></dd></dl></div>
     </li></ol>
             </div>
@@ -270,25 +274,6 @@ routed to event-sourced actors and views with an undefined <code>aggregateId</co
       </a>
     </span>
       <p class="shortcomment cmt">The union of <a href="#defaultDestinationAggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.DurableEvent#defaultDestinationAggregateId">defaultDestinationAggregateId</a> and <a href="#customDestinationAggregateIds:Set[String]" class="extmbr" name="com.rbmhtechnology.eventuate.DurableEvent#customDestinationAggregateIds">customDestinationAggregateIds</a>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#emitter" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="emitter(id:String):Boolean"></a>
-      <a id="emitter(String):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">emitter</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@emitter(id:String):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Returns <code>true</code> if this event was emitted by an emitter with given <code>id</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Returns <code>true</code> if this event was emitted by an emitter with given <code>id</code>.
-</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>
-</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.DurableEvent#emitterAggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="emitterAggregateId:Option[String]"></a>
       <a id="emitterAggregateId:Option[String]"></a>
@@ -383,6 +368,23 @@ routed to event-sourced actors and views with an undefined <code>aggregateId</co
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#id" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="id:com.rbmhtechnology.eventuate.VectorTime"></a>
+      <a id="id:VectorTime"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">id</span><span class="result">: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@id:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Unique event identifier.</p>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -400,6 +402,23 @@ routed to event-sourced actors and views with an undefined <code>aggregateId</co
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#logId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="logId:String"></a>
+      <a id="logId:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">logId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@logId:String" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Local logId (= <code>targetLogId</code>).</p>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -467,7 +486,24 @@ routed to event-sourced actors and views with an undefined <code>aggregateId</co
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Custom, application-defined event.</p>
+      <p class="shortcomment cmt">Application-defined event.</p>
+    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#persistLogId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="persistLogId:String"></a>
+      <a id="persistLogId:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">persistLogId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@persistLogId:String" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Id of the log to which the emitted event has been initially written.</p>
     </li><li name="com.rbmhtechnology.eventuate.DurableEvent#replicated" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="replicated:Boolean"></a>
       <a id="replicated:Boolean"></a>
@@ -518,7 +554,7 @@ routed to event-sourced actors and views with an undefined <code>aggregateId</co
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Source log id from last replication.</p><div class="fullcomment"><div class="comment cmt"><p>Source log id from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></div></div>
+      <p class="shortcomment cmt">Id of the source log from last replication.</p><div class="fullcomment"><div class="comment cmt"><p>Id of the source log from last replication. Equal to <code>targetLogId</code> if not replicated yet.</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.DurableEvent#sourceLogReadPosition" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="sourceLogReadPosition:Long"></a>
       <a id="sourceLogReadPosition:Long"></a>
@@ -552,7 +588,7 @@ routed to event-sourced actors and views with an undefined <code>aggregateId</co
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Source log sequence number from last replication.</p>
+      <p class="shortcomment cmt">Sequence number in source log from last replication.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -570,7 +606,7 @@ routed to event-sourced actors and views with an undefined <code>aggregateId</co
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#systemTimestamp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#systemTimestamp" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="systemTimestamp:Long"></a>
       <a id="systemTimestamp:Long"></a>
       <h4 class="signature">
@@ -586,7 +622,8 @@ routed to event-sourced actors and views with an undefined <code>aggregateId</co
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Wall-clock timestamp, generated by emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p>
+      <p class="shortcomment cmt">Wall-clock timestamp, generated by the log that initially persisted the emitted event.</p><div class="fullcomment"><div class="comment cmt"><p>Wall-clock timestamp, generated by the log that initially persisted the emitted event. The id of
+                       that log is <code>persistLogId</code>.</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.DurableEvent#targetLogId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="targetLogId:String"></a>
       <a id="targetLogId:String"></a>
@@ -603,7 +640,7 @@ routed to event-sourced actors and views with an undefined <code>aggregateId</co
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Target log id from last replication.</p>
+      <p class="shortcomment cmt">Id of the target log from last replication.</p>
     </li><li name="com.rbmhtechnology.eventuate.DurableEvent#targetLogSequenceNr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="targetLogSequenceNr:Long"></a>
       <a id="targetLogSequenceNr:Long"></a>
@@ -620,8 +657,8 @@ routed to event-sourced actors and views with an undefined <code>aggregateId</co
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Target log sequence number.</p>
-    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#vectorTimestamp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Sequence number in target log from last replication.</p>
+    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#vectorTimestamp" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime"></a>
       <a id="vectorTimestamp:VectorTime"></a>
       <h4 class="signature">
@@ -637,7 +674,8 @@ routed to event-sourced actors and views with an undefined <code>aggregateId</co
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Vector timestamp, generated by emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p>
+      <p class="shortcomment cmt">Vector timestamp, generated by the log that initially persisted the emitted event.</p><div class="fullcomment"><div class="comment cmt"><p>Vector timestamp, generated by the log that initially persisted the emitted event. The id of
+                       that log is <code>persistLogId</code>.</p></div></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
