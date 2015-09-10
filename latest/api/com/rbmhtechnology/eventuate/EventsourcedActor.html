@@ -932,8 +932,8 @@ the actor switches to consuming live events.
     </span>
       <p class="shortcomment cmt">Asynchronously saves the given <code>snapshot</code> and calls <code>handler</code> with the generated
 snapshot metadata.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously saves the given <code>snapshot</code> and calls <code>handler</code> with the generated
-snapshot metadata. The <code>handler</code> can also obtain a reference to the initial message
-sender via <code>sender()</code>.
+snapshot metadata. The <code>handler</code> can obtain a reference to the initial message
+sender with <code>sender()</code>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="akka.actor.Actor#self" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="self:akka.actor.ActorRef"></a>
@@ -969,6 +969,27 @@ sender via <code>sender()</code>.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#sharedClockEntry" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="sharedClockEntry:Boolean"></a>
+      <a id="sharedClockEntry:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">sharedClockEntry</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@sharedClockEntry:Boolean" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">If <code>true</code>, this actor shares a vector clock entry with those actors on the same local <code>eventLog</code>
+that have set <code>sharedClockEntry</code> to <code>true</code> as well.</p><div class="fullcomment"><div class="comment cmt"><p>If <code>true</code>, this actor shares a vector clock entry with those actors on the same local <code>eventLog</code>
+that have set <code>sharedClockEntry</code> to <code>true</code> as well. Otherwise, this actor has its own entry in
+the vector clock.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="akka.actor.StashSupport#stash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="stash():Unit"></a>
       <a id="stash():Unit"></a>

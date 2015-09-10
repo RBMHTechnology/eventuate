@@ -20,7 +20,7 @@ Eventuate applications store events in one or more event logs. An event log can 
 
    An event log, replicated across locations 1, 2 and 3.
 
-Events in a local event log have a total order that is consistent with causal order. This total order is likely to differ between locations, as events can be written concurrently at different locations. Hence, the strongest ordering guarantee for a *replicated event log* is `causal ordering`_\ [#]_ which is tracked with :ref:`vector-clocks`. Relaxing the ordering guarantee to causal ordering allows local event logs to remain available for writes during inter-location network partitions. 
+Events in a local event log have a total order that is consistent with causal order. This total order is location-specific because events can be written concurrently at different locations. Hence, the strongest ordering guarantee for a *replicated event log* is causal ordering which is tracked with :ref:`vector-clocks`. Relaxing the global ordering guarantee to causal ordering allows local event logs to remain available for writes during inter-location network partitions. 
 
 A replication endpoint can also manage more than one local event log. Local event logs can be given a name and replication occurs only between logs of the same name. Logs with different names are isolated from each other\ [#]_. Also, their distribution across locations may differ, as shown in the following figure.
 
@@ -97,7 +97,13 @@ Eventuate provides implementations of :ref:`commutative-replicated-data-types` (
 Vector clocks
 -------------
 
-Eventuates uses `vector clocks`_ to track concurrent updates to a replicated event log at different locations. Although all event-sourced actors are sources of concurrent activity, only those from different locations contribute to a different entry in a vector clock. Actors at the same location contribute to the same entry. This is formalized in `plausible clocks`_ and further described in `ticket 68`_.
+Eventuates uses `vector clocks`_ to track *happened-before* relationships (= potential causality) of events and provides means to limit the size of these clocks. 
+
+By default, all event-sourced actors that share an event log at a given location also share an entry in a vector clock. Event-sourced actors from different locations contribute to different entries in a vector clock. Consequently, concurrency of events can only be reliably detected if they have been emitted at different locations. This is formalized in `plausible clocks`_ and further described in `ticket 68`_. The main advantage of this approach are clock sizes that scale with the usually small number of locations in the worst case, still covering many use cases.
+
+Although plausible clocks are a reasonable default for many Eventuate applications, others need more fine-grained tracking of potential causality. To achieve that goal, event-sourced actors can opt-in to have their own entry in a vector clock instead of sharing it with others. This is especially useful for applications that additionally need to detect concurrent events within a location which is further described in `ticket 103`_.
+
+A consequence of more-fine grained causality tracking can be larger vector clocks. On the other hand, only events that are actually handled by an event-sourced actor contribute to that actor’s vector clock. Therefore, selective event handling in combination with :ref:`event-routing` rules (as applied in a one-\ aggregate_-per-actor design, for example) can additionally help to keep vector clock sizes small.
 
 .. _batching:
 
@@ -137,15 +143,14 @@ We haven’t started yet working on this. Should you have any preferences or pro
 
 .. _vector clocks: http://en.wikipedia.org/wiki/Vector_clock
 .. _plausible clocks: http://link.springer.com/article/10.1007%2Fs004460050065
-.. _causal ordering: http://krasserm.github.io/2015/01/13/event-sourcing-at-global-scale/#event-log
 .. _event sourcing: http://martinfowler.com/eaaDev/EventSourcing.html
 .. _event collaboration: http://martinfowler.com/eaaDev/EventCollaboration.html
 .. _aggregate: http://martinfowler.com/bliki/DDD_Aggregate.html
 
 .. _ticket 68: https://github.com/RBMHTechnology/eventuate/issues/68
+.. _ticket 103: https://github.com/RBMHTechnology/eventuate/issues/103
 .. _let us know: https://groups.google.com/forum/#!forum/eventuate
 
-.. [#] In the linked article, the term *site* is synonymous with *location*.
 .. [#] :ref:`processors` can be used to connect otherwise partitioned event logs.  
 
 
