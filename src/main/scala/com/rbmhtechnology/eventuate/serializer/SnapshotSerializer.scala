@@ -65,7 +65,7 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
     builder.setPayload(eventSerializer.payloadFormatBuilder(snapshot.payload.asInstanceOf[AnyRef]))
     builder.setEmitterId(snapshot.emitterId)
     builder.setLastEvent(eventSerializer.durableEventFormatBuilder(snapshot.lastEvent))
-    builder.setLastHandledTime(eventSerializer.vectorTimeFormatBuilder(snapshot.lastHandledTime))
+    builder.setCurrentTime(eventSerializer.vectorTimeFormatBuilder(snapshot.currentTime))
 
     snapshot.deliveryAttempts.foreach { da =>
       builder.addDeliveryAttempts(deliveryAttemptFormatBuilder(da))
@@ -124,7 +124,7 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
       eventSerializer.payload(snapshotFormat.getPayload),
       snapshotFormat.getEmitterId,
       eventSerializer.durableEvent(snapshotFormat.getLastEvent),
-      eventSerializer.vectorTime(snapshotFormat.getLastHandledTime),
+      eventSerializer.vectorTime(snapshotFormat.getCurrentTime),
       builder.result())
   }
 

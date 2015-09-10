@@ -31,6 +31,7 @@ import akka.actor._
  * @see [[EventsourcedView]]
  */
 trait EventsourcedActor extends EventsourcedView {
+  import DurableEvent.UndefinedLogId
   import EventsourcingProtocol._
 
   private var writeRequests: Vector[DurableEvent] = Vector.empty
@@ -84,7 +85,7 @@ trait EventsourcedActor extends EventsourcedView {
    * parameter.
    */
   final def persist[A](event: A, customDestinationAggregateIds: Set[String] = Set())(handler: Handler[A]): Unit = {
-    writeRequests = writeRequests :+ DurableEvent(event, id, emitterAggregateId = aggregateId, customDestinationAggregateIds = customDestinationAggregateIds, vectorTimestamp = lastHandledTime)
+    writeRequests = writeRequests :+ durableEvent(event, customDestinationAggregateIds)
     writeHandlers = writeHandlers :+ handler.asInstanceOf[Try[Any] => Unit]
   }
 
@@ -119,6 +120,27 @@ trait EventsourcedActor extends EventsourcedView {
         if (wPending) write()
         if (wPending && stateSync) writing = true else if (stateSync) messageStash.unstash()
       }
+  }
+
+  private def durableEvent(payload: Any, customDestinationAggregateIds: Set[String]): DurableEvent = {
+    if (sharedClockEntry) {
+      DurableEvent(
+        payload = payload,
+        emitterId = id,
+        emitterAggregateId = aggregateId,
+        customDestinationAggregateIds = customDestinationAggregateIds,
+        vectorTimestamp = currentTime,
+        processId = UndefinedLogId)
+    } else {
+      DurableEvent(
+        payload = payload,
+        emitterId = id,
+        emitterAggregateId = aggregateId,
+        customDestinationAggregateIds = customDestinationAggregateIds,
+        systemTimestamp = System.currentTimeMillis(),
+        vectorTimestamp = incrementLocalTime,
+        processId = id)
+    }
   }
 
   private def writePending: Boolean =

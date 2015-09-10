@@ -27,19 +27,23 @@ import com.rbmhtechnology.eventuate.ConfirmedDelivery.DeliveryAttempt
 case class SnapshotMetadata(emitterId: String, sequenceNr: Long)
 
 /**
- * Represents a snapshot of internal state of an [[EventsourcedActor]] or [[EventsourcedView]].
+ * Provider API.
  *
- * @param payload The actual user-defined snapshot passed as argument to [[EventsourcedActor#save]] or [[EventsourcedView#save]].
- * @param emitterId Id of the [[EventsourcedActor]] or [[EventsourcedView]] that generated this snapshot.
- * @param lastEvent Last event that has been delivered to an actor's event handler.
- * @param lastHandledTime Vector time that covers all handled events up to `lastEvent`.
- * @param deliveryAttempts Unconfirmed delivery attempts of an actor (when implementing [[ConfirmedDelivery]]).
+ * Snapshot storage format. [[EventsourcedActor]]s and [[EventsourcedView]]s can save snapshots of
+ * internal state by calling [[EventsourcedActor#save]] or [[EventsourcedView#save]], respectively.
+ *
+ * @param payload Application-specific snapshot.
+ * @param emitterId Id of the [[EventsourcedActor]] or [[EventsourcedView]] that saved the snapshot.
+ * @param lastEvent Last event delivered to the event handler before the snapshot was saved.
+ * @param currentTime Current vector time when the snapshot was saved.
+ * @param deliveryAttempts Unconfirmed delivery attempts when the snapshot was saved (can only be
+ *                         non-empty if the actor implements [[ConfirmedDelivery]]).
  */
 case class Snapshot(
     payload: Any,
     emitterId: String,
     lastEvent: DurableEvent,
-    lastHandledTime: VectorTime,
+    currentTime: VectorTime,
     deliveryAttempts: Vector[DeliveryAttempt] = Vector.empty) {
 
   val metadata: SnapshotMetadata =

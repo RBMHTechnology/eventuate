@@ -28,7 +28,7 @@ message DurableEventFormat {
   repeated string customDestinationAggregateIds = 4;
   optional int64 systemTimestamp = 5;
   optional VectorTimeFormat vectorTimestamp = 6;
-  optional string persistLogId = 7;
+  optional string processId = 7;
   optional string sourceLogId = 8;
   optional string targetLogId = 9;
   optional int64 sourceLogSequenceNr = 10;

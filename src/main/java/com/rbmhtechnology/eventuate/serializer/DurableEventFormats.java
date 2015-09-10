@@ -115,20 +115,20 @@ public final class DurableEventFormats {
      */
     com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getVectorTimestampOrBuilder();
 
-    // optional string persistLogId = 7;
+    // optional string processId = 7;
     /**
-     * <code>optional string persistLogId = 7;</code>
+     * <code>optional string processId = 7;</code>
      */
-    boolean hasPersistLogId();
+    boolean hasProcessId();
     /**
-     * <code>optional string persistLogId = 7;</code>
+     * <code>optional string processId = 7;</code>
      */
-    java.lang.String getPersistLogId();
+    java.lang.String getProcessId();
     /**
-     * <code>optional string persistLogId = 7;</code>
+     * <code>optional string processId = 7;</code>
      */
     com.google.protobuf.ByteString
-        getPersistLogIdBytes();
+        getProcessIdBytes();
 
     // optional string sourceLogId = 8;
     /**
@@ -292,7 +292,7 @@ public final class DurableEventFormats {
             }
             case 58: {
               bitField0_ |= 0x00000020;
-              persistLogId_ = input.readBytes();
+              processId_ = input.readBytes();
               break;
             }
             case 66: {
@@ -539,20 +539,20 @@ public final class DurableEventFormats {
       return vectorTimestamp_;
     }
 
-    // optional string persistLogId = 7;
-    public static final int PERSISTLOGID_FIELD_NUMBER = 7;
-    private java.lang.Object persistLogId_;
+    // optional string processId = 7;
+    public static final int PROCESSID_FIELD_NUMBER = 7;
+    private java.lang.Object processId_;
     /**
-     * <code>optional string persistLogId = 7;</code>
+     * <code>optional string processId = 7;</code>
      */
-    public boolean hasPersistLogId() {
+    public boolean hasProcessId() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>optional string persistLogId = 7;</code>
+     * <code>optional string processId = 7;</code>
      */
-    public java.lang.String getPersistLogId() {
-      java.lang.Object ref = persistLogId_;
+    public java.lang.String getProcessId() {
+      java.lang.Object ref = processId_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -560,22 +560,22 @@ public final class DurableEventFormats {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          persistLogId_ = s;
+          processId_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string persistLogId = 7;</code>
+     * <code>optional string processId = 7;</code>
      */
     public com.google.protobuf.ByteString
-        getPersistLogIdBytes() {
-      java.lang.Object ref = persistLogId_;
+        getProcessIdBytes() {
+      java.lang.Object ref = processId_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        persistLogId_ = b;
+        processId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -723,7 +723,7 @@ public final class DurableEventFormats {
       customDestinationAggregateIds_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       systemTimestamp_ = 0L;
       vectorTimestamp_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
-      persistLogId_ = "";
+      processId_ = "";
       sourceLogId_ = "";
       targetLogId_ = "";
       sourceLogSequenceNr_ = 0L;
@@ -767,7 +767,7 @@ public final class DurableEventFormats {
         output.writeMessage(6, vectorTimestamp_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeBytes(7, getPersistLogIdBytes());
+        output.writeBytes(7, getProcessIdBytes());
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeBytes(8, getSourceLogIdBytes());
@@ -824,7 +824,7 @@ public final class DurableEventFormats {
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(7, getPersistLogIdBytes());
+          .computeBytesSize(7, getProcessIdBytes());
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
@@ -984,7 +984,7 @@ public final class DurableEventFormats {
           vectorTimestampBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000020);
-        persistLogId_ = "";
+        processId_ = "";
         bitField0_ = (bitField0_ & ~0x00000040);
         sourceLogId_ = "";
         bitField0_ = (bitField0_ & ~0x00000080);
@@ -1061,7 +1061,7 @@ public final class DurableEventFormats {
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000020;
         }
-        result.persistLogId_ = persistLogId_;
+        result.processId_ = processId_;
         if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
           to_bitField0_ |= 0x00000040;
         }
@@ -1127,9 +1127,9 @@ public final class DurableEventFormats {
         if (other.hasVectorTimestamp()) {
           mergeVectorTimestamp(other.getVectorTimestamp());
         }
-        if (other.hasPersistLogId()) {
+        if (other.hasProcessId()) {
           bitField0_ |= 0x00000040;
-          persistLogId_ = other.persistLogId_;
+          processId_ = other.processId_;
           onChanged();
         }
         if (other.hasSourceLogId()) {
@@ -1692,76 +1692,76 @@ public final class DurableEventFormats {
         return vectorTimestampBuilder_;
       }
 
-      // optional string persistLogId = 7;
-      private java.lang.Object persistLogId_ = "";
+      // optional string processId = 7;
+      private java.lang.Object processId_ = "";
       /**
-       * <code>optional string persistLogId = 7;</code>
+       * <code>optional string processId = 7;</code>
        */
-      public boolean hasPersistLogId() {
+      public boolean hasProcessId() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
-       * <code>optional string persistLogId = 7;</code>
+       * <code>optional string processId = 7;</code>
        */
-      public java.lang.String getPersistLogId() {
-        java.lang.Object ref = persistLogId_;
+      public java.lang.String getProcessId() {
+        java.lang.Object ref = processId_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          persistLogId_ = s;
+          processId_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>optional string persistLogId = 7;</code>
+       * <code>optional string processId = 7;</code>
        */
       public com.google.protobuf.ByteString
-          getPersistLogIdBytes() {
-        java.lang.Object ref = persistLogId_;
+          getProcessIdBytes() {
+        java.lang.Object ref = processId_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          persistLogId_ = b;
+          processId_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string persistLogId = 7;</code>
+       * <code>optional string processId = 7;</code>
        */
-      public Builder setPersistLogId(
+      public Builder setProcessId(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000040;
-        persistLogId_ = value;
+        processId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string persistLogId = 7;</code>
+       * <code>optional string processId = 7;</code>
        */
-      public Builder clearPersistLogId() {
+      public Builder clearProcessId() {
         bitField0_ = (bitField0_ & ~0x00000040);
-        persistLogId_ = getDefaultInstance().getPersistLogId();
+        processId_ = getDefaultInstance().getProcessId();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string persistLogId = 7;</code>
+       * <code>optional string processId = 7;</code>
        */
-      public Builder setPersistLogIdBytes(
+      public Builder setProcessIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000040;
-        persistLogId_ = value;
+        processId_ = value;
         onChanged();
         return this;
       }
@@ -3872,22 +3872,22 @@ public final class DurableEventFormats {
   static {
     java.lang.String[] descriptorData = {
       "\n+src/main/protobuf/DurableEventFormats." +
-      "proto\"\351\002\n\022DurableEventFormat\022\037\n\007payload\030" +
+      "proto\"\346\002\n\022DurableEventFormat\022\037\n\007payload\030" +
       "\001 \001(\0132\016.PayloadFormat\022\021\n\temitterId\030\002 \001(\t" +
       "\022\032\n\022emitterAggregateId\030\003 \001(\t\022%\n\035customDe" +
       "stinationAggregateIds\030\004 \003(\t\022\027\n\017systemTim" +
       "estamp\030\005 \001(\003\022*\n\017vectorTimestamp\030\006 \001(\0132\021." +
-      "VectorTimeFormat\022\024\n\014persistLogId\030\007 \001(\t\022\023" +
-      "\n\013sourceLogId\030\010 \001(\t\022\023\n\013targetLogId\030\t \001(\t" +
-      "\022\033\n\023sourceLogSequenceNr\030\n \001(\003\022\033\n\023targetL" +
-      "ogSequenceNr\030\013 \001(\003\022\035\n\025sourceLogReadPosit",
-      "ion\030\014 \001(\003\"O\n\rPayloadFormat\022\024\n\014serializer" +
-      "Id\030\001 \001(\005\022\017\n\007payload\030\002 \001(\014\022\027\n\017payloadMani" +
-      "fest\030\003 \001(\014\"?\n\025VectorTimeEntryFormat\022\021\n\tp" +
-      "rocessId\030\001 \002(\t\022\023\n\013logicalTime\030\002 \002(\003\";\n\020V" +
-      "ectorTimeFormat\022\'\n\007entries\030\001 \003(\0132\026.Vecto" +
-      "rTimeEntryFormatB+\n\'com.rbmhtechnology.e" +
-      "ventuate.serializerH\001"
+      "VectorTimeFormat\022\021\n\tprocessId\030\007 \001(\t\022\023\n\013s" +
+      "ourceLogId\030\010 \001(\t\022\023\n\013targetLogId\030\t \001(\t\022\033\n" +
+      "\023sourceLogSequenceNr\030\n \001(\003\022\033\n\023targetLogS" +
+      "equenceNr\030\013 \001(\003\022\035\n\025sourceLogReadPosition",
+      "\030\014 \001(\003\"O\n\rPayloadFormat\022\024\n\014serializerId\030" +
+      "\001 \001(\005\022\017\n\007payload\030\002 \001(\014\022\027\n\017payloadManifes" +
+      "t\030\003 \001(\014\"?\n\025VectorTimeEntryFormat\022\021\n\tproc" +
+      "essId\030\001 \002(\t\022\023\n\013logicalTime\030\002 \002(\003\";\n\020Vect" +
+      "orTimeFormat\022\'\n\007entries\030\001 \003(\0132\026.VectorTi" +
+      "meEntryFormatB+\n\'com.rbmhtechnology.even" +
+      "tuate.serializerH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -3899,7 +3899,7 @@ public final class DurableEventFormats {
           internal_static_DurableEventFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_DurableEventFormat_descriptor,
-              new java.lang.String[] { "Payload", "EmitterId", "EmitterAggregateId", "CustomDestinationAggregateIds", "SystemTimestamp", "VectorTimestamp", "PersistLogId", "SourceLogId", "TargetLogId", "SourceLogSequenceNr", "TargetLogSequenceNr", "SourceLogReadPosition", });
+              new java.lang.String[] { "Payload", "EmitterId", "EmitterAggregateId", "CustomDestinationAggregateIds", "SystemTimestamp", "VectorTimestamp", "ProcessId", "SourceLogId", "TargetLogId", "SourceLogSequenceNr", "TargetLogSequenceNr", "SourceLogReadPosition", });
           internal_static_PayloadFormat_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_PayloadFormat_fieldAccessorTable = new

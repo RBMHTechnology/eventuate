@@ -60,7 +60,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
 
   private var _recovering: Boolean = true
   private var _lastReceivedEvent: DurableEvent = _
-  private var _lastHandledTime: VectorTime = VectorTime()
+  private var _clock: VectorClock = _
 
   private var saveRequests: Map[SnapshotMetadata, Handler[SnapshotMetadata]] = Map.empty
 
@@ -78,6 +78,14 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
    */
   def aggregateId: Option[String] =
     None
+
+  /**
+   * If `true`, this actor shares a vector clock entry with those actors on the same local `eventLog`
+   * that have set `sharedClockEntry` to `true` as well. Otherwise, this actor has its own entry in
+   * the vector clock.
+   */
+  def sharedClockEntry: Boolean =
+    true
 
   /**
    * Global unique actor id.
@@ -132,10 +140,21 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
    */
   private[eventuate] def onEventInternal(event: DurableEvent): Unit = {
     _lastReceivedEvent = event
-    _lastHandledTime = _lastHandledTime.merge(event.vectorTimestamp)
 
-    if (event.replicated)
-      _lastHandledTime = _lastHandledTime.setLocalTime(event.logId, event.sequenceNr)
+    if (sharedClockEntry) {
+      // set local clock to local time (= sequence number) of event log
+      _clock = _clock.set(event.logId, event.sequenceNr)
+      if (event.emitterId != id)
+         // merge clock with non-self-emitted event timestamp
+        _clock = _clock.merge(event.vectorTimestamp)
+    } else {
+      if (event.emitterId != id)
+        // update clock with non-self-emitted event timestamp (incl. increment of local time)
+        _clock = _clock.update(event.vectorTimestamp)
+      else if (recovering)
+        // merge clock with self-emitted event timestamp only during recovery
+        _clock = _clock.merge(event.vectorTimestamp)
+    }
   }
 
   /**
@@ -154,8 +173,16 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
   /**
    * Internal API.
    */
-  private[eventuate] def lastHandledTime: VectorTime =
-    _lastHandledTime
+  private[eventuate] def currentTime: VectorTime =
+    _clock.currentTime
+
+  /**
+   * Internal API.
+   */
+  private[eventuate] def incrementLocalTime: VectorTime = {
+    _clock = _clock.tick()
+    _clock.currentTime
+  }
 
   /**
    * Sequence number of the last handled event.
@@ -189,8 +216,8 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
 
   /**
    * Asynchronously saves the given `snapshot` and calls `handler` with the generated
-   * snapshot metadata. The `handler` can also obtain a reference to the initial message
-   * sender via `sender()`.
+   * snapshot metadata. The `handler` can obtain a reference to the initial message
+   * sender with `sender()`.
    */
   def save(snapshot: Any)(handler: Handler[SnapshotMetadata]): Unit = {
     val payload = snapshot match {
@@ -198,7 +225,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
       case other                              => other
     }
 
-    val prototype = Snapshot(payload, id, lastReceivedEvent, lastHandledTime)
+    val prototype = Snapshot(payload, id, lastReceivedEvent, currentTime)
     val metadata = prototype.metadata
 
     if (saveRequests.contains(metadata)) {
@@ -221,7 +248,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
    */
   private[eventuate] def loadedSnapshot(snapshot: Snapshot): Unit = {
     _lastReceivedEvent = snapshot.lastEvent
-    _lastHandledTime = snapshot.lastHandledTime
+    _clock = _clock.copy(currentTime = snapshot.currentTime)
   }
 
   /**
@@ -317,7 +344,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
    */
   override def preStart(): Unit = {
     _lastReceivedEvent = DurableEvent(id)
-    _lastHandledTime = VectorTime()
+    _clock = VectorClock(id)
     load()
   }
 

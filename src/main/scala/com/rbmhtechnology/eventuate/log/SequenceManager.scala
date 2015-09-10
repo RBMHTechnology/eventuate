@@ -21,6 +21,8 @@ import com.rbmhtechnology.eventuate._
 import scala.collection.immutable.Seq
 
 private[eventuate] class SequenceManager(logId: String) {
+  import DurableEvent.UndefinedLogId
+
   private var counter: Long = 0L
   private var updates = 0L
 
@@ -47,10 +49,13 @@ private[eventuate] class SequenceManager(logId: String) {
       advanceSequenceNr(1L)
       advanceSequenceNrUpdates()
 
+      val st = if (event.processId == UndefinedLogId) systemTimestamp else event.systemTimestamp
+      val vt = if (event.processId == UndefinedLogId) event.vectorTimestamp.setLocalTime(logId, currentSequenceNr) else event.vectorTimestamp
+
       event.copy(
-        persistLogId = logId,
-        systemTimestamp = systemTimestamp,
-        vectorTimestamp = event.vectorTimestamp.setLocalTime(logId, currentSequenceNr),
+        systemTimestamp = st,
+        vectorTimestamp = vt,
+        processId = logId,
         sourceLogId = logId,
         targetLogId = logId,
         sourceLogSequenceNr = currentSequenceNr,

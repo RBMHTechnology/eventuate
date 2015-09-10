@@ -151,3 +151,50 @@ object LoadSnapshot {
   }
   //#
 }
+
+object ClockEntryClass {
+  import akka.actor._
+  import com.rbmhtechnology.eventuate.EventsourcedActor
+
+  //#clock-entry-class
+  class ExampleActor(override val id: String,
+                     override val eventLog: ActorRef) extends EventsourcedActor {
+
+    override def sharedClockEntry: Boolean = false
+
+    // ...
+  //#
+    override val onCommand: Receive = {
+      case cmd => // ...
+    }
+
+    override val onEvent: Receive = {
+      case evt => // ...
+    }
+  //#clock-entry-class
+  }
+  //#
+}
+
+object ClockEntryInstance {
+  import akka.actor._
+  import com.rbmhtechnology.eventuate.EventsourcedActor
+
+  //#clock-entry-instance
+  class ExampleActor(override val id: String,
+                     override val eventLog: ActorRef,
+                     override val sharedClockEntry: Boolean) extends EventsourcedActor {
+
+    // ..
+  //#
+    override val onCommand: Receive = {
+      case cmd => // ...
+    }
+
+    override val onEvent: Receive = {
+      case evt => // ...
+    }
+  //#clock-entry-instance
+  }
+  //#
+}

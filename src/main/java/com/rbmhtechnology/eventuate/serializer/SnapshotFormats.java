@@ -70,19 +70,19 @@ public final class SnapshotFormats {
      */
     com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormatOrBuilder getLastEventOrBuilder();
 
-    // optional .VectorTimeFormat lastHandledTime = 4;
+    // optional .VectorTimeFormat currentTime = 4;
     /**
-     * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+     * <code>optional .VectorTimeFormat currentTime = 4;</code>
      */
-    boolean hasLastHandledTime();
+    boolean hasCurrentTime();
     /**
-     * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+     * <code>optional .VectorTimeFormat currentTime = 4;</code>
      */
-    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getLastHandledTime();
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentTime();
     /**
-     * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+     * <code>optional .VectorTimeFormat currentTime = 4;</code>
      */
-    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getLastHandledTimeOrBuilder();
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentTimeOrBuilder();
 
     // repeated .DeliveryAttemptFormat deliveryAttempts = 5;
     /**
@@ -194,12 +194,12 @@ public final class SnapshotFormats {
             case 34: {
               com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder subBuilder = null;
               if (((bitField0_ & 0x00000008) == 0x00000008)) {
-                subBuilder = lastHandledTime_.toBuilder();
+                subBuilder = currentTime_.toBuilder();
               }
-              lastHandledTime_ = input.readMessage(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.PARSER, extensionRegistry);
+              currentTime_ = input.readMessage(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.PARSER, extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(lastHandledTime_);
-                lastHandledTime_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(currentTime_);
+                currentTime_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000008;
               break;
@@ -342,26 +342,26 @@ public final class SnapshotFormats {
       return lastEvent_;
     }
 
-    // optional .VectorTimeFormat lastHandledTime = 4;
-    public static final int LASTHANDLEDTIME_FIELD_NUMBER = 4;
-    private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat lastHandledTime_;
+    // optional .VectorTimeFormat currentTime = 4;
+    public static final int CURRENTTIME_FIELD_NUMBER = 4;
+    private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentTime_;
     /**
-     * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+     * <code>optional .VectorTimeFormat currentTime = 4;</code>
      */
-    public boolean hasLastHandledTime() {
+    public boolean hasCurrentTime() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     /**
-     * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+     * <code>optional .VectorTimeFormat currentTime = 4;</code>
      */
-    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getLastHandledTime() {
-      return lastHandledTime_;
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentTime() {
+      return currentTime_;
     }
     /**
-     * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+     * <code>optional .VectorTimeFormat currentTime = 4;</code>
      */
-    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getLastHandledTimeOrBuilder() {
-      return lastHandledTime_;
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentTimeOrBuilder() {
+      return currentTime_;
     }
 
     // repeated .DeliveryAttemptFormat deliveryAttempts = 5;
@@ -404,7 +404,7 @@ public final class SnapshotFormats {
       payload_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.PayloadFormat.getDefaultInstance();
       emitterId_ = "";
       lastEvent_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.getDefaultInstance();
-      lastHandledTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      currentTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
       deliveryAttempts_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
@@ -418,8 +418,8 @@ public final class SnapshotFormats {
           return false;
         }
       }
-      if (hasLastHandledTime()) {
-        if (!getLastHandledTime().isInitialized()) {
+      if (hasCurrentTime()) {
+        if (!getCurrentTime().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -441,7 +441,7 @@ public final class SnapshotFormats {
         output.writeMessage(3, lastEvent_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeMessage(4, lastHandledTime_);
+        output.writeMessage(4, currentTime_);
       }
       for (int i = 0; i < deliveryAttempts_.size(); i++) {
         output.writeMessage(5, deliveryAttempts_.get(i));
@@ -469,7 +469,7 @@ public final class SnapshotFormats {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, lastHandledTime_);
+          .computeMessageSize(4, currentTime_);
       }
       for (int i = 0; i < deliveryAttempts_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -585,7 +585,7 @@ public final class SnapshotFormats {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getPayloadFieldBuilder();
           getLastEventFieldBuilder();
-          getLastHandledTimeFieldBuilder();
+          getCurrentTimeFieldBuilder();
           getDeliveryAttemptsFieldBuilder();
         }
       }
@@ -609,10 +609,10 @@ public final class SnapshotFormats {
           lastEventBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000004);
-        if (lastHandledTimeBuilder_ == null) {
-          lastHandledTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+        if (currentTimeBuilder_ == null) {
+          currentTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
         } else {
-          lastHandledTimeBuilder_.clear();
+          currentTimeBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000008);
         if (deliveryAttemptsBuilder_ == null) {
@@ -672,10 +672,10 @@ public final class SnapshotFormats {
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        if (lastHandledTimeBuilder_ == null) {
-          result.lastHandledTime_ = lastHandledTime_;
+        if (currentTimeBuilder_ == null) {
+          result.currentTime_ = currentTime_;
         } else {
-          result.lastHandledTime_ = lastHandledTimeBuilder_.build();
+          result.currentTime_ = currentTimeBuilder_.build();
         }
         if (deliveryAttemptsBuilder_ == null) {
           if (((bitField0_ & 0x00000010) == 0x00000010)) {
@@ -713,8 +713,8 @@ public final class SnapshotFormats {
         if (other.hasLastEvent()) {
           mergeLastEvent(other.getLastEvent());
         }
-        if (other.hasLastHandledTime()) {
-          mergeLastHandledTime(other.getLastHandledTime());
+        if (other.hasCurrentTime()) {
+          mergeCurrentTime(other.getCurrentTime());
         }
         if (deliveryAttemptsBuilder_ == null) {
           if (!other.deliveryAttempts_.isEmpty()) {
@@ -753,8 +753,8 @@ public final class SnapshotFormats {
             return false;
           }
         }
-        if (hasLastHandledTime()) {
-          if (!getLastHandledTime().isInitialized()) {
+        if (hasCurrentTime()) {
+          if (!getCurrentTime().isInitialized()) {
             
             return false;
           }
@@ -1089,121 +1089,121 @@ public final class SnapshotFormats {
         return lastEventBuilder_;
       }
 
-      // optional .VectorTimeFormat lastHandledTime = 4;
-      private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat lastHandledTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      // optional .VectorTimeFormat currentTime = 4;
+      private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
-          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> lastHandledTimeBuilder_;
+          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> currentTimeBuilder_;
       /**
-       * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentTime = 4;</code>
        */
-      public boolean hasLastHandledTime() {
+      public boolean hasCurrentTime() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentTime = 4;</code>
        */
-      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getLastHandledTime() {
-        if (lastHandledTimeBuilder_ == null) {
-          return lastHandledTime_;
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentTime() {
+        if (currentTimeBuilder_ == null) {
+          return currentTime_;
         } else {
-          return lastHandledTimeBuilder_.getMessage();
+          return currentTimeBuilder_.getMessage();
         }
       }
       /**
-       * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentTime = 4;</code>
        */
-      public Builder setLastHandledTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
-        if (lastHandledTimeBuilder_ == null) {
+      public Builder setCurrentTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
+        if (currentTimeBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          lastHandledTime_ = value;
+          currentTime_ = value;
           onChanged();
         } else {
-          lastHandledTimeBuilder_.setMessage(value);
+          currentTimeBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000008;
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentTime = 4;</code>
        */
-      public Builder setLastHandledTime(
+      public Builder setCurrentTime(
           com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder builderForValue) {
-        if (lastHandledTimeBuilder_ == null) {
-          lastHandledTime_ = builderForValue.build();
+        if (currentTimeBuilder_ == null) {
+          currentTime_ = builderForValue.build();
           onChanged();
         } else {
-          lastHandledTimeBuilder_.setMessage(builderForValue.build());
+          currentTimeBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000008;
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentTime = 4;</code>
        */
-      public Builder mergeLastHandledTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
-        if (lastHandledTimeBuilder_ == null) {
+      public Builder mergeCurrentTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
+        if (currentTimeBuilder_ == null) {
           if (((bitField0_ & 0x00000008) == 0x00000008) &&
-              lastHandledTime_ != com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance()) {
-            lastHandledTime_ =
-              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.newBuilder(lastHandledTime_).mergeFrom(value).buildPartial();
+              currentTime_ != com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance()) {
+            currentTime_ =
+              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.newBuilder(currentTime_).mergeFrom(value).buildPartial();
           } else {
-            lastHandledTime_ = value;
+            currentTime_ = value;
           }
           onChanged();
         } else {
-          lastHandledTimeBuilder_.mergeFrom(value);
+          currentTimeBuilder_.mergeFrom(value);
         }
         bitField0_ |= 0x00000008;
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentTime = 4;</code>
        */
-      public Builder clearLastHandledTime() {
-        if (lastHandledTimeBuilder_ == null) {
-          lastHandledTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      public Builder clearCurrentTime() {
+        if (currentTimeBuilder_ == null) {
+          currentTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
           onChanged();
         } else {
-          lastHandledTimeBuilder_.clear();
+          currentTimeBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentTime = 4;</code>
        */
-      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder getLastHandledTimeBuilder() {
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder getCurrentTimeBuilder() {
         bitField0_ |= 0x00000008;
         onChanged();
-        return getLastHandledTimeFieldBuilder().getBuilder();
+        return getCurrentTimeFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentTime = 4;</code>
        */
-      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getLastHandledTimeOrBuilder() {
-        if (lastHandledTimeBuilder_ != null) {
-          return lastHandledTimeBuilder_.getMessageOrBuilder();
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentTimeOrBuilder() {
+        if (currentTimeBuilder_ != null) {
+          return currentTimeBuilder_.getMessageOrBuilder();
         } else {
-          return lastHandledTime_;
+          return currentTime_;
         }
       }
       /**
-       * <code>optional .VectorTimeFormat lastHandledTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentTime = 4;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
           com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> 
-          getLastHandledTimeFieldBuilder() {
-        if (lastHandledTimeBuilder_ == null) {
-          lastHandledTimeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          getCurrentTimeFieldBuilder() {
+        if (currentTimeBuilder_ == null) {
+          currentTimeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
               com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder>(
-                  lastHandledTime_,
+                  currentTime_,
                   getParentForChildren(),
                   isClean());
-          lastHandledTime_ = null;
+          currentTime_ = null;
         }
-        return lastHandledTimeBuilder_;
+        return currentTimeBuilder_;
       }
 
       // repeated .DeliveryAttemptFormat deliveryAttempts = 5;
@@ -4828,24 +4828,24 @@ public final class SnapshotFormats {
     java.lang.String[] descriptorData = {
       "\n\'src/main/protobuf/SnapshotFormats.prot" +
       "o\032+src/main/protobuf/DurableEventFormats" +
-      ".proto\"\312\001\n\016SnapshotFormat\022\037\n\007payload\030\001 \001" +
+      ".proto\"\306\001\n\016SnapshotFormat\022\037\n\007payload\030\001 \001" +
       "(\0132\016.PayloadFormat\022\021\n\temitterId\030\002 \001(\t\022&\n" +
-      "\tlastEvent\030\003 \001(\0132\023.DurableEventFormat\022*\n" +
-      "\017lastHandledTime\030\004 \001(\0132\021.VectorTimeForma" +
-      "t\0220\n\020deliveryAttempts\030\005 \003(\0132\026.DeliveryAt" +
-      "temptFormat\"a\n\025DeliveryAttemptFormat\022\022\n\n" +
-      "deliveryId\030\001 \001(\t\022\037\n\007message\030\002 \001(\0132\016.Payl" +
-      "oadFormat\022\023\n\013destination\030\003 \001(\t\"^\n\034Concur",
-      "rentVersionsTreeFormat\022/\n\004root\030\001 \001(\0132!.C" +
-      "oncurrentVersionsTreeNodeFormat\022\r\n\005owner" +
-      "\030\002 \001(\t\"\216\001\n ConcurrentVersionsTreeNodeFor" +
-      "mat\022#\n\tversioned\030\001 \001(\0132\020.VersionedFormat" +
-      "\022\020\n\010rejected\030\002 \001(\010\0223\n\010children\030\003 \003(\0132!.C" +
-      "oncurrentVersionsTreeNodeFormat\"o\n\017Versi" +
-      "onedFormat\022*\n\017updateTimestamp\030\001 \001(\0132\021.Ve" +
-      "ctorTimeFormat\022\017\n\007creator\030\002 \001(\t\022\037\n\007paylo" +
-      "ad\030\003 \001(\0132\016.PayloadFormatB+\n\'com.rbmhtech" +
-      "nology.eventuate.serializerH\001"
+      "\tlastEvent\030\003 \001(\0132\023.DurableEventFormat\022&\n" +
+      "\013currentTime\030\004 \001(\0132\021.VectorTimeFormat\0220\n" +
+      "\020deliveryAttempts\030\005 \003(\0132\026.DeliveryAttemp" +
+      "tFormat\"a\n\025DeliveryAttemptFormat\022\022\n\ndeli" +
+      "veryId\030\001 \001(\t\022\037\n\007message\030\002 \001(\0132\016.PayloadF" +
+      "ormat\022\023\n\013destination\030\003 \001(\t\"^\n\034Concurrent",
+      "VersionsTreeFormat\022/\n\004root\030\001 \001(\0132!.Concu" +
+      "rrentVersionsTreeNodeFormat\022\r\n\005owner\030\002 \001" +
+      "(\t\"\216\001\n ConcurrentVersionsTreeNodeFormat\022" +
+      "#\n\tversioned\030\001 \001(\0132\020.VersionedFormat\022\020\n\010" +
+      "rejected\030\002 \001(\010\0223\n\010children\030\003 \003(\0132!.Concu" +
+      "rrentVersionsTreeNodeFormat\"o\n\017Versioned" +
+      "Format\022*\n\017updateTimestamp\030\001 \001(\0132\021.Vector" +
+      "TimeFormat\022\017\n\007creator\030\002 \001(\t\022\037\n\007payload\030\003" +
+      " \001(\0132\016.PayloadFormatB+\n\'com.rbmhtechnolo" +
+      "gy.eventuate.serializerH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -4857,7 +4857,7 @@ public final class SnapshotFormats {
           internal_static_SnapshotFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_SnapshotFormat_descriptor,
-              new java.lang.String[] { "Payload", "EmitterId", "LastEvent", "LastHandledTime", "DeliveryAttempts", });
+              new java.lang.String[] { "Payload", "EmitterId", "LastEvent", "CurrentTime", "DeliveryAttempts", });
           internal_static_DeliveryAttemptFormat_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_DeliveryAttemptFormat_fieldAccessorTable = new

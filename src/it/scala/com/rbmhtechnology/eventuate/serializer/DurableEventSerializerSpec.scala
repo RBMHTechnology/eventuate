@@ -53,7 +53,7 @@ object DurableEventSerializerSpec {
     customDestinationAggregateIds = Set("x", "y"),
     systemTimestamp = 2L,
     vectorTimestamp = VectorTime("p1" -> 1L, "p2" -> 2L),
-    persistLogId = "p4",
+    processId = "p4",
     sourceLogId = "p3",
     targetLogId = "p4",
     sourceLogSequenceNr = 17L,

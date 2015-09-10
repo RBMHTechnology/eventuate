@@ -84,7 +84,7 @@ class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", Even
       val expectedA = eventsA.zipWithIndex.map {
         case (event, idx) => event.copy(
           vectorTimestamp = timestamp(1L + idx),
-          persistLogId = logId,
+          processId = logId,
           sourceLogId = logId,
           targetLogId = logId,
           sourceLogSequenceNr = 1L + idx,
@@ -94,7 +94,7 @@ class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", Even
       val expectedB = eventsB.zipWithIndex.map {
         case (event, idx) => event.copy(
           vectorTimestamp = timestamp(6L + idx),
-          persistLogId = logId,
+          processId = logId,
           sourceLogId = logId,
           targetLogId = logId,
           sourceLogSequenceNr = 6L + idx,

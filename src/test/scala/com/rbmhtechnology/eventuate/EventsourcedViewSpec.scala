@@ -45,7 +45,7 @@ object EventsourcedViewSpec {
 
     override val onEvent: Receive = {
       case "boom" => throw boom
-      case evt => dstProbe ! ((evt, lastVectorTimestamp, lastHandledTime, lastSequenceNr))
+      case evt => dstProbe ! ((evt, lastVectorTimestamp, currentTime, lastSequenceNr))
     }
   }
 
@@ -58,15 +58,15 @@ object EventsourcedViewSpec {
   val event2c = DurableEvent("c", emitterIdB, None, Set(), 0L, timestamp(0, 2), logIdB, logIdB, logIdA, 2L, 3L, 3L)
   val event2d = DurableEvent("d", emitterIdB, None, Set(), 0L, timestamp(0, 3), logIdB, logIdB, logIdA, 3L, 4L, 3L)
 
-  def event(payload: Any, sequenceNr: Long): DurableEvent =
-    DurableEvent(payload, emitterIdA, None, Set(), 0L, timestamp(sequenceNr), logIdA, logIdA, logIdA, sequenceNr, sequenceNr, 0L)
-
   def timestamp(a: Long = 0L, b: Long= 0L) = (a, b) match {
     case (0L, 0L) => VectorTime()
     case (a,  0L) => VectorTime(logIdA -> a)
     case (0L,  b) => VectorTime(logIdB -> b)
     case (a,   b) => VectorTime(logIdA -> a, logIdB -> b)
   }
+
+  def event(payload: Any, sequenceNr: Long): DurableEvent =
+    DurableEvent(payload, emitterIdA, None, Set(), 0L, timestamp(sequenceNr), logIdA, logIdA, logIdA, sequenceNr, sequenceNr, 0L)
 }
 
 class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -86,12 +86,12 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
   override def afterAll: Unit =
     TestKit.shutdownActorSystem(system)
 
-  def unrecoveredActor(): ActorRef =
+  def unrecoveredEventsourcedActor(): ActorRef =
     system.actorOf(Props(new TestEventsourcedView(logProbe.ref, dstProbe.ref)))
 
   "An EventsourcedView" must {
     "recover from replayed events" in {
-      val actor = unrecoveredActor()
+      val actor = unrecoveredEventsourcedActor()
 
       logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId))
       actor ! LoadSnapshotSuccess(None, instanceId)
@@ -105,7 +105,7 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
       dstProbe.expectMsg(("b", event1b.vectorTimestamp, event1b.vectorTimestamp, event1b.sequenceNr))
     }
     "retry recovery on failure" in {
-      val actor = unrecoveredActor()
+      val actor = unrecoveredEventsourcedActor()
 
       logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId))
       actor ! LoadSnapshotSuccess(None, instanceId)
@@ -131,7 +131,7 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
       dstProbe.expectMsg(("c", event1c.vectorTimestamp, event1c.vectorTimestamp, event1c.sequenceNr))
     }
     "stash commands during recovery and handle them after initial recovery" in {
-      val actor = unrecoveredActor()
+      val actor = unrecoveredEventsourcedActor()
 
       actor ! Ping(1)
       actor ! Replaying(event1a, instanceId)
@@ -147,7 +147,7 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
       dstProbe.expectMsg(Pong(3))
     }
     "stash commands during recovery and handle them after retried recovery" in {
-      val actor = unrecoveredActor()
+      val actor = unrecoveredEventsourcedActor()
 
       logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId))
       actor ! LoadSnapshotSuccess(None, instanceId)
@@ -177,7 +177,7 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
       dstProbe.expectMsg(Pong(2))
     }
     "ignore live events that have already been consumed during recovery" in {
-      val actor = unrecoveredActor()
+      val actor = unrecoveredEventsourcedActor()
       actor ! Replaying(event2a, instanceId)
       actor ! Written(event2b) // live event
       actor ! Written(event2c) // live event

@@ -27,7 +27,7 @@ message SnapshotFormat {
   optional PayloadFormat payload = 1;
   optional string emitterId = 2;
   optional DurableEventFormat lastEvent = 3;
-  optional VectorTimeFormat lastHandledTime = 4;
+  optional VectorTimeFormat currentTime = 4;
   repeated DeliveryAttemptFormat deliveryAttempts = 5;
 }
 

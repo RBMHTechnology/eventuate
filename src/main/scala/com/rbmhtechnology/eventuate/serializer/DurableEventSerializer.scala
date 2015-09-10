@@ -65,7 +65,7 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
     builder.setEmitterId(durableEvent.emitterId)
     builder.setSystemTimestamp(durableEvent.systemTimestamp)
     builder.setVectorTimestamp(vectorTimeFormatBuilder(durableEvent.vectorTimestamp))
-    builder.setPersistLogId(durableEvent.persistLogId)
+    builder.setProcessId(durableEvent.processId)
     builder.setSourceLogId(durableEvent.sourceLogId)
     builder.setTargetLogId(durableEvent.targetLogId)
     builder.setSourceLogSequenceNr(durableEvent.sourceLogSequenceNr)
@@ -124,7 +124,7 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
       customDestinationAggregateIds = customDestinationAggregateIds,
       systemTimestamp = durableEventFormat.getSystemTimestamp,
       vectorTimestamp = vectorTime(durableEventFormat.getVectorTimestamp),
-      persistLogId = durableEventFormat.getPersistLogId,
+      processId = durableEventFormat.getProcessId,
       sourceLogId = durableEventFormat.getSourceLogId,
       targetLogId = durableEventFormat.getTargetLogId,
       sourceLogSequenceNr = durableEventFormat.getSourceLogSequenceNr,

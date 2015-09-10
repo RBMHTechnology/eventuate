@@ -38,19 +38,25 @@ case class VectorClock(processId: String, currentTime: VectorTime = VectorTime()
    * Updates current time with `t` (single tick and merge).
    */
   def update(t: VectorTime): VectorClock =
-    tick().merge(t)
+    merge(t).tick()
 
   /**
    * Merges current time with `t`.
    */
   def merge(t: VectorTime): VectorClock =
-    copy(processId, currentTime.merge(t))
+    copy(currentTime = currentTime.merge(t))
 
   /**
-   * Advances local time by a single `count` ticks.
+   * Advances local time by a single tick.
    */
   def tick(): VectorClock =
-    copy(processId, currentTime.increment(processId))
+    copy(currentTime = currentTime.increment(processId))
+
+  /**
+   * Sets the local time of given `processId` to `t`.
+   */
+  def set(processId: String, t: Long): VectorClock =
+    copy(currentTime = currentTime.setLocalTime(processId, t))
 
   /**
    * Checks whether the owner process is in agreement with an emitter process about

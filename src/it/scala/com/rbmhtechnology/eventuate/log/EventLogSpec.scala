@@ -75,7 +75,7 @@ object EventLogSpec {
 
   implicit class RemoteDurableEvent(event: DurableEvent) {
     def remote: DurableEvent = event.copy(
-      persistLogId = remoteLogId,
+      processId = remoteLogId,
       sourceLogId = remoteLogId,
       targetLogId = remoteLogId)
   }
@@ -134,7 +134,7 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfter
     events.zipWithIndex.map {
       case (event, idx) => event.copy(
         vectorTimestamp = timestamp(offset + idx),
-        persistLogId = logId,
+        processId = logId,
         sourceLogId = logId,
         targetLogId = logId,
         sourceLogSequenceNr = offset + idx,
@@ -144,7 +144,7 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfter
   def expectedReplicatedEvents(events: Seq[DurableEvent], sourceLogReadPosition: Long, offset: Long = 0): Seq[DurableEvent] =
     events.zipWithIndex.map {
       case (event, idx) => event.copy(
-        persistLogId = remoteLogId,
+        processId = remoteLogId,
         sourceLogId = remoteLogId,
         targetLogId = logId,
         targetLogSequenceNr = offset + idx,

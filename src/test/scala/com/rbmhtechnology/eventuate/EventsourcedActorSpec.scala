@@ -42,25 +42,26 @@ object EventsourcedActorSpec {
 
     override val onCommand: Receive = {
       case "boom" => throw boom
+      case "status" => dstProbe ! (("status", lastVectorTimestamp, currentTime, lastSequenceNr))
       case Ping(i) => dstProbe ! Pong(i)
       case "test-handler-order" =>
-        persist("a")(r => dstProbe ! ((s"${r.get}-1", lastVectorTimestamp, lastHandledTime, lastSequenceNr)))
-        persist("b")(r => dstProbe ! ((s"${r.get}-2", lastVectorTimestamp, lastHandledTime, lastSequenceNr)))
+        persist("a")(r => dstProbe ! ((s"${r.get}-1", lastVectorTimestamp, currentTime, lastSequenceNr)))
+        persist("b")(r => dstProbe ! ((s"${r.get}-2", lastVectorTimestamp, currentTime, lastSequenceNr)))
       case "test-multi-persist" =>
-        val handler = (r: Try[String]) => dstProbe ! ((r.get, lastHandledTime, lastVectorTimestamp, lastSequenceNr))
+        val handler = (r: Try[String]) => dstProbe ! ((r.get, currentTime, lastVectorTimestamp, lastSequenceNr))
         persistN(Seq("a", "b", "c"), handler)(handler)
       case Cmd(p, num) => 1 to num foreach { i =>
         persist(s"${p}-${i}") {
           case Success("boom") => throw boom
-          case Success(evt) => dstProbe ! ((evt, lastVectorTimestamp, lastHandledTime, lastSequenceNr))
-          case Failure(err) => errProbe ! ((err, lastVectorTimestamp, lastHandledTime, lastSequenceNr))
+          case Success(evt) => dstProbe ! ((evt, lastVectorTimestamp, currentTime, lastSequenceNr))
+          case Failure(err) => errProbe ! ((err, lastVectorTimestamp, currentTime, lastSequenceNr))
         }
       }
     }
 
     override val onEvent: Receive = {
       case "boom" => throw boom
-      case evt if evt != "x" => dstProbe ! ((evt, lastVectorTimestamp, lastHandledTime, lastSequenceNr))
+      case evt if evt != "x" => dstProbe ! ((evt, lastVectorTimestamp, currentTime, lastSequenceNr))
     }
   }
 
@@ -146,7 +147,29 @@ object EventsourcedActorSpec {
     }
 
     private def message(payload: Any) =
-      (payload, lastVectorTimestamp, lastHandledTime, lastSequenceNr)
+      (payload, lastVectorTimestamp, currentTime, lastSequenceNr)
+  }
+
+  class TestCausalityActor(
+    val logProbe: ActorRef,
+    val dstProbe: ActorRef,
+    val errProbe: ActorRef,
+    override val sharedClockEntry: Boolean) extends EventsourcedActor {
+
+    val id = emitterIdA
+    val eventLog = logProbe
+
+    override val onCommand: Receive = {
+      case Cmd(p: String, _) =>
+        persist(p) {
+          case Success(evt) => onEvent(evt)
+          case Failure(err) => errProbe ! err
+        }
+    }
+
+    override val onEvent: Receive = {
+      case evt => dstProbe ! ((evt, lastVectorTimestamp, currentTime, lastSequenceNr))
+    }
   }
 }
 
@@ -162,35 +185,31 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
     errProbe = TestProbe()
   }
 
-  override def unrecoveredActor: ActorRef =
-    unrecoveredActor(stateSync = true)
+  override def unrecoveredEventsourcedActor(): ActorRef =
+    unrecoveredEventsourcedActor(stateSync = true)
 
-  def unrecoveredActor(stateSync: Boolean): ActorRef =
+  def unrecoveredEventsourcedActor(stateSync: Boolean): ActorRef =
     system.actorOf(Props(new TestEventsourcedActor(logProbe.ref, dstProbe.ref, errProbe.ref, stateSync)))
 
   def unrecoveredSnapshotActor(): ActorRef =
     system.actorOf(Props(new TestSnapshotActor(logProbe.ref, dstProbe.ref, errProbe.ref)))
 
-  def recoveredActor(stateSync: Boolean = true): ActorRef = {
-    val actor = unrecoveredActor(stateSync)
-    logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId))
-    actor ! LoadSnapshotSuccess(None, instanceId)
-    logProbe.expectMsg(Replay(1, actor, instanceId))
-    actor ! ReplaySuccess(instanceId)
-    actor
-  }
+  def unrecoveredCausalityActor(sharedClockEntry: Boolean): ActorRef =
+    system.actorOf(Props(new TestCausalityActor(logProbe.ref, dstProbe.ref, errProbe.ref, sharedClockEntry)))
 
-  def recoveredSnapshotActor(): ActorRef = {
-    val actor = system.actorOf(Props(new TestSnapshotActor(logProbe.ref, dstProbe.ref, errProbe.ref)))
-    logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId))
-    actor ! LoadSnapshotSuccess(None, instanceId)
-    logProbe.expectMsg(Replay(1, actor, instanceId))
-    actor ! ReplaySuccess(instanceId)
-    actor
-  }
+  def recoveredEventsourcedActor(stateSync: Boolean): ActorRef =
+    processRecover(unrecoveredEventsourcedActor(stateSync))
 
-  def stashingActor(stateSync: Boolean = true): ActorRef = {
-    val actor = system.actorOf(Props(new TestStashingActor(logProbe.ref, dstProbe.ref, errProbe.ref, stateSync)))
+  def recoveredSnapshotActor(): ActorRef =
+    processRecover(unrecoveredSnapshotActor())
+
+  def recoveredCausalityActor(sharedClockEntry: Boolean): ActorRef =
+    processRecover(unrecoveredCausalityActor(sharedClockEntry))
+
+  def stashingActor(stateSync: Boolean): ActorRef =
+    processRecover(system.actorOf(Props(new TestStashingActor(logProbe.ref, dstProbe.ref, errProbe.ref, stateSync))))
+
+  def processRecover(actor: ActorRef): ActorRef = {
     logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId))
     actor ! LoadSnapshotSuccess(None, instanceId)
     logProbe.expectMsg(Replay(1, actor, instanceId))
@@ -206,7 +225,7 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
   "An EventsourcedActor" when {
     "in stateSync = true mode" must {
       "stash further commands while persistence is in progress" in {
-        val actor = recoveredActor(stateSync = true)
+        val actor = recoveredEventsourcedActor(stateSync = true)
         actor ! Cmd("a", 2)
         actor ! Ping(1)
         actor ! Ping(2)
@@ -224,7 +243,7 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
         dstProbe.expectMsg(Pong(2))
       }
       "process further commands if persist is aborted by exception in persist handler" in {
-        val actor = recoveredActor(stateSync = true)
+        val actor = recoveredEventsourcedActor(stateSync = true)
         actor ! Cmd("a", 2)
         actor ! Cmd("b", 2)
 
@@ -315,7 +334,7 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
     }
     "in stateSync = false mode" must {
       "process further commands while persistence is in progress" in {
-        val actor = recoveredActor(stateSync = false)
+        val actor = recoveredEventsourcedActor(stateSync = false)
         actor ! Cmd("a", 2)
         actor ! Ping(1)
         val write = logProbe.expectMsgClass(classOf[Write])
@@ -328,7 +347,7 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
         dstProbe.expectMsg(("a-2", timestamp(2), timestamp(2), 2))
       }
       "process further commands if persist is aborted by exception in command handler" in {
-        val actor = recoveredActor(stateSync = false)
+        val actor = recoveredEventsourcedActor(stateSync = false)
         actor ! Cmd("a", 2)
         actor ! "boom"
         actor ! Cmd("b", 2)
@@ -358,7 +377,7 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
     }
     "in any mode" must {
       "handle remote events while persistence is in progress" in {
-        val actor = recoveredActor(stateSync = true)
+        val actor = recoveredEventsourcedActor(stateSync = true)
         actor ! Cmd("a", 2)
         val write = logProbe.expectMsgClass(classOf[Write])
         write.events(0).payload should be("a-1")
@@ -381,7 +400,7 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
         dstProbe.expectMsg(("a-2", timestamp(4, 0), timestamp(4, 2), 4L))
       }
       "invoke persist handler in correct order" in {
-        val actor = recoveredActor(stateSync = true)
+        val actor = recoveredEventsourcedActor(stateSync = true)
         actor ! "test-handler-order"
 
         val write = logProbe.expectMsgClass(classOf[Write])
@@ -395,7 +414,7 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
         dstProbe.expectMsg(("b-2", timestamp(2), timestamp(2), 2))
       }
       "additionally invoke onLast handler for multi-persist" in {
-        val actor = recoveredActor(stateSync = true)
+        val actor = recoveredEventsourcedActor(stateSync = true)
         actor ! "test-multi-persist"
 
         val write = logProbe.expectMsgClass(classOf[Write])
@@ -413,7 +432,7 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
         dstProbe.expectMsg(("c", timestamp(3), timestamp(3), 3))
       }
       "report failed writes to persist handler" in {
-        val actor = recoveredActor(stateSync = true)
+        val actor = recoveredEventsourcedActor(stateSync = true)
         actor ! Cmd("a", 2)
 
         val write = logProbe.expectMsgClass(classOf[Write])
@@ -427,12 +446,24 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
         errProbe.expectMsg((boom, event2.vectorTimestamp, event2.vectorTimestamp, event2.sequenceNr))
       }
       "not send empty write commands to log" in {
-        val actor = recoveredActor(stateSync = true)
+        val actor = recoveredEventsourcedActor(stateSync = true)
         actor ! Ping(1)
         actor ! Cmd("a", 2)
         val write = logProbe.expectMsgClass(classOf[Write])
         write.events(0).payload should be("a-1")
         write.events(1).payload should be("a-2")
+      }
+      "not update clock if event is not handled" in {
+        val actor = recoveredEventsourcedActor(stateSync = true)
+
+        actor ! Written(event2b)
+        actor ! Written(event2c.copy(payload = "x"))
+        actor ! "status"
+        actor ! Written(event2d)
+
+        dstProbe.expectMsg(("b",      event2b.vectorTimestamp, timestamp(2, 1), event2b.sequenceNr))
+        dstProbe.expectMsg(("status", event2b.vectorTimestamp, timestamp(2, 1), event2b.sequenceNr))
+        dstProbe.expectMsg(("d",      event2d.vectorTimestamp, timestamp(4, 3), event2d.sequenceNr))
       }
     }
   }
@@ -550,6 +581,80 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
       actor ! "snap"
       actor ! "snap"
       errProbe.expectMsgClass(classOf[IllegalStateException])
+    }
+  }
+
+  "An EventsourcedActor" when {
+    "in sharedClockEntry = false mode" must {
+      def timestamp(a: Long = 0L, b: Long= 0L) = (a, b) match {
+        case (0L, 0L) => VectorTime()
+        case (a,  0L) => VectorTime(emitterIdA -> a)
+        case (0L,  b) => VectorTime(emitterIdB -> b)
+        case (a,   b) => VectorTime(emitterIdA -> a, emitterIdB -> b)
+      }
+      "recover from replayed self-emitted events" in {
+        val actor = unrecoveredCausalityActor(sharedClockEntry = false)
+
+        val e1 = event1a.copy(vectorTimestamp = timestamp(1, 0), processId = emitterIdA)
+        val e2 = event1b.copy(vectorTimestamp = timestamp(2, 0), processId = emitterIdA)
+
+        logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId))
+        actor ! LoadSnapshotSuccess(None, instanceId)
+        logProbe.expectMsg(Replay(1, actor, instanceId))
+
+        actor ! Replaying(e1, instanceId)
+        actor ! Replaying(e2, instanceId)
+        actor ! ReplaySuccess(instanceId)
+
+        dstProbe.expectMsg(("a", e1.vectorTimestamp, e1.vectorTimestamp, e1.sequenceNr))
+        dstProbe.expectMsg(("b", e2.vectorTimestamp, e2.vectorTimestamp, e2.sequenceNr))
+      }
+      "recover from replayed self-emitted and remote events" in {
+        val actor = unrecoveredCausalityActor(sharedClockEntry = false)
+
+        val e1 = event2a.copy(vectorTimestamp = timestamp(1, 0), processId = emitterIdA, targetLogSequenceNr = 6L)
+        val e2 = event2b.copy(vectorTimestamp = timestamp(0, 1), processId = emitterIdB, targetLogSequenceNr = 7L)
+        val e3 = event2c.copy(vectorTimestamp = timestamp(0, 2), processId = emitterIdB, targetLogSequenceNr = 8L)
+        val e4 = event2d.copy(vectorTimestamp = timestamp(0, 3), processId = emitterIdB, targetLogSequenceNr = 9L)
+
+        logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId))
+        actor ! LoadSnapshotSuccess(None, instanceId)
+        logProbe.expectMsg(Replay(1, actor, instanceId))
+
+        actor ! Replaying(e1, instanceId)
+        actor ! Replaying(e2, instanceId)
+        actor ! Replaying(e3, instanceId)
+        actor ! Replaying(e4, instanceId)
+        actor ! ReplaySuccess(instanceId)
+
+        dstProbe.expectMsg(("a", e1.vectorTimestamp, timestamp(1, 0), e1.targetLogSequenceNr))
+        dstProbe.expectMsg(("b", e2.vectorTimestamp, timestamp(2, 1), e2.targetLogSequenceNr))
+        dstProbe.expectMsg(("c", e3.vectorTimestamp, timestamp(3, 2), e3.targetLogSequenceNr))
+        dstProbe.expectMsg(("d", e4.vectorTimestamp, timestamp(4, 3), e4.targetLogSequenceNr))
+      }
+      "increase local time when persisting an event" in {
+        val actor = recoveredCausalityActor(sharedClockEntry = false)
+
+        val e1 = DurableEvent("x", emitterIdB, None, Set(), 0L, timestamp(0, 1), emitterIdB, logIdB, logIdA, 1L, 1L, 2L)
+        val e2 = DurableEvent("a", emitterIdA, None, Set(), 0L, timestamp(2, 1), emitterIdA)
+        val e3 = DurableEvent("b", emitterIdA, None, Set(), 0L, timestamp(3, 1), emitterIdA)
+
+        actor ! Written(e1)
+        actor ! Cmd("a")
+        actor ! Cmd("b")
+
+        val write1 = logProbe.expectMsgClass(classOf[Write])
+        write1.events(0).copy(systemTimestamp = 0L) should be(e2)
+        actor ! WriteSuccess(e2.copy(sourceLogId = logIdA, targetLogId = logIdA, sourceLogSequenceNr = 2L, targetLogSequenceNr = 2L), instanceId)
+
+        val write2 = logProbe.expectMsgClass(classOf[Write])
+        write2.events(0).copy(systemTimestamp = 0L) should be(e3)
+        actor ! WriteSuccess(e3.copy(sourceLogId = logIdA, targetLogId = logIdA, sourceLogSequenceNr = 3L, targetLogSequenceNr = 3L), instanceId)
+
+        dstProbe.expectMsg(("x", e1.vectorTimestamp, timestamp(1, 1), 1))
+        dstProbe.expectMsg(("a", e2.vectorTimestamp, timestamp(2, 1), 2))
+        dstProbe.expectMsg(("b", e3.vectorTimestamp, timestamp(3, 1), 3))
+      }
     }
   }
 }

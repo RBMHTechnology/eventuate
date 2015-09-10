@@ -55,7 +55,7 @@ object BasicCausalityConfig extends MultiNodeConfig {
     }
 
     val onEvent: Receive = {
-      case s: String => probe ! ((s, lastVectorTimestamp, lastHandledTime))
+      case s: String => probe ! ((s, lastVectorTimestamp, currentTime))
     }
   }
 
@@ -79,51 +79,54 @@ abstract class BasicCausalitySpec extends MultiNodeSpec(BasicCausalityConfig) wi
     case (a,   b) => VectorTime(logIdA -> a, logIdB -> b)
   }
 
-  "Eventuate" must {
-    "support the scenario documented in issue #68" in {
-      val probe = TestProbe()
+  "Event-sourced actors" when {
+    "located at different locations" can {
+      "track causality" in {
+        val probe = TestProbe()
 
-      runOn(nodeA) {
-        val endpoint = createEndpoint(nodeA.name, Set(node(nodeB).address.toReplicationConnection))
-        val actor = system.actorOf(Props(new ReplicatedActor("pa", endpoint.log, probe.ref)))
+        runOn(nodeA) {
+          val endpoint = createEndpoint(nodeA.name, Set(node(nodeB).address.toReplicationConnection))
+          val actor = system.actorOf(Props(new ReplicatedActor("pa", endpoint.log, probe.ref)))
 
-        probe.expectMsg(("x", vectorTime(0, 1), vectorTime(1, 1)))
-        actor ! "y"
-        probe.expectMsg(("y", vectorTime(2, 1), vectorTime(2, 1)))
+          probe.expectMsg(("x", vectorTime(0, 1), vectorTime(1, 1)))
 
-        enterBarrier("reply")
-        testConductor.blackhole(nodeA, nodeB, Direction.Both).await
-        enterBarrier("broken")
+          actor ! "y"
+          probe.expectMsg(("y", vectorTime(2, 1), vectorTime(2, 1)))
 
-        actor ! "z1"
-        probe.expectMsg(("z1", vectorTime(3, 1), vectorTime(3, 1)))
+          enterBarrier("reply")
+          testConductor.blackhole(nodeA, nodeB, Direction.Both).await
+          enterBarrier("broken")
 
-        enterBarrier("repair")
-        testConductor.passThrough(nodeA, nodeB, Direction.Both).await
+          actor ! "z1"
+          probe.expectMsg(("z1", vectorTime(3, 1), vectorTime(3, 1)))
 
-        probe.expectMsg(("z2", vectorTime(2, 3), vectorTime(4, 3)))
+          enterBarrier("repair")
+          testConductor.passThrough(nodeA, nodeB, Direction.Both).await
+
+          probe.expectMsg(("z2", vectorTime(2, 3), vectorTime(4, 3)))
+        }
+
+        runOn(nodeB) {
+          val endpoint = createEndpoint(nodeB.name, Set(node(nodeA).address.toReplicationConnection))
+          val actor = system.actorOf(Props(new ReplicatedActor("pb", endpoint.log, probe.ref)))
+
+          actor ! "x"
+          probe.expectMsg(("x", vectorTime(0, 1), vectorTime(0, 1)))
+          probe.expectMsg(("y", vectorTime(2, 1), vectorTime(2, 2)))
+
+          enterBarrier("reply")
+          enterBarrier("broken")
+
+          actor ! "z2"
+          probe.expectMsg(("z2", vectorTime(2, 3), vectorTime(2, 3)))
+
+          enterBarrier("repair")
+
+          probe.expectMsg(("z1", vectorTime(3, 1), vectorTime(3, 4)))
+        }
+
+        enterBarrier("finish")
       }
-
-      runOn(nodeB) {
-        val endpoint = createEndpoint(nodeB.name, Set(node(nodeA).address.toReplicationConnection))
-        val actor = system.actorOf(Props(new ReplicatedActor("pa", endpoint.log, probe.ref)))
-
-        actor ! "x"
-        probe.expectMsg(("x", vectorTime(0, 1), vectorTime(0, 1)))
-        probe.expectMsg(("y", vectorTime(2, 1), vectorTime(2, 2)))
-
-        enterBarrier("reply")
-        enterBarrier("broken")
-
-        actor ! "z2"
-        probe.expectMsg(("z2", vectorTime(2, 3), vectorTime(2, 3)))
-
-        enterBarrier("repair")
-
-        probe.expectMsg(("z1", vectorTime(3, 1), vectorTime(3, 4)))
-      }
-
-      enterBarrier("finish")
     }
   }
 }
