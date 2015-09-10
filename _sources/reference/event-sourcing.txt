@@ -74,7 +74,7 @@ Event metadata of the last handled event can be obtained with the ``last*`` meth
 Causality tracking
 ~~~~~~~~~~~~~~~~~~
 
-As described in section :ref:`vector-clocks`, Eventuate’s causality tracking default can be formalized with `plausible clocks`_. To achieve more fine-grained causality tracking, event-sourced actors can reserve their own entry in a vector clock. To reserve their own entry, concrete ``EventsourcedActor``\ s must override the ``sharedClockEntry`` method to return ``false``.
+As described in section :ref:`vector-clocks`, Eventuate’s causality tracking default can be formalized in `plausible clocks`_. To achieve more fine-grained causality tracking, event-sourced actors can reserve their own entry in a vector clock. To reserve its own entry, a concrete ``EventsourcedActor`` must override the ``sharedClockEntry`` method to return ``false``.
 
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: clock-entry-class
