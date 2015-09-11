@@ -37,6 +37,8 @@ Event replication across locations is reliable. Should there be a network partit
 
 Replication connections can also be configured with replication filters, so that only events matching one or more filter criteria are replicated. This is especially useful for smaller locations (for example, mobile devices) that only need to exchange a subset of events with other locations.
 
+.. _event-sourced-actors:
+
 Event-sourced actors
 --------------------
 
@@ -62,7 +64,7 @@ A special form of event collaboration is state replication where actors of the s
 
    Fig. 4 
 
-   Two event-sourced actors exchanging events over a distributed event log.
+   Two event-sourced actors exchanging events over a replicated event log.
 
 Event-sourced actors may also interact with external services by sending commands and processing replies. Commands can be sent with *at-most-once* or *at-least-once* delivery semantics, depending on the reliability requirements of an application. Replies from external services are usually processed like external commands which may result in further events to be written. This way, external services can be included into reliable, event-driven business processes controlled by event-sourced actors.
 
@@ -117,6 +119,8 @@ Eventuate internally uses batching to optimize read and write throughput. It is 
 - consuming events from the event log: Events can be read from the event log in batches which allows for efficient integration of external consumers.
 
 - replicating events: Events are replicated in batches of configurable size. They are batch-read from a source log, batch-transferred over a replication connection and batch-written to a target log.
+
+.. _adapters:
 
 Adapters
 --------

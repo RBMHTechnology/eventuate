@@ -28,11 +28,13 @@
         </head>
         <body class="type">
       <div id="definition">
-        <img src="../../../lib/class_big.png" />
+        <img alt="Class" src="../../../lib/class_big.png" />
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a></p>
-        <h1>Snapshot</h1> <span class="permalink">
+        <h1>Snapshot</h1><h3><span class="morelinks"><div>Related Doc:
+            <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">package eventuate</a>
+          </div></span></h3><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       </div>
@@ -50,8 +52,7 @@
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Provider API.</p><p>Snapshot storage format. <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>s and <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>s can save snapshots of
 internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor#save">EventsourcedActor#save</a> or <a href="EventsourcedView.html#save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#save">EventsourcedView#save</a>, respectively.
 </p></div><dl class="paramcmts block"><dt class="param">payload</dt><dd class="cmt"><p>Application-specific snapshot.</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that saved the snapshot.</p></dd><dt class="param">lastEvent</dt><dd class="cmt"><p>Last event delivered to the event handler before the snapshot was saved.</p></dd><dt class="param">currentTime</dt><dd class="cmt"><p>Current vector time when the snapshot was saved.</p></dd><dt class="param">deliveryAttempts</dt><dd class="cmt"><p>Unconfirmed delivery attempts when the snapshot was saved (can only be
-                        non-empty if the actor implements <a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a>).
-</p></dd></dl><div class="toggleContainer block">
+                        non-empty if the actor implements <a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a>).</p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -79,7 +80,6 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
               <li class="hideall out"><span>Hide All</span></li>
               <li class="showall in"><span>Show all</span></li>
             </ol>
-            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
           </div>
         <div id="visbl">
             <span class="filtertype">Visibility</span>
@@ -104,12 +104,11 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@&lt;init&gt;(payload:Any,emitterId:String,lastEvent:com.rbmhtechnology.eventuate.DurableEvent,currentTime:com.rbmhtechnology.eventuate.VectorTime,deliveryAttempts:Vector[com.rbmhtechnology.eventuate.ConfirmedDelivery.DeliveryAttempt]):com.rbmhtechnology.eventuate.Snapshot" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">payload</dt><dd class="cmt"><p>Application-specific snapshot.</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that saved the snapshot.</p></dd><dt class="param">lastEvent</dt><dd class="cmt"><p>Last event delivered to the event handler before the snapshot was saved.</p></dd><dt class="param">currentTime</dt><dd class="cmt"><p>Current vector time when the snapshot was saved.</p></dd><dt class="param">deliveryAttempts</dt><dd class="cmt"><p>Unconfirmed delivery attempts when the snapshot was saved (can only be
-                        non-empty if the actor implements <a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a>).
-</p></dd></dl></div>
+                        non-empty if the actor implements <a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a>).</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -132,7 +131,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@!=(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -149,7 +148,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@##():Int" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -166,7 +165,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@==(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -183,7 +182,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@add(deliveryAttempt:com.rbmhtechnology.eventuate.ConfirmedDelivery.DeliveryAttempt):com.rbmhtechnology.eventuate.Snapshot" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       
@@ -200,7 +199,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@asInstanceOf[T0]:T0" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
@@ -217,7 +216,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@clone():Object" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -240,7 +239,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@currentTime:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Current vector time when the snapshot was saved.</p>
@@ -257,7 +256,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@deliveryAttempts:Vector[com.rbmhtechnology.eventuate.ConfirmedDelivery.DeliveryAttempt]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Unconfirmed delivery attempts when the snapshot was saved (can only be
@@ -275,7 +274,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@emitterId:String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that saved the snapshot.</p>
@@ -292,7 +291,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -309,7 +308,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@finalize():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -332,7 +331,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@getClass():Class[_]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -349,7 +348,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
@@ -366,7 +365,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@lastEvent:com.rbmhtechnology.eventuate.DurableEvent" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Last event delivered to the event handler before the snapshot was saved.</p>
@@ -383,7 +382,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@metadata:com.rbmhtechnology.eventuate.SnapshotMetadata" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       
@@ -400,7 +399,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -417,7 +416,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@notify():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -434,7 +433,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@notifyAll():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -451,7 +450,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@payload:Any" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Application-specific snapshot.</p>
@@ -468,7 +467,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -485,7 +484,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@wait():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -508,7 +507,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -531,7 +530,7 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.Snapshot@wait(x$1:Long):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>

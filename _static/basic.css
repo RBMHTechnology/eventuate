@@ -4,7 +4,7 @@
  *
  * Sphinx stylesheet -- basic theme.
  *
- * :copyright: Copyright 2007-2015 by the Sphinx team, see AUTHORS.
+ * :copyright: Copyright 2007-2014 by the Sphinx team, see AUTHORS.
  * :license: BSD, see LICENSE for details.
  *
  */
@@ -525,11 +525,11 @@ div.code-block-caption span.caption-number {
 div.code-block-caption span.caption-text {
 }
 
-div.literal-block-wrapper {
+div.container {
     padding: 1em 1em 0;
 }
 
-div.literal-block-wrapper div.highlight {
+div.container div.highlight {
     margin: 0;
 }
 
