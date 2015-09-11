@@ -59,7 +59,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
   val instanceId: Int = instanceIdCounter.getAndIncrement()
 
   private var _recovering: Boolean = true
-  private var _lastReceivedEvent: DurableEvent = _
+  private var _lastHandledEvent: DurableEvent = _
   private var _clock: VectorClock = _
 
   private var saveRequests: Map[SnapshotMetadata, Handler[SnapshotMetadata]] = Map.empty
@@ -139,7 +139,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
    * Internal API.
    */
   private[eventuate] def onEventInternal(event: DurableEvent): Unit = {
-    _lastReceivedEvent = event
+    _lastHandledEvent = event
 
     if (sharedClockEntry) {
       // set local clock to local time (= sequence number) of event log
@@ -161,14 +161,14 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
    * Internal API.
    */
   private[eventuate] def onEventInternal(event: DurableEvent, failure: Throwable): Unit = {
-    _lastReceivedEvent = event
+    _lastHandledEvent = event
   }
 
   /**
    * Internal API.
    */
-  private[eventuate] def lastReceivedEvent: DurableEvent =
-    _lastReceivedEvent
+  private[eventuate] def lastHandledEvent: DurableEvent =
+    _lastHandledEvent
 
   /**
    * Internal API.
@@ -188,31 +188,31 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
    * Sequence number of the last handled event.
    */
   final def lastSequenceNr: Long =
-    lastReceivedEvent.sequenceNr
+    lastHandledEvent.sequenceNr
 
   /**
    * Wall-clock timestamp of the last handled event.
    */
   final def lastSystemTimestamp: Long =
-    lastReceivedEvent.systemTimestamp
+    lastHandledEvent.systemTimestamp
 
   /**
    * Vector timestamp of the last handled event.
    */
   final def lastVectorTimestamp: VectorTime =
-    lastReceivedEvent.vectorTimestamp
+    lastHandledEvent.vectorTimestamp
 
   /**
    * Emitter aggregate id of the last handled event.
    */
   final def lastEmitterAggregateId: Option[String] =
-    lastReceivedEvent.emitterAggregateId
+    lastHandledEvent.emitterAggregateId
 
   /**
    * Emitter id of the last handled event.
    */
   final def lastEmitterId: String =
-    lastReceivedEvent.emitterId
+    lastHandledEvent.emitterId
 
   /**
    * Asynchronously saves the given `snapshot` and calls `handler` with the generated
@@ -225,7 +225,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
       case other                              => other
     }
 
-    val prototype = Snapshot(payload, id, lastReceivedEvent, currentTime)
+    val prototype = Snapshot(payload, id, lastHandledEvent, currentTime)
     val metadata = prototype.metadata
 
     if (saveRequests.contains(metadata)) {
@@ -247,7 +247,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
    * Internal API.
    */
   private[eventuate] def loadedSnapshot(snapshot: Snapshot): Unit = {
-    _lastReceivedEvent = snapshot.lastEvent
+    _lastHandledEvent = snapshot.lastEvent
     _clock = _clock.copy(currentTime = snapshot.currentTime)
   }
 
@@ -343,7 +343,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
    * Initiates recovery.
    */
   override def preStart(): Unit = {
-    _lastReceivedEvent = DurableEvent(id)
+    _lastHandledEvent = DurableEvent(id)
     _clock = VectorClock(id)
     load()
   }

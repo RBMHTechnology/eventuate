@@ -34,7 +34,7 @@ case class SnapshotMetadata(emitterId: String, sequenceNr: Long)
  *
  * @param payload Application-specific snapshot.
  * @param emitterId Id of the [[EventsourcedActor]] or [[EventsourcedView]] that saved the snapshot.
- * @param lastEvent Last event delivered to the event handler before the snapshot was saved.
+ * @param lastEvent Last handled event before the snapshot was saved.
  * @param currentTime Current vector time when the snapshot was saved.
  * @param deliveryAttempts Unconfirmed delivery attempts when the snapshot was saved (can only be
  *                         non-empty if the actor implements [[ConfirmedDelivery]]).
