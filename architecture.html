@@ -184,7 +184,7 @@
 <div class="legend">
 An event log, replicated across locations 1, 2 and 3.</div>
 </div>
-<p>Events in a local event log have a total order that is consistent with causal order. This total order is location-specific because events can be written concurrently at different locations. Hence, the strongest ordering guarantee for a <em>replicated event log</em> is causal ordering which is tracked with <a class="reference internal" href="#vector-clocks"><span>Vector clocks</span></a>. Relaxing the global ordering guarantee to causal ordering allows local event logs to remain available for writes during inter-location network partitions.</p>
+<p>Writes to a local event log are not coordinated with other locations. Without coordination, the strongest global ordering guarantee for a <em>replicated event log</em> is causal ordering which is tracked with <a class="reference internal" href="#vector-clocks"><span>Vector clocks</span></a>. Events in a local event log have a total order that is location-specific but consistent with causal order at all locations. Relaxing the global ordering guarantee to causal ordering allows local event logs to remain available for writes during inter-location network partitions.</p>
 <p>A replication endpoint can also manage more than one local event log. Local event logs can be given a name and replication occurs only between logs of the same name. Logs with different names are isolated from each other<a class="footnote-reference" href="#id10" id="id3">[1]</a>. Also, their distribution across locations may differ, as shown in the following figure.</p>
 <div class="figure" id="id12" style="width: 70%">
 <img alt="_images/architecture-2.png" src="_images/architecture-2.png" />
