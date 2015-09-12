@@ -20,7 +20,7 @@ Eventuate applications store events in one or more event logs. An event log can 
 
    An event log, replicated across locations 1, 2 and 3.
 
-Events in a local event log have a total order that is consistent with causal order. This total order is location-specific because events can be written concurrently at different locations. Hence, the strongest ordering guarantee for a *replicated event log* is causal ordering which is tracked with :ref:`vector-clocks`. Relaxing the global ordering guarantee to causal ordering allows local event logs to remain available for writes during inter-location network partitions. 
+Writes to a local event log are not coordinated with other locations. Without coordination, the strongest global ordering guarantee for a *replicated event log* is causal ordering which is tracked with :ref:`vector-clocks`. Events in a local event log have a total order that is location-specific but consistent with causal order at all locations. Relaxing the global ordering guarantee to causal ordering allows local event logs to remain available for writes during inter-location network partitions.
 
 A replication endpoint can also manage more than one local event log. Local event logs can be given a name and replication occurs only between logs of the same name. Logs with different names are isolated from each other\ [#]_. Also, their distribution across locations may differ, as shown in the following figure.
 

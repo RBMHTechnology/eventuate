@@ -84,7 +84,7 @@ or the Java version with::
 
 both updates propagate to all other locations which are then displayed as conflict. Resolve the conflict with the ``resolve`` command. Conflict resolution writes a conflict resolution event to the replicated event log so that the conflict is automatically resolved at all locations.
 
-.. [#] This is a static rule for distributed agreement on conflict resolution.  
+.. [#] This is a static rule for distributed agreement which doesn’t require coordination among locations.
 
 .. _sbt: http://www.scala-sbt.org/
 
