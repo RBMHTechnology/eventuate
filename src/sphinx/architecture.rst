@@ -114,7 +114,7 @@ Batching
 
 Eventuate internally uses batching to optimize read and write throughput. It is used for
 
-- producing new events to the event log: Whenever a write operation to a an event log is in progress, new write requests are batched and served when the previous write operation completed. This strategy leads to dynamically increasing write-batch sizes (up to a configurable maximum) under increasing write loads. If there is no current write operation in progress, a new write request is served immediately, keeping latency at a minimum.
+- producing new events to the event log: Whenever a write operation to an event log is in progress, new write requests are batched and served when the previous write operation completed. This strategy leads to dynamically increasing write-batch sizes (up to a configurable maximum) under increasing write loads. If there is no current write operation in progress, a new write request is served immediately, keeping latency at a minimum.
 
 - consuming events from the event log: Events can be read from the event log in batches which allows for efficient integration of external consumers.
 
