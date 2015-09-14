@@ -245,7 +245,7 @@ External service integration.</div>
 <span id="id7"></span><h2>Batching<a class="headerlink" href="#batching" title="Permalink to this headline">¶</a></h2>
 <p>Eventuate internally uses batching to optimize read and write throughput. It is used for</p>
 <ul class="simple">
-<li>producing new events to the event log: Whenever a write operation to a an event log is in progress, new write requests are batched and served when the previous write operation completed. This strategy leads to dynamically increasing write-batch sizes (up to a configurable maximum) under increasing write loads. If there is no current write operation in progress, a new write request is served immediately, keeping latency at a minimum.</li>
+<li>producing new events to the event log: Whenever a write operation to an event log is in progress, new write requests are batched and served when the previous write operation completed. This strategy leads to dynamically increasing write-batch sizes (up to a configurable maximum) under increasing write loads. If there is no current write operation in progress, a new write request is served immediately, keeping latency at a minimum.</li>
 <li>consuming events from the event log: Events can be read from the event log in batches which allows for efficient integration of external consumers.</li>
 <li>replicating events: Events are replicated in batches of configurable size. They are batch-read from a source log, batch-transferred over a replication connection and batch-written to a target log.</li>
 </ul>
@@ -306,7 +306,7 @@ External service integration.</div>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.3-SNAPSHOT',
+            VERSION:'0.4-SNAPSHOT',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

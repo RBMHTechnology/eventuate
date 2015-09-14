@@ -21,7 +21,7 @@ To include the latest release into a Maven project, add the following to your ``
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate_2.11</artifactId>
-        <version>0.2.2</version>
+        <version>0.3</version>
     </dependency>
 
 To include the latest development snapshot::
@@ -35,7 +35,7 @@ To include the latest development snapshot::
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate_2.11</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.4-SNAPSHOT</version>
     </dependency>
 
 SBT
@@ -45,18 +45,18 @@ To include the latest release into an sbt_ project, add the following to your ``
 
     resolvers += "Eventuate Releases" at "https://dl.bintray.com/rbmhtechnology/maven"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate" % "0.2.2"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate" % "0.3"
 
 To include the latest development snapshot::
 
     resolvers += "OJO Snapshots" at "https://oss.jfrog.org/oss-snapshot-local"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate" % "0.3-SNAPSHOT"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate" % "0.4-SNAPSHOT"
 
 Sources
 -------
 
-To download the Eventuate sources, clone the `Github repository`_. Source jar files are also published Bintray_ and OJO_.
+To download the Eventuate sources, clone the `Github repository`_. Source jar files are also published to Bintray_ and OJO_.
 
 .. _OJO: http://oss.jfrog.org/artifactory/simple/oss-snapshot-local/
 .. _Bintray: https://bintray.com/rbmhtechnology/maven/eventuate
