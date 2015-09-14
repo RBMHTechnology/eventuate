@@ -62,7 +62,7 @@ A special form of event collaboration is state replication where actors of the s
 .. figure:: images/architecture-4.png
    :figwidth: 70%
 
-   Fig. 4 
+   Fig. 4
 
    Two event-sourced actors exchanging events over a replicated event log.
 
@@ -99,7 +99,7 @@ Eventuate provides implementations of :ref:`commutative-replicated-data-types` (
 Vector clocks
 -------------
 
-Eventuates uses `vector clocks`_ to track *happened-before* relationships (= potential causality) of events and provides means to limit the size of these clocks. 
+Eventuates uses `vector clocks`_ to track *happened-before* relationships (= potential causality) of events and provides means to limit the size of these clocks.
 
 By default, event-sourced actors that share an event log at a given location also share an entry in a vector clock. Event-sourced actors from different locations contribute to different entries in a vector clock. Consequently, concurrency of events can only be reliably detected if they have been emitted at different locations. This is formalized in `plausible clocks`_ and further described in `ticket 68`_. The main advantage of this approach are clock sizes that scale with the usually small number of locations in the worst case, still covering many use cases.
 
@@ -114,7 +114,7 @@ Batching
 
 Eventuate internally uses batching to optimize read and write throughput. It is used for
 
-- producing new events to the event log: Whenever a write operation to a an event log is in progress, new write requests are batched and served when the previous write operation completed. This strategy leads to dynamically increasing write-batch sizes (up to a configurable maximum) under increasing write loads. If there is no current write operation in progress, a new write request is served immediately, keeping latency at a minimum.
+- producing new events to the event log: Whenever a write operation to an event log is in progress, new write requests are batched and served when the previous write operation is completed. This strategy leads to dynamically increasing write-batch sizes (up to a configurable maximum) under increasing write loads. If there is no current write operation in progress, a new write request is served immediately, keeping latency at a minimum.
 
 - consuming events from the event log: Events can be read from the event log in batches which allows for efficient integration of external consumers.
 
@@ -155,6 +155,6 @@ We haven’t started yet working on this. Should you have any preferences or pro
 .. _ticket 103: https://github.com/RBMHTechnology/eventuate/issues/103
 .. _let us know: https://groups.google.com/forum/#!forum/eventuate
 
-.. [#] :ref:`processors` can be used to connect otherwise partitioned event logs.  
+.. [#] :ref:`processors` can be used to connect otherwise partitioned event logs.
 
 
