@@ -56,7 +56,7 @@ To include the latest development snapshot::
 Sources
 -------
 
-To download the Eventuate sources, clone the `Github repository`_. Source jar files are also published to Bintray_ and OJO_.
+To download the Eventuate sources, clone the `Github repository`_. Source jar files are also published Bintray_ and OJO_.
 
 .. _OJO: http://oss.jfrog.org/artifactory/simple/oss-snapshot-local/
 .. _Bintray: https://bintray.com/rbmhtechnology/maven/eventuate
