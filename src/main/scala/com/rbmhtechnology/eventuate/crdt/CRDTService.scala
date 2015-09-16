@@ -60,7 +60,7 @@ trait CRDTServiceOps[A, B] {
   /**
    * Update phase 2 ("downstream").
    */
-  def update(crdt: A, operation: Any, vectorTimestamp: VectorTime, systemTimestamp: Long): A
+  def update(crdt: A, operation: Any, event: DurableEvent): A
 }
 
 object CRDTService {
@@ -186,7 +186,7 @@ trait CRDTService[A, B] {
           case Some(crdt) => crdt
           case None       => ops.zero
         }
-        crdts = crdts + (id -> ops.update(crdt, operation, lastVectorTimestamp, lastSystemTimestamp))
+        crdts = crdts + (id -> ops.update(crdt, operation, lastHandledEvent))
         onChange(crdts(id), operation) // TODO: make onChange callbacks configurable (needed in tests only)
     }
   }

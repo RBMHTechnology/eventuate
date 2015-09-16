@@ -18,7 +18,7 @@ package com.rbmhtechnology.eventuate.crdt
 
 import akka.actor._
 
-import com.rbmhtechnology.eventuate.VectorTime
+import com.rbmhtechnology.eventuate.DurableEvent
 
 import scala.concurrent.Future
 
@@ -53,7 +53,7 @@ object Counter {
     override def precondition: Boolean =
       false
 
-    override def update(crdt: Counter[A], operation: Any, vectorTimestamp: VectorTime, systemTimestamp: Long): Counter[A] = operation match {
+    override def update(crdt: Counter[A], operation: Any, event: DurableEvent): Counter[A] = operation match {
       case UpdateOp(delta) => crdt.update(delta.asInstanceOf[A])
     }
   }
