@@ -22,6 +22,7 @@ import org.scalatest._
 
 class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
   val mvReg = MVRegister[Int]()
+  val lwwReg = LWWRegister[Int]()
   val orSet = ORSet[Int]()
 
   def vectorTime(t1: Long, t2: Long): VectorTime =
@@ -60,6 +61,35 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
         .set(2, vectorTime(0, 1))
         .set(3, vectorTime(1, 1))
         .value should be(Set(3))
+    }
+  }
+
+  "An LWWRegister" must {
+    "not have a value by default" in {
+      lwwReg.value should be('empty)
+    }
+    "store a single value" in {
+      lwwReg
+        .set(1, vectorTime(1, 0), 0, "source-1")
+        .value should be(Some(1))
+    }
+    "accept a new value if was set after the current value according to the vector clock" in {
+      lwwReg
+        .set(1, vectorTime(1, 0), 1, "emitter-1")
+        .set(2, vectorTime(2, 0), 0, "emitter-2")
+        .value should be(Some(2))
+    }
+    "fallback to the wall clock if the values' vector clocks are concurrent" in {
+      lwwReg
+        .set(1, vectorTime(1, 0), 1, "emitter-1")
+        .set(2, vectorTime(0, 1), 0, "emitter-2")
+        .value should be(Some(1))
+    }
+    "fallback to the greatest emitter if the values' vector clocks and wall clocks are concurrent" in {
+      lwwReg
+        .set(1, vectorTime(1, 0), 0, "emitter-1")
+        .set(2, vectorTime(0, 1), 0, "emitter-2")
+        .value should be(Some(2))
     }
   }
 
