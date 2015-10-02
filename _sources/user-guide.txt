@@ -199,7 +199,7 @@ A formal to approach to commutative replicated data types (CmRDTs) or operation-
 - The command and event handler of an event-sourced actor can be used to implement the two update phases mentioned in the paper: *atSource* and *downstream*, respectively.
 - All *downstream* preconditions mentioned in the paper are satisfied in case of causal delivery of update operations which is guaranteed for actors consuming from a replicated event log.
 
-Eventuate currently implements 3 out of 12 operation-based CRDTs specified in the paper. These are *Counter*, *MV-Register* and *OR-Set*. They can be instantiated and used via their corresponding *CRDT services*. CRDT operations are asynchronous methods on the service interfaces. CRDT services free applications from dealing with low-level details like event-sourced actors or command messages directly. The following is the definition of ORSetService_:
+Eventuate currently implements 4 out of 12 operation-based CRDTs specified in the paper. These are *Counter*, *MV-Register*, *LWW-Register* and *OR-Set*. They can be instantiated and used via their corresponding *CRDT services*. CRDT operations are asynchronous methods on the service interfaces. CRDT services free applications from dealing with low-level details like event-sourced actors or command messages directly. The following is the definition of ORSetService_:
 
 .. includecode:: ../main/scala/com/rbmhtechnology/eventuate/crdt/ORSet.scala
    :snippet: or-set-service

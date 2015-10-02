@@ -146,6 +146,68 @@ of events.
       <p class="shortcomment cmt">Replicated <a href="Counter.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Counter">Counter</a> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <a href="Counter.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Counter">Counter</a> CRDT service.
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Counter value type.
 </p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.LWWRegister" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="LWWRegister[A]extendsProductwithSerializable"></a>
+      <a id="LWWRegister[A]:LWWRegister[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="LWWRegister.html"><span class="name">LWWRegister</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="versionedValue">versionedValue: <span class="extype" name="scala.Option">Option</span>[<a href="LWWVersioned.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWVersioned">LWWVersioned</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister.A">A</span>]] = <span class="symbol">None</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@LWWRegister[A]extendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Replicated Last Writer Wins Register.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated Last Writer Wins Register. Stores a single value and timestamp at which it was set. The value is updated
+only if the vector clock is later, if the vector clocks are concurrent the register compares the system time,
+if the values are still concurrent the source with the greatest emitterId wins
+Note that this relies on synchronized system clocks. <a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a> should only be used when the choice of
+value is not important for concurrent updates occurring within the clock skew.
+</p></div><dl class="paramcmts block"><dt class="param">versionedValue</dt><dd class="cmt"><p>Initially empty.
+</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
+</p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="LWWRegisterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.LWWRegister[A],A]"></a>
+      <a id="LWWRegisterService[A]:LWWRegisterService[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="LWWRegisterService.html"><span class="name">LWWRegisterService</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>], <span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@LWWRegisterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.LWWRegister[A],A]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Replicated <a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a> CRDT service.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>LWWRegister value type.
+</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.LWWVersioned" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="LWWVersioned[A]extendsProductwithSerializable"></a>
+      <a id="LWWVersioned[A]:LWWVersioned[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="LWWVersioned.html"><span class="name">LWWVersioned</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="value">value: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWVersioned.A">A</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="../VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>, <span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@LWWVersioned[A]extendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A LWWVersioned value.</p><div class="fullcomment"><div class="comment cmt"><p>A LWWVersioned value.
+</p></div><dl class="paramcmts block"><dt class="param">value</dt><dd class="cmt"><p>The value.</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>Timestamp of the event that caused this version.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>Wall Clock</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>Creator of the event that caused this version.
+</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegister" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MVRegister[A]extendsProductwithSerializable"></a>
       <a id="MVRegister[A]:MVRegister[A]"></a>
@@ -264,6 +326,23 @@ by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnolo
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@Counter" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.LWWRegister" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LWWRegister"></a>
+      <a id="LWWRegister:LWWRegister"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="LWWRegister$.html"><span class="name">LWWRegister</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@LWWRegister" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
