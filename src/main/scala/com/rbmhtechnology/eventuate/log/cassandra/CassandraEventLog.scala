@@ -24,6 +24,7 @@ import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 import com.rbmhtechnology.eventuate.log._
+import com.rbmhtechnology.eventuate.log.TimeTracker._
 import com.rbmhtechnology.eventuate.snapshot.filesystem._
 
 import scala.collection.immutable.Seq
@@ -63,6 +64,7 @@ import scala.util._
  */
 class CassandraEventLog(val id: String) extends Actor with Stash with ActorLogging {
   import CassandraEventLog._
+  import NotificationChannel._
 
   val eventStream = context.system.eventStream
   val cassandra: Cassandra = Cassandra(context.system)
@@ -70,22 +72,35 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
   cassandra.createEventTable(id)
   cassandra.createAggregateEventTable(id)
 
-  private val scheduler = context.system.scheduler
-  private val statement = cassandra.prepareWriteEvent(id)
+  private val preparedWriteEventStatement = cassandra.prepareWriteEvent(id)
 
+  private val notificationChannel = context.actorOf(Props(new NotificationChannel(id)))
   private val snapshotStore = new FilesystemSnapshotStore(new FilesystemSnapshotStoreSettings(context.system))
-  private val reader = createReader(cassandra, id)
-  private val index = createIndex(cassandra, reader, id)
+  private val progressStore = createReplicationProgressStore(cassandra, id)
+  private val eventReader = createEventReader(cassandra, id)
+  private val index = createIndex(cassandra, eventReader, id)
+
   private var registry = SubscriberRegistry()
+  private var timeTracker = TimeTracker()
+  private var timeCache = Map.empty[String, VectorTime].withDefaultValue(VectorTime())
 
-  private[eventuate] val sequenceManager: SequenceManager =
-    new SequenceManager(id)
-
-  import sequenceManager._
+  // ------------------------------------------------------
+  // TODO: consider exchanging only vector time deltas
+  //
+  // Messages:
+  //
+  // - ReplicationRead
+  // - ReplicationReadSuccess
+  // - ReplicationWrite
+  // - ReplicationWriteSuccess
+  //
+  // This optimization might be necessary if many event-
+  // sourced actors use their own entry in vector clocks.
+  // ------------------------------------------------------
 
   def initializing: Receive = {
-    case Initialize(snr) =>
-      setSequenceNr(snr)
+    case Initialize(t) =>
+      timeTracker = t
       unstashAll()
       context.become(initialized)
     case other =>
@@ -93,79 +108,125 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
   }
 
   def initialized: Receive = {
-    case cmd: GetLastSourceLogReadPosition =>
-      index.forward(cmd)
+    case GetSequenceNr =>
+      sender() ! GetSequenceNrSuccess(timeTracker.sequenceNr)
+    case GetReplicationProgresses =>
+      import cassandra.readDispatcher
+      val sdr = sender()
+      progressStore.readReplicationProgressesAsync onComplete {
+        case Success(p) => sdr ! GetReplicationProgressesSuccess(p)
+        case Failure(e) => sdr ! GetReplicationProgressesFailure(e)
+      }
+    case GetReplicationProgress(sourceLogId) =>
+      import cassandra.readDispatcher
+      val sdr = sender()
+      val tvt = timeTracker.vectorTime
+      progressStore.readReplicationProgressAsync(sourceLogId) onComplete {
+        case Success(p) => sdr ! GetReplicationProgressSuccess(sourceLogId, p, tvt)
+        case Failure(e) => sdr ! GetReplicationProgressFailure(e)
+      }
+    case SetReplicationProgress(sourceLogId, progress) =>
+      val sdr = sender()
+      implicit val dispatcher = context.system.dispatchers.defaultGlobalDispatcher
+      progressStore.writeReplicationProgressAsync(sourceLogId, progress) onComplete {
+        case Success(_) => sdr ! SetReplicationProgressSuccess(sourceLogId, progress)
+        case Failure(e) => sdr ! SetReplicationProgressFailure(e)
+      }
     case cmd @ Replay(_, requestor, Some(emitterAggregateId), _) =>
       registry = registry.registerAggregateSubscriber(context.watch(requestor), emitterAggregateId)
       index.forward(cmd)
     case Replay(from, requestor, None, iid) =>
       import cassandra.readDispatcher
       registry = registry.registerDefaultSubscriber(context.watch(requestor))
-      reader.replayAsync(from)(event => requestor ! Replaying(event, iid) ) onComplete {
+      eventReader.replayAsync(from)(event => requestor ! Replaying(event, iid) ) onComplete {
         case Success(_) => requestor ! ReplaySuccess(iid)
         case Failure(e) => requestor ! ReplayFailure(e, iid)
       }
-    case r @ ReplicationRead(from, max, filter, targetLogId) =>
+    case r @ ReplicationRead(from, max, filter, targetLogId, _, currentTargetVectorTime) =>
       import cassandra.readDispatcher
       val sdr = sender()
-      eventStream.publish(r)
-      reader.readAsync(from, max, filter, targetLogId) onComplete {
+      notificationChannel ! r
+      eventReader.readAsync(from, max, filter, currentTargetVectorTime, targetLogId) onComplete {
         case Success(result) =>
-          val r = ReplicationReadSuccess(result.events, result.to, targetLogId)
-          sdr ! r
-          eventStream.publish(r)
+          val reply = ReplicationReadSuccess(result.events, result.to, targetLogId, null)
+          self.tell(reply, sdr)
         case Failure(cause)  =>
-          val r = ReplicationReadFailure(cause.getMessage, targetLogId)
-          sdr ! r
-          eventStream.publish(r)
+          val reply = ReplicationReadFailure(cause.getMessage, targetLogId)
+          sdr ! reply
+          notificationChannel ! reply
       }
+    case r @ ReplicationReadSuccess(events, _, targetLogId, _) =>
+      // Post-filter events using a possibly updated vector time received from the target.
+      // This is an optimization to reduce network bandwidth usage. If omitted, events are
+      // still filtered at target based on the current local vector time at the target (for
+      // correctness).
+      val currentTargetVectorTime = timeCache(targetLogId)
+      val updated = events.filter(_.replicate(currentTargetVectorTime))
+      val reply = r.copy(updated, currentSourceVectorTime = timeTracker.vectorTime)
+      sender() ! reply
+      notificationChannel ! reply
+      logFilterStatistics(log, id, "source", events, updated)
     case Write(events, initiator, requestor, iid) =>
       val result = for {
-        partition <- Try(adjustSequenceNr(events.size))
-        updated    = prepareWrite(events, currentSystemTime)
-        _         <- Try(write(partition, updated))
-      } yield updated
+        (partition, tracker) <- Try(adjustSequenceNr(events.size, cassandra.settings.partitionSizeMax, timeTracker))
+        (updated, tracker2)   = tracker.prepareWrite(id, events, currentSystemTime)
+        tracker3             <- Try(write(partition, updated, tracker2))
+      } yield (updated, tracker3)
 
       result match {
-        case Success(updated) =>
+        case Success((updated, tracker)) =>
+          timeTracker = tracker
           registry.pushWriteSuccess(updated, initiator, requestor, iid)
-          publishUpdateNotification(updated)
-          requestIndexUpdate()
+          notificationChannel ! Updated(updated)
         case Failure(e) =>
           registry.pushWriteFailure(events, initiator, requestor, iid, e)
       }
     case r @ WriteN(writes) =>
       val result = for {
-        partition     <- Try(adjustSequenceNr(r.size))
-        updatedWrites  = writes.map(w => w.copy(prepareWrite(w.events, currentSystemTime)))
-        updatedEvents  = updatedWrites.flatMap(_.events)
-        _             <- Try(write(partition, updatedEvents))
-      } yield (updatedWrites, updatedEvents)
+        (partition, tracker)      <- Try(adjustSequenceNr(r.size, cassandra.settings.partitionSizeMax, timeTracker))
+        (updatedWrites, tracker2)  = tracker.prepareWrites(id, writes, currentSystemTime)
+        updatedEvents              = updatedWrites.flatMap(_.events)
+        tracker3                  <- Try(write(partition, updatedEvents, tracker2))
+      } yield (updatedWrites, updatedEvents, tracker3)
 
       result match {
-        case Success((updatedWrites, updatedEvents)) =>
+        case Success((updatedWrites, updatedEvents, tracker)) =>
+          timeTracker = tracker
           updatedWrites.foreach(w => registry.pushWriteSuccess(w.events, w.initiator, w.requestor, w.instanceId))
-          publishUpdateNotification(updatedEvents)
-          requestIndexUpdate()
+          notificationChannel ! Updated(updatedEvents)
         case Failure(e) =>
           writes.foreach(w => registry.pushWriteFailure(w.events, w.initiator, w.requestor, w.instanceId, e))
       }
       sender() ! WriteNComplete // notify batch layer that write completed
-    case r @ ReplicationWrite(Seq(), _, _) =>
-      index.forward(r)
-    case ReplicationWrite(events, sourceLogId, lastSourceLogSequenceNrRead) =>
+    case ReplicationWrite(events, sourceLogId, replicationProgress, currentSourceVectorTime) =>
+      timeCache = timeCache.updated(sourceLogId, currentSourceVectorTime)
       val result = for {
-        partition <- Try(adjustSequenceNr(events.size))
-        updated    = prepareReplicate(events, lastSourceLogSequenceNrRead)
-        _         <- Try(write(partition, updated))
-      } yield updated
+        (partition, tracker) <- Try(adjustSequenceNr(events.size, cassandra.settings.partitionSizeMax, timeTracker))
+        (updated, tracker2)   = tracker.prepareReplicate(id, events, replicationProgress)
+        tracker3             <- Try(write(partition, updated, tracker2))
+      } yield (updated, tracker3)
 
       result match {
-        case Success(updated) =>
-          sender() ! ReplicationWriteSuccess(events.size, lastSourceLogSequenceNrRead)
+        case Success((updated, tracker)) =>
+          val rws = ReplicationWriteSuccess(events.size, replicationProgress, tracker.vectorTime)
+          val sdr = sender()
+          timeTracker = tracker
           registry.pushReplicateSuccess(updated)
-          publishUpdateNotification(updated)
-          requestIndexUpdate()
+          notificationChannel ! rws
+          notificationChannel ! Updated(updated)
+          logFilterStatistics(log, id, "target", events, updated)
+          implicit val dispatcher = context.system.dispatchers.defaultGlobalDispatcher
+          progressStore.writeReplicationProgressAsync(sourceLogId, replicationProgress) onComplete {
+            case Success(_) =>
+              sdr ! rws
+            case Failure(e) =>
+              // Write failure of replication progress can be ignored. Using a stale
+              // progress to resume replication will redundantly read events from a
+              // source log but these events will be successfully identified as
+              // duplicates, either at source or latest at target.
+              log.warning(s"Writing of replication progress failed: ${e.getMessage}")
+              sdr ! rws
+          }
         case Failure(e) =>
           sender() ! ReplicationWriteFailure(e)
       }
@@ -191,41 +252,48 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
   private[eventuate] def currentSystemTime: Long =
     System.currentTimeMillis
 
-  private[eventuate] def createReader(cassandra: Cassandra, logId: String) =
+  private[eventuate] def createEventReader(cassandra: Cassandra, logId: String) =
     new CassandraEventReader(cassandra, logId)
 
   private[eventuate] def createIndex(cassandra: Cassandra, eventReader: CassandraEventReader, logId: String) =
     context.actorOf(CassandraIndex.props(cassandra, eventReader, logId))
 
-  private[eventuate] def write(partition: Long, events: Seq[DurableEvent]): Unit = cassandra.executeBatch { batch =>
-    events.foreach(event => batch.add(statement.bind(partition: JLong, event.sequenceNr: JLong, cassandra.eventToByteBuffer(event))))
-  }
+  private[eventuate] def createReplicationProgressStore(cassandra: Cassandra, logId: String) =
+    new CassandraReplicationProgressStore(cassandra, logId)
 
-  private def publishUpdateNotification(events: Seq[DurableEvent] = Seq()): Unit =
-    if (events.nonEmpty) eventStream.publish(Updated(id, events))
-
-  private def requestIndexUpdate(): Unit =
-    if (currentSequenceNrUpdates >= cassandra.settings.indexUpdateLimit) {
+  private[eventuate] def write(partition: Long, events: Seq[DurableEvent], tracker: TimeTracker): TimeTracker = {
+    cassandra.executeBatch { batch =>
+      events.foreach { event =>
+        batch.add(preparedWriteEventStatement.bind(partition: JLong, event.localSequenceNr: JLong, cassandra.eventToByteBuffer(event)))
+      }
+    }
+    if (tracker.updateCount >= cassandra.settings.indexUpdateLimit) {
       index ! CassandraIndex.UpdateIndex()
-      resetSequenceNrUpdates()
-    }
-
-  private def adjustSequenceNr(batchSize: Long, maxBatchSize: Long = cassandra.settings.partitionSizeMax): Long = { // move to Cassandra
-    require(batchSize <= maxBatchSize, s"write batch size (${batchSize}) must not be greater than maximum partition size (${maxBatchSize})")
-
-    val currentPartition = partitionOf(currentSequenceNr, maxBatchSize)
-    val remainingPartitionSize = partitionSize(currentSequenceNr, maxBatchSize)
-    if (remainingPartitionSize < batchSize) {
-      advanceSequenceNr(remainingPartitionSize)
-      currentPartition + 1L
+      tracker.copy(updateCount = 0L)
     } else {
-      currentPartition
+      tracker
     }
   }
+
 }
 
 object CassandraEventLog {
-  private[eventuate] case class Initialize(sequenceNr: Long)
+  private[eventuate] case class Initialize(timeTracker: TimeTracker)
+
+  /**
+   * Adjusts `timeTracker.sequenceNumber` if a batch of `batchSize` doesn't fit in the current partition.
+   */
+  def adjustSequenceNr(batchSize: Long, maxBatchSize: Long, tracker: TimeTracker): (Long, TimeTracker) = {
+    require(batchSize <= maxBatchSize, s"write batch size (${batchSize}) must not be greater than maximum partition size (${maxBatchSize})")
+
+    val currentPartition = partitionOf(tracker.sequenceNr, maxBatchSize)
+    val remainingPartitionSize = partitionSize(tracker.sequenceNr, maxBatchSize)
+    if (remainingPartitionSize < batchSize) {
+      (currentPartition + 1L, tracker.advanceSequenceNr(remainingPartitionSize))
+    } else {
+      (currentPartition, tracker)
+    }
+  }
 
   /**
    * Partition number for given `sequenceNr`.

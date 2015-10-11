@@ -29,16 +29,16 @@ import scala.language.existentials
 class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serializer {
   import ReplicationFilterTreeFormat.NodeType._
 
-  val ExclusionFilterClass = classOf[SourceLogIdExclusionFilter]
   val AndFilterClass = classOf[AndFilter]
   val OrFilterClass= classOf[OrFilter]
+  val NoFilterClass = NoFilter.getClass
 
   override def identifier: Int = 22564
   override def includeManifest: Boolean = true
 
   override def toBinary(o: AnyRef): Array[Byte] = o match {
-    case f: SourceLogIdExclusionFilter =>
-      exclusionFilterFormatBuilder(f).build().toByteArray
+    case NoFilter =>
+      NoFilterFormat.newBuilder().build().toByteArray
     case f: ReplicationFilter =>
       filterTreeFormatBuilder(f).build().toByteArray
     case _ =>
@@ -48,8 +48,8 @@ class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serialize
   override def fromBinary(bytes: Array[Byte], manifest: Option[Class[_]]): AnyRef = manifest match {
     case None        => throw new IllegalArgumentException("manifest required")
     case Some(clazz) => clazz match {
-      case ExclusionFilterClass =>
-        exclusionFilter(SourceLogIdExclusionFilterFormat.parseFrom(bytes))
+      case NoFilterClass =>
+        NoFilter
       case AndFilterClass | OrFilterClass =>
         filterTree(ReplicationFilterTreeFormat.parseFrom(bytes))
       case _ =>
@@ -89,13 +89,6 @@ class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serialize
     builder
   }
 
-  private def exclusionFilterFormatBuilder(filter: SourceLogIdExclusionFilter): SourceLogIdExclusionFilterFormat.Builder = {
-    val builder = SourceLogIdExclusionFilterFormat.newBuilder()
-
-    builder.setSourceLogId(filter.sourceLogId)
-    builder
-  }
-
   // --------------------------------------------------------------------------------
   //  fromBinary helpers
   // --------------------------------------------------------------------------------
@@ -116,9 +109,5 @@ class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serialize
       filterMessage.getFilter.toByteArray,
       filterMessage.getSerializerId,
       filterClass).get
-  }
-
-  private def exclusionFilter(exclusionFilterFormat: SourceLogIdExclusionFilterFormat): SourceLogIdExclusionFilter = {
-    SourceLogIdExclusionFilter(exclusionFilterFormat.getSourceLogId)
   }
 }

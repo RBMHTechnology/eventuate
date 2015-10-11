@@ -130,65 +130,30 @@ public final class DurableEventFormats {
     com.google.protobuf.ByteString
         getProcessIdBytes();
 
-    // optional string sourceLogId = 8;
+    // optional string localLogId = 8;
     /**
-     * <code>optional string sourceLogId = 8;</code>
+     * <code>optional string localLogId = 8;</code>
      */
-    boolean hasSourceLogId();
+    boolean hasLocalLogId();
     /**
-     * <code>optional string sourceLogId = 8;</code>
+     * <code>optional string localLogId = 8;</code>
      */
-    java.lang.String getSourceLogId();
+    java.lang.String getLocalLogId();
     /**
-     * <code>optional string sourceLogId = 8;</code>
-     */
-    com.google.protobuf.ByteString
-        getSourceLogIdBytes();
-
-    // optional string targetLogId = 9;
-    /**
-     * <code>optional string targetLogId = 9;</code>
-     */
-    boolean hasTargetLogId();
-    /**
-     * <code>optional string targetLogId = 9;</code>
-     */
-    java.lang.String getTargetLogId();
-    /**
-     * <code>optional string targetLogId = 9;</code>
+     * <code>optional string localLogId = 8;</code>
      */
     com.google.protobuf.ByteString
-        getTargetLogIdBytes();
+        getLocalLogIdBytes();
 
-    // optional int64 sourceLogSequenceNr = 10;
+    // optional int64 localSequenceNr = 9;
     /**
-     * <code>optional int64 sourceLogSequenceNr = 10;</code>
+     * <code>optional int64 localSequenceNr = 9;</code>
      */
-    boolean hasSourceLogSequenceNr();
+    boolean hasLocalSequenceNr();
     /**
-     * <code>optional int64 sourceLogSequenceNr = 10;</code>
+     * <code>optional int64 localSequenceNr = 9;</code>
      */
-    long getSourceLogSequenceNr();
-
-    // optional int64 targetLogSequenceNr = 11;
-    /**
-     * <code>optional int64 targetLogSequenceNr = 11;</code>
-     */
-    boolean hasTargetLogSequenceNr();
-    /**
-     * <code>optional int64 targetLogSequenceNr = 11;</code>
-     */
-    long getTargetLogSequenceNr();
-
-    // optional int64 sourceLogReadPosition = 12;
-    /**
-     * <code>optional int64 sourceLogReadPosition = 12;</code>
-     */
-    boolean hasSourceLogReadPosition();
-    /**
-     * <code>optional int64 sourceLogReadPosition = 12;</code>
-     */
-    long getSourceLogReadPosition();
+    long getLocalSequenceNr();
   }
   /**
    * Protobuf type {@code DurableEventFormat}
@@ -297,27 +262,12 @@ public final class DurableEventFormats {
             }
             case 66: {
               bitField0_ |= 0x00000040;
-              sourceLogId_ = input.readBytes();
+              localLogId_ = input.readBytes();
               break;
             }
-            case 74: {
+            case 72: {
               bitField0_ |= 0x00000080;
-              targetLogId_ = input.readBytes();
-              break;
-            }
-            case 80: {
-              bitField0_ |= 0x00000100;
-              sourceLogSequenceNr_ = input.readInt64();
-              break;
-            }
-            case 88: {
-              bitField0_ |= 0x00000200;
-              targetLogSequenceNr_ = input.readInt64();
-              break;
-            }
-            case 96: {
-              bitField0_ |= 0x00000400;
-              sourceLogReadPosition_ = input.readInt64();
+              localSequenceNr_ = input.readInt64();
               break;
             }
           }
@@ -582,20 +532,20 @@ public final class DurableEventFormats {
       }
     }
 
-    // optional string sourceLogId = 8;
-    public static final int SOURCELOGID_FIELD_NUMBER = 8;
-    private java.lang.Object sourceLogId_;
+    // optional string localLogId = 8;
+    public static final int LOCALLOGID_FIELD_NUMBER = 8;
+    private java.lang.Object localLogId_;
     /**
-     * <code>optional string sourceLogId = 8;</code>
+     * <code>optional string localLogId = 8;</code>
      */
-    public boolean hasSourceLogId() {
+    public boolean hasLocalLogId() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
-     * <code>optional string sourceLogId = 8;</code>
+     * <code>optional string localLogId = 8;</code>
      */
-    public java.lang.String getSourceLogId() {
-      java.lang.Object ref = sourceLogId_;
+    public java.lang.String getLocalLogId() {
+      java.lang.Object ref = localLogId_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -603,117 +553,42 @@ public final class DurableEventFormats {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          sourceLogId_ = s;
+          localLogId_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string sourceLogId = 8;</code>
+     * <code>optional string localLogId = 8;</code>
      */
     public com.google.protobuf.ByteString
-        getSourceLogIdBytes() {
-      java.lang.Object ref = sourceLogId_;
+        getLocalLogIdBytes() {
+      java.lang.Object ref = localLogId_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        sourceLogId_ = b;
+        localLogId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
 
-    // optional string targetLogId = 9;
-    public static final int TARGETLOGID_FIELD_NUMBER = 9;
-    private java.lang.Object targetLogId_;
+    // optional int64 localSequenceNr = 9;
+    public static final int LOCALSEQUENCENR_FIELD_NUMBER = 9;
+    private long localSequenceNr_;
     /**
-     * <code>optional string targetLogId = 9;</code>
+     * <code>optional int64 localSequenceNr = 9;</code>
      */
-    public boolean hasTargetLogId() {
+    public boolean hasLocalSequenceNr() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     /**
-     * <code>optional string targetLogId = 9;</code>
+     * <code>optional int64 localSequenceNr = 9;</code>
      */
-    public java.lang.String getTargetLogId() {
-      java.lang.Object ref = targetLogId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          targetLogId_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>optional string targetLogId = 9;</code>
-     */
-    public com.google.protobuf.ByteString
-        getTargetLogIdBytes() {
-      java.lang.Object ref = targetLogId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        targetLogId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    // optional int64 sourceLogSequenceNr = 10;
-    public static final int SOURCELOGSEQUENCENR_FIELD_NUMBER = 10;
-    private long sourceLogSequenceNr_;
-    /**
-     * <code>optional int64 sourceLogSequenceNr = 10;</code>
-     */
-    public boolean hasSourceLogSequenceNr() {
-      return ((bitField0_ & 0x00000100) == 0x00000100);
-    }
-    /**
-     * <code>optional int64 sourceLogSequenceNr = 10;</code>
-     */
-    public long getSourceLogSequenceNr() {
-      return sourceLogSequenceNr_;
-    }
-
-    // optional int64 targetLogSequenceNr = 11;
-    public static final int TARGETLOGSEQUENCENR_FIELD_NUMBER = 11;
-    private long targetLogSequenceNr_;
-    /**
-     * <code>optional int64 targetLogSequenceNr = 11;</code>
-     */
-    public boolean hasTargetLogSequenceNr() {
-      return ((bitField0_ & 0x00000200) == 0x00000200);
-    }
-    /**
-     * <code>optional int64 targetLogSequenceNr = 11;</code>
-     */
-    public long getTargetLogSequenceNr() {
-      return targetLogSequenceNr_;
-    }
-
-    // optional int64 sourceLogReadPosition = 12;
-    public static final int SOURCELOGREADPOSITION_FIELD_NUMBER = 12;
-    private long sourceLogReadPosition_;
-    /**
-     * <code>optional int64 sourceLogReadPosition = 12;</code>
-     */
-    public boolean hasSourceLogReadPosition() {
-      return ((bitField0_ & 0x00000400) == 0x00000400);
-    }
-    /**
-     * <code>optional int64 sourceLogReadPosition = 12;</code>
-     */
-    public long getSourceLogReadPosition() {
-      return sourceLogReadPosition_;
+    public long getLocalSequenceNr() {
+      return localSequenceNr_;
     }
 
     private void initFields() {
@@ -724,11 +599,8 @@ public final class DurableEventFormats {
       systemTimestamp_ = 0L;
       vectorTimestamp_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
       processId_ = "";
-      sourceLogId_ = "";
-      targetLogId_ = "";
-      sourceLogSequenceNr_ = 0L;
-      targetLogSequenceNr_ = 0L;
-      sourceLogReadPosition_ = 0L;
+      localLogId_ = "";
+      localSequenceNr_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -770,19 +642,10 @@ public final class DurableEventFormats {
         output.writeBytes(7, getProcessIdBytes());
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeBytes(8, getSourceLogIdBytes());
+        output.writeBytes(8, getLocalLogIdBytes());
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeBytes(9, getTargetLogIdBytes());
-      }
-      if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        output.writeInt64(10, sourceLogSequenceNr_);
-      }
-      if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        output.writeInt64(11, targetLogSequenceNr_);
-      }
-      if (((bitField0_ & 0x00000400) == 0x00000400)) {
-        output.writeInt64(12, sourceLogReadPosition_);
+        output.writeInt64(9, localSequenceNr_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -828,23 +691,11 @@ public final class DurableEventFormats {
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(8, getSourceLogIdBytes());
+          .computeBytesSize(8, getLocalLogIdBytes());
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(9, getTargetLogIdBytes());
-      }
-      if (((bitField0_ & 0x00000100) == 0x00000100)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(10, sourceLogSequenceNr_);
-      }
-      if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(11, targetLogSequenceNr_);
-      }
-      if (((bitField0_ & 0x00000400) == 0x00000400)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(12, sourceLogReadPosition_);
+          .computeInt64Size(9, localSequenceNr_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -986,16 +837,10 @@ public final class DurableEventFormats {
         bitField0_ = (bitField0_ & ~0x00000020);
         processId_ = "";
         bitField0_ = (bitField0_ & ~0x00000040);
-        sourceLogId_ = "";
+        localLogId_ = "";
         bitField0_ = (bitField0_ & ~0x00000080);
-        targetLogId_ = "";
+        localSequenceNr_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000100);
-        sourceLogSequenceNr_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000200);
-        targetLogSequenceNr_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000400);
-        sourceLogReadPosition_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000800);
         return this;
       }
 
@@ -1065,23 +910,11 @@ public final class DurableEventFormats {
         if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
           to_bitField0_ |= 0x00000040;
         }
-        result.sourceLogId_ = sourceLogId_;
+        result.localLogId_ = localLogId_;
         if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
           to_bitField0_ |= 0x00000080;
         }
-        result.targetLogId_ = targetLogId_;
-        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
-          to_bitField0_ |= 0x00000100;
-        }
-        result.sourceLogSequenceNr_ = sourceLogSequenceNr_;
-        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
-          to_bitField0_ |= 0x00000200;
-        }
-        result.targetLogSequenceNr_ = targetLogSequenceNr_;
-        if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
-          to_bitField0_ |= 0x00000400;
-        }
-        result.sourceLogReadPosition_ = sourceLogReadPosition_;
+        result.localSequenceNr_ = localSequenceNr_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1132,24 +965,13 @@ public final class DurableEventFormats {
           processId_ = other.processId_;
           onChanged();
         }
-        if (other.hasSourceLogId()) {
+        if (other.hasLocalLogId()) {
           bitField0_ |= 0x00000080;
-          sourceLogId_ = other.sourceLogId_;
+          localLogId_ = other.localLogId_;
           onChanged();
         }
-        if (other.hasTargetLogId()) {
-          bitField0_ |= 0x00000100;
-          targetLogId_ = other.targetLogId_;
-          onChanged();
-        }
-        if (other.hasSourceLogSequenceNr()) {
-          setSourceLogSequenceNr(other.getSourceLogSequenceNr());
-        }
-        if (other.hasTargetLogSequenceNr()) {
-          setTargetLogSequenceNr(other.getTargetLogSequenceNr());
-        }
-        if (other.hasSourceLogReadPosition()) {
-          setSourceLogReadPosition(other.getSourceLogReadPosition());
+        if (other.hasLocalSequenceNr()) {
+          setLocalSequenceNr(other.getLocalSequenceNr());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -1766,249 +1588,109 @@ public final class DurableEventFormats {
         return this;
       }
 
-      // optional string sourceLogId = 8;
-      private java.lang.Object sourceLogId_ = "";
+      // optional string localLogId = 8;
+      private java.lang.Object localLogId_ = "";
       /**
-       * <code>optional string sourceLogId = 8;</code>
+       * <code>optional string localLogId = 8;</code>
        */
-      public boolean hasSourceLogId() {
+      public boolean hasLocalLogId() {
         return ((bitField0_ & 0x00000080) == 0x00000080);
       }
       /**
-       * <code>optional string sourceLogId = 8;</code>
+       * <code>optional string localLogId = 8;</code>
        */
-      public java.lang.String getSourceLogId() {
-        java.lang.Object ref = sourceLogId_;
+      public java.lang.String getLocalLogId() {
+        java.lang.Object ref = localLogId_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          sourceLogId_ = s;
+          localLogId_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>optional string sourceLogId = 8;</code>
+       * <code>optional string localLogId = 8;</code>
        */
       public com.google.protobuf.ByteString
-          getSourceLogIdBytes() {
-        java.lang.Object ref = sourceLogId_;
+          getLocalLogIdBytes() {
+        java.lang.Object ref = localLogId_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          sourceLogId_ = b;
+          localLogId_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string sourceLogId = 8;</code>
+       * <code>optional string localLogId = 8;</code>
        */
-      public Builder setSourceLogId(
+      public Builder setLocalLogId(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000080;
-        sourceLogId_ = value;
+        localLogId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string sourceLogId = 8;</code>
+       * <code>optional string localLogId = 8;</code>
        */
-      public Builder clearSourceLogId() {
+      public Builder clearLocalLogId() {
         bitField0_ = (bitField0_ & ~0x00000080);
-        sourceLogId_ = getDefaultInstance().getSourceLogId();
+        localLogId_ = getDefaultInstance().getLocalLogId();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string sourceLogId = 8;</code>
+       * <code>optional string localLogId = 8;</code>
        */
-      public Builder setSourceLogIdBytes(
+      public Builder setLocalLogIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000080;
-        sourceLogId_ = value;
+        localLogId_ = value;
         onChanged();
         return this;
       }
 
-      // optional string targetLogId = 9;
-      private java.lang.Object targetLogId_ = "";
+      // optional int64 localSequenceNr = 9;
+      private long localSequenceNr_ ;
       /**
-       * <code>optional string targetLogId = 9;</code>
+       * <code>optional int64 localSequenceNr = 9;</code>
        */
-      public boolean hasTargetLogId() {
+      public boolean hasLocalSequenceNr() {
         return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
-       * <code>optional string targetLogId = 9;</code>
+       * <code>optional int64 localSequenceNr = 9;</code>
        */
-      public java.lang.String getTargetLogId() {
-        java.lang.Object ref = targetLogId_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          targetLogId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+      public long getLocalSequenceNr() {
+        return localSequenceNr_;
       }
       /**
-       * <code>optional string targetLogId = 9;</code>
+       * <code>optional int64 localSequenceNr = 9;</code>
        */
-      public com.google.protobuf.ByteString
-          getTargetLogIdBytes() {
-        java.lang.Object ref = targetLogId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          targetLogId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string targetLogId = 9;</code>
-       */
-      public Builder setTargetLogId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000100;
-        targetLogId_ = value;
+      public Builder setLocalSequenceNr(long value) {
+        bitField0_ |= 0x00000100;
+        localSequenceNr_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string targetLogId = 9;</code>
+       * <code>optional int64 localSequenceNr = 9;</code>
        */
-      public Builder clearTargetLogId() {
+      public Builder clearLocalSequenceNr() {
         bitField0_ = (bitField0_ & ~0x00000100);
-        targetLogId_ = getDefaultInstance().getTargetLogId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string targetLogId = 9;</code>
-       */
-      public Builder setTargetLogIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000100;
-        targetLogId_ = value;
-        onChanged();
-        return this;
-      }
-
-      // optional int64 sourceLogSequenceNr = 10;
-      private long sourceLogSequenceNr_ ;
-      /**
-       * <code>optional int64 sourceLogSequenceNr = 10;</code>
-       */
-      public boolean hasSourceLogSequenceNr() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
-      }
-      /**
-       * <code>optional int64 sourceLogSequenceNr = 10;</code>
-       */
-      public long getSourceLogSequenceNr() {
-        return sourceLogSequenceNr_;
-      }
-      /**
-       * <code>optional int64 sourceLogSequenceNr = 10;</code>
-       */
-      public Builder setSourceLogSequenceNr(long value) {
-        bitField0_ |= 0x00000200;
-        sourceLogSequenceNr_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int64 sourceLogSequenceNr = 10;</code>
-       */
-      public Builder clearSourceLogSequenceNr() {
-        bitField0_ = (bitField0_ & ~0x00000200);
-        sourceLogSequenceNr_ = 0L;
-        onChanged();
-        return this;
-      }
-
-      // optional int64 targetLogSequenceNr = 11;
-      private long targetLogSequenceNr_ ;
-      /**
-       * <code>optional int64 targetLogSequenceNr = 11;</code>
-       */
-      public boolean hasTargetLogSequenceNr() {
-        return ((bitField0_ & 0x00000400) == 0x00000400);
-      }
-      /**
-       * <code>optional int64 targetLogSequenceNr = 11;</code>
-       */
-      public long getTargetLogSequenceNr() {
-        return targetLogSequenceNr_;
-      }
-      /**
-       * <code>optional int64 targetLogSequenceNr = 11;</code>
-       */
-      public Builder setTargetLogSequenceNr(long value) {
-        bitField0_ |= 0x00000400;
-        targetLogSequenceNr_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int64 targetLogSequenceNr = 11;</code>
-       */
-      public Builder clearTargetLogSequenceNr() {
-        bitField0_ = (bitField0_ & ~0x00000400);
-        targetLogSequenceNr_ = 0L;
-        onChanged();
-        return this;
-      }
-
-      // optional int64 sourceLogReadPosition = 12;
-      private long sourceLogReadPosition_ ;
-      /**
-       * <code>optional int64 sourceLogReadPosition = 12;</code>
-       */
-      public boolean hasSourceLogReadPosition() {
-        return ((bitField0_ & 0x00000800) == 0x00000800);
-      }
-      /**
-       * <code>optional int64 sourceLogReadPosition = 12;</code>
-       */
-      public long getSourceLogReadPosition() {
-        return sourceLogReadPosition_;
-      }
-      /**
-       * <code>optional int64 sourceLogReadPosition = 12;</code>
-       */
-      public Builder setSourceLogReadPosition(long value) {
-        bitField0_ |= 0x00000800;
-        sourceLogReadPosition_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int64 sourceLogReadPosition = 12;</code>
-       */
-      public Builder clearSourceLogReadPosition() {
-        bitField0_ = (bitField0_ & ~0x00000800);
-        sourceLogReadPosition_ = 0L;
+        localSequenceNr_ = 0L;
         onChanged();
         return this;
       }
@@ -3872,22 +3554,20 @@ public final class DurableEventFormats {
   static {
     java.lang.String[] descriptorData = {
       "\n+src/main/protobuf/DurableEventFormats." +
-      "proto\"\346\002\n\022DurableEventFormat\022\037\n\007payload\030" +
+      "proto\"\220\002\n\022DurableEventFormat\022\037\n\007payload\030" +
       "\001 \001(\0132\016.PayloadFormat\022\021\n\temitterId\030\002 \001(\t" +
       "\022\032\n\022emitterAggregateId\030\003 \001(\t\022%\n\035customDe" +
       "stinationAggregateIds\030\004 \003(\t\022\027\n\017systemTim" +
       "estamp\030\005 \001(\003\022*\n\017vectorTimestamp\030\006 \001(\0132\021." +
-      "VectorTimeFormat\022\021\n\tprocessId\030\007 \001(\t\022\023\n\013s" +
-      "ourceLogId\030\010 \001(\t\022\023\n\013targetLogId\030\t \001(\t\022\033\n" +
-      "\023sourceLogSequenceNr\030\n \001(\003\022\033\n\023targetLogS" +
-      "equenceNr\030\013 \001(\003\022\035\n\025sourceLogReadPosition",
-      "\030\014 \001(\003\"O\n\rPayloadFormat\022\024\n\014serializerId\030" +
-      "\001 \001(\005\022\017\n\007payload\030\002 \001(\014\022\027\n\017payloadManifes" +
-      "t\030\003 \001(\014\"?\n\025VectorTimeEntryFormat\022\021\n\tproc" +
-      "essId\030\001 \002(\t\022\023\n\013logicalTime\030\002 \002(\003\";\n\020Vect" +
-      "orTimeFormat\022\'\n\007entries\030\001 \003(\0132\026.VectorTi" +
-      "meEntryFormatB+\n\'com.rbmhtechnology.even" +
-      "tuate.serializerH\001"
+      "VectorTimeFormat\022\021\n\tprocessId\030\007 \001(\t\022\022\n\nl" +
+      "ocalLogId\030\010 \001(\t\022\027\n\017localSequenceNr\030\t \001(\003" +
+      "\"O\n\rPayloadFormat\022\024\n\014serializerId\030\001 \001(\005\022" +
+      "\017\n\007payload\030\002 \001(\014\022\027\n\017payloadManifest\030\003 \001(",
+      "\014\"?\n\025VectorTimeEntryFormat\022\021\n\tprocessId\030" +
+      "\001 \002(\t\022\023\n\013logicalTime\030\002 \002(\003\";\n\020VectorTime" +
+      "Format\022\'\n\007entries\030\001 \003(\0132\026.VectorTimeEntr" +
+      "yFormatB+\n\'com.rbmhtechnology.eventuate." +
+      "serializerH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -3899,7 +3579,7 @@ public final class DurableEventFormats {
           internal_static_DurableEventFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_DurableEventFormat_descriptor,
-              new java.lang.String[] { "Payload", "EmitterId", "EmitterAggregateId", "CustomDestinationAggregateIds", "SystemTimestamp", "VectorTimestamp", "ProcessId", "SourceLogId", "TargetLogId", "SourceLogSequenceNr", "TargetLogSequenceNr", "SourceLogReadPosition", });
+              new java.lang.String[] { "Payload", "EmitterId", "EmitterAggregateId", "CustomDestinationAggregateIds", "SystemTimestamp", "VectorTimestamp", "ProcessId", "LocalLogId", "LocalSequenceNr", });
           internal_static_PayloadFormat_descriptor =
             getDescriptor().getMessageTypes().get(1);
           internal_static_PayloadFormat_fieldAccessorTable = new

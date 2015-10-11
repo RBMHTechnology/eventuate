@@ -47,7 +47,7 @@ case class Snapshot(
     deliveryAttempts: Vector[DeliveryAttempt] = Vector.empty) {
 
   val metadata: SnapshotMetadata =
-    SnapshotMetadata(emitterId, lastEvent.sequenceNr)
+    SnapshotMetadata(emitterId, lastEvent.localSequenceNr)
 
   def add(deliveryAttempt: DeliveryAttempt): Snapshot =
     copy(deliveryAttempts = deliveryAttempts :+ deliveryAttempt)

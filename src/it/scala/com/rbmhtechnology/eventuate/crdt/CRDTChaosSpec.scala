@@ -36,7 +36,7 @@ abstract class CRDTChaosSpec extends WordSpec with Matchers with ReplicationNode
     ReplicationConfig.create()
 
   def node(nodeName: String, port: Int, connections: Set[ReplicationConnection]): ReplicationNode =
-    register(new ReplicationNode(nodeName, Set(ReplicationEndpoint.DefaultLogName), port, connections))
+    register(new ReplicationNode(nodeName, Set(ReplicationEndpoint.DefaultLogName), port, connections, "eventuate.log.replication.batch-size-max = 3"))
 
   def service(node: ReplicationNode): (ORSetService[String], TestProbe) = {
     implicit val system = node.system
@@ -128,8 +128,8 @@ class CRDTChaosSpecLeveldb extends CRDTChaosSpec with EventLogCleanupLeveldb {
   import CRDTChaosSpec._
 
   class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") {
-    override def write(events: Seq[DurableEvent], batch: WriteBatch): Unit =
-      if (events.map(_.payload).contains(ValueUpdated(crdtId, AddOp(randomNr())))) throw boom else super.write(events, batch)
+    private[eventuate] override def write(events: Seq[DurableEvent], tracker: TimeTracker, batch: WriteBatch): TimeTracker =
+      if (events.map(_.payload).contains(ValueUpdated(crdtId, AddOp(randomNr())))) throw boom else super.write(events, tracker, batch)
   }
 
   val logFactory: String => Props =
@@ -145,9 +145,9 @@ class CRDTChaosSpecCassandra  extends CRDTChaosSpec with EventLogCleanupCassandr
   import CRDTChaosSpec._
 
   class TestEventLog(id: String) extends CassandraEventLog(id) {
-    override def write(partition: Long, events: Seq[DurableEvent]): Unit =
-      if (events.map(_.payload).contains(ValueUpdated(crdtId, AddOp(randomNr())))) throw boom else super.write(partition, events)
-    }
+    private[eventuate] override def write(partition: Long, events: Seq[DurableEvent], tracker: TimeTracker): TimeTracker =
+      if (events.map(_.payload).contains(ValueUpdated(crdtId, AddOp(randomNr())))) throw boom else super.write(partition, events, tracker)
+  }
 
   override val logFactory: String => Props =
     id => logProps(id)

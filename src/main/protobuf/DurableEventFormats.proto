@@ -29,11 +29,8 @@ message DurableEventFormat {
   optional int64 systemTimestamp = 5;
   optional VectorTimeFormat vectorTimestamp = 6;
   optional string processId = 7;
-  optional string sourceLogId = 8;
-  optional string targetLogId = 9;
-  optional int64 sourceLogSequenceNr = 10;
-  optional int64 targetLogSequenceNr = 11;
-  optional int64 sourceLogReadPosition = 12;
+  optional string localLogId = 8;
+  optional int64 localSequenceNr = 9;
 }
 
 message PayloadFormat {

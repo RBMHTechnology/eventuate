@@ -13,21 +13,34 @@ Event logs
 
 Eventuate applications store events in one or more event logs. An event log can be replicated across *locations* where each location has its own copy of events in a *local event log*. Events are asynchronously replicated via *replication connections* between *replication endpoints*.
 
+.. _arch-fig1:
+
 .. figure:: images/architecture-1.png
    :figwidth: 70%
 
    Fig. 1
 
-   An event log, replicated across locations 1, 2 and 3.
+   An event log, replicated across locations 1, 2 and 3 via an acyclic replication network.
 
 Writes to a local event log are not coordinated with other locations. Without coordination, the strongest global ordering guarantee for a *replicated event log* is causal ordering which is tracked with :ref:`vector-clocks`. Events in a local event log have a total order that is location-specific but consistent with causal order at all locations. Relaxing the global ordering guarantee to causal ordering allows local event logs to remain available for writes during inter-location network partitions.
+
+:ref:`arch-fig1` shows a replicated event log with an acyclic replication network. Should location 1 become unavailable, locations 2 and 3 are partitioned and cannot continue to exchange events. To prevent that situation, a replicated event log may also have a cyclic replication network as shown in :ref:`arch-fig2` (see also :ref:`current-limitations`).
+
+.. _arch-fig2:
+
+.. figure:: images/architecture-1a.png
+   :figwidth: 70%
+
+   Fig. 2
+
+   An event log, replicated across locations 1, 2 and 3 via a cyclic replication network.
 
 A replication endpoint can also manage more than one local event log. Local event logs can be given a name and replication occurs only between logs of the same name. Logs with different names are isolated from each other\ [#]_. Also, their distribution across locations may differ, as shown in the following figure.
 
 .. figure:: images/architecture-2.png
    :figwidth: 70%
 
-   Fig. 2
+   Fig. 3
 
    Three replicated event logs. Log X (blue) is replicated across locations 1, 2 and 3. Log Y (red) is replicated across locations 1 and 2 and log Z (green) is replicated across locations 1 and 3.
 
@@ -47,22 +60,22 @@ Event-sourced actors produce events to and consume events from an event log. Dur
 .. figure:: images/architecture-3.png
    :figwidth: 70%
 
-   Fig. 3
+   Fig. 4
 
    An event-sourced actor, producing events to and consuming events from an event log.
 
 When an event-sourced actor is re-started, internal state is recovered by replaying events from its local event log. Events are replayed in local storage order which is consistent with causal order. Consequently, event replay at a given location is deterministic i.e. doesn’t change when replay is repeated. Event replay can also be started from a snapshot of internal state which is an optimization to reduce recovery times.
 
-In addition to consuming their own events, event-sourced actors can also consume events produced by other event-sourced actors to the same event log. This enables `event collaboration`_ between actors (:ref:`arch-fig4`). Applications can customize :ref:`event-routing` between actors.
+In addition to consuming their own events, event-sourced actors can also consume events produced by other event-sourced actors to the same event log. This enables `event collaboration`_ between actors (:ref:`arch-fig5`). Applications can customize :ref:`event-routing` between actors.
 
 A special form of event collaboration is state replication where actors of the same type consume the same events at different locations to re-construct state. Another example is a distributed business process where actors of different type collaborate by exchanging events to achieve a common goal.
 
-.. _arch-fig4:
+.. _arch-fig5:
 
 .. figure:: images/architecture-4.png
    :figwidth: 70%
 
-   Fig. 4 
+   Fig. 5 
 
    Two event-sourced actors exchanging events over a replicated event log.
 
@@ -71,7 +84,7 @@ Event-sourced actors may also interact with external services by sending command
 .. figure:: images/architecture-5.png
    :figwidth: 70%
 
-   Fig. 5
+   Fig. 6
 
    External service integration.
 

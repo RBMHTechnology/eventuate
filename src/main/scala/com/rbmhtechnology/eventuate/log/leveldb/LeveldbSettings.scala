@@ -28,4 +28,7 @@ private[leveldb] class LeveldbSettings(system: ActorSystem) {
 
   val fsync: Boolean =
     system.settings.config.getBoolean("eventuate.log.leveldb.fsync")
+
+  val stateSnapshotLimit: Int =
+    system.settings.config.getInt("eventuate.log.leveldb.state-snapshot-limit")
 }

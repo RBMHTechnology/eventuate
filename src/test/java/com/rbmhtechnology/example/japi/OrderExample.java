@@ -152,5 +152,7 @@ public class OrderExample extends AbstractActor {
         ActorRef manager = system.actorOf(Props.create(OrderManager.class, endpoint.id(), endpoint.logs().apply(ReplicationEndpoint.DefaultLogName())));
         ActorRef view = system.actorOf(Props.create(OrderView.class, endpoint.id(), endpoint.logs().apply(ReplicationEndpoint.DefaultLogName())));
         ActorRef driver = system.actorOf(Props.create(OrderExample.class, manager, view));
+
+        endpoint.activate();
     }
 }

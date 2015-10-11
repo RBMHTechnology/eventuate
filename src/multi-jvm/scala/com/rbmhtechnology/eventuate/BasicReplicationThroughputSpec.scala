@@ -171,9 +171,6 @@ abstract class BasicReplicationThroughputSpec extends MultiNodeSpec(BasicReplica
       println(probe.receiveOne(timeout))
 
       enterBarrier("finish")
-
-      // Workaround for a LevelDB shutdown issue that causes "pthread lock: Invalid argument"
-      Thread.sleep(2000)
     }
   }
 }

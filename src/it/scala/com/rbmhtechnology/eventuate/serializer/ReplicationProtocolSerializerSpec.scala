@@ -30,22 +30,19 @@ object ReplicationProtocolSerializerSpec {
   val getReplicationEndpointInfoSuccess =
     GetReplicationEndpointInfoSuccess(ReplicationEndpointInfo("A", Set("B", "C")))
 
-  val replicationRead1 =
-    ReplicationRead(17L, 10, filter1(), "A")
-
-  val replicationRead2 =
-    ReplicationRead(17L, 10, filter3, "A")
-
   val replicationReadSuccess =
     ReplicationReadSuccess(List(
       DurableEvent("a", "r1"),
-      DurableEvent("b", "r2")), 27L, "B")
+      DurableEvent("b", "r2")), 27L, "B", VectorTime("X" -> 4L))
 
   val replicationReadFailure =
     ReplicationReadFailure("test", "B")
 
-  def subscribeReplicator(replicator: ActorRef) =
-    SubscribeReplicator("A", "B", replicator, filter1())
+  def replicationRead1(r: ActorRef) =
+    ReplicationRead(17L, 10, filter1(), "A", r, VectorTime("X" -> 12L))
+
+  def replicationRead2(r: ActorRef) =
+    ReplicationRead(18L, 11, filter3, "B", r, VectorTime("Y" -> 13L))
 }
 
 class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
@@ -60,6 +57,9 @@ class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with Befo
 
   import support._
 
+  val dl1 = system1.deadLetters
+  val dl2 = system2.deadLetters
+
   "A ReplicationProtocolSerializer" must {
     "serialize GetReplicationEndpointInfo messages" in {
       serialization1.deserialize(serialization1.serialize(GetReplicationEndpointInfo).get, GetReplicationEndpointInfo.getClass).get should be(GetReplicationEndpointInfo)
@@ -68,18 +68,14 @@ class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with Befo
       serialization1.deserialize(serialization1.serialize(getReplicationEndpointInfoSuccess).get, classOf[GetReplicationEndpointInfoSuccess]).get should be(getReplicationEndpointInfoSuccess)
     }
     "serialize ReplicationRead messages" in {
-      serialization1.deserialize(serialization1.serialize(replicationRead1).get, classOf[ReplicationRead]).get should be(replicationRead1)
-      serialization1.deserialize(serialization1.serialize(replicationRead2).get, classOf[ReplicationRead]).get should be(replicationRead2)
+      serialization1.deserialize(serialization1.serialize(replicationRead1(dl1)).get, classOf[ReplicationRead]).get should be(replicationRead1(dl1))
+      serialization1.deserialize(serialization1.serialize(replicationRead2(dl2)).get, classOf[ReplicationRead]).get should be(replicationRead2(dl2))
     }
     "serialize ReplicationReadSuccess messages" in {
       serialization1.deserialize(serialization1.serialize(replicationReadSuccess).get, classOf[ReplicationReadSuccess]).get should be(replicationReadSuccess)
     }
     "serialize ReplicationReadFailure messages" in {
       serialization1.deserialize(serialization1.serialize(replicationReadFailure).get, classOf[ReplicationReadFailure]).get should be(replicationReadFailure)
-    }
-    "serialize SubscribeReplicator messages" in {
-      val replicator = new TestProbe(system1).ref
-      serialization1.deserialize(serialization1.serialize(subscribeReplicator(replicator)).get, classOf[SubscribeReplicator]).get should be(subscribeReplicator(replicator))
     }
     "support remoting of GetReplicationEndpointInfo messages" in {
       senderActor ! GetReplicationEndpointInfo
@@ -90,10 +86,10 @@ class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with Befo
       receiverProbe.expectMsg(getReplicationEndpointInfoSuccess)
     }
     "support remoting of ReplicationRead messages" in {
-      senderActor ! replicationRead1
-      receiverProbe.expectMsg(replicationRead1)
-      senderActor ! replicationRead2
-      receiverProbe.expectMsg(replicationRead2)
+      senderActor ! replicationRead1(dl1)
+      receiverProbe.expectMsgPF() { case r: ReplicationRead => r.copy(replicator = null) should be(replicationRead1(null)) }
+      senderActor ! replicationRead2(dl1)
+      receiverProbe.expectMsgPF() { case r: ReplicationRead => r.copy(replicator = null) should be(replicationRead2(null)) }
     }
     "support remoting of ReplicationReadSuccess messages" in {
       senderActor ! replicationReadSuccess
@@ -102,11 +98,6 @@ class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with Befo
     "support remoting of ReplicationReadFailure messages" in {
       senderActor ! replicationReadFailure
       receiverProbe.expectMsg(replicationReadFailure)
-    }
-    "support remoting of SubscribeReplicator messages" in {
-      val replicator = new TestProbe(system2).ref
-      senderActor ! subscribeReplicator(replicator)
-      receiverProbe.expectMsg(subscribeReplicator(replicator))
     }
   }
 }

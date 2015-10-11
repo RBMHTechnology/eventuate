@@ -21,6 +21,7 @@ import akka.serialization.Serializer
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.ConfirmedDelivery.DeliveryAttempt
+import com.rbmhtechnology.eventuate.log.TimeTracker
 import com.rbmhtechnology.eventuate.serializer.SnapshotFormats._
 
 import scala.collection.JavaConverters._
@@ -31,6 +32,7 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
 
   val SnapshotClass = classOf[Snapshot]
   val ConcurrentVersionsTreeClass = classOf[ConcurrentVersionsTree[_, _]]
+  val TimeTrackerClass = classOf[TimeTracker]
 
   override def identifier: Int = 22566
   override def includeManifest: Boolean = true
@@ -40,6 +42,8 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
       snapshotFormatBuilder(s).build().toByteArray
     case t: ConcurrentVersionsTree[_, _] =>
       concurrentVersionsTreeFormat(t).build().toByteArray
+    case t: TimeTracker =>
+      timeTrackerFormatBuilder(t).build().toByteArray
     case _ =>
       throw new IllegalArgumentException(s"can't serialize object of type ${o.getClass}")
   }
@@ -51,6 +55,8 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
         snapshot(SnapshotFormat.parseFrom(bytes))
       case ConcurrentVersionsTreeClass =>
         concurrentVersionsTree(ConcurrentVersionsTreeFormat.parseFrom(bytes))
+      case TimeTrackerClass =>
+        timeTracker(TimeTrackerFormat.parseFrom(bytes))
       case _ =>
         throw new IllegalArgumentException(s"can't deserialize object of type ${clazz}")
     }
@@ -109,6 +115,13 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
     builder.setCreator(versioned.creator)
   }
 
+  private def timeTrackerFormatBuilder(timeTracker: TimeTracker): TimeTrackerFormat.Builder = {
+    val builder = TimeTrackerFormat.newBuilder
+    builder.setSequenceNr(timeTracker.sequenceNr)
+    builder.setVectorTime(eventSerializer.vectorTimeFormatBuilder(timeTracker.vectorTime))
+    builder
+  }
+
   // --------------------------------------------------------------------------------
   //  fromBinary helpers
   // --------------------------------------------------------------------------------
@@ -156,5 +169,11 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
       eventSerializer.payload(versionedFormat.getPayload),
       eventSerializer.vectorTime(versionedFormat.getUpdateTimestamp),
       versionedFormat.getCreator)
+  }
+
+  private def timeTracker(timeTrackerFormat: TimeTrackerFormat): TimeTracker = {
+    TimeTracker(
+      sequenceNr = timeTrackerFormat.getSequenceNr,
+      vectorTime = eventSerializer.vectorTime(timeTrackerFormat.getVectorTime))
   }
 }

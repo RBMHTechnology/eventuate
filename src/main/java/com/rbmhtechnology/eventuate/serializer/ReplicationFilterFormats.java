@@ -1830,43 +1830,32 @@ public final class ReplicationFilterFormats {
     // @@protoc_insertion_point(class_scope:ReplicationFilterTreeFormat)
   }
 
-  public interface SourceLogIdExclusionFilterFormatOrBuilder
+  public interface NoFilterFormatOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
-
-    // required string sourceLogId = 1;
-    /**
-     * <code>required string sourceLogId = 1;</code>
-     */
-    boolean hasSourceLogId();
-    /**
-     * <code>required string sourceLogId = 1;</code>
-     */
-    java.lang.String getSourceLogId();
-    /**
-     * <code>required string sourceLogId = 1;</code>
-     */
-    com.google.protobuf.ByteString
-        getSourceLogIdBytes();
   }
   /**
-   * Protobuf type {@code SourceLogIdExclusionFilterFormat}
+   * Protobuf type {@code NoFilterFormat}
+   *
+   * <pre>
+   * no fields
+   * </pre>
    */
-  public static final class SourceLogIdExclusionFilterFormat extends
+  public static final class NoFilterFormat extends
       com.google.protobuf.GeneratedMessage
-      implements SourceLogIdExclusionFilterFormatOrBuilder {
-    // Use SourceLogIdExclusionFilterFormat.newBuilder() to construct.
-    private SourceLogIdExclusionFilterFormat(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      implements NoFilterFormatOrBuilder {
+    // Use NoFilterFormat.newBuilder() to construct.
+    private NoFilterFormat(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private SourceLogIdExclusionFilterFormat(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+    private NoFilterFormat(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
-    private static final SourceLogIdExclusionFilterFormat defaultInstance;
-    public static SourceLogIdExclusionFilterFormat getDefaultInstance() {
+    private static final NoFilterFormat defaultInstance;
+    public static NoFilterFormat getDefaultInstance() {
       return defaultInstance;
     }
 
-    public SourceLogIdExclusionFilterFormat getDefaultInstanceForType() {
+    public NoFilterFormat getDefaultInstanceForType() {
       return defaultInstance;
     }
 
@@ -1876,12 +1865,11 @@ public final class ReplicationFilterFormats {
         getUnknownFields() {
       return this.unknownFields;
     }
-    private SourceLogIdExclusionFilterFormat(
+    private NoFilterFormat(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       initFields();
-      int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -1899,11 +1887,6 @@ public final class ReplicationFilterFormats {
               }
               break;
             }
-            case 10: {
-              bitField0_ |= 0x00000001;
-              sourceLogId_ = input.readBytes();
-              break;
-            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -1918,87 +1901,38 @@ public final class ReplicationFilterFormats {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.internal_static_SourceLogIdExclusionFilterFormat_descriptor;
+      return com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.internal_static_NoFilterFormat_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.internal_static_SourceLogIdExclusionFilterFormat_fieldAccessorTable
+      return com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.internal_static_NoFilterFormat_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat.class, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat.Builder.class);
+              com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat.class, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat.Builder.class);
     }
 
-    public static com.google.protobuf.Parser<SourceLogIdExclusionFilterFormat> PARSER =
-        new com.google.protobuf.AbstractParser<SourceLogIdExclusionFilterFormat>() {
-      public SourceLogIdExclusionFilterFormat parsePartialFrom(
+    public static com.google.protobuf.Parser<NoFilterFormat> PARSER =
+        new com.google.protobuf.AbstractParser<NoFilterFormat>() {
+      public NoFilterFormat parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SourceLogIdExclusionFilterFormat(input, extensionRegistry);
+        return new NoFilterFormat(input, extensionRegistry);
       }
     };
 
     @java.lang.Override
-    public com.google.protobuf.Parser<SourceLogIdExclusionFilterFormat> getParserForType() {
+    public com.google.protobuf.Parser<NoFilterFormat> getParserForType() {
       return PARSER;
     }
 
-    private int bitField0_;
-    // required string sourceLogId = 1;
-    public static final int SOURCELOGID_FIELD_NUMBER = 1;
-    private java.lang.Object sourceLogId_;
-    /**
-     * <code>required string sourceLogId = 1;</code>
-     */
-    public boolean hasSourceLogId() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>required string sourceLogId = 1;</code>
-     */
-    public java.lang.String getSourceLogId() {
-      java.lang.Object ref = sourceLogId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          sourceLogId_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>required string sourceLogId = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-        getSourceLogIdBytes() {
-      java.lang.Object ref = sourceLogId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        sourceLogId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
     private void initFields() {
-      sourceLogId_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
-      if (!hasSourceLogId()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -2006,9 +1940,6 @@ public final class ReplicationFilterFormats {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getSourceLogIdBytes());
-      }
       getUnknownFields().writeTo(output);
     }
 
@@ -2018,10 +1949,6 @@ public final class ReplicationFilterFormats {
       if (size != -1) return size;
 
       size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getSourceLogIdBytes());
-      }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
@@ -2034,53 +1961,53 @@ public final class ReplicationFilterFormats {
       return super.writeReplace();
     }
 
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat parseFrom(
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat parseFrom(
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat parseFrom(byte[] data)
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat parseFrom(
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat parseFrom(java.io.InputStream input)
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat parseFrom(
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat parseDelimitedFrom(java.io.InputStream input)
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat parseDelimitedFrom(
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat parseFrom(
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat parseFrom(
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -2089,7 +2016,7 @@ public final class ReplicationFilterFormats {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat prototype) {
+    public static Builder newBuilder(com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -2101,24 +2028,28 @@ public final class ReplicationFilterFormats {
       return builder;
     }
     /**
-     * Protobuf type {@code SourceLogIdExclusionFilterFormat}
+     * Protobuf type {@code NoFilterFormat}
+     *
+     * <pre>
+     * no fields
+     * </pre>
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormatOrBuilder {
+       implements com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormatOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.internal_static_SourceLogIdExclusionFilterFormat_descriptor;
+        return com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.internal_static_NoFilterFormat_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.internal_static_SourceLogIdExclusionFilterFormat_fieldAccessorTable
+        return com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.internal_static_NoFilterFormat_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat.class, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat.Builder.class);
+                com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat.class, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat.Builder.class);
       }
 
-      // Construct using com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat.newBuilder()
+      // Construct using com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -2138,8 +2069,6 @@ public final class ReplicationFilterFormats {
 
       public Builder clear() {
         super.clear();
-        sourceLogId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -2149,59 +2078,43 @@ public final class ReplicationFilterFormats {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.internal_static_SourceLogIdExclusionFilterFormat_descriptor;
+        return com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.internal_static_NoFilterFormat_descriptor;
       }
 
-      public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat getDefaultInstanceForType() {
-        return com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat.getDefaultInstance();
+      public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat getDefaultInstanceForType() {
+        return com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat.getDefaultInstance();
       }
 
-      public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat build() {
-        com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat result = buildPartial();
+      public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat build() {
+        com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat buildPartial() {
-        com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat result = new com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.sourceLogId_ = sourceLogId_;
-        result.bitField0_ = to_bitField0_;
+      public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat buildPartial() {
+        com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat result = new com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat(this);
         onBuilt();
         return result;
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat) {
-          return mergeFrom((com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat)other);
+        if (other instanceof com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat) {
+          return mergeFrom((com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat other) {
-        if (other == com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat.getDefaultInstance()) return this;
-        if (other.hasSourceLogId()) {
-          bitField0_ |= 0x00000001;
-          sourceLogId_ = other.sourceLogId_;
-          onChanged();
-        }
+      public Builder mergeFrom(com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat other) {
+        if (other == com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat.getDefaultInstance()) return this;
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
-        if (!hasSourceLogId()) {
-          
-          return false;
-        }
         return true;
       }
 
@@ -2209,11 +2122,11 @@ public final class ReplicationFilterFormats {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat parsedMessage = null;
+        com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.SourceLogIdExclusionFilterFormat) e.getUnfinishedMessage();
+          parsedMessage = (com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.NoFilterFormat) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -2222,91 +2135,16 @@ public final class ReplicationFilterFormats {
         }
         return this;
       }
-      private int bitField0_;
 
-      // required string sourceLogId = 1;
-      private java.lang.Object sourceLogId_ = "";
-      /**
-       * <code>required string sourceLogId = 1;</code>
-       */
-      public boolean hasSourceLogId() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required string sourceLogId = 1;</code>
-       */
-      public java.lang.String getSourceLogId() {
-        java.lang.Object ref = sourceLogId_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          sourceLogId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>required string sourceLogId = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getSourceLogIdBytes() {
-        java.lang.Object ref = sourceLogId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          sourceLogId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>required string sourceLogId = 1;</code>
-       */
-      public Builder setSourceLogId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-        sourceLogId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required string sourceLogId = 1;</code>
-       */
-      public Builder clearSourceLogId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        sourceLogId_ = getDefaultInstance().getSourceLogId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required string sourceLogId = 1;</code>
-       */
-      public Builder setSourceLogIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-        sourceLogId_ = value;
-        onChanged();
-        return this;
-      }
-
-      // @@protoc_insertion_point(builder_scope:SourceLogIdExclusionFilterFormat)
+      // @@protoc_insertion_point(builder_scope:NoFilterFormat)
     }
 
     static {
-      defaultInstance = new SourceLogIdExclusionFilterFormat(true);
+      defaultInstance = new NoFilterFormat(true);
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:SourceLogIdExclusionFilterFormat)
+    // @@protoc_insertion_point(class_scope:NoFilterFormat)
   }
 
   private static com.google.protobuf.Descriptors.Descriptor
@@ -2320,10 +2158,10 @@ public final class ReplicationFilterFormats {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_ReplicationFilterTreeFormat_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_SourceLogIdExclusionFilterFormat_descriptor;
+    internal_static_NoFilterFormat_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_SourceLogIdExclusionFilterFormat_fieldAccessorTable;
+      internal_static_NoFilterFormat_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -2342,9 +2180,8 @@ public final class ReplicationFilterFormats {
       "dren\030\002 \003(\0132\034.ReplicationFilterTreeFormat" +
       "\022,\n\006filter\030\003 \001(\0132\034.ReplicationFilterLeaf" +
       "Format\"%\n\010NodeType\022\010\n\004LEAF\020\001\022\007\n\003AND\020\002\022\006\n" +
-      "\002OR\020\003\"7\n SourceLogIdExclusionFilterForma",
-      "t\022\023\n\013sourceLogId\030\001 \002(\tB+\n\'com.rbmhtechno" +
-      "logy.eventuate.serializerH\001"
+      "\002OR\020\003\"\020\n\016NoFilterFormatB+\n\'com.rbmhtechn",
+      "ology.eventuate.serializerH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -2363,12 +2200,12 @@ public final class ReplicationFilterFormats {
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationFilterTreeFormat_descriptor,
               new java.lang.String[] { "NodeType", "Children", "Filter", });
-          internal_static_SourceLogIdExclusionFilterFormat_descriptor =
+          internal_static_NoFilterFormat_descriptor =
             getDescriptor().getMessageTypes().get(2);
-          internal_static_SourceLogIdExclusionFilterFormat_fieldAccessorTable = new
+          internal_static_NoFilterFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_SourceLogIdExclusionFilterFormat_descriptor,
-              new java.lang.String[] { "SourceLogId", });
+              internal_static_NoFilterFormat_descriptor,
+              new java.lang.String[] { });
           return null;
         }
       };

@@ -56,6 +56,8 @@ trait ReplicationEndpointDoc {
   val endpoint1 = new ReplicationEndpoint(id = "1", logNames = Set("L", "M"),
     logFactory = logId => LeveldbEventLog.props(logId),
     connections = Set(ReplicationConnection("127.0.0.1", 2553)))
+
+  endpoint1.activate()
   //#
 
   //#logs-map-1
@@ -67,6 +69,8 @@ trait ReplicationEndpointDoc {
   val endpoint2 = new ReplicationEndpoint(id = "2", logNames = Set("L", "M"),
     logFactory = logId => LeveldbEventLog.props(logId),
     connections = Set(ReplicationConnection("127.0.0.1", 2552)))
+
+  endpoint2.activate()
   //#
 }
 

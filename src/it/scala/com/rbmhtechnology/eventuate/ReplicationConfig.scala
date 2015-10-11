@@ -33,6 +33,7 @@ object ReplicationConfig {
          |eventuate.snapshot.filesystem.dir = target/test-snapshot
          |
          |eventuate.log.leveldb.dir = target/test-log
+         |eventuate.log.leveldb.index-update-limit = 3
          |eventuate.log.cassandra.default-port = 9142
          |eventuate.log.cassandra.index-update-limit = 3
          |eventuate.log.replication.batch-size-max = 3

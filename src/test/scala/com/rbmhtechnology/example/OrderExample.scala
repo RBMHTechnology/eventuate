@@ -89,5 +89,7 @@ object OrderExample extends App {
   val manager = system.actorOf(Props(new OrderManager(endpoint.id, endpoint.logs(ReplicationEndpoint.DefaultLogName))))
   val view = system.actorOf(Props(new OrderView(endpoint.id, endpoint.logs(ReplicationEndpoint.DefaultLogName))))
   val driver = system.actorOf(Props(new OrderExample(manager, view)).withDispatcher("eventuate.cli-dispatcher"))
+
+  endpoint.activate()
 }
 

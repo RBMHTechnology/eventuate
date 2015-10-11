@@ -16,12 +16,11 @@
 
 package com.rbmhtechnology.eventuate
 
-import DurableEvent._
-
 /**
  * Provider API.
  *
- * Event storage format.
+ * Event storage format. Fields `localLogId` and `localSequenceNr` differ among replicas, all other fields are not changed
+ * during event replication.
  *
  * @param payload Application-defined event.
  * @param emitterId Id of emitter ([[EventsourcedActor]]).
@@ -36,11 +35,8 @@ import DurableEvent._
  * @param processId Id of the causality-tracking source of concurrent activity. By default, this is the id of the event log
  *                  that initially wrote the event. If the emitting [[EventsourcedActor]] has set `sharedClockEntry` to `false`
  *                  then this is the id of that actor (which is the `emitterId`).
- * @param sourceLogId Id of the source log from last replication. Equals to `targetLogId` if not replicated yet.
- * @param targetLogId Id of the target log from last replication.
- * @param sourceLogSequenceNr Sequence number in source log from last replication.
- * @param targetLogSequenceNr Sequence number in target log from last replication.
- * @param sourceLogReadPosition Highest source log read position from last replication.
+ * @param localLogId Id of the local event log.
+ * @param localSequenceNr Sequence number in the local event log.
  */
 case class DurableEvent(
   payload: Any,
@@ -49,12 +45,11 @@ case class DurableEvent(
   customDestinationAggregateIds: Set[String] = Set(),
   systemTimestamp: Long = 0L,
   vectorTimestamp: VectorTime = VectorTime(),
-  processId: String = UndefinedLogId,
-  sourceLogId: String = UndefinedLogId,
-  targetLogId: String = UndefinedLogId,
-  sourceLogSequenceNr: Long = UndefinedSequenceNr,
-  targetLogSequenceNr: Long = UndefinedSequenceNr,
-  sourceLogReadPosition: Long = 0L) {
+  processId: String = DurableEvent.UndefinedLogId,
+  localLogId: String = DurableEvent.UndefinedLogId,
+  localSequenceNr: Long = DurableEvent.UndefinedSequenceNr) {
+
+  import DurableEvent._
 
   /**
    * Unique event identifier.
@@ -63,22 +58,19 @@ case class DurableEvent(
     vectorTimestamp
 
   /**
-   * Local logId (= `targetLogId`).
+   * Returns `true` if this event is a valid replication candidate. A valid candidate
+   * has a `vectorTimestamp` that is not `<=` the given `vectorTime` and passes the
+   * given replication `filter`.
    */
-  def logId: String =
-    targetLogId
+  def replicate(vectorTime: VectorTime, filter: ReplicationFilter): Boolean =
+    replicate(vectorTime) && filter(this)
 
   /**
-   * Local sequence number (= `targetLogSequenceNr`).
+   * Returns `true` if the event is a valid replication candidate. A valid candidate
+   * has a `vectorTimestamp` that is not `<=` the given `vectorTime`.
    */
-  def sequenceNr: Long =
-    targetLogSequenceNr
-
-  /**
-   * `true` if this is a replicated event.
-   */
-  def replicated: Boolean =
-    targetLogId != sourceLogId
+  def replicate(vectorTime: VectorTime): Boolean =
+    !(vectorTimestamp <= vectorTime)
 
   /**
    * The default routing destination of this event is its `emitterAggregateId`. If defined, the event is
@@ -93,6 +85,23 @@ case class DurableEvent(
    */
   def destinationAggregateIds: Set[String] =
     if (defaultDestinationAggregateId.isDefined) customDestinationAggregateIds + defaultDestinationAggregateId.get else customDestinationAggregateIds
+
+  /**
+   * Prepares the event for the initial write to a local event log.
+   */
+  private[eventuate] def prepareWrite(logId: String, sequenceNr: Long, timestamp: Long): DurableEvent = {
+    val st = if (processId == UndefinedLogId) timestamp else systemTimestamp
+    val vt = if (processId == UndefinedLogId) vectorTimestamp.setLocalTime(logId, sequenceNr) else vectorTimestamp
+    val id = if (processId == UndefinedLogId) logId else processId
+    copy(systemTimestamp = st, vectorTimestamp = vt, processId = id, localLogId = logId, localSequenceNr = sequenceNr)
+  }
+
+  /**
+   * Prepares the event for a replication write to a target event log.
+   */
+  private[eventuate] def prepareReplicate(logId: String, sequenceNr: Long): DurableEvent = {
+    copy(localLogId = logId, localSequenceNr = sequenceNr)
+  }
 }
 
 object DurableEvent {
@@ -100,5 +109,5 @@ object DurableEvent {
   val UndefinedSequenceNr = 0L
 
   def apply(emitterId: String): DurableEvent =
-    DurableEvent(payload = null, emitterId)
+    apply(null, emitterId)
 }

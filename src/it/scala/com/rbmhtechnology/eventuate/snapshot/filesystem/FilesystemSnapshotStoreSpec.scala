@@ -60,9 +60,7 @@ class FilesystemSnapshotStoreSpec extends WordSpec with Matchers with BeforeAndA
     emitterIdCtr.toString
 
   def snapshot(payload: String, sequenceNr: Long): Snapshot = {
-    val event = DurableEvent.apply(emitterId).copy(
-      sourceLogSequenceNr = sequenceNr,
-      targetLogSequenceNr = sequenceNr)
+    val event = DurableEvent.apply(emitterId).copy(localSequenceNr = sequenceNr)
     Snapshot(payload, emitterId, event, VectorTime("x" -> 17L))
   }
 

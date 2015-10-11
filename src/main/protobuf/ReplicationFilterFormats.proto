@@ -38,6 +38,6 @@ message ReplicationFilterTreeFormat {
   optional ReplicationFilterLeafFormat filter = 3;   // set if nodeType == LEAF
 }
 
-message SourceLogIdExclusionFilterFormat {
-  required string sourceLogId = 1;
+message NoFilterFormat {
+  // no fields
 }

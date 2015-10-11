@@ -20,7 +20,6 @@ import akka.actor.ActorSystem
 import akka.testkit.{TestProbe, TestKit}
 
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
-import com.rbmhtechnology.eventuate.ReplicationProtocol._
 
 import com.typesafe.config._
 
@@ -48,7 +47,7 @@ class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", Even
     val probe = TestProbe()
     log ! Replay(fromSequenceNr, probe.ref, None, 0)
     probe.receiveWhile[(Any, Long)]() {
-      case r: Replaying => (r.event.payload, r.event.sequenceNr)
+      case r: Replaying => (r.event.payload, r.event.localSequenceNr)
     }
   }
 
@@ -82,27 +81,12 @@ class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", Even
       log ! Write(eventsB, system.deadLetters, requestorProbe.ref, 0)
 
       val expectedA = eventsA.zipWithIndex.map {
-        case (event, idx) => event.copy(
-          vectorTimestamp = timestamp(1L + idx),
-          processId = logId,
-          sourceLogId = logId,
-          targetLogId = logId,
-          sourceLogSequenceNr = 1L + idx,
-          targetLogSequenceNr = 1L + idx)
+        case (event, idx) => event.copy(vectorTimestamp = timestamp(1L + idx), processId = logId, localLogId = logId, localSequenceNr = 1L + idx)
       }
 
       val expectedB = eventsB.zipWithIndex.map {
-        case (event, idx) => event.copy(
-          vectorTimestamp = timestamp(6L + idx),
-          processId = logId,
-          sourceLogId = logId,
-          targetLogId = logId,
-          sourceLogSequenceNr = 6L + idx,
-          targetLogSequenceNr = 6L + idx)
+        case (event, idx) => event.copy(vectorTimestamp = timestamp(6L + idx), processId = logId, localLogId = logId, localSequenceNr = 6L + idx)
       }
-
-      notificationProbe.expectMsg(Updated(logId, expectedA))
-      notificationProbe.expectMsg(Updated(logId, expectedB))
 
       expectedA.foreach(event => requestorProbe.expectMsg(WriteSuccess(event, 0)))
       expectedB.foreach(event => requestorProbe.expectMsg(WriteSuccess(event, 0)))

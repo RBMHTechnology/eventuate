@@ -28,7 +28,7 @@ import org.scalatest._
 import scala.collection.immutable.Seq
 import scala.util._
 
-object CausalityIntegrationSpec {
+object EventsourcedActorCausalitySpec {
   class Collaborator(val id: String, val eventLog: ActorRef, override val sharedClockEntry: Boolean, handles: Set[String], probe: ActorRef) extends EventsourcedActor {
     val onCommand: Receive = {
       case s: String => persist(s) {
@@ -47,8 +47,8 @@ object CausalityIntegrationSpec {
     ReplicationConnection("127.0.0.1", port, filters)
 }
 
-abstract class CausalityIntegrationSpec extends WordSpec with Matchers with ReplicationNodeRegistry {
-  import CausalityIntegrationSpec._
+abstract class EventsourcedActorCausalitySpec extends WordSpec with Matchers with ReplicationNodeRegistry {
+  import EventsourcedActorCausalitySpec._
 
   implicit def logFactory: String => Props
 
@@ -166,11 +166,11 @@ abstract class CausalityIntegrationSpec extends WordSpec with Matchers with Repl
   }
 }
 
-class CausalityIntegrationSpecLeveldb extends CausalityIntegrationSpec with EventLogCleanupLeveldb {
+class EventsourcedActorCausalitySpecLeveldb extends EventsourcedActorCausalitySpec with EventLogCleanupLeveldb {
   override val logFactory: String => Props = id => EventLogLifecycleLeveldb.TestEventLog.props(id, batching = true)
 }
 
-class CausalityIntegrationSpecCassandra extends CausalityIntegrationSpec with EventLogCleanupCassandra {
+class EventsourcedActorCausalitySpecCassandra extends EventsourcedActorCausalitySpec with EventLogCleanupCassandra {
   override val logFactory: String => Props = id => EventLogLifecycleCassandra.TestEventLog.props(id, batching = true)
 
   override def beforeAll(): Unit = {

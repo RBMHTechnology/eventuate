@@ -24,13 +24,13 @@ Replication
 
 ``OrderActor``\ s are replicated across locations A - F, each running as separate process on ``localhost`` (see section :ref:`running`)::
 
-    A        E
+    A ------ E
      \      /    
       C -- D
      /      \
     B        F
 
-Each location can create and update orders, even under presence of partitions. In the example application, partitions can be created by shutting down locations. For example, when shutting down location ``C``, partitions ``A``, ``B`` and ``E-D-F`` are created. 
+Each location can create and update orders, even under presence of partitions. In the example application, partitions can be created by shutting down locations. For example, when shutting down location ``C``, partitions ``B`` and ``A-E-D-F`` are created. 
 
 Concurrent updates to orders with different order id do not conflict. Concurrent updates to replicas of the same order are considered as conflict and must be resolved by the user, otherwise, further updates to that order are rejected. Updates are only rejected if a conflict is already *visible* to a location.
 
@@ -74,7 +74,7 @@ This should open six terminal windows, representing locations A - F. For running
 
     ./example java
 
-Create and update some orders and see how changes are propagated to other locations. To make concurrent updates to an order, for example, enter ``exit`` at location ``C``, and add different items to that order at locations ``A`` and ``F``. When starting location ``C`` again with:: 
+Create and update some orders and see how changes are propagated to other locations. To make concurrent updates to an order, for example, enter ``exit`` at location ``C``, and add different items to that order at locations ``B`` and ``F``. When starting location ``C`` again with:: 
 
     ./example-location A
 

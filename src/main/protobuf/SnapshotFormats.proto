@@ -53,3 +53,9 @@ message VersionedFormat {
   optional string creator = 2;
   optional PayloadFormat payload = 3;
 }
+
+message TimeTrackerFormat {
+  optional int64 sequenceNr = 1;
+  optional VectorTimeFormat vectorTime = 2;
+}
+

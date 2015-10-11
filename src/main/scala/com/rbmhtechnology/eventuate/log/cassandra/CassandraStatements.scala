@@ -78,25 +78,25 @@ private[eventuate] trait CassandraAggregateEventStatements extends CassandraStat
   def aggregateEventTable(logId: String) = s"${table(logId)}_agg"
 }
 
-private[eventuate] trait CassandraSequenceNumberStatements extends CassandraStatements {
-  def createSequenceNumberTableStatement = s"""
-      CREATE TABLE IF NOT EXISTS ${sequenceNumberTable} (
+private[eventuate] trait CassandraTimeTrackerStatements extends CassandraStatements {
+  def createTimeTrackerTableStatement = s"""
+      CREATE TABLE IF NOT EXISTS ${timeTrackerTable} (
         log_id text,
-        sequence_nr bigint,
+        time_tracker blob,
         PRIMARY KEY (log_id))
     """
 
-  def writeSequenceNumberStatement = s"""
-      INSERT INTO ${sequenceNumberTable} (log_id, sequence_nr)
+  def writeTimeTrackerStatement = s"""
+      INSERT INTO ${timeTrackerTable} (log_id, time_tracker)
       VALUES (?, ?)
     """
 
-  def readSequenceNumberStatement = s"""
-      SELECT * FROM ${sequenceNumberTable} WHERE
+  def readTimeTrackerStatement = s"""
+      SELECT * FROM ${timeTrackerTable} WHERE
         log_id = ?
     """
 
-  def sequenceNumberTable = table("snr")
+  def timeTrackerTable = table("tt")
 }
 
 private[eventuate] trait CassandraReplicationProgressStatements extends CassandraStatements {
@@ -114,6 +114,12 @@ private[eventuate] trait CassandraReplicationProgressStatements extends Cassandr
     """
 
   def readReplicationProgressStatement: String =  s"""
+      SELECT * FROM ${replicationProgressTable} WHERE
+        log_id = ? AND
+        source_log_id = ?
+    """
+
+  def readReplicationProgressesStatement: String =  s"""
       SELECT * FROM ${replicationProgressTable} WHERE
         log_id = ?
     """

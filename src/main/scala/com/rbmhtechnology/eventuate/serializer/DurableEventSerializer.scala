@@ -66,11 +66,8 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
     builder.setSystemTimestamp(durableEvent.systemTimestamp)
     builder.setVectorTimestamp(vectorTimeFormatBuilder(durableEvent.vectorTimestamp))
     builder.setProcessId(durableEvent.processId)
-    builder.setSourceLogId(durableEvent.sourceLogId)
-    builder.setTargetLogId(durableEvent.targetLogId)
-    builder.setSourceLogSequenceNr(durableEvent.sourceLogSequenceNr)
-    builder.setTargetLogSequenceNr(durableEvent.targetLogSequenceNr)
-    builder.setSourceLogReadPosition(durableEvent.sourceLogReadPosition)
+    builder.setLocalLogId(durableEvent.localLogId)
+    builder.setLocalSequenceNr(durableEvent.localSequenceNr)
 
     durableEvent.emitterAggregateId.foreach { id =>
       builder.setEmitterAggregateId(id)
@@ -125,11 +122,8 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
       systemTimestamp = durableEventFormat.getSystemTimestamp,
       vectorTimestamp = vectorTime(durableEventFormat.getVectorTimestamp),
       processId = durableEventFormat.getProcessId,
-      sourceLogId = durableEventFormat.getSourceLogId,
-      targetLogId = durableEventFormat.getTargetLogId,
-      sourceLogSequenceNr = durableEventFormat.getSourceLogSequenceNr,
-      targetLogSequenceNr = durableEventFormat.getTargetLogSequenceNr,
-      sourceLogReadPosition = durableEventFormat.getSourceLogReadPosition)
+      localLogId = durableEventFormat.getLocalLogId,
+      localSequenceNr = durableEventFormat.getLocalSequenceNr)
   }
 
   def payload(payloadFormat: PayloadFormat): Any = {

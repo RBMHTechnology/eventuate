@@ -1579,6 +1579,35 @@ public final class ReplicationProtocolFormats {
      */
     com.google.protobuf.ByteString
         getTargetLogIdBytes();
+
+    // optional string replicator = 5;
+    /**
+     * <code>optional string replicator = 5;</code>
+     */
+    boolean hasReplicator();
+    /**
+     * <code>optional string replicator = 5;</code>
+     */
+    java.lang.String getReplicator();
+    /**
+     * <code>optional string replicator = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getReplicatorBytes();
+
+    // optional .VectorTimeFormat currentTargetVectorTime = 6;
+    /**
+     * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+     */
+    boolean hasCurrentTargetVectorTime();
+    /**
+     * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+     */
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentTargetVectorTime();
+    /**
+     * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+     */
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentTargetVectorTimeOrBuilder();
   }
   /**
    * Protobuf type {@code ReplicationReadFormat}
@@ -1657,6 +1686,24 @@ public final class ReplicationProtocolFormats {
             case 34: {
               bitField0_ |= 0x00000008;
               targetLogId_ = input.readBytes();
+              break;
+            }
+            case 42: {
+              bitField0_ |= 0x00000010;
+              replicator_ = input.readBytes();
+              break;
+            }
+            case 50: {
+              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000020) == 0x00000020)) {
+                subBuilder = currentTargetVectorTime_.toBuilder();
+              }
+              currentTargetVectorTime_ = input.readMessage(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(currentTargetVectorTime_);
+                currentTargetVectorTime_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000020;
               break;
             }
           }
@@ -1796,11 +1843,78 @@ public final class ReplicationProtocolFormats {
       }
     }
 
+    // optional string replicator = 5;
+    public static final int REPLICATOR_FIELD_NUMBER = 5;
+    private java.lang.Object replicator_;
+    /**
+     * <code>optional string replicator = 5;</code>
+     */
+    public boolean hasReplicator() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional string replicator = 5;</code>
+     */
+    public java.lang.String getReplicator() {
+      java.lang.Object ref = replicator_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          replicator_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>optional string replicator = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getReplicatorBytes() {
+      java.lang.Object ref = replicator_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        replicator_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // optional .VectorTimeFormat currentTargetVectorTime = 6;
+    public static final int CURRENTTARGETVECTORTIME_FIELD_NUMBER = 6;
+    private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentTargetVectorTime_;
+    /**
+     * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+     */
+    public boolean hasCurrentTargetVectorTime() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+     */
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentTargetVectorTime() {
+      return currentTargetVectorTime_;
+    }
+    /**
+     * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+     */
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentTargetVectorTimeOrBuilder() {
+      return currentTargetVectorTime_;
+    }
+
     private void initFields() {
       fromSequenceNr_ = 0L;
       maxNumEvents_ = 0;
       filter_ = com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.getDefaultInstance();
       targetLogId_ = "";
+      replicator_ = "";
+      currentTargetVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1809,6 +1923,12 @@ public final class ReplicationProtocolFormats {
 
       if (hasFilter()) {
         if (!getFilter().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasCurrentTargetVectorTime()) {
+        if (!getCurrentTargetVectorTime().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -1831,6 +1951,12 @@ public final class ReplicationProtocolFormats {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBytes(4, getTargetLogIdBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBytes(5, getReplicatorBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeMessage(6, currentTargetVectorTime_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1856,6 +1982,14 @@ public final class ReplicationProtocolFormats {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(4, getTargetLogIdBytes());
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, getReplicatorBytes());
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, currentTargetVectorTime_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1966,6 +2100,7 @@ public final class ReplicationProtocolFormats {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getFilterFieldBuilder();
+          getCurrentTargetVectorTimeFieldBuilder();
         }
       }
       private static Builder create() {
@@ -1986,6 +2121,14 @@ public final class ReplicationProtocolFormats {
         bitField0_ = (bitField0_ & ~0x00000004);
         targetLogId_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
+        replicator_ = "";
+        bitField0_ = (bitField0_ & ~0x00000010);
+        if (currentTargetVectorTimeBuilder_ == null) {
+          currentTargetVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+        } else {
+          currentTargetVectorTimeBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -2034,6 +2177,18 @@ public final class ReplicationProtocolFormats {
           to_bitField0_ |= 0x00000008;
         }
         result.targetLogId_ = targetLogId_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.replicator_ = replicator_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        if (currentTargetVectorTimeBuilder_ == null) {
+          result.currentTargetVectorTime_ = currentTargetVectorTime_;
+        } else {
+          result.currentTargetVectorTime_ = currentTargetVectorTimeBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2064,6 +2219,14 @@ public final class ReplicationProtocolFormats {
           targetLogId_ = other.targetLogId_;
           onChanged();
         }
+        if (other.hasReplicator()) {
+          bitField0_ |= 0x00000010;
+          replicator_ = other.replicator_;
+          onChanged();
+        }
+        if (other.hasCurrentTargetVectorTime()) {
+          mergeCurrentTargetVectorTime(other.getCurrentTargetVectorTime());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -2071,6 +2234,12 @@ public final class ReplicationProtocolFormats {
       public final boolean isInitialized() {
         if (hasFilter()) {
           if (!getFilter().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasCurrentTargetVectorTime()) {
+          if (!getCurrentTargetVectorTime().isInitialized()) {
             
             return false;
           }
@@ -2354,6 +2523,197 @@ public final class ReplicationProtocolFormats {
         return this;
       }
 
+      // optional string replicator = 5;
+      private java.lang.Object replicator_ = "";
+      /**
+       * <code>optional string replicator = 5;</code>
+       */
+      public boolean hasReplicator() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional string replicator = 5;</code>
+       */
+      public java.lang.String getReplicator() {
+        java.lang.Object ref = replicator_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          replicator_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string replicator = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getReplicatorBytes() {
+        java.lang.Object ref = replicator_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          replicator_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string replicator = 5;</code>
+       */
+      public Builder setReplicator(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        replicator_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string replicator = 5;</code>
+       */
+      public Builder clearReplicator() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        replicator_ = getDefaultInstance().getReplicator();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string replicator = 5;</code>
+       */
+      public Builder setReplicatorBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000010;
+        replicator_ = value;
+        onChanged();
+        return this;
+      }
+
+      // optional .VectorTimeFormat currentTargetVectorTime = 6;
+      private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentTargetVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> currentTargetVectorTimeBuilder_;
+      /**
+       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       */
+      public boolean hasCurrentTargetVectorTime() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentTargetVectorTime() {
+        if (currentTargetVectorTimeBuilder_ == null) {
+          return currentTargetVectorTime_;
+        } else {
+          return currentTargetVectorTimeBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       */
+      public Builder setCurrentTargetVectorTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
+        if (currentTargetVectorTimeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          currentTargetVectorTime_ = value;
+          onChanged();
+        } else {
+          currentTargetVectorTimeBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       */
+      public Builder setCurrentTargetVectorTime(
+          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder builderForValue) {
+        if (currentTargetVectorTimeBuilder_ == null) {
+          currentTargetVectorTime_ = builderForValue.build();
+          onChanged();
+        } else {
+          currentTargetVectorTimeBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       */
+      public Builder mergeCurrentTargetVectorTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
+        if (currentTargetVectorTimeBuilder_ == null) {
+          if (((bitField0_ & 0x00000020) == 0x00000020) &&
+              currentTargetVectorTime_ != com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance()) {
+            currentTargetVectorTime_ =
+              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.newBuilder(currentTargetVectorTime_).mergeFrom(value).buildPartial();
+          } else {
+            currentTargetVectorTime_ = value;
+          }
+          onChanged();
+        } else {
+          currentTargetVectorTimeBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000020;
+        return this;
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       */
+      public Builder clearCurrentTargetVectorTime() {
+        if (currentTargetVectorTimeBuilder_ == null) {
+          currentTargetVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+          onChanged();
+        } else {
+          currentTargetVectorTimeBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000020);
+        return this;
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder getCurrentTargetVectorTimeBuilder() {
+        bitField0_ |= 0x00000020;
+        onChanged();
+        return getCurrentTargetVectorTimeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentTargetVectorTimeOrBuilder() {
+        if (currentTargetVectorTimeBuilder_ != null) {
+          return currentTargetVectorTimeBuilder_.getMessageOrBuilder();
+        } else {
+          return currentTargetVectorTime_;
+        }
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> 
+          getCurrentTargetVectorTimeFieldBuilder() {
+        if (currentTargetVectorTimeBuilder_ == null) {
+          currentTargetVectorTimeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder>(
+                  currentTargetVectorTime_,
+                  getParentForChildren(),
+                  isClean());
+          currentTargetVectorTime_ = null;
+        }
+        return currentTargetVectorTimeBuilder_;
+      }
+
       // @@protoc_insertion_point(builder_scope:ReplicationReadFormat)
     }
 
@@ -2393,15 +2753,15 @@ public final class ReplicationProtocolFormats {
     com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormatOrBuilder getEventsOrBuilder(
         int index);
 
-    // optional int64 lastSourceLogSequenceNrRead = 2;
+    // optional int64 replicationProgress = 2;
     /**
-     * <code>optional int64 lastSourceLogSequenceNrRead = 2;</code>
+     * <code>optional int64 replicationProgress = 2;</code>
      */
-    boolean hasLastSourceLogSequenceNrRead();
+    boolean hasReplicationProgress();
     /**
-     * <code>optional int64 lastSourceLogSequenceNrRead = 2;</code>
+     * <code>optional int64 replicationProgress = 2;</code>
      */
-    long getLastSourceLogSequenceNrRead();
+    long getReplicationProgress();
 
     // optional string targetLogId = 3;
     /**
@@ -2417,6 +2777,20 @@ public final class ReplicationProtocolFormats {
      */
     com.google.protobuf.ByteString
         getTargetLogIdBytes();
+
+    // optional .VectorTimeFormat currentSourceVectorTime = 4;
+    /**
+     * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+     */
+    boolean hasCurrentSourceVectorTime();
+    /**
+     * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+     */
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentSourceVectorTime();
+    /**
+     * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+     */
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentSourceVectorTimeOrBuilder();
   }
   /**
    * Protobuf type {@code ReplicationReadSuccessFormat}
@@ -2479,12 +2853,25 @@ public final class ReplicationProtocolFormats {
             }
             case 16: {
               bitField0_ |= 0x00000001;
-              lastSourceLogSequenceNrRead_ = input.readInt64();
+              replicationProgress_ = input.readInt64();
               break;
             }
             case 26: {
               bitField0_ |= 0x00000002;
               targetLogId_ = input.readBytes();
+              break;
+            }
+            case 34: {
+              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000004) == 0x00000004)) {
+                subBuilder = currentSourceVectorTime_.toBuilder();
+              }
+              currentSourceVectorTime_ = input.readMessage(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(currentSourceVectorTime_);
+                currentSourceVectorTime_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000004;
               break;
             }
           }
@@ -2566,20 +2953,20 @@ public final class ReplicationProtocolFormats {
       return events_.get(index);
     }
 
-    // optional int64 lastSourceLogSequenceNrRead = 2;
-    public static final int LASTSOURCELOGSEQUENCENRREAD_FIELD_NUMBER = 2;
-    private long lastSourceLogSequenceNrRead_;
+    // optional int64 replicationProgress = 2;
+    public static final int REPLICATIONPROGRESS_FIELD_NUMBER = 2;
+    private long replicationProgress_;
     /**
-     * <code>optional int64 lastSourceLogSequenceNrRead = 2;</code>
+     * <code>optional int64 replicationProgress = 2;</code>
      */
-    public boolean hasLastSourceLogSequenceNrRead() {
+    public boolean hasReplicationProgress() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>optional int64 lastSourceLogSequenceNrRead = 2;</code>
+     * <code>optional int64 replicationProgress = 2;</code>
      */
-    public long getLastSourceLogSequenceNrRead() {
-      return lastSourceLogSequenceNrRead_;
+    public long getReplicationProgress() {
+      return replicationProgress_;
     }
 
     // optional string targetLogId = 3;
@@ -2625,10 +3012,33 @@ public final class ReplicationProtocolFormats {
       }
     }
 
+    // optional .VectorTimeFormat currentSourceVectorTime = 4;
+    public static final int CURRENTSOURCEVECTORTIME_FIELD_NUMBER = 4;
+    private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentSourceVectorTime_;
+    /**
+     * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+     */
+    public boolean hasCurrentSourceVectorTime() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+     */
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentSourceVectorTime() {
+      return currentSourceVectorTime_;
+    }
+    /**
+     * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+     */
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentSourceVectorTimeOrBuilder() {
+      return currentSourceVectorTime_;
+    }
+
     private void initFields() {
       events_ = java.util.Collections.emptyList();
-      lastSourceLogSequenceNrRead_ = 0L;
+      replicationProgress_ = 0L;
       targetLogId_ = "";
+      currentSourceVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -2637,6 +3047,12 @@ public final class ReplicationProtocolFormats {
 
       for (int i = 0; i < getEventsCount(); i++) {
         if (!getEvents(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      if (hasCurrentSourceVectorTime()) {
+        if (!getCurrentSourceVectorTime().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -2652,10 +3068,13 @@ public final class ReplicationProtocolFormats {
         output.writeMessage(1, events_.get(i));
       }
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt64(2, lastSourceLogSequenceNrRead_);
+        output.writeInt64(2, replicationProgress_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(3, getTargetLogIdBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeMessage(4, currentSourceVectorTime_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2672,11 +3091,15 @@ public final class ReplicationProtocolFormats {
       }
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(2, lastSourceLogSequenceNrRead_);
+          .computeInt64Size(2, replicationProgress_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(3, getTargetLogIdBytes());
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, currentSourceVectorTime_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2787,6 +3210,7 @@ public final class ReplicationProtocolFormats {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getEventsFieldBuilder();
+          getCurrentSourceVectorTimeFieldBuilder();
         }
       }
       private static Builder create() {
@@ -2801,10 +3225,16 @@ public final class ReplicationProtocolFormats {
         } else {
           eventsBuilder_.clear();
         }
-        lastSourceLogSequenceNrRead_ = 0L;
+        replicationProgress_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000002);
         targetLogId_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
+        if (currentSourceVectorTimeBuilder_ == null) {
+          currentSourceVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+        } else {
+          currentSourceVectorTimeBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -2845,11 +3275,19 @@ public final class ReplicationProtocolFormats {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.lastSourceLogSequenceNrRead_ = lastSourceLogSequenceNrRead_;
+        result.replicationProgress_ = replicationProgress_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000002;
         }
         result.targetLogId_ = targetLogId_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        if (currentSourceVectorTimeBuilder_ == null) {
+          result.currentSourceVectorTime_ = currentSourceVectorTime_;
+        } else {
+          result.currentSourceVectorTime_ = currentSourceVectorTimeBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -2892,13 +3330,16 @@ public final class ReplicationProtocolFormats {
             }
           }
         }
-        if (other.hasLastSourceLogSequenceNrRead()) {
-          setLastSourceLogSequenceNrRead(other.getLastSourceLogSequenceNrRead());
+        if (other.hasReplicationProgress()) {
+          setReplicationProgress(other.getReplicationProgress());
         }
         if (other.hasTargetLogId()) {
           bitField0_ |= 0x00000004;
           targetLogId_ = other.targetLogId_;
           onChanged();
+        }
+        if (other.hasCurrentSourceVectorTime()) {
+          mergeCurrentSourceVectorTime(other.getCurrentSourceVectorTime());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2907,6 +3348,12 @@ public final class ReplicationProtocolFormats {
       public final boolean isInitialized() {
         for (int i = 0; i < getEventsCount(); i++) {
           if (!getEvents(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasCurrentSourceVectorTime()) {
+          if (!getCurrentSourceVectorTime().isInitialized()) {
             
             return false;
           }
@@ -3173,35 +3620,35 @@ public final class ReplicationProtocolFormats {
         return eventsBuilder_;
       }
 
-      // optional int64 lastSourceLogSequenceNrRead = 2;
-      private long lastSourceLogSequenceNrRead_ ;
+      // optional int64 replicationProgress = 2;
+      private long replicationProgress_ ;
       /**
-       * <code>optional int64 lastSourceLogSequenceNrRead = 2;</code>
+       * <code>optional int64 replicationProgress = 2;</code>
        */
-      public boolean hasLastSourceLogSequenceNrRead() {
+      public boolean hasReplicationProgress() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional int64 lastSourceLogSequenceNrRead = 2;</code>
+       * <code>optional int64 replicationProgress = 2;</code>
        */
-      public long getLastSourceLogSequenceNrRead() {
-        return lastSourceLogSequenceNrRead_;
+      public long getReplicationProgress() {
+        return replicationProgress_;
       }
       /**
-       * <code>optional int64 lastSourceLogSequenceNrRead = 2;</code>
+       * <code>optional int64 replicationProgress = 2;</code>
        */
-      public Builder setLastSourceLogSequenceNrRead(long value) {
+      public Builder setReplicationProgress(long value) {
         bitField0_ |= 0x00000002;
-        lastSourceLogSequenceNrRead_ = value;
+        replicationProgress_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional int64 lastSourceLogSequenceNrRead = 2;</code>
+       * <code>optional int64 replicationProgress = 2;</code>
        */
-      public Builder clearLastSourceLogSequenceNrRead() {
+      public Builder clearReplicationProgress() {
         bitField0_ = (bitField0_ & ~0x00000002);
-        lastSourceLogSequenceNrRead_ = 0L;
+        replicationProgress_ = 0L;
         onChanged();
         return this;
       }
@@ -3278,6 +3725,123 @@ public final class ReplicationProtocolFormats {
         targetLogId_ = value;
         onChanged();
         return this;
+      }
+
+      // optional .VectorTimeFormat currentSourceVectorTime = 4;
+      private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentSourceVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> currentSourceVectorTimeBuilder_;
+      /**
+       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       */
+      public boolean hasCurrentSourceVectorTime() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentSourceVectorTime() {
+        if (currentSourceVectorTimeBuilder_ == null) {
+          return currentSourceVectorTime_;
+        } else {
+          return currentSourceVectorTimeBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       */
+      public Builder setCurrentSourceVectorTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
+        if (currentSourceVectorTimeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          currentSourceVectorTime_ = value;
+          onChanged();
+        } else {
+          currentSourceVectorTimeBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       */
+      public Builder setCurrentSourceVectorTime(
+          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder builderForValue) {
+        if (currentSourceVectorTimeBuilder_ == null) {
+          currentSourceVectorTime_ = builderForValue.build();
+          onChanged();
+        } else {
+          currentSourceVectorTimeBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       */
+      public Builder mergeCurrentSourceVectorTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
+        if (currentSourceVectorTimeBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008) &&
+              currentSourceVectorTime_ != com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance()) {
+            currentSourceVectorTime_ =
+              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.newBuilder(currentSourceVectorTime_).mergeFrom(value).buildPartial();
+          } else {
+            currentSourceVectorTime_ = value;
+          }
+          onChanged();
+        } else {
+          currentSourceVectorTimeBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000008;
+        return this;
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       */
+      public Builder clearCurrentSourceVectorTime() {
+        if (currentSourceVectorTimeBuilder_ == null) {
+          currentSourceVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+          onChanged();
+        } else {
+          currentSourceVectorTimeBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder getCurrentSourceVectorTimeBuilder() {
+        bitField0_ |= 0x00000008;
+        onChanged();
+        return getCurrentSourceVectorTimeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentSourceVectorTimeOrBuilder() {
+        if (currentSourceVectorTimeBuilder_ != null) {
+          return currentSourceVectorTimeBuilder_.getMessageOrBuilder();
+        } else {
+          return currentSourceVectorTime_;
+        }
+      }
+      /**
+       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> 
+          getCurrentSourceVectorTimeFieldBuilder() {
+        if (currentSourceVectorTimeBuilder_ == null) {
+          currentSourceVectorTimeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder>(
+                  currentSourceVectorTime_,
+                  getParentForChildren(),
+                  isClean());
+          currentSourceVectorTime_ = null;
+        }
+        return currentSourceVectorTimeBuilder_;
       }
 
       // @@protoc_insertion_point(builder_scope:ReplicationReadSuccessFormat)
@@ -3918,993 +4482,6 @@ public final class ReplicationProtocolFormats {
     // @@protoc_insertion_point(class_scope:ReplicationReadFailureFormat)
   }
 
-  public interface SubscribeReplicatorFormatOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-
-    // optional string sourceLogId = 1;
-    /**
-     * <code>optional string sourceLogId = 1;</code>
-     */
-    boolean hasSourceLogId();
-    /**
-     * <code>optional string sourceLogId = 1;</code>
-     */
-    java.lang.String getSourceLogId();
-    /**
-     * <code>optional string sourceLogId = 1;</code>
-     */
-    com.google.protobuf.ByteString
-        getSourceLogIdBytes();
-
-    // optional string targetLogId = 2;
-    /**
-     * <code>optional string targetLogId = 2;</code>
-     */
-    boolean hasTargetLogId();
-    /**
-     * <code>optional string targetLogId = 2;</code>
-     */
-    java.lang.String getTargetLogId();
-    /**
-     * <code>optional string targetLogId = 2;</code>
-     */
-    com.google.protobuf.ByteString
-        getTargetLogIdBytes();
-
-    // optional string replicator = 3;
-    /**
-     * <code>optional string replicator = 3;</code>
-     */
-    boolean hasReplicator();
-    /**
-     * <code>optional string replicator = 3;</code>
-     */
-    java.lang.String getReplicator();
-    /**
-     * <code>optional string replicator = 3;</code>
-     */
-    com.google.protobuf.ByteString
-        getReplicatorBytes();
-
-    // optional .ReplicationFilterTreeFormat filter = 4;
-    /**
-     * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-     */
-    boolean hasFilter();
-    /**
-     * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-     */
-    com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat getFilter();
-    /**
-     * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-     */
-    com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormatOrBuilder getFilterOrBuilder();
-  }
-  /**
-   * Protobuf type {@code SubscribeReplicatorFormat}
-   */
-  public static final class SubscribeReplicatorFormat extends
-      com.google.protobuf.GeneratedMessage
-      implements SubscribeReplicatorFormatOrBuilder {
-    // Use SubscribeReplicatorFormat.newBuilder() to construct.
-    private SubscribeReplicatorFormat(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
-      super(builder);
-      this.unknownFields = builder.getUnknownFields();
-    }
-    private SubscribeReplicatorFormat(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final SubscribeReplicatorFormat defaultInstance;
-    public static SubscribeReplicatorFormat getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public SubscribeReplicatorFormat getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
-      return this.unknownFields;
-    }
-    private SubscribeReplicatorFormat(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 10: {
-              bitField0_ |= 0x00000001;
-              sourceLogId_ = input.readBytes();
-              break;
-            }
-            case 18: {
-              bitField0_ |= 0x00000002;
-              targetLogId_ = input.readBytes();
-              break;
-            }
-            case 26: {
-              bitField0_ |= 0x00000004;
-              replicator_ = input.readBytes();
-              break;
-            }
-            case 34: {
-              com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000008) == 0x00000008)) {
-                subBuilder = filter_.toBuilder();
-              }
-              filter_ = input.readMessage(com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.PARSER, extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(filter_);
-                filter_ = subBuilder.buildPartial();
-              }
-              bitField0_ |= 0x00000008;
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.internal_static_SubscribeReplicatorFormat_descriptor;
-    }
-
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.internal_static_SubscribeReplicatorFormat_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat.class, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat.Builder.class);
-    }
-
-    public static com.google.protobuf.Parser<SubscribeReplicatorFormat> PARSER =
-        new com.google.protobuf.AbstractParser<SubscribeReplicatorFormat>() {
-      public SubscribeReplicatorFormat parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SubscribeReplicatorFormat(input, extensionRegistry);
-      }
-    };
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<SubscribeReplicatorFormat> getParserForType() {
-      return PARSER;
-    }
-
-    private int bitField0_;
-    // optional string sourceLogId = 1;
-    public static final int SOURCELOGID_FIELD_NUMBER = 1;
-    private java.lang.Object sourceLogId_;
-    /**
-     * <code>optional string sourceLogId = 1;</code>
-     */
-    public boolean hasSourceLogId() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>optional string sourceLogId = 1;</code>
-     */
-    public java.lang.String getSourceLogId() {
-      java.lang.Object ref = sourceLogId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          sourceLogId_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>optional string sourceLogId = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-        getSourceLogIdBytes() {
-      java.lang.Object ref = sourceLogId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        sourceLogId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    // optional string targetLogId = 2;
-    public static final int TARGETLOGID_FIELD_NUMBER = 2;
-    private java.lang.Object targetLogId_;
-    /**
-     * <code>optional string targetLogId = 2;</code>
-     */
-    public boolean hasTargetLogId() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>optional string targetLogId = 2;</code>
-     */
-    public java.lang.String getTargetLogId() {
-      java.lang.Object ref = targetLogId_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          targetLogId_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>optional string targetLogId = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-        getTargetLogIdBytes() {
-      java.lang.Object ref = targetLogId_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        targetLogId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    // optional string replicator = 3;
-    public static final int REPLICATOR_FIELD_NUMBER = 3;
-    private java.lang.Object replicator_;
-    /**
-     * <code>optional string replicator = 3;</code>
-     */
-    public boolean hasReplicator() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    /**
-     * <code>optional string replicator = 3;</code>
-     */
-    public java.lang.String getReplicator() {
-      java.lang.Object ref = replicator_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        if (bs.isValidUtf8()) {
-          replicator_ = s;
-        }
-        return s;
-      }
-    }
-    /**
-     * <code>optional string replicator = 3;</code>
-     */
-    public com.google.protobuf.ByteString
-        getReplicatorBytes() {
-      java.lang.Object ref = replicator_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        replicator_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    // optional .ReplicationFilterTreeFormat filter = 4;
-    public static final int FILTER_FIELD_NUMBER = 4;
-    private com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat filter_;
-    /**
-     * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-     */
-    public boolean hasFilter() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
-    }
-    /**
-     * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-     */
-    public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat getFilter() {
-      return filter_;
-    }
-    /**
-     * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-     */
-    public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormatOrBuilder getFilterOrBuilder() {
-      return filter_;
-    }
-
-    private void initFields() {
-      sourceLogId_ = "";
-      targetLogId_ = "";
-      replicator_ = "";
-      filter_ = com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.getDefaultInstance();
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-
-      if (hasFilter()) {
-        if (!getFilter().isInitialized()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeBytes(1, getSourceLogIdBytes());
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getTargetLogIdBytes());
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, getReplicatorBytes());
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeMessage(4, filter_);
-      }
-      getUnknownFields().writeTo(output);
-    }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, getSourceLogIdBytes());
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getTargetLogIdBytes());
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, getReplicatorBytes());
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, filter_);
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
-
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
-    }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
-    }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code SubscribeReplicatorFormat}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormatOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.internal_static_SubscribeReplicatorFormat_descriptor;
-      }
-
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.internal_static_SubscribeReplicatorFormat_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat.class, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat.Builder.class);
-      }
-
-      // Construct using com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getFilterFieldBuilder();
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        sourceLogId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
-        targetLogId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
-        replicator_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
-        if (filterBuilder_ == null) {
-          filter_ = com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.getDefaultInstance();
-        } else {
-          filterBuilder_.clear();
-        }
-        bitField0_ = (bitField0_ & ~0x00000008);
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.internal_static_SubscribeReplicatorFormat_descriptor;
-      }
-
-      public com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat getDefaultInstanceForType() {
-        return com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat.getDefaultInstance();
-      }
-
-      public com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat build() {
-        com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat buildPartial() {
-        com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat result = new com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.sourceLogId_ = sourceLogId_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.targetLogId_ = targetLogId_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.replicator_ = replicator_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        if (filterBuilder_ == null) {
-          result.filter_ = filter_;
-        } else {
-          result.filter_ = filterBuilder_.build();
-        }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat) {
-          return mergeFrom((com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat other) {
-        if (other == com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat.getDefaultInstance()) return this;
-        if (other.hasSourceLogId()) {
-          bitField0_ |= 0x00000001;
-          sourceLogId_ = other.sourceLogId_;
-          onChanged();
-        }
-        if (other.hasTargetLogId()) {
-          bitField0_ |= 0x00000002;
-          targetLogId_ = other.targetLogId_;
-          onChanged();
-        }
-        if (other.hasReplicator()) {
-          bitField0_ |= 0x00000004;
-          replicator_ = other.replicator_;
-          onChanged();
-        }
-        if (other.hasFilter()) {
-          mergeFilter(other.getFilter());
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        if (hasFilter()) {
-          if (!getFilter().isInitialized()) {
-            
-            return false;
-          }
-        }
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.SubscribeReplicatorFormat) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      private int bitField0_;
-
-      // optional string sourceLogId = 1;
-      private java.lang.Object sourceLogId_ = "";
-      /**
-       * <code>optional string sourceLogId = 1;</code>
-       */
-      public boolean hasSourceLogId() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>optional string sourceLogId = 1;</code>
-       */
-      public java.lang.String getSourceLogId() {
-        java.lang.Object ref = sourceLogId_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          sourceLogId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>optional string sourceLogId = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getSourceLogIdBytes() {
-        java.lang.Object ref = sourceLogId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          sourceLogId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string sourceLogId = 1;</code>
-       */
-      public Builder setSourceLogId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-        sourceLogId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string sourceLogId = 1;</code>
-       */
-      public Builder clearSourceLogId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        sourceLogId_ = getDefaultInstance().getSourceLogId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string sourceLogId = 1;</code>
-       */
-      public Builder setSourceLogIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-        sourceLogId_ = value;
-        onChanged();
-        return this;
-      }
-
-      // optional string targetLogId = 2;
-      private java.lang.Object targetLogId_ = "";
-      /**
-       * <code>optional string targetLogId = 2;</code>
-       */
-      public boolean hasTargetLogId() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>optional string targetLogId = 2;</code>
-       */
-      public java.lang.String getTargetLogId() {
-        java.lang.Object ref = targetLogId_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          targetLogId_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>optional string targetLogId = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getTargetLogIdBytes() {
-        java.lang.Object ref = targetLogId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          targetLogId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string targetLogId = 2;</code>
-       */
-      public Builder setTargetLogId(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-        targetLogId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string targetLogId = 2;</code>
-       */
-      public Builder clearTargetLogId() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        targetLogId_ = getDefaultInstance().getTargetLogId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string targetLogId = 2;</code>
-       */
-      public Builder setTargetLogIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
-        targetLogId_ = value;
-        onChanged();
-        return this;
-      }
-
-      // optional string replicator = 3;
-      private java.lang.Object replicator_ = "";
-      /**
-       * <code>optional string replicator = 3;</code>
-       */
-      public boolean hasReplicator() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>optional string replicator = 3;</code>
-       */
-      public java.lang.String getReplicator() {
-        java.lang.Object ref = replicator_;
-        if (!(ref instanceof java.lang.String)) {
-          java.lang.String s = ((com.google.protobuf.ByteString) ref)
-              .toStringUtf8();
-          replicator_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>optional string replicator = 3;</code>
-       */
-      public com.google.protobuf.ByteString
-          getReplicatorBytes() {
-        java.lang.Object ref = replicator_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          replicator_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string replicator = 3;</code>
-       */
-      public Builder setReplicator(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-        replicator_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string replicator = 3;</code>
-       */
-      public Builder clearReplicator() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        replicator_ = getDefaultInstance().getReplicator();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string replicator = 3;</code>
-       */
-      public Builder setReplicatorBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-        replicator_ = value;
-        onChanged();
-        return this;
-      }
-
-      // optional .ReplicationFilterTreeFormat filter = 4;
-      private com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat filter_ = com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.getDefaultInstance();
-      private com.google.protobuf.SingleFieldBuilder<
-          com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormatOrBuilder> filterBuilder_;
-      /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-       */
-      public boolean hasFilter() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-       */
-      public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat getFilter() {
-        if (filterBuilder_ == null) {
-          return filter_;
-        } else {
-          return filterBuilder_.getMessage();
-        }
-      }
-      /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-       */
-      public Builder setFilter(com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat value) {
-        if (filterBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          filter_ = value;
-          onChanged();
-        } else {
-          filterBuilder_.setMessage(value);
-        }
-        bitField0_ |= 0x00000008;
-        return this;
-      }
-      /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-       */
-      public Builder setFilter(
-          com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder builderForValue) {
-        if (filterBuilder_ == null) {
-          filter_ = builderForValue.build();
-          onChanged();
-        } else {
-          filterBuilder_.setMessage(builderForValue.build());
-        }
-        bitField0_ |= 0x00000008;
-        return this;
-      }
-      /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-       */
-      public Builder mergeFilter(com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat value) {
-        if (filterBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) == 0x00000008) &&
-              filter_ != com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.getDefaultInstance()) {
-            filter_ =
-              com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.newBuilder(filter_).mergeFrom(value).buildPartial();
-          } else {
-            filter_ = value;
-          }
-          onChanged();
-        } else {
-          filterBuilder_.mergeFrom(value);
-        }
-        bitField0_ |= 0x00000008;
-        return this;
-      }
-      /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-       */
-      public Builder clearFilter() {
-        if (filterBuilder_ == null) {
-          filter_ = com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.getDefaultInstance();
-          onChanged();
-        } else {
-          filterBuilder_.clear();
-        }
-        bitField0_ = (bitField0_ & ~0x00000008);
-        return this;
-      }
-      /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-       */
-      public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder getFilterBuilder() {
-        bitField0_ |= 0x00000008;
-        onChanged();
-        return getFilterFieldBuilder().getBuilder();
-      }
-      /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-       */
-      public com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormatOrBuilder getFilterOrBuilder() {
-        if (filterBuilder_ != null) {
-          return filterBuilder_.getMessageOrBuilder();
-        } else {
-          return filter_;
-        }
-      }
-      /**
-       * <code>optional .ReplicationFilterTreeFormat filter = 4;</code>
-       */
-      private com.google.protobuf.SingleFieldBuilder<
-          com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormatOrBuilder> 
-          getFilterFieldBuilder() {
-        if (filterBuilder_ == null) {
-          filterBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder, com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormatOrBuilder>(
-                  filter_,
-                  getParentForChildren(),
-                  isClean());
-          filter_ = null;
-        }
-        return filterBuilder_;
-      }
-
-      // @@protoc_insertion_point(builder_scope:SubscribeReplicatorFormat)
-    }
-
-    static {
-      defaultInstance = new SubscribeReplicatorFormat(true);
-      defaultInstance.initFields();
-    }
-
-    // @@protoc_insertion_point(class_scope:SubscribeReplicatorFormat)
-  }
-
   public interface ReplicationDueFormatOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
   }
@@ -5253,11 +4830,6 @@ public final class ReplicationProtocolFormats {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_ReplicationReadFailureFormat_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_SubscribeReplicatorFormat_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_SubscribeReplicatorFormat_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_ReplicationDueFormat_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -5279,21 +4851,20 @@ public final class ReplicationProtocolFormats {
       "\022\020\n\010logNames\030\002 \003(\t\"\"\n GetReplicationEndp" +
       "ointInfoFormat\"W\n\'GetReplicationEndpoint" +
       "InfoSuccessFormat\022,\n\004info\030\001 \002(\0132\036.Replic" +
-      "ationEndpointInfoFormat\"\210\001\n\025ReplicationR" +
+      "ationEndpointInfoFormat\"\320\001\n\025ReplicationR" +
       "eadFormat\022\026\n\016fromSequenceNr\030\001 \001(\003\022\024\n\014max",
       "NumEvents\030\002 \001(\005\022,\n\006filter\030\003 \001(\0132\034.Replic" +
       "ationFilterTreeFormat\022\023\n\013targetLogId\030\004 \001" +
-      "(\t\"}\n\034ReplicationReadSuccessFormat\022#\n\006ev" +
-      "ents\030\001 \003(\0132\023.DurableEventFormat\022#\n\033lastS" +
-      "ourceLogSequenceNrRead\030\002 \001(\003\022\023\n\013targetLo" +
-      "gId\030\003 \001(\t\"B\n\034ReplicationReadFailureForma" +
-      "t\022\r\n\005cause\030\001 \001(\t\022\023\n\013targetLogId\030\002 \001(\t\"\207\001" +
-      "\n\031SubscribeReplicatorFormat\022\023\n\013sourceLog" +
-      "Id\030\001 \001(\t\022\023\n\013targetLogId\030\002 \001(\t\022\022\n\nreplica" +
-      "tor\030\003 \001(\t\022,\n\006filter\030\004 \001(\0132\034.ReplicationF",
-      "ilterTreeFormat\"\026\n\024ReplicationDueFormatB" +
-      "+\n\'com.rbmhtechnology.eventuate.serializ" +
-      "erH\001"
+      "(\t\022\022\n\nreplicator\030\005 \001(\t\0222\n\027currentTargetV" +
+      "ectorTime\030\006 \001(\0132\021.VectorTimeFormat\"\251\001\n\034R" +
+      "eplicationReadSuccessFormat\022#\n\006events\030\001 " +
+      "\003(\0132\023.DurableEventFormat\022\033\n\023replicationP" +
+      "rogress\030\002 \001(\003\022\023\n\013targetLogId\030\003 \001(\t\0222\n\027cu" +
+      "rrentSourceVectorTime\030\004 \001(\0132\021.VectorTime" +
+      "Format\"B\n\034ReplicationReadFailureFormat\022\r" +
+      "\n\005cause\030\001 \001(\t\022\023\n\013targetLogId\030\002 \001(\t\"\026\n\024Re",
+      "plicationDueFormatB+\n\'com.rbmhtechnology" +
+      ".eventuate.serializerH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5323,27 +4894,21 @@ public final class ReplicationProtocolFormats {
           internal_static_ReplicationReadFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationReadFormat_descriptor,
-              new java.lang.String[] { "FromSequenceNr", "MaxNumEvents", "Filter", "TargetLogId", });
+              new java.lang.String[] { "FromSequenceNr", "MaxNumEvents", "Filter", "TargetLogId", "Replicator", "CurrentTargetVectorTime", });
           internal_static_ReplicationReadSuccessFormat_descriptor =
             getDescriptor().getMessageTypes().get(4);
           internal_static_ReplicationReadSuccessFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationReadSuccessFormat_descriptor,
-              new java.lang.String[] { "Events", "LastSourceLogSequenceNrRead", "TargetLogId", });
+              new java.lang.String[] { "Events", "ReplicationProgress", "TargetLogId", "CurrentSourceVectorTime", });
           internal_static_ReplicationReadFailureFormat_descriptor =
             getDescriptor().getMessageTypes().get(5);
           internal_static_ReplicationReadFailureFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationReadFailureFormat_descriptor,
               new java.lang.String[] { "Cause", "TargetLogId", });
-          internal_static_SubscribeReplicatorFormat_descriptor =
-            getDescriptor().getMessageTypes().get(6);
-          internal_static_SubscribeReplicatorFormat_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_SubscribeReplicatorFormat_descriptor,
-              new java.lang.String[] { "SourceLogId", "TargetLogId", "Replicator", "Filter", });
           internal_static_ReplicationDueFormat_descriptor =
-            getDescriptor().getMessageTypes().get(7);
+            getDescriptor().getMessageTypes().get(6);
           internal_static_ReplicationDueFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationDueFormat_descriptor,

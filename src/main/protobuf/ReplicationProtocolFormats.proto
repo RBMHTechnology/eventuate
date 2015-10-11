@@ -42,24 +42,20 @@ message ReplicationReadFormat {
   optional int32 maxNumEvents = 2;
   optional ReplicationFilterTreeFormat filter = 3;
   optional string targetLogId = 4;
+  optional string replicator = 5;
+  optional VectorTimeFormat currentTargetVectorTime = 6;
 }
 
 message ReplicationReadSuccessFormat {
   repeated DurableEventFormat events = 1;
-  optional int64 lastSourceLogSequenceNrRead = 2;
+  optional int64 replicationProgress = 2;
   optional string targetLogId = 3;
+  optional VectorTimeFormat currentSourceVectorTime = 4;
 }
 
 message ReplicationReadFailureFormat {
   optional string cause = 1;
   optional string targetLogId = 2;
-}
-
-message SubscribeReplicatorFormat {
-  optional string sourceLogId = 1;
-  optional string targetLogId = 2;
-  optional string replicator = 3;
-  optional ReplicationFilterTreeFormat filter = 4;
 }
 
 message ReplicationDueFormat {

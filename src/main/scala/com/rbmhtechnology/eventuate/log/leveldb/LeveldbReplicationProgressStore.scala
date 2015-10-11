@@ -20,7 +20,7 @@ import java.nio.ByteBuffer
 
 import org.iq80.leveldb.{DB, DBIterator, WriteBatch}
 
-private[leveldb] class ReplicationProgressMap(leveldb: DB, classifier: Int, numericId: String => Int) {
+private class LeveldbReplicationProgressStore(leveldb: DB, classifier: Int, numericId: String => Int, findId: Int => Option[String]) {
   private val rpKeyEnd: Int =
     Int.MaxValue
 
@@ -38,6 +38,27 @@ private[leveldb] class ReplicationProgressMap(leveldb: DB, classifier: Int, nume
     val nid = numericId(logId)
     val progress = leveldb.get(rpKeyBytes(nid))
     if (progress == null) 0L else LeveldbEventLog.longFromBytes(progress)
+  }
+
+  def readReplicationProgresses(iter: DBIterator): Map[String, Long] = {
+    iter.seek(rpKeyBytes(0))
+    readReplicationProgresses(Map.empty, iter).foldLeft(Map.empty[String, Long]) {
+      case (acc, (nid, progress)) => findId(nid) match {
+        case Some(id) => acc + (id -> progress)
+        case None     => acc
+      }
+    }
+  }
+
+  private def readReplicationProgresses(rpMap: Map[Int, Long], iter: DBIterator): Map[Int, Long] = {
+    if (!iter.hasNext) rpMap else {
+      val nextEntry = iter.next()
+      val nextKey = rpKey(nextEntry.getKey)
+      if (nextKey == rpKeyEnd) rpMap else {
+        val nextVal = LeveldbEventLog.longFromBytes(nextEntry.getValue)
+        readReplicationProgresses(rpMap + (nextKey -> nextVal), iter)
+      }
+    }
   }
 
   private def rpKeyBytes(nid: Int): Array[Byte] = {

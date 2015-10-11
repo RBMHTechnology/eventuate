@@ -39,6 +39,8 @@ object ReplicationIntegrationSpec {
   }
 
   class ReplicatedActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+    override val stateSync = false
+
     val onCommand: Receive = {
       case s: String => persist(s) {
         case Success(e) => onEvent(e)
@@ -62,9 +64,8 @@ abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with Re
 
   var ctr: Int = 0
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     ctr += 1
-  }
 
   def config =
     ReplicationConfig.create()

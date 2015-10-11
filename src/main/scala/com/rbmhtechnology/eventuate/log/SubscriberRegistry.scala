@@ -22,7 +22,7 @@ import com.rbmhtechnology.eventuate.EventsourcingProtocol.{WriteFailure, WriteSu
 
 import scala.collection.immutable.Seq
 
-private[eventuate] case class SubscriberRegistry(
+private case class SubscriberRegistry(
   aggregateRegistry: AggregateRegistry = AggregateRegistry(),
   defaultRegistry: Set[ActorRef] = Set.empty) {
 
@@ -68,7 +68,7 @@ private[eventuate] case class SubscriberRegistry(
     }
 }
 
-private[eventuate] case class AggregateRegistry(
+private case class AggregateRegistry(
   aggregateRegistry: Map[String, Set[ActorRef]] = Map.empty,
   aggregateRegistryIndex: Map[ActorRef, String] = Map.empty) {
 

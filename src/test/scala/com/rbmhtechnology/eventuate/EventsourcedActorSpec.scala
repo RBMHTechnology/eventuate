@@ -383,11 +383,11 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
         write.events(0).payload should be("a-1")
         write.events(1).payload should be("a-2")
 
-        val eventB1 = DurableEvent("b-1", emitterIdB, None, Set(), 0L, timestamp(0, 1), logIdB, logIdB, logIdA, 1L, 1L, 3L)
-        val eventB2 = DurableEvent("b-2", emitterIdB, None, Set(), 0L, timestamp(0, 2), logIdB, logIdB, logIdA, 2L, 2L, 3L)
+        val eventB1 = DurableEvent("b-1", emitterIdB, None, Set(), 0L, timestamp(0, 1), logIdB, logIdA, 1L)
+        val eventB2 = DurableEvent("b-2", emitterIdB, None, Set(), 0L, timestamp(0, 2), logIdB, logIdA, 2L)
 
-        val eventA1 = DurableEvent("a-1", emitterIdA, None, Set(), 0L, timestamp(3, 0), logIdA, logIdA, logIdA, 3L, 3L, 0L)
-        val eventA2 = DurableEvent("a-2", emitterIdA, None, Set(), 0L, timestamp(4, 0), logIdA, logIdA, logIdA, 4L, 4L, 0L)
+        val eventA1 = DurableEvent("a-1", emitterIdA, None, Set(), 0L, timestamp(3, 0), logIdA, logIdA, 3L)
+        val eventA2 = DurableEvent("a-2", emitterIdA, None, Set(), 0L, timestamp(4, 0), logIdA, logIdA, 4L)
 
         actor ! Written(eventB1)
         actor ! Written(eventB2)
@@ -442,8 +442,8 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
         actor ! WriteFailure(event1, boom, instanceId)
         actor ! WriteFailure(event2, boom, instanceId)
 
-        errProbe.expectMsg((boom, event1.vectorTimestamp, event1.vectorTimestamp, event1.sequenceNr))
-        errProbe.expectMsg((boom, event2.vectorTimestamp, event2.vectorTimestamp, event2.sequenceNr))
+        errProbe.expectMsg((boom, event1.vectorTimestamp, event1.vectorTimestamp, event1.localSequenceNr))
+        errProbe.expectMsg((boom, event2.vectorTimestamp, event2.vectorTimestamp, event2.localSequenceNr))
       }
       "not send empty write commands to log" in {
         val actor = recoveredEventsourcedActor(stateSync = true)
@@ -461,9 +461,9 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
         actor ! "status"
         actor ! Written(event2d)
 
-        dstProbe.expectMsg(("b",      event2b.vectorTimestamp, timestamp(2, 1), event2b.sequenceNr))
-        dstProbe.expectMsg(("status", event2b.vectorTimestamp, timestamp(2, 1), event2b.sequenceNr))
-        dstProbe.expectMsg(("d",      event2d.vectorTimestamp, timestamp(4, 3), event2d.sequenceNr))
+        dstProbe.expectMsg(("b",      event2b.vectorTimestamp, timestamp(2, 1), event2b.localSequenceNr))
+        dstProbe.expectMsg(("status", event2b.vectorTimestamp, timestamp(2, 1), event2b.localSequenceNr))
+        dstProbe.expectMsg(("d",      event2d.vectorTimestamp, timestamp(4, 3), event2d.localSequenceNr))
       }
     }
   }
@@ -522,9 +522,9 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
       dstProbe.expectMsg((Vector("a", "b"), timestamp(2), timestamp(2), 2))
     }
     "save a snapshot" in {
-      val event1 = DurableEvent("x", emitterIdB, None, Set(), 0L, timestamp(0, 1), logIdB, logIdB, logIdA, 1L, 1L, 2L)
-      val event2 = DurableEvent("a", emitterIdA, None, Set(), 0L, timestamp(2, 1), logIdA, logIdA, logIdA, 2L, 2L, 0L)
-      val event3 = DurableEvent("b", emitterIdA, None, Set(), 0L, timestamp(3, 1), logIdA, logIdA, logIdA, 3L, 3L, 0L)
+      val event1 = DurableEvent("x", emitterIdB, None, Set(), 0L, timestamp(0, 1), logIdB, logIdA, 1L)
+      val event2 = DurableEvent("a", emitterIdA, None, Set(), 0L, timestamp(2, 1), logIdA, logIdA, 2L)
+      val event3 = DurableEvent("b", emitterIdA, None, Set(), 0L, timestamp(3, 1), logIdA, logIdA, 3L)
 
       val actor = recoveredSnapshotActor()
       actor ! Written(event1)
@@ -606,16 +606,16 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
         actor ! Replaying(e2, instanceId)
         actor ! ReplaySuccess(instanceId)
 
-        dstProbe.expectMsg(("a", e1.vectorTimestamp, e1.vectorTimestamp, e1.sequenceNr))
-        dstProbe.expectMsg(("b", e2.vectorTimestamp, e2.vectorTimestamp, e2.sequenceNr))
+        dstProbe.expectMsg(("a", e1.vectorTimestamp, e1.vectorTimestamp, e1.localSequenceNr))
+        dstProbe.expectMsg(("b", e2.vectorTimestamp, e2.vectorTimestamp, e2.localSequenceNr))
       }
       "recover from replayed self-emitted and remote events" in {
         val actor = unrecoveredCausalityActor(sharedClockEntry = false)
 
-        val e1 = event2a.copy(vectorTimestamp = timestamp(1, 0), processId = emitterIdA, targetLogSequenceNr = 6L)
-        val e2 = event2b.copy(vectorTimestamp = timestamp(0, 1), processId = emitterIdB, targetLogSequenceNr = 7L)
-        val e3 = event2c.copy(vectorTimestamp = timestamp(0, 2), processId = emitterIdB, targetLogSequenceNr = 8L)
-        val e4 = event2d.copy(vectorTimestamp = timestamp(0, 3), processId = emitterIdB, targetLogSequenceNr = 9L)
+        val e1 = event2a.copy(vectorTimestamp = timestamp(1, 0), processId = emitterIdA, localSequenceNr = 6L)
+        val e2 = event2b.copy(vectorTimestamp = timestamp(0, 1), processId = emitterIdB, localSequenceNr = 7L)
+        val e3 = event2c.copy(vectorTimestamp = timestamp(0, 2), processId = emitterIdB, localSequenceNr = 8L)
+        val e4 = event2d.copy(vectorTimestamp = timestamp(0, 3), processId = emitterIdB, localSequenceNr = 9L)
 
         logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId))
         actor ! LoadSnapshotSuccess(None, instanceId)
@@ -627,15 +627,15 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
         actor ! Replaying(e4, instanceId)
         actor ! ReplaySuccess(instanceId)
 
-        dstProbe.expectMsg(("a", e1.vectorTimestamp, timestamp(1, 0), e1.targetLogSequenceNr))
-        dstProbe.expectMsg(("b", e2.vectorTimestamp, timestamp(2, 1), e2.targetLogSequenceNr))
-        dstProbe.expectMsg(("c", e3.vectorTimestamp, timestamp(3, 2), e3.targetLogSequenceNr))
-        dstProbe.expectMsg(("d", e4.vectorTimestamp, timestamp(4, 3), e4.targetLogSequenceNr))
+        dstProbe.expectMsg(("a", e1.vectorTimestamp, timestamp(1, 0), e1.localSequenceNr))
+        dstProbe.expectMsg(("b", e2.vectorTimestamp, timestamp(2, 1), e2.localSequenceNr))
+        dstProbe.expectMsg(("c", e3.vectorTimestamp, timestamp(3, 2), e3.localSequenceNr))
+        dstProbe.expectMsg(("d", e4.vectorTimestamp, timestamp(4, 3), e4.localSequenceNr))
       }
       "increase local time when persisting an event" in {
         val actor = recoveredCausalityActor(sharedClockEntry = false)
 
-        val e1 = DurableEvent("x", emitterIdB, None, Set(), 0L, timestamp(0, 1), emitterIdB, logIdB, logIdA, 1L, 1L, 2L)
+        val e1 = DurableEvent("x", emitterIdB, None, Set(), 0L, timestamp(0, 1), emitterIdB, logIdA, 1L)
         val e2 = DurableEvent("a", emitterIdA, None, Set(), 0L, timestamp(2, 1), emitterIdA)
         val e3 = DurableEvent("b", emitterIdA, None, Set(), 0L, timestamp(3, 1), emitterIdA)
 
@@ -644,16 +644,16 @@ class EventsourcedActorSpec extends EventsourcedViewSpec {
         actor ! Cmd("b")
 
         val write1 = logProbe.expectMsgClass(classOf[Write])
-        write1.events(0).copy(systemTimestamp = 0L) should be(e2)
-        actor ! WriteSuccess(e2.copy(sourceLogId = logIdA, targetLogId = logIdA, sourceLogSequenceNr = 2L, targetLogSequenceNr = 2L), instanceId)
+        write1.events.head.copy(systemTimestamp = 0L) should be(e2)
+        actor ! WriteSuccess(e2.copy(localLogId = logIdA, localSequenceNr = 2L), instanceId)
 
         val write2 = logProbe.expectMsgClass(classOf[Write])
-        write2.events(0).copy(systemTimestamp = 0L) should be(e3)
-        actor ! WriteSuccess(e3.copy(sourceLogId = logIdA, targetLogId = logIdA, sourceLogSequenceNr = 3L, targetLogSequenceNr = 3L), instanceId)
+        write2.events.head.copy(systemTimestamp = 0L) should be(e3)
+        actor ! WriteSuccess(e3.copy(localLogId = logIdA, localSequenceNr = 3L), instanceId)
 
-        dstProbe.expectMsg(("x", e1.vectorTimestamp, timestamp(1, 1), 1))
-        dstProbe.expectMsg(("a", e2.vectorTimestamp, timestamp(2, 1), 2))
-        dstProbe.expectMsg(("b", e3.vectorTimestamp, timestamp(3, 1), 3))
+        dstProbe.expectMsg(("x", e1.vectorTimestamp, timestamp(1, 1), 1L))
+        dstProbe.expectMsg(("a", e2.vectorTimestamp, timestamp(2, 1), 2L))
+        dstProbe.expectMsg(("b", e3.vectorTimestamp, timestamp(3, 1), 3L))
       }
     }
   }

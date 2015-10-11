@@ -31,7 +31,7 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
   import CassandraEventReader._
   import CassandraEventLog._
 
-  val statement: PreparedStatement =
+  val preparedReadEventsStatement: PreparedStatement =
     cassandra.prepareReadEvents(logId)
 
   def replayAsync(fromSequenceNr: Long)(f: DurableEvent => Unit): Future[Unit] =
@@ -41,19 +41,19 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
     eventIterator(fromSequenceNr, Long.MaxValue).foreach(f)
 
   def readAsync(fromSequenceNr: Long, max: Int): Future[ReadResult] =
-    readAsync(fromSequenceNr, max, NoFilter, logId)
+    readAsync(fromSequenceNr, max, NoFilter, VectorTime(), logId)
 
-  def readAsync(fromSequenceNr: Long, max: Int, filter: ReplicationFilter, targetLogId: String): Future[ReadResult] =
-    Future(read(fromSequenceNr, max, filter, targetLogId))(cassandra.readDispatcher)
+  def readAsync(fromSequenceNr: Long, max: Int, filter: ReplicationFilter, lower: VectorTime, targetLogId: String): Future[ReadResult] =
+    Future(read(fromSequenceNr, max, filter, lower, targetLogId))(cassandra.readDispatcher)
 
-  def read(fromSequenceNr: Long, max: Int, filter: ReplicationFilter, targetLogId: String): ReadResult = {
+  def read(fromSequenceNr: Long, max: Int, filter: ReplicationFilter, lower: VectorTime, targetLogId: String): ReadResult = {
     val builder = new VectorBuilder[DurableEvent]
     val iterator = leaseEventIterator(targetLogId, fromSequenceNr)
     var num = 0
 
     while (iterator.hasNext && num < max) {
       val event = iterator.next()
-      if (filter.apply(event)) {
+      if (event.replicate(lower, filter)) {
         builder += event
         num += 1
       }
@@ -75,7 +75,7 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
     var read = true
 
     def newIter(): Iterator[Row] =
-      if (currentSequenceNr > toSequenceNr) Iterator.empty else cassandra.session.execute(statement.bind(currentPartition: JLong, currentSequenceNr: JLong)).iterator.asScala
+      if (currentSequenceNr > toSequenceNr) Iterator.empty else cassandra.session.execute(preparedReadEventsStatement.bind(currentPartition: JLong, currentSequenceNr: JLong)).iterator.asScala
 
     @annotation.tailrec
     final def hasNext: Boolean = {
@@ -143,7 +143,7 @@ private[eventuate] object CassandraEventIteratorLeasing {
 
     override def next(): DurableEvent = {
       val event = iterator.next()
-      _lastSequenceNrRead = event.sequenceNr
+      _lastSequenceNrRead = event.localSequenceNr
       event
     }
   }

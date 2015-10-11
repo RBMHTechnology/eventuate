@@ -23,14 +23,14 @@ import org.scalatest._
 
 import scala.concurrent.duration._
 
-class ReplicationFailureDetectorSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach with BeforeAndAfterAll {
+class FailureDetectorSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach with BeforeAndAfterAll {
   import ReplicationEndpoint._
-  import ReplicationServerFailureDetector._
+  import FailureDetector._
 
   var failureDetector: ActorRef = _
 
   override def beforeEach(): Unit = {
-    failureDetector = system.actorOf(Props(new ReplicationServerFailureDetector("A", "L1", 1.second)))
+    failureDetector = system.actorOf(Props(new FailureDetector("A", "L1", 1.second)))
   }
 
   override def afterEach(): Unit = {

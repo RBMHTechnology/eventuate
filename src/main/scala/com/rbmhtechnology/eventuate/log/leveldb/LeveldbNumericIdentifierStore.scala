@@ -20,7 +20,7 @@ import java.nio.ByteBuffer
 
 import org.iq80.leveldb.{DB, DBIterator}
 
-private[leveldb] class NumericIdentifierMap(leveldb: DB, classifier: Int) {
+private class LeveldbNumericIdentifierStore(leveldb: DB, classifier: Int) {
   private var idMap: Map[String, Int] =
     Map.empty
 
@@ -36,6 +36,9 @@ private[leveldb] class NumericIdentifierMap(leveldb: DB, classifier: Int) {
     case None    => writeIdMapping(id, idMap.size + 1)
     case Some(v) => v
   }
+
+  def findId(numericId: Int): Option[String] =
+    idMap.find { case (_, nid) => nid == numericId }.map(_._1)
 
   def readIdMap(iter: DBIterator): Unit = {
     iter.seek(idKeyBytes(0))

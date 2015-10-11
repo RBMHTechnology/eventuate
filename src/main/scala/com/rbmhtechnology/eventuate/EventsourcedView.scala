@@ -143,7 +143,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
 
     if (sharedClockEntry) {
       // set local clock to local time (= sequence number) of event log
-      _clock = _clock.set(event.logId, event.sequenceNr)
+      _clock = _clock.set(event.localLogId, event.localSequenceNr)
       if (event.emitterId != id)
          // merge clock with non-self-emitted event timestamp
         _clock = _clock.merge(event.vectorTimestamp)
@@ -188,7 +188,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
    * Sequence number of the last handled event.
    */
   final def lastSequenceNr: Long =
-    lastHandledEvent.sequenceNr
+    lastHandledEvent.localSequenceNr
 
   /**
    * Wall-clock timestamp of the last handled event.
@@ -306,7 +306,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
   }
 
   private def initiated: Receive = {
-    case Written(event) => if (event.sequenceNr > lastSequenceNr) {
+    case Written(event) => if (event.localSequenceNr > lastSequenceNr) {
       receiveEvent(event)
     }
     case ConditionalCommand(condition, cmd) =>

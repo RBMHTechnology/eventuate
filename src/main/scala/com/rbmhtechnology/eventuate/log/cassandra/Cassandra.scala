@@ -26,6 +26,7 @@ import com.datastax.driver.core._
 import com.datastax.driver.core.utils.Bytes
 
 import com.rbmhtechnology.eventuate.DurableEvent
+import com.rbmhtechnology.eventuate.log.TimeTracker
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
@@ -113,7 +114,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   private val logging = Logging(system, this)
   private val statements = new CassandraEventStatements
     with CassandraAggregateEventStatements
-    with CassandraSequenceNumberStatements
+    with CassandraTimeTrackerStatements
     with CassandraReplicationProgressStatements {
 
     override def settings: CassandraSettings =
@@ -133,7 +134,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
     if (keyspaceAutoCreate)
       _session.execute(createKeySpaceStatement)
 
-    _session.execute(createSequenceNumberTableStatement)
+    _session.execute(createTimeTrackerTableStatement)
     _session.execute(createReplicationProgressTableStatement)
   } match {
     case Success(_) => logging.info("Cassandra extension initialized")
@@ -176,14 +177,17 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   private[eventuate] def prepareReadAggregateEvents(logId: String): PreparedStatement =
     session.prepare(readAggregateEventsStatement(logId)).setConsistencyLevel(readConsistency)
 
-  private[eventuate] val preparedWriteSequenceNumberStatement: PreparedStatement =
-    session.prepare(writeSequenceNumberStatement).setConsistencyLevel(writeConsistency)
+  private[eventuate] val preparedWriteTimeTrackerStatement: PreparedStatement =
+    session.prepare(writeTimeTrackerStatement).setConsistencyLevel(writeConsistency)
 
-  private[eventuate] val preparedReadSequenceNumberStatement: PreparedStatement =
-    session.prepare(readSequenceNumberStatement).setConsistencyLevel(readConsistency)
+  private[eventuate] val preparedReadTimeTrackerStatement: PreparedStatement =
+    session.prepare(readTimeTrackerStatement).setConsistencyLevel(readConsistency)
 
   private[eventuate] val preparedWriteReplicationProgressStatement: PreparedStatement =
     session.prepare(writeReplicationProgressStatement).setConsistencyLevel(writeConsistency)
+
+  private[eventuate] val preparedReadReplicationProgressesStatement: PreparedStatement =
+    session.prepare(readReplicationProgressesStatement).setConsistencyLevel(readConsistency)
 
   private[eventuate] val preparedReadReplicationProgressStatement: PreparedStatement =
     session.prepare(readReplicationProgressStatement).setConsistencyLevel(readConsistency)
@@ -193,6 +197,12 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
 
   private[eventuate] def eventFromByteBuffer(buffer: ByteBuffer): DurableEvent =
     serializer.deserialize(Bytes.getArray(buffer), classOf[DurableEvent]).get
+
+  private[eventuate] def timeTrackerToByteBuffer(tracker: TimeTracker): ByteBuffer =
+    ByteBuffer.wrap(serializer.serialize(tracker).get)
+
+  private[eventuate] def timeTrackerFromByteBuffer(buffer: ByteBuffer): TimeTracker =
+    serializer.deserialize(Bytes.getArray(buffer), classOf[TimeTracker]).get
 
   private[eventuate] def executeBatch(body: BatchStatement => Unit): Unit =
     session.execute(withBatch(body))

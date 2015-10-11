@@ -25,7 +25,6 @@ import akka.util.Timeout
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
-import com.rbmhtechnology.eventuate.log.EventLogSpec._
 import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.log.cassandra.CassandraIndex._
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
@@ -106,34 +105,22 @@ object EventLogLifecycleLeveldb {
     override def currentSystemTime: Long =
       0L
 
-    override def replay(from: Long, classifier: Int)(f: (DurableEvent) => Unit): Unit =
+    private[eventuate] override def replay(from: Long, classifier: Int)(f: (DurableEvent) => Unit): Unit =
       if (from == -1L) throw boom else super.replay(from, classifier)(f)
 
-    override def read(from: Long, max: Int, filter: ReplicationFilter): ReadResult =
-      if (from == -1L) throw boom else super.read(from, max, filter)
+    private[eventuate] override def read(from: Long, max: Int, filter: ReplicationFilter, lower: VectorTime): ReadResult =
+      if (from == -1L) throw boom else super.read(from, max, filter, lower)
 
-    override def write(events: Seq[DurableEvent], batch: WriteBatch): Unit = events match {
+    private[eventuate] override def write(events: Seq[DurableEvent], tracker: TimeTracker, batch: WriteBatch): TimeTracker = events match {
       case es if es.map(_.payload).contains("boom") => throw boom
-      case _ => super.write(events, batch)
+      case _ => super.write(events, tracker, batch)
     }
 
     override def unhandled(message: Any): Unit = message match {
-      case GetSequenceNr =>
-        sender() ! GetSequenceNrSuccess(sequenceManager.currentSequenceNr)
-      case GetReplicationProgress =>
-        sender() ! GetReplicationProgressSuccess(progressMap)
-      case SetReplicationProgress(logId, sequenceNr) =>
-        withBatch(batch => replicationProgressMap.writeReplicationProgress(logId, sequenceNr, batch))
       case "boom" =>
         throw boom
       case _ =>
         super.unhandled(message)
-    }
-
-    private def progressMap = List(EventLogSpec.remoteLogId, "x", "y").foldLeft[Map[String, Long]](Map.empty) {
-      case (map, logId) =>
-        val progress = replicationProgressMap.readReplicationProgress(logId)
-        if (progress == 0L) map else map + (logId -> progress)
     }
   }
 }
@@ -230,19 +217,12 @@ object EventLogLifecycleCassandra {
     override def currentSystemTime: Long =
       0L
 
-    override def write(partition: Long, events: Seq[DurableEvent]): Unit = events match {
-      case es if es.map(_.payload).contains("boom") => throw boom
-      case _ => super.write(partition, events)
-    }
-
     override def unhandled(message: Any): Unit = message match {
-      case GetSequenceNr =>
-        sender() ! GetSequenceNrSuccess(sequenceManager.currentSequenceNr)
-      case GetReplicationProgress =>
+      case GetReplicationProgresses =>
         val sdr = sender()
-        getReplicationProgress(List(EventLogSpec.remoteLogId, "x", "y")) onComplete {
-          case Success(r) => sdr ! GetReplicationProgressSuccess(r)
-          case Failure(e) => sdr ! GetReplicationProgressFailure(e)
+        getReplicationProgressMap(List(EventLogSpec.remoteLogId, "x", "y")) onComplete {
+          case Success(r) => sdr ! GetReplicationProgressesSuccess(r)
+          case Failure(e) => sdr ! GetReplicationProgressesFailure(e)
         }
       case "boom" =>
         throw boom
@@ -250,20 +230,25 @@ object EventLogLifecycleCassandra {
         super.unhandled(message)
     }
 
-    override private[eventuate] def createReader(cassandra: Cassandra, logId: String) =
+    private[eventuate] override def write(partition: Long, events: Seq[DurableEvent], tracker: TimeTracker): TimeTracker = events match {
+      case es if es.map(_.payload).contains("boom") => throw boom
+      case _ => super.write(partition, events, tracker)
+    }
+
+    private[eventuate] override def createEventReader(cassandra: Cassandra, logId: String) =
       new TestEventReader(cassandra, logId)
 
-    override private[eventuate] def createIndex(cassandra: Cassandra, eventReader: CassandraEventReader, logId: String): ActorRef = {
+    private[eventuate] override def createIndex(cassandra: Cassandra, eventReader: CassandraEventReader, logId: String): ActorRef = {
       index = context.actorOf(Props(new TestIndex(cassandra, eventReader, logId, failureSpec, indexProbe)))
       index
     }
 
-    private def getReplicationProgress(sourceLogIds: Seq[String]): Future[Map[String, Long]] = {
+    private def getReplicationProgressMap(sourceLogIds: Seq[String]): Future[Map[String, Long]] = {
       implicit val timeout = Timeout(10.seconds)
 
-      Future.sequence(sourceLogIds.map(sourceLogId => index.ask(GetLastSourceLogReadPosition(sourceLogId)).mapTo[GetLastSourceLogReadPositionSuccess])).map { results =>
+      Future.sequence(sourceLogIds.map(sourceLogId => index.ask(GetReplicationProgress(sourceLogId)).mapTo[GetReplicationProgressSuccess])).map { results =>
         results.foldLeft[Map[String, Long]](Map.empty) {
-          case (acc, GetLastSourceLogReadPositionSuccess(logId, snr)) => if (snr == 0L) acc else acc + (logId -> snr)
+          case (acc, GetReplicationProgressSuccess(logId, snr, _)) => if (snr == 0L) acc else acc + (logId -> snr)
         }
       }
     }
@@ -273,14 +258,14 @@ object EventLogLifecycleCassandra {
     override def replay(from: Long)(f: (DurableEvent) => Unit): Unit =
       if (from == -1L) throw boom else super.replay(from)(f)
 
-    override def read(from: Long, max: Int, filter: ReplicationFilter, targetLogId: String): CassandraEventReader.ReadResult =
-      if (from == -1L) throw boom else super.read(from, max, filter, targetLogId)
+    override def read(from: Long, max: Int, filter: ReplicationFilter, lower: VectorTime, targetLogId: String): CassandraEventReader.ReadResult =
+      if (from == -1L) throw boom else super.read(from, max, filter, lower, targetLogId)
   }
 
   class TestIndex(cassandra: Cassandra, eventReader: CassandraEventReader, logId: String, failureSpec: TestFailureSpec, indexProbe: Option[ActorRef]) extends CassandraIndex(cassandra, eventReader, logId) {
     val stream = context.system.eventStream
 
-    override private[eventuate] def createIndexStore(cassandra: Cassandra, logId: String) =
+    private[eventuate] override def createIndexStore(cassandra: Cassandra, logId: String) =
       new TestIndexStore(cassandra, logId, failureSpec)
 
     override def onIndexEvent(event: Any): Unit =
@@ -291,22 +276,22 @@ object EventLogLifecycleCassandra {
     private var writeIndexIncrementFailed = false
     private var readSequenceNumberFailed = false
 
-    override def writeAsync(replicationProgress: ReplicationProgress, aggregateEvents: AggregateEvents, sequenceNr: Long)(implicit executor: ExecutionContext): Future[Long] =
+    private[eventuate] override def writeAsync(aggregateEvents: AggregateEvents, timeTracker: TimeTracker)(implicit executor: ExecutionContext): Future[TimeTracker] =
       if (failureSpec.failBeforeIndexIncrementWrite && !writeIndexIncrementFailed) {
         writeIndexIncrementFailed = true
         Future.failed(boom)
       } else if (failureSpec.failAfterIndexIncrementWrite && !writeIndexIncrementFailed) {
         writeIndexIncrementFailed = true
         for {
-          _ <- super.writeAsync(replicationProgress, aggregateEvents, sequenceNr)
+          _ <- super.writeAsync(aggregateEvents, timeTracker)
           r <- Future.failed(boom)
         } yield r
-      } else super.writeAsync(replicationProgress, aggregateEvents, sequenceNr)
+      } else super.writeAsync(aggregateEvents, timeTracker)
 
-    override def readSequenceNumberAsync: Future[Long] =
+    private[eventuate] override def readTimeTrackerAsync: Future[TimeTracker] =
       if (failureSpec.failOnSequenceNrRead && !readSequenceNumberFailed) {
         readSequenceNumberFailed = true
         Future.failed(boom)
-      } else super.readSequenceNumberAsync
+      } else super.readTimeTrackerAsync
   }
 }

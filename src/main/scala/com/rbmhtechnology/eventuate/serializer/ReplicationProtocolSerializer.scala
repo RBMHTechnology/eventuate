@@ -35,7 +35,6 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   val ReplicationReadClass = classOf[ReplicationRead]
   val ReplicationReadSuccessClass = classOf[ReplicationReadSuccess]
   val ReplicationReadFailureClass = classOf[ReplicationReadFailure]
-  val SubscribeReplicatorClass = classOf[SubscribeReplicator]
   val ReplicationDueClass = ReplicationDue.getClass
 
   override def identifier: Int = 22565
@@ -53,8 +52,6 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         replicationReadSuccessFormatBuilder(m).build().toByteArray
       case m: ReplicationReadFailure =>
         replicationReadFailureFormatBuilder(m).build().toByteArray
-      case m: SubscribeReplicator =>
-        subscribeReplicatorFormatBuilder(m).build().toByteArray
       case ReplicationDue =>
         ReplicationDueFormat.newBuilder().build().toByteArray
       case _ =>
@@ -75,8 +72,6 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         replicationReadSuccess(ReplicationReadSuccessFormat.parseFrom(bytes))
       case ReplicationReadFailureClass =>
         replicationReadFailure(ReplicationReadFailureFormat.parseFrom(bytes))
-      case SubscribeReplicatorClass =>
-        subscribeReplicator(SubscribeReplicatorFormat.parseFrom(bytes))
       case ReplicationDueClass =>
         ReplicationDue
       case _ =>
@@ -88,15 +83,6 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   //  toBinary helpers
   // --------------------------------------------------------------------------------
 
-  private def subscribeReplicatorFormatBuilder(message: SubscribeReplicator): SubscribeReplicatorFormat.Builder = {
-    val builder = SubscribeReplicatorFormat.newBuilder()
-    builder.setSourceLogId(message.sourceLogId)
-    builder.setTargetLogId(message.targetLogId)
-    builder.setReplicator(Serialization.serializedActorPath(message.replicator))
-    builder.setFilter(filterSerializer.filterTreeFormatBuilder(message.filter))
-    builder
-  }
-
   private def replicationReadFailureFormatBuilder(message: ReplicationReadFailure): ReplicationReadFailureFormat.Builder = {
     val builder = ReplicationReadFailureFormat.newBuilder()
     builder.setCause(message.cause)
@@ -107,8 +93,9 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   private def replicationReadSuccessFormatBuilder(message: ReplicationReadSuccess): ReplicationReadSuccessFormat.Builder = {
     val builder = ReplicationReadSuccessFormat.newBuilder()
     message.events.foreach(event => builder.addEvents(eventSerializer.durableEventFormatBuilder(event)))
-    builder.setLastSourceLogSequenceNrRead(message.lastSourceLogSequenceNrRead)
+    builder.setReplicationProgress(message.replicationProgress)
     builder.setTargetLogId(message.targetLogId)
+    builder.setCurrentSourceVectorTime(eventSerializer.vectorTimeFormatBuilder(message.currentSourceVectorTime))
     builder
   }
 
@@ -118,6 +105,8 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     builder.setMaxNumEvents(message.maxNumEvents)
     builder.setFilter(filterSerializer.filterTreeFormatBuilder(message.filter))
     builder.setTargetLogId(message.targetLogId)
+    builder.setReplicator(Serialization.serializedActorPath(message.replicator))
+    builder.setCurrentTargetVectorTime(eventSerializer.vectorTimeFormatBuilder(message.currentTargetVectorTime))
     builder
   }
 
@@ -135,13 +124,6 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   //  fromBinary helpers
   // --------------------------------------------------------------------------------
 
-  private def subscribeReplicator(messageFormat: SubscribeReplicatorFormat): SubscribeReplicator =
-    SubscribeReplicator(
-      messageFormat.getSourceLogId,
-      messageFormat.getTargetLogId,
-      system.provider.resolveActorRef(messageFormat.getReplicator),
-      filterSerializer.filterTree(messageFormat.getFilter))
-
   private def replicationReadFailure(messageFormat: ReplicationReadFailureFormat): ReplicationReadFailure =
     ReplicationReadFailure(
       messageFormat.getCause,
@@ -156,8 +138,9 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
 
     ReplicationReadSuccess(
       builder.result(),
-      messageFormat.getLastSourceLogSequenceNrRead,
-      messageFormat.getTargetLogId)
+      messageFormat.getReplicationProgress,
+      messageFormat.getTargetLogId,
+      eventSerializer.vectorTime(messageFormat.getCurrentSourceVectorTime))
   }
 
   private def replicationRead(messageFormat: ReplicationReadFormat): ReplicationRead =
@@ -165,7 +148,9 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
       messageFormat.getFromSequenceNr,
       messageFormat.getMaxNumEvents,
       filterSerializer.filterTree(messageFormat.getFilter),
-      messageFormat.getTargetLogId)
+      messageFormat.getTargetLogId,
+      system.provider.resolveActorRef(messageFormat.getReplicator),
+      eventSerializer.vectorTime(messageFormat.getCurrentTargetVectorTime))
 
   private def getReplicationEndpointInfoSuccess(messageFormat: GetReplicationEndpointInfoSuccessFormat) =
     GetReplicationEndpointInfoSuccess(replicationEndpointInfo(messageFormat.getInfo))

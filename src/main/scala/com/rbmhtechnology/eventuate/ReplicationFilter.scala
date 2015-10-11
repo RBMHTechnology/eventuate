@@ -88,30 +88,11 @@ private[eventuate] case class OrFilter(filters: Seq[ReplicationFilter]) extends 
 }
 
 /**
- * Default replication filter.
- */
-private[eventuate] case class SourceLogIdExclusionFilter(sourceLogId: String) extends ReplicationFilter with ReplicationFilter.Format {
-  /**
-   * Evaluates to `true` if `event.sourceLogId` does not equal `sourceLogId`.
-   */
-  def apply(event: DurableEvent): Boolean =
-    event.sourceLogId != sourceLogId
-}
-
-/**
  * Replication filter that evaluates to `true` for all events.
  */
-private[eventuate] object NoFilter extends ReplicationFilter {
+private[eventuate] object NoFilter extends ReplicationFilter with ReplicationFilter.Format {
   /**
    * Evaluates to `true`.
    */
   def apply(event: DurableEvent): Boolean = true
-}
-
-/**
- * Replication filter that evaluates to `true` for non-replicated events.
- */
-private[eventuate] case object NonReplicatedFilter extends ReplicationFilter {
-  def apply(event: DurableEvent): Boolean =
-    !event.replicated
 }

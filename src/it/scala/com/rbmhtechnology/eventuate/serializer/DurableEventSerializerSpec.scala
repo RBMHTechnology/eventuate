@@ -54,11 +54,8 @@ object DurableEventSerializerSpec {
     systemTimestamp = 2L,
     vectorTimestamp = VectorTime("p1" -> 1L, "p2" -> 2L),
     processId = "p4",
-    sourceLogId = "p3",
-    targetLogId = "p4",
-    sourceLogSequenceNr = 17L,
-    targetLogSequenceNr = 18L,
-    sourceLogReadPosition = 22L)
+    localLogId = "p3",
+    localSequenceNr = 17L)
 }
 
 class DurableEventSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {

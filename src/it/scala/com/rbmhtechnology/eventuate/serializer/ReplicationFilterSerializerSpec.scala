@@ -24,6 +24,10 @@ import com.rbmhtechnology.eventuate._
 import org.scalatest._
 
 object ReplicationFilterSerializerSpec {
+  case class ProcessIdFilter(processId: String) extends ReplicationFilter {
+    override def apply(event: DurableEvent): Boolean = event.processId == processId
+  }
+
   case class ExampleFilter(num: Int) extends ReplicationFilter {
     def apply(event: DurableEvent): Boolean = num == 1
   }
@@ -46,25 +50,27 @@ object ReplicationFilterSerializerSpec {
     }
   }
 
-  def filter1(custom: ReplicationFilter = SourceLogIdExclusionFilter("d")) = AndFilter(List(
-    SourceLogIdExclusionFilter("a"),
-    SourceLogIdExclusionFilter("b"),
+  def filter1(custom: ReplicationFilter = ProcessIdFilter("d")) = AndFilter(List(
+    ProcessIdFilter("a"),
+    ProcessIdFilter("b"),
+    NoFilter,
     OrFilter(List(
-      SourceLogIdExclusionFilter("c"),
+      ProcessIdFilter("c"),
       custom
     ))
   ))
 
-  def filter2(custom: ReplicationFilter = SourceLogIdExclusionFilter("d")) = OrFilter(List(
-    SourceLogIdExclusionFilter("a"),
-    SourceLogIdExclusionFilter("b"),
+  def filter2(custom: ReplicationFilter = ProcessIdFilter("d")) = OrFilter(List(
+    ProcessIdFilter("a"),
+    ProcessIdFilter("b"),
+    NoFilter,
     AndFilter(List(
-      SourceLogIdExclusionFilter("c"),
+      ProcessIdFilter("c"),
       custom
     ))
   ))
 
-  val filter3 = SourceLogIdExclusionFilter("a")
+  val filter3 = ProcessIdFilter("a")
 }
 
 class ReplicationFilterSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
@@ -96,17 +102,18 @@ class ReplicationFilterSerializerSpec extends WordSpec with Matchers with Before
     "serialize replication filter trees with an or-filter root" in {
       serialization1.deserialize(serialization1.serialize(filter2()).get, classOf[OrFilter]).get should be(filter2())
     }
-    "serialize exclusion filters" in {
-      serialization1.deserialize(serialization1.serialize(filter3).get, classOf[SourceLogIdExclusionFilter]).get should be(filter3)
+    "serialize NoFilter" in {
+      serialization1.deserialize(serialization1.serialize(NoFilter).get, NoFilter.getClass).get should be(NoFilter)
+    }
+    "serialize custom filters" in {
+      serialization1.deserialize(serialization1.serialize(filter3).get, classOf[ProcessIdFilter]).get should be(filter3)
+      serialization2.deserialize(serialization2.serialize(ExampleFilter(1)).get, classOf[ExampleFilter]).get should be(ExampleFilter(2))
     }
     "serialize replication filter trees with an and-filter root and a custom leaf" in {
       serialization2.deserialize(serialization2.serialize(filter1(ExampleFilter(1))).get, classOf[AndFilter]).get should be(filter1(ExampleFilter(2)))
     }
     "serialize replication filter trees with an or-filter root and a custom leaf" in {
       serialization2.deserialize(serialization2.serialize(filter2(ExampleFilter(1))).get, classOf[OrFilter]).get should be(filter2(ExampleFilter(2)))
-    }
-    "serialize custom filters" in {
-      serialization2.deserialize(serialization2.serialize(ExampleFilter(1)).get, classOf[ExampleFilter]).get should be(ExampleFilter(2))
     }
     "support remoting of replication filter trees with an and-filter root" in {
       senderActor ! filter1()
