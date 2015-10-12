@@ -193,6 +193,7 @@
       &quot;com.rbmhtechnology.eventuate.ReplicationProtocol$Format&quot; = eventuate-replication-protocol
       &quot;com.rbmhtechnology.eventuate.ConcurrentVersionsTree&quot; = eventuate-snapshot
       &quot;com.rbmhtechnology.eventuate.Snapshot&quot; = eventuate-snapshot
+      &quot;com.rbmhtechnology.eventuate.log.TimeTracker&quot; = eventuate-snapshot
     }
   }
 }
@@ -238,6 +239,11 @@ eventuate {
 
     # Use fsync on write.
     fsync = on
+
+    # Minimum number of new events that must have been written before another
+    # snapshot of the log&#39;s internal state (sequence number and merged vector
+    # time) is written.
+    state-snapshot-limit = 128
 
     write-dispatcher {
       executor = &quot;thread-pool-executor&quot;
@@ -297,8 +303,8 @@ eventuate {
     # indexed log entries.
     init-retry-backoff = 5s
 
-    # Number of new events that must have been written before another index
-    # update is triggered.
+    # Minimum number of new events that must have been written before another
+    # index update is triggered.
     index-update-limit = 128
 
     write-dispatcher {

@@ -202,14 +202,14 @@
 <div class="section" id="replication">
 <h2>Replication<a class="headerlink" href="#replication" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal"><span class="pre">OrderActor</span></code>s are replicated across locations A - F, each running as separate process on <code class="docutils literal"><span class="pre">localhost</span></code> (see section <a class="reference internal" href="#running"><span>Running</span></a>):</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">A</span>        <span class="n">E</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">A</span> <span class="o">------</span> <span class="n">E</span>
  <span class="o">\</span>      <span class="o">/</span>
   <span class="n">C</span> <span class="o">--</span> <span class="n">D</span>
  <span class="o">/</span>      <span class="o">\</span>
 <span class="n">B</span>        <span class="n">F</span>
 </pre></div>
 </div>
-<p>Each location can create and update orders, even under presence of partitions. In the example application, partitions can be created by shutting down locations. For example, when shutting down location <code class="docutils literal"><span class="pre">C</span></code>, partitions <code class="docutils literal"><span class="pre">A</span></code>, <code class="docutils literal"><span class="pre">B</span></code> and <code class="docutils literal"><span class="pre">E-D-F</span></code> are created.</p>
+<p>Each location can create and update orders, even under presence of partitions. In the example application, partitions can be created by shutting down locations. For example, when shutting down location <code class="docutils literal"><span class="pre">C</span></code>, partitions <code class="docutils literal"><span class="pre">B</span></code> and <code class="docutils literal"><span class="pre">A-E-D-F</span></code> are created.</p>
 <p>Concurrent updates to orders with different order id do not conflict. Concurrent updates to replicas of the same order are considered as conflict and must be resolved by the user, otherwise, further updates to that order are rejected. Updates are only rejected if a conflict is already <em>visible</em> to a location.</p>
 </div>
 <div class="section" id="interface">
@@ -248,7 +248,7 @@
 <div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span> <span class="n">java</span>
 </pre></div>
 </div>
-<p>Create and update some orders and see how changes are propagated to other locations. To make concurrent updates to an order, for example, enter <code class="docutils literal"><span class="pre">exit</span></code> at location <code class="docutils literal"><span class="pre">C</span></code>, and add different items to that order at locations <code class="docutils literal"><span class="pre">A</span></code> and <code class="docutils literal"><span class="pre">F</span></code>. When starting location <code class="docutils literal"><span class="pre">C</span></code> again with:</p>
+<p>Create and update some orders and see how changes are propagated to other locations. To make concurrent updates to an order, for example, enter <code class="docutils literal"><span class="pre">exit</span></code> at location <code class="docutils literal"><span class="pre">C</span></code>, and add different items to that order at locations <code class="docutils literal"><span class="pre">B</span></code> and <code class="docutils literal"><span class="pre">F</span></code>. When starting location <code class="docutils literal"><span class="pre">C</span></code> again with:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">-</span><span class="n">location</span> <span class="n">A</span>
 </pre></div>
 </div>

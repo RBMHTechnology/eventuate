@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>GetLastSourceLogReadPositionSuccess - com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPositionSuccess</title>
-          <meta name="description" content="GetLastSourceLogReadPositionSuccess - com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPositionSuccess" />
-          <meta name="keywords" content="GetLastSourceLogReadPositionSuccess com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPositionSuccess" />
+          <title>SetReplicationProgressFailure - com.rbmhtechnology.eventuate.ReplicationProtocol.SetReplicationProgressFailure</title>
+          <meta name="description" content="SetReplicationProgressFailure - com.rbmhtechnology.eventuate.ReplicationProtocol.SetReplicationProgressFailure" />
+          <meta name="keywords" content="SetReplicationProgressFailure com.rbmhtechnology.eventuate.ReplicationProtocol.SetReplicationProgressFailure" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess';
+            var hash = 'com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -30,8 +30,8 @@
       <div id="definition">
         <img src="../../../lib/class_big.png" />
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="ReplicationProtocol$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol">ReplicationProtocol</a></p>
-        <h1>GetLastSourceLogReadPositionSuccess</h1> <span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess" title="Permalink" target="_top">
+        <h1>SetReplicationProgressFailure</h1> <span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -43,11 +43,11 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">GetLastSourceLogReadPositionSuccess</span><span class="params">(<span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="lastSourceLogSequenceNrStored">lastSourceLogSequenceNrStored: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">SetReplicationProgressFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Success reply after a <a href="ReplicationProtocol$$GetLastSourceLogReadPosition.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPosition">GetLastSourceLogReadPosition</a>.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Failure reply after a <a href="ReplicationProtocol$$SetReplicationProgress.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.SetReplicationProgress">SetReplicationProgress</a>.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -68,7 +68,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPositionSuccess"><span>GetLastSourceLogReadPositionSuccess</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.ReplicationProtocol.SetReplicationProgressFailure"><span>SetReplicationProgressFailure</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -88,19 +88,19 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPositionSuccess#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(sourceLogId:String,lastSourceLogSequenceNrStored:Long):com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPositionSuccess"></a>
-      <a id="&lt;init&gt;:GetLastSourceLogReadPositionSuccess"></a>
+              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.SetReplicationProgressFailure#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(cause:Throwable):com.rbmhtechnology.eventuate.ReplicationProtocol.SetReplicationProgressFailure"></a>
+      <a id="&lt;init&gt;:SetReplicationProgressFailure"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">GetLastSourceLogReadPositionSuccess</span><span class="params">(<span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="lastSourceLogSequenceNrStored">lastSourceLogSequenceNrStored: <span class="extype" name="scala.Long">Long</span></span>)</span>
+        <span class="name">SetReplicationProgressFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@&lt;init&gt;(sourceLogId:String,lastSourceLogSequenceNrStored:Long):com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPositionSuccess" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@&lt;init&gt;(cause:Throwable):com.rbmhtechnology.eventuate.ReplicationProtocol.SetReplicationProgressFailure" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -126,7 +126,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -143,7 +143,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@##():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@##():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -160,7 +160,7 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -177,11 +177,28 @@
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.SetReplicationProgressFailure#cause" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="cause:Throwable"></a>
+      <a id="cause:Throwable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">cause</span><span class="result">: <span class="extype" name="scala.Throwable">Throwable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@cause:Throwable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -194,7 +211,7 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@clone():Object" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@clone():Object" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -217,7 +234,7 @@
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -234,7 +251,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -257,7 +274,7 @@
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -274,28 +291,11 @@
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPositionSuccess#lastSourceLogSequenceNrStored" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="lastSourceLogSequenceNrStored:Long"></a>
-      <a id="lastSourceLogSequenceNrStored:Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">lastSourceLogSequenceNrStored</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@lastSourceLogSequenceNrStored:Long" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -308,7 +308,7 @@
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -325,7 +325,7 @@
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@notify():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -342,28 +342,11 @@
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetLastSourceLogReadPositionSuccess#sourceLogId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="sourceLogId:String"></a>
-      <a id="sourceLogId:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">sourceLogId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@sourceLogId:String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -376,7 +359,7 @@
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -393,7 +376,7 @@
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@wait():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -416,7 +399,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -439,7 +422,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$GetLastSourceLogReadPositionSuccess@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$SetReplicationProgressFailure@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>

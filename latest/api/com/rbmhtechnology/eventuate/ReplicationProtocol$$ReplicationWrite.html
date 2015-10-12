@@ -43,12 +43,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationWrite</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="lastSourceLogSequenceNrRead">lastSourceLogSequenceNrRead: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">ReplicationWrite</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentSourceVectorTime">currentSourceVectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Instructs a target log to write replicated <code>events</code> from the source log identified by
-<code>sourceLogId</code> along with the last read position in the source log (<code>lastSourceLogSequenceNrRead</code>).
+<code>sourceLogId</code> along with the last read position in the source log (<code>replicationProgress</code>).
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -90,7 +90,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],sourceLogId:String,lastSourceLogSequenceNrRead:Long):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite"></a>
+      <a id="&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],sourceLogId:String,replicationProgress:Long,currentSourceVectorTime:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite"></a>
       <a id="&lt;init&gt;:ReplicationWrite"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -98,10 +98,10 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationWrite</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="lastSourceLogSequenceNrRead">lastSourceLogSequenceNrRead: <span class="extype" name="scala.Long">Long</span></span>)</span>
+        <span class="name">ReplicationWrite</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentSourceVectorTime">currentSourceVectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],sourceLogId:String,lastSourceLogSequenceNrRead:Long):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],sourceLogId:String,replicationProgress:Long,currentSourceVectorTime:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -206,6 +206,23 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite#currentSourceVectorTime" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="currentSourceVectorTime:com.rbmhtechnology.eventuate.VectorTime"></a>
+      <a id="currentSourceVectorTime:VectorTime"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">currentSourceVectorTime</span><span class="result">: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@currentSourceVectorTime:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -297,23 +314,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite#lastSourceLogSequenceNrRead" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="lastSourceLogSequenceNrRead:Long"></a>
-      <a id="lastSourceLogSequenceNrRead:Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">lastSourceLogSequenceNrRead</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@lastSourceLogSequenceNrRead:Long" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -365,6 +365,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite#replicationProgress" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="replicationProgress:Long"></a>
+      <a id="replicationProgress:Long"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">replicationProgress</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@replicationProgress:Long" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite#sourceLogId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="sourceLogId:String"></a>
       <a id="sourceLogId:String"></a>

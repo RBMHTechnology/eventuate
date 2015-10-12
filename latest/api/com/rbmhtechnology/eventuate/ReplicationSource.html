@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>ReplicationEndpoint - com.rbmhtechnology.eventuate.ReplicationEndpoint</title>
-          <meta name="description" content="ReplicationEndpoint - com.rbmhtechnology.eventuate.ReplicationEndpoint" />
-          <meta name="keywords" content="ReplicationEndpoint com.rbmhtechnology.eventuate.ReplicationEndpoint" />
+          <title>ReplicationSource - com.rbmhtechnology.eventuate.ReplicationSource</title>
+          <meta name="description" content="ReplicationSource - com.rbmhtechnology.eventuate.ReplicationSource" />
+          <meta name="keywords" content="ReplicationSource com.rbmhtechnology.eventuate.ReplicationSource" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.ReplicationEndpoint';
+            var hash = 'com.rbmhtechnology.eventuate.ReplicationSource';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -28,10 +28,10 @@
         </head>
         <body class="type">
       <div id="definition">
-        <a href="ReplicationEndpoint$.html" title="Go to companion"><img src="../../../lib/class_to_object_big.png" /></a>
+        <img src="../../../lib/class_big.png" />
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a></p>
-        <h1><a href="ReplicationEndpoint$.html" title="Go to companion">ReplicationEndpoint</a></h1> <span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint" title="Permalink" target="_top">
+        <h1>ReplicationSource</h1> <span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -40,21 +40,17 @@
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">class</span>
+        <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationEndpoint</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">ReplicationSource</span><span class="params">(<span name="endpointId">endpointId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="log">log: <span class="extype" name="akka.actor.ActorSelection">ActorSelection</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A replication endpoint connects to other replication endpoints for replicating events. Events are
-replicated from the connected endpoints to this endpoint. The connected endpoints are <i>replication
-sources</i>, this endpoint is a <i>replication target</i>. To setup bi-directional replication, the other
-replication endpoints must additionally setup replication connections to this endpoint.</p><p>A replication endpoint manages one or more event logs. Event logs are indexed by name. Events are
-replicated only between event logs with matching names.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>References a remote event log at a source <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -72,7 +68,7 @@ replicated only between event logs with matching names.
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.ReplicationEndpoint"><span>ReplicationEndpoint</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.ReplicationSource"><span>ReplicationSource</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -92,25 +88,23 @@ replicated only between event logs with matching names.
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(id:String,logNames:Set[String],logFactory:String=&gt;akka.actor.Props,connections:Set[com.rbmhtechnology.eventuate.ReplicationConnection])(implicitsystem:akka.actor.ActorSystem):com.rbmhtechnology.eventuate.ReplicationEndpoint"></a>
-      <a id="&lt;init&gt;:ReplicationEndpoint"></a>
+              <ol><li name="com.rbmhtechnology.eventuate.ReplicationSource#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(endpointId:String,logName:String,logId:String,log:akka.actor.ActorSelection):com.rbmhtechnology.eventuate.ReplicationSource"></a>
+      <a id="&lt;init&gt;:ReplicationSource"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationEndpoint</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logNames">logNames: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="logFactory">logFactory: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="akka.actor.Props">Props</span></span>, <span name="connections">connections: <span class="extype" name="scala.Predef.Set">Set</span>[<a href="ReplicationConnection.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationConnection">ReplicationConnection</a>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>)</span>
+        <span class="name">ReplicationSource</span><span class="params">(<span name="endpointId">endpointId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="log">log: <span class="extype" name="akka.actor.ActorSelection">ActorSelection</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@&lt;init&gt;(id:String,logNames:Set[String],logFactory:String=&gt;akka.actor.Props,connections:Set[com.rbmhtechnology.eventuate.ReplicationConnection])(implicitsystem:akka.actor.ActorSystem):com.rbmhtechnology.eventuate.ReplicationEndpoint" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@&lt;init&gt;(endpointId:String,logName:String,logId:String,log:akka.actor.ActorSelection):com.rbmhtechnology.eventuate.ReplicationSource" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">id</dt><dd class="cmt"><p>Unique replication endpoint id.</p></dd><dt class="param">logNames</dt><dd class="cmt"><p>Names of the event logs managed by this replication endpoint.</p></dd><dt class="param">logFactory</dt><dd class="cmt"><p>Factory of log actor <code>Props</code>. The <code>String</code> parameter of the factory is a unique
-                  log id generated by this endpoint. The log actor must be assigned this log id.</p></dd><dt class="param">connections</dt><dd class="cmt"><p>Replication connections to other replication endpoints.
-</p></dd></dl></div>
+      
     </li></ol>
             </div>
 
@@ -132,7 +126,7 @@ replicated only between event logs with matching names.
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -149,7 +143,7 @@ replicated only between event logs with matching names.
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@##():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@##():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -166,28 +160,11 @@ replicated only between event logs with matching names.
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#activate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="activate():Unit"></a>
-      <a id="activate():Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">activate</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@activate():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Activates this endpoint by establishing and accepting replication connections.</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -200,7 +177,7 @@ replicated only between event logs with matching names.
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -217,7 +194,7 @@ replicated only between event logs with matching names.
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@clone():Object" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@clone():Object" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -228,23 +205,23 @@ replicated only between event logs with matching names.
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#connections" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="connections:Set[com.rbmhtechnology.eventuate.ReplicationConnection]"></a>
-      <a id="connections:Set[ReplicationConnection]"></a>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationSource#endpointId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="endpointId:String"></a>
+      <a id="endpointId:String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">connections</span><span class="result">: <span class="extype" name="scala.Predef.Set">Set</span>[<a href="ReplicationConnection.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationConnection">ReplicationConnection</a>]</span>
+        <span class="name">endpointId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@connections:Set[com.rbmhtechnology.eventuate.ReplicationConnection]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@endpointId:String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Replication connections to other replication endpoints.</p>
+      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -257,28 +234,11 @@ replicated only between event logs with matching names.
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(x$1:Any):Boolean"></a>
-      <a id="equals(Any):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@equals(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -291,7 +251,7 @@ replicated only between event logs with matching names.
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -314,62 +274,11 @@ replicated only between event logs with matching names.
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="hashCode():Int"></a>
-      <a id="hashCode():Int"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@hashCode():Int" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#id" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="id:String"></a>
-      <a id="id:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">id</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@id:String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Unique replication endpoint id.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#info" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="info:com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo"></a>
-      <a id="info:ReplicationEndpointInfo"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">info</span><span class="result">: <a href="ReplicationProtocol$$ReplicationEndpointInfo.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo">ReplicationEndpointInfo</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@info:com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">This replication endpoint's info object.</p>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -382,80 +291,62 @@ replicated only between event logs with matching names.
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#logFactory" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="logFactory:String=&gt;akka.actor.Props"></a>
-      <a id="logFactory:(String)⇒Props"></a>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationSource#log" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="log:akka.actor.ActorSelection"></a>
+      <a id="log:ActorSelection"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">logFactory</span><span class="result">: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="akka.actor.Props">Props</span></span>
+        <span class="name">log</span><span class="result">: <span class="extype" name="akka.actor.ActorSelection">ActorSelection</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@logFactory:String=&gt;akka.actor.Props" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@log:akka.actor.ActorSelection" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Factory of log actor <code>Props</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Factory of log actor <code>Props</code>. The <code>String</code> parameter of the factory is a unique
-                  log id generated by this endpoint. The log actor must be assigned this log id.</p></div></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#logId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="logId(logName:String):String"></a>
-      <a id="logId(String):String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">logId</span><span class="params">(<span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@logId(logName:String):String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Returns the unique log id for given <code>logName</code>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#logNames" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="logNames:Set[String]"></a>
-      <a id="logNames:Set[String]"></a>
+      
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationSource#logId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="logId:String"></a>
+      <a id="logId:String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">logNames</span><span class="result">: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+        <span class="name">logId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@logNames:Set[String]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@logId:String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Names of the event logs managed by this replication endpoint.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#logs" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="logs:Map[String,akka.actor.ActorRef]"></a>
-      <a id="logs:Map[String,ActorRef]"></a>
+      
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationSource#logName" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="logName:String"></a>
+      <a id="logName:String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">logs</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="akka.actor.ActorRef">ActorRef</span>]</span>
+        <span class="name">logName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@logs:Map[String,akka.actor.ActorRef]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@logName:String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">The log actors managed by this endpoint, indexed by their name.</p>
+      
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -468,7 +359,7 @@ replicated only between event logs with matching names.
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -485,7 +376,7 @@ replicated only between event logs with matching names.
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@notify():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -502,28 +393,11 @@ replicated only between event logs with matching names.
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#settings" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="settings:com.rbmhtechnology.eventuate.ReplicationSettings"></a>
-      <a id="settings:ReplicationSettings"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">settings</span><span class="result">: <a href="ReplicationSettings.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationSettings">ReplicationSettings</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@settings:com.rbmhtechnology.eventuate.ReplicationSettings" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">The actor system's replication settings.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -536,62 +410,11 @@ replicated only between event logs with matching names.
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#system" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="system:akka.actor.ActorSystem"></a>
-      <a id="system:ActorSystem"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">system</span><span class="result">: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@system:akka.actor.ActorSystem" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#target" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="target(logName:String):com.rbmhtechnology.eventuate.ReplicationTarget"></a>
-      <a id="target(String):ReplicationTarget"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">target</span><span class="params">(<span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="ReplicationTarget.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationTarget">ReplicationTarget</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@target(logName:String):com.rbmhtechnology.eventuate.ReplicationTarget" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Returns the <a href="ReplicationTarget.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationTarget">ReplicationTarget</a> for given <code>logName</code>.</p>
-    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="toString():String"></a>
-      <a id="toString():String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@toString():String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -604,7 +427,7 @@ replicated only between event logs with matching names.
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@wait():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -627,7 +450,7 @@ replicated only between event logs with matching names.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -650,7 +473,7 @@ replicated only between event logs with matching names.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationSource@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -670,7 +493,15 @@ replicated only between event logs with matching names.
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
+        <div class="parent" name="scala.Serializable">
+              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="java.io.Serializable">
+              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
+            </div><div class="parent" name="scala.Product">
+              <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
+            </div><div class="parent" name="scala.Equals">
+              <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
+            </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
