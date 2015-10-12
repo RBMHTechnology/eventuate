@@ -81,6 +81,10 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
     }
     "fallback to the wall clock if the values' vector clocks are concurrent" in {
       lwwReg
+        .set(1, vectorTime(1, 0), 0, "emitter-1")
+        .set(2, vectorTime(0, 1), 1, "emitter-2")
+        .value should be(Some(2))
+      lwwReg
         .set(1, vectorTime(1, 0), 1, "emitter-1")
         .set(2, vectorTime(0, 1), 0, "emitter-2")
         .value should be(Some(1))
@@ -90,6 +94,10 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
         .set(1, vectorTime(1, 0), 0, "emitter-1")
         .set(2, vectorTime(0, 1), 0, "emitter-2")
         .value should be(Some(2))
+      lwwReg
+        .set(1, vectorTime(1, 0), 0, "emitter-2")
+        .set(2, vectorTime(0, 1), 0, "emitter-1")
+        .value should be(Some(1))
     }
   }
 

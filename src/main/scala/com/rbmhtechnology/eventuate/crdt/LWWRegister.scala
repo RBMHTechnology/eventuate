@@ -22,47 +22,39 @@ import com.rbmhtechnology.eventuate.{Versioned, DurableEvent, VectorTime}
 
 import scala.concurrent.Future
 
-/**
- * A LWWVersioned value.
- *
- * @param value The value.
- * @param vectorTimestamp Timestamp of the event that caused this version.
- * @param systemTimestamp Wall Clock
- * @param emitterId Creator of the event that caused this version.
- */
-case class LWWVersioned[A](value: A, vectorTimestamp: VectorTime, systemTimestamp: Long = 0L, emitterId: String = "")
 
 /**
- * Replicated Last Writer Wins Register. Stores a single value and timestamp at which it was set. The value is updated
- * only if the vector clock is later, if the vector clocks are concurrent the register compares the system time,
- * if the values are still concurrent the source with the greatest emitterId wins
+ * Replicated LWW-Register with an [[MVRegister]]-based implementation. Instead of returning multiple values
+ * in case of concurrent assignments, the last written value is returned. The last written value is determined
+ * by comparing the following [[Registered]] fields in given order:
+ *
+ *  - `vectorTimestamp`: if causally related, return the value with the higher timestamp, otherwise compare
+ *  - `systemTimestamp`: if not equal, return the value with the higher timestamp, otherwise compare
+ *  - `emitterId`
+ *
  * Note that this relies on synchronized system clocks. [[LWWRegister]] should only be used when the choice of
  * value is not important for concurrent updates occurring within the clock skew.
  *
- * @param versionedValue Initially empty.
+ * @param mvRegister Initially empty [[MVRegister]].
  *
  * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]]
  */
-case class LWWRegister[A](versionedValue: Option[LWWVersioned[A]] = None) {
+case class LWWRegister[A](mvRegister: MVRegister[A] = MVRegister.apply[A]) {
+  def value: Option[A] = {
+    mvRegister.registered.toVector.sorted(LWWRegister.LWWOrdering[A]).lastOption.map(_.value)
 
-  def value: Option[A] =
-    versionedValue.map(_.value)
+  }
 
-  def set(v: A, vt : VectorTime, st : Long, emitterId : String): LWWRegister[A] = {
-    val nvv = LWWVersioned(v, vt, st, emitterId)
-    val result = versionedValue match {
-      case None =>
-        Some(nvv)
-      case Some(vv) if nvv.vectorTimestamp > vv.vectorTimestamp =>
-        Some(nvv)
-      case Some(vv) if nvv.systemTimestamp > vv.systemTimestamp =>
-        Some(nvv)
-      case Some(vv) if nvv.systemTimestamp == vv.systemTimestamp && nvv.emitterId > vv.emitterId =>
-        Some(nvv)
-      case _ =>
-        versionedValue
-    }
-    copy(result)
+  /**
+   * Assigns a [[Registered]] value from `v` and `vectorTimestamp` and returns an updated MV-Register.
+   *
+   * @param v assigned value.
+   * @param vectorTimestamp vector timestamp of the assigned value.
+   * @param systemTimestamp system timestamp of the assigned value.
+   * @param emitterId id of the value emitter.
+   */
+  def set(v: A, vectorTimestamp : VectorTime, systemTimestamp : Long, emitterId: String): LWWRegister[A] = {
+    copy(mvRegister.set(v, vectorTimestamp, systemTimestamp, emitterId))
   }
 }
 
@@ -81,8 +73,16 @@ object LWWRegister {
       false
 
     override def update(crdt: LWWRegister[A], operation: Any, event: DurableEvent): LWWRegister[A] = operation match {
-      case UpdateOp(value) => crdt.set(value.asInstanceOf[A], event.vectorTimestamp, event.systemTimestamp, event.emitterId)
+      case SetOp(value) => crdt.set(value.asInstanceOf[A], event.vectorTimestamp, event.systemTimestamp, event.emitterId)
     }
+  }
+
+  implicit def LWWOrdering[A] = new Ordering[Registered[A]] {
+    override def compare(x: Registered[A], y: Registered[A]): Int =
+      if (x.systemTimestamp == y.systemTimestamp)
+        x.emitterId.compareTo(y.emitterId)
+      else
+        x.systemTimestamp.compareTo(y.systemTimestamp)
   }
 }
 
@@ -91,15 +91,15 @@ object LWWRegister {
  *
  * @param serviceId Unique id of this service.
  * @param log Event log.
- * @tparam A LWWRegister value type.
+ * @tparam A [[LWWRegister]] value type.
  */
-class LWWRegisterService[A](val serviceId: String, val log: ActorRef)(implicit system: ActorSystem, val ops: CRDTServiceOps[LWWRegister[A], A])
-  extends CRDTService[LWWRegister[A], A] {
+class LWWRegisterService[A](val serviceId: String, val log: ActorRef)(implicit system: ActorSystem, val ops: CRDTServiceOps[LWWRegister[A], Option[A]])
+  extends CRDTService[LWWRegister[A], Option[A]] {
 
   /**
-   * Updates the value
+   * Assigns a `value` to the LWW-Register identified by `id` and returns the updated LWW-Register value.
    */
-  def update(id: String, value: A): Future[A] =
+  def set(id: String, value: A): Future[Option[A]] =
     op(id, SetOp(value))
 
   start()

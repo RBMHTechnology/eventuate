@@ -20,8 +20,10 @@ class CRDTServiceSpec  extends TestKit(ActorSystem("test")) with WordSpecLike wi
     "ignore events from CRDT services of different type" in {
       val service1 = new CounterService[Int]("a", log)
       val service2 = new MVRegisterService[Int]("b", log)
+      val service3 = new LWWRegisterService[Int]("c", log)
       service1.update("a", 1).await should be(1)
       service2.set("a", 1).await should be(Set(1))
+      service3.set("a", 1).await should be(Some(1))
     }
   }
 
@@ -53,6 +55,18 @@ class CRDTServiceSpec  extends TestKit(ActorSystem("test")) with WordSpecLike wi
       val service = new MVRegisterService[Int]("a", log)
       service.set("a", 1).await should be(Set(1))
       service.value("a").await should be(Set(1))
+    }
+  }
+
+  "An LWWRegisterService" must {
+    "return the default value of an LWWRegister" in {
+      val service = new LWWRegisterService[Int]("a", log)
+      service.value("a").await should be(None)
+    }
+    "return the written value of an LWWRegister" in {
+      val service = new LWWRegisterService[Int]("a", log)
+      service.set("a", 1).await should be(Some(1))
+      service.value("a").await should be(Some(1))
     }
   }
 
