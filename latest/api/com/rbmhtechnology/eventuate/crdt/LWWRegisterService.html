@@ -43,15 +43,15 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">LWWRegisterService</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>], <span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]</span>
+        <span class="name">LWWRegisterService</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]]</span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Replicated <a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a> CRDT service.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>LWWRegister value type.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a> value type.
 </p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>], <span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -90,7 +90,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(serviceId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.LWWRegister[A],A]):com.rbmhtechnology.eventuate.crdt.LWWRegisterService[A]"></a>
+      <a id="&lt;init&gt;(serviceId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.LWWRegister[A],Option[A]]):com.rbmhtechnology.eventuate.crdt.LWWRegisterService[A]"></a>
       <a id="&lt;init&gt;:LWWRegisterService[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -98,10 +98,10 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">LWWRegisterService</span><span class="params">(<span name="serviceId">serviceId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="log">log: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>, <span name="ops">ops: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>], <span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]</span>)</span>
+        <span class="name">LWWRegisterService</span><span class="params">(<span name="serviceId">serviceId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="log">log: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>, <span name="ops">ops: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]]</span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegisterService@&lt;init&gt;(serviceId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.LWWRegister[A],A]):com.rbmhtechnology.eventuate.crdt.LWWRegisterService[A]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegisterService@&lt;init&gt;(serviceId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.LWWRegister[A],Option[A]]):com.rbmhtechnology.eventuate.crdt.LWWRegisterService[A]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -384,14 +384,14 @@
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#op" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="op(id:String,operation:Any):scala.concurrent.Future[B]"></a>
-      <a id="op(String,Any):Future[A]"></a>
+      <a id="op(String,Any):Future[Option[A]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">op</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="operation">operation: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]</span>
+        <span class="name">op</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="operation">operation: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]]</span>
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegisterService@op(id:String,operation:Any):scala.concurrent.Future[B]" title="Permalink" target="_top">
@@ -402,18 +402,18 @@
 Returns the updated value of the CRDT.
 </p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService#ops" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.LWWRegister[A],A]"></a>
-      <a id="ops:CRDTServiceOps[LWWRegister[A],A]"></a>
+      <a id="ops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.LWWRegister[A],Option[A]]"></a>
+      <a id="ops:CRDTServiceOps[LWWRegister[A],Option[A]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">implicit </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">ops</span><span class="result">: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>], <span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]</span>
+        <span class="name">ops</span><span class="result">: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegisterService@ops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.LWWRegister[A],A]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegisterService@ops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.LWWRegister[A],Option[A]]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -436,6 +436,23 @@ Returns the updated value of the CRDT.
       </a>
     </span>
       <p class="shortcomment cmt">Unique id of this service.</p><div class="fullcomment"><div class="comment cmt"><p>Unique id of this service.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService">LWWRegisterService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService#set" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="set(id:String,value:A):scala.concurrent.Future[Option[A]]"></a>
+      <a id="set(String,A):Future[Option[A]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">set</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="value">value: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegisterService@set(id:String,value:A):scala.concurrent.Future[Option[A]]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Assigns a <code>value</code> to the LWW-Register identified by <code>id</code> and returns the updated LWW-Register value.</p>
     </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#start" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="start()(implicitsystem:akka.actor.ActorSystem):Unit"></a>
       <a id="start()(ActorSystem):Unit"></a>
@@ -506,34 +523,16 @@ Returns the updated value of the CRDT.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService#update" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="update(id:String,value:A):scala.concurrent.Future[A]"></a>
-      <a id="update(String,A):Future[A]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">update</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="value">value: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegisterService@update(id:String,value:A):scala.concurrent.Future[A]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Updates the value
-</p>
     </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#value" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="value(id:String):scala.concurrent.Future[B]"></a>
-      <a id="value(String):Future[A]"></a>
+      <a id="value(String):Future[Option[A]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">value</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]</span>
+        <span class="name">value</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]]</span>
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegisterService@value(id:String):scala.concurrent.Future[B]" title="Permalink" target="_top">
@@ -621,7 +620,7 @@ Returns the updated value of the CRDT.
 
         <div id="inheritedMembers">
         <div class="parent" name="com.rbmhtechnology.eventuate.crdt.CRDTService">
-              <h3>Inherited from <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>], <span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]</h3>
+              <h3>Inherited from <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService.A">A</span>]]</h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">

@@ -43,16 +43,15 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">LWWRegister</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="versionedValue">versionedValue: <span class="extype" name="scala.Option">Option</span>[<a href="LWWVersioned.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWVersioned">LWWVersioned</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister.A">A</span>]] = <span class="symbol">None</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">LWWRegister</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="mvRegister">mvRegister: <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister.A">A</span>] = <span class="symbol"><span class="name"><a href="MVRegister$.html">MVRegister.apply[A]</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Replicated Last Writer Wins Register. Stores a single value and timestamp at which it was set. The value is updated
-only if the vector clock is later, if the vector clocks are concurrent the register compares the system time,
-if the values are still concurrent the source with the greatest emitterId wins
-Note that this relies on synchronized system clocks. <a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a> should only be used when the choice of
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Replicated LWW-Register with an <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>-based implementation. Instead of returning multiple values
+in case of concurrent assignments, the last written value is returned. The last written value is determined
+by comparing the following <a href="Registered.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Registered">Registered</a> fields in given order:</p><ul><li><code>vectorTimestamp</code>: if causally related, return the value with the higher timestamp, otherwise compare</li><li><code>systemTimestamp</code>: if not equal, return the value with the higher timestamp, otherwise compare</li><li><code>emitterId</code></li></ul><p>Note that this relies on synchronized system clocks. <a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a> should only be used when the choice of
 value is not important for concurrent updates occurring within the clock skew.
-</p></div><dl class="paramcmts block"><dt class="param">versionedValue</dt><dd class="cmt"><p>Initially empty.
+</p></div><dl class="paramcmts block"><dt class="param">mvRegister</dt><dd class="cmt"><p>Initially empty <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>.
 </p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
 </p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
@@ -95,7 +94,7 @@ value is not important for concurrent updates occurring within the clock skew.
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.crdt.LWWRegister#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(versionedValue:Option[com.rbmhtechnology.eventuate.crdt.LWWVersioned[A]]):com.rbmhtechnology.eventuate.crdt.LWWRegister[A]"></a>
+      <a id="&lt;init&gt;(mvRegister:com.rbmhtechnology.eventuate.crdt.MVRegister[A]):com.rbmhtechnology.eventuate.crdt.LWWRegister[A]"></a>
       <a id="&lt;init&gt;:LWWRegister[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -103,14 +102,14 @@ value is not important for concurrent updates occurring within the clock skew.
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">LWWRegister</span><span class="params">(<span name="versionedValue">versionedValue: <span class="extype" name="scala.Option">Option</span>[<a href="LWWVersioned.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWVersioned">LWWVersioned</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister.A">A</span>]] = <span class="symbol">None</span></span>)</span>
+        <span class="name">LWWRegister</span><span class="params">(<span name="mvRegister">mvRegister: <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister.A">A</span>] = <span class="symbol"><span class="name"><a href="MVRegister$.html">MVRegister.apply[A]</a></span></span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@&lt;init&gt;(versionedValue:Option[com.rbmhtechnology.eventuate.crdt.LWWVersioned[A]]):com.rbmhtechnology.eventuate.crdt.LWWRegister[A]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@&lt;init&gt;(mvRegister:com.rbmhtechnology.eventuate.crdt.MVRegister[A]):com.rbmhtechnology.eventuate.crdt.LWWRegister[A]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">versionedValue</dt><dd class="cmt"><p>Initially empty.
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">mvRegister</dt><dd class="cmt"><p>Initially empty <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>.
 </p></dd></dl></div>
     </li></ol>
             </div>
@@ -286,6 +285,23 @@ value is not important for concurrent updates occurring within the clock skew.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.LWWRegister#mvRegister" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="mvRegister:com.rbmhtechnology.eventuate.crdt.MVRegister[A]"></a>
+      <a id="mvRegister:MVRegister[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">mvRegister</span><span class="result">: <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister.A">A</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@mvRegister:com.rbmhtechnology.eventuate.crdt.MVRegister[A]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Initially empty <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>.</p>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -337,8 +353,8 @@ value is not important for concurrent updates occurring within the clock skew.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.LWWRegister#set" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="set(v:A,vt:com.rbmhtechnology.eventuate.VectorTime,st:Long,emitterId:String):com.rbmhtechnology.eventuate.crdt.LWWRegister[A]"></a>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.LWWRegister#set" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="set(v:A,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime,systemTimestamp:Long,emitterId:String):com.rbmhtechnology.eventuate.crdt.LWWRegister[A]"></a>
       <a id="set(A,VectorTime,Long,String):LWWRegister[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -346,14 +362,16 @@ value is not important for concurrent updates occurring within the clock skew.
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">set</span><span class="params">(<span name="v">v: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister.A">A</span></span>, <span name="vt">vt: <a href="../VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="st">st: <span class="extype" name="scala.Long">Long</span></span>, <span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister.A">A</span>]</span>
+        <span class="name">set</span><span class="params">(<span name="v">v: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister.A">A</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="../VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister.A">A</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@set(v:A,vt:com.rbmhtechnology.eventuate.VectorTime,st:Long,emitterId:String):com.rbmhtechnology.eventuate.crdt.LWWRegister[A]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@set(v:A,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime,systemTimestamp:Long,emitterId:String):com.rbmhtechnology.eventuate.crdt.LWWRegister[A]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      
+      <p class="shortcomment cmt">Assigns a <a href="Registered.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Registered">Registered</a> value from <code>v</code> and <code>vectorTimestamp</code> and returns an updated MV-Register.</p><div class="fullcomment"><div class="comment cmt"><p>Assigns a <a href="Registered.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Registered">Registered</a> value from <code>v</code> and <code>vectorTimestamp</code> and returns an updated MV-Register.
+</p></div><dl class="paramcmts block"><dt class="param">v</dt><dd class="cmt"><p>assigned value.</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>vector timestamp of the assigned value.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>system timestamp of the assigned value.</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>id of the value emitter.
+</p></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -388,23 +406,6 @@ value is not important for concurrent updates occurring within the clock skew.
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.crdt.LWWRegister#versionedValue" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="versionedValue:Option[com.rbmhtechnology.eventuate.crdt.LWWVersioned[A]]"></a>
-      <a id="versionedValue:Option[LWWVersioned[A]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">versionedValue</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="LWWVersioned.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWVersioned">LWWVersioned</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister.A">A</span>]]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@versionedValue:Option[com.rbmhtechnology.eventuate.crdt.LWWVersioned[A]]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Initially empty.</p>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
