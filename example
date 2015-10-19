@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# generate example classpath script only once
+sbt exampleClasspath
+
 for location in A B C D E F
 do
     if command -v osascript >/dev/null 2>&1; then
