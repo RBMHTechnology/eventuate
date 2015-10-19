@@ -191,23 +191,6 @@
       </a>
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="ReplicationProtocol$$GetReplicationProgresses$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgresses">GetReplicationProgresses</a>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetSequenceNrSuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="GetSequenceNrSuccessextendsProductwithSerializable"></a>
-      <a id="GetSequenceNrSuccess:GetSequenceNrSuccess"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$GetSequenceNrSuccess.html"><span class="name">GetSequenceNrSuccess</span></a><span class="params">(<span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@GetSequenceNrSuccessextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Success reply after a <a href="ReplicationProtocol$$GetSequenceNr$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetSequenceNr">GetSequenceNr</a>.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ReplicationEndpointInfoextendsReplicationProtocol.FormatwithProductwithSerializable"></a>
       <a id="ReplicationEndpointInfo:ReplicationEndpointInfo"></a>
@@ -246,6 +229,24 @@ to establish replication connections.
     </span>
       <p class="shortcomment cmt">Instructs a source log to read up to <code>maxNumEvents</code> starting <code>fromSequenceNr</code>
 and applying the given replication <code>filter</code>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReplicationReadEnvelopeextendsReplicationProtocol.FormatwithProductwithSerializable"></a>
+      <a id="ReplicationReadEnvelope:ReplicationReadEnvelope"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReplicationProtocol$$ReplicationReadEnvelope.html"><span class="name">ReplicationReadEnvelope</span></a><span class="params">(<span name="payload">payload: <a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a></span>, <span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadEnvelopeextendsReplicationProtocol.FormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"><a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a> requests are sent within this envelope to allow a remote acceptor to
+dispatch the request to the appropriate log.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicationReadFailureextendsReplicationProtocol.FormatwithProductwithSerializable"></a>
       <a id="ReplicationReadFailure:ReplicationReadFailure"></a>
@@ -464,23 +465,6 @@ and applying the given replication <code>filter</code>.</p>
       </a>
     </span>
       <p class="shortcomment cmt">Requests all replication progresses from a log.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetSequenceNr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="GetSequenceNr"></a>
-      <a id="GetSequenceNr:GetSequenceNr"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$GetSequenceNr$.html"><span class="name">GetSequenceNr</span></a><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@GetSequenceNr" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Requests the current sequence number from an event log.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicationEndpointInfo"></a>
       <a id="ReplicationEndpointInfo:ReplicationEndpointInfo"></a>

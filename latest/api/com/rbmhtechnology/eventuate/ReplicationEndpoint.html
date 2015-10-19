@@ -187,7 +187,7 @@ replicated only between event logs with matching names.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Activates this endpoint by establishing and accepting replication connections.</p>
+      <p class="shortcomment cmt">Activates this endpoint by starting event replication from remote endpoints to this endpoint.</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -507,6 +507,32 @@ replicated only between event logs with matching names.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#recover" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recover():scala.concurrent.Future[Unit]"></a>
+      <a id="recover():Future[Unit]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">recover</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@recover():scala.concurrent.Future[Unit]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Runs an asynchronous disaster recovery procedure.</p><div class="fullcomment"><div class="comment cmt"><p>Runs an asynchronous disaster recovery procedure. This procedure recovers this endpoint in case of total or
+partial event loss. Partial event loss means event loss from a given sequence number upwards (for example,
+after having installed a storage backup). Recovery copies events from directly connected remote endpoints back
+to this endpoint and automatically removes invalid snapshots. A snapshot is invalid if it covers events that
+have been lost.</p><p>This procedure requires that event replication between this and directly connected endpoints is bi-directional
+and that these endpoints are available during recovery. Recovery is idempotent and must be repeated in failure
+cases by the application. It is important that recovery successfully completes before calling <a href="#activate():Unit" class="extmbr" name="com.rbmhtechnology.eventuate.ReplicationEndpoint#activate">activate</a> on
+this endpoint again. Activating this endpoint without having successfully recovered from partial or total event
+loss may result in inconsistent replica states.
+</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#settings" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="settings:com.rbmhtechnology.eventuate.ReplicationSettings"></a>
       <a id="settings:ReplicationSettings"></a>
@@ -558,23 +584,6 @@ replicated only between event logs with matching names.
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#target" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="target(logName:String):com.rbmhtechnology.eventuate.ReplicationTarget"></a>
-      <a id="target(String):ReplicationTarget"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">target</span><span class="params">(<span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="ReplicationTarget.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationTarget">ReplicationTarget</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@target(logName:String):com.rbmhtechnology.eventuate.ReplicationTarget" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Returns the <a href="ReplicationTarget.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationTarget">ReplicationTarget</a> for given <code>logName</code>.</p>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>

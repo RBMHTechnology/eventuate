@@ -92,7 +92,7 @@ back to older snapshots if newer snapshots cannot be loaded.
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStore#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(settings:com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStoreSettings):com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStore"></a>
+      <a id="&lt;init&gt;(settings:com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStoreSettings,logId:String):com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStore"></a>
       <a id="&lt;init&gt;:FilesystemSnapshotStore"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -100,10 +100,10 @@ back to older snapshots if newer snapshots cannot be loaded.
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">FilesystemSnapshotStore</span><span class="params">(<span name="settings">settings: <a href="FilesystemSnapshotStoreSettings.html" class="extype" name="com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStoreSettings">FilesystemSnapshotStoreSettings</a></span>)</span>
+        <span class="name">FilesystemSnapshotStore</span><span class="params">(<span name="settings">settings: <a href="FilesystemSnapshotStoreSettings.html" class="extype" name="com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStoreSettings">FilesystemSnapshotStoreSettings</a></span>, <span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStore@&lt;init&gt;(settings:com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStoreSettings):com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStore" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStore@&lt;init&gt;(settings:com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStoreSettings,logId:String):com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStore" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
@@ -208,6 +208,41 @@ back to older snapshots if newer snapshots cannot be loaded.
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStore#delete" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="delete(lowerSequenceNr:Long):Unit"></a>
+      <a id="delete(Long):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">delete</span><span class="params">(<span name="lowerSequenceNr">lowerSequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStore@delete(lowerSequenceNr:Long):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStore#deleteAsync" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="deleteAsync(lowerSequenceNr:Long):scala.concurrent.Future[Unit]"></a>
+      <a id="deleteAsync(Long):Future[Unit]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">deleteAsync</span><span class="params">(<span name="lowerSequenceNr">lowerSequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStore@deleteAsync(lowerSequenceNr:Long):scala.concurrent.Future[Unit]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Asynchronously deletes all snapshots with a sequence number greater than or equal <code>lowerSequenceNr</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously deletes all snapshots with a sequence number greater than or equal <code>lowerSequenceNr</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStore">FilesystemSnapshotStore</a> → <a href="../SnapshotStore.html" class="extype" name="com.rbmhtechnology.eventuate.snapshot.SnapshotStore">SnapshotStore</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>

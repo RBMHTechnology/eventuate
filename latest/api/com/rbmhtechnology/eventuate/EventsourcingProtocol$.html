@@ -89,7 +89,41 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.LoadSnapshot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteSnapshots" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DeleteSnapshotsextendsProductwithSerializable"></a>
+      <a id="DeleteSnapshots:DeleteSnapshots"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcingProtocol$$DeleteSnapshots.html"><span class="name">DeleteSnapshots</span></a><span class="params">(<span name="lowerSequenceNr">lowerSequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DeleteSnapshotsextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Instructs an event log to delete all snapshots with a sequence number greater than or equal to <code>lowerSequenceNr</code>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteSnapshotsFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DeleteSnapshotsFailureextendsProductwithSerializable"></a>
+      <a id="DeleteSnapshotsFailure:DeleteSnapshotsFailure"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcingProtocol$$DeleteSnapshotsFailure.html"><span class="name">DeleteSnapshotsFailure</span></a><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DeleteSnapshotsFailureextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Failure reply after a <a href="EventsourcingProtocol$$DeleteSnapshots.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteSnapshots">DeleteSnapshots</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.LoadSnapshot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="LoadSnapshotextendsProductwithSerializable"></a>
       <a id="LoadSnapshot:LoadSnapshot"></a>
       <h4 class="signature">
@@ -413,6 +447,23 @@ This message is not sent to a participant if that participant has sent a corresp
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteSnapshotsSuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DeleteSnapshotsSuccess"></a>
+      <a id="DeleteSnapshotsSuccess:DeleteSnapshotsSuccess"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcingProtocol$$DeleteSnapshotsSuccess$.html"><span class="name">DeleteSnapshotsSuccess</span></a><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DeleteSnapshotsSuccess" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Success reply after a <a href="EventsourcingProtocol$$DeleteSnapshots.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteSnapshots">DeleteSnapshots</a>.</p>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Replay"></a>
       <a id="Replay:Replay"></a>

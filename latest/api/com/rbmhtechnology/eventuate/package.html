@@ -357,24 +357,6 @@ replicated only between event logs with matching names.
       </a>
     </span>
       <p class="shortcomment cmt">Serializable and composable replication filter.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationLink" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReplicationLinkextendsProductwithSerializable"></a>
-      <a id="ReplicationLink:ReplicationLink"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationLink.html"><span class="name">ReplicationLink</span></a><span class="params">(<span name="source">source: <a href="ReplicationSource.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationSource">ReplicationSource</a></span>, <span name="target">target: <a href="ReplicationTarget.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationTarget">ReplicationTarget</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@ReplicationLinkextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Represents an unidirectional replication link where events are
-replicated from a <code>source</code> to a <code>target</code>.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationSettings" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicationSettingsextendsAnyRef"></a>
       <a id="ReplicationSettings:ReplicationSettings"></a>
@@ -392,40 +374,6 @@ replicated from a <code>source</code> to a <code>target</code>.</p>
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationSource" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReplicationSourceextendsProductwithSerializable"></a>
-      <a id="ReplicationSource:ReplicationSource"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationSource.html"><span class="name">ReplicationSource</span></a><span class="params">(<span name="endpointId">endpointId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="log">log: <span class="extype" name="akka.actor.ActorSelection">ActorSelection</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@ReplicationSourceextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">References a remote event log at a source <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationTarget" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReplicationTargetextendsProductwithSerializable"></a>
-      <a id="ReplicationTarget:ReplicationTarget"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationTarget.html"><span class="name">ReplicationTarget</span></a><span class="params">(<span name="endpoint">endpoint: <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a></span>, <span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="log">log: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@ReplicationTargetextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">References a local event log at a target <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p>
     </li><li name="com.rbmhtechnology.eventuate.Snapshot" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="SnapshotextendsProductwithSerializable"></a>
       <a id="Snapshot:Snapshot"></a>
