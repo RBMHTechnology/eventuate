@@ -85,6 +85,8 @@ publishMavenStyle := true
 import com.typesafe.sbt.SbtMultiJvm
 import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
+lazy val IntegrationTest = config("it") extend(Test)
+
 evictionWarningOptions in update := EvictionWarningOptions.default
   .withWarnTransitiveEvictions(false)
   .withWarnDirectEvictions(false)

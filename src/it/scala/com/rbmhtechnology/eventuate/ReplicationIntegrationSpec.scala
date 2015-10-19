@@ -93,7 +93,7 @@ abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with Re
 
       val actorA = nodeA.system.actorOf(Props(new ReplicatedActor("pa", nodeA.logs("L1"), probeA.ref)))
       val actorB = nodeB.system.actorOf(Props(new ReplicatedActor("pb", nodeB.logs("L1"), probeB.ref)))
-      val actorC = nodeB.system.actorOf(Props(new ReplicatedActor("pc", nodeC.logs("L1"), probeC.ref)))
+      val actorC = nodeC.system.actorOf(Props(new ReplicatedActor("pc", nodeC.logs("L1"), probeC.ref)))
 
       actorA ! "a1"
       actorA ! "a2"

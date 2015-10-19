@@ -3,8 +3,8 @@ package com.rbmhtechnology.eventuate.crdt
 import akka.actor._
 import akka.testkit._
 
-import com.rbmhtechnology.eventuate.AwaitHelper
 import com.rbmhtechnology.eventuate.log.EventLogLifecycleLeveldb
+import com.rbmhtechnology.eventuate.utilities._
 
 import org.scalatest._
 

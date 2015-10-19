@@ -43,6 +43,9 @@ object ReplicationProtocolSerializerSpec {
 
   def replicationRead2(r: ActorRef) =
     ReplicationRead(18L, 11, filter3, "B", r, VectorTime("Y" -> 13L))
+
+  def replicationReadEnvelope(r: ReplicationRead): ReplicationReadEnvelope =
+    ReplicationReadEnvelope(r, "X")
 }
 
 class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
@@ -66,6 +69,10 @@ class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with Befo
     }
     "serialize GetReplicationEndpointInfoSuccess messages" in {
       serialization1.deserialize(serialization1.serialize(getReplicationEndpointInfoSuccess).get, classOf[GetReplicationEndpointInfoSuccess]).get should be(getReplicationEndpointInfoSuccess)
+    }
+    "serialize ReplicationReadEnvelope messages" in {
+      serialization1.deserialize(serialization1.serialize(replicationReadEnvelope(replicationRead1(dl1))).get, classOf[ReplicationReadEnvelope]).get should be(replicationReadEnvelope(replicationRead1(dl1)))
+      serialization1.deserialize(serialization1.serialize(replicationReadEnvelope(replicationRead2(dl2))).get, classOf[ReplicationReadEnvelope]).get should be(replicationReadEnvelope(replicationRead2(dl2)))
     }
     "serialize ReplicationRead messages" in {
       serialization1.deserialize(serialization1.serialize(replicationRead1(dl1)).get, classOf[ReplicationRead]).get should be(replicationRead1(dl1))

@@ -19,7 +19,7 @@ package com.rbmhtechnology.eventuate.log.leveldb
 import akka.actor.ActorSystem
 import akka.dispatch.MessageDispatcher
 
-private[leveldb] class LeveldbSettings(system: ActorSystem) {
+private[eventuate] class LeveldbSettings(system: ActorSystem) {
   implicit val readDispatcher: MessageDispatcher =
     system.dispatchers.lookup("eventuate.log.leveldb.read-dispatcher")
 

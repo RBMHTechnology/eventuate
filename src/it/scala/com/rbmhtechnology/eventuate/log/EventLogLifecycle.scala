@@ -119,6 +119,8 @@ object EventLogLifecycleLeveldb {
     override def unhandled(message: Any): Unit = message match {
       case "boom" =>
         throw boom
+      case "dir" =>
+        sender() ! logDir
       case _ =>
         super.unhandled(message)
     }

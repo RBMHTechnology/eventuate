@@ -23,13 +23,13 @@ import org.scalatest._
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
 
-class ReplicationNode(val id: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection], customConfig: String = "")(implicit logFactory: String => Props) {
+class ReplicationNode(val id: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection], customConfig: String = "", activate: Boolean = true)(implicit logFactory: String => Props) {
   val system: ActorSystem =
     ActorSystem(ReplicationConnection.DefaultRemoteSystemName, ReplicationConfig.create(port, customConfig))
 
   val endpoint: ReplicationEndpoint = {
     val endpoint = new ReplicationEndpoint(id, logNames, logFactory, connections)(system)
-    endpoint.activate()
+    if (activate) endpoint.activate()
     endpoint
   }
 

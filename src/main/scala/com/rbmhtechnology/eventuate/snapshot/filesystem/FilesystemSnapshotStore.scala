@@ -39,11 +39,16 @@ object FilesystemSnapshotStore {
  *
  * @see Configuration key `eventuate.snapshot.filesystem.snapshots-per-emitter-max`.
  */
-class FilesystemSnapshotStore(settings: FilesystemSnapshotStoreSettings) extends SnapshotStore {
+class FilesystemSnapshotStore(settings: FilesystemSnapshotStoreSettings, logId: String) extends SnapshotStore {
   private val log = Logging(settings.system, classOf[FilesystemSnapshotStore])
-  private val rootDir = new File(settings.rootDir)
+  private val rootDir = new File(settings.rootDir, URLEncoder.encode(logId, "UTF-8"))
 
   rootDir.mkdirs()
+
+  override def deleteAsync(lowerSequenceNr: Long): Future[Unit] = {
+    import settings.writeDispatcher
+    Future(delete(lowerSequenceNr))
+  }
 
   override def saveAsync(snapshot: Snapshot): Future[Unit] = {
     import settings.writeDispatcher
@@ -54,6 +59,12 @@ class FilesystemSnapshotStore(settings: FilesystemSnapshotStoreSettings) extends
     import settings.readDispatcher
     Future(load(dstDir(emitterId)))
   }
+
+  def delete(lowerSequenceNr: Long): Unit = for {
+    emitterId  <- rootDir.listFiles
+    emitterDir  = dstDir(emitterId.getName)
+    sequenceNr <- decreasingSequenceNrs(emitterDir) if sequenceNr >= lowerSequenceNr
+  } dstFile(emitterDir, sequenceNr).delete()
 
   def load(dir: File): Option[Snapshot] = {
     @annotation.tailrec

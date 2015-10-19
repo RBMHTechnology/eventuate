@@ -18,6 +18,8 @@ package com.rbmhtechnology.eventuate
 
 import akka.actor._
 
+import com.rbmhtechnology.eventuate.log.TimeTracker
+
 import scala.collection.immutable.Seq
 
 object ReplicationProtocol {
@@ -65,35 +67,14 @@ object ReplicationProtocol {
   private[eventuate] case object ReplicationDue extends Format
 
   /**
-   * Instructs a source log to read up to `maxNumEvents` starting `fromSequenceNr`
-   * and applying the given replication `filter`.
+   * Requests the time tracker from an event log.
    */
-  case class ReplicationRead(fromSequenceNr: Long, maxNumEvents: Int, filter: ReplicationFilter, targetLogId: String, replicator: ActorRef, currentTargetVectorTime: VectorTime) extends Format
+  private[eventuate] case object GetTimeTracker
 
   /**
-   * Success reply after a [[ReplicationRead]].
-   *
-   * @param events read events.
-   * @param replicationProgress last read sequence number. This is greater than
-   *                            or equal to the sequence number of the last read
-   *                            event (if any).
+   * Success reply after a [[GetTimeTracker]].
    */
-  case class ReplicationReadSuccess(events: Seq[DurableEvent], replicationProgress: Long, targetLogId: String, currentSourceVectorTime: VectorTime) extends Format
-
-  /**
-   * Failure reply after a [[ReplicationRead]].
-   */
-  case class ReplicationReadFailure(cause: String, targetLogId: String) extends Format
-
-  /**
-   * Requests the current sequence number from an event log.
-   */
-  case object GetSequenceNr
-
-  /**
-   * Success reply after a [[GetSequenceNr]].
-   */
-  case class GetSequenceNrSuccess(sequenceNr: Long)
+  private[eventuate] case class GetTimeTrackerSuccess(tracker: TimeTracker)
 
   /**
    * Requests all replication progresses from a log.
@@ -139,6 +120,33 @@ object ReplicationProtocol {
    * Failure reply after a [[SetReplicationProgress]].
    */
   case class SetReplicationProgressFailure(cause: Throwable)
+
+  /**
+   * [[ReplicationRead]] requests are sent within this envelope to allow a remote acceptor to
+   * dispatch the request to the appropriate log.
+   */
+  case class ReplicationReadEnvelope(payload: ReplicationRead, logName: String) extends Format
+
+  /**
+   * Instructs a source log to read up to `maxNumEvents` starting `fromSequenceNr`
+   * and applying the given replication `filter`.
+   */
+  case class ReplicationRead(fromSequenceNr: Long, maxNumEvents: Int, filter: ReplicationFilter, targetLogId: String, replicator: ActorRef, currentTargetVectorTime: VectorTime) extends Format
+
+  /**
+   * Success reply after a [[ReplicationRead]].
+   *
+   * @param events read events.
+   * @param replicationProgress last read sequence number. This is greater than
+   *                            or equal to the sequence number of the last read
+   *                            event (if any).
+   */
+  case class ReplicationReadSuccess(events: Seq[DurableEvent], replicationProgress: Long, targetLogId: String, currentSourceVectorTime: VectorTime) extends Format
+
+  /**
+   * Failure reply after a [[ReplicationRead]].
+   */
+  case class ReplicationReadFailure(cause: String, targetLogId: String) extends Format
 
   /**
    * Instructs a target log to write replicated `events` from the source log identified by

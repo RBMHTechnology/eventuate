@@ -72,6 +72,26 @@ trait ReplicationEndpointDoc {
 
   endpoint2.activate()
   //#
+
+  import scala.concurrent.ExecutionContext.Implicits.global
+  //#disaster-recovery-1
+  import com.rbmhtechnology.eventuate.ReplicationEndpoint
+  import scala.concurrent.Future
+  import scala.util._
+
+  val endpoint: ReplicationEndpoint = //...
+  //#
+  null
+
+  //#disaster-recovery-1
+  val recovery: Future[Unit] = endpoint.recover()
+
+  recovery onComplete {
+    case Success(_) => endpoint.activate()
+    case Failure(e) => // retry recovery ...
+  }
+  //#
+
 }
 
 trait ReplicationFilterDoc {

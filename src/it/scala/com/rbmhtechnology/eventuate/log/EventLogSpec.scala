@@ -114,8 +114,8 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfter
   }
 
   def currentSequenceNr: Long = {
-    log.tell(GetSequenceNr, requestorProbe.ref)
-    requestorProbe.expectMsgClass(classOf[GetSequenceNrSuccess]).sequenceNr
+    log.tell(GetTimeTracker, requestorProbe.ref)
+    requestorProbe.expectMsgClass(classOf[GetTimeTrackerSuccess]).tracker.sequenceNr
   }
 
   def expectedEmittedEvents(events: Seq[DurableEvent], offset: Long = 0): Seq[DurableEvent] =
@@ -491,11 +491,11 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
     }
     "recover the current sequence number on (re)start" in {
       generateEmittedEvents()
-      log.tell(GetSequenceNr, requestorProbe.ref)
-      requestorProbe.expectMsg(GetSequenceNrSuccess(3))
+      log.tell(GetTimeTracker, requestorProbe.ref)
+      requestorProbe.expectMsgType[GetTimeTrackerSuccess].tracker.sequenceNr should be(3L)
       log ! "boom"
-      log.tell(GetSequenceNr, requestorProbe.ref)
-      requestorProbe.expectMsg(GetSequenceNrSuccess(3))
+      log.tell(GetTimeTracker, requestorProbe.ref)
+      requestorProbe.expectMsgType[GetTimeTrackerSuccess].tracker.sequenceNr should be(3L)
     }
     "recover the replication progress on (re)start" in {
       log.tell(SetReplicationProgress("x", 17), requestorProbe.ref)

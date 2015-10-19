@@ -17,9 +17,9 @@
 package com.rbmhtechnology.eventuate.log
 
 import akka.event.LoggingAdapter
-import com.rbmhtechnology.eventuate.EventsourcingProtocol.Write
 
 import com.rbmhtechnology.eventuate._
+import com.rbmhtechnology.eventuate.EventsourcingProtocol.Write
 
 import scala.collection.immutable.Seq
 
@@ -103,8 +103,7 @@ private[eventuate] object TimeTracker {
     if (al < bl) {
       val diff = bl - al
       val perc = diff * 100.0 / bl
-      println(f"[$logId] excluded $diff events ($perc%3.1f%% at $location)")
-      //log.info(f"[$logId] excluded $diff events ($perc%3.1f%% at $location)")
+      log.info(f"[$logId] excluded $diff events ($perc%3.1f%% at $location)")
     }
   }
 }

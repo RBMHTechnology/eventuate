@@ -37,6 +37,11 @@ message GetReplicationEndpointInfoSuccessFormat {
   required ReplicationEndpointInfoFormat info = 1;
 }
 
+message ReplicationReadEnvelopeFormat {
+  optional ReplicationReadFormat payload = 1;
+  optional string logName = 2;
+}
+
 message ReplicationReadFormat {
   optional int64 fromSequenceNr = 1;
   optional int32 maxNumEvents = 2;

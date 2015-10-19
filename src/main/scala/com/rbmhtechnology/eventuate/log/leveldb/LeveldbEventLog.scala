@@ -66,7 +66,7 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
   private var timeCache = Map.empty[String, VectorTime].withDefaultValue(VectorTime())
 
   private val notificationChannel = context.actorOf(Props(new NotificationChannel(id)))
-  private val snapshotStore = new FilesystemSnapshotStore(new FilesystemSnapshotStoreSettings(context.system))
+  private val snapshotStore = new FilesystemSnapshotStore(new FilesystemSnapshotStoreSettings(context.system), id)
   private val replicationProgressMap = new LeveldbReplicationProgressStore(leveldb, -3, eventLogIdMap.numericId, eventLogIdMap.findId)
   private val aggregateIdMap = new LeveldbNumericIdentifierStore(leveldb, -1)
   private val eventLogIdMap = new LeveldbNumericIdentifierStore(leveldb, -2)
@@ -86,8 +86,8 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
   // ------------------------------------------------------
 
   final def receive = {
-    case GetSequenceNr =>
-      sender() ! GetSequenceNrSuccess(timeTracker.sequenceNr)
+    case GetTimeTracker =>
+      sender() ! GetTimeTrackerSuccess(timeTracker)
     case GetReplicationProgresses =>
       Try(withIterator(iter => replicationProgressMap.readReplicationProgresses(iter))) match {
         case Success(r) => sender() ! GetReplicationProgressesSuccess(r)
@@ -195,9 +195,19 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
         case Success(_) => requestor.tell(SaveSnapshotSuccess(snapshot.metadata, iid), initiator)
         case Failure(e) => requestor.tell(SaveSnapshotFailure(snapshot.metadata, e, iid), initiator)
       }
+    case DeleteSnapshots(lowerSequenceNr) =>
+      import context.dispatcher
+      val sdr = sender()
+      snapshotStore.deleteAsync(lowerSequenceNr) onComplete {
+        case Success(_) => sdr ! DeleteSnapshotsSuccess
+        case Failure(e) => sdr ! DeleteSnapshotsFailure(e)
+      }
     case Terminated(requestor) =>
       registry = registry.unregisterSubscriber(requestor)
   }
+
+  def logDir: File =
+    leveldbDir
 
   def currentSystemTime: Long =
     System.currentTimeMillis

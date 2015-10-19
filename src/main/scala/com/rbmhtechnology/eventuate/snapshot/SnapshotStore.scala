@@ -25,6 +25,11 @@ import scala.concurrent.Future
  */
 trait SnapshotStore {
   /**
+   * Asynchronously deletes all snapshots with a sequence number greater than or equal `lowerSequenceNr`.
+   */
+  def deleteAsync(lowerSequenceNr: Long): Future[Unit]
+
+  /**
    * Asynchronously saves the given `snapshot`.
    */
   def saveAsync(snapshot: Snapshot): Future[Unit]

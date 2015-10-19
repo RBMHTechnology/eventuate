@@ -123,4 +123,19 @@ object EventsourcingProtocol {
    * Failure reply after a [[LoadSnapshot]].
    */
   case class LoadSnapshotFailure(cause: Throwable, instanceId: Int)
+
+  /**
+   * Instructs an event log to delete all snapshots with a sequence number greater than or equal to `lowerSequenceNr`.
+   */
+  case class DeleteSnapshots(lowerSequenceNr: Long)
+
+  /**
+   * Success reply after a [[DeleteSnapshots]].
+   */
+  case object DeleteSnapshotsSuccess
+
+  /**
+   * Failure reply after a [[DeleteSnapshots]].
+   */
+  case class DeleteSnapshotsFailure(cause: Throwable)
 }

@@ -73,7 +73,7 @@ public class OrderManager extends AbstractEventsourcedView {
     }
 
     private void replyState(ActorRef target) {
-        OnComplete<GetStateSuccess> completionHander = new OnComplete<GetStateSuccess>() {
+        OnComplete<GetStateSuccess> completionHandler = new OnComplete<GetStateSuccess>() {
             public void onComplete(Throwable failure, GetStateSuccess success) throws Throwable {
                 if (failure == null) {
                     target.tell(success, self());
@@ -88,7 +88,7 @@ public class OrderManager extends AbstractEventsourcedView {
 
         Futures.sequence(resultStream::iterator, context().dispatcher())
                 .map(resultsReducer, context().dispatcher())
-                .onComplete(completionHander, context().dispatcher());
+                .onComplete(completionHandler, context().dispatcher());
     }
 
     private Future<GetStateSuccess> asyncGetState(ActorRef actor) {

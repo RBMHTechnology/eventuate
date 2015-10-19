@@ -146,6 +146,10 @@ public class OrderExample extends AbstractActor {
     }
 
     public static void main(String[] args) {
+        if (args[1].equals("recover")) {
+            throw new UnsupportedOperationException("Java version of example application doesn't support disaster recovery yet");
+        }
+
         ActorSystem system = ActorSystem.create(ReplicationConnection.DefaultRemoteSystemName(), ConfigFactory.load(args[0]));
         ReplicationEndpoint endpoint = ReplicationEndpoint.create(id -> LeveldbEventLog.props(id, "j", true), system);
 

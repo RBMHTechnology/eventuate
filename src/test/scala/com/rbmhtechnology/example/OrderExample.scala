@@ -23,7 +23,9 @@ import com.rbmhtechnology.eventuate.VersionedAggregate._
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
 import com.typesafe.config.ConfigFactory
 
+import scala.concurrent.Future
 import scala.io.Source
+import scala.util._
 
 class OrderExample(manager: ActorRef, view: ActorRef) extends Actor {
   import OrderActor._
@@ -84,12 +86,24 @@ class OrderExample(manager: ActorRef, view: ActorRef) extends Actor {
 }
 
 object OrderExample extends App {
+  val recover = args(1) == "recover"
   val system = ActorSystem(ReplicationConnection.DefaultRemoteSystemName, ConfigFactory.load(args(0)))
   val endpoint = ReplicationEndpoint(id => LeveldbEventLog.props(id, "s"))(system)
-  val manager = system.actorOf(Props(new OrderManager(endpoint.id, endpoint.logs(ReplicationEndpoint.DefaultLogName))))
-  val view = system.actorOf(Props(new OrderView(endpoint.id, endpoint.logs(ReplicationEndpoint.DefaultLogName))))
-  val driver = system.actorOf(Props(new OrderExample(manager, view)).withDispatcher("eventuate.cli-dispatcher"))
 
-  endpoint.activate()
+  import system.dispatcher
+
+  def initialize(): Future[Unit] =
+    if (recover) endpoint.recover() else Future.successful(())
+
+  initialize() onComplete {
+    case Failure(e)=>
+      println(s"Recovery failed: ${e.getMessage}")
+      system.terminate()
+    case Success(_) =>
+      val manager = system.actorOf(Props(new OrderManager(endpoint.id, endpoint.logs(ReplicationEndpoint.DefaultLogName))))
+      val view = system.actorOf(Props(new OrderView(endpoint.id, endpoint.logs(ReplicationEndpoint.DefaultLogName))))
+      val driver = system.actorOf(Props(new OrderExample(manager, view)).withDispatcher("eventuate.cli-dispatcher"))
+      endpoint.activate()
+  }
 }
 

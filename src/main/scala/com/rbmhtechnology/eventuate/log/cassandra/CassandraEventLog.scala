@@ -75,7 +75,7 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
   private val preparedWriteEventStatement = cassandra.prepareWriteEvent(id)
 
   private val notificationChannel = context.actorOf(Props(new NotificationChannel(id)))
-  private val snapshotStore = new FilesystemSnapshotStore(new FilesystemSnapshotStoreSettings(context.system))
+  private val snapshotStore = new FilesystemSnapshotStore(new FilesystemSnapshotStoreSettings(context.system), id)
   private val progressStore = createReplicationProgressStore(cassandra, id)
   private val eventReader = createEventReader(cassandra, id)
   private val index = createIndex(cassandra, eventReader, id)
@@ -108,8 +108,8 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
   }
 
   def initialized: Receive = {
-    case GetSequenceNr =>
-      sender() ! GetSequenceNrSuccess(timeTracker.sequenceNr)
+    case GetTimeTracker =>
+      sender() ! GetTimeTrackerSuccess(timeTracker)
     case GetReplicationProgresses =>
       import cassandra.readDispatcher
       val sdr = sender()
@@ -225,7 +225,7 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
               // source log but these events will be successfully identified as
               // duplicates, either at source or latest at target.
               log.warning(s"Writing of replication progress failed: ${e.getMessage}")
-              sdr ! rws
+              sdr ! ReplicationWriteFailure(e)
           }
         case Failure(e) =>
           sender() ! ReplicationWriteFailure(e)
@@ -241,6 +241,13 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
       snapshotStore.saveAsync(snapshot) onComplete {
         case Success(_) => requestor.tell(SaveSnapshotSuccess(snapshot.metadata, iid), initiator)
         case Failure(e) => requestor.tell(SaveSnapshotFailure(snapshot.metadata, e, iid), initiator)
+      }
+    case DeleteSnapshots(lowerSequenceNr) =>
+      import context.dispatcher
+      val sdr = sender()
+      snapshotStore.deleteAsync(lowerSequenceNr) onComplete {
+        case Success(_) => sdr ! DeleteSnapshotsSuccess
+        case Failure(e) => sdr ! DeleteSnapshotsFailure(e)
       }
     case Terminated(requestor) =>
       registry = registry.unregisterSubscriber(requestor)

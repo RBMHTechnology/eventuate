@@ -42,12 +42,10 @@ object EventsourcedActorCausalitySpec {
         probe ! ((s, lastVectorTimestamp, currentTime))
     }
   }
-
-  def replicationConnection(port: Int, filters: Map[String, ReplicationFilter] = Map.empty): ReplicationConnection =
-    ReplicationConnection("127.0.0.1", port, filters)
 }
 
 abstract class EventsourcedActorCausalitySpec extends WordSpec with Matchers with ReplicationNodeRegistry {
+  import ReplicationIntegrationSpec.replicationConnection
   import EventsourcedActorCausalitySpec._
 
   implicit def logFactory: String => Props

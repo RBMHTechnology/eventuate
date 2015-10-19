@@ -196,6 +196,32 @@ Both messages are defined in ReplicationEndpoint_. Their ``endpointId`` paramete
 
 It instructs the failure detector to publish an ``Unavailable`` message if there is no heartbeat from the remote replication endpoint within 60 seconds. ``Available`` and ``Unavailable`` messages are published periodically at intervals of ``eventuate.log.replication.failure-detection-limit``.
 
+.. _disaster-recovery:
+
+Disaster recovery
+^^^^^^^^^^^^^^^^^
+
+Total or partial event loss at a given location is referred to as a disaster. Event loss is usually prevented by using a clustered :ref:`cassandra-storage-backend` but a catastrophic failure may still lead to event loss. In this case, lost events may be recovered from those previously replicated to other locations and optionally from those written to a storage backup, a procedure referred to as *disaster recovery*. 
+
+If a storage backup exists, events can be partially recovered from that backup so that only events not covered by the backup must be copied from other locations. Recovery of events at a given location is only possible to the extend they have been previously replicated to other locations (or written to the backup). Events that have not been replicated to other locations or for which no storage backup exists cannot be recovered. 
+
+Disaster recovery is executed per ``ReplicationEndpoint`` by calling its asynchronous ``recover()`` method. Only if recovery successfully completes, an application may activate the endpoint by calling its ``activate()`` method, otherwise, recovery must be re-tried.
+
+.. includecode:: ../code/EventLogDoc.scala
+   :snippet: disaster-recovery-1
+
+During execution of disaster recovery, directly connected endpoints must be available. These are endpoints for which replication connections have been configured at the endpoint to be recovered. Availability is needed because connected endpoints need to update internal metadata before they can resume event replication with the recovered endpoint.
+
+.. hint::
+   The ``Future[Unit]`` returned by ``recover()`` completes when the internal metadata update completed. For actually starting the replication of missing events from other locations to the endpoint being recovered, it must be activated with ``activate()``.
+
+Disaster recovery also deletes invalid snapshots, in case they survived the disaster. Invalid snapshots are those that cover lost events. 
+
+A complete reference of ``eventuate.disaster-recovery.*`` configuration options is given in section :ref:`configuration`. The example application also implements :ref:`example-disaster-recovery`.
+
+.. note::
+   Installing a storage backup is a separate administrative task that is not covered by running ``recover()``. 
+
 .. _Cassandra: http://cassandra.apache.org/
 .. _Getting Started: https://wiki.apache.org/cassandra/GettingStarted
 .. _cassandra-unit: https://github.com/jsevellec/cassandra-unit/wiki

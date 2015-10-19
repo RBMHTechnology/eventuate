@@ -32,6 +32,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
 
   val GetReplicationEndpointInfoClass = GetReplicationEndpointInfo.getClass
   val GetReplicationEndpointInfoSuccessClass = classOf[GetReplicationEndpointInfoSuccess]
+  val ReplicationReadEnvelopeClass = classOf[ReplicationReadEnvelope]
   val ReplicationReadClass = classOf[ReplicationRead]
   val ReplicationReadSuccessClass = classOf[ReplicationReadSuccess]
   val ReplicationReadFailureClass = classOf[ReplicationReadFailure]
@@ -46,6 +47,8 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         GetReplicationEndpointInfoFormat.newBuilder().build().toByteArray
       case m: GetReplicationEndpointInfoSuccess =>
         getReplicationEndpointInfoSuccessFormatBuilder(m).build().toByteArray
+      case m: ReplicationReadEnvelope =>
+        replicationReadEnvelopeFormatBuilder(m).build().toByteArray
       case m: ReplicationRead =>
         replicationReadFormatBuilder(m).build().toByteArray
       case m: ReplicationReadSuccess =>
@@ -66,6 +69,8 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         GetReplicationEndpointInfo
       case GetReplicationEndpointInfoSuccessClass =>
         getReplicationEndpointInfoSuccess(GetReplicationEndpointInfoSuccessFormat.parseFrom(bytes))
+      case ReplicationReadEnvelopeClass =>
+        replicationReadEnvelope(ReplicationReadEnvelopeFormat.parseFrom(bytes))
       case ReplicationReadClass =>
         replicationRead(ReplicationReadFormat.parseFrom(bytes))
       case ReplicationReadSuccessClass =>
@@ -110,6 +115,13 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     builder
   }
 
+  private def replicationReadEnvelopeFormatBuilder(message: ReplicationReadEnvelope): ReplicationReadEnvelopeFormat.Builder = {
+    val builder = ReplicationReadEnvelopeFormat.newBuilder()
+    builder.setPayload(replicationReadFormatBuilder(message.payload))
+    builder.setLogName(message.logName)
+    builder
+  }
+
   private def getReplicationEndpointInfoSuccessFormatBuilder(message: GetReplicationEndpointInfoSuccess): GetReplicationEndpointInfoSuccessFormat.Builder =
     GetReplicationEndpointInfoSuccessFormat.newBuilder().setInfo(replicationEndpointInfoFormatBuilder(message.info))
 
@@ -151,6 +163,11 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
       messageFormat.getTargetLogId,
       system.provider.resolveActorRef(messageFormat.getReplicator),
       eventSerializer.vectorTime(messageFormat.getCurrentTargetVectorTime))
+
+  private def replicationReadEnvelope(messageFormat: ReplicationReadEnvelopeFormat): ReplicationReadEnvelope =
+    ReplicationReadEnvelope(
+      replicationRead(messageFormat.getPayload),
+      messageFormat.getLogName)
 
   private def getReplicationEndpointInfoSuccess(messageFormat: GetReplicationEndpointInfoSuccessFormat) =
     GetReplicationEndpointInfoSuccess(replicationEndpointInfo(messageFormat.getInfo))
