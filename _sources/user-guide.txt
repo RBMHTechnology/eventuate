@@ -13,7 +13,7 @@ This is a brief user guide to Eventuate. It is recommended to read sections :ref
 - resolve conflicts automatically and interactively
 - make concurrent updates conflict-free with operation-based CRDTs
 - implement an event-sourced view over many event-sourced actors and
-- achieve read-your-write consistency across event-sourced actors and views.
+- achieve causal read consistency across event-sourced actors and views.
 
 The user guide only scratches the surface of Eventuate. You can find further details in the :ref:`reference`.
 
@@ -230,12 +230,16 @@ Event-sourced views handle events in the same way as event-sourced actors by imp
 Conditional commands
 --------------------
 
-Events emitted by one event-sourced actor are asynchronously consumed by other event sourced-actors or views. For example, an application that successfully appended an entry to an ``ExampleActor`` may not immediately see that update in the ``appendCount`` of ``ExampleView``. To achieve read-your-write consistency between an event-sourced actor and a view, the view should delay command processing until the emitted event has been consumed by the view. This can be achieved with a ``ConditionalCommand``.
+Causal read consistency is the default when reading state from a single event-sourced actor or view. The event stream received by that actor is always causally ordered, hence, it will never see an *effect* before having seen its *cause*. 
+
+The situation is different when a client reads from multiple actors. Imagine two event-sourced actor replicas where a client updates one replica and observes the updated state with the reply. A subsequent from the other replica, made by the same client, may return the old state which violates causal consistency. 
+
+Similar considerations can be made for reading from an event-sourced view after having made an update to an event-sourced actor. For example, an application that successfully appended an entry to ``ExampleActor`` may not immediately see that update in the ``appendCount`` of ``ExampleView``. To achieve causal read consistency, the view should delay command processing until the emitted event has been consumed by the view. This can be achieved with a ``ConditionalCommand``.
 
 .. includecode:: code/UserGuideDoc.scala
    :snippet: conditional-commands
 
-Here, the ``ExampleActor`` includes the event’s vector timestamp in its ``AppendSuccess`` reply. Together with the actual ``GetAppendCount`` command, the timestamp is included as condition in a ``ConditionalCommand`` and sent to the view. ``EventsourcedView`` internally delays the command, if needed, and only dispatches ``GetAppendCount`` to ``onCommand`` after having received an event whose timestamp is ``>=`` the condition timestamp in the conditional command\ [#]_. When running the example with an empty event log, it should print::
+Here, the ``ExampleActor`` includes the event’s vector timestamp in its ``AppendSuccess`` reply. Together with the actual ``GetAppendCount`` command, the timestamp is included as condition in a ``ConditionalCommand`` and sent to the view. ``EventsourcedView`` internally delays the command, if needed, and only dispatches ``GetAppendCount`` to ``onCommand`` if the condition timestamp is in the *causal past* of the view (which is earliest the case when the view consumed the update event). When running the example with an empty event log, it should print::
 
     append count = 1
 
@@ -265,5 +269,3 @@ Here, the ``ExampleActor`` includes the event’s vector timestamp in its ``Appe
 .. [#] A formal approach to automatically *merge* concurrent versions of application state are convergent replicated data types (CvRDTs) or state-based CRDTs.
 
 .. [#] Distributed lock acquisition or leader election require an external coordination service like ZooKeeper_, for example, whereas static rules do not.
-
-.. [#] More precisely, the command is dispatched if the current time of the view’s internal clock is ``>=`` the condition timestamp in the conditional command. The view’s internal clock is updated by *merging* its current time with the vector timestamps of received events. 
