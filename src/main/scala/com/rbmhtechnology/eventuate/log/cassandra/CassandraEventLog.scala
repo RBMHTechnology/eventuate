@@ -66,6 +66,9 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
   import CassandraEventLog._
   import NotificationChannel._
 
+  if (!isValidEventLogId(id))
+    throw new IllegalArgumentException(s"invalid id '$id' specified - Cassandra allows alphanumeric and underscore characters only")
+
   val eventStream = context.system.eventStream
   val cassandra: Cassandra = Cassandra(context.system)
 
@@ -285,7 +288,11 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
 }
 
 object CassandraEventLog {
+  import scala.language.postfixOps
+
   private[eventuate] case class Initialize(timeTracker: TimeTracker)
+
+  private lazy val validCassandraIdentifier = "^[a-zA-Z0-9_]+$"r
 
   /**
    * Adjusts `timeTracker.sequenceNumber` if a batch of `batchSize` doesn't fit in the current partition.
@@ -301,6 +308,13 @@ object CassandraEventLog {
       (currentPartition, tracker)
     }
   }
+
+  /**
+   * Check whether the specified `logId` is valid for Cassandra
+   * table, column and/or keyspace name usage.
+   */
+  def isValidEventLogId(logId: String): Boolean =
+    validCassandraIdentifier.findFirstIn(logId).isDefined
 
   /**
    * Partition number for given `sequenceNr`.
