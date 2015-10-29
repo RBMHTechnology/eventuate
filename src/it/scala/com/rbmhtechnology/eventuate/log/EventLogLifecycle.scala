@@ -16,7 +16,7 @@
 
 package com.rbmhtechnology.eventuate.log
 
-import java.io.File
+import java.io.{Closeable, File}
 
 import akka.actor._
 import akka.pattern.ask
@@ -105,8 +105,8 @@ object EventLogLifecycleLeveldb {
     override def currentSystemTime: Long =
       0L
 
-    private[eventuate] override def replay(from: Long, classifier: Int)(f: (DurableEvent) => Unit): Unit =
-      if (from == -1L) throw boom else super.replay(from, classifier)(f)
+    private[eventuate] override def replayer(requestor: ActorRef, iterator: => Iterator[DurableEvent] with Closeable, from: Long): ActorRef =
+      if (from == -1L) super.replayer(requestor, EventLogLifecycle.failingEventIterator, from) else super.replayer(requestor, iterator, from)
 
     private[eventuate] override def read(from: Long, max: Int, filter: ReplicationFilter, lower: VectorTime): ReadResult =
       if (from == -1L) throw boom else super.read(from, max, filter, lower)
@@ -232,6 +232,9 @@ object EventLogLifecycleCassandra {
         super.unhandled(message)
     }
 
+    private[eventuate] override def replayer(requestor: ActorRef, iterator: => Iterator[DurableEvent] with Closeable, from: Long): ActorRef =
+      if (from == -1L) super.replayer(requestor, EventLogLifecycle.failingEventIterator, from) else super.replayer(requestor, iterator, from)
+
     private[eventuate] override def write(partition: Long, events: Seq[DurableEvent], tracker: TimeTracker): TimeTracker = events match {
       case es if es.map(_.payload).contains("boom") => throw boom
       case _ => super.write(partition, events, tracker)
@@ -257,9 +260,6 @@ object EventLogLifecycleCassandra {
   }
 
   class TestEventReader(cassandra: Cassandra, logId: String) extends CassandraEventReader(cassandra, logId) {
-    override def replay(from: Long)(f: (DurableEvent) => Unit): Unit =
-      if (from == -1L) throw boom else super.replay(from)(f)
-
     override def read(from: Long, max: Int, filter: ReplicationFilter, lower: VectorTime, targetLogId: String): CassandraEventReader.ReadResult =
       if (from == -1L) throw boom else super.read(from, max, filter, lower, targetLogId)
   }
@@ -295,5 +295,13 @@ object EventLogLifecycleCassandra {
         readSequenceNumberFailed = true
         Future.failed(boom)
       } else super.readTimeTrackerAsync
+  }
+}
+
+object EventLogLifecycle {
+  val failingEventIterator = new Iterator[DurableEvent] with Closeable {
+    override def hasNext: Boolean = true
+    override def next(): DurableEvent = throw boom
+    override def close(): Unit = ()
   }
 }

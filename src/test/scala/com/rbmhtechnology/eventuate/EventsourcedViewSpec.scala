@@ -33,10 +33,16 @@ object EventsourcedViewSpec {
 
   class TestEventsourcedView(
      val logProbe: ActorRef,
-     val dstProbe: ActorRef) extends EventsourcedView {
+     val dstProbe: ActorRef,
+     customReplayChunkSize: Option[Int]) extends EventsourcedView {
 
     val id = emitterIdA
     val eventLog = logProbe
+
+    override def replayChunkSizeMax: Int = customReplayChunkSize match {
+      case Some(i) => i
+      case None    => super.replayChunkSizeMax
+    }
 
     override val onCommand: Receive = {
       case "boom" => throw boom
@@ -83,11 +89,14 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
     dstProbe = TestProbe()
   }
 
-  override def afterAll: Unit =
+  override def afterAll(): Unit =
     TestKit.shutdownActorSystem(system)
 
   def unrecoveredEventsourcedActor(): ActorRef =
-    system.actorOf(Props(new TestEventsourcedView(logProbe.ref, dstProbe.ref)))
+    system.actorOf(Props(new TestEventsourcedView(logProbe.ref, dstProbe.ref, None)))
+
+  def unrecoveredEventsourcedActor(customReplayChunkSize: Int): ActorRef =
+    system.actorOf(Props(new TestEventsourcedView(logProbe.ref, dstProbe.ref, Some(customReplayChunkSize))))
 
   "An EventsourcedView" must {
     "recover from replayed events" in {
@@ -103,6 +112,26 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
 
       dstProbe.expectMsg(("a", event1a.vectorTimestamp, event1a.vectorTimestamp, event1a.localSequenceNr))
       dstProbe.expectMsg(("b", event1b.vectorTimestamp, event1b.vectorTimestamp, event1b.localSequenceNr))
+    }
+    "recover from events that are replayed in chunks" in {
+      val actor = unrecoveredEventsourcedActor(2)
+
+      logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId))
+      actor ! LoadSnapshotSuccess(None, instanceId)
+      logProbe.expectMsg(Replay(1, 2, actor, instanceId))
+
+      actor ! Replaying(event1a, instanceId)
+      actor ! Replaying(event1b, instanceId)
+
+      actor.tell(ReplaySuspended(instanceId), logProbe.ref)
+      logProbe.expectMsg(ReplayNext(2, instanceId))
+
+      actor ! Replaying(event1c, instanceId)
+      actor ! ReplaySuccess(instanceId)
+
+      dstProbe.expectMsg(("a", event1a.vectorTimestamp, event1a.vectorTimestamp, event1a.localSequenceNr))
+      dstProbe.expectMsg(("b", event1b.vectorTimestamp, event1b.vectorTimestamp, event1b.localSequenceNr))
+      dstProbe.expectMsg(("c", event1c.vectorTimestamp, event1c.vectorTimestamp, event1c.localSequenceNr))
     }
     "retry recovery on failure" in {
       val actor = unrecoveredEventsourcedActor()

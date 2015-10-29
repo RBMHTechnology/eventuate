@@ -198,3 +198,28 @@ object ClockEntryInstance {
   }
   //#
 }
+
+object ChunkedReplay {
+  import akka.actor._
+  import com.rbmhtechnology.eventuate.EventsourcedActor
+
+  //#chunk-size-max
+  class ExampleActor(override val id: String,
+                     override val eventLog: ActorRef) extends EventsourcedActor {
+
+    override def replayChunkSizeMax: Int = 64
+
+    // ...
+  //#
+    override val onCommand: Receive = {
+      case cmd => // ...
+    }
+
+    override val onEvent: Receive = {
+      case evt => // ...
+    }
+  //#chunk-size-max
+  }
+  //#
+
+}

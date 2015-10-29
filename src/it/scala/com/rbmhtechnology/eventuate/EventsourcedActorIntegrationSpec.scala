@@ -201,6 +201,28 @@ object EventsourcedActorIntegrationSpec {
         probe ! state
     }
   }
+
+  class ChunkedReplayActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+    var state: Vector[String] = Vector.empty
+
+    override def replayChunkSizeMax: Int = 2
+
+    override val onCommand: Receive = {
+      case "boom" =>
+        throw boom
+      case "state" =>
+        probe ! state
+      case s: String =>
+        persist(s) {
+          case Success(r) => onEvent(r)
+          case Failure(e) => throw e
+        }
+    }
+
+    override val onEvent: Receive = {
+      case s: String => state = state :+ s
+    }
+  }
 }
 
 abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach {
@@ -379,6 +401,21 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
 
       viewProbe.expectMsg(Vector("v-a", "v-b"))
       viewProbe.expectMsg(Vector("v-a", "v-b", "v-c"))
+    }
+    "support chunked event replay" in {
+      val probe = TestProbe()
+      val actor = system.actorOf(Props(new ChunkedReplayActor("1", log, probe.ref)))
+
+      val messages = 1.to(10).map(i => s"m-$i")
+
+      messages.foreach(actor ! _)
+
+      actor ! "state"
+      probe.expectMsg(messages)
+
+      actor ! "boom"
+      actor ! "state"
+      probe.expectMsg(messages)
     }
   }
 }

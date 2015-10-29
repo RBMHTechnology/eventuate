@@ -16,14 +16,15 @@
 
 package com.rbmhtechnology.eventuate.log.cassandra
 
+import java.io.Closeable
 import java.lang.{Long => JLong}
 
 import akka.actor._
 
-import com.datastax.driver.core.{Row, PreparedStatement}
+import com.datastax.driver.core._
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
-import com.rbmhtechnology.eventuate.log.TimeTracker
+import com.rbmhtechnology.eventuate.log._
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Seq
@@ -45,7 +46,7 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
    * Contains the sequence number of the last event in event log that
    * has been successfully processed and written to the index.
    */
-  private var lastIndexTime: TimeTracker = TimeTracker()
+  private var timeTracker: TimeTracker = TimeTracker()
 
   def initializing: Receive = {
     case ReadTimeTracker =>
@@ -56,7 +57,7 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
     case ReadTimeTrackerSuccess(t) =>
       indexUpdater ! UpdateIndex(t)
     case u @ UpdateIndexSuccess(t, _) =>
-      this.lastIndexTime = t
+      timeTracker = t
       eventLog ! Initialize(t)
       context.become(initialized)
       unstashAll()
@@ -75,25 +76,16 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
 
   def initialized: Receive = {
     case UpdateIndex(_) =>
-      indexUpdater ! UpdateIndex(lastIndexTime)
+      indexUpdater ! UpdateIndex(timeTracker)
     case u @ UpdateIndexSuccess(t, _) =>
-      this.lastIndexTime = t
+      timeTracker = t
       onIndexEvent(u)
     case u @ UpdateIndexFailure(cause) =>
       log.error(cause, "UpdateIndex failure")
       onIndexEvent(u)
-    case Replay(fromSequenceNr, requestor, Some(emitterAggregateId), iid) =>
-      val isnr = lastIndexTime.sequenceNr
-      val replay = for {
-        rsnr <- indexStore.replayAsync(emitterAggregateId, fromSequenceNr)(event => requestor ! Replaying(event, iid))
-        nsnr = math.max(isnr, rsnr) + 1L
-        s    <- eventReader.replayAsync(nsnr)(event => if (event.destinationAggregateIds.contains(emitterAggregateId)) requestor ! Replaying(event, iid))
-      } yield s
-
-      replay onComplete {
-        case Success(_) => requestor ! ReplaySuccess(iid)
-        case Failure(e) => requestor ! ReplayFailure(e, iid)
-      }
+    case Replay(fromSequenceNr, max, requestor, Some(emitterAggregateId), iid) =>
+      val sequenceNr = timeTracker.sequenceNr // avoid closing over current state (compositeEventIterator is called by a child actor)
+      replayer(requestor, compositeEventIterator(emitterAggregateId, fromSequenceNr, sequenceNr)) ! ReplayNext(max, iid)
   }
 
   def receive =
@@ -112,6 +104,39 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
     eventReader.eventIterator(increment.timeTracker.sequenceNr + 1L, Long.MaxValue).foldLeft(increment) {
       case (inc, event) => inc.update(event)
     }
+  }
+
+  private def replayer(requestor: ActorRef, iterator: => Iterator[DurableEvent] with Closeable): ActorRef =
+    context.actorOf(Props(new ChunkedEventReplay(requestor, iterator)).withDispatcher("eventuate.log.cassandra.read-dispatcher"))
+
+  private def compositeEventIterator(aggregateId: String, fromSequenceNr: Long, indexSequenceNr: Long): Iterator[DurableEvent] with Closeable =
+    new CompositeEventIterator(aggregateId, fromSequenceNr, indexSequenceNr)
+
+  private class CompositeEventIterator(aggregateId: String, fromSequenceNr: Long, indexSequenceNr: Long) extends Iterator[DurableEvent] with Closeable {
+    private var iter: Iterator[DurableEvent] = indexStore.aggregateEventIterator(aggregateId, fromSequenceNr, Long.MaxValue)
+    private var last = fromSequenceNr - 1L
+    private var idxr = true
+
+    @annotation.tailrec
+    final def hasNext: Boolean =
+      if (idxr && iter.hasNext) {
+        true
+      } else if (idxr) {
+        idxr = false
+        iter = eventReader.eventIterator((indexSequenceNr max last) + 1L, Long.MaxValue).filter(_.destinationAggregateIds.contains(aggregateId))
+        hasNext
+      } else {
+        iter.hasNext
+      }
+
+    def next(): DurableEvent = {
+      val evt = iter.next()
+      last = evt.localSequenceNr
+      evt
+    }
+
+    def close(): Unit =
+      ()
   }
 
   override def preStart(): Unit =
@@ -209,16 +234,6 @@ private[eventuate] class CassandraIndexStore(cassandra: Cassandra, logId: String
   private val preparedReadAggregateEventStatement: PreparedStatement = cassandra.prepareReadAggregateEvents(logId)
   private val preparedWriteAggregateEventStatement: PreparedStatement = cassandra.prepareWriteAggregateEvent(logId)
 
-  def replayAsync(aggregateId: String, fromSequenceNr: Long)(f: DurableEvent => Unit): Future[Long] = {
-    import cassandra.readDispatcher
-    Future(replay(aggregateId, fromSequenceNr)(f))
-  }
-
-  def replay(aggregateId: String, fromSequenceNr: Long)(f: DurableEvent => Unit): Long =
-    aggregateEventIterator(aggregateId, fromSequenceNr, Long.MaxValue).foldLeft(fromSequenceNr - 1L) {
-      case (_, event) => f(event); event.localSequenceNr
-    }
-
   private[eventuate] def readTimeTrackerAsync: Future[TimeTracker] = {
     import cassandra.readDispatcher
     cassandra.session.executeAsync(cassandra.preparedReadTimeTrackerStatement.bind(logId)).map { resultSet =>
@@ -245,7 +260,7 @@ private[eventuate] class CassandraIndexStore(cassandra: Cassandra, logId: String
   private def writeTimeTrackerAsync(timeTracker: TimeTracker)(implicit executor: ExecutionContext): Future[TimeTracker] =
     cassandra.session.executeAsync(cassandra.preparedWriteTimeTrackerStatement.bind(logId, cassandra.timeTrackerToByteBuffer(timeTracker))).map(_ => timeTracker)
 
-  private def aggregateEventIterator(aggregateId: String, fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] =
+  private[eventuate] def aggregateEventIterator(aggregateId: String, fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] =
     new AggregateEventIterator(aggregateId, fromSequenceNr, toSequenceNr)
 
   private class AggregateEventIterator(aggregateId: String, fromSequenceNr: Long, toSequenceNr: Long) extends Iterator[DurableEvent] {

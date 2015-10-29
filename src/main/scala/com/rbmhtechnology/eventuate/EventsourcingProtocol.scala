@@ -60,6 +60,17 @@ object EventsourcingProtocol {
    */
   case class Written(event: DurableEvent)
 
+  object Replay {
+    def apply(from: Long, max: Int, requestor: ActorRef, instanceId: Int): Replay =
+      new Replay(from, max, requestor, None, instanceId)
+
+    def apply(from: Long, requestor: ActorRef, aggregateId: Option[String], instanceId: Int): Replay =
+      new Replay(from, 65536, requestor, aggregateId, instanceId)
+
+    def apply(from: Long, requestor: ActorRef, instanceId: Int): Replay =
+      new Replay(from, 65536, requestor, None, instanceId)
+  }
+
   /**
    * Instructs an event log to replay events from sequence number `from` to the given `requestor`.
    * Replayed events are sent within [[Replaying]] messages. If replay successfully completes the
@@ -69,20 +80,22 @@ object EventsourcingProtocol {
    * If `aggregateId` is defined, only events with a matching `aggregateId` are replayed, otherwise,
    * all events.
    */
-  case class Replay(from: Long, requestor: ActorRef, aggregateId: Option[String], instanceId: Int)
+  case class Replay(from: Long, max: Int, requestor: ActorRef, aggregateId: Option[String], instanceId: Int)
 
-  object Replay {
-    /**
-     * Creates a [[Replay]] command where `aggregateId` is not defined.
-     */
-    def apply(from: Long, requestor: ActorRef, instanceId: Int): Replay =
-      new Replay(from, requestor, None, instanceId)
-  }
+  /**
+   * Instructs and event log to continue replay with at most `max` events.
+   */
+  case class ReplayNext(max: Int, instanceId: Int)
 
   /**
    * Single `event` replay after a [[Replay]].
    */
   case class Replaying(event: DurableEvent, instanceId: Int)
+
+  /**
+   * Control reply that replay has been suspended.
+   */
+  case class ReplaySuspended(instanceId: Int)
 
   /**
    * Success reply after a [[Replay]], sent when all [[Replaying]] messages have been sent.

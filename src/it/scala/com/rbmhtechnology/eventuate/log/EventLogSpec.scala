@@ -381,6 +381,22 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
       requestorProbe.expectMsg(Replaying(generatedEmittedEvents(2), 0))
       requestorProbe.expectMsg(ReplaySuccess(0))
     }
+    "replay events in chunks" in {
+      generateEmittedEvents()
+      generateEmittedEvents()
+      log ! Replay(1L, 2, requestorProbe.ref, 0)
+      requestorProbe.expectMsg(Replaying(generatedEmittedEvents(0), 0))
+      requestorProbe.expectMsg(Replaying(generatedEmittedEvents(1), 0))
+      requestorProbe.expectMsg(ReplaySuspended(0))
+      requestorProbe.sender() ! ReplayNext(2, 0)
+      requestorProbe.expectMsg(Replaying(generatedEmittedEvents(2), 0))
+      requestorProbe.expectMsg(Replaying(generatedEmittedEvents(3), 0))
+      requestorProbe.expectMsg(ReplaySuspended(0))
+      requestorProbe.sender() ! ReplayNext(2, 0)
+      requestorProbe.expectMsg(Replaying(generatedEmittedEvents(4), 0))
+      requestorProbe.expectMsg(Replaying(generatedEmittedEvents(5), 0))
+      requestorProbe.expectMsg(ReplaySuccess(0))
+    }
     "replay events from a custom position" in {
       generateEmittedEvents()
       log ! Replay(3L, requestorProbe.ref, 0)
@@ -406,7 +422,7 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
       requestorProbe.expectMsg(Replaying(generatedEmittedEvents(2), 0))
       requestorProbe.expectMsg(ReplaySuccess(0))
     }
-    "replay events from the index and properly stop at the index classifier" in {
+    "replay events from the index with proper isolation" in {
       generateEmittedEvents(customDestinationAggregateIds = Set("a1"))
       generateEmittedEvents(customDestinationAggregateIds = Set("a2"))
       log ! Replay(1L, requestorProbe.ref, Some("a1"), 0)
@@ -683,6 +699,26 @@ class EventLogSpecCassandra extends EventLogSpec with EventLogLifecycleCassandra
         event("d", Some("a1"))))
 
       expectReplay(3L, Some("a1"), "c", "d")
+    }
+    "replay aggregate events from index and log in chunks" in {
+      writeEmittedEvents(List(
+        event("a", Some("a1")),
+        event("b", Some("a1")),
+        event("c", Some("a1"))))
+
+      indexProbe.expectMsg(UpdateIndexSuccess(TimeTracker(sequenceNr = 3L, vectorTime = timestamp(3L)), 1))
+
+      writeEmittedEvents(List(
+        event("d", Some("a1"))))
+
+      log ! Replay(1L, 2, requestorProbe.ref, Some("a1"), 0)
+      requestorProbe.expectMsgClass(classOf[Replaying]).event.payload should be("a")
+      requestorProbe.expectMsgClass(classOf[Replaying]).event.payload should be("b")
+      requestorProbe.expectMsg(ReplaySuspended(0))
+      requestorProbe.sender() ! ReplayNext(2, 0)
+      requestorProbe.expectMsgClass(classOf[Replaying]).event.payload should be("c")
+      requestorProbe.expectMsgClass(classOf[Replaying]).event.payload should be("d")
+      requestorProbe.expectMsg(ReplaySuccess(0))
     }
   }
 }

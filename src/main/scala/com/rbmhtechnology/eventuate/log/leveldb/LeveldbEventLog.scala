@@ -16,9 +16,10 @@
 
 package com.rbmhtechnology.eventuate.log.leveldb
 
-import java.io.File
+import java.io.{Closeable, File}
 import java.nio.ByteBuffer
 
+import scala.collection.JavaConverters._
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
 import scala.util._
@@ -103,21 +104,13 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
         case Success(_) => sender() ! SetReplicationProgressSuccess(sourceLogId, progress)
         case Failure(e) => sender() ! SetReplicationProgressFailure(e)
       }
-    case Replay(from, requestor, None, iid) =>
-      import leveldbSettings.readDispatcher
+    case Replay(from, max, requestor, None, iid) =>
       registry = registry.registerDefaultSubscriber(context.watch(requestor))
-      Future(replay(from, EventKey.DefaultClassifier)(event => requestor ! Replaying(event, iid))) onComplete {
-        case Success(_) => requestor ! ReplaySuccess(iid)
-        case Failure(e) => requestor ! ReplayFailure(e, iid)
-      }
-    case Replay(from, requestor, Some(emitterAggregateId), iid) =>
-      import leveldbSettings.readDispatcher
+      replayer(requestor, eventIterator(1L max from, EventKey.DefaultClassifier), from) ! ReplayNext(max, iid)
+    case Replay(from, max, requestor, Some(emitterAggregateId), iid) =>
       val nid = aggregateIdMap.numericId(emitterAggregateId)
       registry = registry.registerAggregateSubscriber(context.watch(requestor), emitterAggregateId)
-      Future(replay(from, nid)(event => requestor ! Replaying(event, iid))) onComplete {
-        case Success(_) => requestor ! ReplaySuccess(iid)
-        case Failure(e) => requestor ! ReplayFailure(e, iid)
-      }
+      replayer(requestor, eventIterator(1L max from, nid), from) ! ReplayNext(max, iid)
     case r @ ReplicationRead(from, max, filter, targetLogId, _, currentTargetVectorTime) =>
       import leveldbSettings.readDispatcher
       val sdr = sender()
@@ -232,40 +225,22 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
     }
   }
 
-  private[eventuate] def read(from: Long, max: Int, filter: ReplicationFilter, lower: VectorTime): ReadResult = withIterator { iter =>
-    val first = if (from < 1L) 1L else from
-    var last = first - 1
-    @annotation.tailrec
-    def go(events: Vector[DurableEvent], num: Int): Vector[DurableEvent] = if (iter.hasNext && num > 0) {
-      val nextEntry = iter.next()
-      val nextKey = eventKey(nextEntry.getKey)
-      if (nextKey.classifier == EventKey.DefaultClassifier) {
-        val nextEvt = event(nextEntry.getValue)
-        last = nextKey.sequenceNr
-        if (!nextEvt.replicate(lower, filter)) go(events, num)
-        else go(events :+ event(nextEntry.getValue), num - 1)
-      } else events
-    } else events
-    iter.seek(eventKeyBytes(EventKey.DefaultClassifier, first))
-    ReadResult(go(Vector.empty, max), last)
-  }
-
-  private[eventuate] def replay(from: Long, classifier: Int)(f: DurableEvent => Unit): Unit = withIterator { iter =>
-    val first = if (from < 1L) 1L else from
-    @annotation.tailrec
-    def go(): Unit = if (iter.hasNext) {
-      val nextEntry = iter.next()
-      val nextKey = eventKey(nextEntry.getKey)
-      if (nextKey.classifier == classifier) {
-        f(event(nextEntry.getValue))
-        go()
-      }
+  private[eventuate] def read(from: Long, max: Int, filter: ReplicationFilter, lower: VectorTime): ReadResult = {
+    val first = 1L max from
+    withEventIterator(first, EventKey.DefaultClassifier) { iter =>
+      var last = first - 1L
+      val evts = iter.filter { evt =>
+        last = evt.localSequenceNr
+        evt.replicate(lower, filter)
+      }.take(max).toVector
+      ReadResult(evts, last)
     }
-    iter.seek(eventKeyBytes(classifier, first))
-    go()
   }
 
-  private[eventuate] def withBatch[R](body: WriteBatch ⇒ R): R = {
+  private[eventuate] def replayer(requestor: ActorRef, iterator: => Iterator[DurableEvent] with Closeable, from: Long): ActorRef =
+    context.actorOf(Props(new ChunkedEventReplay(requestor, iterator)).withDispatcher("eventuate.log.leveldb.read-dispatcher"))
+
+  private def withBatch[R](body: WriteBatch => R): R = {
     val batch = leveldb.createWriteBatch()
     try {
       val r = body(batch)
@@ -276,7 +251,7 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
     }
   }
 
-  private[eventuate] def withIterator[R](body: DBIterator => R): R = {
+  private def withIterator[R](body: DBIterator => R): R = {
     val so = snapshotOptions()
     val iter = leveldb.iterator(so)
     addActiveIterator(iter)
@@ -286,6 +261,40 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
       iter.close()
       removeActiveIterator(iter)
       so.snapshot().close()
+    }
+  }
+
+  private def withEventIterator[R](from: Long, classifier: Int)(body: EventIterator => R): R = {
+    val iter = eventIterator(from, classifier)
+    try {
+      body(iter)
+    } finally {
+      iter.close()
+    }
+  }
+
+  private def eventIterator(from: Long, classifier: Int): EventIterator =
+    new EventIterator(from, classifier)
+
+  private class EventIterator(from: Long, classifier: Int) extends Iterator[DurableEvent] with Closeable {
+    val opts = snapshotOptions()
+
+    val iter1 = leveldb.iterator(opts)
+    val iter2 = iter1.asScala.takeWhile(entry => eventKey(entry.getKey).classifier == classifier).map(entry => event(entry.getValue))
+
+    addActiveIterator(iter1)
+    iter1.seek(eventKeyBytes(classifier, from))
+
+    override def hasNext: Boolean =
+      iter2.hasNext
+
+    override def next(): DurableEvent =
+      iter2.next()
+
+    override def close(): Unit = {
+      iter1.close()
+      removeActiveIterator(iter1)
+      opts.snapshot().close()
     }
   }
 
@@ -313,8 +322,10 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
       case cval => timeTracker = timeTracker(cval)
     }
 
-    replay(timeTracker.sequenceNr + 1L, EventKey.DefaultClassifier) { event =>
-      timeTracker = timeTracker.update(event)
+    withEventIterator(timeTracker.sequenceNr + 1L, EventKey.DefaultClassifier) { iter =>
+      timeTracker = iter.foldLeft(timeTracker) {
+        case (tracker, event) => tracker.update(event)
+      }
     }
   }
 

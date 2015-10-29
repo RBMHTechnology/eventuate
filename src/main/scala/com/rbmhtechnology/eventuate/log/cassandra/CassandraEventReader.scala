@@ -16,6 +16,7 @@
 
 package com.rbmhtechnology.eventuate.log.cassandra
 
+import java.io.Closeable
 import java.lang.{Long => JLong}
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.BinaryOperator
@@ -33,12 +34,6 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
 
   val preparedReadEventsStatement: PreparedStatement =
     cassandra.prepareReadEvents(logId)
-
-  def replayAsync(fromSequenceNr: Long)(f: DurableEvent => Unit): Future[Unit] =
-    Future(replay(fromSequenceNr)(f))(cassandra.readDispatcher)
-
-  def replay(fromSequenceNr: Long)(f: DurableEvent => Unit): Unit =
-    eventIterator(fromSequenceNr, Long.MaxValue).foreach(f)
 
   def readAsync(fromSequenceNr: Long, max: Int): Future[ReadResult] =
     readAsync(fromSequenceNr, max, NoFilter, VectorTime(), logId)
@@ -62,10 +57,10 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
     ReadResult(builder.result(), iterator.lastSequenceNrRead)
   }
 
-  def eventIterator(fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] =
+  def eventIterator(fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] with Closeable =
     new EventIterator(fromSequenceNr, toSequenceNr)
 
-  private class EventIterator(fromSequenceNr: Long, toSequenceNr: Long) extends Iterator[DurableEvent] {
+  private class EventIterator(fromSequenceNr: Long, toSequenceNr: Long) extends Iterator[DurableEvent] with Closeable {
     import cassandra.settings._
 
     var currentSequenceNr = math.max(fromSequenceNr, 1L)
@@ -100,6 +95,9 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
       read = true
       cassandra.eventFromByteBuffer(row.getBytes("event"))
     }
+
+    override def close(): Unit =
+      ()
   }
 }
 

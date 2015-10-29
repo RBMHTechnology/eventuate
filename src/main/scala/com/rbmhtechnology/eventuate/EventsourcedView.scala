@@ -23,8 +23,13 @@ import java.util.concurrent.atomic.AtomicInteger
 import akka.actor._
 
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
+import com.typesafe.config.Config
 
 import scala.util._
+
+private class ReplaySettings(config: Config) {
+  val chunkSizeMax = config.getInt("eventuate.replay.chunk-size-max")
+}
 
 private object EventsourcedView {
   val instanceIdCounter = new AtomicInteger(0)
@@ -62,6 +67,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
   private var _lastHandledEvent: DurableEvent = _
   private var _clock: VectorClock = _
 
+  private val settings = new ReplaySettings(context.system.settings.config)
   private var saveRequests: Map[SnapshotMetadata, Handler[SnapshotMetadata]] = Map.empty
 
   /**
@@ -86,6 +92,15 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
    */
   def sharedClockEntry: Boolean =
     true
+
+  /**
+   * Maximum number of events to be replayed to this actor before replaying is suspended. A suspended replay
+   * is resumed automatically after all replayed events haven been handled by this actor's event handler
+   * (= backpressure). The default value for the maximum replay chunk size is given by configuration item
+   * `eventuate.replay.chunk-size-max`. Configured values can be overridden by overriding this method.
+   */
+  def replayChunkSizeMax: Int =
+    settings.chunkSizeMax
 
   /**
    * Global unique actor id.
@@ -268,7 +283,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
    */
   //#replay
   private def replay(fromSequenceNr: Long = 1L): Unit =
-    eventLog ! Replay(fromSequenceNr, self, aggregateId, instanceId)
+    eventLog ! Replay(fromSequenceNr, replayChunkSizeMax, self, aggregateId, instanceId)
   //#
 
   private def initiating: Receive = {
@@ -290,6 +305,9 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
     }
     case Replaying(event, iid) => if (iid == instanceId) {
       receiveEvent(event)
+    }
+    case ReplaySuspended(iid) => if (iid == instanceId) {
+      sender() ! ReplayNext(replayChunkSizeMax, iid)
     }
     case ReplaySuccess(iid) => if (iid == instanceId) {
       context.become(initiated)

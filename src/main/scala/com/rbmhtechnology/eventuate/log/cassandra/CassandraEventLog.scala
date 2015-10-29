@@ -16,6 +16,7 @@
 
 package com.rbmhtechnology.eventuate.log.cassandra
 
+import java.io.Closeable
 import java.lang.{Long => JLong}
 
 import akka.actor._
@@ -135,16 +136,12 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
         case Success(_) => sdr ! SetReplicationProgressSuccess(sourceLogId, progress)
         case Failure(e) => sdr ! SetReplicationProgressFailure(e)
       }
-    case cmd @ Replay(_, requestor, Some(emitterAggregateId), _) =>
+    case r @ Replay(_, _, requestor, Some(emitterAggregateId), _) =>
       registry = registry.registerAggregateSubscriber(context.watch(requestor), emitterAggregateId)
-      index.forward(cmd)
-    case Replay(from, requestor, None, iid) =>
-      import cassandra.readDispatcher
+      index forward r
+    case Replay(fromSequenceNr, max, requestor, None, iid) =>
       registry = registry.registerDefaultSubscriber(context.watch(requestor))
-      eventReader.replayAsync(from)(event => requestor ! Replaying(event, iid) ) onComplete {
-        case Success(_) => requestor ! ReplaySuccess(iid)
-        case Failure(e) => requestor ! ReplayFailure(e, iid)
-      }
+      replayer(requestor, eventReader.eventIterator(fromSequenceNr, Long.MaxValue), fromSequenceNr) ! ReplayNext(max, iid)
     case r @ ReplicationRead(from, max, filter, targetLogId, _, currentTargetVectorTime) =>
       import cassandra.readDispatcher
       val sdr = sender()
@@ -271,6 +268,9 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
   private[eventuate] def createReplicationProgressStore(cassandra: Cassandra, logId: String) =
     new CassandraReplicationProgressStore(cassandra, logId)
 
+  private[eventuate] def replayer(requestor: ActorRef, iterator: => Iterator[DurableEvent] with Closeable, fromSequenceNr: Long): ActorRef =
+    context.actorOf(Props(new ChunkedEventReplay(requestor, iterator)).withDispatcher("eventuate.log.cassandra.read-dispatcher"))
+
   private[eventuate] def write(partition: Long, events: Seq[DurableEvent], tracker: TimeTracker): TimeTracker = {
     cassandra.executeBatch { batch =>
       events.foreach { event =>
@@ -284,7 +284,6 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
       tracker
     }
   }
-
 }
 
 object CassandraEventLog {
