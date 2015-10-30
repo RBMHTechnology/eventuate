@@ -40,26 +40,28 @@ private case class SubscriberRegistry(
 
   def pushReplicateSuccess(events: Seq[DurableEvent]): Unit = {
     events.foreach { event =>
+      val written = Written(event)
       // in any case, notify all default subscribers
-      defaultRegistry.foreach(_ ! Written(event))
+      defaultRegistry.foreach(_ ! written)
       // notify subscribers with matching aggregate id
       for {
         aggregateId <- event.destinationAggregateIds
         aggregate <- aggregateRegistry(aggregateId)
-      } aggregate ! Written(event)
+      } aggregate ! written
     }
   }
 
   def pushWriteSuccess(events: Seq[DurableEvent], initiator: ActorRef, requestor: ActorRef, instanceId: Int): Unit =
     events.foreach { event =>
       requestor.tell(WriteSuccess(event, instanceId), initiator)
+      val written = Written(event)
       // in any case, notify all default subscribers (except requestor)
-      defaultRegistry.foreach(r => if (r != requestor) r ! Written(event))
+      defaultRegistry.foreach(r => if (r != requestor) r ! written)
       // notify subscribers with matching aggregate id (except requestor)
       for {
         aggregateId <- event.destinationAggregateIds
         aggregate <- aggregateRegistry(aggregateId) if aggregate != requestor
-      } aggregate ! Written(event)
+      } aggregate ! written
     }
 
   def pushWriteFailure(events: Seq[DurableEvent], initiator: ActorRef, requestor: ActorRef, instanceId: Int, cause: Throwable): Unit =
