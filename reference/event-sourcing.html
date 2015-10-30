@@ -310,13 +310,31 @@
 <h1>State recovery<a class="headerlink" href="#state-recovery" title="Permalink to this headline">¶</a></h1>
 <p>When an event-sourced actor or view is started or re-started, events are replayed to its <code class="docutils literal"><span class="pre">onEvent</span></code> handler so that internal state can be recovered<a class="footnote-reference" href="#id15" id="id6">[4]</a>. Event replay is initiated internally by sending a <code class="docutils literal"><span class="pre">Replay</span></code> message to the <code class="docutils literal"><span class="pre">eventLog</span></code> actor:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">private</span> <span class="k">def</span> <span class="n">replay</span><span class="o">(</span><span class="n">fromSequenceNr</span><span class="k">:</span> <span class="kt">Long</span> <span class="o">=</span> <span class="mi">1L</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span>
-  <span class="n">eventLog</span> <span class="o">!</span> <span class="nc">Replay</span><span class="o">(</span><span class="n">fromSequenceNr</span><span class="o">,</span> <span class="n">self</span><span class="o">,</span> <span class="n">aggregateId</span><span class="o">,</span> <span class="n">instanceId</span><span class="o">)</span>
+  <span class="n">eventLog</span> <span class="o">!</span> <span class="nc">Replay</span><span class="o">(</span><span class="n">fromSequenceNr</span><span class="o">,</span> <span class="n">replayChunkSizeMax</span><span class="o">,</span> <span class="n">self</span><span class="o">,</span> <span class="n">aggregateId</span><span class="o">,</span> <span class="n">instanceId</span><span class="o">)</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal"><span class="pre">replay</span></code> method is defined by <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> and automatically called when an <code class="docutils literal"><span class="pre">EventsourcedView</span></code> or <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> is started or re-started.</p>
 <p>Sending a <code class="docutils literal"><span class="pre">Replay</span></code> message automatically registers the sending actor at its event log, so that newly written events can be immediately routed to that actor. If the actor is stopped it is automatically de-registered.</p>
 <p>While an event-sourced actor or view is recovering i.e. replaying messages, its <code class="docutils literal"><span class="pre">recovering</span></code> method returns <code class="docutils literal"><span class="pre">true</span></code>. If recovery successfully completes, its empty <code class="docutils literal"><span class="pre">onRecovered()</span></code> method is called which can be overridden by applications.</p>
 <p>During recovery, new commands are <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/actors.html#stash">stashed</a> and dispatched to <code class="docutils literal"><span class="pre">onCommand</span></code> after recovery successfully completed. This ensures that new commands never see partially recovered state.</p>
+<div class="section" id="backpressure">
+<h2>Backpressure<a class="headerlink" href="#backpressure" title="Permalink to this headline">¶</a></h2>
+<p>If event handling is slower than event replay, events are buffered in the mailboxes of event-sourced actors and views. In order to avoid out-of-memory errors, Eventuate has a built-in backpressure mechanism for event replay.</p>
+<p>After a configurable number of events, replay is suspended for giving event handlers time to catch up. When they are done, replay is automatically resumed. The default number of events to be replayed before replay is suspended can be configured with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">replay</span><span class="o">.</span><span class="n">chunk</span><span class="o">-</span><span class="n">size</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">65536</span>
+</pre></div>
+</div>
+<p>Concrete event-sourced actors and views can override the configured default value by overriding <code class="docutils literal"><span class="pre">replayChunkSizeMax</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+                   <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">replayChunkSizeMax</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">64</span>
+
+  <span class="c1">// ...</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="section" id="snapshots">
 <span id="id7"></span><h1>Snapshots<a class="headerlink" href="#snapshots" title="Permalink to this headline">¶</a></h1>

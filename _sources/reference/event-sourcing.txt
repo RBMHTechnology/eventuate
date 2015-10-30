@@ -107,6 +107,21 @@ While an event-sourced actor or view is recovering i.e. replaying messages, its 
 
 During recovery, new commands are stashed_ and dispatched to ``onCommand`` after recovery successfully completed. This ensures that new commands never see partially recovered state.
 
+Backpressure
+~~~~~~~~~~~~
+
+If event handling is slower than event replay, events are buffered in the mailboxes of event-sourced actors and views. In order to avoid out-of-memory errors, Eventuate has a built-in backpressure mechanism for event replay.
+
+After a configurable number of events, replay is suspended for giving event handlers time to catch up. When they are done, replay is automatically resumed. The default number of events to be replayed before replay is suspended can be configured with:
+
+.. includecode:: ../conf/common.conf
+   :snippet: chunk-size-max
+
+Concrete event-sourced actors and views can override the configured default value by overriding ``replayChunkSizeMax``:
+
+.. includecode:: ../code/EventSourcingDoc.scala
+   :snippet: chunk-size-max
+
 .. _snapshots:
 
 Snapshots

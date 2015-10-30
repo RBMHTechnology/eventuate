@@ -1074,6 +1074,27 @@ the actor switches to consuming live events.
     </span>
       <p class="shortcomment cmt">Redelivers all unconfirmed messages.</p><div class="fullcomment"><div class="comment cmt"><p>Redelivers all unconfirmed messages.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#replayChunkSizeMax" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="replayChunkSizeMax:Int"></a>
+      <a id="replayChunkSizeMax:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">replayChunkSizeMax</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@replayChunkSizeMax:Int" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Maximum number of events to be replayed to this actor before replaying is suspended.</p><div class="fullcomment"><div class="comment cmt"><p>Maximum number of events to be replayed to this actor before replaying is suspended. A suspended replay
+is resumed automatically after all replayed events haven been handled by this actor's event handler
+(= backpressure). The default value for the maximum replay chunk size is given by configuration item
+<code>eventuate.replay.chunk-size-max</code>. Configured values can be overridden by overriding this method.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#save" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="save(snapshot:Any,handler:java.util.function.BiConsumer[com.rbmhtechnology.eventuate.SnapshotMetadata,Throwable]):Unit"></a>
       <a id="save(Any,BiConsumer[SnapshotMetadata,Throwable]):Unit"></a>
