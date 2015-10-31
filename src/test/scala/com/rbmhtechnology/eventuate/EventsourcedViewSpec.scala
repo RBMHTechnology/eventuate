@@ -205,14 +205,12 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
       dstProbe.expectMsg(Pong(1))
       dstProbe.expectMsg(Pong(2))
     }
-    "ignore live events that have already been consumed during recovery" in {
+    "stash live events consumed during recovery" in {
       val actor = unrecoveredEventsourcedActor()
       actor ! Replaying(event2a, instanceId)
-      actor ! Written(event2b) // live event
       actor ! Written(event2c) // live event
-      actor ! Written(event2d) // live event
       actor ! Replaying(event2b, instanceId)
-      actor ! Replaying(event2c, instanceId)
+      actor ! Written(event2d) // live event
       actor ! ReplaySuccess(instanceId)
       dstProbe.expectMsg(("a", event2a.vectorTimestamp, event2a.vectorTimestamp, event2a.localSequenceNr))
       dstProbe.expectMsg(("b", event2b.vectorTimestamp, timestamp(2, 1), event2b.localSequenceNr))

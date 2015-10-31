@@ -65,6 +65,7 @@ import scala.util._
  */
 class CassandraEventLog(val id: String) extends Actor with Stash with ActorLogging {
   import CassandraEventLog._
+  import CassandraIndex._
   import NotificationChannel._
 
   if (!isValidEventLogId(id))
@@ -136,17 +137,18 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
         case Success(_) => sdr ! SetReplicationProgressSuccess(sourceLogId, progress)
         case Failure(e) => sdr ! SetReplicationProgressFailure(e)
       }
-    case r @ Replay(_, _, requestor, Some(emitterAggregateId), _) =>
+    case r @ Replay(fromSequenceNr, max, requestor, Some(emitterAggregateId), iid) =>
       registry = registry.registerAggregateSubscriber(context.watch(requestor), emitterAggregateId)
-      index forward r
+      index forward ReplayIndex(fromSequenceNr, timeTracker.sequenceNr, max, requestor, emitterAggregateId, iid)
     case Replay(fromSequenceNr, max, requestor, None, iid) =>
+      val toSequenceNr = timeTracker.sequenceNr // avoid async evaluation
       registry = registry.registerDefaultSubscriber(context.watch(requestor))
-      replayer(requestor, eventReader.eventIterator(fromSequenceNr, Long.MaxValue), fromSequenceNr) ! ReplayNext(max, iid)
+      replayer(requestor, eventReader.eventIterator(fromSequenceNr, toSequenceNr), fromSequenceNr) ! ReplayNext(max, iid)
     case r @ ReplicationRead(from, max, filter, targetLogId, _, currentTargetVectorTime) =>
       import cassandra.readDispatcher
       val sdr = sender()
       notificationChannel ! r
-      eventReader.readAsync(from, max, filter, currentTargetVectorTime, targetLogId) onComplete {
+      eventReader.readAsync(from, timeTracker.sequenceNr, max, filter, currentTargetVectorTime, targetLogId) onComplete {
         case Success(result) =>
           val reply = ReplicationReadSuccess(result.events, result.to, targetLogId, null)
           self.tell(reply, sdr)
@@ -278,7 +280,7 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
       }
     }
     if (tracker.updateCount >= cassandra.settings.indexUpdateLimit) {
-      index ! CassandraIndex.UpdateIndex()
+      index ! Update(tracker.sequenceNr)
       tracker.copy(updateCount = 0L)
     } else {
       tracker
@@ -334,6 +336,12 @@ object CassandraEventLog {
    */
   def firstSequenceNr(partition: Long, partitionSizeMax: Long): Long =
     partition * partitionSizeMax + 1L
+
+  /**
+   * Last sequence number of given `partition`.
+   */
+  def lastSequenceNr(partition: Long, partitionSizeMax: Long): Long =
+    (partition + 1L) * partitionSizeMax
 
   /**
    * Creates a [[CassandraEventLog]] configuration object.

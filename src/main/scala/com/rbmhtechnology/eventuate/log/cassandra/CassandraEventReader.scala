@@ -28,33 +28,26 @@ import scala.collection.JavaConverters._
 import scala.collection.immutable.{VectorBuilder, Seq}
 import scala.concurrent.Future
 
-private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: String) extends CassandraEventIteratorLeasing {
+private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: String) {
   import CassandraEventReader._
   import CassandraEventLog._
 
   val preparedReadEventsStatement: PreparedStatement =
     cassandra.prepareReadEvents(logId)
 
-  def readAsync(fromSequenceNr: Long, max: Int): Future[ReadResult] =
-    readAsync(fromSequenceNr, max, NoFilter, VectorTime(), logId)
+  def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int): Future[ReadResult] =
+    readAsync(fromSequenceNr, toSequenceNr, max, NoFilter, VectorTime(), logId)
 
-  def readAsync(fromSequenceNr: Long, max: Int, filter: ReplicationFilter, lower: VectorTime, targetLogId: String): Future[ReadResult] =
-    Future(read(fromSequenceNr, max, filter, lower, targetLogId))(cassandra.readDispatcher)
+  def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: ReplicationFilter, lower: VectorTime, targetLogId: String): Future[ReadResult] =
+    Future(read(fromSequenceNr, toSequenceNr, max, filter, lower, targetLogId))(cassandra.readDispatcher)
 
-  def read(fromSequenceNr: Long, max: Int, filter: ReplicationFilter, lower: VectorTime, targetLogId: String): ReadResult = {
-    val builder = new VectorBuilder[DurableEvent]
-    val iterator = leaseEventIterator(targetLogId, fromSequenceNr)
-    var num = 0
-
-    while (iterator.hasNext && num < max) {
-      val event = iterator.next()
-      if (event.replicate(lower, filter)) {
-        builder += event
-        num += 1
-      }
-    }
-    releaseEventIterator(iterator)
-    ReadResult(builder.result(), iterator.lastSequenceNrRead)
+  def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: ReplicationFilter, lower: VectorTime, targetLogId: String): ReadResult = {
+    var lastSequenceNr = fromSequenceNr - 1L
+    val events = eventIterator(fromSequenceNr, toSequenceNr).filter { evt =>
+      lastSequenceNr = evt.localSequenceNr
+      evt.replicate(lower, filter)
+    }.take(max).toVector
+    ReadResult(events, lastSequenceNr)
   }
 
   def eventIterator(fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] with Closeable =
@@ -67,10 +60,13 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
     var currentPartition = partitionOf(currentSequenceNr, partitionSizeMax)
 
     var currentIter = newIter()
-    var read = true
+    var read = currentSequenceNr != firstSequenceNr(currentPartition, partitionSizeMax)
 
     def newIter(): Iterator[Row] =
-      if (currentSequenceNr > toSequenceNr) Iterator.empty else cassandra.session.execute(preparedReadEventsStatement.bind(currentPartition: JLong, currentSequenceNr: JLong)).iterator.asScala
+      if (currentSequenceNr > toSequenceNr) Iterator.empty else {
+        val upperSequenceNumber = lastSequenceNr(currentPartition, partitionSizeMax) min toSequenceNr
+        cassandra.session.execute(preparedReadEventsStatement.bind(currentPartition: JLong, currentSequenceNr: JLong, upperSequenceNumber: JLong)).iterator.asScala
+      }
 
     @annotation.tailrec
     final def hasNext: Boolean = {
@@ -104,45 +100,3 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
 private[eventuate] object CassandraEventReader {
   case class ReadResult(events: Seq[DurableEvent], to: Long)
 }
-
-private[eventuate] trait CassandraEventIteratorLeasing {
-  import CassandraEventIteratorLeasing._
-
-  private val eventLogIterators: AtomicReference[Map[String, LeasableEventIterator]] =
-    new AtomicReference(Map.empty)
-
-  def eventIterator(fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent]
-
-  def leaseEventIterator(leaserId: String, fromSequenceNr: Long): LeasableEventIterator = {
-    eventLogIterators.get.get(leaserId) match {
-      case Some(iter) if iter.lastSequenceNrRead == (fromSequenceNr - 1L) && iter.hasNext =>
-        iter
-      case _ =>
-        new LeasableEventIterator(leaserId, fromSequenceNr, eventIterator(fromSequenceNr, Long.MaxValue))
-    }
-  }
-
-  def releaseEventIterator(iterator: LeasableEventIterator): Unit = {
-    eventLogIterators.getAndAccumulate(Map(iterator.leaserId -> iterator), new BinaryOperator[Map[String, LeasableEventIterator]] {
-      override def apply(t: Map[String, LeasableEventIterator], u: Map[String, LeasableEventIterator]): Map[String, LeasableEventIterator] = t ++ u
-    })
-  }
-}
-
-private[eventuate] object CassandraEventIteratorLeasing {
-  class LeasableEventIterator(val leaserId: String, fromSequenceNr: Long, iterator: Iterator[DurableEvent]) extends Iterator[DurableEvent] {
-    private var _lastSequenceNrRead = fromSequenceNr - 1L
-
-    def lastSequenceNrRead: Long =
-      _lastSequenceNrRead
-
-    override def hasNext: Boolean =
-      iterator.hasNext
-
-    override def next(): DurableEvent = {
-      val event = iterator.next()
-      _lastSequenceNrRead = event.localSequenceNr
-      event
-    }
-  }
-} 

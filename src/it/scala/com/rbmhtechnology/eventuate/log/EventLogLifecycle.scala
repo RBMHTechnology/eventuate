@@ -260,8 +260,8 @@ object EventLogLifecycleCassandra {
   }
 
   class TestEventReader(cassandra: Cassandra, logId: String) extends CassandraEventReader(cassandra, logId) {
-    override def read(from: Long, max: Int, filter: ReplicationFilter, lower: VectorTime, targetLogId: String): CassandraEventReader.ReadResult =
-      if (from == -1L) throw boom else super.read(from, max, filter, lower, targetLogId)
+    override def read(from: Long, to: Long, max: Int, filter: ReplicationFilter, lower: VectorTime, targetLogId: String): CassandraEventReader.ReadResult =
+      if (from == -1L) throw boom else super.read(from, to: Long, max, filter, lower, targetLogId)
   }
 
   class TestIndex(cassandra: Cassandra, eventReader: CassandraEventReader, logId: String, failureSpec: TestFailureSpec, indexProbe: Option[ActorRef]) extends CassandraIndex(cassandra, eventReader, logId) {

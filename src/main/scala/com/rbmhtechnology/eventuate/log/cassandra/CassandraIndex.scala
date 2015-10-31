@@ -55,7 +55,7 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
         case Failure(e) => self ! ReadTimeTrackerFailure(e)
       }
     case ReadTimeTrackerSuccess(t) =>
-      indexUpdater ! UpdateIndex(t)
+      indexUpdater ! UpdateIndex(t, Long.MaxValue)
     case u @ UpdateIndexSuccess(t, _) =>
       timeTracker = t
       eventLog ! Initialize(t)
@@ -75,17 +75,17 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
   }
 
   def initialized: Receive = {
-    case UpdateIndex(_) =>
-      indexUpdater ! UpdateIndex(timeTracker)
+    case Update(toSequenceNr) =>
+      indexUpdater ! UpdateIndex(timeTracker, toSequenceNr)
     case u @ UpdateIndexSuccess(t, _) =>
       timeTracker = t
       onIndexEvent(u)
     case u @ UpdateIndexFailure(cause) =>
       log.error(cause, "UpdateIndex failure")
       onIndexEvent(u)
-    case Replay(fromSequenceNr, max, requestor, Some(emitterAggregateId), iid) =>
-      val sequenceNr = timeTracker.sequenceNr // avoid closing over current state (compositeEventIterator is called by a child actor)
-      replayer(requestor, compositeEventIterator(emitterAggregateId, fromSequenceNr, sequenceNr)) ! ReplayNext(max, iid)
+    case ReplayIndex(fromSequenceNr, toSequenceNr, max, requestor, emitterAggregateId, iid) =>
+      val indexSequenceNr = timeTracker.sequenceNr // avoid async evaluation by replayer actor
+      replayer(requestor, compositeEventIterator(emitterAggregateId, fromSequenceNr, indexSequenceNr, toSequenceNr)) ! ReplayNext(max, iid)
   }
 
   def receive =
@@ -109,11 +109,11 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
   private def replayer(requestor: ActorRef, iterator: => Iterator[DurableEvent] with Closeable): ActorRef =
     context.actorOf(Props(new ChunkedEventReplay(requestor, iterator)).withDispatcher("eventuate.log.cassandra.read-dispatcher"))
 
-  private def compositeEventIterator(aggregateId: String, fromSequenceNr: Long, indexSequenceNr: Long): Iterator[DurableEvent] with Closeable =
-    new CompositeEventIterator(aggregateId, fromSequenceNr, indexSequenceNr)
+  private def compositeEventIterator(aggregateId: String, fromSequenceNr: Long, indexSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] with Closeable =
+    new CompositeEventIterator(aggregateId, fromSequenceNr, indexSequenceNr, toSequenceNr)
 
-  private class CompositeEventIterator(aggregateId: String, fromSequenceNr: Long, indexSequenceNr: Long) extends Iterator[DurableEvent] with Closeable {
-    private var iter: Iterator[DurableEvent] = indexStore.aggregateEventIterator(aggregateId, fromSequenceNr, Long.MaxValue)
+  private class CompositeEventIterator(aggregateId: String, fromSequenceNr: Long, indexSequenceNr: Long, toSequenceNr: Long) extends Iterator[DurableEvent] with Closeable {
+    private var iter: Iterator[DurableEvent] = indexStore.aggregateEventIterator(aggregateId, fromSequenceNr, indexSequenceNr)
     private var last = fromSequenceNr - 1L
     private var idxr = true
 
@@ -123,7 +123,7 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
         true
       } else if (idxr) {
         idxr = false
-        iter = eventReader.eventIterator((indexSequenceNr max last) + 1L, Long.MaxValue).filter(_.destinationAggregateIds.contains(aggregateId))
+        iter = eventReader.eventIterator((indexSequenceNr max last) + 1L, toSequenceNr).filter(_.destinationAggregateIds.contains(aggregateId))
         hasNext
       } else {
         iter.hasNext
@@ -150,11 +150,14 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
 }
 
 private[eventuate] object CassandraIndex {
+  case class ReplayIndex(from: Long, to: Long, max: Int, requestor: ActorRef, aggregateId: String, instanceId: Int)
+
   case object ReadTimeTracker
   case class ReadTimeTrackerSuccess(timeTracker: TimeTracker)
   case class ReadTimeTrackerFailure(cause: Throwable)
 
-  case class UpdateIndex(timeTracker: TimeTracker = TimeTracker())
+  case class Update(toSequenceNr: Long)
+  case class UpdateIndex(timeTracker: TimeTracker, toSequenceNr: Long)
   case class UpdateIndexProgress(increment: IndexIncrement)
   case class UpdateIndexSuccess(timeTracker: TimeTracker, steps: Int = 0)
   case class UpdateIndexFailure(cause: Throwable)
@@ -192,12 +195,12 @@ private[eventuate] class CassandraIndexUpdater(cassandra: Cassandra, eventReader
   val index = context.parent
 
   val idle: Receive = {
-    case UpdateIndex(lastIndexTime) =>
-      update(lastIndexTime.sequenceNr + 1L, IndexIncrement(AggregateEvents(), lastIndexTime))
-      context.become(updating(0))
+    case UpdateIndex(timeTracker, toSequenceNr) =>
+      update(timeTracker.sequenceNr + 1L, toSequenceNr, IndexIncrement(AggregateEvents(), timeTracker))
+      context.become(updating(0, toSequenceNr))
   }
 
-  def updating(steps: Int): Receive = {
+  def updating(steps: Int, toSequenceNr: Long): Receive = {
     case UpdateIndexFailure(err) =>
       index ! UpdateIndexFailure(err)
       context.become(idle)
@@ -205,22 +208,22 @@ private[eventuate] class CassandraIndexUpdater(cassandra: Cassandra, eventReader
       index ! UpdateIndexSuccess(t, steps)
       context.become(idle)
     case UpdateIndexProgress(inc) =>
-      update(inc.timeTracker.sequenceNr + 1L, inc.clearAggregateEvents)
-      context.become(updating(steps + 1))
+      update(inc.timeTracker.sequenceNr + 1L, toSequenceNr, inc.clearAggregateEvents)
+      context.become(updating(steps + 1, toSequenceNr))
   }
 
   def receive = idle
 
-  def update(fromSequenceNr: Long, increment: IndexIncrement): Unit =
-    updateAsync(fromSequenceNr, increment) onComplete {
+  def update(fromSequenceNr: Long, toSequenceNr: Long, increment: IndexIncrement): Unit =
+    updateAsync(fromSequenceNr, toSequenceNr, increment) onComplete {
       case Success((inc, true))  => self ! UpdateIndexProgress(inc)
       case Success((inc, false)) => self ! UpdateIndexSuccess(inc.timeTracker)
       case Failure(err)          => self ! UpdateIndexFailure(err)
     }
   
-  def updateAsync(fromSequenceNr: Long, increment: IndexIncrement): Future[(IndexIncrement, Boolean)] =
+  def updateAsync(fromSequenceNr: Long, toSequenceNr: Long, increment: IndexIncrement): Future[(IndexIncrement, Boolean)] =
     for {
-      res <- eventReader.readAsync(fromSequenceNr, cassandra.settings.indexUpdateLimit)
+      res <- eventReader.readAsync(fromSequenceNr, toSequenceNr, cassandra.settings.indexUpdateLimit)
       inc <- writeAsync(increment.update(res.events))
     } yield (inc, res.events.nonEmpty)
 
@@ -269,7 +272,7 @@ private[eventuate] class CassandraIndexStore(cassandra: Cassandra, logId: String
     var rowCount = 0
 
     def newIter(): Iterator[Row] =
-      if (currentSequenceNr > toSequenceNr) Iterator.empty else cassandra.session.execute(preparedReadAggregateEventStatement.bind(aggregateId, currentSequenceNr: JLong)).iterator.asScala
+      if (currentSequenceNr > toSequenceNr) Iterator.empty else cassandra.session.execute(preparedReadAggregateEventStatement.bind(aggregateId, currentSequenceNr: JLong, toSequenceNr: JLong)).iterator.asScala
 
     @annotation.tailrec
     final def hasNext: Boolean = {

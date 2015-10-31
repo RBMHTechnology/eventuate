@@ -150,7 +150,7 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfter
   }
 
   def registerCollaborator(aggregateId: Option[String] = None, collaborator: TestProbe = TestProbe()): TestProbe = {
-    log ! Replay(Long.MaxValue, collaborator.ref, aggregateId, 0)
+    log ! Replay(1L, 0, collaborator.ref, aggregateId, 0)
     collaborator.expectMsg(ReplaySuccess(0))
     collaborator
   }
@@ -567,7 +567,7 @@ class EventLogSpecCassandra extends EventLogSpec with EventLogLifecycleCassandra
   }
 
   "A Cassandra event log" must {
-    "reuse source event iterators during replication" in {
+    "serve small replication reads efficiently" in {
       val num = 1000
 
       val events = 1 to num map { i =>
