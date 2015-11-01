@@ -91,6 +91,7 @@ abstract class ReplicatedORSetSpec extends MultiNodeSpec(ReplicatedORSetConfig) 
           override private[crdt] def onChange(crdt: ORSet[Int], operation: Any): Unit = probe.ref ! crdt.value
         }
 
+        service.value("x")
         probe.expectMsg(Set(1))
         service.add("x", 2)
         probe.expectMsg(Set(1, 2))

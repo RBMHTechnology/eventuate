@@ -87,7 +87,7 @@ trait CRDTService[A, B] {
   private implicit val timeout = Timeout(10.seconds)
 
   private var system: Option[ActorSystem] = None
-  private var worker: Option[ActorRef] = None
+  private var manager: Option[ActorRef] = None
 
   /**
    * CRDT service id.
@@ -107,12 +107,12 @@ trait CRDTService[A, B] {
   /**
    * Starts the CRDT service.
    */
-  def start()(implicit system: ActorSystem): Unit = if (worker.isEmpty) {
-    // all CRDTs of same type managed within a single CRDTActor
+  def start()(implicit system: ActorSystem): Unit = if (manager.isEmpty) {
+    // all CRDTs of same type managed within a single CRDTManager
     val aggregateId: String = ops.zero.getClass.getSimpleName
 
     this.system = Some(system)
-    this.worker = Some(system.actorOf(Props(new CRDTActor(serviceId, Some(aggregateId), log))))
+    this.manager = Some(system.actorOf(Props(new CRDTManager)))
   }
 
   /**
@@ -120,11 +120,11 @@ trait CRDTService[A, B] {
    */
   def stop(): Unit = for {
     s <- system
-    w <- worker
+    m <- manager
   } {
-    s.stop(w)
+    s.stop(m)
     system = None
-    worker = None
+    manager = None
   }
 
   /**
@@ -142,7 +142,7 @@ trait CRDTService[A, B] {
     w.ask(UpdateValue(id, operation)).mapTo[UpdateValueReply].map(_.value)(d)
   }
 
-  private def withWorkerAndDispatcher(async: (ActorRef, ExecutionContext) => Future[B]): Future[B] = worker match {
+  private def withWorkerAndDispatcher(async: (ActorRef, ExecutionContext) => Future[B]): Future[B] = manager match {
     case None    => Future.failed(new Exception("Service not started"))
     case Some(w) => async(w, system.get.dispatcher)
   }
@@ -151,29 +151,33 @@ trait CRDTService[A, B] {
   private case class GetValueReply(id: String, value: B)
   private case class UpdateValue(id: String, operation: Any)
   private case class UpdateValueReply(id: String, value: B)
+  private case class OnChange(crdt: A, operation: Any)
 
-  private class CRDTActor(
-      override val id: String,
-      override val aggregateId: Option[String],
-      override val eventLog: ActorRef) extends EventsourcedActor {
+  private class CRDTActor(crdtId: String, override val eventLog: ActorRef) extends EventsourcedActor {
+    override val id =
+      s"${serviceId}_${crdtId}"
 
-    var crdts: Map[String, A] = Map.empty.withDefault(_ => ops.zero)
+    override val aggregateId =
+      Some(s"${ops.zero.getClass.getSimpleName}_${crdtId}")
+
+    var crdt: A =
+      ops.zero
 
     override def stateSync: Boolean =
       ops.precondition
 
     override val onCommand: Receive = {
-      case GetValue(id) =>
-        sender() ! GetValueReply(id, ops.value(crdts(id)))
-      case UpdateValue(id, operation) =>
-        ops.prepare(crdts(id), operation) match {
+      case GetValue(`crdtId`) =>
+        sender() ! GetValueReply(crdtId, ops.value(crdt))
+      case UpdateValue(`crdtId`, operation) =>
+        ops.prepare(crdt, operation) match {
           case None =>
-            sender() ! UpdateValueReply(id, ops.value(crdts(id)))
+            sender() ! UpdateValueReply(crdtId, ops.value(crdt))
           case Some(op) =>
-            persist(ValueUpdated(id, op)) {
+            persist(ValueUpdated(crdtId, op)) {
               case Success(evt) =>
                 onEvent(evt)
-                sender() ! UpdateValueReply(id, ops.value(crdts(id)))
+                sender() ! UpdateValueReply(crdtId, ops.value(crdt))
               case Failure(err) =>
                 sender() ! Status.Failure(err)
             }
@@ -181,13 +185,31 @@ trait CRDTService[A, B] {
     }
 
     override val onEvent: Receive = {
-      case ValueUpdated(id, operation) =>
-        val crdt = crdts.get(id) match {
-          case Some(crdt) => crdt
-          case None       => ops.zero
-        }
-        crdts = crdts + (id -> ops.update(crdt, operation, lastHandledEvent))
-        onChange(crdts(id), operation) // TODO: make onChange callbacks configurable (needed in tests only)
+      case evt @ ValueUpdated(id, operation) =>
+        crdt = ops.update(crdt, operation, lastHandledEvent)
+        context.parent ! OnChange(crdt, operation)
+    }
+  }
+
+  private class CRDTManager extends Actor {
+    var crdts: Map[String, ActorRef] = Map.empty
+
+    def receive = {
+      case cmd @ GetValue(id) =>
+        crdtActor(id) forward cmd
+      case cmd @ UpdateValue(id, _) =>
+        crdtActor(id) forward cmd
+      case n @ OnChange(crdt, operation) =>
+        onChange(crdt, operation)
+    }
+
+    def crdtActor(id: String): ActorRef = crdts.get(id) match {
+      case Some(crdt) =>
+        crdt
+      case None =>
+        val crdt = context.actorOf(Props(new CRDTActor(id, log)))
+        crdts = crdts.updated(id, crdt)
+        crdt
     }
   }
 
