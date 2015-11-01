@@ -237,6 +237,8 @@ Applications can also configure custom serializers for snapshots in the same way
 
 Custom snapshot serialization also works for state managed with ``ConcurrentVersions[A, B]``. A custom serializer configured for type parameter ``A`` is used whenever a snapshot of type ``ConcurrentVersions[A, B]`` is saved (see also :ref:`tracking-conflicting-versions`).
 
+Custom serializers can also be configured for the type parameter ``A`` of ``MVRegister[A]``, ``LWWRegister[A]`` and ``ORSet[A]``, :ref:`commutative-replicated-data-types` for which the corresponding CRDT service interfaces provide a ``save`` method for saving snapshots.
+
 .. [#] An explicit ``onEvent`` call may become obsolete in future releases.
 .. [#] The ``customDestinationAggregateIds`` parameter is described in section :ref:`event-routing`.
 .. [#] Writes from different event-sourced actors that have ``stateSync`` set to ``true`` are still batched, but not the writes from a single event-sourced actor.

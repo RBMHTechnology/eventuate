@@ -186,6 +186,7 @@
       eventuate-replication-filter = &quot;com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer&quot;
       eventuate-replication-protocol = &quot;com.rbmhtechnology.eventuate.serializer.ReplicationProtocolSerializer&quot;
       eventuate-snapshot = &quot;com.rbmhtechnology.eventuate.serializer.SnapshotSerializer&quot;
+      eventuate-crdt = &quot;com.rbmhtechnology.eventuate.serializer.CRDTSerializer&quot;
     }
 
     serialization-bindings {
@@ -195,6 +196,7 @@
       &quot;com.rbmhtechnology.eventuate.ConcurrentVersionsTree&quot; = eventuate-snapshot
       &quot;com.rbmhtechnology.eventuate.Snapshot&quot; = eventuate-snapshot
       &quot;com.rbmhtechnology.eventuate.log.TimeTracker&quot; = eventuate-snapshot
+      &quot;com.rbmhtechnology.eventuate.crdt.CRDTFormat&quot; = eventuate-crdt
     }
   }
 }

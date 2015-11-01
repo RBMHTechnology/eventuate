@@ -66,7 +66,24 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.crdt.CRDTService" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.crdt.CRDTFormat" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="CRDTFormatextendsSerializable"></a>
+      <a id="CRDTFormat:CRDTFormat"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="CRDTFormat.html"><span class="name">CRDTFormat</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@CRDTFormatextendsSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Marker trait for protobuf-serializable CRDTs.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="CRDTService[A,B]extendsAnyRef"></a>
       <a id="CRDTService[A,B]:CRDTService[A,B]"></a>
       <h4 class="signature">
@@ -147,7 +164,7 @@ of events.
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Counter value type.
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.LWWRegister" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="LWWRegister[A]extendsProductwithSerializable"></a>
+      <a id="LWWRegister[A]extendsCRDTFormatwithProductwithSerializable"></a>
       <a id="LWWRegister[A]:LWWRegister[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -155,10 +172,10 @@ of events.
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="LWWRegister.html"><span class="name">LWWRegister</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="mvRegister">mvRegister: <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister.A">A</span>] = <span class="symbol"><span class="name"><a href="MVRegister$.html">MVRegister.apply[A]</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="LWWRegister.html"><span class="name">LWWRegister</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="mvRegister">mvRegister: <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister.A">A</span>] = <span class="symbol"><span class="name"><a href="MVRegister$.html">MVRegister.apply[A]</a></span></span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@LWWRegister[A]extendsProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@LWWRegister[A]extendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -189,7 +206,7 @@ value is not important for concurrent updates occurring within the clock skew.
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a> value type.
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegister" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="MVRegister[A]extendsProductwithSerializable"></a>
+      <a id="MVRegister[A]extendsCRDTFormatwithProductwithSerializable"></a>
       <a id="MVRegister[A]:MVRegister[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -197,10 +214,10 @@ value is not important for concurrent updates occurring within the clock skew.
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="MVRegister.html"><span class="name">MVRegister</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="registered">registered: <span class="extype" name="scala.Predef.Set">Set</span>[<a href="Registered.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Registered">Registered</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister.A">A</span>]] = <span class="symbol">Set.empty[Registered[A]]</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="MVRegister.html"><span class="name">MVRegister</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="registered">registered: <span class="extype" name="scala.Predef.Set">Set</span>[<a href="Registered.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Registered">Registered</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister.A">A</span>]] = <span class="symbol">Set.empty[Registered[A]]</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@MVRegister[A]extendsProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@MVRegister[A]extendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -231,7 +248,7 @@ assigned <a href="Registered.html" class="extype" name="com.rbmhtechnology.event
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> value type.
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSet" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ORSet[A]extendsProductwithSerializable"></a>
+      <a id="ORSet[A]extendsCRDTFormatwithProductwithSerializable"></a>
       <a id="ORSet[A]:ORSet[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -239,10 +256,10 @@ assigned <a href="Registered.html" class="extype" name="com.rbmhtechnology.event
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ORSet.html"><span class="name">ORSet</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="versionedEntries">versionedEntries: <span class="extype" name="scala.Predef.Set">Set</span>[<a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet.A">A</span>]] = <span class="symbol">Set.empty[Versioned[A]]</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ORSet.html"><span class="name">ORSet</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="versionedEntries">versionedEntries: <span class="extype" name="scala.collection.immutable.Set">Set</span>[<a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet.A">A</span>]] = <span class="symbol">Set.empty[Versioned[A]]</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@ORSet[A]extendsProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@ORSet[A]extendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -251,7 +268,7 @@ assigned <a href="Registered.html" class="extype" name="com.rbmhtechnology.event
 </p></dd><dt class="param">versionedEntries</dt><dd class="cmt"><p><a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSetService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ORSetService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.ORSet[A],Set[A]]"></a>
+      <a id="ORSetService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.ORSet[A],scala.collection.immutable.Set[A]]"></a>
       <a id="ORSetService[A]:ORSetService[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -259,10 +276,10 @@ assigned <a href="Registered.html" class="extype" name="com.rbmhtechnology.event
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="ORSetService.html"><span class="name">ORSetService</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
+        <a href="ORSetService.html"><span class="name">ORSetService</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.collection.immutable.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@ORSetService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.ORSet[A],Set[A]]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@ORSetService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.ORSet[A],scala.collection.immutable.Set[A]]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>

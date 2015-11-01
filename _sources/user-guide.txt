@@ -204,7 +204,9 @@ Eventuate currently implements 4 out of 12 operation-based CRDTs specified in th
 .. includecode:: ../main/scala/com/rbmhtechnology/eventuate/crdt/ORSet.scala
    :snippet: or-set-service
 
-The ORSetService_ is a CRDT service that manages ORSet_ instances. It implements the asynchronous ``add`` and ``remove`` methods and inherits the ``value(id: String): Set[A]`` method from ``CRDTService[ORSet[A], Set[A]]`` for reading the current value. Their ``id`` parameter identifies an ``ORSet`` instance. Instances are automatically created by the service on demand. A usage example is the ReplicatedOrSetSpec_ that is based on Akka’s `multi node testkit`_.
+The ORSetService_ is a CRDT service that manages ORSet_ instances. It implements the asynchronous ``add`` and ``remove`` methods and inherits the ``value(id: String): Future[Set[A]]`` method from ``CRDTService[ORSet[A], Set[A]]`` for reading the current value. Their ``id`` parameter identifies an ``ORSet`` instance. Instances are automatically created by the service on demand. A usage example is the ReplicatedOrSetSpec_ that is based on Akka’s `multi node testkit`_.
+
+A CRDT service also implements a ``save(id: String): Future[SnapshotMetadata]`` method for saving CRDT snapshots. :ref:`snapshots` may reduce recovery times of CRDTs with a long update history but are not required for CRDT persistence. 
 
 New operation-based CRDTs and their corresponding services can be developed with the CRDT development framework, by defining an instance of the CRDTServiceOps_ type class and implementing the CRDTService_ trait. Take a look at the `CRDT sources`_ for examples. 
 

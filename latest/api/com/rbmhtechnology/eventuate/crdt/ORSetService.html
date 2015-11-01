@@ -43,7 +43,7 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">ORSetService</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
+        <span class="name">ORSetService</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.collection.immutable.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
       </span>
       </h4>
       
@@ -51,7 +51,7 @@
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> entry type
 </p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.collection.immutable.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -90,7 +90,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.crdt.ORSetService#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(serviceId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORSet[A],Set[A]]):com.rbmhtechnology.eventuate.crdt.ORSetService[A]"></a>
+      <a id="&lt;init&gt;(serviceId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORSet[A],scala.collection.immutable.Set[A]]):com.rbmhtechnology.eventuate.crdt.ORSetService[A]"></a>
       <a id="&lt;init&gt;:ORSetService[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -98,10 +98,10 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ORSetService</span><span class="params">(<span name="serviceId">serviceId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="log">log: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>, <span name="ops">ops: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>)</span>
+        <span class="name">ORSetService</span><span class="params">(<span name="serviceId">serviceId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="log">log: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>, <span name="ops">ops: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.collection.immutable.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@&lt;init&gt;(serviceId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORSet[A],Set[A]]):com.rbmhtechnology.eventuate.crdt.ORSetService[A]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@&lt;init&gt;(serviceId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORSet[A],scala.collection.immutable.Set[A]]):com.rbmhtechnology.eventuate.crdt.ORSetService[A]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -167,7 +167,7 @@
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSetService#add" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="add(id:String,entry:A):scala.concurrent.Future[Set[A]]"></a>
+      <a id="add(id:String,entry:A):scala.concurrent.Future[scala.collection.immutable.Set[A]]"></a>
       <a id="add(String,A):Future[Set[A]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -175,10 +175,10 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">add</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="entry">entry: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
+        <span class="name">add</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="entry">entry: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.collection.immutable.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@add(id:String,entry:A):scala.concurrent.Future[Set[A]]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@add(id:String,entry:A):scala.concurrent.Future[scala.collection.immutable.Set[A]]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -408,7 +408,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">op</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="operation">operation: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
+        <span class="name">op</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="operation">operation: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.collection.immutable.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@op(id:String,operation:Any):scala.concurrent.Future[B]" title="Permalink" target="_top">
@@ -419,7 +419,7 @@
 Returns the updated value of the CRDT.
 </p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSetService#ops" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORSet[A],Set[A]]"></a>
+      <a id="ops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORSet[A],scala.collection.immutable.Set[A]]"></a>
       <a id="ops:CRDTServiceOps[ORSet[A],Set[A]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -427,17 +427,17 @@ Returns the updated value of the CRDT.
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">ops</span><span class="result">: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
+        <span class="name">ops</span><span class="result">: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.collection.immutable.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@ops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORSet[A],Set[A]]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@ops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORSet[A],scala.collection.immutable.Set[A]]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">CRDT service operations.</p><div class="fullcomment"><div class="comment cmt"><p>CRDT service operations.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService">ORSetService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSetService#remove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="remove(id:String,entry:A):scala.concurrent.Future[Set[A]]"></a>
+      <a id="remove(id:String,entry:A):scala.concurrent.Future[scala.collection.immutable.Set[A]]"></a>
       <a id="remove(String,A):Future[Set[A]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -445,14 +445,32 @@ Returns the updated value of the CRDT.
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">remove</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="entry">entry: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
+        <span class="name">remove</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="entry">entry: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.collection.immutable.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@remove(id:String,entry:A):scala.concurrent.Future[Set[A]]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@remove(id:String,entry:A):scala.concurrent.Future[scala.collection.immutable.Set[A]]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Removes <code>entry</code> from the OR-Set identified by <code>id</code> and returns the updated entry set.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#save" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="save(id:String):scala.concurrent.Future[com.rbmhtechnology.eventuate.SnapshotMetadata]"></a>
+      <a id="save(String):Future[SnapshotMetadata]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">save</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../SnapshotMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.SnapshotMetadata">SnapshotMetadata</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@save(id:String):scala.concurrent.Future[com.rbmhtechnology.eventuate.SnapshotMetadata]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Saves a snapshot of the CRDT identified by <code>id</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Saves a snapshot of the CRDT identified by <code>id</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSetService#serviceId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="serviceId:String"></a>
       <a id="serviceId:String"></a>
@@ -549,7 +567,7 @@ Returns the updated value of the CRDT.
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">value</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
+        <span class="name">value</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.collection.immutable.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</span>
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSetService@value(id:String):scala.concurrent.Future[B]" title="Permalink" target="_top">
@@ -637,7 +655,7 @@ Returns the updated value of the CRDT.
 
         <div id="inheritedMembers">
         <div class="parent" name="com.rbmhtechnology.eventuate.crdt.CRDTService">
-              <h3>Inherited from <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</h3>
+              <h3>Inherited from <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>], <span class="extype" name="scala.collection.immutable.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService.A">A</span>]]</h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
