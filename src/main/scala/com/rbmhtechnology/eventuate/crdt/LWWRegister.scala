@@ -39,7 +39,7 @@ import scala.concurrent.Future
  *
  * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]]
  */
-case class LWWRegister[A](mvRegister: MVRegister[A] = MVRegister.apply[A]) {
+case class LWWRegister[A](mvRegister: MVRegister[A] = MVRegister.apply[A]) extends CRDTFormat {
   def value: Option[A] = {
     mvRegister.registered.toVector.sorted(LWWRegister.LWWOrdering[A]).lastOption.map(_.value)
 

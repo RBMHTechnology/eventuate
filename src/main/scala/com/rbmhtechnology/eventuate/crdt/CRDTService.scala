@@ -130,27 +130,43 @@ trait CRDTService[A, B] {
   /**
    * Returns the current value of the CRDT identified by `id`.
    */
-  def value(id: String): Future[B] = withWorkerAndDispatcher { (w, d) =>
-    w.ask(GetValue(id)).mapTo[GetValueReply].map(_.value)(d)
+  def value(id: String): Future[B] = withManagerAndDispatcher { (w, d) =>
+    w.ask(Get(id)).mapTo[GetReply].map(_.value)(d)
+  }
+
+  /**
+   * Saves a snapshot of the CRDT identified by `id`.
+   */
+  def save(id: String): Future[SnapshotMetadata] = withManagerAndDispatcher { (w, d) =>
+    w.ask(Save(id)).mapTo[SaveReply].map(_.metadata)(d)
   }
 
   /**
    * Updates the CRDT identified by `id` with given `operation`.
    * Returns the updated value of the CRDT.
    */
-  protected def op(id: String, operation: Any): Future[B] = withWorkerAndDispatcher { (w, d) =>
-    w.ask(UpdateValue(id, operation)).mapTo[UpdateValueReply].map(_.value)(d)
+  protected def op(id: String, operation: Any): Future[B] = withManagerAndDispatcher { (w, d) =>
+    w.ask(Update(id, operation)).mapTo[UpdateReply].map(_.value)(d)
   }
 
-  private def withWorkerAndDispatcher(async: (ActorRef, ExecutionContext) => Future[B]): Future[B] = manager match {
+  private def withManagerAndDispatcher[R](async: (ActorRef, ExecutionContext) => Future[R]): Future[R] = manager match {
     case None    => Future.failed(new Exception("Service not started"))
-    case Some(w) => async(w, system.get.dispatcher)
+    case Some(m) => async(m, system.get.dispatcher)
   }
 
-  private case class GetValue(id: String)
-  private case class GetValueReply(id: String, value: B)
-  private case class UpdateValue(id: String, operation: Any)
-  private case class UpdateValueReply(id: String, value: B)
+  private trait Identified {
+    def id: String
+  }
+
+  private case class Get(id: String) extends Identified
+  private case class GetReply(id: String, value: B) extends Identified
+
+  private case class Update(id: String, operation: Any) extends Identified
+  private case class UpdateReply(id: String, value: B) extends Identified
+
+  private case class Save(id: String) extends Identified
+  private case class SaveReply(id: String, metadata: SnapshotMetadata) extends Identified
+
   private case class OnChange(crdt: A, operation: Any)
 
   private class CRDTActor(crdtId: String, override val eventLog: ActorRef) extends EventsourcedActor {
@@ -167,20 +183,27 @@ trait CRDTService[A, B] {
       ops.precondition
 
     override val onCommand: Receive = {
-      case GetValue(`crdtId`) =>
-        sender() ! GetValueReply(crdtId, ops.value(crdt))
-      case UpdateValue(`crdtId`, operation) =>
+      case Get(`crdtId`) =>
+        sender() ! GetReply(crdtId, ops.value(crdt))
+      case Update(`crdtId`, operation) =>
         ops.prepare(crdt, operation) match {
           case None =>
-            sender() ! UpdateValueReply(crdtId, ops.value(crdt))
+            sender() ! UpdateReply(crdtId, ops.value(crdt))
           case Some(op) =>
             persist(ValueUpdated(crdtId, op)) {
               case Success(evt) =>
                 onEvent(evt)
-                sender() ! UpdateValueReply(crdtId, ops.value(crdt))
+                sender() ! UpdateReply(crdtId, ops.value(crdt))
               case Failure(err) =>
                 sender() ! Status.Failure(err)
             }
+        }
+      case Save(`crdtId`) =>
+        save(crdt) {
+          case Success(md) =>
+            sender() ! SaveReply(crdtId, md)
+          case Failure(err) =>
+            sender() ! Status.Failure(err)
         }
     }
 
@@ -189,16 +212,20 @@ trait CRDTService[A, B] {
         crdt = ops.update(crdt, operation, lastHandledEvent)
         context.parent ! OnChange(crdt, operation)
     }
+
+    override val onSnapshot: Receive = {
+      case snapshot: A =>
+        crdt = snapshot
+        context.parent ! OnChange(crdt, null)
+    }
   }
 
   private class CRDTManager extends Actor {
     var crdts: Map[String, ActorRef] = Map.empty
 
     def receive = {
-      case cmd @ GetValue(id) =>
-        crdtActor(id) forward cmd
-      case cmd @ UpdateValue(id, _) =>
-        crdtActor(id) forward cmd
+      case cmd: Identified =>
+        crdtActor(cmd.id) forward cmd
       case n @ OnChange(crdt, operation) =>
         onChange(crdt, operation)
     }

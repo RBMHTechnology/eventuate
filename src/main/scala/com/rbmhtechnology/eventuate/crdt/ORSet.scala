@@ -21,6 +21,7 @@ import akka.actor._
 import com.rbmhtechnology.eventuate._
 
 import scala.concurrent.Future
+import scala.collection.immutable.Set
 
 /**
  * Replicated OR-Set. In case of a concurrent `add` and `remove`, `add` has precedence.
@@ -30,7 +31,7 @@ import scala.concurrent.Future
  *
  * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]]
  */
-case class ORSet[A](versionedEntries: Set[Versioned[A]] = Set.empty[Versioned[A]]) {
+case class ORSet[A](versionedEntries: Set[Versioned[A]] = Set.empty[Versioned[A]]) extends CRDTFormat {
   /**
    * Returns all entries, masking duplicates of different version.
    */

@@ -38,7 +38,7 @@ case class Registered[A](value: A, updateTimestamp: VectorTime, systemTimestamp:
  *
  * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]]
  */
-case class MVRegister[A](registered: Set[Registered[A]] = Set.empty[Registered[A]]) {
+case class MVRegister[A](registered: Set[Registered[A]] = Set.empty[Registered[A]]) extends CRDTFormat {
   def value: Set[A] =
     registered.map(_.value)
 

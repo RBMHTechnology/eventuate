@@ -23,17 +23,43 @@ abstract class CRDTRecoverySpec extends TestKit(ActorSystem("test")) with WordSp
   "A CRDTService" must {
     "recover CRDT instances" in {
       val service1 = service("a")
-      service1.add("a", 1)
-      service1.add("a", 2)
+      service1.add("x", 1)
+      service1.add("x", 2)
       probe.expectMsg(Set(1))
       probe.expectMsg(Set(1, 2))
-      service1.value("a").await should be(Set(1, 2))
+      service1.value("x").await should be(Set(1, 2))
 
       val service2 = service("b")
-      service2.value("a").await should be(Set(1, 2))
       // CRDT lazily recovered on read request
+      service2.value("x").await should be(Set(1, 2))
       probe.expectMsg(Set(1))
       probe.expectMsg(Set(1, 2))
+    }
+    "recover CRDT instances from snapshots" in {
+      val service1 = service("a")
+      service1.add("x", 1)
+      service1.add("x", 2)
+      service1.save("x").await
+      service1.add("x", 3)
+      probe.expectMsg(Set(1))
+      probe.expectMsg(Set(1, 2))
+      probe.expectMsg(Set(1, 2, 3))
+      service1.value("x").await should be(Set(1, 2, 3))
+
+      val service2 = service("a")
+      // CRDT lazily recovered on read request
+      service2.value("x").await should be(Set(1, 2, 3))
+      // snapshot only exists in scope of service a
+      probe.expectMsg(Set(1, 2))
+      probe.expectMsg(Set(1, 2, 3))
+
+      val service3 = service("b")
+      // CRDT lazily recovered on read request
+      service3.value("x").await should be(Set(1, 2, 3))
+      // snapshot doesn't exist in scope of service b
+      probe.expectMsg(Set(1))
+      probe.expectMsg(Set(1, 2))
+      probe.expectMsg(Set(1, 2, 3))
     }
   }
 }
