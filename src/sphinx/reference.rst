@@ -5,7 +5,7 @@ Reference
 ---------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    reference/api-docs
    reference/event-log
