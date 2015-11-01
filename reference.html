@@ -179,12 +179,26 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="reference/api-docs.html">API docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/event-log.html">Event log</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-log.html#local-event-log">Local event log</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-log.html#replicated-event-log">Replicated event log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-log.html#local-event-log">Local event log</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-log.html#leveldb-storage-backend">LevelDB storage backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-log.html#cassandra-storage-backend">Cassandra storage backend</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-log.html#replicated-event-log">Replicated event log</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-log.html#replication-endpoints">Replication endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-log.html#replication-filters">Replication filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-log.html#batch-replication">Batch replication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-log.html#failure-detection">Failure detection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-log.html#disaster-recovery">Disaster recovery</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#command-handler">Command handler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#command-handler">Command handler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#handling-persistence-failures">Handling persistence failures</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#state-synchronization">State synchronization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-handler">Event handler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#causality-tracking">Causality tracking</a></li>

@@ -201,7 +201,7 @@ It instructs the failure detector to publish an ``Unavailable`` message if there
 Disaster recovery
 ^^^^^^^^^^^^^^^^^
 
-Total or partial event loss at a given location is referred to as a disaster. Event loss is usually prevented by using a clustered :ref:`cassandra-storage-backend` but a catastrophic failure may still lead to event loss. In this case, lost events may be recovered from those previously replicated to other locations and optionally from those written to a storage backup, a procedure referred to as *disaster recovery*. 
+Total or partial event loss at a given location is classified as disaster. Event loss can be usually prevented by using a clustered :ref:`cassandra-storage-backend` (at each location) but a catastrophic failure may still lead to event loss. In this case, lost events can be recovered from other locations, optionally starting from an existing storage backup, a procedure called *disaster recovery*. 
 
 If a storage backup exists, events can be partially recovered from that backup so that only events not covered by the backup must be copied from other locations. Recovery of events at a given location is only possible to the extend they have been previously replicated to other locations (or written to the backup). Events that have not been replicated to other locations or for which no storage backup exists cannot be recovered. 
 
