@@ -32,9 +32,8 @@ private[eventuate] class BatchingSettings(config: Config) {
  * sent as [[EventsourcingProtocol.WriteN]] batch to the wrapped event log.
  *
  * Batch sizes dynamically increase to a configurable limit under increasing load. The batch size limit can
- * be configured with `eventuate.log.write-batch-size-limit`. If there is no current write operation in
- * progress, a new `Write` command is served immediately (as `WriteN` batch of size 1), keeping latency at
- * a minimum.
+ * be configured with `eventuate.log.batch-size-limit`. If there is no current write operation in progress,
+ * a new `Write` command is served immediately (as `WriteN` batch of size 1), keeping latency at a minimum.
  *
  * @param eventLogProps configuration object of the wrapped event log actor. The wrapped event log actor is
  *                      created as child actor of this wrapper.

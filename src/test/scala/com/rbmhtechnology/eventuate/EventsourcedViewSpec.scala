@@ -217,5 +217,37 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
       dstProbe.expectMsg(("c", event2c.vectorTimestamp, timestamp(3, 2), event2c.localSequenceNr))
       dstProbe.expectMsg(("d", event2d.vectorTimestamp, timestamp(4, 3), event2d.localSequenceNr))
     }
+    "ignore live events targeted at previous incarnations" in {
+      val actor = unrecoveredEventsourcedActor()
+      val next = instanceId + 1
+
+      logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId))
+      actor ! LoadSnapshotSuccess(None, instanceId)
+      logProbe.expectMsg(Replay(1, actor, instanceId))
+
+      actor ! Replaying(event2a, instanceId)
+      actor ! Replaying(event2b, instanceId)
+      actor ! ReplaySuccess(instanceId)
+      actor ! "boom"
+      actor ! Written(event2c) // live event
+
+      dstProbe.expectMsg(("a", event2a.vectorTimestamp, event2a.vectorTimestamp, event2a.localSequenceNr))
+      dstProbe.expectMsg(("b", event2b.vectorTimestamp, timestamp(2, 1), event2b.localSequenceNr))
+
+      logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, next))
+      actor ! LoadSnapshotSuccess(None, next)
+      logProbe.expectMsg(Replay(1, actor, next))
+
+      actor ! Replaying(event2a, next)
+      actor ! Replaying(event2b, next)
+      actor ! Replaying(event2c, next)
+      actor ! ReplaySuccess(next)
+      actor ! Written(event2d) // live event
+
+      dstProbe.expectMsg(("a", event2a.vectorTimestamp, event2a.vectorTimestamp, event2a.localSequenceNr))
+      dstProbe.expectMsg(("b", event2b.vectorTimestamp, timestamp(2, 1), event2b.localSequenceNr))
+      dstProbe.expectMsg(("c", event2c.vectorTimestamp, timestamp(3, 2), event2c.localSequenceNr))
+      dstProbe.expectMsg(("d", event2d.vectorTimestamp, timestamp(4, 3), event2d.localSequenceNr))
+    }
   }
 }

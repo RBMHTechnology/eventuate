@@ -324,8 +324,9 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
   }
 
   private def initiated: Receive = {
-    case Written(event) =>
+    case Written(event) => if (event.localSequenceNr > lastSequenceNr) {
       receiveEvent(event)
+    }
     case ConditionalCommand(condition, cmd) =>
       conditionalSend(condition, cmd)
     case SaveSnapshotSuccess(metadata, iid) => if (iid == instanceId) {
