@@ -49,9 +49,8 @@
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>An event log wrapper that batches <a href="../EventsourcingProtocol$$Write.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">EventsourcingProtocol.Write</a> commands. Batched write commands are
 sent as <a href="../EventsourcingProtocol$$WriteN.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteN">EventsourcingProtocol.WriteN</a> batch to the wrapped event log.</p><p>Batch sizes dynamically increase to a configurable limit under increasing load. The batch size limit can
-be configured with <code>eventuate.log.write-batch-size-limit</code>. If there is no current write operation in
-progress, a new <code>Write</code> command is served immediately (as <code>WriteN</code> batch of size 1), keeping latency at
-a minimum.
+be configured with <code>eventuate.log.batch-size-limit</code>. If there is no current write operation in progress,
+a new <code>Write</code> command is served immediately (as <code>WriteN</code> batch of size 1), keeping latency at a minimum.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
