@@ -29,12 +29,12 @@ Table of contents
    getting-started
    introduction
    architecture
-   download
    user-guide
    reference
+   resources
+   download
    developers
    project
-   articles
    faq
    example-application
    current-limitations
