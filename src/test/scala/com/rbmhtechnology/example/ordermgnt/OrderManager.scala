@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.example
+package com.rbmhtechnology.example.ordermgnt
 
 import akka.actor._
 import akka.pattern.ask

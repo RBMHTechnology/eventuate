@@ -139,7 +139,7 @@ private class Acceptor(endpoint: ReplicationEndpoint) extends Actor {
     case Process =>
       context.become(processing)
     case Recover(links, promise) =>
-      println(s"[recovery of ${endpoint.id}] Chacking replication progress with remote endpoints ...")
+      println(s"[recovery of ${endpoint.id}] Checking replication progress with remote endpoints ...")
       context.become(recovering(context.actorOf(Props(new RecoveryManager(endpoint.id, links))), promise))
   }
 

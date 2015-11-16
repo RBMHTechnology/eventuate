@@ -1,7 +1,9 @@
+.. _ref-event-sourced-actors:
+
 Event-sourced actors
 --------------------
 
-An introduction to event-sourced actors is already given in section :ref:`architecture` and the :ref:`user-guide`. Applications use event-sourced actors for writing events to an event log and for maintaining state on the command side (C) of a CQRS_ architecture. Event-sourced actors distinguish command processing from event processing. They must extend the EventsourcedActor_ trait and implement a :ref:`command-handler` and an :ref:`event-handler`.
+An introduction to event-sourced actors is already given in section :ref:`architecture` and the :ref:`user-guide`. Applications use event-sourced actors for writing events to an event log and for maintaining in-memory write models on the command side (C) of a CQRS_ application. Event-sourced actors distinguish command processing from event processing. They must extend the EventsourcedActor_ trait and implement a :ref:`command-handler` and an :ref:`event-handler`.
 
 .. _command-handler:
 
@@ -84,17 +86,104 @@ The value of ``sharedClockEntry`` may also be instance-specific, if required.
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: clock-entry-instance
 
+.. _ref-event-sourced-views:
+
 Event-sourced views
 -------------------
 
-An introduction to event-sourced views is already given in section :ref:`architecture` and the :ref:`user-guide`. Applications use event-sourced views for consuming events from an event log and for maintaining state on the query side (Q) of a CQRS_ architecture. 
+An introduction to event-sourced views is already given in section :ref:`architecture` and the :ref:`user-guide`. Applications use event-sourced views for for maintaining in-memory read models on the query side (Q) of a CQRS_ application.
 
 Like event-sourced actors, event-sourced views distinguish command processing from event processing. They must implement the EventsourcedView_ trait. ``EventsourcedView`` is a functional subset of ``EventsourcedActor`` that cannot ``persist`` events.
+
+.. _ref-event-sourced-writers:
+
+Event-sourced writers
+---------------------
+
+An introduction to event-sourced writers is already given in section :ref:`architecture`. Applications use event-sourced writers for maintaining persistent read models on the query side (Q) of a CQRS_ application.
+
+Like event-sourced views, event-sourced writers can only consume events from an event log but can make incremental batch updates to external, application-defined query databases. A query database can be a relational database, a graph database or whatever is needed by an application. Concrete writers must implement the EventsourcedWriter_ trait.
+
+This section outlines how to update a persistent read model in Cassandra_ from events consumed by an event-sourced writer. The relevant events are:
+
+.. includecode:: ../../test/scala/com/rbmhtechnology/example/querydb/Emitter.scala
+   :snippet: events
+
+The persistent read model is a ``CUSTOMER`` table with the following structure::
+
+     id | first  | last    | address
+    ----+--------+---------+-------------
+      1 | Martin | Krasser | Somewhere 1
+      2 | Volker | Stampa  | Somewhere 3
+      3 | ...    | ...     | ...
+
+The read model update progress is written to a separate ``PROGRESS`` table with a single ``sequence_nr`` column::
+
+     id | sequence_nr
+    ----+-------------
+      0 |           3
+
+The stored sequence number is that of the last successfully processed event. An event is considered as successfully processed if its data have been written to the ``CUSTOMER`` table. Only a single row is needed in the ``PROGRESS`` table to track the update progress for the whole ``CUSTOMER`` table.
+
+The event-sourced ``Writer`` in the following example implements ``EventsourcedWriter[Long, Unit]`` (where ``Long`` is the type of the initial read result and ``Unit`` the type of write results). It is initialized with an ``eventLog`` from which it consumes events and a Cassandra ``Session`` for writing event processing results.
+
+.. includecode:: ../../test/scala/com/rbmhtechnology/example/querydb/Writer.scala
+   :snippet: writer
+
+.. hint::
+   The full example source code is available `here <https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example/querydb>`_.
+
+On a high level, the example ``Writer`` implements the following behavior:
+
+- During initialization (after start or restart) it asynchronously ``read``\ s the stored update progress from the ``PROGRESS`` table. The read result is passed as argument to ``readSuccess`` and incremented by ``1`` before returning it to the caller. This causes the ``Writer`` to resume event processing from that position in the event log.
+- Event are processed in ``onEvent`` by translating them to Cassandra update statements which are added to an in-memory ``batch`` of type ``Vector[BoundStatement]``. The batch is written to Cassandra when Eventuate calls the ``write`` method.
+- The ``write`` method asynchronously updates the ``CUSTOMER`` table with the statements contained in ``batch`` and then updates the ``PROGRESS`` table with the sequence number of the last processed event. After having submitted the statements to Cassandra, the batch is cleared for further event processing. Event processing can run concurrently to write operations. 
+- A ``batch`` that has been updated while a write operation is in progress is written directly after the current write operation successfully completes. If no write operation is in progress, a change to ``batch`` is written immediately. This keeps read model update delays at a minimum and increases batch sizes under increasing load. Batch sizes can be limited with ``replayChunkSizeMax``.
+
+If a ``write`` (or ``read``) operation fails, the writer is restarted, by default, and resumes event processing from the last stored sequence number + ``1``. This behavior can be changed by overriding ``writeFailure`` (or ``readFailure``) from ``EventsourcedWriter``.
+
+.. note::
+   The example does not use Cassandra ``BatchStatement``\ s for reasons explained in `this article <https://medium.com/@foundev/cassandra-batch-loading-without-the-batch-keyword-40f00e35e23e>`_. Atomic writes are not needed because database updates in this example are idempotent and can be re-tried in failure cases. Failure cases where idempotency is relevant are partial updates to the ``CUSTOMER`` table or a failed write to the ``PROGRESS`` table. ``BatchStatement``\ s should only be used when database updates are not idempotent and atomicity is required on database level.
+   
+.. _stateful-writers:
+
+Stateful writers
+~~~~~~~~~~~~~~~~
+
+The above ``Writer`` implements a stateless writer. Although it accumulates batches while a write operation is in progress, it cannot recover permanent in-memory state from the event log, because event processing only starts from the last stored sequence number. If a writer needs to be stateful, it must return ``None`` from ``readSuccess``. In this case, event replay either starts from scratch or from a previously stored snapshot. A stateful writer should still write the update progress to the ``PROGRESS`` table but exclude events with a sequence number less than or equal to the stored sequence number from contributing to the update ``batch``.
+
+.. _ref-event-sourced-processors:
+
+Event-sourced processors
+------------------------
+
+An introduction to event-sourced processors is already given in section :ref:`architecture`. Applications use event-sourced processors to consume events form a source event log, process these events and write the processed events to a target event log. With processors, event logs can be connected to event stream processing pipelines and graphs.
+
+Event-sourced processors are a specialization of :ref:`event-sourced-writers` where the *external database* is a target event log. Concrete stateless processors must implement the StatelessProcessor_ trait, stateful processors the EventsourcedProcessor_ trait (see also :ref:`stateful-writers`).
+
+The following example ``Processor`` is an implementation of ``StatelessProcessor``. In addition to providing a source ``eventLog``, concrete processors must also provide a ``targetEventLog``:
+
+.. includecode:: ../code/EventSourcingDoc.scala
+   :snippet: processor
+
+The event handler implemented by a processor is ``processEvent``. The type of the handler is defined as:
+
+.. includecode:: ../../main/scala/com/rbmhtechnology/eventuate/EventsourcedProcessor.scala
+   :snippet: process
+
+Processed events to be written to the target event log are returned by the handler as ``Seq[Any]``. With this handler signature, events from the source log can be 
+
+- excluded from being written to the target log by returning an empty ``Seq`` 
+- transformed one-to-one by returning a ``Seq`` of size 1 or even
+- transformed and split by returning a ``Seq`` of size greater than ``1``
+
+.. note::
+   ``StatelessProcessor`` and ``EventsourcedProcessor`` internally ensure that writing to the target event log is idempotent. Applications don’t need to take extra care about idempotency.
 
 State recovery
 --------------
 
-When an event-sourced actor or view is started or re-started, events are replayed to its ``onEvent`` handler so that internal state can be recovered\ [#]_. Event replay is initiated internally by sending a ``Replay`` message to the ``eventLog`` actor:
+When an event-sourced actor or view is started or re-started, events are replayed to its ``onEvent`` handler so that internal state can be recovered\ [#]_. This is also the case for stateful event-sourced writers and processors. Event replay is initiated internally by sending a ``Replay`` message to the ``eventLog`` actor:
 
 .. includecode:: ../../main/scala/com/rbmhtechnology/eventuate/EventsourcedView.scala
    :snippet: replay
@@ -103,21 +192,21 @@ The ``replay`` method is defined by EventsourcedView_ and automatically called w
 
 Sending a ``Replay`` message automatically registers the sending actor at its event log, so that newly written events can be immediately routed to that actor. If the actor is stopped it is automatically de-registered.
 
-While an event-sourced actor or view is recovering i.e. replaying messages, its ``recovering`` method returns ``true``. If recovery successfully completes, its empty ``onRecovered()`` method is called which can be overridden by applications.
+While an event-sourced actor, view, writer or processor is recovering i.e. replaying messages, its ``recovering`` method returns ``true``. If recovery successfully completes, its empty ``onRecovered()`` method is called which can be overridden by applications.
 
 During recovery, new commands are stashed_ and dispatched to ``onCommand`` after recovery successfully completed. This ensures that new commands never see partially recovered state.
 
 Backpressure
 ~~~~~~~~~~~~
 
-If event handling is slower than event replay, events are buffered in the mailboxes of event-sourced actors and views. In order to avoid out-of-memory errors, Eventuate has a built-in backpressure mechanism for event replay.
+If event handling is slower than event replay, events are buffered in the mailboxes of event-sourced actors, views, writers and processors. In order to avoid out-of-memory errors, Eventuate has a built-in backpressure mechanism for event replay.
 
 After a configurable number of events, replay is suspended for giving event handlers time to catch up. When they are done, replay is automatically resumed. The default number of events to be replayed before replay is suspended can be configured with:
 
 .. includecode:: ../conf/common.conf
    :snippet: chunk-size-max
 
-Concrete event-sourced actors and views can override the configured default value by overriding ``replayChunkSizeMax``:
+Concrete event-sourced actors, views, writers and processors can override the configured default value by overriding ``replayChunkSizeMax``:
 
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: chunk-size-max
@@ -127,7 +216,7 @@ Concrete event-sourced actors and views can override the configured default valu
 Snapshots
 ---------
 
-Recovery times increase with the number of events that are replayed to event-sourced actors or views. They can be decreased by starting event replay from a previously saved snapshot of internal state rather than replaying events from scratch. Event-sourced actors and views can save snapshots by calling ``save`` within their command handler:
+Recovery times increase with the number of events that are replayed to event-sourced actors, views, stateful writers or stateful processors. They can be decreased by starting event replay from a previously saved snapshot of internal state rather than replaying events from scratch. Event-sourced actors, views, stateful writers and stateful processors can save snapshots by calling ``save`` within their command handler:
 
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: snapshot-save
@@ -136,7 +225,7 @@ Snapshots are saved asynchronously. On completion, a user-defined handler of typ
 
 An event-sourced actor that is :ref:`tracking-conflicting-versions` of application state can also save ``ConcurrentVersions[A, B]`` instances directly. One can even configure custom serializers for type parameter ``A`` as explained in section :ref:`snapshot-serialization`.
 
-During recovery, the latest snapshot saved by an event-sourced actor or view is loaded and can be handled with the ``onSnapshot`` handler. This handler should initialize internal actor state from the loaded snapshot: 
+During recovery, the latest snapshot saved by an event-sourced actor, view, stateful writer or stateful processor is loaded and can be handled with the ``onSnapshot`` handler. This handler should initialize internal actor state from the loaded snapshot: 
 
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: snapshot-load
@@ -156,7 +245,7 @@ Snapshots are currently stored in a directory that can be configured with
 .. includecode:: ../conf/snapshot.conf
    :snippet: snapshot-dir
 
-in ``application.conf``. The maximum number of stored snapshots per event-sourced actor or view can be configured with
+in ``application.conf``. The maximum number of stored snapshots per event-sourced actor, view, writer or processor can be configured with
 
 .. includecode:: ../conf/snapshot.conf
    :snippet: snapshot-num
@@ -169,10 +258,10 @@ If this number is exceeded, older snapshots are automatically deleted.
 Event routing
 -------------
 
-An event that is emitted by an event-sourced actor can be routed to other event-sourced actors and views if they share an :ref:`event-log`\ [#]_ . The default event routing rules are:
+An event that is emitted by an event-sourced actor or processor can be routed to other event-sourced actors, views, writers and processors if they share an :ref:`event-log`\ [#]_ . The default event routing rules are:
 
-- If an event-sourced actor or view has an undefined ``aggregateId``, all events are routed to it. It may choose to handle only a subset of them though.
-- If an event-sourced actor or view has a defined ``aggregateId``, only events emitted by event-sourced actors with the same ``aggregateId`` are routed to it.
+- If an event-sourced actor, view, writer or processor has an undefined ``aggregateId``, all events are routed to it. It may choose to handle only a subset of them though.
+- If an event-sourced actor, view, writer or processor has a defined ``aggregateId``, only events emitted by event-sourced actors or processors with the same ``aggregateId`` are routed to it.
 
 Routing destinations are defined during emission of an event and are persisted together with the event\ [#]_. This makes routing decisions repeatable during event replay and allows for routing rule changes without affecting past routing decisions. Applications can define additional routing destinations with the ``customDestinationAggregateIds`` parameter of ``persist``:
 
@@ -243,7 +332,7 @@ Custom serializers can also be configured for the type parameter ``A`` of ``MVRe
 .. [#] The ``customDestinationAggregateIds`` parameter is described in section :ref:`event-routing`.
 .. [#] Writes from different event-sourced actors that have ``stateSync`` set to ``true`` are still batched, but not the writes from a single event-sourced actor.
 .. [#] Event replay can optionally start from :ref:`snapshots` of actor state.
-.. [#] :ref:`processors` can additionally route events between event logs.
+.. [#] Event-sourced processors can additionally route events between event logs.
 .. [#] The routing destinations of a DurableEvent_ can be obtained with its ``destinationAggregateIds`` method.
 
 .. _CQRS: http://martinfowler.com/bliki/CQRS.html
@@ -252,10 +341,14 @@ Custom serializers can also be configured for the type parameter ``A`` of ``MVRe
 .. _Serializer: http://doc.akka.io/api/akka/2.3.9/#akka.serialization.Serializer
 .. _Protocol Buffers: https://developers.google.com/protocol-buffers/
 .. _plausible clocks: https://github.com/RBMHTechnology/eventuate/issues/68
+.. _Cassandra: http://cassandra.apache.org/
 
 .. _ConfirmedDelivery: ../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery
 .. _DurableEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent
 .. _DurableEventSerializer: ../latest/api/index.html#com.rbmhtechnology.eventuate.serializer.DurableEventSerializer
 .. _EventsourcedActor: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor
 .. _EventsourcedView: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedView
+.. _EventsourcedWriter: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedWriter
+.. _EventsourcedProcessor: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor
+.. _StatelessProcessor: ../latest/api/index.html#com.rbmhtechnology.eventuate.StatelessProcessor
 .. _ReplicationFilter: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationFilter

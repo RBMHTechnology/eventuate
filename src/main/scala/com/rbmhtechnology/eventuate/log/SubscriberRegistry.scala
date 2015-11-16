@@ -18,7 +18,7 @@ package com.rbmhtechnology.eventuate.log
 
 import akka.actor.ActorRef
 import com.rbmhtechnology.eventuate.DurableEvent
-import com.rbmhtechnology.eventuate.EventsourcingProtocol.{WriteFailure, WriteSuccess, Written}
+import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 
 import scala.collection.immutable.Seq
 
@@ -51,7 +51,7 @@ private case class SubscriberRegistry(
     }
   }
 
-  def pushWriteSuccess(events: Seq[DurableEvent], initiator: ActorRef, requestor: ActorRef, instanceId: Int): Unit =
+  def pushWriteSuccess(events: Seq[DurableEvent], initiator: ActorRef, requestor: ActorRef, instanceId: Int): Unit = {
     events.foreach { event =>
       requestor.tell(WriteSuccess(event, instanceId), initiator)
       val written = Written(event)
@@ -63,6 +63,7 @@ private case class SubscriberRegistry(
         aggregate <- aggregateRegistry(aggregateId) if aggregate != requestor
       } aggregate ! written
     }
+  }
 
   def pushWriteFailure(events: Seq[DurableEvent], initiator: ActorRef, requestor: ActorRef, instanceId: Int, cause: Throwable): Unit =
     events.foreach { event =>

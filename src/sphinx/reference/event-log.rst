@@ -96,7 +96,7 @@ The distribution of ``L``, ``M`` and ``N`` across locations may also differ::
             N2 --- N3
 
 .. note::
-   Event replication is reliable and can recover from network failures. It can also recover from crashes of source and target locations i.e. event replication automatically resumes when a crashed location recovers. Replicated events are also guaranteed to be written *exactly-once* to a target log. This is possible because replication progress metadata are stored along with replicated events in the target log. This allows a replication target to reliably detect and ignore duplicates. Event-sourced actors and views can therefore rely on receiving a de-duplicated event stream. 
+   Event replication is reliable and can recover from network failures. It can also recover from crashes of source and target locations i.e. event replication automatically resumes when a crashed location recovers. Replicated events are also guaranteed to be written *exactly-once* to a target log. This is possible because replication progress metadata are stored along with replicated events in the target log. This allows a replication target to reliably detect and ignore duplicates. Event-sourced actors, views, writers and processors can therefore rely on receiving a de-duplicated event stream.
 
 Replication endpoints
 ^^^^^^^^^^^^^^^^^^^^^

@@ -531,13 +531,57 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
       log.tell(GetReplicationProgresses, requestorProbe.ref)
       requestorProbe.expectMsg(GetReplicationProgressesSuccess(Map(EventLogSpec.remoteLogId -> 19L)))
     }
-    "set an event's system timestamp if that event's processId is not defined" in {
+    "update an event's system timestamp" in {
       log ! Write(List(event("a").copy(systemTimestamp = 3L)), system.deadLetters, requestorProbe.ref, 0)
       requestorProbe.expectMsgType[WriteSuccess].event.systemTimestamp should be(0L)
     }
-    "use an event's system timestamp if that event's processId is defined" in {
-      log ! Write(List(event("a").copy(systemTimestamp = 3L, processId = "foo")), system.deadLetters, requestorProbe.ref, 0)
-      requestorProbe.expectMsgType[WriteSuccess].event.systemTimestamp should be(3L)
+    "update an emitted event's process id and vector timestamp during if the process id is not defined" in {
+      val evt = DurableEvent("a", emitterIdA, processId = UndefinedLogId)
+      val exp = DurableEvent("a", emitterIdA, processId = logId, vectorTimestamp = VectorTime(logId -> 1L), localLogId = logId, localSequenceNr = 1)
+      log ! Write(List(evt), system.deadLetters, requestorProbe.ref, 0)
+      requestorProbe.expectMsgType[WriteSuccess].event should be(exp)
+    }
+    "not update an emitted event's process id and vector timestamp during if the process id is defined" in {
+      val evt = DurableEvent("a", emitterIdA, processId = emitterIdA, vectorTimestamp = VectorTime(emitterIdA -> 1L))
+      val exp = DurableEvent("a", emitterIdA, processId = emitterIdA, vectorTimestamp = VectorTime(emitterIdA -> 1L), localLogId = logId, localSequenceNr = 1)
+      log ! Write(List(evt), system.deadLetters, requestorProbe.ref, 0)
+      requestorProbe.expectMsgType[WriteSuccess].event should be(exp)
+    }
+    "update a replicated event's process id and vector timestamp during if the process id is not defined" in {
+      val evt = DurableEvent("a", emitterIdA, processId = UndefinedLogId, vectorTimestamp = VectorTime(remoteLogId -> 1L))
+      val exp = DurableEvent("a", emitterIdA, processId = logId, vectorTimestamp = VectorTime(remoteLogId -> 1L, logId -> 1L), localLogId = logId, localSequenceNr = 1)
+      registerCollaborator(aggregateId = None, collaborator = requestorProbe)
+      log ! ReplicationWrite(List(evt), remoteLogId, 5, VectorTime())
+      requestorProbe.expectMsgType[Written].event should be(exp)
+    }
+    "not update a replicated event's process id and vector timestamp during if the process id is defined" in {
+      val evt = DurableEvent("a", emitterIdA, processId = emitterIdA, vectorTimestamp = VectorTime(emitterIdA -> 1L))
+      val exp = DurableEvent("a", emitterIdA, processId = emitterIdA, vectorTimestamp = VectorTime(emitterIdA -> 1L), localLogId = logId, localSequenceNr = 1)
+      registerCollaborator(aggregateId = None, collaborator = requestorProbe)
+      log ! ReplicationWrite(List(evt), remoteLogId, 5, VectorTime())
+      requestorProbe.expectMsgType[Written].event should be(exp)
+    }
+    "not write events to the target log that are in causal past of the target log" in {
+      val evt1 = DurableEvent("i", emitterIdB, vectorTimestamp = timestamp(0, 7), processId = remoteLogId)
+      val evt2 = DurableEvent("j", emitterIdB, vectorTimestamp = timestamp(0, 8), processId = remoteLogId)
+      val evt3 = DurableEvent("k", emitterIdB, vectorTimestamp = timestamp(0, 9), processId = remoteLogId)
+      registerCollaborator(aggregateId = None, collaborator = requestorProbe)
+      log ! ReplicationWrite(List(evt1, evt2), remoteLogId, 5, VectorTime())
+      log ! ReplicationWrite(List(evt2, evt3), remoteLogId, 6, VectorTime())
+      requestorProbe.expectMsgType[Written].event.payload should be("i")
+      requestorProbe.expectMsgType[Written].event.payload should be("j")
+      requestorProbe.expectMsgType[Written].event.payload should be("k")
+    }
+    "not read events from the source log that are in causal past of the target log (using the target time from the request)" in {
+      generateEmittedEvents()
+      log.tell(ReplicationRead(1, Int.MaxValue, NoFilter, remoteLogId, dl, timestamp(1)), requestorProbe.ref)
+      requestorProbe.expectMsgType[ReplicationReadSuccess].events.map(_.payload) should be(Seq("b", "c"))
+    }
+    "not read events from the source log that are in causal past of the target log (using the target time from the cache)" in {
+      generateEmittedEvents()
+      log ! ReplicationWrite(Nil, remoteLogId, 5, timestamp(2)) // update time cache
+      log.tell(ReplicationRead(1, Int.MaxValue, NoFilter, remoteLogId, dl, timestamp(1)), requestorProbe.ref)
+      requestorProbe.expectMsgType[ReplicationReadSuccess].events.map(_.payload) should be(Seq("c"))
     }
   }
 }

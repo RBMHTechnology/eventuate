@@ -163,75 +163,21 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
       // still filtered at target based on the current local vector time at the target (for
       // correctness).
       val currentTargetVectorTime = timeCache(targetLogId)
-      val updated = events.filter(_.replicate(currentTargetVectorTime))
+      val updated = events.filterNot(_.before(currentTargetVectorTime))
       val reply = r.copy(updated, currentSourceVectorTime = timeTracker.vectorTime)
       sender() ! reply
       notificationChannel ! reply
-      logFilterStatistics(log, id, "source", events, updated)
-    case Write(events, initiator, requestor, iid) =>
-      val result = for {
-        (partition, tracker) <- Try(adjustSequenceNr(events.size, cassandra.settings.partitionSizeMax, timeTracker))
-        (updated, tracker2)   = tracker.prepareWrite(id, events, currentSystemTime)
-        tracker3             <- Try(write(partition, updated, tracker2))
-      } yield (updated, tracker3)
-
-      result match {
-        case Success((updated, tracker)) =>
-          timeTracker = tracker
-          registry.pushWriteSuccess(updated, initiator, requestor, iid)
-          notificationChannel ! Updated(updated)
-        case Failure(e) =>
-          registry.pushWriteFailure(events, initiator, requestor, iid, e)
-      }
-    case r @ WriteN(writes) =>
-      val result = for {
-        (partition, tracker)      <- Try(adjustSequenceNr(r.size, cassandra.settings.partitionSizeMax, timeTracker))
-        (updatedWrites, tracker2)  = tracker.prepareWrites(id, writes, currentSystemTime)
-        updatedEvents              = updatedWrites.flatMap(_.events)
-        tracker3                  <- Try(write(partition, updatedEvents, tracker2))
-      } yield (updatedWrites, updatedEvents, tracker3)
-
-      result match {
-        case Success((updatedWrites, updatedEvents, tracker)) =>
-          timeTracker = tracker
-          updatedWrites.foreach(w => registry.pushWriteSuccess(w.events, w.initiator, w.requestor, w.instanceId))
-          notificationChannel ! Updated(updatedEvents)
-        case Failure(e) =>
-          writes.foreach(w => registry.pushWriteFailure(w.events, w.initiator, w.requestor, w.instanceId, e))
-      }
-      sender() ! WriteNComplete // notify batch layer that write completed
-    case ReplicationWrite(events, sourceLogId, replicationProgress, currentSourceVectorTime) =>
-      timeCache = timeCache.updated(sourceLogId, currentSourceVectorTime)
-      val result = for {
-        (partition, tracker) <- Try(adjustSequenceNr(events.size, cassandra.settings.partitionSizeMax, timeTracker))
-        (updated, tracker2)   = tracker.prepareReplicate(id, events, replicationProgress)
-        tracker3             <- Try(write(partition, updated, tracker2))
-      } yield (updated, tracker3)
-
-      result match {
-        case Success((updated, tracker)) =>
-          val rws = ReplicationWriteSuccess(events.size, replicationProgress, tracker.vectorTime)
-          val sdr = sender()
-          timeTracker = tracker
-          registry.pushReplicateSuccess(updated)
-          notificationChannel ! rws
-          notificationChannel ! Updated(updated)
-          logFilterStatistics(log, id, "target", events, updated)
-          implicit val dispatcher = context.system.dispatchers.defaultGlobalDispatcher
-          progressStore.writeReplicationProgressAsync(sourceLogId, replicationProgress) onComplete {
-            case Success(_) =>
-              sdr ! rws
-            case Failure(e) =>
-              // Write failure of replication progress can be ignored. Using a stale
-              // progress to resume replication will redundantly read events from a
-              // source log but these events will be successfully identified as
-              // duplicates, either at source or latest at target.
-              log.warning(s"Writing of replication progress failed: ${e.getMessage}")
-              sdr ! ReplicationWriteFailure(e)
-          }
-        case Failure(e) =>
-          sender() ! ReplicationWriteFailure(e)
-      }
+      logFilterStatistics(id, "source", events, updated, log)
+    case w: Write =>
+      writeN(Seq(w))
+    case WriteN(writes) =>
+      writeN(writes)
+      sender() ! WriteNComplete
+    case w: ReplicationWrite =>
+      replicateN(Seq(w.copy(initiator = sender())))
+    case ReplicationWriteN(writes) =>
+      replicateN(writes)
+      sender() ! ReplicationWriteNComplete
     case LoadSnapshot(emitterId, requestor, iid) =>
       import cassandra.readDispatcher
       snapshotStore.loadAsync(emitterId) onComplete {
@@ -272,6 +218,62 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
 
   private[eventuate] def replayer(requestor: ActorRef, iterator: => Iterator[DurableEvent] with Closeable, fromSequenceNr: Long): ActorRef =
     context.actorOf(Props(new ChunkedEventReplay(requestor, iterator)).withDispatcher("eventuate.log.cassandra.read-dispatcher"))
+
+  private def replicateN(writes: Seq[ReplicationWrite]): Unit = {
+    writes.foreach(w => timeCache = timeCache.updated(w.sourceLogId, w.currentSourceVectorTime))
+    val result = for {
+      (partition, tracker)      <- Try(adjustSequenceNr(writes.map(_.events.size).sum, cassandra.settings.partitionSizeMax, timeTracker))
+      (updatedWrites, tracker2)  = tracker.prepareReplicates(id, writes, log)
+      updatedEvents              = updatedWrites.flatMap(_.events)
+      tracker3                  <- Try(write(partition, updatedEvents, tracker2))
+    } yield (updatedWrites, updatedEvents, tracker3)
+
+    result match {
+      case Success((updatedWrites, updatedEvents, tracker3)) =>
+        timeTracker = tracker3
+        updatedWrites.foreach { w =>
+          val rws = ReplicationWriteSuccess(w.events.size, w.replicationProgress, tracker3.vectorTime)
+          val sdr = w.initiator
+          registry.pushReplicateSuccess(w.events)
+          notificationChannel ! rws
+          implicit val dispatcher = context.system.dispatchers.defaultGlobalDispatcher
+          progressStore.writeReplicationProgressAsync(w.sourceLogId, w.replicationProgress) onComplete {
+            case Success(_) =>
+              sdr ! rws
+            case Failure(e) =>
+              // Write failure of replication progress can be ignored. Using a stale
+              // progress to resume replication will redundantly read events from a
+              // source log but these events will be successfully identified as
+              // duplicates, either at source or latest at target.
+              log.warning(s"Writing of replication progress failed: ${e.getMessage}")
+              sdr ! ReplicationWriteFailure(e)
+          }
+        }
+        notificationChannel ! Updated(updatedEvents)
+      case Failure(e) =>
+        writes.foreach { w =>
+          w.initiator ! ReplicationWriteFailure(e)
+        }
+    }
+  }
+
+  private def writeN(writes: Seq[Write]): Unit = {
+    val result = for {
+      (partition, tracker)      <- Try(adjustSequenceNr(writes.map(_.events.size).sum, cassandra.settings.partitionSizeMax, timeTracker))
+      (updatedWrites, tracker2)  = tracker.prepareWrites(id, writes, currentSystemTime)
+      updatedEvents              = updatedWrites.flatMap(_.events)
+      tracker3                  <- Try(write(partition, updatedEvents, tracker2))
+    } yield (updatedWrites, updatedEvents, tracker3)
+
+    result match {
+      case Success((updatedWrites, updatedEvents, tracker3)) =>
+        timeTracker = tracker3
+        updatedWrites.foreach(w => registry.pushWriteSuccess(w.events, w.initiator, w.requestor, w.instanceId))
+        notificationChannel ! Updated(updatedEvents)
+      case Failure(e) =>
+        writes.foreach(w => registry.pushWriteFailure(w.events, w.initiator, w.requestor, w.instanceId, e))
+    }
+  }
 
   private[eventuate] def write(partition: Long, events: Seq[DurableEvent], tracker: TimeTracker): TimeTracker = {
     cassandra.executeBatch { batch =>

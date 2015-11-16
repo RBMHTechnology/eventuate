@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.example.japi;
+package com.rbmhtechnology.example.ordermgnt.japi;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +36,7 @@ import com.rbmhtechnology.eventuate.AbstractEventsourcedView;
 import static java.util.stream.Collectors.reducing;
 
 import static com.rbmhtechnology.eventuate.VersionedAggregate.*;
-import static com.rbmhtechnology.example.japi.OrderActor.*;
+import static com.rbmhtechnology.example.ordermgnt.japi.OrderActor.*;
 
 public class OrderManager extends AbstractEventsourcedView {
 

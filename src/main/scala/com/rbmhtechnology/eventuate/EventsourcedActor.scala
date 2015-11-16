@@ -122,27 +122,6 @@ trait EventsourcedActor extends EventsourcedView {
       }
   }
 
-  private def durableEvent(payload: Any, customDestinationAggregateIds: Set[String]): DurableEvent = {
-    if (sharedClockEntry) {
-      DurableEvent(
-        payload = payload,
-        emitterId = id,
-        emitterAggregateId = aggregateId,
-        customDestinationAggregateIds = customDestinationAggregateIds,
-        vectorTimestamp = currentTime,
-        processId = UndefinedLogId)
-    } else {
-      DurableEvent(
-        payload = payload,
-        emitterId = id,
-        emitterAggregateId = aggregateId,
-        customDestinationAggregateIds = customDestinationAggregateIds,
-        systemTimestamp = System.currentTimeMillis(),
-        vectorTimestamp = incrementLocalTime,
-        processId = id)
-    }
-  }
-
   private def writePending: Boolean =
     writeRequests.nonEmpty
 

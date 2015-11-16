@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.example.japi;
+package com.rbmhtechnology.example.ordermgnt.japi;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,8 +33,8 @@ import com.rbmhtechnology.eventuate.VersionedAggregate.*;
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog;
 import com.typesafe.config.ConfigFactory;
 
-import static com.rbmhtechnology.example.japi.OrderActor.*;
-import static com.rbmhtechnology.example.japi.OrderView.*;
+import static com.rbmhtechnology.example.ordermgnt.japi.OrderActor.*;
+import static com.rbmhtechnology.example.ordermgnt.japi.OrderView.*;
 
 public class OrderExample extends AbstractActor {
     private static Pattern pExit    = Pattern.compile("^exit\\s*");
@@ -82,7 +82,7 @@ public class OrderExample extends AbstractActor {
                 .match(CommandFailure.class, r -> r.getCause() instanceof ConflictDetectedException, r -> {
                     ConflictDetectedException cause = (ConflictDetectedException) r.getCause();
                     System.out.println(cause.getMessage() + ", select one of the following versions to resolve conflict");
-                    OrderActor.printOrder(cause.getVersions());
+                    printOrder(cause.getVersions());
                     prompt();
                 })
                 .match(CommandFailure.class, r -> {

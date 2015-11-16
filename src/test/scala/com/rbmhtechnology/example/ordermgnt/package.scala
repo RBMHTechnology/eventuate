@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology
+package com.rbmhtechnology.example
 
 import com.rbmhtechnology.eventuate.Versioned
 
-package object example {
+package object ordermgnt {
   def printOrder(versions: Seq[Versioned[Order]]): Unit = {
     if (versions.size > 1) {
       println("Conflict:")

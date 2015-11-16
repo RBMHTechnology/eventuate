@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.example.japi;
+package com.rbmhtechnology.example.ordermgnt
 
-import java.io.Serializable;
+//#order-definition
+case class Order(id: String, items: List[String] = Nil, cancelled: Boolean = false) {
+  def addItem(item: String): Order =
+    copy(items = item :: items)
 
-public abstract class OrderId implements Serializable {
-    private String orderId;
+  def removeItem(item: String): Order =
+    copy(items = items.filterNot(_ == item))
 
-    protected OrderId(String orderId) {
-        this.orderId = orderId;
-    }
+  def cancel: Order =
+    copy(cancelled = true)
 
-    public String getOrderId() {
-        return orderId;
-    }
+  override def toString() =
+    s"[${id}] items=${items.reverse.mkString(",")} cancelled=${cancelled}"
 }
+//#

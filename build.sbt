@@ -142,7 +142,7 @@ exampleClasspath := {
   val fileName = ".example-classpath"
   val file = Paths.get(fileName)
 
-  Files.write(file, output.getBytes, StandardOpenOption.TRUNCATE_EXISTING)
+  Files.write(file, output.getBytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
   file.toFile.setExecutable(true)
 }
 

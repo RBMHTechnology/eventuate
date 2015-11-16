@@ -149,10 +149,20 @@ object ReplicationProtocol {
   case class ReplicationReadFailure(cause: String, targetLogId: String) extends Format
 
   /**
+   * Instructs an event log to batch-execute the given `writes`.
+   */
+  case class ReplicationWriteN(writes: Seq[ReplicationWrite])
+
+  /**
+   * Completion reply after a [[ReplicationWriteN]].
+   */
+  case object ReplicationWriteNComplete
+
+  /**
    * Instructs a target log to write replicated `events` from the source log identified by
    * `sourceLogId` along with the last read position in the source log (`replicationProgress`).
    */
-  case class ReplicationWrite(events: Seq[DurableEvent], sourceLogId: String, replicationProgress: Long, currentSourceVectorTime: VectorTime)
+  case class ReplicationWrite(events: Seq[DurableEvent], sourceLogId: String, replicationProgress: Long, currentSourceVectorTime: VectorTime, initiator: ActorRef = null)
 
   /**
    * Success reply after a [[ReplicationWrite]].

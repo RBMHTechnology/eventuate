@@ -27,7 +27,7 @@ import com.typesafe.config.Config
 
 import scala.util._
 
-private class ReplaySettings(config: Config) {
+private class EventsourcedViewSettings(config: Config) {
   val chunkSizeMax = config.getInt("eventuate.replay.chunk-size-max")
 }
 
@@ -53,8 +53,15 @@ private object EventsourcedView {
  * An `EventsourcedView` can only consume events from its `eventLog` but cannot produce new events.
  * Commands sent to an `EventsourcedView` during recovery are delayed until recovery completes.
  *
- * @see [[EventsourcedActor]]
+ * Event replay is subject to backpressure. After a configurable number of events
+ * (see `eventuate.replay.chunk-size-max` configuration parameter), replay is suspended until these
+ * events have been handled by `onEvent` and then resumed again. There's no backpressure mechanism
+ * for live event processing yet (but will come in future releases).
+ *
  * @see [[DurableEvent]]
+ * @see [[EventsourcedActor]]
+ * @see [[EventsourcedWriter]]
+ * @see [[EventsourcedProcessor]]
  */
 trait EventsourcedView extends Actor with ConditionalCommands with Stash with ActorLogging {
   import EventsourcedView._
@@ -67,7 +74,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
   private var _lastHandledEvent: DurableEvent = _
   private var _clock: VectorClock = _
 
-  private val settings = new ReplaySettings(context.system.settings.config)
+  private val settings = new EventsourcedViewSettings(context.system.settings.config)
   private var saveRequests: Map[SnapshotMetadata, Handler[SnapshotMetadata]] = Map.empty
 
   /**
@@ -153,6 +160,20 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
   /**
    * Internal API.
    */
+  private[eventuate] def receiveEvent(event: DurableEvent): Unit = {
+    if (onEvent.isDefinedAt(event.payload)) {
+      onEventInternal(event)
+      onEvent(event.payload)
+    }
+
+    if (!recovering) {
+      conditionChanged(event.vectorTimestamp)
+    }
+  }
+
+  /**
+   * Internal API.
+   */
   private[eventuate] def onEventInternal(event: DurableEvent): Unit = {
     _lastHandledEvent = event
 
@@ -160,7 +181,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
       // set local clock to local time (= sequence number) of event log
       _clock = _clock.set(event.localLogId, event.localSequenceNr)
       if (event.emitterId != id)
-         // merge clock with non-self-emitted event timestamp
+        // merge clock with non-self-emitted event timestamp
         _clock = _clock.merge(event.vectorTimestamp)
     } else {
       if (event.emitterId != id)
@@ -194,7 +215,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
   /**
    * Internal API.
    */
-  private[eventuate] def incrementLocalTime: VectorTime = {
+  private[eventuate] def incrementLocalTime(): VectorTime = {
     _clock = _clock.tick()
     _clock.currentTime
   }
@@ -234,7 +255,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
    * snapshot metadata. The `handler` can obtain a reference to the initial message
    * sender with `sender()`.
    */
-  def save(snapshot: Any)(handler: Handler[SnapshotMetadata]): Unit = {
+  final def save(snapshot: Any)(handler: Handler[SnapshotMetadata]): Unit = {
     val payload = snapshot match {
       case tree: ConcurrentVersionsTree[_, _] => tree.copy()
       case other                              => other
@@ -247,7 +268,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
       handler(Failure(new IllegalStateException(s"snapshot with metadata ${metadata} is currently being saved")))
     } else {
       saveRequests += (metadata -> handler)
-      val snapshot = capturedSnapshot(prototype)
+      val snapshot = snapshotCaptured(prototype)
       eventLog ! SaveSnapshot(snapshot, sender(), self, instanceId)
     }
   }
@@ -255,13 +276,13 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
   /**
    * Internal API.
    */
-  private[eventuate] def capturedSnapshot(snapshot: Snapshot): Snapshot =
+  private[eventuate] def snapshotCaptured(snapshot: Snapshot): Snapshot =
     snapshot
 
   /**
    * Internal API.
    */
-  private[eventuate] def loadedSnapshot(snapshot: Snapshot): Unit = {
+  private[eventuate] def snapshotLoaded(snapshot: Snapshot): Unit = {
     _lastHandledEvent = snapshot.lastEvent
     _clock = _clock.copy(currentTime = snapshot.currentTime)
   }
@@ -273,23 +294,55 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
     onCommand(msg)
 
   /**
-   * Sends a [[EventsourcingProtocol#LoadSnapshot LoadSnapshot]] command to the event log.
+   * Internal API.
    */
-  private def load(): Unit =
+  private[eventuate] def init(): Unit =
+    load()
+
+  /**
+   * Internal API.
+   */
+  private[eventuate] def load(): Unit =
     eventLog ! LoadSnapshot(id, self, instanceId)
 
   /**
-   * Sends a [[EventsourcingProtocol#Replay Replay]] command to the event log.
+   * Internal API.
    */
   //#replay
-  private def replay(fromSequenceNr: Long = 1L): Unit =
+  private[eventuate] def replay(fromSequenceNr: Long = 1L): Unit =
     eventLog ! Replay(fromSequenceNr, replayChunkSizeMax, self, aggregateId, instanceId)
   //#
 
-  private def initiating: Receive = {
+  /**
+   * Internal API.
+   */
+  private[eventuate] def durableEvent(payload: Any, customDestinationAggregateIds: Set[String]): DurableEvent = {
+    if (sharedClockEntry) {
+      DurableEvent(
+        payload = payload,
+        emitterId = id,
+        emitterAggregateId = aggregateId,
+        customDestinationAggregateIds = customDestinationAggregateIds,
+        vectorTimestamp = currentTime,
+        processId = DurableEvent.UndefinedLogId)
+    } else {
+      DurableEvent(
+        payload = payload,
+        emitterId = id,
+        emitterAggregateId = aggregateId,
+        customDestinationAggregateIds = customDestinationAggregateIds,
+        vectorTimestamp = incrementLocalTime(),
+        processId = id)
+    }
+  }
+
+  /**
+   * Internal API.
+   */
+  private[eventuate] def initiating: Receive = {
     case LoadSnapshotSuccess(Some(snapshot), iid) => if (iid == instanceId) {
       if (onSnapshot.isDefinedAt(snapshot.payload)) {
-        loadedSnapshot(snapshot)
+        snapshotLoaded(snapshot)
         onSnapshot(snapshot.payload)
         replay(snapshot.metadata.sequenceNr + 1L)
       } else {
@@ -323,7 +376,10 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
       messageStash.stash()
   }
 
-  private def initiated: Receive = {
+  /**
+   * Internal API.
+   */
+  private[eventuate] def initiated: Receive = {
     case Written(event) => if (event.localSequenceNr > lastSequenceNr) {
       receiveEvent(event)
     }
@@ -341,17 +397,6 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
       unhandledMessage(msg)
   }
 
-  private def receiveEvent(event: DurableEvent): Unit = {
-    if (onEvent.isDefinedAt(event.payload)) {
-      onEventInternal(event)
-      onEvent(event.payload)
-    }
-
-    if (!recovering) {
-      conditionChanged(event.vectorTimestamp)
-    }
-  }
-
   /**
    * Initialization behavior.
    */
@@ -363,7 +408,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
   override def preStart(): Unit = {
     _lastHandledEvent = DurableEvent(id)
     _clock = VectorClock(id)
-    load()
+    init()
   }
 
   /**

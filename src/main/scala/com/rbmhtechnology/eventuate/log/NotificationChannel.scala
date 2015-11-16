@@ -43,7 +43,7 @@ private class NotificationChannel(logId: String) extends Actor {
     case Updated(events) =>
       registry.foreach {
         case (targetLogId, reg) =>
-          if (!reading.contains(targetLogId) && events.exists(_.replicate(reg.currentTargetVectorTime, reg.filter))) {
+          if (!reading.contains(targetLogId) && events.exists(_.replicable(reg.currentTargetVectorTime, reg.filter))) {
             reg.replicator ! ReplicationDue
           }
       }

@@ -188,6 +188,9 @@ trait EventLogLifecycleCassandra extends EventLogCleanupCassandra with BeforeAnd
   def logId: String =
     _logCtr.toString
 
+  def logProps(logId: String): Props =
+    logProps(logId, TestFailureSpec(), system.deadLetters)
+
   def logProps(logId: String, failureSpec: TestFailureSpec, indexProbe: ActorRef): Props =
     TestEventLog.props(logId, failureSpec, indexProbe, batching)
 }

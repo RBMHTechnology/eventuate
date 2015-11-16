@@ -17,6 +17,8 @@ This is a brief user guide to Eventuate. It is recommended to read sections :ref
 
 The user guide only scratches the surface of Eventuate. You can find further details in the :ref:`reference`.
 
+.. _guide-event-sourced-actors:
+
 Event-sourced actors
 --------------------
 
@@ -215,6 +217,8 @@ New operation-based CRDTs and their corresponding services can be developed with
 
 .. _this article: https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/
 
+.. _guide-event-sourced-views:
+
 Event-sourced views
 -------------------
 
@@ -226,6 +230,9 @@ Event-sourced views are a functional subset of event-sourced actors. They can on
 Event-sourced views handle events in the same way as event-sourced actors by implementing an ``onEvent`` handler. The ``onCommand`` handler in the example processes the read commands ``GetAppendCount`` and ``GetResolveCount``.
 
 ``ExampleView`` implements the mandatory global unique ``id`` but doesn’t define an ``aggregateId``. A view that doesn’t define an ``aggregateId`` can consume events from all event-sourced actors on the same event log. If it defines an ``aggregateId`` it can only consume events from event-sourced actors with the same ``aggregateId`` (assuming the default :ref:`event-routing` rules). 
+
+.. hint::
+   While event-sourced views maintain view state in-memory, :ref:`ref-event-sourced-writers` can be used to persist view state to external databases.
 
 .. _conditional-commands:
 

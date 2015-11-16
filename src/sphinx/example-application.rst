@@ -14,7 +14,7 @@ Domain
 
 The ``Order`` domain object is defined as follows:
 
-.. includecode:: ../test/scala/com/rbmhtechnology/example/Order.scala
+.. includecode:: ../test/scala/com/rbmhtechnology/example/ordermgnt/Order.scala
    :snippet: order-definition
 
 Order creation and updates are tracked as events in a replicated event log. At each location, there is one event-sourced ``OrderActor`` instance per created ``Order`` instance and one event-sourced ``OrderView`` instance that counts the updates made to all orders.
@@ -119,7 +119,7 @@ Disaster recovery can also start from a previous, older backup of the LevelDB di
 
 .. _sbt: http://www.scala-sbt.org/
 
-.. _Scala version: https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example
-.. _Java 8 version: https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/japi
+.. _Scala version: https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example/ordermgnt
+.. _Java 8 version: https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/ordermgnt/japi
 .. _activator: https://www.typesafe.com/community/core-tools/activator-and-sbt
 .. _akka-eventuate-scala: https://www.typesafe.com/activator/template/akka-eventuate-scala

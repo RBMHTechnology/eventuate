@@ -214,8 +214,8 @@ trait CRDTService[A, B] {
     }
 
     override val onSnapshot: Receive = {
-      case snapshot: A =>
-        crdt = snapshot
+      case snapshot =>
+        crdt = snapshot.asInstanceOf[A]
         context.parent ! OnChange(crdt, null)
     }
   }

@@ -130,52 +130,21 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
       // still filtered at target based on the current local vector time at the target (for
       // correctness).
       val currentTargetVectorTime = timeCache(targetLogId)
-      val updated = events.filter(_.replicate(currentTargetVectorTime))
+      val updated = events.filterNot(_.before(currentTargetVectorTime))
       val reply = r.copy(updated, currentSourceVectorTime = timeTracker.vectorTime)
       sender() ! reply
       notificationChannel ! reply
-      logFilterStatistics(log, id, "source", events, updated)
-    case Write(events, initiator, requestor, iid) =>
-      val (updated, tracker) = timeTracker.prepareWrite(id, events, currentSystemTime)
-      Try(write(updated, tracker)) match {
-        case Success(tracker2) =>
-          timeTracker = tracker2
-          registry.pushWriteSuccess(updated, initiator, requestor, iid)
-          notificationChannel ! Updated(updated)
-        case Failure(e) =>
-          registry.pushWriteFailure(events, initiator, requestor, iid, e)
-      }
+      logFilterStatistics(id, "source", events, updated, log)
+    case w: Write =>
+      writeN(Seq(w))
     case WriteN(writes) =>
-      val (updatedWrites, tracker) = timeTracker.prepareWrites(id, writes, currentSystemTime)
-      val updatedEvents = updatedWrites.flatMap(_.events)
-      Try(withBatch(batch => write(updatedEvents, tracker, batch))) match {
-        case Success(tracker2) =>
-          timeTracker = tracker2
-          updatedWrites.foreach(w => registry.pushWriteSuccess(w.events, w.initiator, w.requestor, w.instanceId))
-          notificationChannel ! Updated(updatedEvents)
-        case Failure(e) =>
-          writes.foreach(w => registry.pushWriteFailure(w.events, w.initiator, w.requestor, w.instanceId, e))
-      }
-      sender() ! WriteNComplete // notify batch layer that write completed
-    case w @ ReplicationWrite(events, sourceLogId, replicationProgress, currentSourceVectorTime) =>
-      timeCache = timeCache.updated(sourceLogId, currentSourceVectorTime)
-      val (updated, tracker) = timeTracker.prepareReplicate(id, events, replicationProgress)
-      Try {
-        withBatch { batch =>
-          replicationProgressMap.writeReplicationProgress(sourceLogId, replicationProgress, batch)
-          write(updated, tracker, batch)
-        }
-      } match {
-        case Success(tracker2) =>
-          sender() ! ReplicationWriteSuccess(events.size, replicationProgress, tracker2.vectorTime)
-          timeTracker = tracker2
-          registry.pushReplicateSuccess(updated)
-          notificationChannel ! w
-          notificationChannel ! Updated(updated)
-          logFilterStatistics(log, id, "target", events, updated)
-        case Failure(e) =>
-          sender() ! ReplicationWriteFailure(e)
-      }
+      writeN(writes)
+      sender() ! WriteNComplete
+    case w: ReplicationWrite =>
+      replicateN(Seq(w.copy(initiator = sender())))
+    case ReplicationWriteN(writes) =>
+      replicateN(writes)
+      sender() ! ReplicationWriteNComplete
     case LoadSnapshot(emitterId, requestor, iid) =>
       import leveldbSettings.readDispatcher
       snapshotStore.loadAsync(emitterId) onComplete {
@@ -205,6 +174,44 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
   def currentSystemTime: Long =
     System.currentTimeMillis
 
+  private def replicateN(writes: Seq[ReplicationWrite]): Unit = {
+    writes.foreach(w => timeCache = timeCache.updated(w.sourceLogId, w.currentSourceVectorTime))
+    val (updatedWrites, tracker) = timeTracker.prepareReplicates(id, writes, log)
+    val updatedEvents = updatedWrites.flatMap(_.events)
+    Try {
+      withBatch { batch =>
+        updatedWrites.foreach(w => replicationProgressMap.writeReplicationProgress(w.sourceLogId, w.replicationProgress, batch))
+        write(updatedEvents, tracker, batch)
+      }
+    } match {
+      case Success(tracker2) =>
+        timeTracker = tracker2
+        updatedWrites.foreach { w =>
+          registry.pushReplicateSuccess(w.events)
+          w.initiator ! ReplicationWriteSuccess(w.events.size, w.replicationProgress, tracker2.vectorTime)
+          notificationChannel ! w
+        }
+        notificationChannel ! Updated(updatedEvents)
+      case Failure(e) =>
+        updatedWrites.foreach { w =>
+          w.initiator ! ReplicationWriteFailure(e)
+        }
+    }
+  }
+
+  private def writeN(writes: Seq[Write]): Unit = {
+    val (updatedWrites, tracker) = timeTracker.prepareWrites(id, writes, currentSystemTime)
+    val updatedEvents = updatedWrites.flatMap(_.events)
+    Try(withBatch(batch => write(updatedEvents, tracker, batch))) match {
+      case Success(tracker2) =>
+        timeTracker = tracker2
+        updatedWrites.foreach(w => registry.pushWriteSuccess(w.events, w.initiator, w.requestor, w.instanceId))
+        notificationChannel ! Updated(updatedEvents)
+      case Failure(e) =>
+        writes.foreach(w => registry.pushWriteFailure(w.events, w.initiator, w.requestor, w.instanceId, e))
+    }
+  }
+
   private[eventuate] def write(events: Seq[DurableEvent], tracker: TimeTracker): TimeTracker =
     withBatch(write(events, tracker, _))
 
@@ -231,7 +238,7 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
       var last = first - 1L
       val evts = iter.filter { evt =>
         last = evt.localSequenceNr
-        evt.replicate(lower, filter)
+        evt.replicable(lower, filter)
       }.take(max).toVector
       ReadResult(evts, last)
     }

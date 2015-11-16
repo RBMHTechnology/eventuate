@@ -221,5 +221,35 @@ object ChunkedReplay {
   //#chunk-size-max
   }
   //#
+}
 
+object Processor {
+  import akka.actor._
+  import com.rbmhtechnology.eventuate.StatelessProcessor
+  import scala.collection.immutable.Seq
+
+  //#processor
+  class Processor(
+      val id: String,
+      val eventLog: ActorRef,
+      val targetEventLog: ActorRef)
+    extends StatelessProcessor {
+    // ...
+
+  //#
+    override val onCommand: Receive = {
+      case cmd => // ...
+    }
+
+  //#processor
+    override val processEvent: Process = {
+      // exclude event
+      case "my-event-1" => Seq()
+      // transform event
+      case "my-event-2" => Seq("my-event-2a")
+      // transform and split event
+      case "my-event-3" => Seq("my-event-3a", "my-event-3b")
+    }
+  }
+  //#
 }

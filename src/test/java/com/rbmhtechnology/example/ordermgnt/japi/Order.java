@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.example.japi;
+package com.rbmhtechnology.example.ordermgnt.japi;
 
 import fj.data.List;
 

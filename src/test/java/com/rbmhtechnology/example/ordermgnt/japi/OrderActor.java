@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.example.japi;
+package com.rbmhtechnology.example.ordermgnt.japi;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

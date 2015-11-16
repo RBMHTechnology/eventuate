@@ -58,19 +58,17 @@ case class DurableEvent(
     vectorTimestamp
 
   /**
-   * Returns `true` if this event is a valid replication candidate. A valid candidate
-   * has a `vectorTimestamp` that is not `<=` the given `vectorTime` and passes the
-   * given replication `filter`.
+   * Returns `true` if this event did not happen before or at the given `vectorTime`
+   * and passes the given replication `filter`.
    */
-  def replicate(vectorTime: VectorTime, filter: ReplicationFilter): Boolean =
-    replicate(vectorTime) && filter(this)
+  def replicable(vectorTime: VectorTime, filter: ReplicationFilter): Boolean =
+    !before(vectorTime) && filter(this)
 
   /**
-   * Returns `true` if the event is a valid replication candidate. A valid candidate
-   * has a `vectorTimestamp` that is not `<=` the given `vectorTime`.
+   * Returns `true` if this event happened before or at the given `vectorTime`.
    */
-  def replicate(vectorTime: VectorTime): Boolean =
-    !(vectorTimestamp <= vectorTime)
+  def before(vectorTime: VectorTime): Boolean =
+    vectorTimestamp <= vectorTime
 
   /**
    * The default routing destination of this event is its `emitterAggregateId`. If defined, the event is
@@ -87,20 +85,12 @@ case class DurableEvent(
     if (defaultDestinationAggregateId.isDefined) customDestinationAggregateIds + defaultDestinationAggregateId.get else customDestinationAggregateIds
 
   /**
-   * Prepares the event for the initial write to a local event log.
+   * Prepares the event for writing to an event log.
    */
-  private[eventuate] def prepareWrite(logId: String, sequenceNr: Long, timestamp: Long): DurableEvent = {
-    val st = if (processId == UndefinedLogId) timestamp else systemTimestamp
+  private[eventuate] def prepare(logId: String, sequenceNr: Long, timestamp: Long): DurableEvent = {
     val vt = if (processId == UndefinedLogId) vectorTimestamp.setLocalTime(logId, sequenceNr) else vectorTimestamp
     val id = if (processId == UndefinedLogId) logId else processId
-    copy(systemTimestamp = st, vectorTimestamp = vt, processId = id, localLogId = logId, localSequenceNr = sequenceNr)
-  }
-
-  /**
-   * Prepares the event for a replication write to a target event log.
-   */
-  private[eventuate] def prepareReplicate(logId: String, sequenceNr: Long): DurableEvent = {
-    copy(localLogId = logId, localSequenceNr = sequenceNr)
+    copy(systemTimestamp = timestamp, vectorTimestamp = vt, processId = id, localLogId = logId, localSequenceNr = sequenceNr)
   }
 }
 

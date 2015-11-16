@@ -20,6 +20,7 @@ import akka.event.LoggingAdapter
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol.Write
+import com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite
 
 import scala.collection.immutable.Seq
 
@@ -54,6 +55,14 @@ private[eventuate] case class TimeTracker(updateCount: Long = 0L, sequenceNr: Lo
       }
     }
 
+  def prepareReplicates(logId: String, writes: Seq[ReplicationWrite], logger: LoggingAdapter): (Seq[ReplicationWrite], TimeTracker) = {
+    writes.foldLeft((Vector.empty[ReplicationWrite], this)) {
+      case ((writes2, tracker2), write) => tracker2.prepareReplicate(logId, write.events, write.replicationProgress, logger) match {
+        case (updated, tracker3) => (writes2 :+ write.copy(events = updated), tracker3)
+      }
+    }
+  }
+
   def prepareWrite(logId: String, events: Seq[DurableEvent], systemTimestamp: Long): (Seq[DurableEvent], TimeTracker) = {
     var snr = sequenceNr
     var upd = updateCount
@@ -63,7 +72,7 @@ private[eventuate] case class TimeTracker(updateCount: Long = 0L, sequenceNr: Lo
       snr += 1L
       upd += 1L
 
-      val e2 = e.prepareWrite(logId, snr, systemTimestamp)
+      val e2 = e.prepare(logId, snr, systemTimestamp)
       lvt = lvt.merge(e2.vectorTimestamp)
       e2
     }
@@ -71,39 +80,40 @@ private[eventuate] case class TimeTracker(updateCount: Long = 0L, sequenceNr: Lo
     (updated, copy(updateCount = upd, sequenceNr = snr, vectorTime = vectorTime.merge(lvt)))
   }
 
-  def prepareReplicate(logId: String, events: Seq[DurableEvent], replicationProgress: Long): (Seq[DurableEvent], TimeTracker) = {
+  def prepareReplicate(logId: String, events: Seq[DurableEvent], replicationProgress: Long, logger: LoggingAdapter): (Seq[DurableEvent], TimeTracker) = {
     var snr = sequenceNr
     var upd = updateCount
     var lvt = vectorTime
 
     val updated = events.foldLeft(Vector.empty[DurableEvent]) {
-      case (acc, e) if e.replicate(lvt) =>
-        snr += 1L
-        upd += 1L
-
-        val e2 = e.prepareReplicate(logId, snr)
-        lvt = lvt.merge(e2.vectorTimestamp)
-        acc :+ e2
-      case (acc, e) =>
+      case (acc, e) if e.before(vectorTime) =>
         // Exclude events from writing that are in the causal past of this event log.
         // Excluding them at the target is needed for correctness. Events are also
         // filtered at sources (to reduce network bandwidth usage) but this is only
         // an optimization which cannot achieve 100% filtering coverage for certain
         // replication network topologies.
         acc
+      case (acc, e) =>
+        snr += 1L
+        upd += 1L
+
+        val e2 = e.prepare(logId, snr, e.systemTimestamp)
+        lvt = lvt.merge(e2.vectorTimestamp)
+        acc :+ e2
     }
+    TimeTracker.logFilterStatistics(logId, "target", events, updated, logger)
     (updated, copy(updateCount = upd, sequenceNr = snr, vectorTime = vectorTime.merge(lvt)))
   }
 }
 
 private[eventuate] object TimeTracker {
-  def logFilterStatistics(log: LoggingAdapter, logId: String, location: String, before: Seq[DurableEvent], after: Seq[DurableEvent]): Unit = {
+  def logFilterStatistics(logId: String, location: String, before: Seq[DurableEvent], after: Seq[DurableEvent], logger: LoggingAdapter): Unit = {
     val bl = before.length
     val al = after.length
     if (al < bl) {
       val diff = bl - al
       val perc = diff * 100.0 / bl
-      log.info(f"[$logId] excluded $diff events ($perc%3.1f%% at $location)")
+      logger.info(f"[$logId] excluded $diff events ($perc%3.1f%% at $location)")
     }
   }
 }

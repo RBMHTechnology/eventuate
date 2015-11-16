@@ -45,7 +45,7 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
     var lastSequenceNr = fromSequenceNr - 1L
     val events = eventIterator(fromSequenceNr, toSequenceNr).filter { evt =>
       lastSequenceNr = evt.localSequenceNr
-      evt.replicate(lower, filter)
+      evt.replicable(lower, filter)
     }.take(max).toVector
     ReadResult(events, lastSequenceNr)
   }
