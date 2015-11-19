@@ -138,7 +138,12 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
     _session.execute(createReplicationProgressTableStatement)
   } match {
     case Success(_) => logging.info("Cassandra extension initialized")
-    case Failure(e) => logging.error(e, "Cassandra extension initialization failed."); Await.result(terminate(), Duration.Inf) // TODO: retry
+    case Failure(e) =>
+      logging.error(e, "Cassandra extension initialization failed.")
+      // TODO: as soon as there is a retry mechanism or a dedicated exception
+      // TODO: there is no reason to terminate the actor system anymore
+      terminate()
+      throw e
   }
 
   /**
