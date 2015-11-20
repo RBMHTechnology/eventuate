@@ -320,6 +320,12 @@ eventuate {
     # index update is triggered.
     index-update-limit = 128
 
+    # Maximum number of initial connection retries to a Cassandra cluster.
+    initial-connect-retry-max = 3
+
+    # Delay between initial connection retries to a Cassandra cluster.
+    initial-connect-retry-delay = 5s
+
     write-dispatcher {
       executor = &quot;thread-pool-executor&quot;
       type = PinnedDispatcher
