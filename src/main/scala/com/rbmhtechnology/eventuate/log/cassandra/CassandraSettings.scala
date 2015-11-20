@@ -73,6 +73,12 @@ private[eventuate] class CassandraSettings(config: Config) {
   val indexUpdateLimit: Int =
     config.getInt("eventuate.log.cassandra.index-update-limit")
 
+  val initialConnectRetryMax: Int =
+    config.getInt("eventuate.log.cassandra.initial-connect-retry-max")
+
+  val initialConnectRetryDelay: FiniteDuration =
+    config.getDuration("eventuate.log.cassandra.initial-connect-retry-delay", TimeUnit.MILLISECONDS).millis
+
   val clusterBuilder: Cluster.Builder =
     Cluster.builder.addContactPointsWithPorts(contactPoints.asJava).withCredentials(
       config.getString("eventuate.log.cassandra.username"),

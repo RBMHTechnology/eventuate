@@ -23,13 +23,13 @@ import akka.event.{LogSource, Logging}
 import akka.serialization.SerializationExtension
 
 import com.datastax.driver.core._
+import com.datastax.driver.core.exceptions.NoHostAvailableException
 import com.datastax.driver.core.utils.Bytes
 
 import com.rbmhtechnology.eventuate.DurableEvent
 import com.rbmhtechnology.eventuate.log.TimeTracker
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration.Duration
+import scala.concurrent.Future
 import scala.util._
 
 object Cassandra extends ExtensionId[Cassandra] with ExtensionIdProvider {
@@ -124,12 +124,10 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   import settings._
   import statements._
 
-  private var _cluster: Cluster = _
   private var _session: Session = _
 
   Try {
-    _cluster = clusterBuilder.build
-    _session = _cluster.connect()
+    _session = connect()
 
     if (keyspaceAutoCreate)
       _session.execute(createKeySpaceStatement)
@@ -139,18 +137,34 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   } match {
     case Success(_) => logging.info("Cassandra extension initialized")
     case Failure(e) =>
-      logging.error(e, "Cassandra extension initialization failed.")
-      // TODO: as soon as there is a retry mechanism or a dedicated exception
-      // TODO: there is no reason to terminate the actor system anymore
+      logging.error(e, "Cassandra extension initialization failed")
       terminate()
       throw e
+  }
+
+  @annotation.tailrec
+  private def connect(retries: Int = 0): Session = {
+    val curAttempt = retries + 1
+    val maxAttempts = settings.initialConnectRetryMax + 1
+
+    Try (clusterBuilder.build().connect()) match {
+      case Failure(e: NoHostAvailableException) if retries < settings.initialConnectRetryMax =>
+        logging.error(e, s"Cannot connect to cluster (attempt ${curAttempt}/${maxAttempts} ...)")
+        Thread.sleep(settings.initialConnectRetryDelay.toMillis)
+        connect(retries + 1)
+      case Failure(e) =>
+        logging.error(e, s"Cannot connect to cluster (attempt ${curAttempt}/${maxAttempts} ...)")
+        throw e
+      case Success(session) =>
+        session
+    }
   }
 
   /**
    * Cassandra cluster reference.
    */
   def cluster: Cluster =
-    _cluster
+    session.getCluster
 
   /**
    * Cassandra session used by this extension.
