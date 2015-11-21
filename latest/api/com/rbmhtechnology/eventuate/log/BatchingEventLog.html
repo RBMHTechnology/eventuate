@@ -47,10 +47,12 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>An event log wrapper that batches <a href="../EventsourcingProtocol$$Write.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">EventsourcingProtocol.Write</a> commands. Batched write commands are
-sent as <a href="../EventsourcingProtocol$$WriteN.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteN">EventsourcingProtocol.WriteN</a> batch to the wrapped event log.</p><p>Batch sizes dynamically increase to a configurable limit under increasing load. The batch size limit can
-be configured with <code>eventuate.log.batch-size-limit</code>. If there is no current write operation in progress,
-a new <code>Write</code> command is served immediately (as <code>WriteN</code> batch of size 1), keeping latency at a minimum.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>An event log wrapper that batches write commands. Batched <a href="../EventsourcingProtocol$$Write.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">EventsourcingProtocol.Write</a> commands are sent as
+<a href="../EventsourcingProtocol$$WriteN.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteN">EventsourcingProtocol.WriteN</a> batch to the wrapped event log. Batched <a href="../ReplicationProtocol$$ReplicationWrite.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite">ReplicationProtocol.ReplicationWrite</a>
+commands are sent as <a href="../ReplicationProtocol$$ReplicationWriteN.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteN">ReplicationProtocol.ReplicationWriteN</a> batch to the wrapped event event log.</p><p>Batch sizes dynamically increase to a configurable limit under increasing load. The batch size limit can be
+configured with <code>eventuate.log.batch-size-limit</code>. If there is no current write operation in progress, a new
+<code>Write</code> or <code>ReplicationWrite</code> command is served immediately (as <code>WriteN</code> or <code>ReplicationWriteN</code> batch of size
+1, respectively), keeping latency at a minimum.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -292,23 +294,6 @@ a new <code>Write</code> command is served immediately (as <code>WriteN</code> b
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.BatchingEventLog#batch" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="batch:Vector[com.rbmhtechnology.eventuate.EventsourcingProtocol.Write]"></a>
-      <a id="batch:Vector[Write]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">var</span>
-      </span>
-      <span class="symbol">
-        <span class="name">batch</span><span class="result">: <span class="extype" name="scala.Vector">Vector</span>[<a href="../EventsourcingProtocol$$Write.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">Write</a>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchingEventLog@batch:Vector[com.rbmhtechnology.eventuate.EventsourcingProtocol.Write]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -349,6 +334,23 @@ a new <code>Write</code> command is served immediately (as <code>WriteN</code> b
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.BatchingEventLog#emissionBatcher" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="emissionBatcher:akka.actor.ActorRef"></a>
+      <a id="emissionBatcher:ActorRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">emissionBatcher</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchingEventLog@emissionBatcher:akka.actor.ActorRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -457,23 +459,6 @@ a new <code>Write</code> command is served immediately (as <code>WriteN</code> b
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.BatchingEventLog#idle" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="idle:BatchingEventLog.this.Receive"></a>
-      <a id="idle:Receive"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">idle</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.log.BatchingEventLog.Receive">Receive</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchingEventLog@idle:BatchingEventLog.this.Receive" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -635,22 +620,39 @@ a new <code>Write</code> command is served immediately (as <code>WriteN</code> b
               
         </dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.BatchingEventLog#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="receive:BatchingEventLog.this.Receive"></a>
-      <a id="receive:Receive"></a>
+      <a id="receive:PartialFunction[Any,Unit]"></a>
+      <a id="receive:PartialFunction[Any,Unit]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">receive</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.log.BatchingEventLog.Receive">Receive</a></span>
+        <span class="name">receive</span><span class="result">: <span class="extype" name="scala.PartialFunction">PartialFunction</span>[<span class="extype" name="scala.Any">Any</span>, <span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchingEventLog@receive:BatchingEventLog.this.Receive" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchingEventLog@receive:PartialFunction[Any,Unit]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.BatchingEventLog">BatchingEventLog</a> → Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.BatchingEventLog#replicationBatcher" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="replicationBatcher:akka.actor.ActorRef"></a>
+      <a id="replicationBatcher:ActorRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">replicationBatcher</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchingEventLog@replicationBatcher:akka.actor.ActorRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="akka.actor.Actor#self" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="self:akka.actor.ActorRef"></a>
       <a id="self:ActorRef"></a>
@@ -685,23 +687,6 @@ a new <code>Write</code> command is served immediately (as <code>WriteN</code> b
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.BatchingEventLog#settings" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="settings:com.rbmhtechnology.eventuate.log.BatchingSettings"></a>
-      <a id="settings:BatchingSettings"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">settings</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.log.BatchingSettings">BatchingSettings</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchingEventLog@settings:com.rbmhtechnology.eventuate.log.BatchingSettings" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="akka.actor.Actor#supervisorStrategy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="supervisorStrategy:akka.actor.SupervisorStrategy"></a>
       <a id="supervisorStrategy:SupervisorStrategy"></a>
@@ -839,23 +824,6 @@ a new <code>Write</code> command is served immediately (as <code>WriteN</code> b
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.BatchingEventLog#writing" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="writing:BatchingEventLog.this.Receive"></a>
-      <a id="writing:Receive"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">writing</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.log.BatchingEventLog.Receive">Receive</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchingEventLog@writing:BatchingEventLog.this.Receive" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li></ol>
             </div>
 

@@ -56,14 +56,17 @@ that snapshot or is not overridden at all, event replay starts from scratch. New
 not covered by the snapshot are handled by <code>onEvent</code> after <code>onSnapshot</code> returns.</p><p>By default, an <code>EventsourcedView</code> does not define an <code>aggregateId</code>. In this case, the <code>eventLog</code>
 pushes all events to this actor. If it defines an <code>aggregateId</code>, the <code>eventLog</code> actor only pushes
 those events that contain that <code>aggregateId</code> value in their <code>routingDestinations</code> set.</p><p>An <code>EventsourcedView</code> can only consume events from its <code>eventLog</code> but cannot produce new events.
-Commands sent to an <code>EventsourcedView</code> during recovery are delayed until recovery completes.
-</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>
-</p></span><span class="cmt"><p><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></p></span></dd></dl><div class="toggleContainer block">
+Commands sent to an <code>EventsourcedView</code> during recovery are delayed until recovery completes.</p><p>Event replay is subject to backpressure. After a configurable number of events
+(see <code>eventuate.replay.chunk-size-max</code> configuration parameter), replay is suspended until these
+events have been handled by <code>onEvent</code> and then resumed again. There's no backpressure mechanism
+for live event processing yet (but will come in future releases).
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>
+</p></span><span class="cmt"><p><a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></p></span><span class="cmt"><p><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></p></span><span class="cmt"><p><a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
             <span class="toggle">Known Subclasses</span>
-            <div class="subClasses hiddenContent"><a href="AbstractEventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor">AbstractEventsourcedActor</a>, <a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a>, <a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a>, <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></div>
+            <div class="subClasses hiddenContent"><a href="AbstractEventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor">AbstractEventsourcedActor</a>, <a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a>, <a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a>, <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>, <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>, <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>, <a href="StatelessProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a></div>
           </div></div>
         
 
@@ -885,7 +888,7 @@ is resumed automatically after all replayed events haven been handled by this ac
       <a id="save(Any)(Handler[SnapshotMetadata]):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">

@@ -79,9 +79,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-logs">Event logs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-sourced-actors">Event-sourced actors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-sourced-views">Event-sourced views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-sourced-processors">Event-sourced processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-sourcing">Event sourcing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../architecture.html#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../architecture.html#vector-clocks">Vector clocks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../architecture.html#batching">Batching</a></li>
@@ -103,6 +101,8 @@
 <li class="toctree-l2"><a class="reference internal" href="event-log.html">Event log</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-sourced-writers">Event-sourced writers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-sourced-processors">Event-sourced processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#state-recovery">State recovery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#event-routing">Event routing</a></li>
@@ -181,8 +181,8 @@
           <div role="main" class="document">
             
   <div class="section" id="event-sourced-actors">
-<h1>Event-sourced actors<a class="headerlink" href="#event-sourced-actors" title="Permalink to this headline">¶</a></h1>
-<p>An introduction to event-sourced actors is already given in section <a class="reference internal" href="../architecture.html#architecture"><span>Architecture</span></a> and the <a class="reference internal" href="../user-guide.html#user-guide"><span>User guide</span></a>. Applications use event-sourced actors for writing events to an event log and for maintaining state on the command side (C) of a <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> architecture. Event-sourced actors distinguish command processing from event processing. They must extend the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> trait and implement a <a class="reference internal" href="#command-handler"><span>Command handler</span></a> and an <a class="reference internal" href="#event-handler"><span>Event handler</span></a>.</p>
+<span id="ref-event-sourced-actors"></span><h1>Event-sourced actors<a class="headerlink" href="#event-sourced-actors" title="Permalink to this headline">¶</a></h1>
+<p>An introduction to event-sourced actors is already given in section <a class="reference internal" href="../architecture.html#architecture"><span>Architecture</span></a> and the <a class="reference internal" href="../user-guide.html#user-guide"><span>User guide</span></a>. Applications use event-sourced actors for writing events to an event log and for maintaining in-memory write models on the command side (C) of a <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> application. Event-sourced actors distinguish command processing from event processing. They must extend the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> trait and implement a <a class="reference internal" href="#command-handler"><span>Command handler</span></a> and an <a class="reference internal" href="#event-handler"><span>Event handler</span></a>.</p>
 <div class="section" id="command-handler">
 <span id="id1"></span><h2>Command handler<a class="headerlink" href="#command-handler" title="Permalink to this headline">¶</a></h2>
 <p>A command handler is partial function of type <code class="docutils literal"><span class="pre">PartialFunction[Any,</span> <span class="pre">Unit]</span></code> for which a type alias <code class="docutils literal"><span class="pre">Receive</span></code> exists. It can be defined by implementing <code class="docutils literal"><span class="pre">onCommand</span></code>:</p>
@@ -225,7 +225,7 @@
 <span class="o">}</span>
 </pre></div>
 </div>
-<p>Messages sent by an application to an event-sourced actor are received by its command handler. Usually, a command handler first validates a command, then derives one or more events from it, persists these events with <code class="docutils literal"><span class="pre">persist</span></code> and if persistence succeeds, calls the event handler<a class="footnote-reference" href="#id12" id="id2">[1]</a> and replies to the command sender. The <code class="docutils literal"><span class="pre">persist</span></code> method has the following signature<a class="footnote-reference" href="#id13" id="id3">[2]</a>:</p>
+<p>Messages sent by an application to an event-sourced actor are received by its command handler. Usually, a command handler first validates a command, then derives one or more events from it, persists these events with <code class="docutils literal"><span class="pre">persist</span></code> and if persistence succeeds, calls the event handler<a class="footnote-reference" href="#id13" id="id2">[1]</a> and replies to the command sender. The <code class="docutils literal"><span class="pre">persist</span></code> method has the following signature<a class="footnote-reference" href="#id14" id="id3">[2]</a>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">def</span> <span class="n">persist</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">event</span><span class="k">:</span> <span class="kt">A</span><span class="o">,</span> <span class="n">customDestinationAggregateIds</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">())(</span><span class="n">handler</span><span class="k">:</span> <span class="kt">Try</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span>
 </pre></div>
 </div>
@@ -253,7 +253,7 @@
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">def</span> <span class="n">stateSync</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">true</span>
 </pre></div>
 </div>
-<p>If <code class="docutils literal"><span class="pre">stateSync</span></code> is <code class="docutils literal"><span class="pre">true</span></code> (default), new commands are <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/actors.html#stash">stashed</a> while persistence is in progress. Consequently, new commands see actor state that is <em>in sync</em> with the events in the event log. A consequence is limited write throughput, because <a class="reference internal" href="../architecture.html#batching"><span>Batching</span></a> of write requests is not possible in this case<a class="footnote-reference" href="#id14" id="id4">[3]</a>. This setting is recommended for event-sourced actors that must validate commands against current state.</p>
+<p>If <code class="docutils literal"><span class="pre">stateSync</span></code> is <code class="docutils literal"><span class="pre">true</span></code> (default), new commands are <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/actors.html#stash">stashed</a> while persistence is in progress. Consequently, new commands see actor state that is <em>in sync</em> with the events in the event log. A consequence is limited write throughput, because <a class="reference internal" href="../architecture.html#batching"><span>Batching</span></a> of write requests is not possible in this case<a class="footnote-reference" href="#id15" id="id4">[3]</a>. This setting is recommended for event-sourced actors that must validate commands against current state.</p>
 <p>If <code class="docutils literal"><span class="pre">stateSync</span></code> is <code class="docutils literal"><span class="pre">false</span></code>, new commands are dispatched to <code class="docutils literal"><span class="pre">onCommand</span></code> immediately. Consequently, new commands may see stale actor state. The advantage is significantly higher write throughput as <a class="reference internal" href="../architecture.html#batching"><span>Batching</span></a> of write requests is possible. This setting is recommended for event-sourced actors that don’t need to validate commands against current state.</p>
 <p>If a sender sends several update commands followed by a read command to an event-sourced actor that has <code class="docutils literal"><span class="pre">stateSync</span></code> set to <code class="docutils literal"><span class="pre">false</span></code>, the read command will probably not see the state change from the preceding update commands. To achieve read-your-write consistency, the command sender should wait for a reply from the last update command before sending the read command. The reply must of course be sent from within a <code class="docutils literal"><span class="pre">persist</span></code> handler.</p>
 <div class="admonition note">
@@ -306,29 +306,205 @@
 </div>
 </div>
 <div class="section" id="event-sourced-views">
-<h1>Event-sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h1>
-<p>An introduction to event-sourced views is already given in section <a class="reference internal" href="../architecture.html#architecture"><span>Architecture</span></a> and the <a class="reference internal" href="../user-guide.html#user-guide"><span>User guide</span></a>. Applications use event-sourced views for consuming events from an event log and for maintaining state on the query side (Q) of a <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> architecture.</p>
+<span id="ref-event-sourced-views"></span><h1>Event-sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h1>
+<p>An introduction to event-sourced views is already given in section <a class="reference internal" href="../architecture.html#architecture"><span>Architecture</span></a> and the <a class="reference internal" href="../user-guide.html#user-guide"><span>User guide</span></a>. Applications use event-sourced views for for maintaining in-memory read models on the query side (Q) of a <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> application.</p>
 <p>Like event-sourced actors, event-sourced views distinguish command processing from event processing. They must implement the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> trait. <code class="docutils literal"><span class="pre">EventsourcedView</span></code> is a functional subset of <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> that cannot <code class="docutils literal"><span class="pre">persist</span></code> events.</p>
+</div>
+<div class="section" id="event-sourced-writers">
+<span id="ref-event-sourced-writers"></span><h1>Event-sourced writers<a class="headerlink" href="#event-sourced-writers" title="Permalink to this headline">¶</a></h1>
+<p>An introduction to event-sourced writers is already given in section <a class="reference internal" href="../architecture.html#architecture"><span>Architecture</span></a>. Applications use event-sourced writers for maintaining persistent read models on the query side (Q) of a <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> application.</p>
+<p>Like event-sourced views, event-sourced writers can only consume events from an event log but can make incremental batch updates to external, application-defined query databases. A query database can be a relational database, a graph database or whatever is needed by an application. Concrete writers must implement the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> trait.</p>
+<p>This section outlines how to update a persistent read model in <a class="reference external" href="http://cassandra.apache.org/">Cassandra</a> from events consumed by an event-sourced writer. The relevant events are:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">case</span> <span class="k">class</span> <span class="nc">CustomerCreated</span><span class="o">(</span><span class="n">cid</span><span class="k">:</span> <span class="kt">Long</span><span class="o">,</span> <span class="n">first</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">last</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">address</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">AddressUpdated</span><span class="o">(</span><span class="n">cid</span><span class="k">:</span> <span class="kt">Long</span><span class="o">,</span> <span class="n">address</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>The persistent read model is a <code class="docutils literal"><span class="pre">CUSTOMER</span></code> table with the following structure:</p>
+<div class="highlight-scala"><div class="highlight"><pre> <span class="n">id</span> <span class="o">|</span> <span class="n">first</span>  <span class="o">|</span> <span class="n">last</span>    <span class="o">|</span> <span class="n">address</span>
+<span class="o">----+--------+---------+-------------</span>
+  <span class="mi">1</span> <span class="o">|</span> <span class="nc">Martin</span> <span class="o">|</span> <span class="nc">Krasser</span> <span class="o">|</span> <span class="nc">Somewhere</span> <span class="mi">1</span>
+  <span class="mi">2</span> <span class="o">|</span> <span class="nc">Volker</span> <span class="o">|</span> <span class="nc">Stampa</span>  <span class="o">|</span> <span class="nc">Somewhere</span> <span class="mi">3</span>
+  <span class="mi">3</span> <span class="o">|</span> <span class="o">...</span>    <span class="o">|</span> <span class="o">...</span>     <span class="o">|</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>The read model update progress is written to a separate <code class="docutils literal"><span class="pre">PROGRESS</span></code> table with a single <code class="docutils literal"><span class="pre">sequence_nr</span></code> column:</p>
+<div class="highlight-scala"><div class="highlight"><pre> <span class="n">id</span> <span class="o">|</span> <span class="n">sequence_nr</span>
+<span class="o">----+-------------</span>
+  <span class="mi">0</span> <span class="o">|</span>           <span class="mi">3</span>
+</pre></div>
+</div>
+<p>The stored sequence number is that of the last successfully processed event. An event is considered as successfully processed if its data have been written to the <code class="docutils literal"><span class="pre">CUSTOMER</span></code> table. Only a single row is needed in the <code class="docutils literal"><span class="pre">PROGRESS</span></code> table to track the update progress for the whole <code class="docutils literal"><span class="pre">CUSTOMER</span></code> table.</p>
+<p>The event-sourced <code class="docutils literal"><span class="pre">Writer</span></code> in the following example implements <code class="docutils literal"><span class="pre">EventsourcedWriter[Long,</span> <span class="pre">Unit]</span></code> (where <code class="docutils literal"><span class="pre">Long</span></code> is the type of the initial read result and <code class="docutils literal"><span class="pre">Unit</span></code> the type of write results). It is initialized with an <code class="docutils literal"><span class="pre">eventLog</span></code> from which it consumes events and a Cassandra <code class="docutils literal"><span class="pre">Session</span></code> for writing event processing results.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">java.lang.</span><span class="o">{</span><span class="nc">Long</span> <span class="k">=&gt;</span> <span class="nc">JLong</span><span class="o">}</span>
+
+<span class="k">import</span> <span class="nn">akka.actor.ActorRef</span>
+
+<span class="k">import</span> <span class="nn">com.datastax.driver.core._</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedWriter</span>
+
+<span class="k">import</span> <span class="nn">scala.concurrent.Future</span>
+
+<span class="cm">/**</span>
+<span class="cm">  * Processes `CustomerCreated` and `AddressUpdated` events and updates</span>
+<span class="cm">  * a `CUSTOMER` table in Cassandra with incremental batches.</span>
+<span class="cm">  */</span>
+<span class="k">class</span> <span class="nc">Writer</span><span class="o">(</span><span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">,</span> <span class="n">session</span><span class="k">:</span> <span class="kt">Session</span><span class="o">)</span>
+  <span class="k">extends</span> <span class="nc">EventsourcedWriter</span><span class="o">[</span><span class="kt">Long</span>, <span class="kt">Unit</span><span class="o">]</span> <span class="o">{</span>
+
+  <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.log.cassandra.</span><span class="o">{</span><span class="n">listenableFutureToFuture</span> <span class="k">=&gt;</span> <span class="n">ftr</span><span class="o">}</span>
+  <span class="k">import</span> <span class="nn">context.dispatcher</span>
+
+  <span class="k">val</span> <span class="n">insertCustomerStmt</span> <span class="k">=</span> <span class="n">session</span><span class="o">.</span><span class="n">prepare</span><span class="o">(</span>
+    <span class="s">&quot;INSERT INTO CUSTOMER (id, first, last, address) VALUES (?, ?, ?, ?)&quot;</span><span class="o">)</span>
+
+  <span class="k">val</span> <span class="n">updateCustomerStmt</span> <span class="k">=</span> <span class="n">session</span><span class="o">.</span><span class="n">prepare</span><span class="o">(</span>
+    <span class="s">&quot;UPDATE CUSTOMER SET address = ? WHERE id = ?&quot;</span><span class="o">)</span>
+
+  <span class="k">val</span> <span class="n">updateProgressStmt</span> <span class="k">=</span> <span class="n">session</span><span class="o">.</span><span class="n">prepare</span><span class="o">(</span>
+    <span class="s">&quot;UPDATE PROGRESS SET sequence_nr = ? WHERE id = 0&quot;</span><span class="o">)</span>
+
+  <span class="cm">/**</span>
+<span class="cm">    * Batch of Cassandra update statements collected during event processing.</span>
+<span class="cm">    */</span>
+  <span class="k">var</span> <span class="n">batch</span><span class="k">:</span> <span class="kt">Vector</span><span class="o">[</span><span class="kt">BoundStatement</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Vector</span><span class="o">.</span><span class="n">empty</span>
+
+  <span class="cm">/**</span>
+<span class="cm">    * Suspends replay after 16 events, triggers a `write` and then continues</span>
+<span class="cm">    * with the next 16 events. This is implements event replay backpressure,</span>
+<span class="cm">    * needed if writing to the database is slower than replaying from the</span>
+<span class="cm">    * `eventLog` (which is usually the case).</span>
+<span class="cm">    */</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">replayChunkSizeMax</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span>
+    <span class="mi">16</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**</span>
+<span class="cm">    * Prepares an update `batch` from handled events that is written to the</span>
+<span class="cm">    * database when `write` is called. An event handler never writes to the</span>
+<span class="cm">    * database directly.</span>
+<span class="cm">    */</span>
+  <span class="k">override</span> <span class="k">val</span> <span class="n">onEvent</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="n">c</span> <span class="k">@</span> <span class="nc">CustomerCreated</span><span class="o">(</span><span class="n">cid</span><span class="o">,</span> <span class="n">first</span><span class="o">,</span> <span class="n">last</span><span class="o">,</span> <span class="n">address</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">batch</span> <span class="k">=</span> <span class="n">batch</span> <span class="o">:+</span> <span class="n">insertCustomerStmt</span><span class="o">.</span><span class="n">bind</span><span class="o">(</span><span class="n">cid</span><span class="k">:</span> <span class="kt">JLong</span><span class="o">,</span> <span class="n">first</span><span class="o">,</span> <span class="n">last</span><span class="o">,</span> <span class="n">address</span><span class="o">)</span>
+    <span class="k">case</span> <span class="n">u</span> <span class="k">@</span> <span class="nc">AddressUpdated</span><span class="o">(</span><span class="n">cid</span><span class="o">,</span> <span class="n">address</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">batch</span> <span class="k">=</span> <span class="n">batch</span> <span class="o">:+</span> <span class="n">updateCustomerStmt</span><span class="o">.</span><span class="n">bind</span><span class="o">(</span><span class="n">address</span><span class="o">,</span> <span class="n">cid</span><span class="k">:</span> <span class="kt">JLong</span><span class="o">)</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**</span>
+<span class="cm">    * Asynchronously writes the prepared update `batch` to the database</span>
+<span class="cm">    * together with the sequence number of the last processed event. After</span>
+<span class="cm">    * having submitted the batch, it is cleared so that further events can</span>
+<span class="cm">    * be processed while the write is in progress.</span>
+<span class="cm">    */</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">write</span><span class="o">()</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">snr</span> <span class="k">=</span> <span class="n">lastSequenceNr</span>
+    <span class="k">val</span> <span class="n">res</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+      <span class="k">_</span> <span class="k">&lt;-</span> <span class="nc">Future</span><span class="o">.</span><span class="n">sequence</span><span class="o">(</span><span class="n">batch</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">stmt</span> <span class="k">=&gt;</span> <span class="n">ftr</span><span class="o">(</span><span class="n">session</span><span class="o">.</span><span class="n">executeAsync</span><span class="o">(</span><span class="n">stmt</span><span class="o">))))</span>
+      <span class="k">_</span> <span class="k">&lt;-</span> <span class="n">session</span><span class="o">.</span><span class="n">executeAsync</span><span class="o">(</span><span class="n">updateProgressStmt</span><span class="o">.</span><span class="n">bind</span><span class="o">(</span><span class="n">snr</span><span class="k">:</span> <span class="kt">JLong</span><span class="o">))</span>
+    <span class="o">}</span> <span class="k">yield</span> <span class="o">()</span>
+    <span class="n">batch</span> <span class="k">=</span> <span class="nc">Vector</span><span class="o">.</span><span class="n">empty</span> <span class="c1">// clear batch</span>
+    <span class="n">res</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**</span>
+<span class="cm">    * Reads the sequence number of the last update. This method is called only</span>
+<span class="cm">    * once during writer initialization (after start or restart).</span>
+<span class="cm">    */</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">read</span><span class="o">()</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Long</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">executeAsync</span><span class="o">(</span><span class="s">&quot;SELECT sequence_nr FROM PROGRESS WHERE id = 0&quot;</span><span class="o">)</span>
+      <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">rs</span> <span class="k">=&gt;</span> <span class="k">if</span> <span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">isExhausted</span><span class="o">)</span> <span class="mi">0L</span> <span class="k">else</span> <span class="n">rs</span><span class="o">.</span><span class="n">one</span><span class="o">().</span><span class="n">getLong</span><span class="o">(</span><span class="mi">0</span><span class="o">))</span>
+  <span class="o">}</span>
+
+  <span class="cm">/**</span>
+<span class="cm">    * Handles the `read` result by returning the read value + 1, indicating the</span>
+<span class="cm">    * start position for further reads from the event log.</span>
+<span class="cm">    */</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">readSuccess</span><span class="o">(</span><span class="n">result</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Long</span><span class="o">]</span> <span class="k">=</span>
+    <span class="nc">Some</span><span class="o">(</span><span class="n">result</span> <span class="o">+</span> <span class="mi">1L</span><span class="o">)</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">The full example source code is available <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example/querydb">here</a>.</p>
+</div>
+<p>On a high level, the example <code class="docutils literal"><span class="pre">Writer</span></code> implements the following behavior:</p>
+<ul class="simple">
+<li>During initialization (after start or restart) it asynchronously <code class="docutils literal"><span class="pre">read</span></code>s the stored update progress from the <code class="docutils literal"><span class="pre">PROGRESS</span></code> table. The read result is passed as argument to <code class="docutils literal"><span class="pre">readSuccess</span></code> and incremented by <code class="docutils literal"><span class="pre">1</span></code> before returning it to the caller. This causes the <code class="docutils literal"><span class="pre">Writer</span></code> to resume event processing from that position in the event log.</li>
+<li>Event are processed in <code class="docutils literal"><span class="pre">onEvent</span></code> by translating them to Cassandra update statements which are added to an in-memory <code class="docutils literal"><span class="pre">batch</span></code> of type <code class="docutils literal"><span class="pre">Vector[BoundStatement]</span></code>. The batch is written to Cassandra when Eventuate calls the <code class="docutils literal"><span class="pre">write</span></code> method.</li>
+<li>The <code class="docutils literal"><span class="pre">write</span></code> method asynchronously updates the <code class="docutils literal"><span class="pre">CUSTOMER</span></code> table with the statements contained in <code class="docutils literal"><span class="pre">batch</span></code> and then updates the <code class="docutils literal"><span class="pre">PROGRESS</span></code> table with the sequence number of the last processed event. After having submitted the statements to Cassandra, the batch is cleared for further event processing. Event processing can run concurrently to write operations.</li>
+<li>A <code class="docutils literal"><span class="pre">batch</span></code> that has been updated while a write operation is in progress is written directly after the current write operation successfully completes. If no write operation is in progress, a change to <code class="docutils literal"><span class="pre">batch</span></code> is written immediately. This keeps read model update delays at a minimum and increases batch sizes under increasing load. Batch sizes can be limited with <code class="docutils literal"><span class="pre">replayChunkSizeMax</span></code>.</li>
+</ul>
+<p>If a <code class="docutils literal"><span class="pre">write</span></code> (or <code class="docutils literal"><span class="pre">read</span></code>) operation fails, the writer is restarted, by default, and resumes event processing from the last stored sequence number + <code class="docutils literal"><span class="pre">1</span></code>. This behavior can be changed by overriding <code class="docutils literal"><span class="pre">writeFailure</span></code> (or <code class="docutils literal"><span class="pre">readFailure</span></code>) from <code class="docutils literal"><span class="pre">EventsourcedWriter</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The example does not use Cassandra <code class="docutils literal"><span class="pre">BatchStatement</span></code>s for reasons explained in <a class="reference external" href="https://medium.com/&#64;foundev/cassandra-batch-loading-without-the-batch-keyword-40f00e35e23e">this article</a>. Atomic writes are not needed because database updates in this example are idempotent and can be re-tried in failure cases. Failure cases where idempotency is relevant are partial updates to the <code class="docutils literal"><span class="pre">CUSTOMER</span></code> table or a failed write to the <code class="docutils literal"><span class="pre">PROGRESS</span></code> table. <code class="docutils literal"><span class="pre">BatchStatement</span></code>s should only be used when database updates are not idempotent and atomicity is required on database level.</p>
+</div>
+<div class="section" id="stateful-writers">
+<span id="id6"></span><h2>Stateful writers<a class="headerlink" href="#stateful-writers" title="Permalink to this headline">¶</a></h2>
+<p>The above <code class="docutils literal"><span class="pre">Writer</span></code> implements a stateless writer. Although it accumulates batches while a write operation is in progress, it cannot recover permanent in-memory state from the event log, because event processing only starts from the last stored sequence number. If a writer needs to be stateful, it must return <code class="docutils literal"><span class="pre">None</span></code> from <code class="docutils literal"><span class="pre">readSuccess</span></code>. In this case, event replay either starts from scratch or from a previously stored snapshot. A stateful writer should still write the update progress to the <code class="docutils literal"><span class="pre">PROGRESS</span></code> table but exclude events with a sequence number less than or equal to the stored sequence number from contributing to the update <code class="docutils literal"><span class="pre">batch</span></code>.</p>
+</div>
+</div>
+<div class="section" id="event-sourced-processors">
+<span id="ref-event-sourced-processors"></span><h1>Event-sourced processors<a class="headerlink" href="#event-sourced-processors" title="Permalink to this headline">¶</a></h1>
+<p>An introduction to event-sourced processors is already given in section <a class="reference internal" href="../architecture.html#architecture"><span>Architecture</span></a>. Applications use event-sourced processors to consume events form a source event log, process these events and write the processed events to a target event log. With processors, event logs can be connected to event stream processing pipelines and graphs.</p>
+<p>Event-sourced processors are a specialization of <a class="reference internal" href="../architecture.html#event-sourced-writers"><span>Event-sourced writers</span></a> where the <em>external database</em> is a target event log. Concrete stateless processors must implement the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a> trait, stateful processors the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> trait (see also <a class="reference internal" href="#stateful-writers"><span>Stateful writers</span></a>).</p>
+<p>The following example <code class="docutils literal"><span class="pre">Processor</span></code> is an implementation of <code class="docutils literal"><span class="pre">StatelessProcessor</span></code>. In addition to providing a source <code class="docutils literal"><span class="pre">eventLog</span></code>, concrete processors must also provide a <code class="docutils literal"><span class="pre">targetEventLog</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Processor</span><span class="o">(</span>
+    <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+    <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">,</span>
+    <span class="k">val</span> <span class="n">targetEventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span>
+  <span class="k">extends</span> <span class="nc">StatelessProcessor</span> <span class="o">{</span>
+  <span class="c1">// ...</span>
+
+  <span class="k">override</span> <span class="k">val</span> <span class="n">processEvent</span><span class="k">:</span> <span class="kt">Process</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="c1">// exclude event</span>
+    <span class="k">case</span> <span class="s">&quot;my-event-1&quot;</span> <span class="k">=&gt;</span> <span class="nc">Seq</span><span class="o">()</span>
+    <span class="c1">// transform event</span>
+    <span class="k">case</span> <span class="s">&quot;my-event-2&quot;</span> <span class="k">=&gt;</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">&quot;my-event-2a&quot;</span><span class="o">)</span>
+    <span class="c1">// transform and split event</span>
+    <span class="k">case</span> <span class="s">&quot;my-event-3&quot;</span> <span class="k">=&gt;</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">&quot;my-event-3a&quot;</span><span class="o">,</span> <span class="s">&quot;my-event-3b&quot;</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>The event handler implemented by a processor is <code class="docutils literal"><span class="pre">processEvent</span></code>. The type of the handler is defined as:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">type</span> <span class="kt">Process</span> <span class="o">=</span> <span class="nc">PartialFunction</span><span class="o">[</span><span class="kt">Any</span>, <span class="kt">Seq</span><span class="o">[</span><span class="kt">Any</span><span class="o">]]</span>
+</pre></div>
+</div>
+<p>Processed events to be written to the target event log are returned by the handler as <code class="docutils literal"><span class="pre">Seq[Any]</span></code>. With this handler signature, events from the source log can be</p>
+<ul class="simple">
+<li>excluded from being written to the target log by returning an empty <code class="docutils literal"><span class="pre">Seq</span></code></li>
+<li>transformed one-to-one by returning a <code class="docutils literal"><span class="pre">Seq</span></code> of size 1 or even</li>
+<li>transformed and split by returning a <code class="docutils literal"><span class="pre">Seq</span></code> of size greater than <code class="docutils literal"><span class="pre">1</span></code></li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">StatelessProcessor</span></code> and <code class="docutils literal"><span class="pre">EventsourcedProcessor</span></code> internally ensure that writing to the target event log is idempotent. Applications don’t need to take extra care about idempotency.</p>
+</div>
 </div>
 <div class="section" id="state-recovery">
 <h1>State recovery<a class="headerlink" href="#state-recovery" title="Permalink to this headline">¶</a></h1>
-<p>When an event-sourced actor or view is started or re-started, events are replayed to its <code class="docutils literal"><span class="pre">onEvent</span></code> handler so that internal state can be recovered<a class="footnote-reference" href="#id15" id="id6">[4]</a>. Event replay is initiated internally by sending a <code class="docutils literal"><span class="pre">Replay</span></code> message to the <code class="docutils literal"><span class="pre">eventLog</span></code> actor:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">private</span> <span class="k">def</span> <span class="n">replay</span><span class="o">(</span><span class="n">fromSequenceNr</span><span class="k">:</span> <span class="kt">Long</span> <span class="o">=</span> <span class="mi">1L</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span>
+<p>When an event-sourced actor or view is started or re-started, events are replayed to its <code class="docutils literal"><span class="pre">onEvent</span></code> handler so that internal state can be recovered<a class="footnote-reference" href="#id16" id="id7">[4]</a>. This is also the case for stateful event-sourced writers and processors. Event replay is initiated internally by sending a <code class="docutils literal"><span class="pre">Replay</span></code> message to the <code class="docutils literal"><span class="pre">eventLog</span></code> actor:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">private</span><span class="o">[</span><span class="kt">eventuate</span><span class="o">]</span> <span class="k">def</span> <span class="n">replay</span><span class="o">(</span><span class="n">fromSequenceNr</span><span class="k">:</span> <span class="kt">Long</span> <span class="o">=</span> <span class="mi">1L</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span>
   <span class="n">eventLog</span> <span class="o">!</span> <span class="nc">Replay</span><span class="o">(</span><span class="n">fromSequenceNr</span><span class="o">,</span> <span class="n">replayChunkSizeMax</span><span class="o">,</span> <span class="n">self</span><span class="o">,</span> <span class="n">aggregateId</span><span class="o">,</span> <span class="n">instanceId</span><span class="o">)</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal"><span class="pre">replay</span></code> method is defined by <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> and automatically called when an <code class="docutils literal"><span class="pre">EventsourcedView</span></code> or <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> is started or re-started.</p>
 <p>Sending a <code class="docutils literal"><span class="pre">Replay</span></code> message automatically registers the sending actor at its event log, so that newly written events can be immediately routed to that actor. If the actor is stopped it is automatically de-registered.</p>
-<p>While an event-sourced actor or view is recovering i.e. replaying messages, its <code class="docutils literal"><span class="pre">recovering</span></code> method returns <code class="docutils literal"><span class="pre">true</span></code>. If recovery successfully completes, its empty <code class="docutils literal"><span class="pre">onRecovered()</span></code> method is called which can be overridden by applications.</p>
+<p>While an event-sourced actor, view, writer or processor is recovering i.e. replaying messages, its <code class="docutils literal"><span class="pre">recovering</span></code> method returns <code class="docutils literal"><span class="pre">true</span></code>. If recovery successfully completes, its empty <code class="docutils literal"><span class="pre">onRecovered()</span></code> method is called which can be overridden by applications.</p>
 <p>During recovery, new commands are <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/actors.html#stash">stashed</a> and dispatched to <code class="docutils literal"><span class="pre">onCommand</span></code> after recovery successfully completed. This ensures that new commands never see partially recovered state.</p>
 <div class="section" id="backpressure">
 <h2>Backpressure<a class="headerlink" href="#backpressure" title="Permalink to this headline">¶</a></h2>
-<p>If event handling is slower than event replay, events are buffered in the mailboxes of event-sourced actors and views. In order to avoid out-of-memory errors, Eventuate has a built-in backpressure mechanism for event replay.</p>
+<p>If event handling is slower than event replay, events are buffered in the mailboxes of event-sourced actors, views, writers and processors. In order to avoid out-of-memory errors, Eventuate has a built-in backpressure mechanism for event replay.</p>
 <p>After a configurable number of events, replay is suspended for giving event handlers time to catch up. When they are done, replay is automatically resumed. The default number of events to be replayed before replay is suspended can be configured with:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">replay</span><span class="o">.</span><span class="n">chunk</span><span class="o">-</span><span class="n">size</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">65536</span>
 </pre></div>
 </div>
-<p>Concrete event-sourced actors and views can override the configured default value by overriding <code class="docutils literal"><span class="pre">replayChunkSizeMax</span></code>:</p>
+<p>Concrete event-sourced actors, views, writers and processors can override the configured default value by overriding <code class="docutils literal"><span class="pre">replayChunkSizeMax</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
                    <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
 
@@ -341,8 +517,8 @@
 </div>
 </div>
 <div class="section" id="snapshots">
-<span id="id7"></span><h1>Snapshots<a class="headerlink" href="#snapshots" title="Permalink to this headline">¶</a></h1>
-<p>Recovery times increase with the number of events that are replayed to event-sourced actors or views. They can be decreased by starting event replay from a previously saved snapshot of internal state rather than replaying events from scratch. Event-sourced actors and views can save snapshots by calling <code class="docutils literal"><span class="pre">save</span></code> within their command handler:</p>
+<span id="id8"></span><h1>Snapshots<a class="headerlink" href="#snapshots" title="Permalink to this headline">¶</a></h1>
+<p>Recovery times increase with the number of events that are replayed to event-sourced actors, views, stateful writers or stateful processors. They can be decreased by starting event replay from a previously saved snapshot of internal state rather than replaying events from scratch. Event-sourced actors, views, stateful writers and stateful processors can save snapshots by calling <code class="docutils literal"><span class="pre">save</span></code> within their command handler:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
@@ -380,7 +556,7 @@
 </div>
 <p>Snapshots are saved asynchronously. On completion, a user-defined handler of type <code class="docutils literal"><span class="pre">Try[SnapshotMetadata]</span> <span class="pre">=&gt;</span> <span class="pre">Unit</span></code> is called. Like a <code class="docutils literal"><span class="pre">persist</span></code> handler, a <code class="docutils literal"><span class="pre">save</span></code> handler may also close over actor state and can reply to the command sender using the <code class="docutils literal"><span class="pre">sender()</span></code> reference.</p>
 <p>An event-sourced actor that is <a class="reference internal" href="../user-guide.html#tracking-conflicting-versions"><span>Tracking conflicting versions</span></a> of application state can also save <code class="docutils literal"><span class="pre">ConcurrentVersions[A,</span> <span class="pre">B]</span></code> instances directly. One can even configure custom serializers for type parameter <code class="docutils literal"><span class="pre">A</span></code> as explained in section <a class="reference internal" href="#snapshot-serialization"><span>Custom snapshot serialization</span></a>.</p>
-<p>During recovery, the latest snapshot saved by an event-sourced actor or view is loaded and can be handled with the <code class="docutils literal"><span class="pre">onSnapshot</span></code> handler. This handler should initialize internal actor state from the loaded snapshot:</p>
+<p>During recovery, the latest snapshot saved by an event-sourced actor, view, stateful writer or stateful processor is loaded and can be handled with the <code class="docutils literal"><span class="pre">onSnapshot</span></code> handler. This handler should initialize internal actor state from the loaded snapshot:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
                    <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
 
@@ -416,7 +592,7 @@
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">filesystem</span><span class="o">.</span><span class="n">dir</span> <span class="k">=</span> <span class="o">/</span><span class="n">my</span><span class="o">/</span><span class="n">storage</span><span class="o">/</span><span class="n">location</span>
 </pre></div>
 </div>
-<p>in <code class="docutils literal"><span class="pre">application.conf</span></code>. The maximum number of stored snapshots per event-sourced actor or view can be configured with</p>
+<p>in <code class="docutils literal"><span class="pre">application.conf</span></code>. The maximum number of stored snapshots per event-sourced actor, view, writer or processor can be configured with</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">filesystem</span><span class="o">.</span><span class="n">snapshots</span><span class="o">-</span><span class="n">per</span><span class="o">-</span><span class="n">emitter</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">3</span>
 </pre></div>
 </div>
@@ -424,13 +600,13 @@
 </div>
 </div>
 <div class="section" id="event-routing">
-<span id="id8"></span><h1>Event routing<a class="headerlink" href="#event-routing" title="Permalink to this headline">¶</a></h1>
-<p>An event that is emitted by an event-sourced actor can be routed to other event-sourced actors and views if they share an <a class="reference internal" href="event-log.html#event-log"><span>Event log</span></a><a class="footnote-reference" href="#id16" id="id9">[5]</a> . The default event routing rules are:</p>
+<span id="id9"></span><h1>Event routing<a class="headerlink" href="#event-routing" title="Permalink to this headline">¶</a></h1>
+<p>An event that is emitted by an event-sourced actor or processor can be routed to other event-sourced actors, views, writers and processors if they share an <a class="reference internal" href="event-log.html#event-log"><span>Event log</span></a><a class="footnote-reference" href="#id17" id="id10">[5]</a> . The default event routing rules are:</p>
 <ul class="simple">
-<li>If an event-sourced actor or view has an undefined <code class="docutils literal"><span class="pre">aggregateId</span></code>, all events are routed to it. It may choose to handle only a subset of them though.</li>
-<li>If an event-sourced actor or view has a defined <code class="docutils literal"><span class="pre">aggregateId</span></code>, only events emitted by event-sourced actors with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> are routed to it.</li>
+<li>If an event-sourced actor, view, writer or processor has an undefined <code class="docutils literal"><span class="pre">aggregateId</span></code>, all events are routed to it. It may choose to handle only a subset of them though.</li>
+<li>If an event-sourced actor, view, writer or processor has a defined <code class="docutils literal"><span class="pre">aggregateId</span></code>, only events emitted by event-sourced actors or processors with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> are routed to it.</li>
 </ul>
-<p>Routing destinations are defined during emission of an event and are persisted together with the event<a class="footnote-reference" href="#id17" id="id10">[6]</a>. This makes routing decisions repeatable during event replay and allows for routing rule changes without affecting past routing decisions. Applications can define additional routing destinations with the <code class="docutils literal"><span class="pre">customDestinationAggregateIds</span></code> parameter of <code class="docutils literal"><span class="pre">persist</span></code>:</p>
+<p>Routing destinations are defined during emission of an event and are persisted together with the event<a class="footnote-reference" href="#id18" id="id11">[6]</a>. This makes routing decisions repeatable during event replay and allows for routing rule changes without affecting past routing decisions. Applications can define additional routing destinations with the <code class="docutils literal"><span class="pre">customDestinationAggregateIds</span></code> parameter of <code class="docutils literal"><span class="pre">persist</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
@@ -458,7 +634,7 @@
 <p>Here, <code class="docutils literal"><span class="pre">ExampleEvent</span></code> is routed to destinations with <code class="docutils literal"><span class="pre">aggregateId</span></code>s <code class="docutils literal"><span class="pre">Some(“a2”)</span></code> and <code class="docutils literal"><span class="pre">Some(“a3”)</span></code> in addition to the default routing destinations with <code class="docutils literal"><span class="pre">aggregateId</span></code>s <code class="docutils literal"><span class="pre">Some(“a1”)</span></code> and <code class="docutils literal"><span class="pre">None</span></code>.</p>
 </div>
 <div class="section" id="reliable-delivery">
-<span id="id11"></span><h1>Reliable delivery<a class="headerlink" href="#reliable-delivery" title="Permalink to this headline">¶</a></h1>
+<span id="id12"></span><h1>Reliable delivery<a class="headerlink" href="#reliable-delivery" title="Permalink to this headline">¶</a></h1>
 <p>Reliable, event-based remote communication between event-sourced actors should be done via a <a class="reference internal" href="event-log.html#replicated-event-log"><span>Replicated event log</span></a>. For reliable communication with other services that cannot connect to a replicated event log, event-sourced actors should use the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a> trait:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
 <span class="k">import</span> <span class="nn">scala.util._</span>
@@ -558,40 +734,40 @@
 <p>Applications can also configure custom serializers for snapshots in the same way as for application-defined events and replication filters (see sections <a class="reference internal" href="#event-serialization"><span>Custom event serialization</span></a> and <a class="reference internal" href="#replication-filter-serialization"><span>Custom replication filter serialization</span></a>).</p>
 <p>Custom snapshot serialization also works for state managed with <code class="docutils literal"><span class="pre">ConcurrentVersions[A,</span> <span class="pre">B]</span></code>. A custom serializer configured for type parameter <code class="docutils literal"><span class="pre">A</span></code> is used whenever a snapshot of type <code class="docutils literal"><span class="pre">ConcurrentVersions[A,</span> <span class="pre">B]</span></code> is saved (see also <a class="reference internal" href="../user-guide.html#tracking-conflicting-versions"><span>Tracking conflicting versions</span></a>).</p>
 <p>Custom serializers can also be configured for the type parameter <code class="docutils literal"><span class="pre">A</span></code> of <code class="docutils literal"><span class="pre">MVRegister[A]</span></code>, <code class="docutils literal"><span class="pre">LWWRegister[A]</span></code> and <code class="docutils literal"><span class="pre">ORSet[A]</span></code>, <a class="reference internal" href="../user-guide.html#commutative-replicated-data-types"><span>Operation-based CRDTs</span></a> for which the corresponding CRDT service interfaces provide a <code class="docutils literal"><span class="pre">save</span></code> method for saving snapshots.</p>
-<table class="docutils footnote" frame="void" id="id12" rules="none">
+<table class="docutils footnote" frame="void" id="id13" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>An explicit <code class="docutils literal"><span class="pre">onEvent</span></code> call may become obsolete in future releases.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id13" rules="none">
+<table class="docutils footnote" frame="void" id="id14" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>The <code class="docutils literal"><span class="pre">customDestinationAggregateIds</span></code> parameter is described in section <a class="reference internal" href="#event-routing"><span>Event routing</span></a>.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id14" rules="none">
+<table class="docutils footnote" frame="void" id="id15" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td>Writes from different event-sourced actors that have <code class="docutils literal"><span class="pre">stateSync</span></code> set to <code class="docutils literal"><span class="pre">true</span></code> are still batched, but not the writes from a single event-sourced actor.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id15" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id6">[4]</a></td><td>Event replay can optionally start from <a class="reference internal" href="#snapshots"><span>Snapshots</span></a> of actor state.</td></tr>
-</tbody>
-</table>
 <table class="docutils footnote" frame="void" id="id16" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id9">[5]</a></td><td><a class="reference internal" href="../architecture.html#processors"><span>Event-sourced processors</span></a> can additionally route events between event logs.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id7">[4]</a></td><td>Event replay can optionally start from <a class="reference internal" href="#snapshots"><span>Snapshots</span></a> of actor state.</td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id17" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id10">[6]</a></td><td>The routing destinations of a <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a> can be obtained with its <code class="docutils literal"><span class="pre">destinationAggregateIds</span></code> method.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id10">[5]</a></td><td>Event-sourced processors can additionally route events between event logs.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id18" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id11">[6]</a></td><td>The routing destinations of a <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a> can be obtained with its <code class="docutils literal"><span class="pre">destinationAggregateIds</span></code> method.</td></tr>
 </tbody>
 </table>
 </div>

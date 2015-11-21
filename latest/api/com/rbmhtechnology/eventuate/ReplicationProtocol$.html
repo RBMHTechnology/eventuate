@@ -294,7 +294,7 @@ dispatch the request to the appropriate log.</p>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationWrite.html"><span class="name">ReplicationWrite</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentSourceVectorTime">currentSourceVectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$ReplicationWrite.html"><span class="name">ReplicationWrite</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentSourceVectorTime">currentSourceVectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span> = <span class="symbol">null</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationWriteextendsProductwithSerializable" title="Permalink" target="_top">
@@ -320,6 +320,23 @@ dispatch the request to the appropriate log.</p>
       </a>
     </span>
       <p class="shortcomment cmt">Failure reply after a <a href="ReplicationProtocol$$ReplicationWrite.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite">ReplicationWrite</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteN" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReplicationWriteNextendsProductwithSerializable"></a>
+      <a id="ReplicationWriteN:ReplicationWriteN"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReplicationProtocol$$ReplicationWriteN.html"><span class="name">ReplicationWriteN</span></a><span class="params">(<span name="writes">writes: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="ReplicationProtocol$$ReplicationWrite.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite">ReplicationWrite</a>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationWriteNextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Instructs an event log to batch-execute the given <code>writes</code>.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ReplicationWriteSuccessextendsProductwithSerializable"></a>
       <a id="ReplicationWriteSuccess:ReplicationWriteSuccess"></a>
@@ -482,6 +499,23 @@ dispatch the request to the appropriate log.</p>
       </a>
     </span>
       
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteNComplete" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReplicationWriteNComplete"></a>
+      <a id="ReplicationWriteNComplete:ReplicationWriteNComplete"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ReplicationProtocol$$ReplicationWriteNComplete$.html"><span class="name">ReplicationWriteNComplete</span></a><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationWriteNComplete" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Completion reply after a <a href="ReplicationProtocol$$ReplicationWriteN.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteN">ReplicationWriteN</a>.</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>

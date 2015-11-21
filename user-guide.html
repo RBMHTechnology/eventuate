@@ -78,9 +78,7 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-logs">Event logs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-actors">Event-sourced actors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-views">Event-sourced views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-processors">Event-sourced processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourcing">Event sourcing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#vector-clocks">Vector clocks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#batching">Batching</a></li>
@@ -102,6 +100,8 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-writers">Event-sourced writers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-processors">Event-sourced processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#state-recovery">State recovery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-routing">Event routing</a></li>
@@ -192,7 +192,7 @@
 </ul>
 <p>The user guide only scratches the surface of Eventuate. You can find further details in the <a class="reference internal" href="reference.html#reference"><span>Reference</span></a>.</p>
 <div class="section" id="event-sourced-actors">
-<h2>Event-sourced actors<a class="headerlink" href="#event-sourced-actors" title="Permalink to this headline">¶</a></h2>
+<span id="guide-event-sourced-actors"></span><h2>Event-sourced actors<a class="headerlink" href="#event-sourced-actors" title="Permalink to this headline">¶</a></h2>
 <p>An event-sourced actor is an actor that captures changes to its internal state as a sequence of events. It <em>persists</em> these events to an event log and <em>replays</em> them to recover internal state after a crash or a planned re-start. This is the basic idea behind <a class="reference external" href="http://martinfowler.com/eaaDev/EventSourcing.html">event sourcing</a>: instead of storing current application state, the full history of changes is stored as <em>immutable facts</em> and current state is derived from these facts.</p>
 <p>Event-sourced actors distinguish between <em>commands</em> and <em>events</em>. During command processing they usually validate external commands against internal state and, if validation succeeds, write one or more events to their event log. During event processing they consume events they have written and update internal state by handling these events.</p>
 <p>Concrete event-sourced actors must implement the <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> trait. The following <code class="docutils literal"><span class="pre">ExampleActor</span></code> maintains state of type <code class="docutils literal"><span class="pre">Vector[String]</span></code> to which entries can be appended:</p>
@@ -541,7 +541,7 @@
 </div>
 </div>
 <div class="section" id="event-sourced-views">
-<h2>Event-sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h2>
+<span id="guide-event-sourced-views"></span><h2>Event-sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h2>
 <p>Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. Concrete event-sourced views must implement the <code class="docutils literal"><span class="pre">EventsourcedView</span></code> trait. In the following example, the view counts all <code class="docutils literal"><span class="pre">Appended</span></code> and <code class="docutils literal"><span class="pre">Resolved</span></code> events emitted by all event-sourced actors to the same <code class="docutils literal"><span class="pre">eventLog</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">akka.actor.ActorRef</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedView</span>
@@ -574,6 +574,10 @@
 </div>
 <p>Event-sourced views handle events in the same way as event-sourced actors by implementing an <code class="docutils literal"><span class="pre">onEvent</span></code> handler. The <code class="docutils literal"><span class="pre">onCommand</span></code> handler in the example processes the read commands <code class="docutils literal"><span class="pre">GetAppendCount</span></code> and <code class="docutils literal"><span class="pre">GetResolveCount</span></code>.</p>
 <p><code class="docutils literal"><span class="pre">ExampleView</span></code> implements the mandatory global unique <code class="docutils literal"><span class="pre">id</span></code> but doesn’t define an <code class="docutils literal"><span class="pre">aggregateId</span></code>. A view that doesn’t define an <code class="docutils literal"><span class="pre">aggregateId</span></code> can consume events from all event-sourced actors on the same event log. If it defines an <code class="docutils literal"><span class="pre">aggregateId</span></code> it can only consume events from event-sourced actors with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> (assuming the default <a class="reference internal" href="reference/event-sourcing.html#event-routing"><span>Event routing</span></a> rules).</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">While event-sourced views maintain view state in-memory, <a class="reference internal" href="reference/event-sourcing.html#ref-event-sourced-writers"><span>Event-sourced writers</span></a> can be used to persist view state to external databases.</p>
+</div>
 </div>
 <div class="section" id="conditional-commands">
 <span id="id8"></span><h2>Conditional commands<a class="headerlink" href="#conditional-commands" title="Permalink to this headline">¶</a></h2>

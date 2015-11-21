@@ -50,10 +50,57 @@ Event replication across locations is reliable. Should there be a network partit
 
 Replication connections can also be configured with replication filters, so that only events matching one or more filter criteria are replicated. This is especially useful for smaller locations (for example, mobile devices) that only need to exchange a subset of events with other locations.
 
+Event sourcing
+--------------
+
+Eventuate provides several abstractions for building event-sourced application components. They all derive application state from events stored in :ref:`event-logs` but follow different strategies for managing derived state. A summary is given in :ref:`arch-tab1`, more information in the following subsections. For further details, follow the links in the *Details* column.
+
+.. _arch-tab1:
+.. list-table:: Table 1: Event sourcing abstractions
+   :widths: 20 70 10
+   :header-rows: 1
+
+   * - Abstraction
+     - Description
+     - Details
+   * - :ref:`Event-sourced actor <event-sourced-actors>`
+     - | Consumes events from its event log and 
+       | emits new events to the same event log 
+       | during command processing. Derived state 
+       | is an in-memory write model, representing 
+       | the command-side (C) of CQRS.
+     - - :ref:`User guide <guide-event-sourced-actors>`
+       - :ref:`Reference <ref-event-sourced-actors>`
+       - `API docs <latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor>`_
+   * - :ref:`Event-sourced view<event-sourced-views>`
+     - | Consumes events from its event log but 
+       | cannot emit new events. Derived state 
+       | is an in-memory read model, representing 
+       | the query-side (Q) of CQRS.
+     - - :ref:`User guide <guide-event-sourced-views>`
+       - :ref:`Reference <ref-event-sourced-views>`
+       - `API docs <latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedView>`_
+   * - :ref:`Event-sourced writer<event-sourced-writers>`
+     - | Consumes events from its event log and 
+       | batch-updates an external query database 
+       | using event data. Derived state is a persistent
+       | read model, representing the query-side (Q) of
+       | CQRS.
+     - - :ref:`Reference <ref-event-sourced-writers>`
+       - `API docs <latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedWriter>`_
+   * - :ref:`Event-sourced processor<event-sourced-processors>`
+     - | Consumes events from its event log and 
+       | emits new events to a target event log 
+       | during event processing. Processors can
+       | connect event logs to event processing
+       | pipelines or graphs.
+     - - :ref:`Reference <ref-event-sourced-processors>`
+       - `API docs <latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor>`_
+
 .. _event-sourced-actors:
 
 Event-sourced actors
---------------------
+~~~~~~~~~~~~~~~~~~~~
 
 Event-sourced actors produce events to and consume events from an event log. During *command processing* they usually validate external commands against internal state and, if validation succeeds, write one or more events to their event log. During *event processing* they consume events they have written and update internal state by handling these events. This is the basic idea behind `event sourcing`_. When used in context of a `CQRS`_ architecture, event-sourced actors usually implement the command-side (C).
 
@@ -88,17 +135,31 @@ Event-sourced actors may also interact with external services by sending command
 
    External service integration.
 
+.. _event-sourced-views:
+
 Event-sourced views
--------------------
+~~~~~~~~~~~~~~~~~~~
 
-Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. Views do not only maintain state in-memory but often persist it to a database. By additionally storing the sequence number of the last processed event in the database, writing can be made idempotent. When used in context of a `CQRS`_ architecture, views implement the query-side (Q).
+.. role:: strike
+   :class: wy-text-strike
 
-.. _processors:
+Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. When used in context of a `CQRS`_ architecture, views implement the query-side (Q).
+
+Applications use event-sourced views to create in-memory read models from consumed events. Applications that want to create persistent read models should use :ref:`event-sourced-writers` instead.
+
+.. _event-sourced-writers:
+
+Event-sourced writers
+~~~~~~~~~~~~~~~~~~~~~
+
+Event-sourced writers are a specialization of event-sourced views. They also consume events from an event log but persist the created read model to an external, application-specific query database (which can be a relational database, a graph database or a simple key value store, for example). Event-sourced writers update the query database in incremental batches. For query processing, applications use the external query database directly.
+
+.. _event-sourced-processors:
 
 Event-sourced processors
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-An event-sourced processor consumes events from one or more event logs, processes them (stateless or stateful) and produces the processed events to another event log. Event-sourced processors are gateways between otherwise partitioned event logs. They are not implemented yet.
+An event-sourced processor consumes events from one event log, processes them (stateless or stateful) and produces the processed events to another event log. Event-sourced processors are idempotent producers and a specialization of event-sourced writers. Applications use processors to connect event logs to event stream processing pipelines and graphs. Connectivity to other stream processing solutions is given by :ref:`adapters`.
 
 .. _operation-based-crdts:
 
@@ -132,6 +193,8 @@ Eventuate internally uses batching to optimize read and write throughput. It is 
 - consuming events from the event log: Events can be read from the event log in batches which allows for efficient integration of external consumers.
 
 - replicating events: Events are replicated in batches of configurable size. They are batch-read from a source log, batch-transferred over a replication connection and batch-written to a target log.
+
+- writing to external databases: :ref:`event-sourced-writers` update persistent read models in incremental batches. When a write to an external query database is in progress, new event processing results are batched in-memory and written with the next scheduled write.
 
 .. _adapters:
 
@@ -168,6 +231,4 @@ We haven’t started yet working on this. Should you have any preferences or pro
 .. _ticket 103: https://github.com/RBMHTechnology/eventuate/issues/103
 .. _let us know: https://groups.google.com/forum/#!forum/eventuate
 
-.. [#] :ref:`processors` can be used to connect otherwise partitioned event logs.  
-
-
+.. [#] :ref:`event-sourced-processors` can be used to connect otherwise partitioned event logs.  

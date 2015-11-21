@@ -197,6 +197,23 @@ during event replication.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#before" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="before(vectorTime:com.rbmhtechnology.eventuate.VectorTime):Boolean"></a>
+      <a id="before(VectorTime):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">before</span><span class="params">(<span name="vectorTime">vectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@before(vectorTime:com.rbmhtechnology.eventuate.VectorTime):Boolean" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Returns <code>true</code> if this event happened before or at the given <code>vectorTime</code>.</p>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -524,45 +541,24 @@ routed to event-sourced actors and views with an undefined <code>aggregateId</co
       <p class="shortcomment cmt">Id of the causality-tracking source of concurrent activity.</p><div class="fullcomment"><div class="comment cmt"><p>Id of the causality-tracking source of concurrent activity. By default, this is the id of the event log
                  that initially wrote the event. If the emitting <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> has set <code>sharedClockEntry</code> to <code>false</code>
                  then this is the id of that actor (which is the <code>emitterId</code>).</p></div></div>
-    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#replicate" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="replicate(vectorTime:com.rbmhtechnology.eventuate.VectorTime):Boolean"></a>
-      <a id="replicate(VectorTime):Boolean"></a>
+    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#replicable" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="replicable(vectorTime:com.rbmhtechnology.eventuate.VectorTime,filter:com.rbmhtechnology.eventuate.ReplicationFilter):Boolean"></a>
+      <a id="replicable(VectorTime,ReplicationFilter):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">replicate</span><span class="params">(<span name="vectorTime">vectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">replicable</span><span class="params">(<span name="vectorTime">vectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="filter">filter: <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@replicate(vectorTime:com.rbmhtechnology.eventuate.VectorTime):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@replicable(vectorTime:com.rbmhtechnology.eventuate.VectorTime,filter:com.rbmhtechnology.eventuate.ReplicationFilter):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Returns <code>true</code> if the event is a valid replication candidate.</p><div class="fullcomment"><div class="comment cmt"><p>Returns <code>true</code> if the event is a valid replication candidate. A valid candidate
-has a <code>vectorTimestamp</code> that is not <code>&lt;=</code> the given <code>vectorTime</code>.
-</p></div></div>
-    </li><li name="com.rbmhtechnology.eventuate.DurableEvent#replicate" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="replicate(vectorTime:com.rbmhtechnology.eventuate.VectorTime,filter:com.rbmhtechnology.eventuate.ReplicationFilter):Boolean"></a>
-      <a id="replicate(VectorTime,ReplicationFilter):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">replicate</span><span class="params">(<span name="vectorTime">vectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="filter">filter: <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@replicate(vectorTime:com.rbmhtechnology.eventuate.VectorTime,filter:com.rbmhtechnology.eventuate.ReplicationFilter):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Returns <code>true</code> if this event is a valid replication candidate.</p><div class="fullcomment"><div class="comment cmt"><p>Returns <code>true</code> if this event is a valid replication candidate. A valid candidate
-has a <code>vectorTimestamp</code> that is not <code>&lt;=</code> the given <code>vectorTime</code> and passes the
-given replication <code>filter</code>.
-</p></div></div>
+      <p class="shortcomment cmt">Returns <code>true</code> if this event did not happen before or at the given <code>vectorTime</code>
+and passes the given replication <code>filter</code>.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

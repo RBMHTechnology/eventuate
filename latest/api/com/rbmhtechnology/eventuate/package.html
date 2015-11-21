@@ -270,6 +270,38 @@ within the <code>onCommand</code> command handler. The command handler may only 
 not modify it. Internal state may only be modified within <code>onEvent</code>.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
 </p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="EventsourcedProcessorextendsEventsourcedWriter[Long,Long]"></a>
+      <a id="EventsourcedProcessor:EventsourcedProcessor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcedProcessor.html"><span class="name">EventsourcedProcessor</span></a><span class="result"> extends <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>[<span class="extype" name="scala.Long">Long</span>, <span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@EventsourcedProcessorextendsEventsourcedWriter[Long,Long]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">An <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> that writes processed events to a <code>targetEventLog</code>.</p><div class="fullcomment"><div class="comment cmt"><p>An <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> that writes processed events to a <code>targetEventLog</code>. <code>EventsourcedProcessor</code>
+is an idempotent writer that guarantees that no duplicates are ever written to the target event log,
+also under failure conditions. Hence, applications don't need to take extra care about idempotency.
+Processed events are returned by <code>processEvent</code>, an application-defined event handler that is called
+with events stored in the source <code>eventLog</code>.</p><p>The <code>processEvent</code> event handler may also update actor state. When a processor (re)starts, its state is
+automatically recovered by replaying events, optionally starting from a snapshot. Snapshots of processor
+state can be saved with the <code>save</code> method in the processor's <code>onCommand</code> handler. An event-sourced processor
+that doesn't need to maintain internal state (= stateless processor) should implement <a href="StatelessProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a>
+instead.</p><p>Usually, a processor's source event log is different from its target event log. If a processor needs to
+write processed events back to its source event log, it must reserve its own entry in the vector clock by
+setting <code>sharedClockEntry</code> to <code>false</code>.</p><p>During initialization, a processor reads the processing progress from the target event log. The timeout
+for this read operation can be configured with the <code>eventuate.processor.read-timeout</code> parameter for all
+event-sourced processors or defined on a per class or instance basis by overriding <code>readTimeout</code>. The timeout
+for write operations to the target log can be configured with the <code>eventuate.processor.write-timeout</code> parameter
+for all event-sourced processors or defined on a per class or instance basis by overriding <code>writeTimeout</code>.
+</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EventsourcedViewextendsActorwithConditionalCommandswithStashwithActorLogging"></a>
       <a id="EventsourcedView:EventsourcedView"></a>
@@ -295,9 +327,50 @@ that snapshot or is not overridden at all, event replay starts from scratch. New
 not covered by the snapshot are handled by <code>onEvent</code> after <code>onSnapshot</code> returns.</p><p>By default, an <code>EventsourcedView</code> does not define an <code>aggregateId</code>. In this case, the <code>eventLog</code>
 pushes all events to this actor. If it defines an <code>aggregateId</code>, the <code>eventLog</code> actor only pushes
 those events that contain that <code>aggregateId</code> value in their <code>routingDestinations</code> set.</p><p>An <code>EventsourcedView</code> can only consume events from its <code>eventLog</code> but cannot produce new events.
-Commands sent to an <code>EventsourcedView</code> during recovery are delayed until recovery completes.
-</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>
-</p></span><span class="cmt"><p><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></p></span></dd></dl></div>
+Commands sent to an <code>EventsourcedView</code> during recovery are delayed until recovery completes.</p><p>Event replay is subject to backpressure. After a configurable number of events
+(see <code>eventuate.replay.chunk-size-max</code> configuration parameter), replay is suspended until these
+events have been handled by <code>onEvent</code> and then resumed again. There's no backpressure mechanism
+for live event processing yet (but will come in future releases).
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>
+</p></span><span class="cmt"><p><a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></p></span><span class="cmt"><p><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></p></span><span class="cmt"><p><a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriter" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="EventsourcedWriter[R,W]extendsEventsourcedView"></a>
+      <a id="EventsourcedWriter[R,W]:EventsourcedWriter[R,W]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcedWriter.html"><span class="name">EventsourcedWriter</span></a><span class="tparams">[<span name="R">R</span>, <span name="W">W</span>]</span><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@EventsourcedWriter[R,W]extendsEventsourcedView" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">An <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> designed to update external databases from events stored in its event log.</p><div class="fullcomment"><div class="comment cmt"><p>An <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> designed to update external databases from events stored in its event log. It
+supports event processing patterns optimized for batch-updating external databases to create persistent
+views or read models:</p><ul><li>During initialization, a concrete <code>EventsourcedWriter</code> asynchronously <code>read</code>s data from the external
+   database to obtain information about the actual event processing progress. For example, if the last
+   processed event sequence number is written with every batch update to the database, it can be read
+   during initialization and used by the writer to detect duplicates during further event processing so
+   that event processing can be made idempotent.</li><li>During event processing in its <code>onEvent</code> handler, a concrete writer usually builds a database-specific
+   write-batch (representing an incremental update). After a configurable number of events, <code>EventsourcedWriter</code>
+   calls <code>write</code> to asynchronously write the prepared batch to the database.</li></ul><p>An <code>EventsourcedWriter</code> may also implement an <code>onCommand</code> handler to process commands and save snapshots of
+internal state. Internal state is recovered by replaying events from the event log, optionally starting from
+a saved snapshot (see <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> for details). If a writer doesn't require full internal state
+recovery, it may define a custom starting position in the event log by returning a sequence number from
+<code>readSuccess</code>. If full internal state recovery is required instead, <code>readSuccess</code> should return <code>None</code>
+(which is the default).</p><p>Implementation notes:</p><ul><li>After having started an asynchronous write but before returning from <code>write</code>, a writer should clear the
+   prepared write batch so that further events can be processed while the asynchronous write operation is
+   in progress.</li><li>Event processing during replay (either starting from a default or application-defined position) is subject
+   to backpressure. After a configurable number of events (see <code>eventuate.replay.chunk-size-max</code> configuration
+   parameter), replay is suspended until these events have been written to the target database and then resumed
+   again. There's no backpressure mechanism for live event processing yet (but will come in future releases).
+</li></ul></div><dl class="paramcmts block"><dt class="tparam">R</dt><dd class="cmt"><p>Result type of the asynchronous read operation.</p></dd><dt class="tparam">W</dt><dd class="cmt"><p>Result type of the asynchronous write operations.
+</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="StatelessProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a>
+</p></span><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a></p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationConnection" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ReplicationConnectionextendsProductwithSerializable"></a>
       <a id="ReplicationConnection:ReplicationConnection"></a>
@@ -414,6 +487,29 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       <p class="shortcomment cmt">Snapshot metadata.</p><div class="fullcomment"><div class="comment cmt"><p>Snapshot metadata.
 </p></div><dl class="paramcmts block"><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that saves the snapshot.</p></dd><dt class="param">sequenceNr</dt><dd class="cmt"><p>The highest event sequence number covered by the snapshot.
 </p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.StatelessProcessor" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="StatelessProcessorextendsEventsourcedProcessor"></a>
+      <a id="StatelessProcessor:StatelessProcessor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="StatelessProcessor.html"><span class="name">StatelessProcessor</span></a><span class="result"> extends <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@StatelessProcessorextendsEventsourcedProcessor" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">An <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> whose <code>processEvent</code> handler does <b>not</b> update actor state.</p><div class="fullcomment"><div class="comment cmt"><p>An <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> whose <code>processEvent</code> handler does <b>not</b> update actor state. A
+<a href="StatelessProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a> is optimized for fast startup and failure recovery times, at the cost of
+not being able to have its own entry in the vector clock (see overridden method <code>sharedClockEntry</code>).
+Consequently, a stateless processor can not write processed events back to its source event log i.e.
+the source and the target event log of a stateless processor must be different.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>.
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.VectorClock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="VectorClockextendsProductwithSerializable"></a>
       <a id="VectorClock:VectorClock"></a>
@@ -576,6 +672,40 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.package@DurableEvent" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EventsourcedProcessor"></a>
+      <a id="EventsourcedProcessor:EventsourcedProcessor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcedProcessor$.html"><span class="name">EventsourcedProcessor</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@EventsourcedProcessor" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EventsourcedWriter"></a>
+      <a id="EventsourcedWriter:EventsourcedWriter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcedWriter$.html"><span class="name">EventsourcedWriter</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@EventsourcedWriter" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>

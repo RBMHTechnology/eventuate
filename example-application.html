@@ -78,9 +78,7 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-logs">Event logs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-actors">Event-sourced actors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-views">Event-sourced views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourced-processors">Event-sourced processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourcing">Event sourcing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#vector-clocks">Vector clocks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#batching">Batching</a></li>
@@ -102,6 +100,8 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-writers">Event-sourced writers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-processors">Event-sourced processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#state-recovery">State recovery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-routing">Event routing</a></li>
@@ -179,7 +179,7 @@
             
   <div class="section" id="example-application">
 <span id="id1"></span><h1>Example application<a class="headerlink" href="#example-application" title="Permalink to this headline">¶</a></h1>
-<p>The example application is an over-simplified order management application that allows users to add and remove items from orders via a command-line interface. Order instances are replicated across locations and can be updated at any location. Orders remain writeable during partitions and conflicting updates can be resolved interactively when the partition heals. The example application source code is available as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example">Scala version</a> and as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/japi">Java 8 version</a>.</p>
+<p>The example application is an over-simplified order management application that allows users to add and remove items from orders via a command-line interface. Order instances are replicated across locations and can be updated at any location. Orders remain writeable during partitions and conflicting updates can be resolved interactively when the partition heals. The example application source code is available as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example/ordermgnt">Scala version</a> and as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/ordermgnt/japi">Java 8 version</a>.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">There is a tutorial-style <a class="reference external" href="https://www.typesafe.com/community/core-tools/activator-and-sbt">activator</a> template for the scala-version that guides you through the code: <a class="reference external" href="https://www.typesafe.com/activator/template/akka-eventuate-scala">akka-eventuate-scala</a>.</p>

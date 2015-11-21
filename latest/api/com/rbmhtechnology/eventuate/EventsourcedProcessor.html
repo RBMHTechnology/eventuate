@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>ConfirmedDelivery - com.rbmhtechnology.eventuate.ConfirmedDelivery</title>
-          <meta name="description" content="ConfirmedDelivery - com.rbmhtechnology.eventuate.ConfirmedDelivery" />
-          <meta name="keywords" content="ConfirmedDelivery com.rbmhtechnology.eventuate.ConfirmedDelivery" />
+          <title>EventsourcedProcessor - com.rbmhtechnology.eventuate.EventsourcedProcessor</title>
+          <meta name="description" content="EventsourcedProcessor - com.rbmhtechnology.eventuate.EventsourcedProcessor" />
+          <meta name="keywords" content="EventsourcedProcessor com.rbmhtechnology.eventuate.EventsourcedProcessor" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.ConfirmedDelivery';
+            var hash = 'com.rbmhtechnology.eventuate.EventsourcedProcessor';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -28,10 +28,10 @@
         </head>
         <body class="type">
       <div id="definition">
-        <a href="ConfirmedDelivery$.html" title="Go to companion"><img src="../../../lib/trait_to_object_big.png" /></a>
+        <a href="EventsourcedProcessor$.html" title="Go to companion"><img src="../../../lib/trait_to_object_big.png" /></a>
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a></p>
-        <h1><a href="ConfirmedDelivery$.html" title="Go to companion">ConfirmedDelivery</a></h1> <span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery" title="Permalink" target="_top">
+        <h1><a href="EventsourcedProcessor$.html" title="Go to companion">EventsourcedProcessor</a></h1> <span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -43,25 +43,31 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">ConfirmedDelivery</span><span class="result"> extends <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></span>
+        <span class="name">EventsourcedProcessor</span><span class="result"> extends <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>[<span class="extype" name="scala.Long">Long</span>, <span class="extype" name="scala.Long">Long</span>]</span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Supports the reliable delivery of messages to destinations by enabling applications
-to redeliver messages until they are confirmed by their destinations. Both, message
-delivery and confirmation must be executed within an <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>'s event handler.
-New messages are delivered by calling <code>deliver</code>. When the destination replies with a confirmation
-message, the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> must generate an event for which the handler calls <code>confirm</code>.
-Until confirmation, delivered messages are tracked as <i>unconfirmed</i> messages. Unconfirmed
-messages can be redelivered by calling <code>redeliverUnconfirmed</code>. This is usually done within a
-command handler by processing scheduler messages. Redelivery occurs automatically when the
-<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> successfully recovered after initial start or a re-start.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>An <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> that writes processed events to a <code>targetEventLog</code>. <code>EventsourcedProcessor</code>
+is an idempotent writer that guarantees that no duplicates are ever written to the target event log,
+also under failure conditions. Hence, applications don't need to take extra care about idempotency.
+Processed events are returned by <code>processEvent</code>, an application-defined event handler that is called
+with events stored in the source <code>eventLog</code>.</p><p>The <code>processEvent</code> event handler may also update actor state. When a processor (re)starts, its state is
+automatically recovered by replaying events, optionally starting from a snapshot. Snapshots of processor
+state can be saved with the <code>save</code> method in the processor's <code>onCommand</code> handler. An event-sourced processor
+that doesn't need to maintain internal state (= stateless processor) should implement <a href="StatelessProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a>
+instead.</p><p>Usually, a processor's source event log is different from its target event log. If a processor needs to
+write processed events back to its source event log, it must reserve its own entry in the vector clock by
+setting <code>sharedClockEntry</code> to <code>false</code>.</p><p>During initialization, a processor reads the processing progress from the target event log. The timeout
+for this read operation can be configured with the <code>eventuate.processor.read-timeout</code> parameter for all
+event-sourced processors or defined on a per class or instance basis by overriding <code>readTimeout</code>. The timeout
+for write operations to the target log can be configured with the <code>eventuate.processor.write-timeout</code> parameter
+for all event-sourced processors or defined on a per class or instance basis by overriding <code>writeTimeout</code>.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>[<span class="extype" name="scala.Long">Long</span>, <span class="extype" name="scala.Long">Long</span>], <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
             <span class="toggle">Known Subclasses</span>
-            <div class="subClasses hiddenContent"><a href="AbstractEventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor">AbstractEventsourcedActor</a></div>
+            <div class="subClasses hiddenContent"><a href="StatelessProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a></div>
           </div></div>
         
 
@@ -79,7 +85,7 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.ConfirmedDelivery"><span>ConfirmedDelivery</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedActor"><span>EventsourcedActor</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.ActorLogging"><span>ActorLogging</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="com.rbmhtechnology.eventuate.ConditionalCommands"><span>ConditionalCommands</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.EventsourcedProcessor"><span>EventsourcedProcessor</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedWriter"><span>EventsourcedWriter</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.ActorLogging"><span>ActorLogging</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="com.rbmhtechnology.eventuate.ConditionalCommands"><span>ConditionalCommands</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -113,11 +119,28 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
         <span class="name">Handler</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> = (<span class="extype" name="scala.util.Try">Try</span>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView.Handler.A">A</span>]) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@Handler[A]=scala.util.Try[A]=&gt;Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@Handler[A]=scala.util.Try[A]=&gt;Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor.Process" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Process=com.rbmhtechnology.eventuate.EventsourcedProcessor.Process"></a>
+      <a id="Process:Process"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Process</span><span class="result"> = <span class="extype" name="scala.PartialFunction">PartialFunction</span>[<span class="extype" name="scala.Any">Any</span>, <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<span class="extype" name="scala.Any">Any</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@Process=com.rbmhtechnology.eventuate.EventsourcedProcessor.Process" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Type of this processor's event handler.</p>
     </li><li name="akka.actor.Actor.Receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Receive=akka.actor.Actor.Receive"></a>
       <a id="Receive:Receive"></a>
@@ -130,7 +153,7 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
         <span class="name">Receive</span><span class="result"> = <span class="extype" name="scala.PartialFunction">PartialFunction</span>[<span class="extype" name="scala.Any">Any</span>, <span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@Receive=akka.actor.Actor.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@Receive=akka.actor.Actor.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -152,7 +175,7 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
         <span class="name">eventLog</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@eventLog:akka.actor.ActorRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@eventLog:akka.actor.ActorRef" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -170,7 +193,7 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
         <span class="name">id</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@id:String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@id:String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -185,33 +208,50 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onCommand</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery.Receive">Receive</a></span>
+        <span class="name">onCommand</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor.Receive">Receive</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@onCommand:EventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@onCommand:EventsourcedView.this.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Command handler.</p><div class="fullcomment"><div class="comment cmt"><p>Command handler.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#onEvent" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="onEvent:EventsourcedView.this.Receive"></a>
-      <a id="onEvent:Receive"></a>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#processEvent" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="processEvent:EventsourcedProcessor.this.Process"></a>
+      <a id="processEvent:Process"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onEvent</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery.Receive">Receive</a></span>
+        <span class="name">processEvent</span><span class="result">: <a href="#Process=com.rbmhtechnology.eventuate.EventsourcedProcessor.Process" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor.Process">Process</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@onEvent:EventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@processEvent:EventsourcedProcessor.this.Process" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Event handler.</p><div class="fullcomment"><div class="comment cmt"><p>Event handler.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+      <p class="shortcomment cmt">This processor's event handler.</p><div class="fullcomment"><div class="comment cmt"><p>This processor's event handler. It may generate zero or more processed events per source event.
+</p></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#targetEventLog" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="targetEventLog:akka.actor.ActorRef"></a>
+      <a id="targetEventLog:ActorRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">targetEventLog</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@targetEventLog:akka.actor.ActorRef" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">This processor's target event log.</p>
     </li></ol>
             </div>
 
@@ -229,7 +269,7 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -246,7 +286,7 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@##():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@##():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -263,7 +303,7 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -280,7 +320,7 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
         <span class="name">aggregateId</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@aggregateId:Option[String]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@aggregateId:Option[String]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -302,7 +342,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundPostRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@aroundPostRestart(reason:Throwable):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@aroundPostRestart(reason:Throwable):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -319,7 +359,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundPostStop</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@aroundPostStop():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@aroundPostStop():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -336,7 +376,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundPreRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="message">message: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Any">Any</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@aroundPreRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@aroundPreRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -353,7 +393,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundPreStart</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@aroundPreStart():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@aroundPreStart():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -370,7 +410,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundReceive</span><span class="params">(<span name="receive">receive: <span class="extype" name="akka.actor.Actor.Receive">akka.actor.Actor.Receive</span></span>, <span name="msg">msg: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@aroundReceive(receive:akka.actor.Actor.Receive,msg:Any):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@aroundReceive(receive:akka.actor.Actor.Receive,msg:Any):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -387,7 +427,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -404,7 +444,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@clone():Object" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@clone():Object" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -415,23 +455,6 @@ is defined it will only receive events with a matching aggregate id in
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ConfirmedDelivery#confirm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="confirm(deliveryId:String):Unit"></a>
-      <a id="confirm(String):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">confirm</span><span class="params">(<span name="deliveryId">deliveryId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@confirm(deliveryId:String):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Confirms the message delivery identified by <code>deliveryId</code>.</p>
     </li><li name="akka.actor.Actor#context" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="context:akka.actor.ActorContext"></a>
       <a id="context:ActorContext"></a>
@@ -444,32 +467,11 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">context</span><span class="result">: <span class="extype" name="akka.actor.ActorContext">ActorContext</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@context:akka.actor.ActorContext" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@context:akka.actor.ActorContext" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ConfirmedDelivery#deliver" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="deliver(deliveryId:String,message:Any,destination:akka.actor.ActorPath):Unit"></a>
-      <a id="deliver(String,Any,ActorPath):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">deliver</span><span class="params">(<span name="deliveryId">deliveryId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="message">message: <span class="extype" name="scala.Any">Any</span></span>, <span name="destination">destination: <span class="extype" name="akka.actor.ActorPath">ActorPath</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@deliver(deliveryId:String,message:Any,destination:akka.actor.ActorPath):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Delivers the given <code>message</code> to a <code>destination</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Delivers the given <code>message</code> to a <code>destination</code>. The delivery of <code>message</code> is identified by
-the given <code>deliveryId</code> which must be unique in context of the sending actor. The message is
-tracked as unconfirmed message until delivery is confirmed with <code>confirm</code>, using the same
-<code>deliveryId</code>.
-</p></div></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -482,7 +484,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -499,7 +501,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@equals(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -516,7 +518,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -539,7 +541,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -556,7 +558,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@hashCode():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@hashCode():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -573,7 +575,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">instanceId</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@instanceId:Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@instanceId:Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -590,7 +592,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -607,7 +609,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">lastEmitterAggregateId</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@lastEmitterAggregateId:Option[String]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@lastEmitterAggregateId:Option[String]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -625,7 +627,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">lastEmitterId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@lastEmitterId:String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@lastEmitterId:String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -643,7 +645,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">lastSequenceNr</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@lastSequenceNr:Long" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@lastSequenceNr:Long" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -661,7 +663,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">lastSystemTimestamp</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@lastSystemTimestamp:Long" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@lastSystemTimestamp:Long" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -679,7 +681,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">lastVectorTimestamp</span><span class="result">: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -697,7 +699,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">log</span><span class="result">: <span class="extype" name="akka.event.LoggingAdapter">LoggingAdapter</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@log:akka.event.LoggingAdapter" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@log:akka.event.LoggingAdapter" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -714,7 +716,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -731,7 +733,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@notify():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -748,11 +750,29 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#onEvent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onEvent:EventsourcedProcessor.this.Receive"></a>
+      <a id="onEvent:Receive"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">onEvent</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor.Receive">Receive</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@onEvent:EventsourcedProcessor.this.Receive" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Event handler.</p><div class="fullcomment"><div class="comment cmt"><p>Event handler.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#onRecovered" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="onRecovered():Unit"></a>
       <a id="onRecovered():Unit"></a>
@@ -765,7 +785,7 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="name">onRecovered</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@onRecovered():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@onRecovered():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -780,66 +800,15 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onSnapshot</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery.Receive">Receive</a></span>
+        <span class="name">onSnapshot</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor.Receive">Receive</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@onSnapshot:EventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@onSnapshot:EventsourcedView.this.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Snapshot handler.</p><div class="fullcomment"><div class="comment cmt"><p>Snapshot handler.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#persist" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="persist[A](event:A,customDestinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit"></a>
-      <a id="persist[A](A,Set[String])(Handler[A]):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">persist</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="event">event: <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persist.A">A</span></span>, <span name="customDestinationAggregateIds">customDestinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persist.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@persist[A](event:A,customDestinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Asynchronously persists the given <code>event</code> and calls <code>handler</code> with the persist result.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously persists the given <code>event</code> and calls <code>handler</code> with the persist result.
-The <code>handler</code> is called during a separate message dispatch by this actor, hence, it is
-safe to modify internal state within <code>handler</code>. The <code>handler</code> can also obtain a reference
-to the initial command sender via <code>sender()</code>.</p><p>By default, the event is routed to event-sourced destinations with an undefined <code>aggregateId</code>.
-If this actor's <code>aggregateId</code> is defined it is additionally routed to all actors with the same
-<code>aggregateId</code>. Further routing destinations can be defined with the <code>customDestinationAggregateIds</code>
-parameter.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#persistN" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="persistN[A](events:Seq[A],onLast:EventsourcedActor.this.Handler[A],customDestinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit"></a>
-      <a id="persistN[A](Seq[A],Handler[A],Set[String])(Handler[A]):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">persistN</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="events">events: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistN.A">A</span>]</span>, <span name="onLast">onLast: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistN.A">A</span>] = <span class="symbol">(_: Try[A]) =&gt; ()</span></span>, <span name="customDestinationAggregateIds">customDestinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor.persistN.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@persistN[A](events:Seq[A],onLast:EventsourcedActor.this.Handler[A],customDestinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Asynchronously persists a sequence of <code>events</code> and calls <code>handler</code> with the persist
-results.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously persists a sequence of <code>events</code> and calls <code>handler</code> with the persist
-results. The <code>handler</code> is called for each event in the sequence during a separate
-message dispatch by this actor, hence, it is safe to modify internal state within
-<code>handler</code>. The <code>handler</code> can also obtain a reference to the initial command sender
-via <code>sender()</code>. The <code>onLast</code> handler is additionally called for the last event in
-the sequence.</p><p>By default, the event is routed to event-sourced destinations with an undefined <code>aggregateId</code>.
-If this actor's <code>aggregateId</code> is defined it is additionally routed to all actors with the same
-<code>aggregateId</code>. Further routing destinations can be defined with the <code>customDestinationAggregateIds</code>
-parameter.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></dd></dl></div>
     </li><li name="akka.actor.Actor#postRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="postRestart(reason:Throwable):Unit"></a>
       <a id="postRestart(Throwable):Unit"></a>
@@ -852,7 +821,7 @@ parameter.
         <span class="name">postRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@postRestart(reason:Throwable):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@postRestart(reason:Throwable):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -875,7 +844,7 @@ parameter.
         <span class="name">postStop</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@postStop():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@postStop():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -893,13 +862,13 @@ parameter.
         <span class="name">preRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="message">message: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Any">Any</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@preRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@preRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Unstashes all commands from internal stash and calls <code>super.preRestart</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Unstashes all commands from internal stash and calls <code>super.preRestart</code>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → UnrestrictedStash → Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#preStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#preStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="preStart():Unit"></a>
       <a id="preStart():Unit"></a>
       <h4 class="signature">
@@ -911,12 +880,92 @@ parameter.
         <span class="name">preStart</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@preStart():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@preStart():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Initiates recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Initiates recovery.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#read" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="read():scala.concurrent.Future[Long]"></a>
+      <a id="read():Future[Long]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">read</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@read():scala.concurrent.Future[Long]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Asynchronously reads an initial value from the target database, usually to obtain information about
+event processing progress.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads an initial value from the target database, usually to obtain information about
+event processing progress. This method is called during initialization.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriter#readFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="readFailure(cause:Throwable):Unit"></a>
+      <a id="readFailure(Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@readFailure(cause:Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Called with failure details after a <code>write</code> operation failed.</p><div class="fullcomment"><div class="comment cmt"><p>Called with failure details after a <code>write</code> operation failed. Throws <a href="EventsourcedWriter$$ReadException.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter.ReadException">EventsourcedWriter#ReadException</a>
+by default (causing the writer to restart) and can be overridden.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#readSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="readSuccess(progress:Long):Option[Long]"></a>
+      <a id="readSuccess(Long):Option[Long]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readSuccess</span><span class="params">(<span name="progress">progress: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@readSuccess(progress:Long):Option[Long]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Called with a read result after a <code>read</code> operation successfully completes.</p><div class="fullcomment"><div class="comment cmt"><p>Called with a read result after a <code>read</code> operation successfully completes. This method may update
+internal actor state. If <code>None</code> is returned, the writer continues with state recovery by replaying
+events, optionally starting from a snapshot. If the return value is defined, replay starts from the
+returned sequence number without ever loading a snapshot. Does nothing and returns <code>None</code> by default
+and can be overridden.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#readTimeout" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="readTimeout:scala.concurrent.duration.FiniteDuration"></a>
+      <a id="readTimeout:FiniteDuration"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readTimeout</span><span class="result">: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@readTimeout:scala.concurrent.duration.FiniteDuration" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The default read timeout configured with the <code>eventuate.processor.read-timeout</code> parameter.</p><div class="fullcomment"><div class="comment cmt"><p>The default read timeout configured with the <code>eventuate.processor.read-timeout</code> parameter.
+Can be overridden.
+</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="receive:EventsourcedView.this.Receive"></a>
       <a id="receive:Receive"></a>
@@ -926,10 +975,10 @@ parameter.
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">receive</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery.Receive">Receive</a></span>
+        <span class="name">receive</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor.Receive">Receive</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@receive:EventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@receive:EventsourcedView.this.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -947,7 +996,7 @@ parameter.
         <span class="name">recovering</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@recovering:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@recovering:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -956,23 +1005,6 @@ replayed events from the event log.</p><div class="fullcomment"><div class="comm
 replayed events from the event log. Returns <code>false</code> after recovery completed and
 the actor switches to consuming live events.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ConfirmedDelivery#redeliverUnconfirmed" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="redeliverUnconfirmed():Unit"></a>
-      <a id="redeliverUnconfirmed():Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">redeliverUnconfirmed</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@redeliverUnconfirmed():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Redelivers all unconfirmed messages.</p>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#replayChunkSizeMax" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="replayChunkSizeMax:Int"></a>
       <a id="replayChunkSizeMax:Int"></a>
@@ -985,7 +1017,7 @@ the actor switches to consuming live events.
         <span class="name">replayChunkSizeMax</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@replayChunkSizeMax:Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@replayChunkSizeMax:Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1003,10 +1035,10 @@ is resumed automatically after all replayed events haven been handled by this ac
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">save</span><span class="params">(<span name="snapshot">snapshot: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery.Handler">Handler</a>[<a href="SnapshotMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.SnapshotMetadata">SnapshotMetadata</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">save</span><span class="params">(<span name="snapshot">snapshot: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor.Handler">Handler</a>[<a href="SnapshotMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.SnapshotMetadata">SnapshotMetadata</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1027,7 +1059,7 @@ sender with <code>sender()</code>.
         <span class="name">self</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@self:akka.actor.ActorRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@self:akka.actor.ActorRef" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1044,7 +1076,7 @@ sender with <code>sender()</code>.
         <span class="name">sender</span><span class="params">()</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@sender():akka.actor.ActorRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@sender():akka.actor.ActorRef" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1061,7 +1093,7 @@ sender with <code>sender()</code>.
         <span class="name">sharedClockEntry</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@sharedClockEntry:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@sharedClockEntry:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1082,32 +1114,11 @@ the vector clock.
         <span class="name">stash</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@stash():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@stash():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>StashSupport</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#stateSync" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="stateSync:Boolean"></a>
-      <a id="stateSync:Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">stateSync</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@stateSync:Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">State synchronization.</p><div class="fullcomment"><div class="comment cmt"><p>State synchronization. If set to <code>true</code>, commands see internal state that is consistent
-with the event log. This is achieved by stashing new commands if this actor is currently
-writing events. If set to <code>false</code>, commands see internal state that is eventually
-consistent with the event log.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></dd></dl></div>
     </li><li name="akka.actor.Actor#supervisorStrategy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="supervisorStrategy:akka.actor.SupervisorStrategy"></a>
       <a id="supervisorStrategy:SupervisorStrategy"></a>
@@ -1120,7 +1131,7 @@ consistent with the event log.
         <span class="name">supervisorStrategy</span><span class="result">: <span class="extype" name="akka.actor.SupervisorStrategy">SupervisorStrategy</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@supervisorStrategy:akka.actor.SupervisorStrategy" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@supervisorStrategy:akka.actor.SupervisorStrategy" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1137,7 +1148,7 @@ consistent with the event log.
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1154,28 +1165,11 @@ consistent with the event log.
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@toString():String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@toString():String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ConfirmedDelivery#unconfirmed" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="unconfirmed:Set[String]"></a>
-      <a id="unconfirmed:Set[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">unconfirmed</span><span class="result">: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@unconfirmed:Set[String]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Delivery ids of unconfirmed messages.</p>
     </li><li name="akka.actor.Actor#unhandled" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="unhandled(message:Any):Unit"></a>
       <a id="unhandled(Any):Unit"></a>
@@ -1188,7 +1182,7 @@ consistent with the event log.
         <span class="name">unhandled</span><span class="params">(<span name="message">message: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@unhandled(message:Any):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@unhandled(message:Any):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1205,7 +1199,7 @@ consistent with the event log.
         <span class="name">unstashAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@unstashAll():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@unstashAll():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1222,7 +1216,7 @@ consistent with the event log.
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@wait():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1245,7 +1239,7 @@ consistent with the event log.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1268,7 +1262,7 @@ consistent with the event log.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1279,6 +1273,87 @@ consistent with the event log.
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#write" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="write():scala.concurrent.Future[Long]"></a>
+      <a id="write():Future[Long]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">write</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@write():scala.concurrent.Future[Long]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Asynchronously writes an incremental update to the target database.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously writes an incremental update to the target database. Incremental updates are prepared
+during event processing by a concrete <code>onEvent</code> handler.</p><p>During event replay, this method is called latest after having replayed <code>eventuate.replay.chunk-size-max</code>
+events and immediately after replay completes. During live processing, <code>write</code> is called immediately if
+no write operation is in progress and an event has been handled by <code>onEvent</code>. If a write operation is in
+progress, further event handling may run concurrently to that operation. If events are handled while a
+write operation is in progress, another write will follow immediately after the previous write operation
+completes.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriter#writeFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="writeFailure(cause:Throwable):Unit"></a>
+      <a id="writeFailure(Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writeFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@writeFailure(cause:Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Called with failure details after a <code>write</code> operation failed.</p><div class="fullcomment"><div class="comment cmt"><p>Called with failure details after a <code>write</code> operation failed. Throws <a href="EventsourcedWriter$$WriteException.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter.WriteException">EventsourcedWriter#WriteException</a>
+by default (causing the writer to restart) and can be overridden.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#writeSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="writeSuccess(progress:Long):Unit"></a>
+      <a id="writeSuccess(Long):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writeSuccess</span><span class="params">(<span name="progress">progress: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@writeSuccess(progress:Long):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Called with a write result after a <code>write</code> operation successfully completes.</p><div class="fullcomment"><div class="comment cmt"><p>Called with a write result after a <code>write</code> operation successfully completes. This method may update
+internal actor state. Does nothing by default and can be overridden.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#writeTimeout" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="writeTimeout:scala.concurrent.duration.FiniteDuration"></a>
+      <a id="writeTimeout:FiniteDuration"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writeTimeout</span><span class="result">: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@writeTimeout:scala.concurrent.duration.FiniteDuration" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The default write timeout configured with the <code>eventuate.processor.write-timeout</code> parameter.</p><div class="fullcomment"><div class="comment cmt"><p>The default write timeout configured with the <code>eventuate.processor.write-timeout</code> parameter.
+Can be overridden.
+</p></div></div>
     </li></ol>
             </div>
 
@@ -1288,8 +1363,8 @@ consistent with the event log.
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedActor">
-              <h3>Inherited from <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></h3>
+        <div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedWriter">
+              <h3>Inherited from <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>[<span class="extype" name="scala.Long">Long</span>, <span class="extype" name="scala.Long">Long</span>]</h3>
             </div><div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedView">
               <h3>Inherited from <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></h3>
             </div><div class="parent" name="akka.actor.ActorLogging">

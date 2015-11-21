@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>ReplicationWrite - com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite</title>
-          <meta name="description" content="ReplicationWrite - com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite" />
-          <meta name="keywords" content="ReplicationWrite com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite" />
+          <title>ReplicationWriteN - com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteN</title>
+          <meta name="description" content="ReplicationWriteN - com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteN" />
+          <meta name="keywords" content="ReplicationWriteN com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteN" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite';
+            var hash = 'com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -30,8 +30,8 @@
       <div id="definition">
         <img src="../../../lib/class_big.png" />
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="ReplicationProtocol$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol">ReplicationProtocol</a></p>
-        <h1>ReplicationWrite</h1> <span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite" title="Permalink" target="_top">
+        <h1>ReplicationWriteN</h1> <span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -43,12 +43,11 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationWrite</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentSourceVectorTime">currentSourceVectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span> = <span class="symbol">null</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">ReplicationWriteN</span><span class="params">(<span name="writes">writes: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="ReplicationProtocol$$ReplicationWrite.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite">ReplicationWrite</a>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Instructs a target log to write replicated <code>events</code> from the source log identified by
-<code>sourceLogId</code> along with the last read position in the source log (<code>replicationProgress</code>).
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Instructs an event log to batch-execute the given <code>writes</code>.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -69,7 +68,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite"><span>ReplicationWrite</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteN"><span>ReplicationWriteN</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -89,19 +88,19 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],sourceLogId:String,replicationProgress:Long,currentSourceVectorTime:com.rbmhtechnology.eventuate.VectorTime,initiator:akka.actor.ActorRef):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite"></a>
-      <a id="&lt;init&gt;:ReplicationWrite"></a>
+              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteN#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(writes:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite]):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteN"></a>
+      <a id="&lt;init&gt;:ReplicationWriteN"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationWrite</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentSourceVectorTime">currentSourceVectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span> = <span class="symbol">null</span></span>)</span>
+        <span class="name">ReplicationWriteN</span><span class="params">(<span name="writes">writes: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="ReplicationProtocol$$ReplicationWrite.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite">ReplicationWrite</a>]</span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],sourceLogId:String,replicationProgress:Long,currentSourceVectorTime:com.rbmhtechnology.eventuate.VectorTime,initiator:akka.actor.ActorRef):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@&lt;init&gt;(writes:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite]):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteN" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -127,7 +126,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -144,7 +143,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@##():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@##():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -161,7 +160,7 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -178,7 +177,7 @@
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -195,7 +194,7 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@clone():Object" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@clone():Object" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -206,23 +205,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite#currentSourceVectorTime" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="currentSourceVectorTime:com.rbmhtechnology.eventuate.VectorTime"></a>
-      <a id="currentSourceVectorTime:VectorTime"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">currentSourceVectorTime</span><span class="result">: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@currentSourceVectorTime:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -235,28 +217,11 @@
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite#events" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]"></a>
-      <a id="events:Seq[DurableEvent]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">events</span><span class="result">: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -269,7 +234,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -292,28 +257,11 @@
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite#initiator" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="initiator:akka.actor.ActorRef"></a>
-      <a id="initiator:ActorRef"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">initiator</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@initiator:akka.actor.ActorRef" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -326,7 +274,7 @@
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -343,7 +291,7 @@
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -360,7 +308,7 @@
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@notify():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -377,45 +325,11 @@
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite#replicationProgress" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="replicationProgress:Long"></a>
-      <a id="replicationProgress:Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">replicationProgress</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@replicationProgress:Long" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite#sourceLogId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="sourceLogId:String"></a>
-      <a id="sourceLogId:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">sourceLogId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@sourceLogId:String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -428,7 +342,7 @@
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -445,7 +359,7 @@
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@wait():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -468,7 +382,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -491,7 +405,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWrite@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -502,6 +416,23 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteN#writes" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="writes:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite]"></a>
+      <a id="writes:Seq[ReplicationWrite]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writes</span><span class="result">: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="ReplicationProtocol$$ReplicationWrite.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite">ReplicationWrite</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteN@writes:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li></ol>
             </div>
 
