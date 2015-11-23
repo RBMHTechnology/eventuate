@@ -28,7 +28,6 @@ object ConditionalRequestsSpec {
     val eventLog = context.system.deadLetters
 
     val onCommand: Receive = {
-      case ConditionalRequest(con, cmd) => conditionalSend(con, cmd)
       case t: VectorTime => conditionChanged(t)
       case cmd => sender() ! s"re: ${cmd}"
     }
@@ -48,12 +47,14 @@ class ConditionalRequestsSpec extends TestKit(ActorSystem("test", ConfigFactory.
   import ConditionalRequestsSpec._
   import EventsourcingProtocol._
 
+  var instanceId: Int = _
   var receiver: ActorRef = _
 
   override def beforeEach: Unit = {
+    instanceId = EventsourcedView.instanceIdCounter.get()
     receiver = system.actorOf(Props[ConditionalRequestReceiver])
-    receiver ! LoadSnapshotSuccess(None, EventsourcedView.instanceIdCounter.get())
-    receiver ! ReplaySuccess(EventsourcedView.instanceIdCounter.get())
+    receiver ! LoadSnapshotSuccess(None, instanceId)
+    receiver ! ReplaySuccess(instanceId)
   }
 
   override def afterAll: Unit =
