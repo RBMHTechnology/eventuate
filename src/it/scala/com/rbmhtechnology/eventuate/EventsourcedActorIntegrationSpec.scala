@@ -89,7 +89,7 @@ object EventsourcedActorIntegrationSpec {
     }
   }
 
-  class ConditionalActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+  class ConditionalActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor with ConditionalRequests {
     override val onCommand: Receive = {
       case "persist"      => persist("a")(r => probe ! r.get)
       case "persist-mute" => persist("a")(_ => ())
@@ -101,7 +101,7 @@ object EventsourcedActorIntegrationSpec {
     }
   }
 
-  class ConditionalView(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedView {
+  class ConditionalView(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedView with ConditionalRequests {
     override val onCommand: Receive = {
       case other => probe ! other
     }
@@ -336,7 +336,7 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
   }
 
   "Eventsourced actors and views" must {
-    "support conditional command processing" in {
+    "support conditional request processing" in {
       val act1Props = Props(new ConditionalActor("1", log, probe.ref))
       val act2Props = Props(new ConditionalActor("2", log, probe.ref))
       val viewProps = Props(new ConditionalView("3", log, probe.ref))
@@ -347,9 +347,9 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
 
       val condition = VectorTime(logId -> 3L)
 
-      view ! ConditionalCommand(condition, "delayed")
-      act1 ! ConditionalCommand(condition, "delayed-1")
-      act2 ! ConditionalCommand(condition, "delayed-2")
+      view ! ConditionalRequest(condition, "delayed")
+      act1 ! ConditionalRequest(condition, "delayed-1")
+      act2 ! ConditionalRequest(condition, "delayed-2")
 
       act1 ! "persist"
       act1 ! "persist"
@@ -360,9 +360,9 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
       probe.expectMsgAllOf("delayed-1", "delayed-2", "delayed")
 
       // make sure that conditions are also met after recovery
-      system.actorOf(viewProps) ! ConditionalCommand(condition, "delayed")
-      system.actorOf(act1Props) ! ConditionalCommand(condition, "delayed-1")
-      system.actorOf(act2Props) ! ConditionalCommand(condition, "delayed-2")
+      system.actorOf(viewProps) ! ConditionalRequest(condition, "delayed")
+      system.actorOf(act1Props) ! ConditionalRequest(condition, "delayed-1")
+      system.actorOf(act2Props) ! ConditionalRequest(condition, "delayed-2")
 
       probe.expectMsgAllOf("delayed-1", "delayed-2", "delayed")
     }

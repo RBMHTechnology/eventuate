@@ -35,7 +35,8 @@ trait SnapshotStore {
   def saveAsync(snapshot: Snapshot): Future[Unit]
 
   /**
-   * Asynchronously loads the latest snapshot saved by an event-sourced actor or view identified by `emitterId`.
+   * Asynchronously loads the latest snapshot saved by an event-sourced actor, view, writer or processor
+   * identified by `emitterId`.
    */
   def loadAsync(emitterId: String): Future[Option[Snapshot]]
 }

@@ -33,7 +33,7 @@ object OrderActor {
     def orderId: String
   }
 
-  // Order update commands
+  // Order commands
   case class CreateOrder(orderId: String) extends OrderCommand { val event = OrderCreated(orderId) }
   case class CancelOrder(orderId: String) extends OrderCommand { val event = OrderCancelled(orderId) }
   case class AddOrderItem(orderId: String, item: String) extends OrderCommand  { val event = OrderItemAdded(orderId, item) }
@@ -45,7 +45,7 @@ object OrderActor {
   case class OrderItemRemoved(orderId: String, item: String) extends OrderEvent
   case class OrderCancelled(orderId: String) extends OrderEvent
 
-  // Order read commands + replies
+  // Order queries + replies
   case object GetState
   case class GetStateSuccess(state: Map[String, Seq[Versioned[Order]]])
   case class GetStateFailure(cause: Throwable)

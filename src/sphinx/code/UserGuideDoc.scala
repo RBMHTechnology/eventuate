@@ -308,7 +308,7 @@ object EventsourcedViews {
   //#
 }
 
-object ConditionalCommands extends App {
+object ConditionalRequests extends App {
   import akka.actor._
   import com.rbmhtechnology.eventuate.ReplicationConnection
   import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
@@ -317,14 +317,13 @@ object ConditionalCommands extends App {
   val system: ActorSystem = ActorSystem(ReplicationConnection.DefaultRemoteSystemName)
   val eventLog = system.actorOf(LeveldbEventLog.props("qt-2"))
 
-  //#conditional-commands
+  //#conditional-requests
   import scala.concurrent.duration._
   import scala.util._
   import akka.actor._
   import akka.pattern.ask
   import akka.util.Timeout
-  import com.rbmhtechnology.eventuate.ConditionalCommand
-  import com.rbmhtechnology.eventuate.{EventsourcedActor, VectorTime}
+  import com.rbmhtechnology.eventuate._
 
   case class Append(entry: String)
   case class AppendSuccess(entry: String, updateTimestamp: VectorTime)
@@ -333,7 +332,6 @@ object ConditionalCommands extends App {
                      override val eventLog: ActorRef) extends EventsourcedActor {
 
     private var currentState: Vector[String] = Vector.empty
-
     override val aggregateId = Some(id)
 
     override val onCommand: Receive = {
@@ -351,6 +349,25 @@ object ConditionalCommands extends App {
     }
   }
 
+  class ExampleView(override val id: String, override val eventLog: ActorRef)
+    extends EventsourcedView with ConditionalRequests {
+    // ...
+  //#
+    private var appendCount: Long = 0L
+    private var resolveCount: Long = 0L
+
+    override val onCommand: Receive = {
+      case GetAppendCount => sender() ! GetAppendCountReply(appendCount)
+      case GetResolveCount => sender() ! GetResolveCountReply(resolveCount)
+    }
+
+    override val onEvent: Receive = {
+      case Appended(_) => appendCount += 1L
+      case Resolved(_) => resolveCount += 1L
+    }
+  //#conditional-requests
+  }
+
   val ea = system.actorOf(Props(new ExampleActor("ea", eventLog)))
   val ev = system.actorOf(Props(new ExampleView("ev", eventLog)))
 
@@ -359,7 +376,7 @@ object ConditionalCommands extends App {
 
   for {
     AppendSuccess(_, timestamp) <- ea ? Append("a")
-    GetAppendCountReply(count)  <- ev ? ConditionalCommand(timestamp, GetAppendCount)
+    GetAppendCountReply(count)  <- ev ? ConditionalRequest(timestamp, GetAppendCount)
   } println(s"append count = $count")
   //#
 }

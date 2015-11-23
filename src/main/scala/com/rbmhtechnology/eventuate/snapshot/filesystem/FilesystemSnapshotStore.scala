@@ -33,12 +33,12 @@ object FilesystemSnapshotStore {
 }
 
 /**
- * A snapshot store that saves snapshots to the local filesystem. It keeps a configurable
- * maximum number of snapshots per event-sourced actor or view. Snapshot loading falls
- * back to older snapshots if newer snapshots cannot be loaded.
- *
- * @see Configuration key `eventuate.snapshot.filesystem.snapshots-per-emitter-max`.
- */
+  * A snapshot store that saves snapshots to the local filesystem. It keeps a configurable
+  * maximum number of snapshots per event-sourced actor, view, writer or processor. Snapshot
+  * loading falls back to older snapshots if newer snapshots cannot be loaded.
+  *
+  * @see Configuration key `eventuate.snapshot.filesystem.snapshots-per-emitter-max`.
+  */
 class FilesystemSnapshotStore(settings: FilesystemSnapshotStoreSettings, logId: String) extends SnapshotStore {
   private val log = Logging(settings.system, classOf[FilesystemSnapshotStore])
   private val rootDir = new File(settings.rootDir, URLEncoder.encode(logId, "UTF-8"))

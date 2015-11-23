@@ -95,7 +95,7 @@ trait EventsourcedActor extends EventsourcedView {
   override private[eventuate] def unhandledMessage(msg: Any): Unit = msg match {
     case WriteSuccess(event, iid) => if (iid == instanceId) {
       onEventInternal(event)
-      conditionChanged(lastVectorTimestamp)
+      conditionChanged(currentTime)
       writeHandlers.head(Success(event.payload))
       writeHandlers = writeHandlers.tail
       if (stateSync && writeHandlers.isEmpty) {

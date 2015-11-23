@@ -63,7 +63,7 @@ private object EventsourcedView {
  * @see [[EventsourcedWriter]]
  * @see [[EventsourcedProcessor]]
  */
-trait EventsourcedView extends Actor with ConditionalCommands with Stash with ActorLogging {
+trait EventsourcedView extends Actor with Stash with ActorLogging {
   import EventsourcedView._
 
   type Handler[A] = Try[A] => Unit
@@ -164,10 +164,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
     if (onEvent.isDefinedAt(event.payload)) {
       onEventInternal(event)
       onEvent(event.payload)
-    }
-
-    if (!recovering) {
-      conditionChanged(event.vectorTimestamp)
+      if (!recovering) conditionChanged(currentTime)
     }
   }
 
@@ -219,6 +216,18 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
     _clock = _clock.tick()
     _clock.currentTime
   }
+
+  /**
+    * Internal API.
+    */
+  private[eventuate] def conditionalSend(condition: VectorTime, cmd: Any): Unit =
+    throw new ConditionalRequestException("Actor must extend ConditionalRequests to support ConditionalRequest processing")
+
+  /**
+    * Internal API.
+    */
+  private[eventuate] def conditionChanged(condition: VectorTime): Unit =
+    ()
 
   /**
    * Sequence number of the last handled event.
@@ -364,7 +373,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
     }
     case ReplaySuccess(iid) => if (iid == instanceId) {
       context.become(initiated)
-      conditionChanged(lastVectorTimestamp)
+      conditionChanged(currentTime)
       messageStash.unstashAll()
       recovered()
     }
@@ -383,7 +392,7 @@ trait EventsourcedView extends Actor with ConditionalCommands with Stash with Ac
     case Written(event) => if (event.localSequenceNr > lastSequenceNr) {
       receiveEvent(event)
     }
-    case ConditionalCommand(condition, cmd) =>
+    case ConditionalRequest(condition, cmd) =>
       conditionalSend(condition, cmd)
     case SaveSnapshotSuccess(metadata, iid) => if (iid == instanceId) {
       saveRequests.get(metadata).foreach(handler => handler(Success(metadata)))

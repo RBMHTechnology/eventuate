@@ -56,7 +56,8 @@ import scala.util._
  *  - `log_example` which represents the local event log.
  *  - `log_example_agg` which is an index of the local event log for those events that have non-empty
  *    [[DurableEvent#destinationAggregateIds destinationAggregateIds]] set. It is used for fast recovery
- *    of event-sourced actors or views that have an [[EventsourcedView#aggregateId aggregateId]] defined.
+ *    of event-sourced actors, views, stateful writers and processors that have an
+ *    [[EventsourcedView#aggregateId aggregateId]] defined.
  *
  * @param id unique log id.
  *

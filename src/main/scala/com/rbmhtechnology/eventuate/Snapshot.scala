@@ -21,7 +21,8 @@ import com.rbmhtechnology.eventuate.ConfirmedDelivery.DeliveryAttempt
 /**
  * Snapshot metadata.
  *
- * @param emitterId Id of the [[EventsourcedActor]] or [[EventsourcedView]] that saves the snapshot.
+ * @param emitterId Id of the [[EventsourcedActor]], [[EventsourcedView]], stateful [[EventsourcedWriter]]
+ *                  or [[EventsourcedProcessor]] that saves the snapshot.
  * @param sequenceNr The highest event sequence number covered by the snapshot.
  */
 case class SnapshotMetadata(emitterId: String, sequenceNr: Long)
@@ -29,11 +30,12 @@ case class SnapshotMetadata(emitterId: String, sequenceNr: Long)
 /**
  * Provider API.
  *
- * Snapshot storage format. [[EventsourcedActor]]s and [[EventsourcedView]]s can save snapshots of
- * internal state by calling [[EventsourcedActor#save]] or [[EventsourcedView#save]], respectively.
+ * Snapshot storage format. [[EventsourcedActor]]s, [[EventsourcedView]]s, stateful [[EventsourcedWriter]]s
+ * and [[EventsourcedProcessor]]s can save snapshots of internal state by calling the (inherited)
+ * [[EventsourcedView#save]] method.
  *
  * @param payload Application-specific snapshot.
- * @param emitterId Id of the [[EventsourcedActor]] or [[EventsourcedView]] that saved the snapshot.
+ * @param emitterId Id of the event-sourced actor, view, stateful writer or processor that saved the snapshot.
  * @param lastEvent Last handled event before the snapshot was saved.
  * @param currentTime Current vector time when the snapshot was saved.
  * @param deliveryAttempts Unconfirmed delivery attempts when the snapshot was saved (can only be
