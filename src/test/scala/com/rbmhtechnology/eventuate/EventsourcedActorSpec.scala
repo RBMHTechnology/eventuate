@@ -42,26 +42,26 @@ object EventsourcedActorSpec {
 
     override val onCommand: Receive = {
       case "boom" => throw boom
-      case "status" => dstProbe ! (("status", lastVectorTimestamp, currentTime, lastSequenceNr))
+      case "status" => dstProbe ! (("status", lastVectorTimestamp, currentVectorTime, lastSequenceNr))
       case Ping(i) => dstProbe ! Pong(i)
       case "test-handler-order" =>
-        persist("a")(r => dstProbe ! ((s"${r.get}-1", lastVectorTimestamp, currentTime, lastSequenceNr)))
-        persist("b")(r => dstProbe ! ((s"${r.get}-2", lastVectorTimestamp, currentTime, lastSequenceNr)))
+        persist("a")(r => dstProbe ! ((s"${r.get}-1", lastVectorTimestamp, currentVectorTime, lastSequenceNr)))
+        persist("b")(r => dstProbe ! ((s"${r.get}-2", lastVectorTimestamp, currentVectorTime, lastSequenceNr)))
       case "test-multi-persist" =>
-        val handler = (r: Try[String]) => dstProbe ! ((r.get, currentTime, lastVectorTimestamp, lastSequenceNr))
+        val handler = (r: Try[String]) => dstProbe ! ((r.get, currentVectorTime, lastVectorTimestamp, lastSequenceNr))
         persistN(Seq("a", "b", "c"), handler)(handler)
       case Cmd(p, num) => 1 to num foreach { i =>
         persist(s"${p}-${i}") {
           case Success("boom") => throw boom
-          case Success(evt) => dstProbe ! ((evt, lastVectorTimestamp, currentTime, lastSequenceNr))
-          case Failure(err) => errProbe ! ((err, lastVectorTimestamp, currentTime, lastSequenceNr))
+          case Success(evt) => dstProbe ! ((evt, lastVectorTimestamp, currentVectorTime, lastSequenceNr))
+          case Failure(err) => errProbe ! ((err, lastVectorTimestamp, currentVectorTime, lastSequenceNr))
         }
       }
     }
 
     override val onEvent: Receive = {
       case "boom" => throw boom
-      case evt if evt != "x" => dstProbe ! ((evt, lastVectorTimestamp, currentTime, lastSequenceNr))
+      case evt if evt != "x" => dstProbe ! ((evt, lastVectorTimestamp, currentVectorTime, lastSequenceNr))
     }
   }
 
@@ -147,7 +147,7 @@ object EventsourcedActorSpec {
     }
 
     private def message(payload: Any) =
-      (payload, lastVectorTimestamp, currentTime, lastSequenceNr)
+      (payload, lastVectorTimestamp, currentVectorTime, lastSequenceNr)
   }
 
   class TestCausalityActor(
@@ -168,7 +168,7 @@ object EventsourcedActorSpec {
     }
 
     override val onEvent: Receive = {
-      case evt => dstProbe ! ((evt, lastVectorTimestamp, currentTime, lastSequenceNr))
+      case evt => dstProbe ! ((evt, lastVectorTimestamp, currentVectorTime, lastSequenceNr))
     }
   }
 }

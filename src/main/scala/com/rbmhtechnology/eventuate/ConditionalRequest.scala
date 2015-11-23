@@ -45,6 +45,11 @@ trait ConditionalRequests extends EventsourcedView {
   /**
    * Internal API.
    */
+  override private[eventuate] def trackVectorTime: Boolean = true
+
+  /**
+   * Internal API.
+   */
   override private[eventuate] def conditionalSend(condition: VectorTime, req: Any): Unit =
     requestManager ! Request(condition, req, sender())
 

@@ -164,7 +164,7 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
     if (onEvent.isDefinedAt(event.payload)) {
       onEventInternal(event)
       onEvent(event.payload)
-      if (!recovering) conditionChanged(currentTime)
+      if (!recovering) conditionChanged(currentVectorTime)
     }
   }
 
@@ -173,20 +173,21 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
    */
   private[eventuate] def onEventInternal(event: DurableEvent): Unit = {
     _lastHandledEvent = event
-
-    if (sharedClockEntry) {
-      // set local clock to local time (= sequence number) of event log
-      _clock = _clock.set(event.localLogId, event.localSequenceNr)
-      if (event.emitterId != id)
-        // merge clock with non-self-emitted event timestamp
-        _clock = _clock.merge(event.vectorTimestamp)
-    } else {
-      if (event.emitterId != id)
-        // update clock with non-self-emitted event timestamp (incl. increment of local time)
-        _clock = _clock.update(event.vectorTimestamp)
-      else if (recovering)
-        // merge clock with self-emitted event timestamp only during recovery
-        _clock = _clock.merge(event.vectorTimestamp)
+    if (trackVectorTime) {
+      if (sharedClockEntry) {
+        // set local clock to local time (= sequence number) of event log
+        _clock = _clock.set(event.localLogId, event.localSequenceNr)
+        if (event.emitterId != id)
+          // merge clock with non-self-emitted event timestamp
+          _clock = _clock.merge(event.vectorTimestamp)
+      } else {
+        if (event.emitterId != id)
+          // update clock with non-self-emitted event timestamp (incl. increment of local time)
+          _clock = _clock.update(event.vectorTimestamp)
+        else if (recovering)
+          // merge clock with self-emitted event timestamp only during recovery
+          _clock = _clock.merge(event.vectorTimestamp)
+      }
     }
   }
 
@@ -204,9 +205,15 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
     _lastHandledEvent
 
   /**
+    * Internal API.
+    */
+  private[eventuate] def trackVectorTime: Boolean =
+    false
+
+  /**
    * Internal API.
    */
-  private[eventuate] def currentTime: VectorTime =
+  private[eventuate] def currentVectorTime: VectorTime =
     _clock.currentTime
 
   /**
@@ -270,7 +277,7 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
       case other                              => other
     }
 
-    val prototype = Snapshot(payload, id, lastHandledEvent, currentTime)
+    val prototype = Snapshot(payload, id, lastHandledEvent, currentVectorTime)
     val metadata = prototype.metadata
 
     if (saveRequests.contains(metadata)) {
@@ -332,7 +339,7 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
         emitterId = id,
         emitterAggregateId = aggregateId,
         customDestinationAggregateIds = customDestinationAggregateIds,
-        vectorTimestamp = currentTime,
+        vectorTimestamp = currentVectorTime,
         processId = DurableEvent.UndefinedLogId)
     } else {
       DurableEvent(
@@ -373,7 +380,7 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
     }
     case ReplaySuccess(iid) => if (iid == instanceId) {
       context.become(initiated)
-      conditionChanged(currentTime)
+      conditionChanged(currentVectorTime)
       messageStash.unstashAll()
       recovered()
     }

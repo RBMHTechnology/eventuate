@@ -166,7 +166,7 @@ trait EventsourcedWriter[R, W] extends EventsourcedView {
     }
     case ReplaySuccess(iid) => if (iid == instanceId) {
       context.become(initiatedWrite orElse initiated)
-      conditionChanged(currentTime)
+      conditionChanged(currentVectorTime)
       messageStash.unstashAll()
       recovered()
       write(instanceId)

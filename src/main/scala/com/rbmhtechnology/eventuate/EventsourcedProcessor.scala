@@ -83,6 +83,11 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
   private var storedSequenceNr: Long = 0L
 
   /**
+   * Internal API.
+   */
+  override private[eventuate] def trackVectorTime: Boolean = true
+
+  /**
    * This processor's target event log.
    */
   def targetEventLog: ActorRef

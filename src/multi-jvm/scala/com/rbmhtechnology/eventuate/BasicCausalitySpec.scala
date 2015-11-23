@@ -55,7 +55,7 @@ object BasicCausalityConfig extends MultiNodeConfig {
     }
 
     val onEvent: Receive = {
-      case s: String => probe ! ((s, lastVectorTimestamp, currentTime))
+      case s: String => probe ! ((s, lastVectorTimestamp, currentVectorTime))
     }
   }
 

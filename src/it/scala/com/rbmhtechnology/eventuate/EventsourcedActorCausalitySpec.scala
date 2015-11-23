@@ -39,7 +39,7 @@ object EventsourcedActorCausalitySpec {
 
     val onEvent: Receive = {
       case s: String if handles.contains(s) =>
-        probe ! ((s, lastVectorTimestamp, currentTime))
+        probe ! ((s, lastVectorTimestamp, currentVectorTime))
     }
   }
 }

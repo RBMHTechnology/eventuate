@@ -39,6 +39,11 @@ trait EventsourcedActor extends EventsourcedView {
   private var writing: Boolean = false
 
   /**
+   * Internal API.
+   */
+  override private[eventuate] def trackVectorTime: Boolean = true
+
+  /**
    * State synchronization. If set to `true`, commands see internal state that is consistent
    * with the event log. This is achieved by stashing new commands if this actor is currently
    * writing events. If set to `false`, commands see internal state that is eventually
@@ -95,7 +100,7 @@ trait EventsourcedActor extends EventsourcedView {
   override private[eventuate] def unhandledMessage(msg: Any): Unit = msg match {
     case WriteSuccess(event, iid) => if (iid == instanceId) {
       onEventInternal(event)
-      conditionChanged(currentTime)
+      conditionChanged(currentVectorTime)
       writeHandlers.head(Success(event.payload))
       writeHandlers = writeHandlers.tail
       if (stateSync && writeHandlers.isEmpty) {
