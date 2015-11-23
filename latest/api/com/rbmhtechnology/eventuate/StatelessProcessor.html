@@ -51,7 +51,8 @@
 <a href="" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a> is optimized for fast startup and failure recovery times, at the cost of
 not being able to have its own entry in the vector clock (see overridden method <code>sharedClockEntry</code>).
 Consequently, a stateless processor can not write processed events back to its source event log i.e.
-the source and the target event log of a stateless processor must be different.
+the source and the target event log of a stateless processor must be different.</p><p>A stateless processor emits events with vector timestamps set to source event vector timestamp. In
+other words, it does not modify event vector timestamps.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>.
 </p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>

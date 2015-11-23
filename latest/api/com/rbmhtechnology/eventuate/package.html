@@ -332,7 +332,8 @@ state can be saved with the <code>save</code> method in the processor's <code>on
 that doesn't need to maintain internal state (= stateless processor) should implement <a href="StatelessProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a>
 instead.</p><p>Usually, a processor's source event log is different from its target event log. If a processor needs to
 write processed events back to its source event log, it must reserve its own entry in the vector clock by
-setting <code>sharedClockEntry</code> to <code>false</code>.</p><p>During initialization, a processor reads the processing progress from the target event log. The timeout
+setting <code>sharedClockEntry</code> to <code>false</code>.</p><p>A stateful processor emits events with vector timestamps set to the processor's current vector time. In
+other words, an emitted event has a potential causal relationship to all past source events.</p><p>During initialization, a processor reads the processing progress from the target event log. The timeout
 for this read operation can be configured with the <code>eventuate.processor.read-timeout</code> parameter for all
 event-sourced processors or defined on a per class or instance basis by overriding <code>readTimeout</code>. The timeout
 for write operations to the target log can be configured with the <code>eventuate.processor.write-timeout</code> parameter
@@ -545,7 +546,8 @@ and <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology
 <a href="StatelessProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a> is optimized for fast startup and failure recovery times, at the cost of
 not being able to have its own entry in the vector clock (see overridden method <code>sharedClockEntry</code>).
 Consequently, a stateless processor can not write processed events back to its source event log i.e.
-the source and the target event log of a stateless processor must be different.
+the source and the target event log of a stateless processor must be different.</p><p>A stateless processor emits events with vector timestamps set to source event vector timestamp. In
+other words, it does not modify event vector timestamps.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>.
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.VectorClock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
