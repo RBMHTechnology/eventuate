@@ -207,6 +207,17 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
       actor ! Written(eventC)
       processWrite(3, Seq(eventC1, eventC2))
     }
+    "write events with current vector time" in {
+      val actor = recoveredProcessor()
+      actor ! Written(eventA.copy(vectorTimestamp = timestamp(1, 0)))
+      actor ! Written(eventB.copy(vectorTimestamp = timestamp(0, 1)))
+      processWrite(1, Seq(
+        eventA1.copy(vectorTimestamp = timestamp(1, 0)),
+        eventA2.copy(vectorTimestamp = timestamp(1, 0))))
+      processWrite(2, Seq(
+        eventB1.copy(vectorTimestamp = timestamp(2, 1)),
+        eventB2.copy(vectorTimestamp = timestamp(2, 1))))
+    }
   }
 
   "A stateful EventsourcedProcessor" when {
@@ -236,6 +247,17 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
       processWrite(1, Seq(eventA1, eventA2), success = false)
       processRead(3)
       processReplay(actor, 4, instanceId + 1)
+    }
+    "write events with source event vector time" in {
+      val actor = recoveredProcessor(stateful = false)
+      actor ! Written(eventA.copy(vectorTimestamp = timestamp(1, 0)))
+      actor ! Written(eventB.copy(vectorTimestamp = timestamp(0, 1)))
+      processWrite(1, Seq(
+        eventA1.copy(vectorTimestamp = timestamp(1, 0)),
+        eventA2.copy(vectorTimestamp = timestamp(1, 0))))
+      processWrite(2, Seq(
+        eventB1.copy(vectorTimestamp = timestamp(0, 1)),
+        eventB2.copy(vectorTimestamp = timestamp(0, 1))))
     }
   }
 }

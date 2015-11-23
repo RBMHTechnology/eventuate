@@ -41,7 +41,8 @@ trait EventsourcedActor extends EventsourcedView {
   /**
    * Internal API.
    */
-  override private[eventuate] def trackVectorTime: Boolean = true
+  override private[eventuate] def trackVectorTime: Boolean =
+    true
 
   /**
    * State synchronization. If set to `true`, commands see internal state that is consistent

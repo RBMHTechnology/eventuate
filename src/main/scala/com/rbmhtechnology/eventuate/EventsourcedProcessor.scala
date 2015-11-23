@@ -62,6 +62,9 @@ object EventsourcedProcessor {
  * write processed events back to its source event log, it must reserve its own entry in the vector clock by
  * setting `sharedClockEntry` to `false`.
  *
+ * A stateful processor emits events with vector timestamps set to the processor's current vector time. In
+ * other words, an emitted event has a potential causal relationship to all past source events.
+ *
  * During initialization, a processor reads the processing progress from the target event log. The timeout
  * for this read operation can be configured with the `eventuate.processor.read-timeout` parameter for all
  * event-sourced processors or defined on a per class or instance basis by overriding `readTimeout`. The timeout
@@ -85,7 +88,8 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
   /**
    * Internal API.
    */
-  override private[eventuate] def trackVectorTime: Boolean = true
+  override private[eventuate] def trackVectorTime: Boolean =
+    true
 
   /**
    * This processor's target event log.
@@ -157,9 +161,24 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
  * Consequently, a stateless processor can not write processed events back to its source event log i.e.
  * the source and the target event log of a stateless processor must be different.
  *
+ * A stateless processor emits events with vector timestamps set to source event vector timestamp. In
+ * other words, it does not modify event vector timestamps.
+ *
  * @see [[EventsourcedProcessor]].
  */
 trait StatelessProcessor extends EventsourcedProcessor {
+  /**
+   * Internal API.
+   */
+  override private[eventuate] def durableEvent(payload: Any, customDestinationAggregateIds: Set[String]): DurableEvent =
+    super.durableEvent(payload, customDestinationAggregateIds).copy(vectorTimestamp = lastVectorTimestamp)
+
+  /**
+   * Internal API.
+   */
+  override private[eventuate] def trackVectorTime: Boolean =
+    false
+
   /**
    * Always returns `true`. Therefore, a stateless processor cannot have its own entry in the vector clock
    * because its clock can not be recovered during processor (re)start.
