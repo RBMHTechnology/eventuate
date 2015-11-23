@@ -48,8 +48,8 @@
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A snapshot store that saves snapshots to the local filesystem. It keeps a configurable
-maximum number of snapshots per event-sourced actor or view. Snapshot loading falls
-back to older snapshots if newer snapshots cannot be loaded.
+maximum number of snapshots per event-sourced actor, view, writer or processor. Snapshot
+loading falls back to older snapshots if newer snapshots cannot be loaded.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p>Configuration key <code>eventuate.snapshot.filesystem.snapshots-per-emitter-max</code>.
 </p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
@@ -384,7 +384,9 @@ back to older snapshots if newer snapshots cannot be loaded.
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously loads the latest snapshot saved by an event-sourced actor or view identified by <code>emitterId</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously loads the latest snapshot saved by an event-sourced actor or view identified by <code>emitterId</code>.
+      <p class="shortcomment cmt">Asynchronously loads the latest snapshot saved by an event-sourced actor, view, writer or processor
+identified by <code>emitterId</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously loads the latest snapshot saved by an event-sourced actor, view, writer or processor
+identified by <code>emitterId</code>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.snapshot.filesystem.FilesystemSnapshotStore">FilesystemSnapshotStore</a> → <a href="../SnapshotStore.html" class="extype" name="com.rbmhtechnology.eventuate.snapshot.SnapshotStore">SnapshotStore</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>

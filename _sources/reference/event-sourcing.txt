@@ -53,7 +53,7 @@ If ``stateSync`` is ``true`` (default), new commands are stashed_ while persiste
 
 If ``stateSync`` is ``false``, new commands are dispatched to ``onCommand`` immediately. Consequently, new commands may see stale actor state. The advantage is significantly higher write throughput as :ref:`batching` of write requests is possible. This setting is recommended for event-sourced actors that don’t need to validate commands against current state.
 
-If a sender sends several update commands followed by a read command to an event-sourced actor that has ``stateSync`` set to ``false``, the read command will probably not see the state change from the preceding update commands. To achieve read-your-write consistency, the command sender should wait for a reply from the last update command before sending the read command. The reply must of course be sent from within a ``persist`` handler.
+If a sender sends several (update) commands followed by a query to an event-sourced actor that has ``stateSync`` set to ``false``, the query will probably not see the state change from the preceding commands. To achieve read-your-write consistency, the command sender should wait for a reply from the last command before sending the query. The reply must of course be sent from within a ``persist`` handler.
 
 .. note::
    State synchronization settings only apply to a single actor instance. Events that are emitted concurrently by other actors and handled by that instance can arrive at any time and modify actor state. Anyway, concurrent events are not relevant for achieving read-your-write consistency and should be handled as described in the :ref:`user-guide`.
@@ -287,6 +287,13 @@ The generated ``DeliverEvent`` calls ``deliver`` to deliver a ``ReliableMessage`
 The destination confirms the delivery of the message by sending a ``Confirmation`` reply to the event-sourced actor from which the actor generates a ``ConfirmationEvent``. When handling the event, message delivery can be confirmed by calling ``confirm`` with the ``deliveryId`` as argument.
 
 When the actor is re-started, unconfirmed ``ReliableMessage``\ s are automatically re-delivered to their ``destination``\ s. The example actor additionally schedules ``redeliverUnconfirmed`` calls to periodically re-deliver unconfirmed messages. This is done within the actor’s command handler.
+
+.. _ref-conditional-requests:
+
+Conditional requests
+--------------------
+
+Conditional requests are covered in the :ref:`conditional-requests` section of the :ref:`user-guide`.
 
 Custom serialization
 --------------------

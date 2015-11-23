@@ -168,32 +168,66 @@ shouldn't be a problem if the number of incremental updates to a versioned aggre
 rather small). In later releases, manual and automated purging of old versions will be
 supported.
 </p></div></div>
-    </li><li name="com.rbmhtechnology.eventuate.ConditionalCommand" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ConditionalCommandextendsProductwithSerializable"></a>
-      <a id="ConditionalCommand:ConditionalCommand"></a>
+    </li><li name="com.rbmhtechnology.eventuate.ConditionalRequest" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ConditionalRequestextendsProductwithSerializable"></a>
+      <a id="ConditionalRequest:ConditionalRequest"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ConditionalCommand.html"><span class="name">ConditionalCommand</span></a><span class="params">(<span name="condition">condition: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="cmd">cmd: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ConditionalRequest.html"><span class="name">ConditionalRequest</span></a><span class="params">(<span name="condition">condition: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="req">req: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@ConditionalCommandextendsProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@ConditionalRequestextendsProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">A conditional command is a command to an <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
-whose delivery to the actor's command handler is delayed until the following condition
-is met: the merge result of all timestamps of events, that have been previously handled
-by that actor, must be <code>&gt;=</code> the given <code>condition</code> timestamp.</p><div class="fullcomment"><div class="comment cmt"><p>A conditional command is a command to an <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
-whose delivery to the actor's command handler is delayed until the following condition
-is met: the merge result of all timestamps of events, that have been previously handled
-by that actor, must be <code>&gt;=</code> the given <code>condition</code> timestamp.</p><p>For example, this condition is met by an <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
-if the <code>condition</code> timestamp is the vector timestamp of an event and that event has been
-handled by the actor.
+      <p class="shortcomment cmt">A conditional request is a request to an actor in the <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+hierarchy whose delivery to the actor's command handler is delayed until
+the request's <code>condition</code> is in the causal past of that actor (i.e.</p><div class="fullcomment"><div class="comment cmt"><p>A conditional request is a request to an actor in the <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+hierarchy whose delivery to the actor's command handler is delayed until
+the request's <code>condition</code> is in the causal past of that actor (i.e. if the
+<code>condition</code> is <code>&lt;=</code> the view's current time).
 </p></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.ConditionalRequestException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ConditionalRequestExceptionextendsRuntimeException"></a>
+      <a id="ConditionalRequestException:ConditionalRequestException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ConditionalRequestException.html"><span class="name">ConditionalRequestException</span></a><span class="result"> extends <span class="extype" name="scala.RuntimeException">RuntimeException</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@ConditionalRequestExceptionextendsRuntimeException" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Thrown by an actor in the <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> hierarchy if it receives
+a <a href="ConditionalRequest.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalRequest">ConditionalRequest</a> but does not extends the <a href="ConditionalRequests.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalRequests">ConditionalRequests</a>
+trait.</p>
+    </li><li name="com.rbmhtechnology.eventuate.ConditionalRequests" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ConditionalRequestsextendsEventsourcedView"></a>
+      <a id="ConditionalRequests:ConditionalRequests"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="ConditionalRequests.html"><span class="name">ConditionalRequests</span></a><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@ConditionalRequestsextendsEventsourcedView" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Must be extended by actors in the <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> hierarchy if they
+want to support <a href="ConditionalRequest.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalRequest">ConditionalRequest</a> processing.</p>
     </li><li name="com.rbmhtechnology.eventuate.ConfirmedDelivery" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="ConfirmedDeliveryextendsEventsourcedActor"></a>
       <a id="ConfirmedDelivery:ConfirmedDelivery"></a>
@@ -239,13 +273,15 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
     </span>
       <p class="shortcomment cmt">Provider API.</p><div class="fullcomment"><div class="comment cmt"><p>Provider API.</p><p>Event storage format. Fields <code>localLogId</code> and <code>localSequenceNr</code> differ among replicas, all other fields are not changed
 during event replication.
-</p></div><dl class="paramcmts block"><dt class="param">payload</dt><dd class="cmt"><p>Application-defined event.</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>Id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>).</p></dd><dt class="param">emitterAggregateId</dt><dd class="cmt"><p>Aggregate id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>). This is also the default routing destination
-                          of this event. If defined, the event is routed to event-sourced actors or views with a matching
-                          <code>aggregateId</code>. In any case, the event is routed to event-sourced actors and views with an
-                          undefined <code>aggregateId</code>.</p></dd><dt class="param">customDestinationAggregateIds</dt><dd class="cmt"><p>Aggregate ids of additional, custom routing destinations. If non-empty, the event is
-                                     additionally routed to event-sourced actors and views with a matching <code>aggregateId</code>.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>Wall-clock timestamp, generated by the source of concurrent activity that is identified by <code>processId</code>.</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>Vector timestamp, generated by the source of concurrent activity that is identified by <code>processId</code>.</p></dd><dt class="param">processId</dt><dd class="cmt"><p>Id of the causality-tracking source of concurrent activity. By default, this is the id of the event log
-                 that initially wrote the event. If the emitting <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> has set <code>sharedClockEntry</code> to <code>false</code>
-                 then this is the id of that actor (which is the <code>emitterId</code>).</p></dd><dt class="param">localLogId</dt><dd class="cmt"><p>Id of the local event log.</p></dd><dt class="param">localSequenceNr</dt><dd class="cmt"><p>Sequence number in the local event log.
+</p></div><dl class="paramcmts block"><dt class="param">payload</dt><dd class="cmt"><p>Application-defined event.</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>Id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>).</p></dd><dt class="param">emitterAggregateId</dt><dd class="cmt"><p>Aggregate id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>). This is also
+                          the default routing destination of this event. If defined, the event is routed to event-
+                          sourced actors, views, writers and processors with a matching <code>aggregateId</code>. In any case,
+                          the event is routed to event-sourced actors, views, writers and processors with an undefined
+                          <code>aggregateId</code>.</p></dd><dt class="param">customDestinationAggregateIds</dt><dd class="cmt"><p>Aggregate ids of additional, custom routing destinations. If non-empty, the event is
+                                     additionally routed to event-sourced actors, views, writers and processors with a
+                                     matching <code>aggregateId</code>.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>Wall-clock timestamp, generated by the source of concurrent activity that is identified by <code>processId</code>.</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>Vector timestamp, generated by the source of concurrent activity that is identified by <code>processId</code>.</p></dd><dt class="param">processId</dt><dd class="cmt"><p>Id of the causality-tracking source of concurrent activity. By default, this is the id of the event log
+                 that initially wrote the event. If the emitting <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> has
+                 set <code>sharedClockEntry</code> to <code>false</code> then this is the id of that actor or processor (which is the <code>emitterId</code>).</p></dd><dt class="param">localLogId</dt><dd class="cmt"><p>Id of the local event log.</p></dd><dt class="param">localSequenceNr</dt><dd class="cmt"><p>Sequence number in the local event log.
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EventsourcedActorextendsEventsourcedView"></a>
@@ -303,7 +339,7 @@ for write operations to the target log can be configured with the <code>eventuat
 for all event-sourced processors or defined on a per class or instance basis by overriding <code>writeTimeout</code>.
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="EventsourcedViewextendsActorwithConditionalCommandswithStashwithActorLogging"></a>
+      <a id="EventsourcedViewextendsActorwithStashwithActorLogging"></a>
       <a id="EventsourcedView:EventsourcedView"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -311,10 +347,10 @@ for all event-sourced processors or defined on a per class or instance basis by 
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="EventsourcedView.html"><span class="name">EventsourcedView</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <span class="extype" name="com.rbmhtechnology.eventuate.ConditionalCommands">ConditionalCommands</span> with <span class="extype" name="akka.actor.Stash">Stash</span> with <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></span>
+        <a href="EventsourcedView.html"><span class="name">EventsourcedView</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <span class="extype" name="akka.actor.Stash">Stash</span> with <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@EventsourcedViewextendsActorwithConditionalCommandswithStashwithActorLogging" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@EventsourcedViewextendsActorwithStashwithActorLogging" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -463,9 +499,10 @@ replicated only between event logs with matching names.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Provider API.</p><div class="fullcomment"><div class="comment cmt"><p>Provider API.</p><p>Snapshot storage format. <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>s and <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>s can save snapshots of
-internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor#save">EventsourcedActor#save</a> or <a href="EventsourcedView.html#save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#save">EventsourcedView#save</a>, respectively.
-</p></div><dl class="paramcmts block"><dt class="param">payload</dt><dd class="cmt"><p>Application-specific snapshot.</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that saved the snapshot.</p></dd><dt class="param">lastEvent</dt><dd class="cmt"><p>Last handled event before the snapshot was saved.</p></dd><dt class="param">currentTime</dt><dd class="cmt"><p>Current vector time when the snapshot was saved.</p></dd><dt class="param">deliveryAttempts</dt><dd class="cmt"><p>Unconfirmed delivery attempts when the snapshot was saved (can only be
+      <p class="shortcomment cmt">Provider API.</p><div class="fullcomment"><div class="comment cmt"><p>Provider API.</p><p>Snapshot storage format. <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>s, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>s, stateful <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>s
+and <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>s can save snapshots of internal state by calling the (inherited)
+<a href="EventsourcedView.html#save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#save">EventsourcedView#save</a> method.
+</p></div><dl class="paramcmts block"><dt class="param">payload</dt><dd class="cmt"><p>Application-specific snapshot.</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the event-sourced actor, view, stateful writer or processor that saved the snapshot.</p></dd><dt class="param">lastEvent</dt><dd class="cmt"><p>Last handled event before the snapshot was saved.</p></dd><dt class="param">currentTime</dt><dd class="cmt"><p>Current vector time when the snapshot was saved.</p></dd><dt class="param">deliveryAttempts</dt><dd class="cmt"><p>Unconfirmed delivery attempts when the snapshot was saved (can only be
                         non-empty if the actor implements <a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a>).
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.SnapshotMetadata" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -485,7 +522,8 @@ internal state by calling <a href="EventsourcedActor.html#save(snapshot:Any)(han
       </a>
     </span>
       <p class="shortcomment cmt">Snapshot metadata.</p><div class="fullcomment"><div class="comment cmt"><p>Snapshot metadata.
-</p></div><dl class="paramcmts block"><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> that saves the snapshot.</p></dd><dt class="param">sequenceNr</dt><dd class="cmt"><p>The highest event sequence number covered by the snapshot.
+</p></div><dl class="paramcmts block"><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, stateful <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>
+                 or <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> that saves the snapshot.</p></dd><dt class="param">sequenceNr</dt><dd class="cmt"><p>The highest event sequence number covered by the snapshot.
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.StatelessProcessor" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="StatelessProcessorextendsEventsourcedProcessor"></a>

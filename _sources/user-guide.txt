@@ -227,33 +227,33 @@ Event-sourced views are a functional subset of event-sourced actors. They can on
 .. includecode:: code/UserGuideDoc.scala
    :snippet: event-sourced-view
 
-Event-sourced views handle events in the same way as event-sourced actors by implementing an ``onEvent`` handler. The ``onCommand`` handler in the example processes the read commands ``GetAppendCount`` and ``GetResolveCount``.
+Event-sourced views handle events in the same way as event-sourced actors by implementing an ``onEvent`` handler. The ``onCommand`` handler in the example processes the queries ``GetAppendCount`` and ``GetResolveCount``.
 
 ``ExampleView`` implements the mandatory global unique ``id`` but doesn’t define an ``aggregateId``. A view that doesn’t define an ``aggregateId`` can consume events from all event-sourced actors on the same event log. If it defines an ``aggregateId`` it can only consume events from event-sourced actors with the same ``aggregateId`` (assuming the default :ref:`event-routing` rules). 
 
 .. hint::
-   While event-sourced views maintain view state in-memory, :ref:`ref-event-sourced-writers` can be used to persist view state to external databases.
+   While event-sourced views maintain view state in-memory, :ref:`ref-event-sourced-writers` can be used to persist view state to external databases. A specialization of event-sourced writers are :ref:`ref-event-sourced-processors` whose external database is an event log.
 
-.. _conditional-commands:
+.. _conditional-requests:
 
-Conditional commands
+Conditional requests
 --------------------
 
 Causal read consistency is the default when reading state from a single event-sourced actor or view. The event stream received by that actor is always causally ordered, hence, it will never see an *effect* before having seen its *cause*. 
 
 The situation is different when a client reads from multiple actors. Imagine two event-sourced actor replicas where a client updates one replica and observes the updated state with the reply. A subsequent from the other replica, made by the same client, may return the old state which violates causal consistency. 
 
-Similar considerations can be made for reading from an event-sourced view after having made an update to an event-sourced actor. For example, an application that successfully appended an entry to ``ExampleActor`` may not immediately see that update in the ``appendCount`` of ``ExampleView``. To achieve causal read consistency, the view should delay command processing until the emitted event has been consumed by the view. This can be achieved with a ``ConditionalCommand``.
+Similar considerations can be made for reading from an event-sourced view after having made an update to an event-sourced actor. For example, an application that successfully appended an entry to ``ExampleActor`` may not immediately see that update in the ``appendCount`` of ``ExampleView``. To achieve causal read consistency, the view should delay command processing until the emitted event has been consumed by the view. This can be achieved with a ``ConditionalRequest``.
 
 .. includecode:: code/UserGuideDoc.scala
-   :snippet: conditional-commands
+   :snippet: conditional-requests
 
-Here, the ``ExampleActor`` includes the event’s vector timestamp in its ``AppendSuccess`` reply. Together with the actual ``GetAppendCount`` command, the timestamp is included as condition in a ``ConditionalCommand`` and sent to the view. ``EventsourcedView`` internally delays the command, if needed, and only dispatches ``GetAppendCount`` to ``onCommand`` if the condition timestamp is in the *causal past* of the view (which is earliest the case when the view consumed the update event). When running the example with an empty event log, it should print::
+Here, the ``ExampleActor`` includes the event’s vector timestamp in its ``AppendSuccess`` reply. Together with the actual ``GetAppendCount`` command, the timestamp is included as condition in a ``ConditionalRequest`` and sent to the view. For ``ConditionalRequest`` processing, an event-sourced view must extend the ``ConditionalRequests`` trait. ``ConditionalRequests`` internally delays the command, if needed, and only dispatches ``GetAppendCount`` to the view’s ``onCommand`` handler if the condition timestamp is in the *causal past* of the view (which is earliest the case when the view consumed the update event). When running the example with an empty event log, it should print::
 
     append count = 1
 
 .. note::
-   Not only event-sourced views but also event-sourced actors can receive and delay conditional commands. Delaying conditional commands may re-order them relative to other conditional and non-conditional commands.
+   Not only event-sourced views but also event-sourced actors, stateful event-sourced writers and processors can extend ``ConditionalRequests``. Delaying conditional requests may re-order them relative to other conditional and non-conditional requests.
 
 .. _ZooKeeper: http://zookeeper.apache.org/
 .. _event sourcing: http://martinfowler.com/eaaDev/EventSourcing.html
@@ -271,10 +271,7 @@ Here, the ``ExampleActor`` includes the event’s vector timestamp in its ``Appe
 .. _CRDTService: latest/api/index.html#com.rbmhtechnology.eventuate.crdt.CRDTService
 .. _CRDTServiceOps: latest/api/index.html#com.rbmhtechnology.eventuate.crdt.CRDTServiceOps
 
-.. [#] ``EventsourcedActor``\ s and ``EventsourcedView``\ s that have an undefined ``aggregateId`` can consume events from all other actors on the same event log. 
-
+.. [#] ``EventsourcedActor``\ s and ``EventsourcedView``\ s that have an undefined ``aggregateId`` can consume events from all other actors on the same event log.
 .. [#] Attached update timestamps are not version vectors because Eventuate uses `vector clock update rules`_ instead of `version vector update rules`_. Consequently, update timestamp equivalence cannot be used as criterion for replica convergence.
-
 .. [#] A formal approach to automatically *merge* concurrent versions of application state are convergent replicated data types (CvRDTs) or state-based CRDTs.
-
 .. [#] Distributed lock acquisition or leader election require an external coordination service like ZooKeeper_, for example, whereas static rules do not.

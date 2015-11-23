@@ -92,7 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#resolving-conflicting-versions">Resolving conflicting versions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#event-sourced-views">Event-sourced views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#conditional-commands">Conditional commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conditional-requests">Conditional requests</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
@@ -106,6 +106,7 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-routing">Event routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#conditional-requests">Conditional requests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
@@ -572,25 +573,24 @@
 <span class="o">}</span>
 </pre></div>
 </div>
-<p>Event-sourced views handle events in the same way as event-sourced actors by implementing an <code class="docutils literal"><span class="pre">onEvent</span></code> handler. The <code class="docutils literal"><span class="pre">onCommand</span></code> handler in the example processes the read commands <code class="docutils literal"><span class="pre">GetAppendCount</span></code> and <code class="docutils literal"><span class="pre">GetResolveCount</span></code>.</p>
+<p>Event-sourced views handle events in the same way as event-sourced actors by implementing an <code class="docutils literal"><span class="pre">onEvent</span></code> handler. The <code class="docutils literal"><span class="pre">onCommand</span></code> handler in the example processes the queries <code class="docutils literal"><span class="pre">GetAppendCount</span></code> and <code class="docutils literal"><span class="pre">GetResolveCount</span></code>.</p>
 <p><code class="docutils literal"><span class="pre">ExampleView</span></code> implements the mandatory global unique <code class="docutils literal"><span class="pre">id</span></code> but doesn’t define an <code class="docutils literal"><span class="pre">aggregateId</span></code>. A view that doesn’t define an <code class="docutils literal"><span class="pre">aggregateId</span></code> can consume events from all event-sourced actors on the same event log. If it defines an <code class="docutils literal"><span class="pre">aggregateId</span></code> it can only consume events from event-sourced actors with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> (assuming the default <a class="reference internal" href="reference/event-sourcing.html#event-routing"><span>Event routing</span></a> rules).</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">While event-sourced views maintain view state in-memory, <a class="reference internal" href="reference/event-sourcing.html#ref-event-sourced-writers"><span>Event-sourced writers</span></a> can be used to persist view state to external databases.</p>
+<p class="last">While event-sourced views maintain view state in-memory, <a class="reference internal" href="reference/event-sourcing.html#ref-event-sourced-writers"><span>Event-sourced writers</span></a> can be used to persist view state to external databases. A specialization of event-sourced writers are <a class="reference internal" href="reference/event-sourcing.html#ref-event-sourced-processors"><span>Event-sourced processors</span></a> whose external database is an event log.</p>
 </div>
 </div>
-<div class="section" id="conditional-commands">
-<span id="id8"></span><h2>Conditional commands<a class="headerlink" href="#conditional-commands" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="conditional-requests">
+<span id="id8"></span><h2>Conditional requests<a class="headerlink" href="#conditional-requests" title="Permalink to this headline">¶</a></h2>
 <p>Causal read consistency is the default when reading state from a single event-sourced actor or view. The event stream received by that actor is always causally ordered, hence, it will never see an <em>effect</em> before having seen its <em>cause</em>.</p>
 <p>The situation is different when a client reads from multiple actors. Imagine two event-sourced actor replicas where a client updates one replica and observes the updated state with the reply. A subsequent from the other replica, made by the same client, may return the old state which violates causal consistency.</p>
-<p>Similar considerations can be made for reading from an event-sourced view after having made an update to an event-sourced actor. For example, an application that successfully appended an entry to <code class="docutils literal"><span class="pre">ExampleActor</span></code> may not immediately see that update in the <code class="docutils literal"><span class="pre">appendCount</span></code> of <code class="docutils literal"><span class="pre">ExampleView</span></code>. To achieve causal read consistency, the view should delay command processing until the emitted event has been consumed by the view. This can be achieved with a <code class="docutils literal"><span class="pre">ConditionalCommand</span></code>.</p>
+<p>Similar considerations can be made for reading from an event-sourced view after having made an update to an event-sourced actor. For example, an application that successfully appended an entry to <code class="docutils literal"><span class="pre">ExampleActor</span></code> may not immediately see that update in the <code class="docutils literal"><span class="pre">appendCount</span></code> of <code class="docutils literal"><span class="pre">ExampleView</span></code>. To achieve causal read consistency, the view should delay command processing until the emitted event has been consumed by the view. This can be achieved with a <code class="docutils literal"><span class="pre">ConditionalRequest</span></code>.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
 <span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
 <span class="k">import</span> <span class="nn">akka.pattern.ask</span>
 <span class="k">import</span> <span class="nn">akka.util.Timeout</span>
-<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.ConditionalCommand</span>
-<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.</span><span class="o">{</span><span class="nc">EventsourcedActor</span><span class="o">,</span> <span class="nc">VectorTime</span><span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate._</span>
 
 <span class="k">case</span> <span class="k">class</span> <span class="nc">Append</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
 <span class="k">case</span> <span class="k">class</span> <span class="nc">AppendSuccess</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">updateTimestamp</span><span class="k">:</span> <span class="kt">VectorTime</span><span class="o">)</span>
@@ -599,7 +599,6 @@
                    <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
 
   <span class="k">private</span> <span class="k">var</span> <span class="n">currentState</span><span class="k">:</span> <span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Vector</span><span class="o">.</span><span class="n">empty</span>
-
   <span class="k">override</span> <span class="k">val</span> <span class="n">aggregateId</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
 
   <span class="k">override</span> <span class="k">val</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
@@ -617,6 +616,11 @@
   <span class="o">}</span>
 <span class="o">}</span>
 
+<span class="k">class</span> <span class="nc">ExampleView</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span>
+  <span class="k">extends</span> <span class="nc">EventsourcedView</span> <span class="k">with</span> <span class="nc">ConditionalRequests</span> <span class="o">{</span>
+  <span class="c1">// ...</span>
+<span class="o">}</span>
+
 <span class="k">val</span> <span class="n">ea</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;ea&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">)))</span>
 <span class="k">val</span> <span class="n">ev</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleView</span><span class="o">(</span><span class="s">&quot;ev&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">)))</span>
 
@@ -625,17 +629,17 @@
 
 <span class="k">for</span> <span class="o">{</span>
   <span class="nc">AppendSuccess</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">timestamp</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="n">ea</span> <span class="o">?</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">)</span>
-  <span class="nc">GetAppendCountReply</span><span class="o">(</span><span class="n">count</span><span class="o">)</span>  <span class="k">&lt;-</span> <span class="n">ev</span> <span class="o">?</span> <span class="nc">ConditionalCommand</span><span class="o">(</span><span class="n">timestamp</span><span class="o">,</span> <span class="nc">GetAppendCount</span><span class="o">)</span>
+  <span class="nc">GetAppendCountReply</span><span class="o">(</span><span class="n">count</span><span class="o">)</span>  <span class="k">&lt;-</span> <span class="n">ev</span> <span class="o">?</span> <span class="nc">ConditionalRequest</span><span class="o">(</span><span class="n">timestamp</span><span class="o">,</span> <span class="nc">GetAppendCount</span><span class="o">)</span>
 <span class="o">}</span> <span class="n">println</span><span class="o">(</span><span class="s">s&quot;append count = </span><span class="si">$count</span><span class="s">&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
-<p>Here, the <code class="docutils literal"><span class="pre">ExampleActor</span></code> includes the event’s vector timestamp in its <code class="docutils literal"><span class="pre">AppendSuccess</span></code> reply. Together with the actual <code class="docutils literal"><span class="pre">GetAppendCount</span></code> command, the timestamp is included as condition in a <code class="docutils literal"><span class="pre">ConditionalCommand</span></code> and sent to the view. <code class="docutils literal"><span class="pre">EventsourcedView</span></code> internally delays the command, if needed, and only dispatches <code class="docutils literal"><span class="pre">GetAppendCount</span></code> to <code class="docutils literal"><span class="pre">onCommand</span></code> if the condition timestamp is in the <em>causal past</em> of the view (which is earliest the case when the view consumed the update event). When running the example with an empty event log, it should print:</p>
+<p>Here, the <code class="docutils literal"><span class="pre">ExampleActor</span></code> includes the event’s vector timestamp in its <code class="docutils literal"><span class="pre">AppendSuccess</span></code> reply. Together with the actual <code class="docutils literal"><span class="pre">GetAppendCount</span></code> command, the timestamp is included as condition in a <code class="docutils literal"><span class="pre">ConditionalRequest</span></code> and sent to the view. For <code class="docutils literal"><span class="pre">ConditionalRequest</span></code> processing, an event-sourced view must extend the <code class="docutils literal"><span class="pre">ConditionalRequests</span></code> trait. <code class="docutils literal"><span class="pre">ConditionalRequests</span></code> internally delays the command, if needed, and only dispatches <code class="docutils literal"><span class="pre">GetAppendCount</span></code> to the view’s <code class="docutils literal"><span class="pre">onCommand</span></code> handler if the condition timestamp is in the <em>causal past</em> of the view (which is earliest the case when the view consumed the update event). When running the example with an empty event log, it should print:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">append</span> <span class="n">count</span> <span class="k">=</span> <span class="mi">1</span>
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Not only event-sourced views but also event-sourced actors can receive and delay conditional commands. Delaying conditional commands may re-order them relative to other conditional and non-conditional commands.</p>
+<p class="last">Not only event-sourced views but also event-sourced actors, stateful event-sourced writers and processors can extend <code class="docutils literal"><span class="pre">ConditionalRequests</span></code>. Delaying conditional requests may re-order them relative to other conditional and non-conditional requests.</p>
 </div>
 <table class="docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>

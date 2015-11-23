@@ -93,7 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../user-guide.html#resolving-conflicting-versions">Resolving conflicting versions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user-guide.html#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user-guide.html#event-sourced-views">Event-sourced views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#conditional-commands">Conditional commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#conditional-requests">Conditional requests</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../reference.html">Reference</a><ul class="current">
@@ -107,6 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#event-routing">Event routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reliable-delivery">Reliable delivery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conditional-requests">Conditional requests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#custom-serialization">Custom serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuration</a></li>
 </ul>
@@ -255,7 +256,7 @@
 </div>
 <p>If <code class="docutils literal"><span class="pre">stateSync</span></code> is <code class="docutils literal"><span class="pre">true</span></code> (default), new commands are <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/actors.html#stash">stashed</a> while persistence is in progress. Consequently, new commands see actor state that is <em>in sync</em> with the events in the event log. A consequence is limited write throughput, because <a class="reference internal" href="../architecture.html#batching"><span>Batching</span></a> of write requests is not possible in this case<a class="footnote-reference" href="#id15" id="id4">[3]</a>. This setting is recommended for event-sourced actors that must validate commands against current state.</p>
 <p>If <code class="docutils literal"><span class="pre">stateSync</span></code> is <code class="docutils literal"><span class="pre">false</span></code>, new commands are dispatched to <code class="docutils literal"><span class="pre">onCommand</span></code> immediately. Consequently, new commands may see stale actor state. The advantage is significantly higher write throughput as <a class="reference internal" href="../architecture.html#batching"><span>Batching</span></a> of write requests is possible. This setting is recommended for event-sourced actors that don’t need to validate commands against current state.</p>
-<p>If a sender sends several update commands followed by a read command to an event-sourced actor that has <code class="docutils literal"><span class="pre">stateSync</span></code> set to <code class="docutils literal"><span class="pre">false</span></code>, the read command will probably not see the state change from the preceding update commands. To achieve read-your-write consistency, the command sender should wait for a reply from the last update command before sending the read command. The reply must of course be sent from within a <code class="docutils literal"><span class="pre">persist</span></code> handler.</p>
+<p>If a sender sends several (update) commands followed by a query to an event-sourced actor that has <code class="docutils literal"><span class="pre">stateSync</span></code> set to <code class="docutils literal"><span class="pre">false</span></code>, the query will probably not see the state change from the preceding commands. To achieve read-your-write consistency, the command sender should wait for a reply from the last command before sending the query. The reply must of course be sent from within a <code class="docutils literal"><span class="pre">persist</span></code> handler.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">State synchronization settings only apply to a single actor instance. Events that are emitted concurrently by other actors and handled by that instance can arrive at any time and modify actor state. Anyway, concurrent events are not relevant for achieving read-your-write consistency and should be handled as described in the <a class="reference internal" href="../user-guide.html#user-guide"><span>User guide</span></a>.</p>
@@ -693,6 +694,10 @@
 <p>The generated <code class="docutils literal"><span class="pre">DeliverEvent</span></code> calls <code class="docutils literal"><span class="pre">deliver</span></code> to deliver a <code class="docutils literal"><span class="pre">ReliableMessage</span></code> to <code class="docutils literal"><span class="pre">destination</span></code>. The <code class="docutils literal"><span class="pre">deliveryId</span></code> is the correlation identifier for the delivery <code class="docutils literal"><span class="pre">Confirmation</span></code>. The <code class="docutils literal"><span class="pre">deliveryId</span></code> can be any application-defined id. Here, the event’s sequence number is used which can be obtained with <code class="docutils literal"><span class="pre">lastSequenceNumber</span></code>.</p>
 <p>The destination confirms the delivery of the message by sending a <code class="docutils literal"><span class="pre">Confirmation</span></code> reply to the event-sourced actor from which the actor generates a <code class="docutils literal"><span class="pre">ConfirmationEvent</span></code>. When handling the event, message delivery can be confirmed by calling <code class="docutils literal"><span class="pre">confirm</span></code> with the <code class="docutils literal"><span class="pre">deliveryId</span></code> as argument.</p>
 <p>When the actor is re-started, unconfirmed <code class="docutils literal"><span class="pre">ReliableMessage</span></code>s are automatically re-delivered to their <code class="docutils literal"><span class="pre">destination</span></code>s. The example actor additionally schedules <code class="docutils literal"><span class="pre">redeliverUnconfirmed</span></code> calls to periodically re-deliver unconfirmed messages. This is done within the actor’s command handler.</p>
+</div>
+<div class="section" id="conditional-requests">
+<span id="ref-conditional-requests"></span><h1>Conditional requests<a class="headerlink" href="#conditional-requests" title="Permalink to this headline">¶</a></h1>
+<p>Conditional requests are covered in the <a class="reference internal" href="../user-guide.html#conditional-requests"><span>Conditional requests</span></a> section of the <a class="reference internal" href="../user-guide.html#user-guide"><span>User guide</span></a>.</p>
 </div>
 <div class="section" id="custom-serialization">
 <h1>Custom serialization<a class="headerlink" href="#custom-serialization" title="Permalink to this headline">¶</a></h1>
