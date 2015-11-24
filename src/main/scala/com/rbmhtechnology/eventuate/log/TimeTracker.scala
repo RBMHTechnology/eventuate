@@ -38,7 +38,7 @@ import scala.collection.immutable.Seq
  * @param vectorTime Current vector time of the log. This is the merge
  *                   result of all event vector timestamps in the log.
  */
-private[eventuate] case class TimeTracker(updateCount: Long = 0L, sequenceNr: Long = 0L, vectorTime: VectorTime = VectorTime()) {
+private[eventuate] case class TimeTracker(updateCount: Long = 0L, sequenceNr: Long = 0L, vectorTime: VectorTime = VectorTime.Zero) {
   def advanceUpdateCount(): Unit =
     copy(updateCount = updateCount + 1L)
 
@@ -77,7 +77,7 @@ private[eventuate] case class TimeTracker(updateCount: Long = 0L, sequenceNr: Lo
       e2
     }
 
-    (updated, copy(updateCount = upd, sequenceNr = snr, vectorTime = vectorTime.merge(lvt)))
+    (updated, copy(updateCount = upd, sequenceNr = snr, vectorTime = lvt))
   }
 
   def prepareReplicate(logId: String, events: Seq[DurableEvent], replicationProgress: Long, logger: LoggingAdapter): (Seq[DurableEvent], TimeTracker) = {
@@ -102,7 +102,7 @@ private[eventuate] case class TimeTracker(updateCount: Long = 0L, sequenceNr: Lo
         acc :+ e2
     }
     TimeTracker.logFilterStatistics(logId, "target", events, updated, logger)
-    (updated, copy(updateCount = upd, sequenceNr = snr, vectorTime = vectorTime.merge(lvt)))
+    (updated, copy(updateCount = upd, sequenceNr = snr, vectorTime = lvt))
   }
 }
 

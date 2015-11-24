@@ -30,19 +30,12 @@ import akka.actor._
  *
  * @see [[EventsourcedView]]
  */
-trait EventsourcedActor extends EventsourcedView {
-  import DurableEvent.UndefinedLogId
+trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
   import EventsourcingProtocol._
 
   private var writeRequests: Vector[DurableEvent] = Vector.empty
   private var writeHandlers: Vector[Handler[Any]] = Vector.empty
   private var writing: Boolean = false
-
-  /**
-   * Internal API.
-   */
-  override private[eventuate] def trackVectorTime: Boolean =
-    true
 
   /**
    * State synchronization. If set to `true`, commands see internal state that is consistent

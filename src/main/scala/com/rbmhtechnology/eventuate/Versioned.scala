@@ -58,7 +58,7 @@ trait ConcurrentVersions[A, B] extends Serializable {
    * Experimental ...
    */
   def resolve(selectedTimestamp: VectorTime): ConcurrentVersions[A, B] =
-    resolve(selectedTimestamp, all.map(_.updateTimestamp).foldLeft(VectorTime())(_.merge(_)))
+    resolve(selectedTimestamp, all.map(_.updateTimestamp).foldLeft(VectorTime.Zero)(_.merge(_)))
 
   /**
    * Returns all (un-resolved) concurrent versions.
@@ -247,7 +247,7 @@ object ConcurrentVersionsTree {
    * @tparam B Update type
    */
   def apply[A, B](initial: A)(f: (A, B) => A): ConcurrentVersionsTree[A, B] =
-    new ConcurrentVersionsTree[A, B](new ConcurrentVersionsTree.Node(Versioned(initial, VectorTime(), ""))).withProjection(f)
+    new ConcurrentVersionsTree[A, B](new ConcurrentVersionsTree.Node(Versioned(initial, VectorTime.Zero, ""))).withProjection(f)
 
   /**
    * Creates a new [[ConcurrentVersionsTree]] that uses projection function `f` to compute

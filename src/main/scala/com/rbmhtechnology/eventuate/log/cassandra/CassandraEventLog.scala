@@ -88,7 +88,7 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
 
   private var registry = SubscriberRegistry()
   private var timeTracker = TimeTracker()
-  private var timeCache = Map.empty[String, VectorTime].withDefaultValue(VectorTime())
+  private var timeCache = Map.empty[String, VectorTime].withDefaultValue(VectorTime.Zero)
 
   // ------------------------------------------------------
   // TODO: consider exchanging only vector time deltas

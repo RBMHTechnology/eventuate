@@ -27,7 +27,7 @@ import Scalaz._
  * @param processId Id of the owner process.
  * @param currentTime The clock's current time.
  */
-case class VectorClock(processId: String, currentTime: VectorTime = VectorTime()) {
+case class VectorClock(processId: String, currentTime: VectorTime = VectorTime.Zero) {
   /**
    * Returns the local time of `processId` recorded in this clock.
    */
@@ -95,7 +95,7 @@ case class VectorTime(value: Map[String, Long] = Map.empty) {
    */
   def localCopy(processId: String): VectorTime = value.get(processId) match {
     case Some(t) => VectorTime(processId -> t)
-    case None    => VectorTime()
+    case None    => VectorTime.Zero
   }
 
   /**
@@ -154,6 +154,9 @@ case class VectorTime(value: Map[String, Long] = Map.empty) {
 }
 
 object VectorTime {
+  val Zero: VectorTime =
+    VectorTime()
+
   def apply(entries: (String, Long)*): VectorTime =
     VectorTime(Map(entries: _*))
 

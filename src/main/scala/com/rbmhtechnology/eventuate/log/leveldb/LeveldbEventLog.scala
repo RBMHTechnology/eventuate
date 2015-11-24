@@ -64,7 +64,7 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
 
   private var registry = SubscriberRegistry()
   private var timeTracker = TimeTracker()
-  private var timeCache = Map.empty[String, VectorTime].withDefaultValue(VectorTime())
+  private var timeCache = Map.empty[String, VectorTime].withDefaultValue(VectorTime.Zero)
 
   private val notificationChannel = context.actorOf(Props(new NotificationChannel(id)))
   private val snapshotStore = new FilesystemSnapshotStore(new FilesystemSnapshotStoreSettings(context.system), id)

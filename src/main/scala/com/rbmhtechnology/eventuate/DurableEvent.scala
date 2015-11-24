@@ -46,7 +46,7 @@ case class DurableEvent(
   emitterAggregateId: Option[String] = None,
   customDestinationAggregateIds: Set[String] = Set(),
   systemTimestamp: Long = 0L,
-  vectorTimestamp: VectorTime = VectorTime(),
+  vectorTimestamp: VectorTime = VectorTime.Zero,
   processId: String = DurableEvent.UndefinedLogId,
   localLogId: String = DurableEvent.UndefinedLogId,
   localSequenceNr: Long = DurableEvent.UndefinedSequenceNr) {

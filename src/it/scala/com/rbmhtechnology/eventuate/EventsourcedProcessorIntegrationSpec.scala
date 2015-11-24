@@ -41,9 +41,7 @@ object EventsourcedProcessorIntegrationSpec {
     }
   }
 
-  class SampleProcessor(val id: String, val eventLog: ActorRef, val targetEventLog: ActorRef, sharedVectorClockEntry: Boolean, probe: ActorRef) extends EventsourcedProcessor {
-    override def sharedClockEntry = sharedVectorClockEntry
-
+  class StatelessSampleProcessor(val id: String, val eventLog: ActorRef, val targetEventLog: ActorRef, probe: ActorRef) extends EventsourcedProcessor {
     override val onCommand: Receive = {
       case "boom" => throw boom
       case "snap" => save("") {
@@ -62,6 +60,9 @@ object EventsourcedProcessorIntegrationSpec {
       case _ =>
     }
   }
+
+  class StatefulSampleProcessor(id: String, eventLog: ActorRef, targetEventLog: ActorRef, override val sharedClockEntry: Boolean, probe: ActorRef)
+    extends StatelessSampleProcessor(id, eventLog, targetEventLog, probe) with StatefulProcessor
 }
 
 abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach {
@@ -96,9 +97,9 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
     a2 = system.actorOf(Props(new SampleActor("a2", targetLog, targetProbe.ref)))
   }
 
-  "A stateful EventsourcedProcessor" must {
+  "A StatefulProcessor" must {
     "write processed events to a target log and recover from scratch" in {
-      val p = system.actorOf(Props(new SampleProcessor("p", sourceLog, targetLog, sharedVectorClockEntry = true, processorProbe.ref)))
+      val p = system.actorOf(Props(new StatefulSampleProcessor("p", sourceLog, targetLog, sharedClockEntry = true, processorProbe.ref)))
 
       a1 ! "a"
       a1 ! "b"
@@ -124,7 +125,7 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
       targetProbe.expectMsg(("d-processed-2", VectorTime(sourceLogId -> 4L, targetLogId -> 8L)))
     }
     "write processed events to a target log and recover from snapshot" in {
-      val p = system.actorOf(Props(new SampleProcessor("p", sourceLog, targetLog, sharedVectorClockEntry = true, processorProbe.ref)))
+      val p = system.actorOf(Props(new StatefulSampleProcessor("p", sourceLog, targetLog, sharedClockEntry = true, processorProbe.ref)))
 
       a1 ! "a"
       a1 ! "b"
@@ -156,7 +157,7 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
       targetProbe.expectMsg(("d-processed-2", VectorTime(sourceLogId -> 4L, targetLogId -> 8L)))
     }
     "update event vector timestamps when having set sharedClockEntry to false" in {
-      val p = system.actorOf(Props(new SampleProcessor("p", sourceLog, targetLog, sharedVectorClockEntry = false, processorProbe.ref)))
+      val p = system.actorOf(Props(new StatefulSampleProcessor("p", sourceLog, targetLog, sharedClockEntry = false, processorProbe.ref)))
 
       a1 ! "a"
       a1 ! "b"
@@ -186,7 +187,7 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
         sourceProbe.expectMsg(("b", VectorTime(sourceLogId -> 2L)))
         sourceProbe.expectMsg(("c", VectorTime(sourceLogId -> 3L)))
 
-        val p = system.actorOf(Props(new SampleProcessor("p", sourceLog, sourceLog, sharedVectorClockEntry = false, processorProbe.ref)))
+        val p = system.actorOf(Props(new StatefulSampleProcessor("p", sourceLog, sourceLog, sharedClockEntry = false, processorProbe.ref)))
 
         sourceProbe.expectMsg(("a-processed-1", VectorTime(sourceLogId -> 1L, "p" -> 2L)))
         sourceProbe.expectMsg(("a-processed-2", VectorTime(sourceLogId -> 1L, "p" -> 3L)))
@@ -207,7 +208,7 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
 
   "A stateless EventsourcedProcessor" must {
     "write processed events to a target log and resume from stored position" in {
-      val p = system.actorOf(Props(new SampleProcessor("p", sourceLog, targetLog, sharedVectorClockEntry = true, processorProbe.ref) with StatelessProcessor))
+      val p = system.actorOf(Props(new StatelessSampleProcessor("p", sourceLog, targetLog, processorProbe.ref)))
 
       a1 ! "a"
       a1 ! "b"

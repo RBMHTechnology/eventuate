@@ -36,7 +36,7 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
     cassandra.prepareReadEvents(logId)
 
   def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int): Future[ReadResult] =
-    readAsync(fromSequenceNr, toSequenceNr, max, NoFilter, VectorTime(), logId)
+    readAsync(fromSequenceNr, toSequenceNr, max, NoFilter, VectorTime.Zero, logId)
 
   def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: ReplicationFilter, lower: VectorTime, targetLogId: String): Future[ReadResult] =
     Future(read(fromSequenceNr, toSequenceNr, max, filter, lower, targetLogId))(cassandra.readDispatcher)

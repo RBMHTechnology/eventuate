@@ -19,34 +19,28 @@ package com.rbmhtechnology.eventuate
 import akka.actor._
 
 /**
-  * A conditional request is a request to an actor in the [[EventsourcedView]]
-  * hierarchy whose delivery to the actor's command handler is delayed until
-  * the request's `condition` is in the causal past of that actor (i.e. if the
-  * `condition` is `<=` the view's current time).
-  */
+ * A conditional request is a request to an actor in the [[EventsourcedView]]
+ * hierarchy whose delivery to the actor's command handler is delayed until
+ * the request's `condition` is in the causal past of that actor (i.e. if the
+ * `condition` is `<=` the view's current time).
+ */
 case class ConditionalRequest(condition: VectorTime, req: Any)
 
 /**
-  * Thrown by an actor in the [[EventsourcedView]] hierarchy if it receives
-  * a [[ConditionalRequest]] but does not extends the [[ConditionalRequests]]
-  * trait.
-  */
+ * Thrown by an actor in the [[EventsourcedView]] hierarchy if it receives
+ * a [[ConditionalRequest]] but does not extends the [[ConditionalRequests]]
+ * trait.
+ */
 class ConditionalRequestException(msg: String) extends RuntimeException(msg)
 
 /**
-  * Must be extended by actors in the [[EventsourcedView]] hierarchy if they
-  * want to support [[ConditionalRequest]] processing.
-  */
-trait ConditionalRequests extends EventsourcedView {
+ * Must be extended by actors in the [[EventsourcedView]] hierarchy if they
+ * want to support [[ConditionalRequest]] processing.
+ */
+trait ConditionalRequests extends EventsourcedView with EventsourcedClock {
   import ConditionalRequests._
 
   private val requestManager = context.actorOf(Props(new RequestManager(self)))
-
-  /**
-   * Internal API.
-   */
-  override private[eventuate] def trackVectorTime: Boolean =
-    true
 
   /**
    * Internal API.
@@ -69,7 +63,7 @@ private object ConditionalRequests {
 
   class RequestManager(owner: ActorRef) extends Actor {
     val requestBuffer = context.actorOf(Props(new RequestBuffer(owner)))
-    var currentTime: VectorTime = VectorTime()
+    var currentTime: VectorTime = VectorTime.Zero
 
     val idle: Receive = {
       case cr: Request =>

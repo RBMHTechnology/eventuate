@@ -21,6 +21,8 @@ import akka.testkit._
 
 import com.rbmhtechnology.eventuate.ConfirmedDelivery._
 
+import org.scalatest._
+
 import scala.util._
 
 object EventsourcedActorSpec {
@@ -173,19 +175,27 @@ object EventsourcedActorSpec {
   }
 }
 
-class EventsourcedActorSpec extends EventsourcedViewSpec {
+class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
   import EventsourcedViewSpec._
   import EventsourcedActorSpec._
   import EventsourcingProtocol._
 
+  var instanceId: Int = _
+  var logProbe: TestProbe = _
+  var dstProbe: TestProbe = _
   var errProbe: TestProbe = _
 
   override def beforeEach(): Unit = {
-    super.beforeEach()
+    instanceId = EventsourcedView.instanceIdCounter.get
+    logProbe = TestProbe()
+    dstProbe = TestProbe()
     errProbe = TestProbe()
   }
 
-  override def unrecoveredEventsourcedActor(): ActorRef =
+  override def afterAll(): Unit =
+    TestKit.shutdownActorSystem(system)
+
+  def unrecoveredEventsourcedActor(): ActorRef =
     unrecoveredEventsourcedActor(stateSync = true)
 
   def unrecoveredEventsourcedActor(stateSync: Boolean): ActorRef =

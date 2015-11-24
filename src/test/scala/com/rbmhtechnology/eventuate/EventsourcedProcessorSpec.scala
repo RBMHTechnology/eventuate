@@ -39,12 +39,11 @@ object EventsourcedProcessorSpec {
   val eventC1 = update(eventC.copy("c-1"))
   val eventC2 = update(eventC.copy("c-2"))
 
-  class TestProcessor(srcProbe: ActorRef, trgProbe: ActorRef, appProbe: ActorRef, sce: Boolean) extends EventsourcedProcessor {
+  class StatelessTestProcessor(srcProbe: ActorRef, trgProbe: ActorRef, appProbe: ActorRef) extends EventsourcedProcessor {
     override val id = emitterIdB
     override val eventLog = srcProbe
     override val targetEventLog = trgProbe
     override val replayChunkSizeMax = 2
-    override def sharedClockEntry = sce
 
     override val onCommand: Receive = {
       case cmd => appProbe ! cmd
@@ -64,6 +63,9 @@ object EventsourcedProcessorSpec {
       super.writeFailure(cause)
     }
   }
+
+  class StatefulTestProcessor(srcProbe: ActorRef, trgProbe: ActorRef, appProbe: ActorRef, override val sharedClockEntry: Boolean)
+    extends StatelessTestProcessor(srcProbe, trgProbe, appProbe) with StatefulProcessor
 
   def update(event: DurableEvent): DurableEvent =
     event.copy(emitterId = emitterIdB, processId = UndefinedLogId, localLogId = UndefinedLogId, localSequenceNr = UndefinedSequenceNr)
@@ -89,21 +91,24 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
   override def afterAll(): Unit =
     TestKit.shutdownActorSystem(system)
 
-  def unrecoveredProcessor(stateful: Boolean = true, sharedClockEntry: Boolean = true): ActorRef =
-    if (stateful) system.actorOf(Props(new TestProcessor(srcProbe.ref, trgProbe.ref, appProbe.ref, sharedClockEntry)))
-    else          system.actorOf(Props(new TestProcessor(srcProbe.ref, trgProbe.ref, appProbe.ref, sharedClockEntry) with StatelessProcessor))
+  def unrecoveredStatelessProcessor(): ActorRef =
+    system.actorOf(Props(new StatelessTestProcessor(srcProbe.ref, trgProbe.ref, appProbe.ref)))
 
-  def recoveredProcessor(stateful: Boolean = true, sharedClockEntry: Boolean = true): ActorRef =
-    processRecover(unrecoveredProcessor(stateful, sharedClockEntry), stateful)
+  def unrecoveredStatefulProcessor(sharedClockEntry: Boolean = true): ActorRef =
+    system.actorOf(Props(new StatefulTestProcessor(srcProbe.ref, trgProbe.ref, appProbe.ref, sharedClockEntry)))
 
-  def processRecover(actor: ActorRef, stateful: Boolean = true): ActorRef = {
+  def recoveredStatelessProcessor(): ActorRef = {
+    val actor = unrecoveredStatelessProcessor()
     processRead(0)
-    if (stateful) {
-      processLoad(actor)
-      processReplay(actor, 1)
-    } else {
-      processReplay(actor, 1)
-    }
+    processReplay(actor, 1)
+    actor
+  }
+
+  def recoveredStatefulProcessor(sharedClockEntry: Boolean = true): ActorRef = {
+    val actor = unrecoveredStatefulProcessor(sharedClockEntry)
+    processRead(0)
+    processLoad(actor)
+    processReplay(actor, 1)
     actor
   }
 
@@ -141,19 +146,19 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
   def processResult(result: Any): Unit =
     trgProbe.sender() ! Status.Success(result)
 
-  "A stateful EventsourcedProcessor" must {
+  "A StatefulProcessor" must {
     "recover" in {
-      recoveredProcessor()
+      recoveredStatefulProcessor()
     }
     "restart on failed read by default" in {
-      val actor = unrecoveredProcessor()
+      val actor = unrecoveredStatefulProcessor()
       processRead(0, success = false)
       processRead(0)
       processLoad(actor, instanceId + 1)
       processReplay(actor, 1, instanceId + 1)
     }
     "recover on failed write by default" in {
-      val actor = unrecoveredProcessor()
+      val actor = unrecoveredStatefulProcessor()
       processRead(0)
       processLoad(actor)
       processReplay(actor, 1)
@@ -166,7 +171,7 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
       processWrite(1, Seq(eventA1, eventA2))
     }
     "write to target log during and after recovery" in {
-      val actor = unrecoveredProcessor()
+      val actor = unrecoveredStatefulProcessor()
       processRead(0)
       processLoad(actor)
       srcProbe.expectMsg(Replay(1, 2, actor, instanceId))
@@ -180,7 +185,7 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
       processWrite(3, Seq(eventC1, eventC2))
     }
     "write to target log and process concurrently" in {
-      val actor = recoveredProcessor()
+      val actor = recoveredStatefulProcessor()
       actor ! Written(eventA)
       actor ! Written(eventB)
       actor ! Written(eventC)
@@ -188,7 +193,7 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
       processWrite(3, Seq(eventB1, eventB2, eventC1, eventC2))
     }
     "exclude events from write with sequenceNr <= storedSequenceNr" in {
-      val actor = unrecoveredProcessor()
+      val actor = unrecoveredStatefulProcessor()
       processRead(3)
       processLoad(actor)
       processReplay(actor, 1, 3, instanceId)
@@ -196,7 +201,7 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
       appProbe.expectMsg(3)
     }
     "include events to write with sequenceNr > storedSequenceNr" in {
-      val actor = unrecoveredProcessor()
+      val actor = unrecoveredStatefulProcessor()
       processRead(2)
       processLoad(actor)
       processReplay(actor, 1, 2, instanceId)
@@ -208,7 +213,7 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
       processWrite(3, Seq(eventC1, eventC2))
     }
     "write events with current vector time" in {
-      val actor = recoveredProcessor()
+      val actor = recoveredStatefulProcessor()
       actor ! Written(eventA.copy(vectorTimestamp = timestamp(1, 0)))
       actor ! Written(eventB.copy(vectorTimestamp = timestamp(0, 1)))
       processWrite(1, Seq(
@@ -220,10 +225,10 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
     }
   }
 
-  "A stateful EventsourcedProcessor" when {
+  "A StatefulProcessor" when {
     "using its own vector clock entry" must {
       "update the process id and vector time of emitted events" in {
-        val actor = recoveredProcessor(sharedClockEntry = false)
+        val actor = recoveredStatefulProcessor(sharedClockEntry = false)
         actor ! Written(eventA)
         processWrite(1, Seq(
           eventA1.copy(processId = emitterIdB, vectorTimestamp = eventA.vectorTimestamp.merge(VectorTime(emitterIdB -> 2L))),
@@ -232,24 +237,24 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
     }
   }
 
-  "A stateless EventsourcedProcessor" must {
+  "An EventsourcedProcessor" must {
     "resume" in {
-      recoveredProcessor(stateful = false)
+      recoveredStatelessProcessor()
     }
     "resume on failed read by default" in {
-      val actor = unrecoveredProcessor(stateful = false)
+      val actor = unrecoveredStatelessProcessor()
       processRead(3)
       processReplay(actor, 4)
     }
     "resume on failed write by default" in {
-      val actor = recoveredProcessor(stateful = false)
+      val actor = recoveredStatelessProcessor()
       actor ! Written(eventA)
       processWrite(1, Seq(eventA1, eventA2), success = false)
       processRead(3)
       processReplay(actor, 4, instanceId + 1)
     }
     "write events with source event vector time" in {
-      val actor = recoveredProcessor(stateful = false)
+      val actor = recoveredStatelessProcessor()
       actor ! Written(eventA.copy(vectorTimestamp = timestamp(1, 0)))
       actor ! Written(eventB.copy(vectorTimestamp = timestamp(0, 1)))
       processWrite(1, Seq(

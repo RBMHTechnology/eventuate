@@ -72,7 +72,6 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
 
   private var _recovering: Boolean = true
   private var _lastHandledEvent: DurableEvent = _
-  private var _clock: VectorClock = _
 
   private val settings = new EventsourcedViewSettings(context.system.settings.config)
   private var saveRequests: Map[SnapshotMetadata, Handler[SnapshotMetadata]] = Map.empty
@@ -91,14 +90,6 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
    */
   def aggregateId: Option[String] =
     None
-
-  /**
-   * If `true`, this actor shares a vector clock entry with those actors on the same local `eventLog`
-   * that have set `sharedClockEntry` to `true` as well. Otherwise, this actor has its own entry in
-   * the vector clock.
-   */
-  def sharedClockEntry: Boolean =
-    true
 
   /**
    * Maximum number of events to be replayed to this actor before replaying is suspended. A suspended replay
@@ -173,22 +164,6 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
    */
   private[eventuate] def onEventInternal(event: DurableEvent): Unit = {
     _lastHandledEvent = event
-    if (trackVectorTime) {
-      if (sharedClockEntry) {
-        // set local clock to local time (= sequence number) of event log
-        _clock = _clock.set(event.localLogId, event.localSequenceNr)
-        if (event.emitterId != id)
-          // merge clock with non-self-emitted event timestamp
-          _clock = _clock.merge(event.vectorTimestamp)
-      } else {
-        if (event.emitterId != id)
-          // update clock with non-self-emitted event timestamp (incl. increment of local time)
-          _clock = _clock.update(event.vectorTimestamp)
-        else if (recovering)
-          // merge clock with self-emitted event timestamp only during recovery
-          _clock = _clock.merge(event.vectorTimestamp)
-      }
-    }
   }
 
   /**
@@ -205,34 +180,20 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
     _lastHandledEvent
 
   /**
-    * Internal API.
-    */
-  private[eventuate] def trackVectorTime: Boolean =
-    false
-
-  /**
    * Internal API.
    */
   private[eventuate] def currentVectorTime: VectorTime =
-    _clock.currentTime
+    VectorTime.Zero
 
   /**
    * Internal API.
    */
-  private[eventuate] def incrementLocalTime(): VectorTime = {
-    _clock = _clock.tick()
-    _clock.currentTime
-  }
-
-  /**
-    * Internal API.
-    */
   private[eventuate] def conditionalSend(condition: VectorTime, cmd: Any): Unit =
     throw new ConditionalRequestException("Actor must extend ConditionalRequests to support ConditionalRequest processing")
 
   /**
-    * Internal API.
-    */
+   * Internal API.
+   */
   private[eventuate] def conditionChanged(condition: VectorTime): Unit =
     ()
 
@@ -298,10 +259,8 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
   /**
    * Internal API.
    */
-  private[eventuate] def snapshotLoaded(snapshot: Snapshot): Unit = {
+  private[eventuate] def snapshotLoaded(snapshot: Snapshot): Unit =
     _lastHandledEvent = snapshot.lastEvent
-    _clock = _clock.copy(currentTime = snapshot.currentTime)
-  }
 
   /**
    * Internal API.
@@ -328,29 +287,6 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
   private[eventuate] def replay(fromSequenceNr: Long = 1L): Unit =
     eventLog ! Replay(fromSequenceNr, replayChunkSizeMax, self, aggregateId, instanceId)
   //#
-
-  /**
-   * Internal API.
-   */
-  private[eventuate] def durableEvent(payload: Any, customDestinationAggregateIds: Set[String]): DurableEvent = {
-    if (sharedClockEntry) {
-      DurableEvent(
-        payload = payload,
-        emitterId = id,
-        emitterAggregateId = aggregateId,
-        customDestinationAggregateIds = customDestinationAggregateIds,
-        vectorTimestamp = currentVectorTime,
-        processId = DurableEvent.UndefinedLogId)
-    } else {
-      DurableEvent(
-        payload = payload,
-        emitterId = id,
-        emitterAggregateId = aggregateId,
-        customDestinationAggregateIds = customDestinationAggregateIds,
-        vectorTimestamp = incrementLocalTime(),
-        processId = id)
-    }
-  }
 
   /**
    * Internal API.
@@ -423,7 +359,6 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
    */
   override def preStart(): Unit = {
     _lastHandledEvent = DurableEvent(id)
-    _clock = VectorClock(id)
     init()
   }
 

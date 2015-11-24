@@ -70,7 +70,7 @@ object EventsourcedWriter {
  *    again. There's no backpressure mechanism for live event processing yet (but will come in future releases).
  *
  * @see [[EventsourcedProcessor]]
- * @see [[StatelessProcessor]]
+ * @see [[StatefulProcessor]]
  *
  * @tparam R Result type of the asynchronous read operation.
  * @tparam W Result type of the asynchronous write operations.
@@ -138,11 +138,17 @@ trait EventsourcedWriter[R, W] extends EventsourcedView {
   def writeFailure(cause: Throwable): Unit =
     throw new WriteException("write failed", cause)
 
+  /**
+   * Internal API.
+   */
   override private[eventuate] def onEventInternal(event: DurableEvent): Unit = {
     super.onEventInternal(event)
     numPending += 1
   }
 
+  /**
+   * Internal API.
+   */
   override private[eventuate] def init(): Unit = {
     read onComplete {
       case Success(r) => self ! ReadSuccess(r, instanceId)
@@ -150,6 +156,9 @@ trait EventsourcedWriter[R, W] extends EventsourcedView {
     }
   }
 
+  /**
+   * Internal API.
+   */
   override private[eventuate] def initiating: Receive = {
     case ReadSuccess(r, iid) => if (iid == instanceId) {
       readSuccess(r) match {
@@ -175,6 +184,9 @@ trait EventsourcedWriter[R, W] extends EventsourcedView {
       super.initiating(other)
   }
 
+  /**
+   * Internal API.
+   */
   override private[eventuate] def initiated: Receive = {
     case Written(event) => if (event.localSequenceNr > lastSequenceNr) {
       context.become(initiatedWrite orElse initiated)

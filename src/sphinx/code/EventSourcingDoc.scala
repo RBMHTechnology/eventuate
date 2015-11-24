@@ -225,7 +225,7 @@ object ChunkedReplay {
 
 object Processor {
   import akka.actor._
-  import com.rbmhtechnology.eventuate.StatelessProcessor
+  import com.rbmhtechnology.eventuate.EventsourcedProcessor
   import scala.collection.immutable.Seq
 
   //#processor
@@ -233,7 +233,7 @@ object Processor {
       val id: String,
       val eventLog: ActorRef,
       val targetEventLog: ActorRef)
-    extends StatelessProcessor {
+    extends EventsourcedProcessor {
     // ...
 
   //#
