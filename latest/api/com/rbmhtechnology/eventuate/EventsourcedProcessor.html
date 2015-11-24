@@ -50,25 +50,23 @@
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>An <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> that writes processed events to a <code>targetEventLog</code>. <code>EventsourcedProcessor</code>
 is an idempotent writer that guarantees that no duplicates are ever written to the target event log,
 also under failure conditions. Hence, applications don't need to take extra care about idempotency.
-Processed events are returned by <code>processEvent</code>, an application-defined event handler that is called
-with events stored in the source <code>eventLog</code>.</p><p>The <code>processEvent</code> event handler may also update actor state. When a processor (re)starts, its state is
-automatically recovered by replaying events, optionally starting from a snapshot. Snapshots of processor
-state can be saved with the <code>save</code> method in the processor's <code>onCommand</code> handler. An event-sourced processor
-that doesn't need to maintain internal state (= stateless processor) should implement <a href="StatelessProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a>
-instead.</p><p>Usually, a processor's source event log is different from its target event log. If a processor needs to
-write processed events back to its source event log, it must reserve its own entry in the vector clock by
-setting <code>sharedClockEntry</code> to <code>false</code>.</p><p>A stateful processor emits events with vector timestamps set to the processor's current vector time. In
-other words, an emitted event has a potential causal relationship to all past source events.</p><p>During initialization, a processor reads the processing progress from the target event log. The timeout
+Processed events are those returned by <code>processEvent</code>, an application-defined event handler that is
+invoked with events from the source <code>eventLog</code>.</p><p>During initialization, a processor reads the processing progress from the target event log. The timeout
 for this read operation can be configured with the <code>eventuate.processor.read-timeout</code> parameter for all
 event-sourced processors or defined on a per class or instance basis by overriding <code>readTimeout</code>. The timeout
 for write operations to the target log can be configured with the <code>eventuate.processor.write-timeout</code> parameter
-for all event-sourced processors or defined on a per class or instance basis by overriding <code>writeTimeout</code>.
-</p></div><div class="toggleContainer block">
+for all event-sourced processors or defined on a per class or instance basis by overriding <code>writeTimeout</code>.</p><p>An <code>EventsourcedProcessor</code> is a stateless processor i.e. in-memory state created from source events can
+not be recovered. An application that needs stateful event processing should use <a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a>
+instead.</p><p>An <code>EventsourcedProcessor</code> processor emits events with vector timestamps set to source event vector timestamp.
+In other words, it does not modify event vector timestamps.</p><p>The source event log and the target event log of an <code>EventsourcedProcessor</code> must be different. Writing
+processed events back to the source event log has no effect.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a>
+</p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>[<span class="extype" name="scala.Long">Long</span>, <span class="extype" name="scala.Long">Long</span>], <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
             <span class="toggle">Known Subclasses</span>
-            <div class="subClasses hiddenContent"><a href="StatelessProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a></div>
+            <div class="subClasses hiddenContent"><a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a></div>
           </div></div>
         
 
@@ -772,7 +770,7 @@ is defined it will only receive events with a matching aggregate id in
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Event handler.</p><div class="fullcomment"><div class="comment cmt"><p>Event handler.
+      <p class="shortcomment cmt">Collects processed events generated by <code>processEvent</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Collects processed events generated by <code>processEvent</code>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#onRecovered" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="onRecovered():Unit"></a>
@@ -869,7 +867,7 @@ is defined it will only receive events with a matching aggregate id in
     </span>
       <p class="shortcomment cmt">Unstashes all commands from internal stash and calls <code>super.preRestart</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Unstashes all commands from internal stash and calls <code>super.preRestart</code>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → UnrestrictedStash → Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#preStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#preStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="preStart():Unit"></a>
       <a id="preStart():Unit"></a>
       <h4 class="signature">
@@ -886,7 +884,7 @@ is defined it will only receive events with a matching aggregate id in
       </a>
     </span>
       <p class="shortcomment cmt">Initiates recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Initiates recovery.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#read" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="read():scala.concurrent.Future[Long]"></a>
       <a id="read():Future[Long]"></a>
@@ -903,9 +901,7 @@ is defined it will only receive events with a matching aggregate id in
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously reads an initial value from the target database, usually to obtain information about
-event processing progress.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads an initial value from the target database, usually to obtain information about
-event processing progress. This method is called during initialization.
+      <p class="shortcomment cmt">Asynchronously reads the processing progress from the target event log.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads the processing progress from the target event log.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriter#readFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="readFailure(cause:Throwable):Unit"></a>
@@ -942,11 +938,7 @@ by default (causing the writer to restart) and can be overridden.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Called with a read result after a <code>read</code> operation successfully completes.</p><div class="fullcomment"><div class="comment cmt"><p>Called with a read result after a <code>read</code> operation successfully completes. This method may update
-internal actor state. If <code>None</code> is returned, the writer continues with state recovery by replaying
-events, optionally starting from a snapshot. If the return value is defined, replay starts from the
-returned sequence number without ever loading a snapshot. Does nothing and returns <code>None</code> by default
-and can be overridden.
+      <p class="shortcomment cmt">Sets the read processing progress for this processor and returns it incremented by 1.</p><div class="fullcomment"><div class="comment cmt"><p>Sets the read processing progress for this processor and returns it incremented by 1.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#readTimeout" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="readTimeout:scala.concurrent.duration.FiniteDuration"></a>
@@ -1082,27 +1074,6 @@ sender with <code>sender()</code>.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#sharedClockEntry" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="sharedClockEntry:Boolean"></a>
-      <a id="sharedClockEntry:Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">sharedClockEntry</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@sharedClockEntry:Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">If <code>true</code>, this actor shares a vector clock entry with those actors on the same local <code>eventLog</code>
-that have set <code>sharedClockEntry</code> to <code>true</code> as well.</p><div class="fullcomment"><div class="comment cmt"><p>If <code>true</code>, this actor shares a vector clock entry with those actors on the same local <code>eventLog</code>
-that have set <code>sharedClockEntry</code> to <code>true</code> as well. Otherwise, this actor has its own entry in
-the vector clock.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="akka.actor.StashSupport#stash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="stash():Unit"></a>
       <a id="stash():Unit"></a>
@@ -1290,13 +1261,9 @@ the vector clock.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously writes an incremental update to the target database.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously writes an incremental update to the target database. Incremental updates are prepared
-during event processing by a concrete <code>onEvent</code> handler.</p><p>During event replay, this method is called latest after having replayed <code>eventuate.replay.chunk-size-max</code>
-events and immediately after replay completes. During live processing, <code>write</code> is called immediately if
-no write operation is in progress and an event has been handled by <code>onEvent</code>. If a write operation is in
-progress, further event handling may run concurrently to that operation. If events are handled while a
-write operation is in progress, another write will follow immediately after the previous write operation
-completes.
+      <p class="shortcomment cmt">Asynchronously writes processed events that have been collected since the last write together
+with the current processing progress.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously writes processed events that have been collected since the last write together
+with the current processing progress.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriter#writeFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="writeFailure(cause:Throwable):Unit"></a>
@@ -1333,8 +1300,7 @@ by default (causing the writer to restart) and can be overridden.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Called with a write result after a <code>write</code> operation successfully completes.</p><div class="fullcomment"><div class="comment cmt"><p>Called with a write result after a <code>write</code> operation successfully completes. This method may update
-internal actor state. Does nothing by default and can be overridden.
+      <p class="shortcomment cmt">Sets the written processing progress for this processor.</p><div class="fullcomment"><div class="comment cmt"><p>Sets the written processing progress for this processor.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#writeTimeout" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="writeTimeout:scala.concurrent.duration.FiniteDuration"></a>

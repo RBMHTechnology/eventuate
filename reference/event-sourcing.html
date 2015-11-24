@@ -452,13 +452,13 @@
 <div class="section" id="event-sourced-processors">
 <span id="ref-event-sourced-processors"></span><h1>Event-sourced processors<a class="headerlink" href="#event-sourced-processors" title="Permalink to this headline">¶</a></h1>
 <p>An introduction to event-sourced processors is already given in section <a class="reference internal" href="../architecture.html#architecture"><span>Architecture</span></a>. Applications use event-sourced processors to consume events form a source event log, process these events and write the processed events to a target event log. With processors, event logs can be connected to event stream processing pipelines and graphs.</p>
-<p>Event-sourced processors are a specialization of <a class="reference internal" href="../architecture.html#event-sourced-writers"><span>Event-sourced writers</span></a> where the <em>external database</em> is a target event log. Concrete stateless processors must implement the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a> trait, stateful processors the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> trait (see also <a class="reference internal" href="#stateful-writers"><span>Stateful writers</span></a>).</p>
-<p>The following example <code class="docutils literal"><span class="pre">Processor</span></code> is an implementation of <code class="docutils literal"><span class="pre">StatelessProcessor</span></code>. In addition to providing a source <code class="docutils literal"><span class="pre">eventLog</span></code>, concrete processors must also provide a <code class="docutils literal"><span class="pre">targetEventLog</span></code>:</p>
+<p>Event-sourced processors are a specialization of <a class="reference internal" href="../architecture.html#event-sourced-writers"><span>Event-sourced writers</span></a> where the <em>external database</em> is a target event log. Concrete stateless processors must implement the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> trait, stateful processors the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a> trait (see also <a class="reference internal" href="#stateful-writers"><span>Stateful writers</span></a>).</p>
+<p>The following example <code class="docutils literal"><span class="pre">Processor</span></code> is an implementation of <code class="docutils literal"><span class="pre">EventsourcedProcessor</span></code>. In addition to providing a source <code class="docutils literal"><span class="pre">eventLog</span></code>, a concrete processor must also provide a <code class="docutils literal"><span class="pre">targetEventLog</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Processor</span><span class="o">(</span>
     <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
     <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">,</span>
     <span class="k">val</span> <span class="n">targetEventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span>
-  <span class="k">extends</span> <span class="nc">StatelessProcessor</span> <span class="o">{</span>
+  <span class="k">extends</span> <span class="nc">EventsourcedProcessor</span> <span class="o">{</span>
   <span class="c1">// ...</span>
 
   <span class="k">override</span> <span class="k">val</span> <span class="n">processEvent</span><span class="k">:</span> <span class="kt">Process</span> <span class="o">=</span> <span class="o">{</span>
@@ -476,7 +476,7 @@
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">type</span> <span class="kt">Process</span> <span class="o">=</span> <span class="nc">PartialFunction</span><span class="o">[</span><span class="kt">Any</span>, <span class="kt">Seq</span><span class="o">[</span><span class="kt">Any</span><span class="o">]]</span>
 </pre></div>
 </div>
-<p>Processed events to be written to the target event log are returned by the handler as <code class="docutils literal"><span class="pre">Seq[Any]</span></code>. With this handler signature, events from the source log can be</p>
+<p>Processed events, to be written to the target event log, are returned by the handler as <code class="docutils literal"><span class="pre">Seq[Any]</span></code>. With this handler signature, events from the source log can be</p>
 <ul class="simple">
 <li>excluded from being written to the target log by returning an empty <code class="docutils literal"><span class="pre">Seq</span></code></li>
 <li>transformed one-to-one by returning a <code class="docutils literal"><span class="pre">Seq</span></code> of size 1 or even</li>
@@ -484,7 +484,7 @@
 </ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last"><code class="docutils literal"><span class="pre">StatelessProcessor</span></code> and <code class="docutils literal"><span class="pre">EventsourcedProcessor</span></code> internally ensure that writing to the target event log is idempotent. Applications don’t need to take extra care about idempotency.</p>
+<p class="last"><code class="docutils literal"><span class="pre">EventsourcedProcessor</span></code> and <code class="docutils literal"><span class="pre">StatefulProcessor</span></code> internally ensure that writing to the target event log is idempotent. Applications don’t need to take extra care about idempotency.</p>
 </div>
 </div>
 <div class="section" id="state-recovery">

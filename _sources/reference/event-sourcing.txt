@@ -159,9 +159,9 @@ Event-sourced processors
 
 An introduction to event-sourced processors is already given in section :ref:`architecture`. Applications use event-sourced processors to consume events form a source event log, process these events and write the processed events to a target event log. With processors, event logs can be connected to event stream processing pipelines and graphs.
 
-Event-sourced processors are a specialization of :ref:`event-sourced-writers` where the *external database* is a target event log. Concrete stateless processors must implement the StatelessProcessor_ trait, stateful processors the EventsourcedProcessor_ trait (see also :ref:`stateful-writers`).
+Event-sourced processors are a specialization of :ref:`event-sourced-writers` where the *external database* is a target event log. Concrete stateless processors must implement the EventsourcedProcessor_ trait, stateful processors the StatefulProcessor_ trait (see also :ref:`stateful-writers`).
 
-The following example ``Processor`` is an implementation of ``StatelessProcessor``. In addition to providing a source ``eventLog``, concrete processors must also provide a ``targetEventLog``:
+The following example ``Processor`` is an implementation of ``EventsourcedProcessor``. In addition to providing a source ``eventLog``, a concrete processor must also provide a ``targetEventLog``:
 
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: processor
@@ -171,14 +171,14 @@ The event handler implemented by a processor is ``processEvent``. The type of th
 .. includecode:: ../../main/scala/com/rbmhtechnology/eventuate/EventsourcedProcessor.scala
    :snippet: process
 
-Processed events to be written to the target event log are returned by the handler as ``Seq[Any]``. With this handler signature, events from the source log can be 
+Processed events, to be written to the target event log, are returned by the handler as ``Seq[Any]``. With this handler signature, events from the source log can be 
 
 - excluded from being written to the target log by returning an empty ``Seq`` 
 - transformed one-to-one by returning a ``Seq`` of size 1 or even
 - transformed and split by returning a ``Seq`` of size greater than ``1``
 
 .. note::
-   ``StatelessProcessor`` and ``EventsourcedProcessor`` internally ensure that writing to the target event log is idempotent. Applications don’t need to take extra care about idempotency.
+   ``EventsourcedProcessor`` and ``StatefulProcessor`` internally ensure that writing to the target event log is idempotent. Applications don’t need to take extra care about idempotency.
 
 State recovery
 --------------
@@ -357,5 +357,5 @@ Custom serializers can also be configured for the type parameter ``A`` of ``MVRe
 .. _EventsourcedView: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedView
 .. _EventsourcedWriter: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedWriter
 .. _EventsourcedProcessor: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor
-.. _StatelessProcessor: ../latest/api/index.html#com.rbmhtechnology.eventuate.StatelessProcessor
+.. _StatefulProcessor: ../latest/api/index.html#com.rbmhtechnology.eventuate.StatefulProcessor
 .. _ReplicationFilter: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationFilter

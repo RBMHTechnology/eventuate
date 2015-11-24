@@ -211,7 +211,7 @@ the request's <code>condition</code> is in the causal past of that actor (i.e. i
 a <a href="ConditionalRequest.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalRequest">ConditionalRequest</a> but does not extends the <a href="ConditionalRequests.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalRequests">ConditionalRequests</a>
 trait.</p>
     </li><li name="com.rbmhtechnology.eventuate.ConditionalRequests" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="ConditionalRequestsextendsEventsourcedView"></a>
+      <a id="ConditionalRequestsextendsEventsourcedViewwithEventsourcedClock"></a>
       <a id="ConditionalRequests:ConditionalRequests"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -219,10 +219,10 @@ trait.</p>
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="ConditionalRequests.html"><span class="name">ConditionalRequests</span></a><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></span>
+        <a href="ConditionalRequests.html"><span class="name">ConditionalRequests</span></a><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> with <a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@ConditionalRequestsextendsEventsourcedView" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@ConditionalRequestsextendsEventsourcedViewwithEventsourcedClock" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -264,7 +264,7 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="DurableEvent.html"><span class="name">DurableEvent</span></a><span class="params">(<span name="payload">payload: <span class="extype" name="scala.Any">Any</span></span>, <span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="emitterAggregateId">emitterAggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="customDestinationAggregateIds">customDestinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a> = <span class="symbol"><span class="name"><a href="VectorTime$.html">VectorTime()</a></span></span></span>, <span name="processId">processId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">DurableEvent.UndefinedLogId</a></span></span></span>, <span name="localLogId">localLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">DurableEvent.UndefinedLogId</a></span></span></span>, <span name="localSequenceNr">localSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">DurableEvent.UndefinedSequenceNr</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="DurableEvent.html"><span class="name">DurableEvent</span></a><span class="params">(<span name="payload">payload: <span class="extype" name="scala.Any">Any</span></span>, <span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="emitterAggregateId">emitterAggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="customDestinationAggregateIds">customDestinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a> = <span class="symbol"><span class="name"><a href="VectorTime$.html">VectorTime.Zero</a></span></span></span>, <span name="processId">processId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">DurableEvent.UndefinedLogId</a></span></span></span>, <span name="localLogId">localLogId: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">DurableEvent.UndefinedLogId</a></span></span></span>, <span name="localSequenceNr">localSequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="DurableEvent$.html">DurableEvent.UndefinedSequenceNr</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.package@DurableEventextendsProductwithSerializable" title="Permalink" target="_top">
@@ -284,7 +284,7 @@ during event replication.
                  set <code>sharedClockEntry</code> to <code>false</code> then this is the id of that actor or processor (which is the <code>emitterId</code>).</p></dd><dt class="param">localLogId</dt><dd class="cmt"><p>Id of the local event log.</p></dd><dt class="param">localSequenceNr</dt><dd class="cmt"><p>Sequence number in the local event log.
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="EventsourcedActorextendsEventsourcedView"></a>
+      <a id="EventsourcedActorextendsEventsourcedViewwithEventsourcedClock"></a>
       <a id="EventsourcedActor:EventsourcedActor"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -292,10 +292,10 @@ during event replication.
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="EventsourcedActor.html"><span class="name">EventsourcedActor</span></a><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></span>
+        <a href="EventsourcedActor.html"><span class="name">EventsourcedActor</span></a><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> with <a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@EventsourcedActorextendsEventsourcedView" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@EventsourcedActorextendsEventsourcedViewwithEventsourcedClock" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -306,6 +306,23 @@ within the <code>onCommand</code> command handler. The command handler may only 
 not modify it. Internal state may only be modified within <code>onEvent</code>.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
 </p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedClock" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="EventsourcedClockextendsEventsourcedView"></a>
+      <a id="EventsourcedClock:EventsourcedClock"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcedClock.html"><span class="name">EventsourcedClock</span></a><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@EventsourcedClockextendsEventsourcedView" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Manages a <a href="VectorClock.html" class="extype" name="com.rbmhtechnology.eventuate.VectorClock">VectorClock</a> and implements rules for updating the clock from <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s.</p>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EventsourcedProcessorextendsEventsourcedWriter[Long,Long]"></a>
       <a id="EventsourcedProcessor:EventsourcedProcessor"></a>
@@ -325,20 +342,18 @@ not modify it. Internal state may only be modified within <code>onEvent</code>.
       <p class="shortcomment cmt">An <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> that writes processed events to a <code>targetEventLog</code>.</p><div class="fullcomment"><div class="comment cmt"><p>An <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> that writes processed events to a <code>targetEventLog</code>. <code>EventsourcedProcessor</code>
 is an idempotent writer that guarantees that no duplicates are ever written to the target event log,
 also under failure conditions. Hence, applications don't need to take extra care about idempotency.
-Processed events are returned by <code>processEvent</code>, an application-defined event handler that is called
-with events stored in the source <code>eventLog</code>.</p><p>The <code>processEvent</code> event handler may also update actor state. When a processor (re)starts, its state is
-automatically recovered by replaying events, optionally starting from a snapshot. Snapshots of processor
-state can be saved with the <code>save</code> method in the processor's <code>onCommand</code> handler. An event-sourced processor
-that doesn't need to maintain internal state (= stateless processor) should implement <a href="StatelessProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a>
-instead.</p><p>Usually, a processor's source event log is different from its target event log. If a processor needs to
-write processed events back to its source event log, it must reserve its own entry in the vector clock by
-setting <code>sharedClockEntry</code> to <code>false</code>.</p><p>A stateful processor emits events with vector timestamps set to the processor's current vector time. In
-other words, an emitted event has a potential causal relationship to all past source events.</p><p>During initialization, a processor reads the processing progress from the target event log. The timeout
+Processed events are those returned by <code>processEvent</code>, an application-defined event handler that is
+invoked with events from the source <code>eventLog</code>.</p><p>During initialization, a processor reads the processing progress from the target event log. The timeout
 for this read operation can be configured with the <code>eventuate.processor.read-timeout</code> parameter for all
 event-sourced processors or defined on a per class or instance basis by overriding <code>readTimeout</code>. The timeout
 for write operations to the target log can be configured with the <code>eventuate.processor.write-timeout</code> parameter
-for all event-sourced processors or defined on a per class or instance basis by overriding <code>writeTimeout</code>.
-</p></div></div>
+for all event-sourced processors or defined on a per class or instance basis by overriding <code>writeTimeout</code>.</p><p>An <code>EventsourcedProcessor</code> is a stateless processor i.e. in-memory state created from source events can
+not be recovered. An application that needs stateful event processing should use <a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a>
+instead.</p><p>An <code>EventsourcedProcessor</code> processor emits events with vector timestamps set to source event vector timestamp.
+In other words, it does not modify event vector timestamps.</p><p>The source event log and the target event log of an <code>EventsourcedProcessor</code> must be different. Writing
+processed events back to the source event log has no effect.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a>
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EventsourcedViewextendsActorwithStashwithActorLogging"></a>
       <a id="EventsourcedView:EventsourcedView"></a>
@@ -406,7 +421,7 @@ recovery, it may define a custom starting position in the event log by returning
    parameter), replay is suspended until these events have been written to the target database and then resumed
    again. There's no backpressure mechanism for live event processing yet (but will come in future releases).
 </li></ul></div><dl class="paramcmts block"><dt class="tparam">R</dt><dd class="cmt"><p>Result type of the asynchronous read operation.</p></dd><dt class="tparam">W</dt><dd class="cmt"><p>Result type of the asynchronous write operations.
-</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="StatelessProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a>
+</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a>
 </p></span><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a></p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationConnection" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ReplicationConnectionextendsProductwithSerializable"></a>
@@ -526,28 +541,27 @@ and <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology
 </p></div><dl class="paramcmts block"><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, stateful <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>
                  or <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> that saves the snapshot.</p></dd><dt class="param">sequenceNr</dt><dd class="cmt"><p>The highest event sequence number covered by the snapshot.
 </p></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.StatelessProcessor" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="StatelessProcessorextendsEventsourcedProcessor"></a>
-      <a id="StatelessProcessor:StatelessProcessor"></a>
+    </li><li name="com.rbmhtechnology.eventuate.StatefulProcessor" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="StatefulProcessorextendsEventsourcedProcessorwithEventsourcedClock"></a>
+      <a id="StatefulProcessor:StatefulProcessor"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="StatelessProcessor.html"><span class="name">StatelessProcessor</span></a><span class="result"> extends <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a></span>
+        <a href="StatefulProcessor.html"><span class="name">StatefulProcessor</span></a><span class="result"> extends <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> with <a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@StatelessProcessorextendsEventsourcedProcessor" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@StatefulProcessorextendsEventsourcedProcessorwithEventsourcedClock" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">An <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> whose <code>processEvent</code> handler does <b>not</b> update actor state.</p><div class="fullcomment"><div class="comment cmt"><p>An <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> whose <code>processEvent</code> handler does <b>not</b> update actor state. A
-<a href="StatelessProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatelessProcessor">StatelessProcessor</a> is optimized for fast startup and failure recovery times, at the cost of
-not being able to have its own entry in the vector clock (see overridden method <code>sharedClockEntry</code>).
-Consequently, a stateless processor can not write processed events back to its source event log i.e.
-the source and the target event log of a stateless processor must be different.</p><p>A stateless processor emits events with vector timestamps set to source event vector timestamp. In
-other words, it does not modify event vector timestamps.
+      <p class="shortcomment cmt">An <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> that supports stateful event processing.</p><div class="fullcomment"><div class="comment cmt"><p>An <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> that supports stateful event processing. In-memory state created from source
+events is recovered during event replay, either starting from scratch or from a previously saved snapshot.</p><p>A <code>StatefulProcessor</code> emits events with vector timestamps set to the processor's current vector time. In
+other words, an emitted event has a potential causal relationship to all past source events.</p><p>Usually, a <code>StatefulProcessor</code>'s source event log is different from its target event log. If a processor
+needs to write processed events back to its source event log, it must reserve its own entry in the vector
+clock by setting <code>sharedClockEntry</code> to <code>false</code>, otherwise, writing to the source event log has no effect.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>.
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.VectorClock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -559,7 +573,7 @@ other words, it does not modify event vector timestamps.
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="VectorClock.html"><span class="name">VectorClock</span></a><span class="params">(<span name="processId">processId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="currentTime">currentTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a> = <span class="symbol"><span class="name"><a href="VectorTime$.html">VectorTime()</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="VectorClock.html"><span class="name">VectorClock</span></a><span class="params">(<span name="processId">processId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="currentTime">currentTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a> = <span class="symbol"><span class="name"><a href="VectorTime$.html">VectorTime.Zero</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.package@VectorClockextendsProductwithSerializable" title="Permalink" target="_top">
