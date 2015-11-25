@@ -16,6 +16,8 @@
 
 package com.rbmhtechnology.eventuate.log
 
+import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
+
 import scala.collection.immutable.Seq
 
 import akka.actor._
