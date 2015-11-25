@@ -5,6 +5,7 @@ import akka.testkit.TestProbe
 import akka.util.Timeout
 
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
+import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 
 import scala.collection.immutable.Seq

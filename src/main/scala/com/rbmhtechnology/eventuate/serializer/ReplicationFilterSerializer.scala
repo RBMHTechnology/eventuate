@@ -19,6 +19,9 @@ package com.rbmhtechnology.eventuate.serializer
 import akka.actor.ExtendedActorSystem
 import akka.serialization._
 import com.google.protobuf.ByteString
+import com.rbmhtechnology.eventuate.ReplicationFilter.AndFilter
+import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
+import com.rbmhtechnology.eventuate.ReplicationFilter.OrFilter
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats._

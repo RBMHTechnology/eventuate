@@ -18,6 +18,9 @@ package com.rbmhtechnology.eventuate.serializer
 
 import akka.actor._
 import akka.serialization.Serializer
+import com.rbmhtechnology.eventuate.ReplicationFilter.AndFilter
+import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
+import com.rbmhtechnology.eventuate.ReplicationFilter.OrFilter
 
 import com.rbmhtechnology.eventuate._
 

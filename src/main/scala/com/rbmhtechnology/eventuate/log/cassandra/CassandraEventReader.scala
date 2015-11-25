@@ -18,14 +18,13 @@ package com.rbmhtechnology.eventuate.log.cassandra
 
 import java.io.Closeable
 import java.lang.{Long => JLong}
-import java.util.concurrent.atomic.AtomicReference
-import java.util.function.BinaryOperator
 
 import com.datastax.driver.core.{PreparedStatement, Row}
+import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
 import com.rbmhtechnology.eventuate._
 
 import scala.collection.JavaConverters._
-import scala.collection.immutable.{VectorBuilder, Seq}
+import scala.collection.immutable.Seq
 import scala.concurrent.Future
 
 private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: String) {

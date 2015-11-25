@@ -24,6 +24,7 @@ import akka.actor._
 import akka.pattern.ask
 import akka.pattern.pipe
 import akka.util.Timeout
+import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
 
 import com.typesafe.config.Config
 
