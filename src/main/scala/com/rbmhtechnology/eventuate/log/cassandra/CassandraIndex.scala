@@ -17,7 +17,7 @@
 package com.rbmhtechnology.eventuate.log.cassandra
 
 import java.io.Closeable
-import java.lang.{Long => JLong}
+import java.lang.{ Long => JLong }
 
 import akka.actor._
 
@@ -99,7 +99,7 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventReader: Cassa
 
   private def updateIncrementAsync(increment: IndexIncrement): Future[IndexIncrement] =
     Future(updateIncrement(increment))(cassandra.readDispatcher)
-  
+
   private def updateIncrement(increment: IndexIncrement): IndexIncrement = {
     eventReader.eventIterator(increment.timeTracker.sequenceNr + 1L, Long.MaxValue).foldLeft(increment) {
       case (inc, event) => inc.update(event)
@@ -220,7 +220,7 @@ private[eventuate] class CassandraIndexUpdater(cassandra: Cassandra, eventReader
       case Success((inc, false)) => self ! UpdateIndexSuccess(inc.timeTracker)
       case Failure(err)          => self ! UpdateIndexFailure(err)
     }
-  
+
   def updateAsync(fromSequenceNr: Long, toSequenceNr: Long, increment: IndexIncrement): Future[(IndexIncrement, Boolean)] =
     for {
       res <- eventReader.readAsync(fromSequenceNr, toSequenceNr, cassandra.settings.indexUpdateLimit)

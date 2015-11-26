@@ -19,7 +19,7 @@ package com.rbmhtechnology.eventuate.log.cassandra
 import java.nio.ByteBuffer
 
 import akka.actor._
-import akka.event.{LogSource, Logging}
+import akka.event.{ LogSource, Logging }
 import akka.serialization.SerializationExtension
 
 import com.datastax.driver.core._
@@ -112,10 +112,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   private[eventuate] val serializer = SerializationExtension(system)
 
   private val logging = Logging(system, this)
-  private val statements = new CassandraEventStatements
-    with CassandraAggregateEventStatements
-    with CassandraTimeTrackerStatements
-    with CassandraReplicationProgressStatements {
+  private val statements = new CassandraEventStatements with CassandraAggregateEventStatements with CassandraTimeTrackerStatements with CassandraReplicationProgressStatements {
 
     override def settings: CassandraSettings =
       extension.settings
@@ -147,7 +144,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
     val curAttempt = retries + 1
     val maxAttempts = settings.initialConnectRetryMax + 1
 
-    Try (clusterBuilder.build().connect()) match {
+    Try(clusterBuilder.build().connect()) match {
       case Failure(e: NoHostAvailableException) if retries < settings.initialConnectRetryMax =>
         logging.error(e, s"Cannot connect to cluster (attempt ${curAttempt}/${maxAttempts} ...)")
         Thread.sleep(settings.initialConnectRetryDelay.toMillis)

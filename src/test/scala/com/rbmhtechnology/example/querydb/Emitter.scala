@@ -48,12 +48,14 @@ class Emitter(val id: String, val eventLog: ActorRef) extends EventsourcedActor 
   override val onCommand: Receive = {
     case CreateCustomer(first, last, address) =>
       persist(CustomerCreated(highestCustomerId + 1L, first, last, address)) {
-        case Success(c) => onEvent(c); sender() ! c
+        case Success(c) =>
+          onEvent(c); sender() ! c
         case Failure(e) => throw e
       }
     case UpdateAddress(cid, address) if cid <= highestCustomerId =>
       persist(AddressUpdated(cid, address)) {
-        case Success(c) => onEvent(c); sender() ! c
+        case Success(c) =>
+          onEvent(c); sender() ! c
         case Failure(e) => throw e
       }
     case UpdateAddress(cid, _) =>
@@ -62,9 +64,9 @@ class Emitter(val id: String, val eventLog: ActorRef) extends EventsourcedActor 
 
   override val onEvent: Receive = {
     case CustomerCreated(cid, first, last, address) =>
-        highestCustomerId = cid
+      highestCustomerId = cid
     case AddressUpdated(_, _) =>
-      // ...
+    // ...
   }
 }
 

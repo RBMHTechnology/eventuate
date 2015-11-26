@@ -51,7 +51,7 @@ class OrderManager(replicaId: String, val eventLog: ActorRef) extends Eventsourc
 
   override val onCommand: Receive = {
     case c: OrderCommand => orderActor(c.orderId) forward c
-    case c: SaveSnapshot    => orderActor(c.orderId) forward c
+    case c: SaveSnapshot => orderActor(c.orderId) forward c
     case r: Resolve      => orderActor(r.id) forward r
     case GetState if orderActors.isEmpty =>
       sender() ! GetStateSuccess(Map.empty)
@@ -60,7 +60,7 @@ class OrderManager(replicaId: String, val eventLog: ActorRef) extends Eventsourc
       val statesF = orderActors.values.map(_.ask(GetState).mapTo[GetStateSuccess].map(_.state))
       Future.sequence(statesF).map(_.reduce(_ ++ _)) onComplete {
         case Success(states) => sdr ! GetStateSuccess(states)
-        case Failure(cause) => sdr ! GetStateFailure(cause)
+        case Failure(cause)  => sdr ! GetStateFailure(cause)
       }
   }
 

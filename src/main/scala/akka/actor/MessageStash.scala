@@ -36,7 +36,7 @@ class MessageStash(implicit context: ActorContext, self: ActorRef) {
   protected val mailbox: DequeBasedMessageQueueSemantics =
     cell.mailbox.messageQueue match {
       case queue: DequeBasedMessageQueueSemantics => queue
-      case other => throw ActorInitializationException(self, s"DequeBasedMailbox required, got: ${other.getClass.getName}")
+      case other                                  => throw ActorInitializationException(self, s"DequeBasedMailbox required, got: ${other.getClass.getName}")
     }
 
   protected def enqueueFirst(envelope: Envelope): Unit = {

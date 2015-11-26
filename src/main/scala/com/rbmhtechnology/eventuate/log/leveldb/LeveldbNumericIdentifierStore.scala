@@ -18,7 +18,7 @@ package com.rbmhtechnology.eventuate.log.leveldb
 
 import java.nio.ByteBuffer
 
-import org.iq80.leveldb.{DB, DBIterator}
+import org.iq80.leveldb.{ DB, DBIterator }
 
 private class LeveldbNumericIdentifierStore(leveldb: DB, classifier: Int) {
   private var idMap: Map[String, Int] =

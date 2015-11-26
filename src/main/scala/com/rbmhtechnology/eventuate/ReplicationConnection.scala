@@ -16,7 +16,7 @@
 
 package com.rbmhtechnology.eventuate
 
-import java.util.function.{Function => JFunction}
+import java.util.function.{ Function => JFunction }
 
 import scala.collection.JavaConverters._
 

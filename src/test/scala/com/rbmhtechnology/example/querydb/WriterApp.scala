@@ -61,7 +61,6 @@ object WriterApp extends App {
     system.terminate()
   }
 
-
   def createQueryDB(drop: Boolean): Session = {
     val cluster = Cluster.builder().addContactPoint("localhost").build()
     val session = cluster.connect()

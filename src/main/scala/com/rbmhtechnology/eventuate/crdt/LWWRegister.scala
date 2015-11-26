@@ -18,10 +18,9 @@ package com.rbmhtechnology.eventuate.crdt
 
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
-import com.rbmhtechnology.eventuate.{Versioned, DurableEvent, VectorTime}
+import com.rbmhtechnology.eventuate.{ Versioned, DurableEvent, VectorTime }
 
 import scala.concurrent.Future
-
 
 /**
  * Replicated LWW-Register with an [[MVRegister]]-based implementation. Instead of returning multiple values
@@ -53,7 +52,7 @@ case class LWWRegister[A](mvRegister: MVRegister[A] = MVRegister.apply[A]) exten
    * @param systemTimestamp system timestamp of the assigned value.
    * @param emitterId id of the value emitter.
    */
-  def set(v: A, vectorTimestamp : VectorTime, systemTimestamp : Long, emitterId: String): LWWRegister[A] = {
+  def set(v: A, vectorTimestamp: VectorTime, systemTimestamp: Long, emitterId: String): LWWRegister[A] = {
     copy(mvRegister.set(v, vectorTimestamp, systemTimestamp, emitterId))
   }
 }

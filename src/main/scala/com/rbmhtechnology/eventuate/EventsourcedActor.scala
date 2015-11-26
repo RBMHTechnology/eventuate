@@ -61,7 +61,7 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
    * parameter.
    */
   final def persistN[A](events: Seq[A], onLast: Handler[A] = (_: Try[A]) => (), customDestinationAggregateIds: Set[String] = Set())(handler: Handler[A]): Unit = events match {
-    case Seq()   =>
+    case Seq() =>
     case es :+ e =>
       es.foreach { event =>
         persist(event, customDestinationAggregateIds)(handler)

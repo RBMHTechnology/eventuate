@@ -42,11 +42,11 @@ case class SnapshotMetadata(emitterId: String, sequenceNr: Long)
  *                         non-empty if the actor implements [[ConfirmedDelivery]]).
  */
 case class Snapshot(
-    payload: Any,
-    emitterId: String,
-    lastEvent: DurableEvent,
-    currentTime: VectorTime,
-    deliveryAttempts: Vector[DeliveryAttempt] = Vector.empty) {
+  payload: Any,
+  emitterId: String,
+  lastEvent: DurableEvent,
+  currentTime: VectorTime,
+  deliveryAttempts: Vector[DeliveryAttempt] = Vector.empty) {
 
   val metadata: SnapshotMetadata =
     SnapshotMetadata(emitterId, lastEvent.localSequenceNr)

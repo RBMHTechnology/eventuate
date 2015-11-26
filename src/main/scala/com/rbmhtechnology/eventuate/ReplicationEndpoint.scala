@@ -18,7 +18,7 @@ package com.rbmhtechnology.eventuate
 
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.function.{Function => JFunction}
+import java.util.function.{ Function => JFunction }
 
 import akka.actor._
 import akka.pattern.ask
@@ -205,10 +205,10 @@ class ReplicationEndpoint(val id: String, val logNames: Set[String], val logFact
     val recovery = new Recovery(this)
 
     val phase1 = for {
-      infos    <- recovery.readEndpointInfos
+      infos <- recovery.readEndpointInfos
       trackers <- recovery.readTimeTrackers
-      links     = recovery.recoveryLinks(infos, trackers)
-      _        <- recovery.deleteSnapshots(links)
+      links = recovery.recoveryLinks(infos, trackers)
+      _ <- recovery.deleteSnapshots(links)
     } yield links
 
     val phase2 = for {
@@ -444,7 +444,7 @@ private class FailureDetector(sourceEndpointId: String, logName: String, failure
   def receive = {
     case Tick =>
       val currentTime = System.currentTimeMillis
-      val lastInterval =  currentTime - lastTick
+      val lastInterval = currentTime - lastTick
       if (lastInterval >= failureDetectionLimitMillis) {
         context.system.eventStream.publish(Available(sourceEndpointId, logName))
         lastTick = currentTime

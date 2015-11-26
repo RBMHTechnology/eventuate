@@ -17,7 +17,7 @@
 package com.rbmhtechnology.example.querydb
 
 //#writer
-import java.lang.{Long => JLong}
+import java.lang.{ Long => JLong }
 
 import akka.actor.ActorRef
 
@@ -27,13 +27,13 @@ import com.rbmhtechnology.eventuate.EventsourcedWriter
 import scala.concurrent.Future
 
 /**
-  * Processes `CustomerCreated` and `AddressUpdated` events and updates
-  * a `CUSTOMER` table in Cassandra with incremental batches.
-  */
+ * Processes `CustomerCreated` and `AddressUpdated` events and updates
+ * a `CUSTOMER` table in Cassandra with incremental batches.
+ */
 class Writer(val id: String, val eventLog: ActorRef, session: Session)
   extends EventsourcedWriter[Long, Unit] {
 
-  import com.rbmhtechnology.eventuate.log.cassandra.{listenableFutureToFuture => ftr}
+  import com.rbmhtechnology.eventuate.log.cassandra.{ listenableFutureToFuture => ftr }
   import context.dispatcher
 
   val insertCustomerStmt = session.prepare(
@@ -46,16 +46,16 @@ class Writer(val id: String, val eventLog: ActorRef, session: Session)
     "UPDATE PROGRESS SET sequence_nr = ? WHERE id = 0")
 
   /**
-    * Batch of Cassandra update statements collected during event processing.
-    */
+   * Batch of Cassandra update statements collected during event processing.
+   */
   var batch: Vector[BoundStatement] = Vector.empty
 
   /**
-    * Suspends replay after 16 events, triggers a `write` and then continues
-    * with the next 16 events. This is implements event replay backpressure,
-    * needed if writing to the database is slower than replaying from the
-    * `eventLog` (which is usually the case).
-    */
+   * Suspends replay after 16 events, triggers a `write` and then continues
+   * with the next 16 events. This is implements event replay backpressure,
+   * needed if writing to the database is slower than replaying from the
+   * `eventLog` (which is usually the case).
+   */
   override def replayChunkSizeMax: Int =
     16
 
@@ -64,10 +64,10 @@ class Writer(val id: String, val eventLog: ActorRef, session: Session)
   }
 
   /**
-    * Prepares an update `batch` from handled events that is written to the
-    * database when `write` is called. An event handler never writes to the
-    * database directly.
-    */
+   * Prepares an update `batch` from handled events that is written to the
+   * database when `write` is called. An event handler never writes to the
+   * database directly.
+   */
   override val onEvent: Receive = {
     case c @ CustomerCreated(cid, first, last, address) =>
       batch = batch :+ insertCustomerStmt.bind(cid: JLong, first, last, address)
@@ -76,11 +76,11 @@ class Writer(val id: String, val eventLog: ActorRef, session: Session)
   }
 
   /**
-    * Asynchronously writes the prepared update `batch` to the database
-    * together with the sequence number of the last processed event. After
-    * having submitted the batch, it is cleared so that further events can
-    * be processed while the write is in progress.
-    */
+   * Asynchronously writes the prepared update `batch` to the database
+   * together with the sequence number of the last processed event. After
+   * having submitted the batch, it is cleared so that further events can
+   * be processed while the write is in progress.
+   */
   override def write(): Future[Unit] = {
     val snr = lastSequenceNr
     val res = for {
@@ -92,18 +92,18 @@ class Writer(val id: String, val eventLog: ActorRef, session: Session)
   }
 
   /**
-    * Reads the sequence number of the last update. This method is called only
-    * once during writer initialization (after start or restart).
-    */
+   * Reads the sequence number of the last update. This method is called only
+   * once during writer initialization (after start or restart).
+   */
   override def read(): Future[Long] = {
     session.executeAsync("SELECT sequence_nr FROM PROGRESS WHERE id = 0")
       .map(rs => if (rs.isExhausted) 0L else rs.one().getLong(0))
   }
 
   /**
-    * Handles the `read` result by returning the read value + 1, indicating the
-    * start position for further reads from the event log.
-    */
+   * Handles the `read` result by returning the read value + 1, indicating the
+   * start position for further reads from the event log.
+   */
   override def readSuccess(result: Long): Option[Long] =
     Some(result + 1L)
 }

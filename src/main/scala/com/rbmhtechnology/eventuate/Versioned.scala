@@ -17,7 +17,7 @@
 package com.rbmhtechnology.eventuate
 
 import java.util.function.BiFunction
-import java.util.{List => JList}
+import java.util.{ List => JList }
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Seq
@@ -107,10 +107,10 @@ object ConcurrentVersions {
  * A [[ConcurrentVersions]] implementation that shall be used if updates replace current
  * versioned values (= full updates). `ConcurrentVersionsList` is an immutable data structure.
  */
-class ConcurrentVersionsList[A](vs: List[Versioned[A]], val owner: String = "") extends ConcurrentVersions[A, A]{
+class ConcurrentVersionsList[A](vs: List[Versioned[A]], val owner: String = "") extends ConcurrentVersions[A, A] {
   def update(na: A, updateTimestamp: VectorTime, creator: String = ""): ConcurrentVersionsList[A] = {
     val r = vs.foldRight[(List[Versioned[A]], Boolean)]((Nil, false)) {
-      case (a, (acc, true))  => (a :: acc, true)
+      case (a, (acc, true)) => (a :: acc, true)
       case (a, (acc, false)) =>
         if (updateTimestamp > a.updateTimestamp)
           // regular update on that version
@@ -132,7 +132,7 @@ class ConcurrentVersionsList[A](vs: List[Versioned[A]], val owner: String = "") 
     new ConcurrentVersionsList(vs.foldRight(List.empty[Versioned[A]]) {
       case (v, acc) if v.updateTimestamp == selectedTimestamp => v.copy(updateTimestamp = updateTimestamp) :: acc
       case (v, acc) if v.updateTimestamp.conc(updateTimestamp) => v :: acc
-      case (v, acc)                                   => acc
+      case (v, acc) => acc
     })
   }
 
@@ -167,7 +167,7 @@ case object ConcurrentVersionsList {
  * rather small). In later releases, manual and automated purging of old versions will be
  * supported.
  */
-class ConcurrentVersionsTree[A, B] (private[eventuate] val root: ConcurrentVersionsTree.Node[A]) extends ConcurrentVersions[A, B] {
+class ConcurrentVersionsTree[A, B](private[eventuate] val root: ConcurrentVersionsTree.Node[A]) extends ConcurrentVersions[A, B] {
   import ConcurrentVersionsTree._
 
   @transient
@@ -182,10 +182,10 @@ class ConcurrentVersionsTree[A, B] (private[eventuate] val root: ConcurrentVersi
 
   override def resolve(selectedTimestamp: VectorTime, updateTimestamp: VectorTime): ConcurrentVersionsTree[A, B] = {
     leaves.foreach {
-      case n if n.rejected                                       => // ignore rejected leaf
+      case n if n.rejected => // ignore rejected leaf
       case n if n.versioned.updateTimestamp.conc(updateTimestamp) => // ignore concurrent update
       case n if n.versioned.updateTimestamp == selectedTimestamp => n.stamp(updateTimestamp)
-      case n                                                     => n.reject()
+      case n => n.reject()
     }
     this
   }
@@ -258,7 +258,7 @@ object ConcurrentVersionsTree {
    * @tparam B Update type
    */
   def apply[A, B](f: (A, B) => A): ConcurrentVersionsTree[A, B] =
-    apply(null.asInstanceOf[A] /* FIXME: use Monoid[A].zero */)(f).withProjection(f)
+    apply(null.asInstanceOf[A] /* FIXME: use Monoid[A].zero */ )(f).withProjection(f)
 
   /**
    * Java API.
@@ -271,7 +271,7 @@ object ConcurrentVersionsTree {
    * @tparam B Update type
    */
   def create[A, B](f: BiFunction[A, B, A]): ConcurrentVersionsTree[A, B] =
-    apply(null.asInstanceOf[A] /* FIXME: use Monoid[A].zero */)((a, b) => f.apply(a, b))
+    apply(null.asInstanceOf[A] /* FIXME: use Monoid[A].zero */ )((a, b) => f.apply(a, b))
 
   private[eventuate] class Node[A](var versioned: Versioned[A]) extends Serializable {
     var rejected: Boolean = false

@@ -16,7 +16,7 @@
 
 package com.rbmhtechnology.eventuate.log.cassandra
 
-import java.lang.{Long => JLong}
+import java.lang.{ Long => JLong }
 
 import scala.collection.JavaConverters._
 import scala.concurrent._

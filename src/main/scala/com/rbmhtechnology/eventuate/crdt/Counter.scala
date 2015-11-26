@@ -30,7 +30,7 @@ import scala.concurrent.Future
  *
  * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]]
  */
-case class Counter[A : Integral](value: A) {
+case class Counter[A: Integral](value: A) {
   /**
    * Adds `delta` (which can also be negative) to the counter `value` and
    * returns an updated counter.
@@ -40,10 +40,10 @@ case class Counter[A : Integral](value: A) {
 }
 
 object Counter {
-  def apply[A : Integral]: Counter[A] =
+  def apply[A: Integral]: Counter[A] =
     Counter[A](implicitly[Integral[A]].zero)
 
-  implicit def CounterServiceOps[A : Integral] = new CRDTServiceOps[Counter[A], A] {
+  implicit def CounterServiceOps[A: Integral] = new CRDTServiceOps[Counter[A], A] {
     override def zero: Counter[A] =
       Counter.apply[A]
 

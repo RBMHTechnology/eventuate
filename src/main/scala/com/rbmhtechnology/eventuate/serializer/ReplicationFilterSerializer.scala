@@ -33,7 +33,7 @@ class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serialize
   import ReplicationFilterTreeFormat.NodeType._
 
   val AndFilterClass = classOf[AndFilter]
-  val OrFilterClass= classOf[OrFilter]
+  val OrFilterClass = classOf[OrFilter]
   val NoFilterClass = NoFilter.getClass
 
   override def identifier: Int = 22564
@@ -49,7 +49,7 @@ class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serialize
   }
 
   override def fromBinary(bytes: Array[Byte], manifest: Option[Class[_]]): AnyRef = manifest match {
-    case None        => throw new IllegalArgumentException("manifest required")
+    case None => throw new IllegalArgumentException("manifest required")
     case Some(clazz) => clazz match {
       case NoFilterClass =>
         NoFilter
@@ -98,8 +98,8 @@ class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serialize
 
   def filterTree(filterTreeFormat: ReplicationFilterTreeFormat): ReplicationFilter = {
     filterTreeFormat.getNodeType match {
-      case AND => AndFilter(filterTreeFormat.getChildrenList.asScala.map(filterTree).toList)
-      case OR => OrFilter(filterTreeFormat.getChildrenList.asScala.map(filterTree).toList)
+      case AND  => AndFilter(filterTreeFormat.getChildrenList.asScala.map(filterTree).toList)
+      case OR   => OrFilter(filterTreeFormat.getChildrenList.asScala.map(filterTree).toList)
       case LEAF => filterLeaf(filterTreeFormat.getFilter)
     }
   }

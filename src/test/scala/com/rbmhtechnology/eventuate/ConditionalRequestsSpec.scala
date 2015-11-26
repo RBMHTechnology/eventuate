@@ -29,7 +29,7 @@ object ConditionalRequestsSpec {
 
     val onCommand: Receive = {
       case t: VectorTime => conditionChanged(t)
-      case cmd => sender() ! s"re: ${cmd}"
+      case cmd           => sender() ! s"re: ${cmd}"
     }
 
     val onEvent: Receive = {
@@ -42,7 +42,7 @@ object ConditionalRequestsSpec {
 }
 
 class ConditionalRequestsSpec extends TestKit(ActorSystem("test", ConfigFactory.parseString("akka.log-dead-letters = 0")))
-    with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach with ImplicitSender {
+  with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach with ImplicitSender {
 
   import ConditionalRequestsSpec._
   import EventsourcingProtocol._

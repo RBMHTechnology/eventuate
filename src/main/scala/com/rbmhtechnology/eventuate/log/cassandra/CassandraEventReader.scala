@@ -17,9 +17,9 @@
 package com.rbmhtechnology.eventuate.log.cassandra
 
 import java.io.Closeable
-import java.lang.{Long => JLong}
+import java.lang.{ Long => JLong }
 
-import com.datastax.driver.core.{PreparedStatement, Row}
+import com.datastax.driver.core.{ PreparedStatement, Row }
 import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
 import com.rbmhtechnology.eventuate._
 
