@@ -17,7 +17,7 @@
 package com.rbmhtechnology.eventuate.log.cassandra
 
 import java.io.Closeable
-import java.lang.{Long => JLong}
+import java.lang.{ Long => JLong }
 
 import akka.actor._
 
@@ -153,7 +153,7 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
         case Success(result) =>
           val reply = ReplicationReadSuccess(result.events, result.to, targetLogId, null)
           self.tell(reply, sdr)
-        case Failure(cause)  =>
+        case Failure(cause) =>
           val reply = ReplicationReadFailure(cause.getMessage, targetLogId)
           sdr ! reply
           notificationChannel ! reply
@@ -223,10 +223,10 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
   private def replicateN(writes: Seq[ReplicationWrite]): Unit = {
     writes.foreach(w => timeCache = timeCache.updated(w.sourceLogId, w.currentSourceVectorTime))
     val result = for {
-      (partition, tracker)      <- Try(adjustSequenceNr(writes.map(_.events.size).sum, cassandra.settings.partitionSizeMax, timeTracker))
-      (updatedWrites, tracker2)  = tracker.prepareReplicates(id, writes, log)
-      updatedEvents              = updatedWrites.flatMap(_.events)
-      tracker3                  <- Try(write(partition, updatedEvents, tracker2))
+      (partition, tracker) <- Try(adjustSequenceNr(writes.map(_.events.size).sum, cassandra.settings.partitionSizeMax, timeTracker))
+      (updatedWrites, tracker2) = tracker.prepareReplicates(id, writes, log)
+      updatedEvents = updatedWrites.flatMap(_.events)
+      tracker3 <- Try(write(partition, updatedEvents, tracker2))
     } yield (updatedWrites, updatedEvents, tracker3)
 
     result match {
@@ -260,10 +260,10 @@ class CassandraEventLog(val id: String) extends Actor with Stash with ActorLoggi
 
   private def writeN(writes: Seq[Write]): Unit = {
     val result = for {
-      (partition, tracker)      <- Try(adjustSequenceNr(writes.map(_.events.size).sum, cassandra.settings.partitionSizeMax, timeTracker))
-      (updatedWrites, tracker2)  = tracker.prepareWrites(id, writes, currentSystemTime)
-      updatedEvents              = updatedWrites.flatMap(_.events)
-      tracker3                  <- Try(write(partition, updatedEvents, tracker2))
+      (partition, tracker) <- Try(adjustSequenceNr(writes.map(_.events.size).sum, cassandra.settings.partitionSizeMax, timeTracker))
+      (updatedWrites, tracker2) = tracker.prepareWrites(id, writes, currentSystemTime)
+      updatedEvents = updatedWrites.flatMap(_.events)
+      tracker3 <- Try(write(partition, updatedEvents, tracker2))
     } yield (updatedWrites, updatedEvents, tracker3)
 
     result match {

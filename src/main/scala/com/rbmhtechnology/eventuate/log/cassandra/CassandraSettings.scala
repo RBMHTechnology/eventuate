@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 
 import akka.util.Helpers.Requiring
 
-import com.datastax.driver.core.{Cluster, ConsistencyLevel}
+import com.datastax.driver.core.{ Cluster, ConsistencyLevel }
 import com.typesafe.config.Config
 
 import com.rbmhtechnology.eventuate.ReplicationSettings
@@ -90,11 +90,12 @@ private object CassandraSettings {
     contactPoints match {
       case null | Nil => throw new IllegalArgumentException("a contact point list cannot be empty.")
       case hosts => hosts map {
-        ipWithPort => ipWithPort.split(":") match {
-          case Array(host, port) => new InetSocketAddress(host, port.toInt)
-          case Array(host) => new InetSocketAddress(host, defaultPort)
-          case msg => throw new IllegalArgumentException(s"a contact point should have the form [host:port] or [host] but was: $msg.")
-        }
+        ipWithPort =>
+          ipWithPort.split(":") match {
+            case Array(host, port) => new InetSocketAddress(host, port.toInt)
+            case Array(host)       => new InetSocketAddress(host, defaultPort)
+            case msg               => throw new IllegalArgumentException(s"a contact point should have the form [host:port] or [host] but was: $msg.")
+          }
       }
     }
   }

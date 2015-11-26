@@ -49,7 +49,7 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
   }
 
   override def fromBinary(bytes: Array[Byte], manifest: Option[Class[_]]): AnyRef = manifest match {
-    case None        => throw new IllegalArgumentException("manifest required")
+    case None => throw new IllegalArgumentException("manifest required")
     case Some(clazz) => clazz match {
       case SnapshotClass =>
         snapshot(SnapshotFormat.parseFrom(bytes))

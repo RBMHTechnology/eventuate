@@ -32,9 +32,9 @@ object EventsourcedViewSpec {
   case class Pong(i: Int)
 
   class TestEventsourcedView(
-     val logProbe: ActorRef,
-     val dstProbe: ActorRef,
-     customReplayChunkSize: Option[Int]) extends EventsourcedView {
+    val logProbe: ActorRef,
+    val dstProbe: ActorRef,
+    customReplayChunkSize: Option[Int]) extends EventsourcedView {
 
     val id = emitterIdA
     val eventLog = logProbe
@@ -45,13 +45,13 @@ object EventsourcedViewSpec {
     }
 
     override val onCommand: Receive = {
-      case "boom" => throw boom
+      case "boom"  => throw boom
       case Ping(i) => dstProbe ! Pong(i)
     }
 
     override val onEvent: Receive = {
       case "boom" => throw boom
-      case evt => dstProbe ! ((evt, lastVectorTimestamp, lastSequenceNr))
+      case evt    => dstProbe ! ((evt, lastVectorTimestamp, lastSequenceNr))
     }
   }
 
@@ -64,11 +64,11 @@ object EventsourcedViewSpec {
   val event2c = DurableEvent("c", emitterIdB, None, Set(), 0L, timestamp(0, 2), logIdB, logIdA, 3L)
   val event2d = DurableEvent("d", emitterIdB, None, Set(), 0L, timestamp(0, 3), logIdB, logIdA, 4L)
 
-  def timestamp(a: Long = 0L, b: Long= 0L) = (a, b) match {
+  def timestamp(a: Long = 0L, b: Long = 0L) = (a, b) match {
     case (0L, 0L) => VectorTime()
-    case (a,  0L) => VectorTime(logIdA -> a)
-    case (0L,  b) => VectorTime(logIdB -> b)
-    case (a,   b) => VectorTime(logIdA -> a, logIdB -> b)
+    case (a, 0L)  => VectorTime(logIdA -> a)
+    case (0L, b)  => VectorTime(logIdB -> b)
+    case (a, b)   => VectorTime(logIdA -> a, logIdB -> b)
   }
 
   def event(payload: Any, sequenceNr: Long): DurableEvent =

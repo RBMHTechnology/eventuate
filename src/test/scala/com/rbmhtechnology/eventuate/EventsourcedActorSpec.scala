@@ -34,18 +34,18 @@ object EventsourcedActorSpec {
   case class State(state: Vector[String])
 
   class TestEventsourcedActor(
-      val logProbe: ActorRef,
-      val dstProbe: ActorRef,
-      val errProbe: ActorRef,
-      override val stateSync: Boolean) extends EventsourcedActor {
+    val logProbe: ActorRef,
+    val dstProbe: ActorRef,
+    val errProbe: ActorRef,
+    override val stateSync: Boolean) extends EventsourcedActor {
 
     val id = emitterIdA
     val eventLog = logProbe
 
     override val onCommand: Receive = {
-      case "boom" => throw boom
+      case "boom"   => throw boom
       case "status" => dstProbe ! (("status", lastVectorTimestamp, currentVectorTime, lastSequenceNr))
-      case Ping(i) => dstProbe ! Pong(i)
+      case Ping(i)  => dstProbe ! Pong(i)
       case "test-handler-order" =>
         persist("a")(r => dstProbe ! ((s"${r.get}-1", lastVectorTimestamp, currentVectorTime, lastSequenceNr)))
         persist("b")(r => dstProbe ! ((s"${r.get}-2", lastVectorTimestamp, currentVectorTime, lastSequenceNr)))
@@ -55,14 +55,14 @@ object EventsourcedActorSpec {
       case Cmd(p, num) => 1 to num foreach { i =>
         persist(s"${p}-${i}") {
           case Success("boom") => throw boom
-          case Success(evt) => dstProbe ! ((evt, lastVectorTimestamp, currentVectorTime, lastSequenceNr))
-          case Failure(err) => errProbe ! ((err, lastVectorTimestamp, currentVectorTime, lastSequenceNr))
+          case Success(evt)    => dstProbe ! ((evt, lastVectorTimestamp, currentVectorTime, lastSequenceNr))
+          case Failure(err)    => errProbe ! ((err, lastVectorTimestamp, currentVectorTime, lastSequenceNr))
         }
       }
     }
 
     override val onEvent: Receive = {
-      case "boom" => throw boom
+      case "boom"            => throw boom
       case evt if evt != "x" => dstProbe ! ((evt, lastVectorTimestamp, currentVectorTime, lastSequenceNr))
     }
   }
@@ -119,7 +119,7 @@ object EventsourcedActorSpec {
         throw boom
       case "snap" =>
         save(State(state)) {
-          case Success(md) => dstProbe ! md
+          case Success(md)  => dstProbe ! md
           case Failure(err) => errProbe ! err
         }
       case Cmd(p: String, _) =>
@@ -471,9 +471,9 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         actor ! "status"
         actor ! Written(event2d)
 
-        dstProbe.expectMsg(("b",      event2b.vectorTimestamp, timestamp(2, 1), event2b.localSequenceNr))
+        dstProbe.expectMsg(("b", event2b.vectorTimestamp, timestamp(2, 1), event2b.localSequenceNr))
         dstProbe.expectMsg(("status", event2b.vectorTimestamp, timestamp(2, 1), event2b.localSequenceNr))
-        dstProbe.expectMsg(("d",      event2d.vectorTimestamp, timestamp(4, 3), event2d.localSequenceNr))
+        dstProbe.expectMsg(("d", event2d.vectorTimestamp, timestamp(4, 3), event2d.localSequenceNr))
       }
     }
   }
@@ -596,11 +596,11 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
 
   "An EventsourcedActor" when {
     "in sharedClockEntry = false mode" must {
-      def timestamp(a: Long = 0L, b: Long= 0L) = (a, b) match {
+      def timestamp(a: Long = 0L, b: Long = 0L) = (a, b) match {
         case (0L, 0L) => VectorTime()
-        case (a,  0L) => VectorTime(emitterIdA -> a)
-        case (0L,  b) => VectorTime(emitterIdB -> b)
-        case (a,   b) => VectorTime(emitterIdA -> a, emitterIdB -> b)
+        case (a, 0L)  => VectorTime(emitterIdA -> a)
+        case (0L, b)  => VectorTime(emitterIdB -> b)
+        case (a, b)   => VectorTime(emitterIdA -> a, emitterIdB -> b)
       }
       "recover from replayed self-emitted events" in {
         val actor = unrecoveredCausalityActor(sharedClockEntry = false)

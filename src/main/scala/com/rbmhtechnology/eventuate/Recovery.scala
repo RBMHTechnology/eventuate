@@ -19,7 +19,7 @@ package com.rbmhtechnology.eventuate
 import java.util.concurrent.TimeUnit
 
 import akka.actor._
-import akka.pattern.{after, ask}
+import akka.pattern.{ after, ask }
 import akka.util.Timeout
 
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
@@ -111,7 +111,7 @@ private class Recovery(endpoint: ReplicationEndpoint) {
 
   def recoveryLinks(endpointInfos: Set[ReplicationEndpointInfo], timeTrackers: Map[String, TimeTracker]) = for {
     endpointInfo <- endpointInfos
-    logName      <- endpoint.commonLogNames(endpointInfo)
+    logName <- endpoint.commonLogNames(endpointInfo)
   } yield RecoveryLink(logName, endpoint.logId(logName), endpointInfo.logId(logName), timeTrackers(logName))
 }
 
@@ -153,7 +153,7 @@ private class Acceptor(endpoint: ReplicationEndpoint) extends Actor {
 
   def processing: Receive = {
     case ReplicationReadEnvelope(r, logName) =>
-    endpoint.logs(logName) forward r
+      endpoint.logs(logName) forward r
   }
 
   override def unhandled(message: Any): Unit = message match {

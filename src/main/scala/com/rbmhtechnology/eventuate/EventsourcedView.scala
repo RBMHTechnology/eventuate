@@ -17,7 +17,7 @@
 package com.rbmhtechnology.eventuate
 
 import java.util.function.BiConsumer
-import java.util.{Optional => JOption}
+import java.util.{ Optional => JOption }
 import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor._

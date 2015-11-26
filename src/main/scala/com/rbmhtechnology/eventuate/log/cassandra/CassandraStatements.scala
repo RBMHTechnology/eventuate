@@ -115,13 +115,13 @@ private[eventuate] trait CassandraReplicationProgressStatements extends Cassandr
       VALUES (?, ?, ?)
     """
 
-  def readReplicationProgressStatement: String =  s"""
+  def readReplicationProgressStatement: String = s"""
       SELECT * FROM ${replicationProgressTable} WHERE
         log_id = ? AND
         source_log_id = ?
     """
 
-  def readReplicationProgressesStatement: String =  s"""
+  def readReplicationProgressesStatement: String = s"""
       SELECT * FROM ${replicationProgressTable} WHERE
         log_id = ?
     """

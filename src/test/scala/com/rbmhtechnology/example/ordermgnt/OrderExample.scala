@@ -60,17 +60,17 @@ class OrderExample(manager: ActorRef, view: ActorRef) extends Actor {
       println(cause.getMessage)
       prompt()
     case line: String => line.split(' ').toList match {
-      case "state"                 :: Nil => manager ! GetState
-      case "count"   :: id         :: Nil => view    ! GetUpdateCount(id)
-      case "create"  :: id         :: Nil => manager ! CreateOrder(id)
-      case "cancel"  :: id         :: Nil => manager ! CancelOrder(id)
-      case "save"    :: id         :: Nil => manager ! SaveSnapshot(id)
-      case "add"     :: id :: item :: Nil => manager ! AddOrderItem(id, item)
-      case "remove"  :: id :: item :: Nil => manager ! RemoveOrderItem(id, item)
-      case "resolve" :: id :: idx  :: Nil => manager ! Resolve(id, idx.toInt)
-      case       Nil => prompt()
-      case "" :: Nil => prompt()
-      case na :: nas => println(s"unknown command: ${na}"); prompt()
+      case "state" :: Nil                => manager ! GetState
+      case "count" :: id :: Nil          => view ! GetUpdateCount(id)
+      case "create" :: id :: Nil         => manager ! CreateOrder(id)
+      case "cancel" :: id :: Nil         => manager ! CancelOrder(id)
+      case "save" :: id :: Nil           => manager ! SaveSnapshot(id)
+      case "add" :: id :: item :: Nil    => manager ! AddOrderItem(id, item)
+      case "remove" :: id :: item :: Nil => manager ! RemoveOrderItem(id, item)
+      case "resolve" :: id :: idx :: Nil => manager ! Resolve(id, idx.toInt)
+      case Nil                           => prompt()
+      case "" :: Nil                     => prompt()
+      case na :: nas                     => println(s"unknown command: ${na}"); prompt()
     }
   }
 
@@ -96,7 +96,7 @@ object OrderExample extends App {
     if (recover) endpoint.recover() else Future.successful(())
 
   initialize() onComplete {
-    case Failure(e)=>
+    case Failure(e) =>
       println(s"Recovery failed: ${e.getMessage}")
       system.terminate()
     case Success(_) =>

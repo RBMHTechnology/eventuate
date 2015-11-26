@@ -16,7 +16,7 @@
 
 package com.rbmhtechnology.eventuate.log.leveldb
 
-import java.io.{Closeable, File}
+import java.io.{ Closeable, File }
 import java.nio.ByteBuffer
 
 import scala.collection.JavaConverters._
@@ -119,7 +119,7 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
         case Success(result) =>
           val reply = ReplicationReadSuccess(result.events, result.to, targetLogId, null)
           self.tell(reply, sdr)
-        case Failure(cause)  =>
+        case Failure(cause) =>
           val reply = ReplicationReadFailure(cause.getMessage, targetLogId)
           sdr ! reply
           notificationChannel ! reply
@@ -337,7 +337,7 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
   }
 
   override def postStop(): Unit = {
-    while(activeIterators.get.nonEmpty) {
+    while (activeIterators.get.nonEmpty) {
       // Wait a bit for all concurrent read iterators to be closed
       // See https://github.com/RBMHTechnology/eventuate/issues/87
       Thread.sleep(500)

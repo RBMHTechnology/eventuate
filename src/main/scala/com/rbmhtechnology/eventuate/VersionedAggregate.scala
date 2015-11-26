@@ -16,7 +16,7 @@
 
 package com.rbmhtechnology.eventuate
 
-import java.util.{List => JList, Optional => JOption}
+import java.util.{ List => JList, Optional => JOption }
 import java.util.function.BiFunction
 
 import scala.collection.JavaConverters._
@@ -36,10 +36,10 @@ import VersionedAggregate._
  * @tparam E Event type.
  */
 case class VersionedAggregate[S, C: DomainCmd, E: DomainEvt](
-    id: String,
-    cmdHandler: (S, C) => Try[E],
-    evtHandler: (S, E) => S,
-    aggregate: Option[ConcurrentVersions[S, E]] = None) {
+  id: String,
+  cmdHandler: (S, C) => Try[E],
+  evtHandler: (S, E) => S,
+  aggregate: Option[ConcurrentVersions[S, E]] = None) {
 
   val C = implicitly[DomainCmd[C]]
   val E = implicitly[DomainEvt[E]]
@@ -171,9 +171,9 @@ object VersionedAggregate {
   }
 
   def create[S, C: DomainCmd, E: DomainEvt](
-      id: String,
-      cmdHandler: BiFunction[S, C, E],
-      evtHandler: BiFunction[S, E, S]) =
+    id: String,
+    cmdHandler: BiFunction[S, C, E],
+    evtHandler: BiFunction[S, E, S]) =
     new VersionedAggregate[S, C, E](id,
       (s, c) => Try(cmdHandler.apply(s, c)),
       (s, e) => evtHandler.apply(s, e))

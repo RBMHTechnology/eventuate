@@ -28,16 +28,16 @@ object ReplicationFilter {
   trait Format extends Serializable
 
   /**
-    * Serializable logical AND of given `filters`.
-    */
+   * Serializable logical AND of given `filters`.
+   */
   case class AndFilter(filters: Seq[ReplicationFilter]) extends ReplicationFilter with Format {
     /**
-      * Evaluates to `true` if all `filters` evaluate to `true`, `false` otherwise.
-      */
+     * Evaluates to `true` if all `filters` evaluate to `true`, `false` otherwise.
+     */
     def apply(event: DurableEvent): Boolean = {
       @annotation.tailrec
       def go(filters: Seq[ReplicationFilter]): Boolean = filters match {
-        case Nil => true
+        case Nil     => true
         case f +: fs => if (f(event)) go(fs) else false
       }
       go(filters)
@@ -45,16 +45,16 @@ object ReplicationFilter {
   }
 
   /**
-    * Serializable logical OR of given `filters`.
-    */
+   * Serializable logical OR of given `filters`.
+   */
   case class OrFilter(filters: Seq[ReplicationFilter]) extends ReplicationFilter with Format {
     /**
-      * Evaluates to `true` if any of `filters` evaluate to `true`, `false` otherwise.
-      */
+     * Evaluates to `true` if any of `filters` evaluate to `true`, `false` otherwise.
+     */
     def apply(event: DurableEvent): Boolean = {
       @annotation.tailrec
       def go(filters: Seq[ReplicationFilter]): Boolean = filters match {
-        case Nil => false
+        case Nil     => false
         case f +: fs => if (f(event)) true else go(fs)
       }
       go(filters)
@@ -62,12 +62,12 @@ object ReplicationFilter {
   }
 
   /**
-    * Replication filter that evaluates to `true` for all events.
-    */
+   * Replication filter that evaluates to `true` for all events.
+   */
   object NoFilter extends ReplicationFilter with Format {
     /**
-      * Evaluates to `true`.
-      */
+     * Evaluates to `true`.
+     */
     def apply(event: DurableEvent): Boolean = true
   }
 }
@@ -87,7 +87,7 @@ trait ReplicationFilter extends Serializable {
    */
   def and(filter: ReplicationFilter): ReplicationFilter = this match {
     case f @ AndFilter(filters) => f.copy(filter +: filters)
-    case _ => AndFilter(Seq(filter, this))
+    case _                      => AndFilter(Seq(filter, this))
   }
 
   /**
@@ -96,6 +96,6 @@ trait ReplicationFilter extends Serializable {
    */
   def or(filter: ReplicationFilter): ReplicationFilter = this match {
     case f @ OrFilter(filters) => f.copy(filter +: filters)
-    case _ => OrFilter(Seq(filter, this))
+    case _                     => OrFilter(Seq(filter, this))
   }
 }

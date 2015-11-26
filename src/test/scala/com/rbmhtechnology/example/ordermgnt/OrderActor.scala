@@ -36,7 +36,7 @@ object OrderActor {
   // Order commands
   case class CreateOrder(orderId: String) extends OrderCommand { val event = OrderCreated(orderId) }
   case class CancelOrder(orderId: String) extends OrderCommand { val event = OrderCancelled(orderId) }
-  case class AddOrderItem(orderId: String, item: String) extends OrderCommand  { val event = OrderItemAdded(orderId, item) }
+  case class AddOrderItem(orderId: String, item: String) extends OrderCommand { val event = OrderItemAdded(orderId, item) }
   case class RemoveOrderItem(orderId: String, item: String) extends OrderCommand { val event = OrderItemRemoved(orderId, item) }
 
   // Order events
@@ -66,7 +66,7 @@ object OrderActor {
   implicit object OrderDomainEvt extends DomainEvt[OrderEvent] {
     override def origin(evt: OrderEvent): String = evt match {
       case OrderCreated(_, creator) => creator
-      case _ => ""
+      case _                        => ""
     }
   }
 }
@@ -143,14 +143,14 @@ class OrderActor(orderId: String, replicaId: String, val eventLog: ActorRef) ext
   }
 
   private def commandValidation: (Order, OrderCommand) => Try[OrderEvent] = {
-    case (_, c: CreateOrder) => Success(c.event.copy(creator = replicaId))
+    case (_, c: CreateOrder)  => Success(c.event.copy(creator = replicaId))
     case (_, c: OrderCommand) => Success(c.event)
   }
 
   private def eventProjection: (Order, OrderEvent) => Order = {
-    case (_    , OrderCreated(`orderId`, _)) => Order(orderId)
-    case (order, OrderCancelled(`orderId`)) => order.cancel
-    case (order, OrderItemAdded(`orderId`, item)) => order.addItem(item)
+    case (_, OrderCreated(`orderId`, _))            => Order(orderId)
+    case (order, OrderCancelled(`orderId`))         => order.cancel
+    case (order, OrderItemAdded(`orderId`, item))   => order.addItem(item)
     case (order, OrderItemRemoved(`orderId`, item)) => order.removeItem(item)
   }
 }

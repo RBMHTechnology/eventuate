@@ -45,7 +45,7 @@ private[eventuate] class BatchingSettings(config: Config) {
 class BatchingEventLog(eventLogProps: Props) extends Actor {
   val eventLog: ActorRef =
     context.actorOf(eventLogProps)
-  
+
   val emissionBatcher: ActorRef =
     context.actorOf(Props(new EmissionBatcher(eventLog)))
 
@@ -104,7 +104,7 @@ private class EmissionBatcher(eventLog: ActorRef) extends Actor {
     batch = r
     batch.nonEmpty
   } else false
-} 
+}
 
 private class ReplicationBatcher(eventLog: ActorRef) extends Actor {
   val settings = new BatchingSettings(context.system.settings.config)
