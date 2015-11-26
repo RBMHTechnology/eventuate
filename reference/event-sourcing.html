@@ -336,7 +336,7 @@
 </div>
 <p>The stored sequence number is that of the last successfully processed event. An event is considered as successfully processed if its data have been written to the <code class="docutils literal"><span class="pre">CUSTOMER</span></code> table. Only a single row is needed in the <code class="docutils literal"><span class="pre">PROGRESS</span></code> table to track the update progress for the whole <code class="docutils literal"><span class="pre">CUSTOMER</span></code> table.</p>
 <p>The event-sourced <code class="docutils literal"><span class="pre">Writer</span></code> in the following example implements <code class="docutils literal"><span class="pre">EventsourcedWriter[Long,</span> <span class="pre">Unit]</span></code> (where <code class="docutils literal"><span class="pre">Long</span></code> is the type of the initial read result and <code class="docutils literal"><span class="pre">Unit</span></code> the type of write results). It is initialized with an <code class="docutils literal"><span class="pre">eventLog</span></code> from which it consumes events and a Cassandra <code class="docutils literal"><span class="pre">Session</span></code> for writing event processing results.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">java.lang.</span><span class="o">{</span><span class="nc">Long</span> <span class="k">=&gt;</span> <span class="nc">JLong</span><span class="o">}</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">java.lang.</span><span class="o">{</span> <span class="nc">Long</span> <span class="k">=&gt;</span> <span class="nc">JLong</span> <span class="o">}</span>
 
 <span class="k">import</span> <span class="nn">akka.actor.ActorRef</span>
 
@@ -346,13 +346,13 @@
 <span class="k">import</span> <span class="nn">scala.concurrent.Future</span>
 
 <span class="cm">/**</span>
-<span class="cm">  * Processes `CustomerCreated` and `AddressUpdated` events and updates</span>
-<span class="cm">  * a `CUSTOMER` table in Cassandra with incremental batches.</span>
-<span class="cm">  */</span>
+<span class="cm"> * Processes `CustomerCreated` and `AddressUpdated` events and updates</span>
+<span class="cm"> * a `CUSTOMER` table in Cassandra with incremental batches.</span>
+<span class="cm"> */</span>
 <span class="k">class</span> <span class="nc">Writer</span><span class="o">(</span><span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">,</span> <span class="n">session</span><span class="k">:</span> <span class="kt">Session</span><span class="o">)</span>
   <span class="k">extends</span> <span class="nc">EventsourcedWriter</span><span class="o">[</span><span class="kt">Long</span>, <span class="kt">Unit</span><span class="o">]</span> <span class="o">{</span>
 
-  <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.log.cassandra.</span><span class="o">{</span><span class="n">listenableFutureToFuture</span> <span class="k">=&gt;</span> <span class="n">ftr</span><span class="o">}</span>
+  <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.log.cassandra.</span><span class="o">{</span> <span class="n">listenableFutureToFuture</span> <span class="k">=&gt;</span> <span class="n">ftr</span> <span class="o">}</span>
   <span class="k">import</span> <span class="nn">context.dispatcher</span>
 
   <span class="k">val</span> <span class="n">insertCustomerStmt</span> <span class="k">=</span> <span class="n">session</span><span class="o">.</span><span class="n">prepare</span><span class="o">(</span>
@@ -365,16 +365,16 @@
     <span class="s">&quot;UPDATE PROGRESS SET sequence_nr = ? WHERE id = 0&quot;</span><span class="o">)</span>
 
   <span class="cm">/**</span>
-<span class="cm">    * Batch of Cassandra update statements collected during event processing.</span>
-<span class="cm">    */</span>
+<span class="cm">   * Batch of Cassandra update statements collected during event processing.</span>
+<span class="cm">   */</span>
   <span class="k">var</span> <span class="n">batch</span><span class="k">:</span> <span class="kt">Vector</span><span class="o">[</span><span class="kt">BoundStatement</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Vector</span><span class="o">.</span><span class="n">empty</span>
 
   <span class="cm">/**</span>
-<span class="cm">    * Suspends replay after 16 events, triggers a `write` and then continues</span>
-<span class="cm">    * with the next 16 events. This is implements event replay backpressure,</span>
-<span class="cm">    * needed if writing to the database is slower than replaying from the</span>
-<span class="cm">    * `eventLog` (which is usually the case).</span>
-<span class="cm">    */</span>
+<span class="cm">   * Suspends replay after 16 events, triggers a `write` and then continues</span>
+<span class="cm">   * with the next 16 events. This is implements event replay backpressure,</span>
+<span class="cm">   * needed if writing to the database is slower than replaying from the</span>
+<span class="cm">   * `eventLog` (which is usually the case).</span>
+<span class="cm">   */</span>
   <span class="k">override</span> <span class="k">def</span> <span class="n">replayChunkSizeMax</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span>
     <span class="mi">16</span>
 
@@ -383,10 +383,10 @@
   <span class="o">}</span>
 
   <span class="cm">/**</span>
-<span class="cm">    * Prepares an update `batch` from handled events that is written to the</span>
-<span class="cm">    * database when `write` is called. An event handler never writes to the</span>
-<span class="cm">    * database directly.</span>
-<span class="cm">    */</span>
+<span class="cm">   * Prepares an update `batch` from handled events that is written to the</span>
+<span class="cm">   * database when `write` is called. An event handler never writes to the</span>
+<span class="cm">   * database directly.</span>
+<span class="cm">   */</span>
   <span class="k">override</span> <span class="k">val</span> <span class="n">onEvent</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
     <span class="k">case</span> <span class="n">c</span> <span class="k">@</span> <span class="nc">CustomerCreated</span><span class="o">(</span><span class="n">cid</span><span class="o">,</span> <span class="n">first</span><span class="o">,</span> <span class="n">last</span><span class="o">,</span> <span class="n">address</span><span class="o">)</span> <span class="k">=&gt;</span>
       <span class="n">batch</span> <span class="k">=</span> <span class="n">batch</span> <span class="o">:+</span> <span class="n">insertCustomerStmt</span><span class="o">.</span><span class="n">bind</span><span class="o">(</span><span class="n">cid</span><span class="k">:</span> <span class="kt">JLong</span><span class="o">,</span> <span class="n">first</span><span class="o">,</span> <span class="n">last</span><span class="o">,</span> <span class="n">address</span><span class="o">)</span>
@@ -395,11 +395,11 @@
   <span class="o">}</span>
 
   <span class="cm">/**</span>
-<span class="cm">    * Asynchronously writes the prepared update `batch` to the database</span>
-<span class="cm">    * together with the sequence number of the last processed event. After</span>
-<span class="cm">    * having submitted the batch, it is cleared so that further events can</span>
-<span class="cm">    * be processed while the write is in progress.</span>
-<span class="cm">    */</span>
+<span class="cm">   * Asynchronously writes the prepared update `batch` to the database</span>
+<span class="cm">   * together with the sequence number of the last processed event. After</span>
+<span class="cm">   * having submitted the batch, it is cleared so that further events can</span>
+<span class="cm">   * be processed while the write is in progress.</span>
+<span class="cm">   */</span>
   <span class="k">override</span> <span class="k">def</span> <span class="n">write</span><span class="o">()</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
     <span class="k">val</span> <span class="n">snr</span> <span class="k">=</span> <span class="n">lastSequenceNr</span>
     <span class="k">val</span> <span class="n">res</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
@@ -411,18 +411,18 @@
   <span class="o">}</span>
 
   <span class="cm">/**</span>
-<span class="cm">    * Reads the sequence number of the last update. This method is called only</span>
-<span class="cm">    * once during writer initialization (after start or restart).</span>
-<span class="cm">    */</span>
+<span class="cm">   * Reads the sequence number of the last update. This method is called only</span>
+<span class="cm">   * once during writer initialization (after start or restart).</span>
+<span class="cm">   */</span>
   <span class="k">override</span> <span class="k">def</span> <span class="n">read</span><span class="o">()</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Long</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
     <span class="n">session</span><span class="o">.</span><span class="n">executeAsync</span><span class="o">(</span><span class="s">&quot;SELECT sequence_nr FROM PROGRESS WHERE id = 0&quot;</span><span class="o">)</span>
       <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">rs</span> <span class="k">=&gt;</span> <span class="k">if</span> <span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="n">isExhausted</span><span class="o">)</span> <span class="mi">0L</span> <span class="k">else</span> <span class="n">rs</span><span class="o">.</span><span class="n">one</span><span class="o">().</span><span class="n">getLong</span><span class="o">(</span><span class="mi">0</span><span class="o">))</span>
   <span class="o">}</span>
 
   <span class="cm">/**</span>
-<span class="cm">    * Handles the `read` result by returning the read value + 1, indicating the</span>
-<span class="cm">    * start position for further reads from the event log.</span>
-<span class="cm">    */</span>
+<span class="cm">   * Handles the `read` result by returning the read value + 1, indicating the</span>
+<span class="cm">   * start position for further reads from the event log.</span>
+<span class="cm">   */</span>
   <span class="k">override</span> <span class="k">def</span> <span class="n">readSuccess</span><span class="o">(</span><span class="n">result</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Long</span><span class="o">]</span> <span class="k">=</span>
     <span class="nc">Some</span><span class="o">(</span><span class="n">result</span> <span class="o">+</span> <span class="mi">1L</span><span class="o">)</span>
 <span class="o">}</span>
