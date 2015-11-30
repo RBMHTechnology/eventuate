@@ -25,13 +25,13 @@ import com.datastax.driver.core.{ Cluster, ConsistencyLevel }
 import com.typesafe.config.Config
 
 import com.rbmhtechnology.eventuate.ReplicationSettings
-import com.rbmhtechnology.eventuate.log.BatchingSettings
+import com.rbmhtechnology.eventuate.log._
 
 import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 
-private[eventuate] class CassandraSettings(config: Config) {
-  import CassandraSettings._
+class CassandraEventLogSettings(config: Config) extends EventLogSettings {
+  import CassandraEventLogSettings._
 
   private val batchingSettings = new BatchingSettings(config)
   private val replicationSettings = new ReplicationSettings(config)
@@ -60,18 +60,21 @@ private[eventuate] class CassandraSettings(config: Config) {
   val contactPoints =
     getContactPoints(config.getStringList("eventuate.log.cassandra.contact-points").asScala, defaultPort)
 
-  val partitionSizeMax: Int =
-    config.getInt("eventuate.log.cassandra.partition-size-max")
+  val partitionSizeMax: Long =
+    config.getLong("eventuate.log.cassandra.partition-size-max")
       .requiring(_ > batchingSettings.batchSizeLimit,
         s"eventuate.log.cassandra.partition-size-max must be greater than eventuate.log.batching.batch-size-limit (${batchingSettings.batchSizeLimit})")
       .requiring(_ > replicationSettings.batchSizeMax,
         s"eventuate.log.cassandra.partition-size-max must be greater than eventuate.log.replication.batch-size-max (${replicationSettings.batchSizeMax})")
 
-  val initRetryBackoff: FiniteDuration =
-    config.getDuration("eventuate.log.cassandra.init-retry-backoff", TimeUnit.MILLISECONDS).millis
-
   val indexUpdateLimit: Int =
     config.getInt("eventuate.log.cassandra.index-update-limit")
+
+  val initRetryMax: Int =
+    config.getInt("eventuate.log.cassandra.init-retry-max")
+
+  val initRetryDelay: FiniteDuration =
+    config.getDuration("eventuate.log.cassandra.init-retry-delay", TimeUnit.MILLISECONDS).millis
 
   val initialConnectRetryMax: Int =
     config.getInt("eventuate.log.cassandra.initial-connect-retry-max")
@@ -85,7 +88,7 @@ private[eventuate] class CassandraSettings(config: Config) {
       config.getString("eventuate.log.cassandra.password"))
 }
 
-private object CassandraSettings {
+private object CassandraEventLogSettings {
   def getContactPoints(contactPoints: Seq[String], defaultPort: Int): Seq[InetSocketAddress] = {
     contactPoints match {
       case null | Nil => throw new IllegalArgumentException("a contact point list cannot be empty.")

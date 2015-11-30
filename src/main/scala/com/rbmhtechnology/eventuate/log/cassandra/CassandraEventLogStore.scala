@@ -20,33 +20,40 @@ import java.io.Closeable
 import java.lang.{ Long => JLong }
 
 import com.datastax.driver.core.{ PreparedStatement, Row }
-import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
 import com.rbmhtechnology.eventuate._
+import com.rbmhtechnology.eventuate.log._
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Seq
-import scala.concurrent.Future
+import scala.concurrent.{ ExecutionContext, Future }
 
-private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: String) {
-  import CassandraEventReader._
-  import CassandraEventLog._
+private[eventuate] class CassandraEventLogStore(cassandra: Cassandra, logId: String) {
+  val preparedWriteEventStatement: PreparedStatement =
+    cassandra.prepareWriteEvent(logId)
 
   val preparedReadEventsStatement: PreparedStatement =
     cassandra.prepareReadEvents(logId)
 
-  def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int): Future[ReadResult] =
-    readAsync(fromSequenceNr, toSequenceNr, max, NoFilter, VectorTime.Zero, logId)
+  def writeSync(events: Seq[DurableEvent], partition: Long) =
+    cassandra.executeBatch { batch =>
+      events.foreach { event =>
+        batch.add(preparedWriteEventStatement.bind(partition: JLong, event.localSequenceNr: JLong, cassandra.eventToByteBuffer(event)))
+      }
+    }
 
-  def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: ReplicationFilter, lower: VectorTime, targetLogId: String): Future[ReadResult] =
-    Future(read(fromSequenceNr, toSequenceNr, max, filter, lower, targetLogId))(cassandra.readDispatcher)
+  def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int)(implicit executor: ExecutionContext): Future[BatchReadResult] =
+    readAsync(fromSequenceNr, toSequenceNr, max, _ => true)
 
-  def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: ReplicationFilter, lower: VectorTime, targetLogId: String): ReadResult = {
+  def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: DurableEvent => Boolean)(implicit executor: ExecutionContext): Future[BatchReadResult] =
+    Future(read(fromSequenceNr, toSequenceNr, max, filter))
+
+  def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: DurableEvent => Boolean): BatchReadResult = {
     var lastSequenceNr = fromSequenceNr - 1L
     val events = eventIterator(fromSequenceNr, toSequenceNr).filter { evt =>
       lastSequenceNr = evt.localSequenceNr
-      evt.replicable(lower, filter)
+      filter(evt)
     }.take(max).toVector
-    ReadResult(events, lastSequenceNr)
+    BatchReadResult(events, lastSequenceNr)
   }
 
   def eventIterator(fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] with Closeable =
@@ -54,6 +61,7 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
 
   private class EventIterator(fromSequenceNr: Long, toSequenceNr: Long) extends Iterator[DurableEvent] with Closeable {
     import cassandra.settings._
+    import EventLog._
 
     var currentSequenceNr = math.max(fromSequenceNr, 1L)
     var currentPartition = partitionOf(currentSequenceNr, partitionSizeMax)
@@ -94,8 +102,4 @@ private[eventuate] class CassandraEventReader(cassandra: Cassandra, logId: Strin
     override def close(): Unit =
       ()
   }
-}
-
-private[eventuate] object CassandraEventReader {
-  case class ReadResult(events: Seq[DurableEvent], to: Long)
 }

@@ -46,7 +46,7 @@ package object utilities {
       to.log.ask(GetReplicationProgress(from.logId)).mapTo[GetReplicationProgressSuccess]
 
     def readEvents(reply: GetReplicationProgressSuccess): Future[ReplicationReadSuccess] =
-      from.log.ask(ReplicationRead(reply.storedReplicationProgress + 1, num, NoFilter, to.logId, to.endpoint.system.deadLetters, reply.currentTargetVectorTime)).mapTo[ReplicationReadSuccess]
+      from.log.ask(ReplicationRead(reply.storedReplicationProgress + 1, num, NoFilter, to.logId, to.endpoint.system.deadLetters, reply.currentTargetVersionVector)).mapTo[ReplicationReadSuccess]
 
     def writeEvents(reply: ReplicationReadSuccess): Future[ReplicationWriteSuccess] =
       to.log.ask(ReplicationWrite(reply.events, from.logId, reply.replicationProgress, VectorTime())).mapTo[ReplicationWriteSuccess]

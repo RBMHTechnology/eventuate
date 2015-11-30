@@ -18,6 +18,7 @@ package com.rbmhtechnology.eventuate
 
 import akka.actor._
 import akka.testkit._
+
 import com.typesafe.config.ConfigFactory
 
 import org.scalatest._

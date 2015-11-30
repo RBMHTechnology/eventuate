@@ -43,7 +43,7 @@ private class NotificationChannel(logId: String) extends Actor {
     case Updated(events) =>
       registry.foreach {
         case (targetLogId, reg) =>
-          if (!reading.contains(targetLogId) && events.exists(_.replicable(reg.currentTargetVectorTime, reg.filter))) {
+          if (!reading.contains(targetLogId) && events.exists(_.replicable(reg.currentTargetVersionVector, reg.filter))) {
             reg.replicator ! ReplicationDue
           }
       }
@@ -56,7 +56,7 @@ private class NotificationChannel(logId: String) extends Actor {
       reading -= r.targetLogId
     case w: ReplicationWrite =>
       registry.get(w.sourceLogId) match {
-        case Some(reg) => registry += (w.sourceLogId -> reg.copy(currentTargetVectorTime = w.currentSourceVectorTime))
+        case Some(reg) => registry += (w.sourceLogId -> reg.copy(currentTargetVersionVector = w.currentSourceVersionVector))
         case None      =>
       }
   }

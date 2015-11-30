@@ -2270,19 +2270,19 @@ public final class ReplicationProtocolFormats {
     com.google.protobuf.ByteString
         getReplicatorBytes();
 
-    // optional .VectorTimeFormat currentTargetVectorTime = 6;
+    // optional .VectorTimeFormat currentTargetVersionVector = 6;
     /**
-     * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+     * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
      */
-    boolean hasCurrentTargetVectorTime();
+    boolean hasCurrentTargetVersionVector();
     /**
-     * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+     * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
      */
-    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentTargetVectorTime();
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentTargetVersionVector();
     /**
-     * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+     * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
      */
-    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentTargetVectorTimeOrBuilder();
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentTargetVersionVectorOrBuilder();
   }
   /**
    * Protobuf type {@code ReplicationReadFormat}
@@ -2371,12 +2371,12 @@ public final class ReplicationProtocolFormats {
             case 50: {
               com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder subBuilder = null;
               if (((bitField0_ & 0x00000020) == 0x00000020)) {
-                subBuilder = currentTargetVectorTime_.toBuilder();
+                subBuilder = currentTargetVersionVector_.toBuilder();
               }
-              currentTargetVectorTime_ = input.readMessage(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.PARSER, extensionRegistry);
+              currentTargetVersionVector_ = input.readMessage(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.PARSER, extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(currentTargetVectorTime_);
-                currentTargetVectorTime_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(currentTargetVersionVector_);
+                currentTargetVersionVector_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000020;
               break;
@@ -2561,26 +2561,26 @@ public final class ReplicationProtocolFormats {
       }
     }
 
-    // optional .VectorTimeFormat currentTargetVectorTime = 6;
-    public static final int CURRENTTARGETVECTORTIME_FIELD_NUMBER = 6;
-    private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentTargetVectorTime_;
+    // optional .VectorTimeFormat currentTargetVersionVector = 6;
+    public static final int CURRENTTARGETVERSIONVECTOR_FIELD_NUMBER = 6;
+    private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentTargetVersionVector_;
     /**
-     * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+     * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
      */
-    public boolean hasCurrentTargetVectorTime() {
+    public boolean hasCurrentTargetVersionVector() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+     * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
      */
-    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentTargetVectorTime() {
-      return currentTargetVectorTime_;
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentTargetVersionVector() {
+      return currentTargetVersionVector_;
     }
     /**
-     * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+     * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
      */
-    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentTargetVectorTimeOrBuilder() {
-      return currentTargetVectorTime_;
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentTargetVersionVectorOrBuilder() {
+      return currentTargetVersionVector_;
     }
 
     private void initFields() {
@@ -2589,7 +2589,7 @@ public final class ReplicationProtocolFormats {
       filter_ = com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.getDefaultInstance();
       targetLogId_ = "";
       replicator_ = "";
-      currentTargetVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      currentTargetVersionVector_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -2602,8 +2602,8 @@ public final class ReplicationProtocolFormats {
           return false;
         }
       }
-      if (hasCurrentTargetVectorTime()) {
-        if (!getCurrentTargetVectorTime().isInitialized()) {
+      if (hasCurrentTargetVersionVector()) {
+        if (!getCurrentTargetVersionVector().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -2631,7 +2631,7 @@ public final class ReplicationProtocolFormats {
         output.writeBytes(5, getReplicatorBytes());
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeMessage(6, currentTargetVectorTime_);
+        output.writeMessage(6, currentTargetVersionVector_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2664,7 +2664,7 @@ public final class ReplicationProtocolFormats {
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(6, currentTargetVectorTime_);
+          .computeMessageSize(6, currentTargetVersionVector_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2775,7 +2775,7 @@ public final class ReplicationProtocolFormats {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getFilterFieldBuilder();
-          getCurrentTargetVectorTimeFieldBuilder();
+          getCurrentTargetVersionVectorFieldBuilder();
         }
       }
       private static Builder create() {
@@ -2798,10 +2798,10 @@ public final class ReplicationProtocolFormats {
         bitField0_ = (bitField0_ & ~0x00000008);
         replicator_ = "";
         bitField0_ = (bitField0_ & ~0x00000010);
-        if (currentTargetVectorTimeBuilder_ == null) {
-          currentTargetVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+        if (currentTargetVersionVectorBuilder_ == null) {
+          currentTargetVersionVector_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
         } else {
-          currentTargetVectorTimeBuilder_.clear();
+          currentTargetVersionVectorBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000020);
         return this;
@@ -2859,10 +2859,10 @@ public final class ReplicationProtocolFormats {
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000020;
         }
-        if (currentTargetVectorTimeBuilder_ == null) {
-          result.currentTargetVectorTime_ = currentTargetVectorTime_;
+        if (currentTargetVersionVectorBuilder_ == null) {
+          result.currentTargetVersionVector_ = currentTargetVersionVector_;
         } else {
-          result.currentTargetVectorTime_ = currentTargetVectorTimeBuilder_.build();
+          result.currentTargetVersionVector_ = currentTargetVersionVectorBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -2899,8 +2899,8 @@ public final class ReplicationProtocolFormats {
           replicator_ = other.replicator_;
           onChanged();
         }
-        if (other.hasCurrentTargetVectorTime()) {
-          mergeCurrentTargetVectorTime(other.getCurrentTargetVectorTime());
+        if (other.hasCurrentTargetVersionVector()) {
+          mergeCurrentTargetVersionVector(other.getCurrentTargetVersionVector());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2913,8 +2913,8 @@ public final class ReplicationProtocolFormats {
             return false;
           }
         }
-        if (hasCurrentTargetVectorTime()) {
-          if (!getCurrentTargetVectorTime().isInitialized()) {
+        if (hasCurrentTargetVersionVector()) {
+          if (!getCurrentTargetVersionVector().isInitialized()) {
             
             return false;
           }
@@ -3272,121 +3272,121 @@ public final class ReplicationProtocolFormats {
         return this;
       }
 
-      // optional .VectorTimeFormat currentTargetVectorTime = 6;
-      private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentTargetVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      // optional .VectorTimeFormat currentTargetVersionVector = 6;
+      private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentTargetVersionVector_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
-          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> currentTargetVectorTimeBuilder_;
+          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> currentTargetVersionVectorBuilder_;
       /**
-       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
        */
-      public boolean hasCurrentTargetVectorTime() {
+      public boolean hasCurrentTargetVersionVector() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
        */
-      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentTargetVectorTime() {
-        if (currentTargetVectorTimeBuilder_ == null) {
-          return currentTargetVectorTime_;
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentTargetVersionVector() {
+        if (currentTargetVersionVectorBuilder_ == null) {
+          return currentTargetVersionVector_;
         } else {
-          return currentTargetVectorTimeBuilder_.getMessage();
+          return currentTargetVersionVectorBuilder_.getMessage();
         }
       }
       /**
-       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
        */
-      public Builder setCurrentTargetVectorTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
-        if (currentTargetVectorTimeBuilder_ == null) {
+      public Builder setCurrentTargetVersionVector(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
+        if (currentTargetVersionVectorBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          currentTargetVectorTime_ = value;
+          currentTargetVersionVector_ = value;
           onChanged();
         } else {
-          currentTargetVectorTimeBuilder_.setMessage(value);
+          currentTargetVersionVectorBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000020;
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
        */
-      public Builder setCurrentTargetVectorTime(
+      public Builder setCurrentTargetVersionVector(
           com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder builderForValue) {
-        if (currentTargetVectorTimeBuilder_ == null) {
-          currentTargetVectorTime_ = builderForValue.build();
+        if (currentTargetVersionVectorBuilder_ == null) {
+          currentTargetVersionVector_ = builderForValue.build();
           onChanged();
         } else {
-          currentTargetVectorTimeBuilder_.setMessage(builderForValue.build());
+          currentTargetVersionVectorBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000020;
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
        */
-      public Builder mergeCurrentTargetVectorTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
-        if (currentTargetVectorTimeBuilder_ == null) {
+      public Builder mergeCurrentTargetVersionVector(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
+        if (currentTargetVersionVectorBuilder_ == null) {
           if (((bitField0_ & 0x00000020) == 0x00000020) &&
-              currentTargetVectorTime_ != com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance()) {
-            currentTargetVectorTime_ =
-              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.newBuilder(currentTargetVectorTime_).mergeFrom(value).buildPartial();
+              currentTargetVersionVector_ != com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance()) {
+            currentTargetVersionVector_ =
+              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.newBuilder(currentTargetVersionVector_).mergeFrom(value).buildPartial();
           } else {
-            currentTargetVectorTime_ = value;
+            currentTargetVersionVector_ = value;
           }
           onChanged();
         } else {
-          currentTargetVectorTimeBuilder_.mergeFrom(value);
+          currentTargetVersionVectorBuilder_.mergeFrom(value);
         }
         bitField0_ |= 0x00000020;
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
        */
-      public Builder clearCurrentTargetVectorTime() {
-        if (currentTargetVectorTimeBuilder_ == null) {
-          currentTargetVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      public Builder clearCurrentTargetVersionVector() {
+        if (currentTargetVersionVectorBuilder_ == null) {
+          currentTargetVersionVector_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
           onChanged();
         } else {
-          currentTargetVectorTimeBuilder_.clear();
+          currentTargetVersionVectorBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
        */
-      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder getCurrentTargetVectorTimeBuilder() {
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder getCurrentTargetVersionVectorBuilder() {
         bitField0_ |= 0x00000020;
         onChanged();
-        return getCurrentTargetVectorTimeFieldBuilder().getBuilder();
+        return getCurrentTargetVersionVectorFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
        */
-      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentTargetVectorTimeOrBuilder() {
-        if (currentTargetVectorTimeBuilder_ != null) {
-          return currentTargetVectorTimeBuilder_.getMessageOrBuilder();
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentTargetVersionVectorOrBuilder() {
+        if (currentTargetVersionVectorBuilder_ != null) {
+          return currentTargetVersionVectorBuilder_.getMessageOrBuilder();
         } else {
-          return currentTargetVectorTime_;
+          return currentTargetVersionVector_;
         }
       }
       /**
-       * <code>optional .VectorTimeFormat currentTargetVectorTime = 6;</code>
+       * <code>optional .VectorTimeFormat currentTargetVersionVector = 6;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
           com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> 
-          getCurrentTargetVectorTimeFieldBuilder() {
-        if (currentTargetVectorTimeBuilder_ == null) {
-          currentTargetVectorTimeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          getCurrentTargetVersionVectorFieldBuilder() {
+        if (currentTargetVersionVectorBuilder_ == null) {
+          currentTargetVersionVectorBuilder_ = new com.google.protobuf.SingleFieldBuilder<
               com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder>(
-                  currentTargetVectorTime_,
+                  currentTargetVersionVector_,
                   getParentForChildren(),
                   isClean());
-          currentTargetVectorTime_ = null;
+          currentTargetVersionVector_ = null;
         }
-        return currentTargetVectorTimeBuilder_;
+        return currentTargetVersionVectorBuilder_;
       }
 
       // @@protoc_insertion_point(builder_scope:ReplicationReadFormat)
@@ -3453,19 +3453,19 @@ public final class ReplicationProtocolFormats {
     com.google.protobuf.ByteString
         getTargetLogIdBytes();
 
-    // optional .VectorTimeFormat currentSourceVectorTime = 4;
+    // optional .VectorTimeFormat currentSourceVersionVector = 4;
     /**
-     * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+     * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
      */
-    boolean hasCurrentSourceVectorTime();
+    boolean hasCurrentSourceVersionVector();
     /**
-     * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+     * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
      */
-    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentSourceVectorTime();
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentSourceVersionVector();
     /**
-     * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+     * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
      */
-    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentSourceVectorTimeOrBuilder();
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentSourceVersionVectorOrBuilder();
   }
   /**
    * Protobuf type {@code ReplicationReadSuccessFormat}
@@ -3539,12 +3539,12 @@ public final class ReplicationProtocolFormats {
             case 34: {
               com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder subBuilder = null;
               if (((bitField0_ & 0x00000004) == 0x00000004)) {
-                subBuilder = currentSourceVectorTime_.toBuilder();
+                subBuilder = currentSourceVersionVector_.toBuilder();
               }
-              currentSourceVectorTime_ = input.readMessage(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.PARSER, extensionRegistry);
+              currentSourceVersionVector_ = input.readMessage(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.PARSER, extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(currentSourceVectorTime_);
-                currentSourceVectorTime_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(currentSourceVersionVector_);
+                currentSourceVersionVector_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000004;
               break;
@@ -3687,33 +3687,33 @@ public final class ReplicationProtocolFormats {
       }
     }
 
-    // optional .VectorTimeFormat currentSourceVectorTime = 4;
-    public static final int CURRENTSOURCEVECTORTIME_FIELD_NUMBER = 4;
-    private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentSourceVectorTime_;
+    // optional .VectorTimeFormat currentSourceVersionVector = 4;
+    public static final int CURRENTSOURCEVERSIONVECTOR_FIELD_NUMBER = 4;
+    private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentSourceVersionVector_;
     /**
-     * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+     * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
      */
-    public boolean hasCurrentSourceVectorTime() {
+    public boolean hasCurrentSourceVersionVector() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+     * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
      */
-    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentSourceVectorTime() {
-      return currentSourceVectorTime_;
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentSourceVersionVector() {
+      return currentSourceVersionVector_;
     }
     /**
-     * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+     * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
      */
-    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentSourceVectorTimeOrBuilder() {
-      return currentSourceVectorTime_;
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentSourceVersionVectorOrBuilder() {
+      return currentSourceVersionVector_;
     }
 
     private void initFields() {
       events_ = java.util.Collections.emptyList();
       replicationProgress_ = 0L;
       targetLogId_ = "";
-      currentSourceVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      currentSourceVersionVector_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -3726,8 +3726,8 @@ public final class ReplicationProtocolFormats {
           return false;
         }
       }
-      if (hasCurrentSourceVectorTime()) {
-        if (!getCurrentSourceVectorTime().isInitialized()) {
+      if (hasCurrentSourceVersionVector()) {
+        if (!getCurrentSourceVersionVector().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -3749,7 +3749,7 @@ public final class ReplicationProtocolFormats {
         output.writeBytes(3, getTargetLogIdBytes());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeMessage(4, currentSourceVectorTime_);
+        output.writeMessage(4, currentSourceVersionVector_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -3774,7 +3774,7 @@ public final class ReplicationProtocolFormats {
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, currentSourceVectorTime_);
+          .computeMessageSize(4, currentSourceVersionVector_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -3885,7 +3885,7 @@ public final class ReplicationProtocolFormats {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getEventsFieldBuilder();
-          getCurrentSourceVectorTimeFieldBuilder();
+          getCurrentSourceVersionVectorFieldBuilder();
         }
       }
       private static Builder create() {
@@ -3904,10 +3904,10 @@ public final class ReplicationProtocolFormats {
         bitField0_ = (bitField0_ & ~0x00000002);
         targetLogId_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
-        if (currentSourceVectorTimeBuilder_ == null) {
-          currentSourceVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+        if (currentSourceVersionVectorBuilder_ == null) {
+          currentSourceVersionVector_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
         } else {
-          currentSourceVectorTimeBuilder_.clear();
+          currentSourceVersionVectorBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000008);
         return this;
@@ -3958,10 +3958,10 @@ public final class ReplicationProtocolFormats {
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000004;
         }
-        if (currentSourceVectorTimeBuilder_ == null) {
-          result.currentSourceVectorTime_ = currentSourceVectorTime_;
+        if (currentSourceVersionVectorBuilder_ == null) {
+          result.currentSourceVersionVector_ = currentSourceVersionVector_;
         } else {
-          result.currentSourceVectorTime_ = currentSourceVectorTimeBuilder_.build();
+          result.currentSourceVersionVector_ = currentSourceVersionVectorBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -4013,8 +4013,8 @@ public final class ReplicationProtocolFormats {
           targetLogId_ = other.targetLogId_;
           onChanged();
         }
-        if (other.hasCurrentSourceVectorTime()) {
-          mergeCurrentSourceVectorTime(other.getCurrentSourceVectorTime());
+        if (other.hasCurrentSourceVersionVector()) {
+          mergeCurrentSourceVersionVector(other.getCurrentSourceVersionVector());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -4027,8 +4027,8 @@ public final class ReplicationProtocolFormats {
             return false;
           }
         }
-        if (hasCurrentSourceVectorTime()) {
-          if (!getCurrentSourceVectorTime().isInitialized()) {
+        if (hasCurrentSourceVersionVector()) {
+          if (!getCurrentSourceVersionVector().isInitialized()) {
             
             return false;
           }
@@ -4402,121 +4402,121 @@ public final class ReplicationProtocolFormats {
         return this;
       }
 
-      // optional .VectorTimeFormat currentSourceVectorTime = 4;
-      private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentSourceVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      // optional .VectorTimeFormat currentSourceVersionVector = 4;
+      private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat currentSourceVersionVector_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
-          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> currentSourceVectorTimeBuilder_;
+          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> currentSourceVersionVectorBuilder_;
       /**
-       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
        */
-      public boolean hasCurrentSourceVectorTime() {
+      public boolean hasCurrentSourceVersionVector() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       /**
-       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
        */
-      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentSourceVectorTime() {
-        if (currentSourceVectorTimeBuilder_ == null) {
-          return currentSourceVectorTime_;
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getCurrentSourceVersionVector() {
+        if (currentSourceVersionVectorBuilder_ == null) {
+          return currentSourceVersionVector_;
         } else {
-          return currentSourceVectorTimeBuilder_.getMessage();
+          return currentSourceVersionVectorBuilder_.getMessage();
         }
       }
       /**
-       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
        */
-      public Builder setCurrentSourceVectorTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
-        if (currentSourceVectorTimeBuilder_ == null) {
+      public Builder setCurrentSourceVersionVector(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
+        if (currentSourceVersionVectorBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          currentSourceVectorTime_ = value;
+          currentSourceVersionVector_ = value;
           onChanged();
         } else {
-          currentSourceVectorTimeBuilder_.setMessage(value);
+          currentSourceVersionVectorBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000008;
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
        */
-      public Builder setCurrentSourceVectorTime(
+      public Builder setCurrentSourceVersionVector(
           com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder builderForValue) {
-        if (currentSourceVectorTimeBuilder_ == null) {
-          currentSourceVectorTime_ = builderForValue.build();
+        if (currentSourceVersionVectorBuilder_ == null) {
+          currentSourceVersionVector_ = builderForValue.build();
           onChanged();
         } else {
-          currentSourceVectorTimeBuilder_.setMessage(builderForValue.build());
+          currentSourceVersionVectorBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000008;
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
        */
-      public Builder mergeCurrentSourceVectorTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
-        if (currentSourceVectorTimeBuilder_ == null) {
+      public Builder mergeCurrentSourceVersionVector(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
+        if (currentSourceVersionVectorBuilder_ == null) {
           if (((bitField0_ & 0x00000008) == 0x00000008) &&
-              currentSourceVectorTime_ != com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance()) {
-            currentSourceVectorTime_ =
-              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.newBuilder(currentSourceVectorTime_).mergeFrom(value).buildPartial();
+              currentSourceVersionVector_ != com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance()) {
+            currentSourceVersionVector_ =
+              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.newBuilder(currentSourceVersionVector_).mergeFrom(value).buildPartial();
           } else {
-            currentSourceVectorTime_ = value;
+            currentSourceVersionVector_ = value;
           }
           onChanged();
         } else {
-          currentSourceVectorTimeBuilder_.mergeFrom(value);
+          currentSourceVersionVectorBuilder_.mergeFrom(value);
         }
         bitField0_ |= 0x00000008;
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
        */
-      public Builder clearCurrentSourceVectorTime() {
-        if (currentSourceVectorTimeBuilder_ == null) {
-          currentSourceVectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      public Builder clearCurrentSourceVersionVector() {
+        if (currentSourceVersionVectorBuilder_ == null) {
+          currentSourceVersionVector_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
           onChanged();
         } else {
-          currentSourceVectorTimeBuilder_.clear();
+          currentSourceVersionVectorBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
        */
-      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder getCurrentSourceVectorTimeBuilder() {
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder getCurrentSourceVersionVectorBuilder() {
         bitField0_ |= 0x00000008;
         onChanged();
-        return getCurrentSourceVectorTimeFieldBuilder().getBuilder();
+        return getCurrentSourceVersionVectorFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
        */
-      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentSourceVectorTimeOrBuilder() {
-        if (currentSourceVectorTimeBuilder_ != null) {
-          return currentSourceVectorTimeBuilder_.getMessageOrBuilder();
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getCurrentSourceVersionVectorOrBuilder() {
+        if (currentSourceVersionVectorBuilder_ != null) {
+          return currentSourceVersionVectorBuilder_.getMessageOrBuilder();
         } else {
-          return currentSourceVectorTime_;
+          return currentSourceVersionVector_;
         }
       }
       /**
-       * <code>optional .VectorTimeFormat currentSourceVectorTime = 4;</code>
+       * <code>optional .VectorTimeFormat currentSourceVersionVector = 4;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
           com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> 
-          getCurrentSourceVectorTimeFieldBuilder() {
-        if (currentSourceVectorTimeBuilder_ == null) {
-          currentSourceVectorTimeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          getCurrentSourceVersionVectorFieldBuilder() {
+        if (currentSourceVersionVectorBuilder_ == null) {
+          currentSourceVersionVectorBuilder_ = new com.google.protobuf.SingleFieldBuilder<
               com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder>(
-                  currentSourceVectorTime_,
+                  currentSourceVersionVector_,
                   getParentForChildren(),
                   isClean());
-          currentSourceVectorTime_ = null;
+          currentSourceVersionVector_ = null;
         }
-        return currentSourceVectorTimeBuilder_;
+        return currentSourceVersionVectorBuilder_;
       }
 
       // @@protoc_insertion_point(builder_scope:ReplicationReadSuccessFormat)
@@ -5533,20 +5533,20 @@ public final class ReplicationProtocolFormats {
       "InfoSuccessFormat\022,\n\004info\030\001 \002(\0132\036.Replic" +
       "ationEndpointInfoFormat\"Y\n\035ReplicationRe" +
       "adEnvelopeFormat\022\'\n\007payload\030\001 \001(\0132\026.Repl",
-      "icationReadFormat\022\017\n\007logName\030\002 \001(\t\"\320\001\n\025R" +
+      "icationReadFormat\022\017\n\007logName\030\002 \001(\t\"\323\001\n\025R" +
       "eplicationReadFormat\022\026\n\016fromSequenceNr\030\001" +
       " \001(\003\022\024\n\014maxNumEvents\030\002 \001(\005\022,\n\006filter\030\003 \001" +
       "(\0132\034.ReplicationFilterTreeFormat\022\023\n\013targ" +
-      "etLogId\030\004 \001(\t\022\022\n\nreplicator\030\005 \001(\t\0222\n\027cur" +
-      "rentTargetVectorTime\030\006 \001(\0132\021.VectorTimeF" +
-      "ormat\"\251\001\n\034ReplicationReadSuccessFormat\022#" +
-      "\n\006events\030\001 \003(\0132\023.DurableEventFormat\022\033\n\023r" +
-      "eplicationProgress\030\002 \001(\003\022\023\n\013targetLogId\030" +
-      "\003 \001(\t\0222\n\027currentSourceVectorTime\030\004 \001(\0132\021",
-      ".VectorTimeFormat\"B\n\034ReplicationReadFail" +
-      "ureFormat\022\r\n\005cause\030\001 \001(\t\022\023\n\013targetLogId\030" +
-      "\002 \001(\t\"\026\n\024ReplicationDueFormatB+\n\'com.rbm" +
-      "htechnology.eventuate.serializerH\001"
+      "etLogId\030\004 \001(\t\022\022\n\nreplicator\030\005 \001(\t\0225\n\032cur" +
+      "rentTargetVersionVector\030\006 \001(\0132\021.VectorTi" +
+      "meFormat\"\254\001\n\034ReplicationReadSuccessForma" +
+      "t\022#\n\006events\030\001 \003(\0132\023.DurableEventFormat\022\033" +
+      "\n\023replicationProgress\030\002 \001(\003\022\023\n\013targetLog" +
+      "Id\030\003 \001(\t\0225\n\032currentSourceVersionVector\030\004",
+      " \001(\0132\021.VectorTimeFormat\"B\n\034ReplicationRe" +
+      "adFailureFormat\022\r\n\005cause\030\001 \001(\t\022\023\n\013target" +
+      "LogId\030\002 \001(\t\"\026\n\024ReplicationDueFormatB+\n\'c" +
+      "om.rbmhtechnology.eventuate.serializerH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5582,13 +5582,13 @@ public final class ReplicationProtocolFormats {
           internal_static_ReplicationReadFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationReadFormat_descriptor,
-              new java.lang.String[] { "FromSequenceNr", "MaxNumEvents", "Filter", "TargetLogId", "Replicator", "CurrentTargetVectorTime", });
+              new java.lang.String[] { "FromSequenceNr", "MaxNumEvents", "Filter", "TargetLogId", "Replicator", "CurrentTargetVersionVector", });
           internal_static_ReplicationReadSuccessFormat_descriptor =
             getDescriptor().getMessageTypes().get(5);
           internal_static_ReplicationReadSuccessFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationReadSuccessFormat_descriptor,
-              new java.lang.String[] { "Events", "ReplicationProgress", "TargetLogId", "CurrentSourceVectorTime", });
+              new java.lang.String[] { "Events", "ReplicationProgress", "TargetLogId", "CurrentSourceVersionVector", });
           internal_static_ReplicationReadFailureFormat_descriptor =
             getDescriptor().getMessageTypes().get(6);
           internal_static_ReplicationReadFailureFormat_fieldAccessorTable = new

@@ -27,7 +27,7 @@ import com.datastax.driver.core.exceptions.NoHostAvailableException
 import com.datastax.driver.core.utils.Bytes
 
 import com.rbmhtechnology.eventuate.DurableEvent
-import com.rbmhtechnology.eventuate.log.TimeTracker
+import com.rbmhtechnology.eventuate.log.EventLogClock
 
 import scala.concurrent.Future
 import scala.util._
@@ -103,7 +103,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
    * Settings used by the Cassandra storage backend. Closed when the `ActorSystem` of
    * this extension terminates.
    */
-  private[eventuate] val settings = new CassandraSettings(system.settings.config)
+  private[eventuate] val settings = new CassandraEventLogSettings(system.settings.config)
 
   /**
    * Serializer used by the Cassandra storage backend. Closed when the `ActorSystem` of
@@ -112,9 +112,9 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   private[eventuate] val serializer = SerializationExtension(system)
 
   private val logging = Logging(system, this)
-  private val statements = new CassandraEventStatements with CassandraAggregateEventStatements with CassandraTimeTrackerStatements with CassandraReplicationProgressStatements {
+  private val statements = new CassandraEventStatements with CassandraAggregateEventStatements with CassandraEventLogClockStatements with CassandraReplicationProgressStatements {
 
-    override def settings: CassandraSettings =
+    override def settings: CassandraEventLogSettings =
       extension.settings
   }
 
@@ -129,7 +129,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
     if (keyspaceAutoCreate)
       _session.execute(createKeySpaceStatement)
 
-    _session.execute(createTimeTrackerTableStatement)
+    _session.execute(createEventLogClockTableStatement)
     _session.execute(createReplicationProgressTableStatement)
   } match {
     case Success(_) => logging.info("Cassandra extension initialized")
@@ -172,9 +172,6 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   /**
    * Dispatcher for event log and index reads.
    */
-  private[eventuate] implicit val readDispatcher =
-    system.dispatchers.lookup("eventuate.log.cassandra.read-dispatcher")
-
   private[eventuate] def createEventTable(logId: String): Unit =
     session.execute(createEventTableStatement(logId))
 
@@ -193,11 +190,11 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   private[eventuate] def prepareReadAggregateEvents(logId: String): PreparedStatement =
     session.prepare(readAggregateEventsStatement(logId)).setConsistencyLevel(readConsistency)
 
-  private[eventuate] val preparedWriteTimeTrackerStatement: PreparedStatement =
-    session.prepare(writeTimeTrackerStatement).setConsistencyLevel(writeConsistency)
+  private[eventuate] val preparedWriteEventLogClockStatement: PreparedStatement =
+    session.prepare(writeEventLogClockStatement).setConsistencyLevel(writeConsistency)
 
-  private[eventuate] val preparedReadTimeTrackerStatement: PreparedStatement =
-    session.prepare(readTimeTrackerStatement).setConsistencyLevel(readConsistency)
+  private[eventuate] val preparedReadEventLogClockStatement: PreparedStatement =
+    session.prepare(readEventLogClockStatement).setConsistencyLevel(readConsistency)
 
   private[eventuate] val preparedWriteReplicationProgressStatement: PreparedStatement =
     session.prepare(writeReplicationProgressStatement).setConsistencyLevel(writeConsistency)
@@ -214,17 +211,19 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   private[eventuate] def eventFromByteBuffer(buffer: ByteBuffer): DurableEvent =
     serializer.deserialize(Bytes.getArray(buffer), classOf[DurableEvent]).get
 
-  private[eventuate] def timeTrackerToByteBuffer(tracker: TimeTracker): ByteBuffer =
-    ByteBuffer.wrap(serializer.serialize(tracker).get)
+  private[eventuate] def clockToByteBuffer(clock: EventLogClock): ByteBuffer =
+    ByteBuffer.wrap(serializer.serialize(clock).get)
 
-  private[eventuate] def timeTrackerFromByteBuffer(buffer: ByteBuffer): TimeTracker =
-    serializer.deserialize(Bytes.getArray(buffer), classOf[TimeTracker]).get
+  private[eventuate] def clockFromByteBuffer(buffer: ByteBuffer): EventLogClock =
+    serializer.deserialize(Bytes.getArray(buffer), classOf[EventLogClock]).get
 
   private[eventuate] def executeBatch(body: BatchStatement => Unit): Unit =
     session.execute(withBatch(body))
 
-  private[eventuate] def executeBatchAsync(body: BatchStatement => Unit): Future[Unit] =
+  private[eventuate] def executeBatchAsync(body: BatchStatement => Unit): Future[Unit] = {
+    implicit val dispatcher = system.dispatchers.defaultGlobalDispatcher
     session.executeAsync(withBatch(body)).map(_ => ())
+  }
 
   private def withBatch(body: BatchStatement => Unit): BatchStatement = {
     val batch = new BatchStatement().setConsistencyLevel(writeConsistency).asInstanceOf[BatchStatement]

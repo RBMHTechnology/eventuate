@@ -19,12 +19,12 @@ package com.rbmhtechnology.eventuate
 import java.util.concurrent.TimeUnit
 
 import akka.actor._
-import akka.pattern.{ after, ask }
+import akka.pattern.ask
 import akka.util.Timeout
 
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
-import com.rbmhtechnology.eventuate.log.TimeTracker
+import com.rbmhtechnology.eventuate.log.EventLogClock
 import com.typesafe.config.Config
 
 import scala.collection.immutable.Seq
@@ -51,9 +51,9 @@ private class RecoverySettings(config: Config) {
  * @param logName Common name of the linked local and remote event log.
  * @param localLogId Local event log id.
  * @param remoteLogId Remote event log id.
- * @param tracker Time tracker value of the local event log at the beginning of disaster recovery.
+ * @param clock Local event log clock at the beginning of disaster recovery.
  */
-private case class RecoveryLink(logName: String, localLogId: String, remoteLogId: String, tracker: TimeTracker)
+private case class RecoveryLink(logName: String, localLogId: String, remoteLogId: String, clock: EventLogClock)
 
 /**
  * Provides disaster recovery primitives.
@@ -65,7 +65,6 @@ private case class RecoveryLink(logName: String, localLogId: String, remoteLogId
 private class Recovery(endpoint: ReplicationEndpoint) {
   private val settings = new RecoverySettings(endpoint.system.settings.config)
 
-  import Recovery._
   import settings._
   import endpoint.system.dispatcher
 
@@ -73,11 +72,11 @@ private class Recovery(endpoint: ReplicationEndpoint) {
   private implicit val scheduler = endpoint.system.scheduler
 
   /**
-   * Reads the time trackers from local event logs.
+   * Reads the clocks from local event logs.
    */
-  def readTimeTrackers: Future[Map[String, TimeTracker]] = {
-    println(s"[recovery of ${endpoint.id}] Read time trackers from local event logs ...")
-    Future.sequence(endpoint.logNames.map(name => readTimeTracker(endpoint.logs(name)).map(name -> _))).map(_.toMap)
+  def readEventLogClocks: Future[Map[String, EventLogClock]] = {
+    println(s"[recovery of ${endpoint.id}] Read clocks from local event logs ...")
+    Future.sequence(endpoint.logNames.map(name => readEventLogClock(endpoint.logs(name)).map(name -> _))).map(_.toMap)
   }
 
   /**
@@ -97,27 +96,22 @@ private class Recovery(endpoint: ReplicationEndpoint) {
     Future.sequence(links.map(deleteSnapshots)).map(_ => ())
   }
 
-  def readTimeTracker(targetLog: ActorRef): Future[TimeTracker] =
-    targetLog.ask(GetTimeTracker).mapTo[GetTimeTrackerSuccess].map(_.tracker)
+  def readEventLogClock(targetLog: ActorRef): Future[EventLogClock] =
+    targetLog.ask(GetEventLogClock).mapTo[GetEventLogClockSuccess].map(_.clock)
 
   def readEndpointInfo(targetAcceptor: ActorSelection): Future[ReplicationEndpointInfo] =
-    retry(targetAcceptor.ask(GetReplicationEndpointInfo), remoteOperationRetryDelay, remoteOperationRetryMax).mapTo[GetReplicationEndpointInfoSuccess].map(_.info)
+    Retry(targetAcceptor.ask(GetReplicationEndpointInfo), remoteOperationRetryDelay, remoteOperationRetryMax).mapTo[GetReplicationEndpointInfoSuccess].map(_.info)
 
   def deleteSnapshots(link: RecoveryLink): Future[Unit] =
-    endpoint.logs(link.logName).ask(DeleteSnapshots(link.tracker.sequenceNr + 1L))(Timeout(snapshotDeletionTimeout)).flatMap {
+    endpoint.logs(link.logName).ask(DeleteSnapshots(link.clock.sequenceNr + 1L))(Timeout(snapshotDeletionTimeout)).flatMap {
       case DeleteSnapshotsSuccess    => Future.successful(())
       case DeleteSnapshotsFailure(e) => Future.failed(e)
     }
 
-  def recoveryLinks(endpointInfos: Set[ReplicationEndpointInfo], timeTrackers: Map[String, TimeTracker]) = for {
+  def recoveryLinks(endpointInfos: Set[ReplicationEndpointInfo], clocks: Map[String, EventLogClock]) = for {
     endpointInfo <- endpointInfos
     logName <- endpoint.commonLogNames(endpointInfo)
-  } yield RecoveryLink(logName, endpoint.logId(logName), endpointInfo.logId(logName), timeTrackers(logName))
-}
-
-private object Recovery {
-  def retry[T](async: => Future[T], delay: FiniteDuration, retries: Int)(implicit ec: ExecutionContext, s: Scheduler): Future[T] =
-    async recoverWith { case _ if retries > 0 => after(delay, s)(retry(async, delay, retries - 1)(ec, s)) }
+  } yield RecoveryLink(logName, endpoint.logId(logName), endpointInfo.logId(logName), clocks(logName))
 }
 
 /**
@@ -219,11 +213,11 @@ private class RecoveryActor(endpointId: String, link: RecoveryLink) extends Acto
   import Acceptor._
 
   def receive = {
-    case r: ReplicationRead if r.fromSequenceNr > link.tracker.sequenceNr + 1L =>
+    case r: ReplicationRead if r.fromSequenceNr > link.clock.sequenceNr + 1L =>
       println(s"[recovery of ${endpointId}] Trigger update of inconsistent replication progress at ${link.remoteLogId} ...")
-      sender() ! ReplicationReadSuccess(Seq(), link.tracker.sequenceNr, link.remoteLogId, link.tracker.vectorTime)
+      sender() ! ReplicationReadSuccess(Seq(), link.clock.sequenceNr, link.remoteLogId, link.clock.versionVector)
     case r: ReplicationRead =>
-      sender() ! ReplicationReadSuccess(Seq(), r.fromSequenceNr - 1L, link.remoteLogId, link.tracker.vectorTime)
+      sender() ! ReplicationReadSuccess(Seq(), r.fromSequenceNr - 1L, link.remoteLogId, link.clock.versionVector)
       context.parent ! RecoveryStepCompleted(link)
   }
 }

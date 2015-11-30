@@ -22,21 +22,17 @@ import scala.collection.JavaConverters._
 import scala.concurrent._
 
 private[eventuate] class CassandraReplicationProgressStore(cassandra: Cassandra, logId: String) {
-  def readReplicationProgressesAsync: Future[Map[String, Long]] = {
-    import cassandra.readDispatcher
+  def readReplicationProgressesAsync(implicit executor: ExecutionContext): Future[Map[String, Long]] =
     cassandra.session.executeAsync(cassandra.preparedReadReplicationProgressesStatement.bind(logId)).map { resultSet =>
       resultSet.iterator().asScala.foldLeft(Map.empty[String, Long]) {
         case (acc, row) => acc + (row.getString("source_log_id") -> row.getLong("source_log_read_pos"))
       }
     }
-  }
 
-  def readReplicationProgressAsync(sourceLogId: String): Future[Long] = {
-    import cassandra.readDispatcher
+  def readReplicationProgressAsync(sourceLogId: String)(implicit executor: ExecutionContext): Future[Long] =
     cassandra.session.executeAsync(cassandra.preparedReadReplicationProgressStatement.bind(logId, sourceLogId)).map { resultSet =>
       if (resultSet.isExhausted) 0L else resultSet.one().getLong("source_log_read_pos")
     }
-  }
 
   def writeReplicationProgressAsync(sourceLogId: String, progress: Long)(implicit executor: ExecutionContext): Future[Unit] =
     cassandra.session.executeAsync(cassandra.preparedWriteReplicationProgressStatement.bind(logId, sourceLogId, progress: JLong)).map(_ => ())

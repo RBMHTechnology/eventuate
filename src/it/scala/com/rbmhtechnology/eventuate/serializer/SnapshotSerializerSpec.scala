@@ -22,7 +22,7 @@ import akka.testkit.TestProbe
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.ConfirmedDelivery.DeliveryAttempt
-import com.rbmhtechnology.eventuate.log.TimeTracker
+import com.rbmhtechnology.eventuate.log.EventLogClock
 import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.{event, ExamplePayload}
 
 import org.scalatest._
@@ -32,8 +32,8 @@ object SnapshotSerializerSpec {
     def nodeTuples = tree.nodes.map { node => (node.versioned, node.rejected) }
   }
 
-  val tracker =
-    TimeTracker(sequenceNr = 17L, vectorTime = VectorTime("A" -> 77L))
+  val clock =
+    EventLogClock(sequenceNr = 17L, versionVector = VectorTime("A" -> 77L))
 
   def last(payload: Any) =
     event.copy(payload = payload)
@@ -119,13 +119,13 @@ class SnapshotSerializerSpec extends WordSpec with Matchers with BeforeAndAfterA
 
       actual.nodeTuples should be(expected.nodeTuples)
     }
-    "support time tracker serialization" in {
+    "support event log clock serialization" in {
       val serialization = SerializationExtension(system1)
 
-      val initial = tracker
+      val initial = clock
       val expected = initial
 
-      serialization.deserialize(serialization.serialize(initial).get, classOf[TimeTracker]).get should be(expected)
+      serialization.deserialize(serialization.serialize(initial).get, classOf[EventLogClock]).get should be(expected)
     }
   }
 }

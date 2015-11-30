@@ -24,7 +24,7 @@ import akka.testkit.TestProbe
 import akka.util.Timeout
 
 import com.rbmhtechnology.eventuate.log._
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbSettings
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSettings
 import com.rbmhtechnology.eventuate.utilities._
 
 import org.apache.commons.io.FileUtils
@@ -57,7 +57,7 @@ object RecoverySpec {
     """.stripMargin
 
   def rootDirectory(target: ReplicationTarget): File =
-    new File(new LeveldbSettings(target.endpoint.system).rootDir)
+    new File(new LeveldbEventLogSettings(target.endpoint.system.settings.config).rootDir)
 
   def logDirectory(target: ReplicationTarget): File = {
     implicit val timeout = Timeout(3.seconds)

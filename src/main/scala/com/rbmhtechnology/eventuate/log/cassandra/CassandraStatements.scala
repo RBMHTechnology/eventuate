@@ -17,7 +17,7 @@
 package com.rbmhtechnology.eventuate.log.cassandra
 
 private[eventuate] trait CassandraStatements {
-  def settings: CassandraSettings
+  def settings: CassandraEventLogSettings
 
   def createKeySpaceStatement = s"""
       CREATE KEYSPACE IF NOT EXISTS ${settings.keyspace}
@@ -80,25 +80,25 @@ private[eventuate] trait CassandraAggregateEventStatements extends CassandraStat
   def aggregateEventTable(logId: String) = s"${table(logId)}_agg"
 }
 
-private[eventuate] trait CassandraTimeTrackerStatements extends CassandraStatements {
-  def createTimeTrackerTableStatement = s"""
-      CREATE TABLE IF NOT EXISTS ${timeTrackerTable} (
+private[eventuate] trait CassandraEventLogClockStatements extends CassandraStatements {
+  def createEventLogClockTableStatement = s"""
+      CREATE TABLE IF NOT EXISTS ${eventLogClockTable} (
         log_id text,
-        time_tracker blob,
+        clock blob,
         PRIMARY KEY (log_id))
     """
 
-  def writeTimeTrackerStatement = s"""
-      INSERT INTO ${timeTrackerTable} (log_id, time_tracker)
+  def writeEventLogClockStatement = s"""
+      INSERT INTO ${eventLogClockTable} (log_id, clock)
       VALUES (?, ?)
     """
 
-  def readTimeTrackerStatement = s"""
-      SELECT * FROM ${timeTrackerTable} WHERE
+  def readEventLogClockStatement = s"""
+      SELECT * FROM ${eventLogClockTable} WHERE
         log_id = ?
     """
 
-  def timeTrackerTable = table("tt")
+  def eventLogClockTable = table("elc")
 }
 
 private[eventuate] trait CassandraReplicationProgressStatements extends CassandraStatements {

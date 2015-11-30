@@ -54,8 +54,8 @@ message VersionedFormat {
   optional PayloadFormat payload = 3;
 }
 
-message TimeTrackerFormat {
+message EventLogClockFormat {
   optional int64 sequenceNr = 1;
-  optional VectorTimeFormat vectorTime = 2;
+  optional VectorTimeFormat versionVector = 2;
 }
 

@@ -18,7 +18,7 @@ Events captured at one location are stored in a local event log and asynchronous
 
 Individual locations remain available for writes during inter-location network partitions. Events that have been captured locally during a network partition are replicated later when the partition heals. Storing events locally and replicating them later can also be useful for applications distributed across temporarily connected devices, for example.
 
-Storage backends at individual locations are pluggable (see also :ref:`current-limitations`). A location running on a mobile device, for example, could choose to write events to the local filesystem whereas a location running in a data center may want to write events to a Cassandra_ cluster. Asynchronous event replication across locations is independent of the storage technologies used at individual locations. A distributed Eventuate application may use different storage backends at different locations.
+Storage backends at individual locations are pluggable. A location running on a mobile device, for example, could choose to write events to the local filesystem whereas a location running in a data center may want to write events to a Cassandra_ cluster. Asynchronous event replication across locations is independent of the storage technologies used at individual locations. A distributed Eventuate application may use different storage backends at different locations.
 
 .. [#] See also `Event sourcing at global scale`_. In this article, the term *site* is synonymous with *location*.
 .. [#] Wyatt Lloyd et al, `Don’t settle for Eventual`_: Scalable Causal Consistency for Wide-Area Storage with COPS.

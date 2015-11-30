@@ -17,7 +17,6 @@
 package com.rbmhtechnology.eventuate.serializer
 
 import akka.actor.ActorRef
-import akka.testkit.TestProbe
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._

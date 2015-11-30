@@ -18,12 +18,13 @@ package com.rbmhtechnology.eventuate.log
 
 import akka.actor._
 
-import com.rbmhtechnology.eventuate.EventsourcingProtocol
+import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
-import com.rbmhtechnology.eventuate.ReplicationProtocol
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 
 import com.typesafe.config.Config
+
+import scala.collection.immutable.Seq
 
 private[eventuate] class BatchingSettings(config: Config) {
   val batchSizeLimit = config.getInt("eventuate.log.batching.batch-size-limit")
@@ -42,7 +43,7 @@ private[eventuate] class BatchingSettings(config: Config) {
  * @param eventLogProps configuration object of the wrapped event log actor. The wrapped event log actor is
  *                      created as child actor of this wrapper.
  */
-class BatchingEventLog(eventLogProps: Props) extends Actor {
+class BatchingLayer(eventLogProps: Props) extends Actor {
   val eventLog: ActorRef =
     context.actorOf(eventLogProps)
 
@@ -60,10 +61,33 @@ class BatchingEventLog(eventLogProps: Props) extends Actor {
   }
 }
 
-private class EmissionBatcher(eventLog: ActorRef) extends Actor {
+private trait Batcher[A <: DurableEventBatch] extends Actor {
   val settings = new BatchingSettings(context.system.settings.config)
-  var batch: Vector[Write] = Vector.empty
+  var batch: Vector[A] = Vector.empty
 
+  def eventLog: ActorRef
+  def writeRequest(batches: Seq[A]): Any
+  def idle: Receive
+
+  def receive = idle
+
+  @annotation.tailrec
+  final def writeAll(): Unit =
+    if (writeBatch()) writeAll()
+
+  final def writeBatch(): Boolean = if (batch.nonEmpty) {
+    var num = 0
+    val (w, r) = batch.span { w =>
+      num += w.size
+      num <= settings.batchSizeLimit || num == w.size
+    }
+    eventLog ! writeRequest(w)
+    batch = r
+    batch.nonEmpty
+  } else false
+}
+
+private class EmissionBatcher(val eventLog: ActorRef) extends Batcher[Write] {
   val idle: Receive = {
     case w: Write =>
       batch = batch :+ w
@@ -88,31 +112,14 @@ private class EmissionBatcher(eventLog: ActorRef) extends Actor {
       eventLog forward cmd
   }
 
-  def receive = idle
-
-  @annotation.tailrec
-  private def writeAll(): Unit =
-    if (writeBatch()) writeAll()
-
-  private def writeBatch(): Boolean = if (batch.nonEmpty) {
-    var num = 0
-    val (w, r) = batch.span { w =>
-      num += w.events.size
-      num <= settings.batchSizeLimit || num == w.events.size
-    }
-    eventLog ! WriteN(w)
-    batch = r
-    batch.nonEmpty
-  } else false
+  def writeRequest(batches: Seq[Write]) =
+    WriteN(batches)
 }
 
-private class ReplicationBatcher(eventLog: ActorRef) extends Actor {
-  val settings = new BatchingSettings(context.system.settings.config)
-  var batch: Vector[ReplicationWrite] = Vector.empty
-
+private class ReplicationBatcher(val eventLog: ActorRef) extends Batcher[ReplicationWrite] {
   val idle: Receive = {
     case w: ReplicationWrite =>
-      batch = batch :+ w.copy(initiator = sender())
+      batch = batch :+ w
       writeBatch()
       context.become(writing)
   }
@@ -126,16 +133,6 @@ private class ReplicationBatcher(eventLog: ActorRef) extends Actor {
       writeBatch()
   }
 
-  def receive = idle
-
-  private def writeBatch(): Boolean = if (batch.nonEmpty) {
-    var num = 0
-    val (w, r) = batch.span { w =>
-      num += w.events.size
-      num <= settings.batchSizeLimit || num == w.events.size
-    }
-    eventLog ! ReplicationWriteN(w)
-    batch = r
-    batch.nonEmpty
-  } else false
+  def writeRequest(batches: Seq[ReplicationWrite]) =
+    ReplicationWriteN(batches)
 }

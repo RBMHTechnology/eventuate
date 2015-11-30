@@ -24,7 +24,7 @@ Eventuate applications store events in one or more event logs. An event log can 
 
 Writes to a local event log are not coordinated with other locations. Without coordination, the strongest global ordering guarantee for a *replicated event log* is causal ordering which is tracked with :ref:`vector-clocks`. Events in a local event log have a total order that is location-specific but consistent with causal order at all locations. Relaxing the global ordering guarantee to causal ordering allows local event logs to remain available for writes during inter-location network partitions.
 
-:ref:`arch-fig1` shows a replicated event log with an acyclic replication network. Should location 1 become unavailable, locations 2 and 3 are partitioned and cannot continue to exchange events. To prevent that situation, a replicated event log may also have a cyclic replication network as shown in :ref:`arch-fig2` (see also :ref:`current-limitations`).
+:ref:`arch-fig1` shows a replicated event log with an acyclic replication network. Should location 1 become unavailable, locations 2 and 3 are partitioned and cannot continue to exchange events. To prevent that situation, a replicated event log may also have a cyclic replication network as shown in :ref:`arch-fig2`.
 
 .. _arch-fig2:
 
@@ -44,7 +44,7 @@ A replication endpoint can also manage more than one local event log. Local even
 
    Three replicated event logs. Log X (blue) is replicated across locations 1, 2 and 3. Log Y (red) is replicated across locations 1 and 2 and log Z (green) is replicated across locations 1 and 3.
 
-Event storage backends at individual locations are pluggable (see also :ref:`current-limitations`). A location that requires stronger durability guarantees should use a storage backend that synchronously replicates events within that location (like the :ref:`cassandra-storage-backend`), others may want to use a more lightweight, non-replicated storage backend in case of weaker durability requirements (like the :ref:`leveldb-storage-backend`).
+Event storage backends at individual locations are pluggable. A location that requires stronger durability guarantees should use a storage backend that synchronously replicates events within that location (like the :ref:`cassandra-storage-backend`), others may want to use a more lightweight, non-replicated storage backend in case of weaker durability requirements (like the :ref:`leveldb-storage-backend`). Applications can also integrate :ref:`custom-storage-backends` into Eventuate by implementing a storage provider interface.
 
 Event replication across locations is reliable. Should there be a network partition or a location crash, replication automatically resumes when the partition heals or the crashed location recovers. Built-in failure detectors inform applications about (un)availability of peer locations.
 
