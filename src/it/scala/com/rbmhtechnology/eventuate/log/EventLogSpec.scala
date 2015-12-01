@@ -16,8 +16,6 @@
 
 package com.rbmhtechnology.eventuate.log
 
-import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
-
 import scala.collection.immutable.Seq
 
 import akka.actor._
@@ -26,6 +24,7 @@ import akka.testkit.{TestProbe, TestKit}
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.DurableEvent._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
+import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 import com.rbmhtechnology.eventuate.log.EventLogLifecycleCassandra.TestFailureSpec
 import com.rbmhtechnology.eventuate.log.cassandra._
@@ -51,7 +50,7 @@ object EventLogSpec {
       |eventuate.log.leveldb.index-update-limit = 6
       |eventuate.log.cassandra.default-port = 9142
       |eventuate.log.cassandra.index-update-limit = 3
-      |eventuate.log.cassandra.init-retry-backoff = 1s
+      |eventuate.log.cassandra.init-retry-delay = 1s
     """.stripMargin)
 
   val emitterIdA = "A"
@@ -116,8 +115,8 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfter
   }
 
   def currentSequenceNr: Long = {
-    log.tell(GetTimeTracker, requestorProbe.ref)
-    requestorProbe.expectMsgClass(classOf[GetTimeTrackerSuccess]).tracker.sequenceNr
+    log.tell(GetEventLogClock, requestorProbe.ref)
+    requestorProbe.expectMsgClass(classOf[GetEventLogClockSuccess]).clock.sequenceNr
   }
 
   def expectedEmittedEvents(events: Seq[DurableEvent], offset: Long = 0): Seq[DurableEvent] =
@@ -509,11 +508,11 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
     }
     "recover the current sequence number on (re)start" in {
       generateEmittedEvents()
-      log.tell(GetTimeTracker, requestorProbe.ref)
-      requestorProbe.expectMsgType[GetTimeTrackerSuccess].tracker.sequenceNr should be(3L)
+      log.tell(GetEventLogClock, requestorProbe.ref)
+      requestorProbe.expectMsgType[GetEventLogClockSuccess].clock.sequenceNr should be(3L)
       log ! "boom"
-      log.tell(GetTimeTracker, requestorProbe.ref)
-      requestorProbe.expectMsgType[GetTimeTrackerSuccess].tracker.sequenceNr should be(3L)
+      log.tell(GetEventLogClock, requestorProbe.ref)
+      requestorProbe.expectMsgType[GetEventLogClockSuccess].clock.sequenceNr should be(3L)
     }
     "recover the replication progress on (re)start" in {
       log.tell(SetReplicationProgress("x", 17), requestorProbe.ref)
@@ -600,7 +599,7 @@ class EventLogSpecCassandra extends EventLogSpec with EventLogLifecycleCassandra
     super.beforeEach()
 
     probe = TestProbe()
-    indexProbe.expectMsg(UpdateIndexSuccess(TimeTracker(sequenceNr = 0L), 0))
+    indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 0L), 0))
   }
 
   def expectReplay(aggregateId: Option[String], payloads: String *): Unit =
@@ -633,37 +632,37 @@ class EventLogSpecCassandra extends EventLogSpec with EventLogLifecycleCassandra
     "run an index update on initialization" in {
       writeEmittedEvents(List(event("a"), event("b")))
       log ! "boom"
-      indexProbe.expectMsg(UpdateIndexSuccess(TimeTracker(sequenceNr = 2L, vectorTime = timestamp(2L)), 1))
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 2L, versionVector = timestamp(2L)), 1))
     }
     "retry an index update on initialization if sequence number read fails" in {
       val failureLog = createLog(TestFailureSpec(failOnSequenceNrRead = true), indexProbe.ref)
-      indexProbe.expectMsg(ReadTimeTrackerFailure(boom))
-      indexProbe.expectMsg(UpdateIndexSuccess(TimeTracker(sequenceNr = 0L, vectorTime = VectorTime()), 0))
+      indexProbe.expectMsg(ReadClockFailure(boom))
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 0L, versionVector = VectorTime()), 0))
     }
     "retry an index update on initialization if index update fails" in {
       val failureLog = createLog(TestFailureSpec(failBeforeIndexIncrementWrite = true), indexProbe.ref)
       indexProbe.expectMsg(UpdateIndexFailure(boom))
-      indexProbe.expectMsg(UpdateIndexSuccess(TimeTracker(sequenceNr = 0L, vectorTime = VectorTime()), 0))
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 0L, versionVector = VectorTime()), 0))
       writeEmittedEvents(List(event("a"), event("b")), failureLog)
       failureLog ! "boom"
       indexProbe.expectMsg(UpdateIndexFailure(boom))
-      indexProbe.expectMsg(UpdateIndexSuccess(TimeTracker(sequenceNr = 2L, vectorTime = timestamp(2L)), 1))
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 2L, versionVector = timestamp(2L)), 1))
     }
     "run an index update after reaching the update limit with a single event batch" in {
       writeEmittedEvents(List(event("a"), event("b"), event("c"), event("d")))
-      indexProbe.expectMsg(UpdateIndexSuccess(TimeTracker(sequenceNr = 4L, vectorTime = timestamp(4L)), 2))
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 4L, versionVector = timestamp(4L)), 2))
     }
     "run an index update after reaching the update limit with a several event batches" in {
       writeEmittedEvents(List(event("a"), event("b")))
       writeEmittedEvents(List(event("c"), event("d")))
-      indexProbe.expectMsg(UpdateIndexSuccess(TimeTracker(sequenceNr = 4L, vectorTime = timestamp(4L)), 2))
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 4L, versionVector = timestamp(4L)), 2))
     }
     "run an index update on initialization and after reaching the update limit" in {
       writeEmittedEvents(List(event("a"), event("b")))
       log ! "boom"
-      indexProbe.expectMsg(UpdateIndexSuccess(TimeTracker(sequenceNr = 2L, vectorTime = timestamp(2L)), 1))
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 2L, versionVector = timestamp(2L)), 1))
       writeEmittedEvents(List(event("d"), event("e"), event("f")))
-      indexProbe.expectMsg(UpdateIndexSuccess(TimeTracker(sequenceNr = 5L, vectorTime = timestamp(5L)), 1))
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 5L, versionVector = timestamp(5L)), 1))
     }
     "return the initial value for a replication progress" in {
       log.tell(GetReplicationProgress(remoteLogId), probe.ref)
@@ -726,7 +725,7 @@ class EventLogSpecCassandra extends EventLogSpec with EventLogLifecycleCassandra
         event("b", Some("a1")),
         event("c", Some("a1"))))
 
-      indexProbe.expectMsg(UpdateIndexSuccess(TimeTracker(sequenceNr = 3L, vectorTime = timestamp(3L)), 1))
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 3L, versionVector = timestamp(3L)), 1))
 
       writeEmittedEvents(List(
         event("d", Some("a1"))))
@@ -739,7 +738,7 @@ class EventLogSpecCassandra extends EventLogSpec with EventLogLifecycleCassandra
         event("b", Some("a1")),
         event("c", Some("a1"))))
 
-      indexProbe.expectMsg(UpdateIndexSuccess(TimeTracker(sequenceNr = 3L, vectorTime = timestamp(3L)), 1))
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 3L, versionVector = timestamp(3L)), 1))
 
       writeEmittedEvents(List(
         event("d", Some("a1"))))
@@ -752,7 +751,7 @@ class EventLogSpecCassandra extends EventLogSpec with EventLogLifecycleCassandra
         event("b", Some("a1")),
         event("c", Some("a1"))))
 
-      indexProbe.expectMsg(UpdateIndexSuccess(TimeTracker(sequenceNr = 3L, vectorTime = timestamp(3L)), 1))
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 3L, versionVector = timestamp(3L)), 1))
 
       writeEmittedEvents(List(
         event("d", Some("a1"))))

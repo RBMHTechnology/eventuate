@@ -17,7 +17,6 @@
 package com.rbmhtechnology.eventuate.crdt
 
 import akka.actor._
-import akka.remote.testconductor.RoleName
 import akka.remote.testkit._
 import akka.remote.transport.ThrottlerTransportAdapter.Direction
 import akka.testkit.TestProbe

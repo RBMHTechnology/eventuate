@@ -16,12 +16,6 @@
 
 package com.rbmhtechnology.eventuate
 
-import java.util.function.{ Function => JFunction }
-
-import scala.collection.JavaConverters._
-
-import akka.actor._
-
 object ReplicationConnection {
   /**
    * Default name of the remote actor system to connect to.

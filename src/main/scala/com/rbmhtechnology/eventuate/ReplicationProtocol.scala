@@ -18,7 +18,7 @@ package com.rbmhtechnology.eventuate
 
 import akka.actor._
 
-import com.rbmhtechnology.eventuate.log.TimeTracker
+import com.rbmhtechnology.eventuate.log.EventLogClock
 
 import scala.collection.immutable.Seq
 
@@ -67,14 +67,14 @@ object ReplicationProtocol {
   private[eventuate] case object ReplicationDue extends Format
 
   /**
-   * Requests the time tracker from an event log.
+   * Requests the clock from an event log.
    */
-  private[eventuate] case object GetTimeTracker
+  private[eventuate] case object GetEventLogClock
 
   /**
-   * Success reply after a [[GetTimeTracker]].
+   * Success reply after a [[GetEventLogClock]].
    */
-  private[eventuate] case class GetTimeTrackerSuccess(tracker: TimeTracker)
+  private[eventuate] case class GetEventLogClockSuccess(clock: EventLogClock)
 
   /**
    * Requests all replication progresses from a log.
@@ -99,7 +99,7 @@ object ReplicationProtocol {
   /**
    * Success reply after a [[GetReplicationProgress]].
    */
-  case class GetReplicationProgressSuccess(sourceLogId: String, storedReplicationProgress: Long, currentTargetVectorTime: VectorTime)
+  case class GetReplicationProgressSuccess(sourceLogId: String, storedReplicationProgress: Long, currentTargetVersionVector: VectorTime)
 
   /**
    * Failure reply after a [[GetReplicationProgress]].
@@ -131,7 +131,7 @@ object ReplicationProtocol {
    * Instructs a source log to read up to `maxNumEvents` starting `fromSequenceNr`
    * and applying the given replication `filter`.
    */
-  case class ReplicationRead(fromSequenceNr: Long, maxNumEvents: Int, filter: ReplicationFilter, targetLogId: String, replicator: ActorRef, currentTargetVectorTime: VectorTime) extends Format
+  case class ReplicationRead(fromSequenceNr: Long, maxNumEvents: Int, filter: ReplicationFilter, targetLogId: String, replicator: ActorRef, currentTargetVersionVector: VectorTime) extends Format
 
   /**
    * Success reply after a [[ReplicationRead]].
@@ -141,7 +141,7 @@ object ReplicationProtocol {
    *                            or equal to the sequence number of the last read
    *                            event (if any).
    */
-  case class ReplicationReadSuccess(events: Seq[DurableEvent], replicationProgress: Long, targetLogId: String, currentSourceVectorTime: VectorTime) extends Format
+  case class ReplicationReadSuccess(events: Seq[DurableEvent], replicationProgress: Long, targetLogId: String, currentSourceVersionVector: VectorTime) extends DurableEventBatch with Format
 
   /**
    * Failure reply after a [[ReplicationRead]].
@@ -162,7 +162,7 @@ object ReplicationProtocol {
    * Instructs a target log to write replicated `events` from the source log identified by
    * `sourceLogId` along with the last read position in the source log (`replicationProgress`).
    */
-  case class ReplicationWrite(events: Seq[DurableEvent], sourceLogId: String, replicationProgress: Long, currentSourceVectorTime: VectorTime, initiator: ActorRef = null)
+  case class ReplicationWrite(events: Seq[DurableEvent], sourceLogId: String, replicationProgress: Long, currentSourceVersionVector: VectorTime, initiator: ActorRef = null) extends DurableEventBatch
 
   /**
    * Success reply after a [[ReplicationWrite]].
@@ -170,7 +170,7 @@ object ReplicationProtocol {
    * @param num Number of events actually replicated.
    * @param storedReplicationProgress Last source log read position stored in the target log.
    */
-  case class ReplicationWriteSuccess(num: Int, storedReplicationProgress: Long, currentTargetVectorTime: VectorTime)
+  case class ReplicationWriteSuccess(num: Int, storedReplicationProgress: Long, currentTargetVersionVector: VectorTime)
 
   /**
    * Failure reply after a [[ReplicationWrite]].

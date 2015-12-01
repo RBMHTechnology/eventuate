@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.eventuate.log.leveldb
+package com.rbmhtechnology.eventuate
 
-import akka.actor.ActorSystem
-import akka.dispatch.MessageDispatcher
+import akka.actor.Scheduler
+import akka.pattern.after
 
-private[eventuate] class LeveldbSettings(system: ActorSystem) {
-  implicit val readDispatcher: MessageDispatcher =
-    system.dispatchers.lookup("eventuate.log.leveldb.read-dispatcher")
+import scala.concurrent._
+import scala.concurrent.duration.FiniteDuration
 
-  val rootDir: String =
-    system.settings.config.getString("eventuate.log.leveldb.dir")
-
-  val fsync: Boolean =
-    system.settings.config.getBoolean("eventuate.log.leveldb.fsync")
-
-  val stateSnapshotLimit: Int =
-    system.settings.config.getInt("eventuate.log.leveldb.state-snapshot-limit")
+private object Retry {
+  def apply[T](async: => Future[T], delay: FiniteDuration, retries: Int)(implicit ec: ExecutionContext, s: Scheduler): Future[T] =
+    async recoverWith { case _ if retries > 0 => after(delay, s)(apply(async, delay, retries - 1)(ec, s)) }
 }

@@ -206,8 +206,8 @@ class ReplicationEndpoint(val id: String, val logNames: Set[String], val logFact
 
     val phase1 = for {
       infos <- recovery.readEndpointInfos
-      trackers <- recovery.readTimeTrackers
-      links = recovery.recoveryLinks(infos, trackers)
+      clocks <- recovery.readEventLogClocks
+      links = recovery.recoveryLinks(infos, clocks)
       _ <- recovery.deleteSnapshots(links)
     } yield links
 
@@ -350,9 +350,9 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
   var readSchedule: Option[Cancellable] = None
 
   val fetching: Receive = {
-    case GetReplicationProgressSuccess(_, storedReplicationProgress, currentTargetVectorTime) =>
+    case GetReplicationProgressSuccess(_, storedReplicationProgress, currentTargetVersionVector) =>
       context.become(reading)
-      read(storedReplicationProgress, currentTargetVectorTime)
+      read(storedReplicationProgress, currentTargetVersionVector)
     case GetReplicationProgressFailure(cause) =>
       log.error(cause, s"replication progress read failed")
       scheduleFetch()
@@ -366,10 +366,10 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
   }
 
   val reading: Receive = {
-    case ReplicationReadSuccess(events, replicationProgress, _, currentSourceVectorTime) =>
+    case ReplicationReadSuccess(events, replicationProgress, _, currentSourceVersionVector) =>
       detector ! Tick
       context.become(writing)
-      write(events, replicationProgress, currentSourceVectorTime)
+      write(events, replicationProgress, currentSourceVersionVector)
     case ReplicationReadFailure(cause, _) =>
       log.error(s"replication read failed: $cause")
       context.become(idle)
@@ -380,9 +380,9 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
     case ReplicationWriteSuccess(num, _, _) if num == 0 =>
       context.become(idle)
       scheduleRead()
-    case ReplicationWriteSuccess(num, storedReplicationProgress, currentTargetVectorTime) =>
+    case ReplicationWriteSuccess(num, storedReplicationProgress, currentTargetVersionVector) =>
       context.become(reading)
-      read(storedReplicationProgress, currentTargetVectorTime)
+      read(storedReplicationProgress, currentTargetVersionVector)
     case ReplicationWriteFailure(cause) =>
       log.error(cause, s"replication write failed")
       context.become(fetching)
@@ -390,6 +390,11 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
   }
 
   def receive = fetching
+
+  override def unhandled(message: Any): Unit = message match {
+    case ReplicationDue => // currently replicating, ignore
+    case other          => super.unhandled(message)
+  }
 
   private def scheduleFetch(): Unit =
     scheduler.scheduleOnce(settings.retryInterval)(fetch())
@@ -405,18 +410,18 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
     } pipeTo self
   }
 
-  private def read(storedReplicationProgress: Long, currentTargetVectorTime: VectorTime): Unit = {
+  private def read(storedReplicationProgress: Long, currentTargetVersionVector: VectorTime): Unit = {
     implicit val timeout = Timeout(settings.readTimeout)
 
-    source.acceptor ? ReplicationReadEnvelope(ReplicationRead(storedReplicationProgress + 1, settings.batchSizeMax, filter, target.logId, self, currentTargetVectorTime), source.logName) recover {
+    source.acceptor ? ReplicationReadEnvelope(ReplicationRead(storedReplicationProgress + 1, settings.batchSizeMax, filter, target.logId, self, currentTargetVersionVector), source.logName) recover {
       case t => ReplicationReadFailure(t.getMessage, target.logId)
     } pipeTo self
   }
 
-  private def write(events: Seq[DurableEvent], replicationProgress: Long, currentSourceVectorTime: VectorTime): Unit = {
+  private def write(events: Seq[DurableEvent], replicationProgress: Long, currentSourceVersionVector: VectorTime): Unit = {
     implicit val timeout = Timeout(settings.writeTimeout)
 
-    target.log ? ReplicationWrite(events, source.logId, replicationProgress, currentSourceVectorTime) recover {
+    target.log ? ReplicationWrite(events, source.logId, replicationProgress, currentSourceVersionVector) recover {
       case t => ReplicationWriteFailure(t)
     } pipeTo self
   }

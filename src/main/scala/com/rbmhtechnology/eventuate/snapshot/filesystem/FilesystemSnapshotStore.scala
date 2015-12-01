@@ -19,7 +19,7 @@ package com.rbmhtechnology.eventuate.snapshot.filesystem
 import java.io._
 import java.net.URLEncoder
 
-import akka.event.{LogSource, Logging}
+import akka.event.{ LogSource, Logging }
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.snapshot.SnapshotStore
 import org.apache.commons.io.IOUtils
@@ -33,12 +33,12 @@ object FilesystemSnapshotStore {
 }
 
 /**
-  * A snapshot store that saves snapshots to the local filesystem. It keeps a configurable
-  * maximum number of snapshots per event-sourced actor, view, writer or processor. Snapshot
-  * loading falls back to older snapshots if newer snapshots cannot be loaded.
-  *
-  * @see Configuration key `eventuate.snapshot.filesystem.snapshots-per-emitter-max`.
-  */
+ * A snapshot store that saves snapshots to the local filesystem. It keeps a configurable
+ * maximum number of snapshots per event-sourced actor, view, writer or processor. Snapshot
+ * loading falls back to older snapshots if newer snapshots cannot be loaded.
+ *
+ * @see Configuration key `eventuate.snapshot.filesystem.snapshots-per-emitter-max`.
+ */
 class FilesystemSnapshotStore(settings: FilesystemSnapshotStoreSettings, logId: String) extends SnapshotStore {
   private val log = Logging(settings.system, classOf[FilesystemSnapshotStore])
   private val rootDir = new File(settings.rootDir, URLEncoder.encode(logId, "UTF-8"))
@@ -61,8 +61,8 @@ class FilesystemSnapshotStore(settings: FilesystemSnapshotStoreSettings, logId: 
   }
 
   def delete(lowerSequenceNr: Long): Unit = for {
-    emitterId  <- rootDir.listFiles
-    emitterDir  = dstDir(emitterId.getName)
+    emitterId <- rootDir.listFiles
+    emitterDir = dstDir(emitterId.getName)
     sequenceNr <- decreasingSequenceNrs(emitterDir) if sequenceNr >= lowerSequenceNr
   } dstFile(emitterDir, sequenceNr).delete()
 

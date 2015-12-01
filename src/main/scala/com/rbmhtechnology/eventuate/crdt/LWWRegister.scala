@@ -18,7 +18,7 @@ package com.rbmhtechnology.eventuate.crdt
 
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
-import com.rbmhtechnology.eventuate.{ Versioned, DurableEvent, VectorTime }
+import com.rbmhtechnology.eventuate.{ DurableEvent, VectorTime }
 
 import scala.concurrent.Future
 

@@ -16,25 +16,46 @@
 
 package com.rbmhtechnology.eventuate.log.leveldb
 
-import java.io.{ Closeable, File }
+import java.io._
 import java.nio.ByteBuffer
-
-import scala.collection.JavaConverters._
-import scala.collection.immutable.Seq
-import scala.concurrent.Future
-import scala.util._
 
 import akka.actor._
 import akka.serialization.SerializationExtension
 
-import org.iq80.leveldb._
-import org.fusesource.leveldbjni.JniDBFactory.factory
-
-import com.rbmhtechnology.eventuate._
-import com.rbmhtechnology.eventuate.EventsourcingProtocol._
-import com.rbmhtechnology.eventuate.ReplicationProtocol._
+import com.rbmhtechnology.eventuate.DurableEvent
 import com.rbmhtechnology.eventuate.log._
-import com.rbmhtechnology.eventuate.snapshot.filesystem._
+import com.typesafe.config.Config
+
+import org.fusesource.leveldbjni.JniDBFactory._
+import org.iq80.leveldb._
+
+import scala.collection.JavaConverters._
+import scala.collection.immutable.Seq
+import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.util._
+
+class LeveldbEventLogSettings(config: Config) extends EventLogSettings {
+  val rootDir: String =
+    config.getString("eventuate.log.leveldb.dir")
+
+  val fsync: Boolean =
+    config.getBoolean("eventuate.log.leveldb.fsync")
+
+  val stateSnapshotLimit: Int =
+    config.getInt("eventuate.log.leveldb.state-snapshot-limit")
+
+  val initRetryDelay: FiniteDuration =
+    Duration.Zero
+
+  val initRetryMax: Int =
+    0
+
+  val partitionSizeMax: Long =
+    Long.MaxValue
+}
+
+case class LeveldbEventIteratorParameters(fromSequenceNr: Long, classifier: Int)
 
 /**
  * An event log actor with LevelDB as storage backend. The directory containing the LevelDB files
@@ -46,176 +67,81 @@ import com.rbmhtechnology.eventuate.snapshot.filesystem._
  * @param id unique log id.
  * @param prefix prefix of the directory that contains the LevelDB files
  */
-class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLogging {
+class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventIteratorParameters](id) {
   import LeveldbEventLog._
-  import NotificationChannel._
-  import TimeTracker._
 
-  private val eventStream = context.system.eventStream
+  override val settings = new LeveldbEventLogSettings(context.system.settings.config)
   private val serialization = SerializationExtension(context.system)
 
-  private val leveldbSettings = new LeveldbSettings(context.system)
   private val leveldbOptions = new Options().createIfMissing(true)
-  private val leveldbWriteOptions = new WriteOptions().sync(leveldbSettings.fsync).snapshot(false)
+  private val leveldbWriteOptions = new WriteOptions().sync(settings.fsync).snapshot(false)
   private def leveldbReadOptions = new ReadOptions().verifyChecksums(false)
 
-  private val leveldbDir = new File(leveldbSettings.rootDir, s"${prefix}-${id}"); leveldbDir.mkdirs()
+  private val leveldbDir = new File(settings.rootDir, s"${prefix}-${id}"); leveldbDir.mkdirs()
   private val leveldb = factory.open(leveldbDir, leveldbOptions)
 
-  private var registry = SubscriberRegistry()
-  private var timeTracker = TimeTracker()
-  private var timeCache = Map.empty[String, VectorTime].withDefaultValue(VectorTime.Zero)
-
-  private val notificationChannel = context.actorOf(Props(new NotificationChannel(id)))
-  private val snapshotStore = new FilesystemSnapshotStore(new FilesystemSnapshotStoreSettings(context.system), id)
   private val replicationProgressMap = new LeveldbReplicationProgressStore(leveldb, -3, eventLogIdMap.numericId, eventLogIdMap.findId)
   private val aggregateIdMap = new LeveldbNumericIdentifierStore(leveldb, -1)
   private val eventLogIdMap = new LeveldbNumericIdentifierStore(leveldb, -2)
 
-  // ------------------------------------------------------
-  // TODO: consider exchanging only vector time deltas
-  //
-  // Messages:
-  //
-  // - ReplicationRead
-  // - ReplicationReadSuccess
-  // - ReplicationWrite
-  // - ReplicationWriteSuccess
-  //
-  // This optimization might be necessary if many event-
-  // sourced actors use their own entry in vector clocks.
-  // ------------------------------------------------------
-
-  final def receive = {
-    case GetTimeTracker =>
-      sender() ! GetTimeTrackerSuccess(timeTracker)
-    case GetReplicationProgresses =>
-      Try(withIterator(iter => replicationProgressMap.readReplicationProgresses(iter))) match {
-        case Success(r) => sender() ! GetReplicationProgressesSuccess(r)
-        case Failure(e) => sender() ! GetReplicationProgressesFailure(e)
-      }
-    case GetReplicationProgress(sourceLogId) =>
-      Try(replicationProgressMap.readReplicationProgress(sourceLogId)) match {
-        case Success(r) => sender() ! GetReplicationProgressSuccess(sourceLogId, r, timeTracker.vectorTime)
-        case Failure(e) => sender() ! GetReplicationProgressFailure(e)
-      }
-    case SetReplicationProgress(sourceLogId, progress) =>
-      Try(withBatch(batch => replicationProgressMap.writeReplicationProgress(sourceLogId, progress, batch))) match {
-        case Success(_) => sender() ! SetReplicationProgressSuccess(sourceLogId, progress)
-        case Failure(e) => sender() ! SetReplicationProgressFailure(e)
-      }
-    case Replay(from, max, requestor, None, iid) =>
-      registry = registry.registerDefaultSubscriber(context.watch(requestor))
-      replayer(requestor, eventIterator(1L max from, EventKey.DefaultClassifier), from) ! ReplayNext(max, iid)
-    case Replay(from, max, requestor, Some(emitterAggregateId), iid) =>
-      val nid = aggregateIdMap.numericId(emitterAggregateId)
-      registry = registry.registerAggregateSubscriber(context.watch(requestor), emitterAggregateId)
-      replayer(requestor, eventIterator(1L max from, nid), from) ! ReplayNext(max, iid)
-    case r @ ReplicationRead(from, max, filter, targetLogId, _, currentTargetVectorTime) =>
-      import leveldbSettings.readDispatcher
-      val sdr = sender()
-      notificationChannel ! r
-      Future(read(from, max, filter, currentTargetVectorTime)) onComplete {
-        case Success(result) =>
-          val reply = ReplicationReadSuccess(result.events, result.to, targetLogId, null)
-          self.tell(reply, sdr)
-        case Failure(cause) =>
-          val reply = ReplicationReadFailure(cause.getMessage, targetLogId)
-          sdr ! reply
-          notificationChannel ! reply
-      }
-    case r @ ReplicationReadSuccess(events, _, targetLogId, _) =>
-      // Post-filter events using a possibly updated vector time received from the target.
-      // This is an optimization to reduce network bandwidth usage. If omitted, events are
-      // still filtered at target based on the current local vector time at the target (for
-      // correctness).
-      val currentTargetVectorTime = timeCache(targetLogId)
-      val updated = events.filterNot(_.before(currentTargetVectorTime))
-      val reply = r.copy(updated, currentSourceVectorTime = timeTracker.vectorTime)
-      sender() ! reply
-      notificationChannel ! reply
-      logFilterStatistics(id, "source", events, updated, log)
-    case w: Write =>
-      writeN(Seq(w))
-    case WriteN(writes) =>
-      writeN(writes)
-      sender() ! WriteNComplete
-    case w: ReplicationWrite =>
-      replicateN(Seq(w.copy(initiator = sender())))
-    case ReplicationWriteN(writes) =>
-      replicateN(writes)
-      sender() ! ReplicationWriteNComplete
-    case LoadSnapshot(emitterId, requestor, iid) =>
-      import leveldbSettings.readDispatcher
-      snapshotStore.loadAsync(emitterId) onComplete {
-        case Success(s) => requestor ! LoadSnapshotSuccess(s, iid)
-        case Failure(e) => requestor ! LoadSnapshotFailure(e, iid)
-      }
-    case SaveSnapshot(snapshot, initiator, requestor, iid) =>
-      import context.dispatcher
-      snapshotStore.saveAsync(snapshot) onComplete {
-        case Success(_) => requestor.tell(SaveSnapshotSuccess(snapshot.metadata, iid), initiator)
-        case Failure(e) => requestor.tell(SaveSnapshotFailure(snapshot.metadata, e, iid), initiator)
-      }
-    case DeleteSnapshots(lowerSequenceNr) =>
-      import context.dispatcher
-      val sdr = sender()
-      snapshotStore.deleteAsync(lowerSequenceNr) onComplete {
-        case Success(_) => sdr ! DeleteSnapshotsSuccess
-        case Failure(e) => sdr ! DeleteSnapshotsFailure(e)
-      }
-    case Terminated(requestor) =>
-      registry = registry.unregisterSubscriber(requestor)
-  }
+  private var updateCount: Long = 0L
 
   def logDir: File =
     leveldbDir
 
-  def currentSystemTime: Long =
-    System.currentTimeMillis
+  override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
+    withBatch(batch => writeSync(events, clock, batch))
 
-  private def replicateN(writes: Seq[ReplicationWrite]): Unit = {
-    writes.foreach(w => timeCache = timeCache.updated(w.sourceLogId, w.currentSourceVectorTime))
-    val (updatedWrites, tracker) = timeTracker.prepareReplicates(id, writes, log)
-    val updatedEvents = updatedWrites.flatMap(_.events)
-    Try {
-      withBatch { batch =>
-        updatedWrites.foreach(w => replicationProgressMap.writeReplicationProgress(w.sourceLogId, w.replicationProgress, batch))
-        write(updatedEvents, tracker, batch)
+  override def writeReplicationProgress(logId: String, progress: Long): Future[Unit] =
+    completed(withBatch(batch => replicationProgressMap.writeReplicationProgress(logId, progress, batch)))
+
+  override def eventIteratorParameters(fromSequenceNr: Long, toSequenceNr: Long): LeveldbEventIteratorParameters =
+    LeveldbEventIteratorParameters(fromSequenceNr, EventKey.DefaultClassifier)
+
+  override def eventIteratorParameters(fromSequenceNr: Long, toSequenceNr: Long, aggregateId: String): LeveldbEventIteratorParameters =
+    LeveldbEventIteratorParameters(fromSequenceNr, aggregateIdMap.numericId(aggregateId))
+
+  override def eventIterator(settings: LeveldbEventIteratorParameters): Iterator[DurableEvent] with Closeable =
+    eventIterator(1L max settings.fromSequenceNr, settings.classifier)
+
+  private def eventIterator(from: Long, classifier: Int): EventIterator =
+    new EventIterator(from, classifier)
+
+  override def readReplicationProgresses: Future[Map[String, Long]] =
+    completed(withIterator(iter => replicationProgressMap.readReplicationProgresses(iter)))
+
+  override def readReplicationProgress(logId: String): Future[Long] =
+    completed(withIterator(iter => replicationProgressMap.readReplicationProgress(logId)))
+
+  override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: DurableEvent => Boolean): Future[BatchReadResult] =
+    Future(readSync(fromSequenceNr, toSequenceNr, max, filter))(services.readDispatcher)
+
+  override def recoverClock: Future[EventLogClock] = completed {
+    val snap = leveldb.get(clockKeyBytes) match {
+      case null => EventLogClock()
+      case cval => clock(cval)
+    }
+
+    withEventIterator(snap.sequenceNr + 1L, EventKey.DefaultClassifier) { iter =>
+      iter.foldLeft(snap) {
+        case (clock, event) => clock.update(event)
       }
-    } match {
-      case Success(tracker2) =>
-        timeTracker = tracker2
-        updatedWrites.foreach { w =>
-          registry.pushReplicateSuccess(w.events)
-          w.initiator ! ReplicationWriteSuccess(w.events.size, w.replicationProgress, tracker2.vectorTime)
-          notificationChannel ! w
-        }
-        notificationChannel ! Updated(updatedEvents)
-      case Failure(e) =>
-        updatedWrites.foreach { w =>
-          w.initiator ! ReplicationWriteFailure(e)
-        }
     }
   }
 
-  private def writeN(writes: Seq[Write]): Unit = {
-    val (updatedWrites, tracker) = timeTracker.prepareWrites(id, writes, currentSystemTime)
-    val updatedEvents = updatedWrites.flatMap(_.events)
-    Try(withBatch(batch => write(updatedEvents, tracker, batch))) match {
-      case Success(tracker2) =>
-        timeTracker = tracker2
-        updatedWrites.foreach(w => registry.pushWriteSuccess(w.events, w.initiator, w.requestor, w.instanceId))
-        notificationChannel ! Updated(updatedEvents)
-      case Failure(e) =>
-        writes.foreach(w => registry.pushWriteFailure(w.events, w.initiator, w.requestor, w.instanceId, e))
+  private def readSync(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: DurableEvent => Boolean): BatchReadResult = {
+    val first = 1L max fromSequenceNr
+    withEventIterator(first, EventKey.DefaultClassifier) { iter =>
+      var last = first - 1L
+      val evts = iter.filter { evt =>
+        last = evt.localSequenceNr
+        filter(evt)
+      }.take(max).toVector
+      BatchReadResult(evts, last)
     }
   }
 
-  private[eventuate] def write(events: Seq[DurableEvent], tracker: TimeTracker): TimeTracker =
-    withBatch(write(events, tracker, _))
-
-  private[eventuate] def write(events: Seq[DurableEvent], tracker: TimeTracker, batch: WriteBatch): TimeTracker = {
+  private def writeSync(events: Seq[DurableEvent], clock: EventLogClock, batch: WriteBatch): Unit = {
     events.foreach { event =>
       val sequenceNr = event.localSequenceNr
       val eventBytes = this.eventBytes(event)
@@ -224,28 +150,14 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
         batch.put(eventKeyBytes(aggregateIdMap.numericId(id), sequenceNr), eventBytes)
       }
     }
-    if (tracker.updateCount >= leveldbSettings.stateSnapshotLimit) {
-      batch.put(timeTrackerKeyBytes, timeTrackerBytes(tracker))
-      tracker.copy(updateCount = 0L)
-    } else {
-      tracker
+
+    updateCount += events.size
+
+    if (updateCount >= settings.stateSnapshotLimit) {
+      batch.put(clockKeyBytes, clockBytes(clock))
+      updateCount = 0
     }
   }
-
-  private[eventuate] def read(from: Long, max: Int, filter: ReplicationFilter, lower: VectorTime): ReadResult = {
-    val first = 1L max from
-    withEventIterator(first, EventKey.DefaultClassifier) { iter =>
-      var last = first - 1L
-      val evts = iter.filter { evt =>
-        last = evt.localSequenceNr
-        evt.replicable(lower, filter)
-      }.take(max).toVector
-      ReadResult(evts, last)
-    }
-  }
-
-  private[eventuate] def replayer(requestor: ActorRef, iterator: => Iterator[DurableEvent] with Closeable, from: Long): ActorRef =
-    context.actorOf(Props(new ChunkedEventReplay(requestor, iterator)).withDispatcher("eventuate.log.leveldb.read-dispatcher"))
 
   private def withBatch[R](body: WriteBatch => R): R = {
     val batch = leveldb.createWriteBatch()
@@ -280,9 +192,6 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
     }
   }
 
-  private def eventIterator(from: Long, classifier: Int): EventIterator =
-    new EventIterator(from, classifier)
-
   private class EventIterator(from: Long, classifier: Int) extends Iterator[DurableEvent] with Closeable {
     val opts = snapshotOptions()
 
@@ -311,11 +220,11 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
   private def event(a: Array[Byte]): DurableEvent =
     serialization.deserialize(a, classOf[DurableEvent]).get
 
-  private def timeTrackerBytes(t: TimeTracker): Array[Byte] =
-    serialization.serialize(t).get
+  private def clockBytes(clock: EventLogClock): Array[Byte] =
+    serialization.serialize(clock).get
 
-  private def timeTracker(a: Array[Byte]): TimeTracker =
-    serialization.deserialize(a, classOf[TimeTracker]).get
+  private def clock(a: Array[Byte]): EventLogClock =
+    serialization.deserialize(a, classOf[EventLogClock]).get
 
   private def snapshotOptions(): ReadOptions =
     leveldbReadOptions.snapshot(leveldb.getSnapshot)
@@ -324,16 +233,7 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
     withIterator(iter => aggregateIdMap.readIdMap(iter))
     withIterator(iter => eventLogIdMap.readIdMap(iter))
     leveldb.put(eventKeyEndBytes, Array.empty[Byte])
-    leveldb.get(timeTrackerKeyBytes) match {
-      case null => // use default tracker value
-      case cval => timeTracker = timeTracker(cval)
-    }
-
-    withEventIterator(timeTracker.sequenceNr + 1L, EventKey.DefaultClassifier) { iter =>
-      timeTracker = iter.foldLeft(timeTracker) {
-        case (tracker, event) => tracker.update(event)
-      }
-    }
+    super.preStart()
   }
 
   override def postStop(): Unit = {
@@ -376,50 +276,51 @@ class LeveldbEventLog(val id: String, prefix: String) extends Actor with ActorLo
 }
 
 object LeveldbEventLog {
-  private[eventuate] case class ReadResult(events: Seq[DurableEvent], to: Long)
+  private case class EventKey(classifier: Int, sequenceNr: Long)
 
-  private[eventuate] case class EventKey(classifier: Int, sequenceNr: Long)
-
-  private[eventuate] object EventKey {
+  private object EventKey {
     val DefaultClassifier: Int = 0
   }
 
-  private[eventuate] val timeTrackerKeyBytes: Array[Byte] =
+  private val clockKeyBytes: Array[Byte] =
     eventKeyBytes(0, 0L)
 
-  private[eventuate] val eventKeyEnd: EventKey =
+  private val eventKeyEnd: EventKey =
     EventKey(Int.MaxValue, Long.MaxValue)
 
-  private[eventuate] val eventKeyEndBytes: Array[Byte] =
+  private val eventKeyEndBytes: Array[Byte] =
     eventKeyBytes(eventKeyEnd.classifier, eventKeyEnd.sequenceNr)
 
-  private[eventuate] def eventKeyBytes(classifier: Int, sequenceNr: Long): Array[Byte] = {
+  private[leveldb] def longBytes(l: Long): Array[Byte] =
+    ByteBuffer.allocate(8).putLong(l).array
+
+  private[leveldb] def longFromBytes(a: Array[Byte]): Long =
+    ByteBuffer.wrap(a).getLong
+
+  private def eventKeyBytes(classifier: Int, sequenceNr: Long): Array[Byte] = {
     val bb = ByteBuffer.allocate(12)
     bb.putInt(classifier)
     bb.putLong(sequenceNr)
     bb.array
   }
 
-  private[eventuate] def eventKey(a: Array[Byte]): EventKey = {
+  private def eventKey(a: Array[Byte]): EventKey = {
     val bb = ByteBuffer.wrap(a)
     EventKey(bb.getInt, bb.getLong)
   }
 
-  private[eventuate] def longBytes(l: Long): Array[Byte] =
-    ByteBuffer.allocate(8).putLong(l).array
-
-  private[eventuate] def longFromBytes(a: Array[Byte]): Long =
-    ByteBuffer.wrap(a).getLong
+  private def completed[A](body: => A): Future[A] =
+    Future.fromTry(Try(body))
 
   /**
    * Creates a [[LeveldbEventLog]] configuration object.
    *
    * @param logId unique log id.
-   * @param prefix prefix of the directory that contains the LevelDB files
+   * @param prefix prefix of the directory that contains the LevelDB files.
    * @param batching `true` if write-batching shall be enabled (recommended).
    */
   def props(logId: String, prefix: String = "log", batching: Boolean = true): Props = {
-    val logProps = Props(new LeveldbEventLog(logId, prefix)).withDispatcher("eventuate.log.leveldb.write-dispatcher")
-    if (batching) Props(new BatchingEventLog(logProps)) else logProps
+    val logProps = Props(new LeveldbEventLog(logId, prefix)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
+    if (batching) Props(new BatchingLayer(logProps)) else logProps
   }
 }

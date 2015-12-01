@@ -10,9 +10,9 @@ Local event log
 
 A local event log belongs to a given *location*\ [#]_ and a location can have one or more local event logs. Depending on the storage backend, a local event log may optionally be replicated within that location for stronger durability guarantees but this is rather an implementation details of the local event log. From Eventuate’s perspective, event replication occurs between different locations which is further described in section :ref:`replicated-event-log`.
 
-To an application, an event log is represented by an event log actor. Producers and consumers interact with that actor to write events to and read events from the event log. They also register at the event log actor to be notified about newly written events. The messages that can be exchanged with an event log actor are defined in EventsourcingProtocol_.
+To an application, an event log is represented by an event log actor. Producers and consumers interact with that actor to write events to and read events from the event log. They also register at the event log actor to be notified about newly written events. The messages that can be exchanged with an event log actor are defined in EventsourcingProtocol_ and ReplicationProtocol_.
 
-At the moment, two storage backends are supported by Eventuate, `LevelDB`_ and `Cassandra`_. The corresponding event log actors are provided by Eventuate and their usage is explained in the following sections.
+At the moment, two storage backends are directly supported by Eventuate, `LevelDB`_ and `Cassandra`_. Usage of the corresponding event log actors is explained in :ref:`leveldb-storage-backend` and :ref:`cassandra-storage-backend`, respectively. The integration of custom storage backends into Eventuate is explained in :ref:`custom-storage-backends`.
 
 .. _leveldb-storage-backend:
 
@@ -63,6 +63,16 @@ Further details are described in the API docs of the `Cassandra extension`_ and 
 
 .. hint::
    For instructions how to run a local Cassandra cluster you may want to read the article `Chaos testing with Docker and Cassandra on Mac OS X`_.
+
+.. _custom-storage-backends:
+
+Custom storage backends
+^^^^^^^^^^^^^^^^^^^^^^^
+
+A custom storage backend can be integrated into Eventuate by extending the abstract EventLog_ actor and implementing the EventLogSPI_ trait. For implementation examples, please take a look at LeveldbEventLog.scala_ and CassandraEventLog.scala_.
+
+.. note::
+   The event log storage provider interface (``EventLogSPI``) is preliminary and likely to be changed in future versions.
 
 .. _replicated-event-log:
 
@@ -231,12 +241,18 @@ A complete reference of ``eventuate.disaster-recovery.*`` configuration options 
 .. _Chaos testing with Docker and Cassandra on Mac OS X: http://rbmhtechnology.github.io/chaos-testing-with-docker-and-cassandra/
 
 .. _EventsourcingProtocol: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$
+.. _ReplicationProtocol: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$
 .. _ReplicationEndpoint: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint$
 .. _ReplicationConnection: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationConnection$
 .. _ReplicationFilter: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationFilter
 .. _DurableEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent
 .. _Cassandra extension: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.cassandra.Cassandra
 .. _CassandraEventLog: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog
+.. _EventLogSPI: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.EventLogSPI
+.. _EventLog: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.EventLog
+
+.. _CassandraEventLog.scala: https://github.com/RBMHTechnology/eventuate/tree/master/src/main/scala/com/rbmhtechnology/eventuate/log/cassandra/CassandraEventLog.scala
+.. _LeveldbEventLog.scala: https://github.com/RBMHTechnology/eventuate/tree/master/src/main/scala/com/rbmhtechnology/eventuate/log/leveldb/LeveldbEventLog.scala
 
 .. [#] A location can be a whole data center, a node within a data center or even a process on a single node, for example.
 .. [#] Log names must be unique per replication endpoint. Replication connections are only established between logs of the same name.

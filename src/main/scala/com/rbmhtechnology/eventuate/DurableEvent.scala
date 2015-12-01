@@ -16,6 +16,8 @@
 
 package com.rbmhtechnology.eventuate
 
+import scala.collection.immutable.Seq
+
 /**
  * Provider API.
  *
@@ -103,3 +105,19 @@ object DurableEvent {
   def apply(emitterId: String): DurableEvent =
     apply(null, emitterId)
 }
+
+/**
+ * Implemented by protocol messages that contain a [[DurableEvent]] sequence.
+ */
+trait DurableEventBatch {
+  /**
+   * Event sequence.
+   */
+  def events: Seq[DurableEvent]
+
+  /**
+   * Event sequence size.
+   */
+  def size: Int = events.size
+}
+

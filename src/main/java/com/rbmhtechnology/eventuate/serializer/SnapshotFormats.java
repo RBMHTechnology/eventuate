@@ -4792,7 +4792,7 @@ public final class SnapshotFormats {
     // @@protoc_insertion_point(class_scope:VersionedFormat)
   }
 
-  public interface TimeTrackerFormatOrBuilder
+  public interface EventLogClockFormatOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
     // optional int64 sequenceNr = 1;
@@ -4805,39 +4805,39 @@ public final class SnapshotFormats {
      */
     long getSequenceNr();
 
-    // optional .VectorTimeFormat vectorTime = 2;
+    // optional .VectorTimeFormat versionVector = 2;
     /**
-     * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+     * <code>optional .VectorTimeFormat versionVector = 2;</code>
      */
-    boolean hasVectorTime();
+    boolean hasVersionVector();
     /**
-     * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+     * <code>optional .VectorTimeFormat versionVector = 2;</code>
      */
-    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getVectorTime();
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getVersionVector();
     /**
-     * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+     * <code>optional .VectorTimeFormat versionVector = 2;</code>
      */
-    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getVectorTimeOrBuilder();
+    com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getVersionVectorOrBuilder();
   }
   /**
-   * Protobuf type {@code TimeTrackerFormat}
+   * Protobuf type {@code EventLogClockFormat}
    */
-  public static final class TimeTrackerFormat extends
+  public static final class EventLogClockFormat extends
       com.google.protobuf.GeneratedMessage
-      implements TimeTrackerFormatOrBuilder {
-    // Use TimeTrackerFormat.newBuilder() to construct.
-    private TimeTrackerFormat(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      implements EventLogClockFormatOrBuilder {
+    // Use EventLogClockFormat.newBuilder() to construct.
+    private EventLogClockFormat(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private TimeTrackerFormat(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+    private EventLogClockFormat(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
 
-    private static final TimeTrackerFormat defaultInstance;
-    public static TimeTrackerFormat getDefaultInstance() {
+    private static final EventLogClockFormat defaultInstance;
+    public static EventLogClockFormat getDefaultInstance() {
       return defaultInstance;
     }
 
-    public TimeTrackerFormat getDefaultInstanceForType() {
+    public EventLogClockFormat getDefaultInstanceForType() {
       return defaultInstance;
     }
 
@@ -4847,7 +4847,7 @@ public final class SnapshotFormats {
         getUnknownFields() {
       return this.unknownFields;
     }
-    private TimeTrackerFormat(
+    private EventLogClockFormat(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -4878,12 +4878,12 @@ public final class SnapshotFormats {
             case 18: {
               com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder subBuilder = null;
               if (((bitField0_ & 0x00000002) == 0x00000002)) {
-                subBuilder = vectorTime_.toBuilder();
+                subBuilder = versionVector_.toBuilder();
               }
-              vectorTime_ = input.readMessage(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.PARSER, extensionRegistry);
+              versionVector_ = input.readMessage(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.PARSER, extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(vectorTime_);
-                vectorTime_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(versionVector_);
+                versionVector_ = subBuilder.buildPartial();
               }
               bitField0_ |= 0x00000002;
               break;
@@ -4902,28 +4902,28 @@ public final class SnapshotFormats {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.rbmhtechnology.eventuate.serializer.SnapshotFormats.internal_static_TimeTrackerFormat_descriptor;
+      return com.rbmhtechnology.eventuate.serializer.SnapshotFormats.internal_static_EventLogClockFormat_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.rbmhtechnology.eventuate.serializer.SnapshotFormats.internal_static_TimeTrackerFormat_fieldAccessorTable
+      return com.rbmhtechnology.eventuate.serializer.SnapshotFormats.internal_static_EventLogClockFormat_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat.class, com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat.Builder.class);
+              com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat.class, com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat.Builder.class);
     }
 
-    public static com.google.protobuf.Parser<TimeTrackerFormat> PARSER =
-        new com.google.protobuf.AbstractParser<TimeTrackerFormat>() {
-      public TimeTrackerFormat parsePartialFrom(
+    public static com.google.protobuf.Parser<EventLogClockFormat> PARSER =
+        new com.google.protobuf.AbstractParser<EventLogClockFormat>() {
+      public EventLogClockFormat parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TimeTrackerFormat(input, extensionRegistry);
+        return new EventLogClockFormat(input, extensionRegistry);
       }
     };
 
     @java.lang.Override
-    public com.google.protobuf.Parser<TimeTrackerFormat> getParserForType() {
+    public com.google.protobuf.Parser<EventLogClockFormat> getParserForType() {
       return PARSER;
     }
 
@@ -4944,39 +4944,39 @@ public final class SnapshotFormats {
       return sequenceNr_;
     }
 
-    // optional .VectorTimeFormat vectorTime = 2;
-    public static final int VECTORTIME_FIELD_NUMBER = 2;
-    private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat vectorTime_;
+    // optional .VectorTimeFormat versionVector = 2;
+    public static final int VERSIONVECTOR_FIELD_NUMBER = 2;
+    private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat versionVector_;
     /**
-     * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+     * <code>optional .VectorTimeFormat versionVector = 2;</code>
      */
-    public boolean hasVectorTime() {
+    public boolean hasVersionVector() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+     * <code>optional .VectorTimeFormat versionVector = 2;</code>
      */
-    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getVectorTime() {
-      return vectorTime_;
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getVersionVector() {
+      return versionVector_;
     }
     /**
-     * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+     * <code>optional .VectorTimeFormat versionVector = 2;</code>
      */
-    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getVectorTimeOrBuilder() {
-      return vectorTime_;
+    public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getVersionVectorOrBuilder() {
+      return versionVector_;
     }
 
     private void initFields() {
       sequenceNr_ = 0L;
-      vectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      versionVector_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
-      if (hasVectorTime()) {
-        if (!getVectorTime().isInitialized()) {
+      if (hasVersionVector()) {
+        if (!getVersionVector().isInitialized()) {
           memoizedIsInitialized = 0;
           return false;
         }
@@ -4992,7 +4992,7 @@ public final class SnapshotFormats {
         output.writeInt64(1, sequenceNr_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeMessage(2, vectorTime_);
+        output.writeMessage(2, versionVector_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -5009,7 +5009,7 @@ public final class SnapshotFormats {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, vectorTime_);
+          .computeMessageSize(2, versionVector_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -5023,53 +5023,53 @@ public final class SnapshotFormats {
       return super.writeReplace();
     }
 
-    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat parseFrom(
+    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat parseFrom(
+    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat parseFrom(byte[] data)
+    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat parseFrom(
+    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat parseFrom(java.io.InputStream input)
+    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat parseFrom(
+    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat parseDelimitedFrom(java.io.InputStream input)
+    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat parseDelimitedFrom(
+    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat parseFrom(
+    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat parseFrom(
+    public static com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -5078,7 +5078,7 @@ public final class SnapshotFormats {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat prototype) {
+    public static Builder newBuilder(com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -5090,24 +5090,24 @@ public final class SnapshotFormats {
       return builder;
     }
     /**
-     * Protobuf type {@code TimeTrackerFormat}
+     * Protobuf type {@code EventLogClockFormat}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormatOrBuilder {
+       implements com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormatOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.rbmhtechnology.eventuate.serializer.SnapshotFormats.internal_static_TimeTrackerFormat_descriptor;
+        return com.rbmhtechnology.eventuate.serializer.SnapshotFormats.internal_static_EventLogClockFormat_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.rbmhtechnology.eventuate.serializer.SnapshotFormats.internal_static_TimeTrackerFormat_fieldAccessorTable
+        return com.rbmhtechnology.eventuate.serializer.SnapshotFormats.internal_static_EventLogClockFormat_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat.class, com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat.Builder.class);
+                com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat.class, com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat.Builder.class);
       }
 
-      // Construct using com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat.newBuilder()
+      // Construct using com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5119,7 +5119,7 @@ public final class SnapshotFormats {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getVectorTimeFieldBuilder();
+          getVersionVectorFieldBuilder();
         }
       }
       private static Builder create() {
@@ -5130,10 +5130,10 @@ public final class SnapshotFormats {
         super.clear();
         sequenceNr_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000001);
-        if (vectorTimeBuilder_ == null) {
-          vectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+        if (versionVectorBuilder_ == null) {
+          versionVector_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
         } else {
-          vectorTimeBuilder_.clear();
+          versionVectorBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000002);
         return this;
@@ -5145,23 +5145,23 @@ public final class SnapshotFormats {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.rbmhtechnology.eventuate.serializer.SnapshotFormats.internal_static_TimeTrackerFormat_descriptor;
+        return com.rbmhtechnology.eventuate.serializer.SnapshotFormats.internal_static_EventLogClockFormat_descriptor;
       }
 
-      public com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat getDefaultInstanceForType() {
-        return com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat.getDefaultInstance();
+      public com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat getDefaultInstanceForType() {
+        return com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat.getDefaultInstance();
       }
 
-      public com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat build() {
-        com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat result = buildPartial();
+      public com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat build() {
+        com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat buildPartial() {
-        com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat result = new com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat(this);
+      public com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat buildPartial() {
+        com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat result = new com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -5171,10 +5171,10 @@ public final class SnapshotFormats {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        if (vectorTimeBuilder_ == null) {
-          result.vectorTime_ = vectorTime_;
+        if (versionVectorBuilder_ == null) {
+          result.versionVector_ = versionVector_;
         } else {
-          result.vectorTime_ = vectorTimeBuilder_.build();
+          result.versionVector_ = versionVectorBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
@@ -5182,29 +5182,29 @@ public final class SnapshotFormats {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat) {
-          return mergeFrom((com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat)other);
+        if (other instanceof com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat) {
+          return mergeFrom((com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat other) {
-        if (other == com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat other) {
+        if (other == com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat.getDefaultInstance()) return this;
         if (other.hasSequenceNr()) {
           setSequenceNr(other.getSequenceNr());
         }
-        if (other.hasVectorTime()) {
-          mergeVectorTime(other.getVectorTime());
+        if (other.hasVersionVector()) {
+          mergeVersionVector(other.getVersionVector());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
-        if (hasVectorTime()) {
-          if (!getVectorTime().isInitialized()) {
+        if (hasVersionVector()) {
+          if (!getVersionVector().isInitialized()) {
             
             return false;
           }
@@ -5216,11 +5216,11 @@ public final class SnapshotFormats {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat parsedMessage = null;
+        com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.rbmhtechnology.eventuate.serializer.SnapshotFormats.TimeTrackerFormat) e.getUnfinishedMessage();
+          parsedMessage = (com.rbmhtechnology.eventuate.serializer.SnapshotFormats.EventLogClockFormat) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -5264,132 +5264,132 @@ public final class SnapshotFormats {
         return this;
       }
 
-      // optional .VectorTimeFormat vectorTime = 2;
-      private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat vectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      // optional .VectorTimeFormat versionVector = 2;
+      private com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat versionVector_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
       private com.google.protobuf.SingleFieldBuilder<
-          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> vectorTimeBuilder_;
+          com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> versionVectorBuilder_;
       /**
-       * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+       * <code>optional .VectorTimeFormat versionVector = 2;</code>
        */
-      public boolean hasVectorTime() {
+      public boolean hasVersionVector() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+       * <code>optional .VectorTimeFormat versionVector = 2;</code>
        */
-      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getVectorTime() {
-        if (vectorTimeBuilder_ == null) {
-          return vectorTime_;
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat getVersionVector() {
+        if (versionVectorBuilder_ == null) {
+          return versionVector_;
         } else {
-          return vectorTimeBuilder_.getMessage();
+          return versionVectorBuilder_.getMessage();
         }
       }
       /**
-       * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+       * <code>optional .VectorTimeFormat versionVector = 2;</code>
        */
-      public Builder setVectorTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
-        if (vectorTimeBuilder_ == null) {
+      public Builder setVersionVector(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
+        if (versionVectorBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          vectorTime_ = value;
+          versionVector_ = value;
           onChanged();
         } else {
-          vectorTimeBuilder_.setMessage(value);
+          versionVectorBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000002;
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+       * <code>optional .VectorTimeFormat versionVector = 2;</code>
        */
-      public Builder setVectorTime(
+      public Builder setVersionVector(
           com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder builderForValue) {
-        if (vectorTimeBuilder_ == null) {
-          vectorTime_ = builderForValue.build();
+        if (versionVectorBuilder_ == null) {
+          versionVector_ = builderForValue.build();
           onChanged();
         } else {
-          vectorTimeBuilder_.setMessage(builderForValue.build());
+          versionVectorBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000002;
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+       * <code>optional .VectorTimeFormat versionVector = 2;</code>
        */
-      public Builder mergeVectorTime(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
-        if (vectorTimeBuilder_ == null) {
+      public Builder mergeVersionVector(com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat value) {
+        if (versionVectorBuilder_ == null) {
           if (((bitField0_ & 0x00000002) == 0x00000002) &&
-              vectorTime_ != com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance()) {
-            vectorTime_ =
-              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.newBuilder(vectorTime_).mergeFrom(value).buildPartial();
+              versionVector_ != com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance()) {
+            versionVector_ =
+              com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.newBuilder(versionVector_).mergeFrom(value).buildPartial();
           } else {
-            vectorTime_ = value;
+            versionVector_ = value;
           }
           onChanged();
         } else {
-          vectorTimeBuilder_.mergeFrom(value);
+          versionVectorBuilder_.mergeFrom(value);
         }
         bitField0_ |= 0x00000002;
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+       * <code>optional .VectorTimeFormat versionVector = 2;</code>
        */
-      public Builder clearVectorTime() {
-        if (vectorTimeBuilder_ == null) {
-          vectorTime_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
+      public Builder clearVersionVector() {
+        if (versionVectorBuilder_ == null) {
+          versionVector_ = com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.getDefaultInstance();
           onChanged();
         } else {
-          vectorTimeBuilder_.clear();
+          versionVectorBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
       /**
-       * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+       * <code>optional .VectorTimeFormat versionVector = 2;</code>
        */
-      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder getVectorTimeBuilder() {
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder getVersionVectorBuilder() {
         bitField0_ |= 0x00000002;
         onChanged();
-        return getVectorTimeFieldBuilder().getBuilder();
+        return getVersionVectorFieldBuilder().getBuilder();
       }
       /**
-       * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+       * <code>optional .VectorTimeFormat versionVector = 2;</code>
        */
-      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getVectorTimeOrBuilder() {
-        if (vectorTimeBuilder_ != null) {
-          return vectorTimeBuilder_.getMessageOrBuilder();
+      public com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder getVersionVectorOrBuilder() {
+        if (versionVectorBuilder_ != null) {
+          return versionVectorBuilder_.getMessageOrBuilder();
         } else {
-          return vectorTime_;
+          return versionVector_;
         }
       }
       /**
-       * <code>optional .VectorTimeFormat vectorTime = 2;</code>
+       * <code>optional .VectorTimeFormat versionVector = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilder<
           com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder> 
-          getVectorTimeFieldBuilder() {
-        if (vectorTimeBuilder_ == null) {
-          vectorTimeBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+          getVersionVectorFieldBuilder() {
+        if (versionVectorBuilder_ == null) {
+          versionVectorBuilder_ = new com.google.protobuf.SingleFieldBuilder<
               com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormat.Builder, com.rbmhtechnology.eventuate.serializer.DurableEventFormats.VectorTimeFormatOrBuilder>(
-                  vectorTime_,
+                  versionVector_,
                   getParentForChildren(),
                   isClean());
-          vectorTime_ = null;
+          versionVector_ = null;
         }
-        return vectorTimeBuilder_;
+        return versionVectorBuilder_;
       }
 
-      // @@protoc_insertion_point(builder_scope:TimeTrackerFormat)
+      // @@protoc_insertion_point(builder_scope:EventLogClockFormat)
     }
 
     static {
-      defaultInstance = new TimeTrackerFormat(true);
+      defaultInstance = new EventLogClockFormat(true);
       defaultInstance.initFields();
     }
 
-    // @@protoc_insertion_point(class_scope:TimeTrackerFormat)
+    // @@protoc_insertion_point(class_scope:EventLogClockFormat)
   }
 
   private static com.google.protobuf.Descriptors.Descriptor
@@ -5418,10 +5418,10 @@ public final class SnapshotFormats {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_VersionedFormat_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_TimeTrackerFormat_descriptor;
+    internal_static_EventLogClockFormat_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_TimeTrackerFormat_fieldAccessorTable;
+      internal_static_EventLogClockFormat_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -5449,10 +5449,10 @@ public final class SnapshotFormats {
       "rrentVersionsTreeNodeFormat\"o\n\017Versioned" +
       "Format\022*\n\017updateTimestamp\030\001 \001(\0132\021.Vector" +
       "TimeFormat\022\017\n\007creator\030\002 \001(\t\022\037\n\007payload\030\003" +
-      " \001(\0132\016.PayloadFormat\"N\n\021TimeTrackerForma" +
-      "t\022\022\n\nsequenceNr\030\001 \001(\003\022%\n\nvectorTime\030\002 \001(",
-      "\0132\021.VectorTimeFormatB+\n\'com.rbmhtechnolo" +
-      "gy.eventuate.serializerH\001"
+      " \001(\0132\016.PayloadFormat\"S\n\023EventLogClockFor" +
+      "mat\022\022\n\nsequenceNr\030\001 \001(\003\022(\n\rversionVector",
+      "\030\002 \001(\0132\021.VectorTimeFormatB+\n\'com.rbmhtec" +
+      "hnology.eventuate.serializerH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5489,12 +5489,12 @@ public final class SnapshotFormats {
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_VersionedFormat_descriptor,
               new java.lang.String[] { "UpdateTimestamp", "Creator", "Payload", });
-          internal_static_TimeTrackerFormat_descriptor =
+          internal_static_EventLogClockFormat_descriptor =
             getDescriptor().getMessageTypes().get(5);
-          internal_static_TimeTrackerFormat_fieldAccessorTable = new
+          internal_static_EventLogClockFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_TimeTrackerFormat_descriptor,
-              new java.lang.String[] { "SequenceNr", "VectorTime", });
+              internal_static_EventLogClockFormat_descriptor,
+              new java.lang.String[] { "SequenceNr", "VersionVector", });
           return null;
         }
       };

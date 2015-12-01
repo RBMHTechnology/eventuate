@@ -13,7 +13,6 @@ import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.log.leveldb._
 
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper
-import org.iq80.leveldb.WriteBatch
 import org.scalatest._
 
 import scala.collection.immutable.Seq
@@ -128,16 +127,16 @@ class CRDTChaosSpecLeveldb extends CRDTChaosSpec with EventLogCleanupLeveldb {
   import CRDTChaosSpec._
 
   class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") {
-    private[eventuate] override def write(events: Seq[DurableEvent], tracker: TimeTracker, batch: WriteBatch): TimeTracker =
-      if (events.map(_.payload).contains(ValueUpdated(crdtId, AddOp(randomNr())))) throw boom else super.write(events, tracker, batch)
+    override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
+      if (events.map(_.payload).contains(ValueUpdated(crdtId, AddOp(randomNr())))) throw boom else super.write(events, partition, clock)
   }
 
   val logFactory: String => Props =
     id => logProps(id)
 
   def logProps(logId: String, batching: Boolean = true): Props = {
-    val logProps = Props(new TestEventLog(logId)).withDispatcher("eventuate.log.leveldb.write-dispatcher")
-    if (batching) Props(new BatchingEventLog(logProps)) else logProps
+    val logProps = Props(new TestEventLog(logId)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
+    if (batching) Props(new BatchingLayer(logProps)) else logProps
   }
 }
 
@@ -145,8 +144,8 @@ class CRDTChaosSpecCassandra  extends CRDTChaosSpec with EventLogCleanupCassandr
   import CRDTChaosSpec._
 
   class TestEventLog(id: String) extends CassandraEventLog(id) {
-    private[eventuate] override def write(partition: Long, events: Seq[DurableEvent], tracker: TimeTracker): TimeTracker =
-      if (events.map(_.payload).contains(ValueUpdated(crdtId, AddOp(randomNr())))) throw boom else super.write(partition, events, tracker)
+    override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
+      if (events.map(_.payload).contains(ValueUpdated(crdtId, AddOp(randomNr())))) throw boom else super.write(events, partition, clock)
   }
 
   override val logFactory: String => Props =
@@ -164,7 +163,7 @@ class CRDTChaosSpecCassandra  extends CRDTChaosSpec with EventLogCleanupCassandr
   }
 
   def logProps(logId: String, batching: Boolean = true): Props = {
-    val logProps = Props(new TestEventLog(logId)).withDispatcher("eventuate.log.cassandra.write-dispatcher")
-    if (batching) Props(new BatchingEventLog(logProps)) else logProps
+    val logProps = Props(new TestEventLog(logId)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
+    if (batching) Props(new BatchingLayer(logProps)) else logProps
   }
 }

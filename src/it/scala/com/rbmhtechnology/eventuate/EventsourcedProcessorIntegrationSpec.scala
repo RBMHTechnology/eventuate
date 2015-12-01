@@ -24,7 +24,6 @@ import com.rbmhtechnology.eventuate.log.EventLogLifecycleLeveldb
 
 import org.scalatest._
 
-import scala.collection.immutable.Seq
 import scala.util._
 
 object EventsourcedProcessorIntegrationSpec {

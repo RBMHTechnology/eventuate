@@ -36,7 +36,7 @@ object EventsourcingProtocol {
    * to the given `requestor`. In case of a successful write, events are sent within [[WriteSuccess]]
    * messages, otherwise within [[WriteFailure]] messages with `initiator` as message sender.
    */
-  case class Write(events: Seq[DurableEvent], initiator: ActorRef, requestor: ActorRef, instanceId: Int)
+  case class Write(events: Seq[DurableEvent], initiator: ActorRef, requestor: ActorRef, instanceId: Int) extends DurableEventBatch
 
   /**
    * Success reply after a [[Write]].

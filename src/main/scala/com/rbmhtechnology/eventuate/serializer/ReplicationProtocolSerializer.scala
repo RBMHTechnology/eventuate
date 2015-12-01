@@ -100,7 +100,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     message.events.foreach(event => builder.addEvents(eventSerializer.durableEventFormatBuilder(event)))
     builder.setReplicationProgress(message.replicationProgress)
     builder.setTargetLogId(message.targetLogId)
-    builder.setCurrentSourceVectorTime(eventSerializer.vectorTimeFormatBuilder(message.currentSourceVectorTime))
+    builder.setCurrentSourceVersionVector(eventSerializer.vectorTimeFormatBuilder(message.currentSourceVersionVector))
     builder
   }
 
@@ -111,7 +111,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     builder.setFilter(filterSerializer.filterTreeFormatBuilder(message.filter))
     builder.setTargetLogId(message.targetLogId)
     builder.setReplicator(Serialization.serializedActorPath(message.replicator))
-    builder.setCurrentTargetVectorTime(eventSerializer.vectorTimeFormatBuilder(message.currentTargetVectorTime))
+    builder.setCurrentTargetVersionVector(eventSerializer.vectorTimeFormatBuilder(message.currentTargetVersionVector))
     builder
   }
 
@@ -152,7 +152,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
       builder.result(),
       messageFormat.getReplicationProgress,
       messageFormat.getTargetLogId,
-      eventSerializer.vectorTime(messageFormat.getCurrentSourceVectorTime))
+      eventSerializer.vectorTime(messageFormat.getCurrentSourceVersionVector))
   }
 
   private def replicationRead(messageFormat: ReplicationReadFormat): ReplicationRead =
@@ -162,7 +162,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
       filterSerializer.filterTree(messageFormat.getFilter),
       messageFormat.getTargetLogId,
       system.provider.resolveActorRef(messageFormat.getReplicator),
-      eventSerializer.vectorTime(messageFormat.getCurrentTargetVectorTime))
+      eventSerializer.vectorTime(messageFormat.getCurrentTargetVersionVector))
 
   private def replicationReadEnvelope(messageFormat: ReplicationReadEnvelopeFormat): ReplicationReadEnvelope =
     ReplicationReadEnvelope(

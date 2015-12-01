@@ -48,14 +48,14 @@ message ReplicationReadFormat {
   optional ReplicationFilterTreeFormat filter = 3;
   optional string targetLogId = 4;
   optional string replicator = 5;
-  optional VectorTimeFormat currentTargetVectorTime = 6;
+  optional VectorTimeFormat currentTargetVersionVector = 6;
 }
 
 message ReplicationReadSuccessFormat {
   repeated DurableEventFormat events = 1;
   optional int64 replicationProgress = 2;
   optional string targetLogId = 3;
-  optional VectorTimeFormat currentSourceVectorTime = 4;
+  optional VectorTimeFormat currentSourceVersionVector = 4;
 }
 
 message ReplicationReadFailureFormat {
