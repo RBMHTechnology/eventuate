@@ -200,7 +200,7 @@
       &quot;com.rbmhtechnology.eventuate.ReplicationProtocol$Format&quot; = eventuate-replication-protocol
       &quot;com.rbmhtechnology.eventuate.ConcurrentVersionsTree&quot; = eventuate-snapshot
       &quot;com.rbmhtechnology.eventuate.Snapshot&quot; = eventuate-snapshot
-      &quot;com.rbmhtechnology.eventuate.log.TimeTracker&quot; = eventuate-snapshot
+      &quot;com.rbmhtechnology.eventuate.log.EventLogClock&quot; = eventuate-snapshot
       &quot;com.rbmhtechnology.eventuate.crdt.CRDTFormat&quot; = eventuate-crdt
     }
   }
@@ -266,20 +266,6 @@ eventuate {
     # snapshot of the log&#39;s internal state (sequence number and merged vector
     # time) is written.
     state-snapshot-limit = 128
-
-    write-dispatcher {
-      executor = &quot;thread-pool-executor&quot;
-      type = PinnedDispatcher
-    }
-
-    read-dispatcher {
-      type = Dispatcher
-      executor = &quot;fork-join-executor&quot;
-      fork-join-executor {
-        parallelism-min = 2
-        parallelism-max = 8
-      }
-    }
   }
 
   log.cassandra {
@@ -320,21 +306,28 @@ eventuate {
     # eventuate.log.replication.batch-size-max
     partition-size-max = 131072
 
-    # Retry backoff for event log initialization. Initialization requires
-    # reading the last indexed sequence number and indexing of not yet
-    # indexed log entries.
-    init-retry-backoff = 5s
-
     # Minimum number of new events that must have been written before another
     # index update is triggered.
     index-update-limit = 128
+
+    # Maximum number event log initialization retries. Initialization includes
+    # recovery of the current sequence number and version vector as well as
+    # indexing of not yet indexed log entries.
+    init-retry-max = 3
+
+    # Delay between event log initialization retries. Initialization includes
+    # recovery of the current sequence number and version vector as well as
+    # indexing of not yet indexed log entries.
+    init-retry-delay = 5s
 
     # Maximum number of initial connection retries to a Cassandra cluster.
     initial-connect-retry-max = 3
 
     # Delay between initial connection retries to a Cassandra cluster.
     initial-connect-retry-delay = 5s
+  }
 
+  log.dispatchers {
     write-dispatcher {
       executor = &quot;thread-pool-executor&quot;
       type = PinnedDispatcher

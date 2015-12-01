@@ -333,7 +333,7 @@ all events.
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="EventsourcingProtocol$$SaveSnapshot.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.SaveSnapshot">SaveSnapshot</a>.</p>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="WriteextendsProductwithSerializable"></a>
+      <a id="WriteextendsDurableEventBatchwithProductwithSerializable"></a>
       <a id="Write:Write"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -341,10 +341,10 @@ all events.
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="EventsourcingProtocol$$Write.html"><span class="name">Write</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="EventsourcingProtocol$$Write.html"><span class="name">Write</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@WriteextendsProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@WriteextendsDurableEventBatchwithProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>

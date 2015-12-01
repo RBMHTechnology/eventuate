@@ -144,23 +144,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#adjustSequenceNr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="adjustSequenceNr(batchSize:Long,maxBatchSize:Long,tracker:com.rbmhtechnology.eventuate.log.TimeTracker):(Long,com.rbmhtechnology.eventuate.log.TimeTracker)"></a>
-      <a id="adjustSequenceNr(Long,Long,TimeTracker):(Long,TimeTracker)"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">adjustSequenceNr</span><span class="params">(<span name="batchSize">batchSize: <span class="extype" name="scala.Long">Long</span></span>, <span name="maxBatchSize">maxBatchSize: <span class="extype" name="scala.Long">Long</span></span>, <span name="tracker">tracker: <span class="extype" name="com.rbmhtechnology.eventuate.log.TimeTracker">TimeTracker</span></span>)</span><span class="result">: (<span class="extype" name="scala.Long">Long</span>, <span class="extype" name="com.rbmhtechnology.eventuate.log.TimeTracker">TimeTracker</span>)</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog$@adjustSequenceNr(batchSize:Long,maxBatchSize:Long,tracker:com.rbmhtechnology.eventuate.log.TimeTracker):(Long,com.rbmhtechnology.eventuate.log.TimeTracker)" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Adjusts <code>timeTracker.sequenceNumber</code> if a batch of <code>batchSize</code> doesn't fit in the current partition.</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -258,23 +241,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#firstSequenceNr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="firstSequenceNr(partition:Long,partitionSizeMax:Long):Long"></a>
-      <a id="firstSequenceNr(Long,Long):Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">firstSequenceNr</span><span class="params">(<span name="partition">partition: <span class="extype" name="scala.Long">Long</span></span>, <span name="partitionSizeMax">partitionSizeMax: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog$@firstSequenceNr(partition:Long,partitionSizeMax:Long):Long" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">First sequence number of given <code>partition</code>.</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -344,23 +310,6 @@
     </span>
       <p class="shortcomment cmt">Check whether the specified <code>logId</code> is valid for Cassandra
 table, column and/or keyspace name usage.</p>
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#lastSequenceNr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="lastSequenceNr(partition:Long,partitionSizeMax:Long):Long"></a>
-      <a id="lastSequenceNr(Long,Long):Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">lastSequenceNr</span><span class="params">(<span name="partition">partition: <span class="extype" name="scala.Long">Long</span></span>, <span name="partitionSizeMax">partitionSizeMax: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog$@lastSequenceNr(partition:Long,partitionSizeMax:Long):Long" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Last sequence number of given <code>partition</code>.</p>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -412,40 +361,6 @@ table, column and/or keyspace name usage.</p>
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#partitionOf" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="partitionOf(sequenceNr:Long,partitionSizeMax:Long):Long"></a>
-      <a id="partitionOf(Long,Long):Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">partitionOf</span><span class="params">(<span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="partitionSizeMax">partitionSizeMax: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog$@partitionOf(sequenceNr:Long,partitionSizeMax:Long):Long" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Partition number for given <code>sequenceNr</code>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#partitionSize" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="partitionSize(sequenceNr:Long,partitionSizeMax:Long):Long"></a>
-      <a id="partitionSize(Long,Long):Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">partitionSize</span><span class="params">(<span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="partitionSizeMax">partitionSizeMax: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog$@partitionSize(sequenceNr:Long,partitionSizeMax:Long):Long" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Remaining partition size given the current <code>sequenceNr</code>.</p>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#props" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="props(logId:String,batching:Boolean):akka.actor.Props"></a>
       <a id="props(String,Boolean):Props"></a>
@@ -499,6 +414,23 @@ table, column and/or keyspace name usage.</p>
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#validCassandraIdentifier" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="validCassandraIdentifier:scala.util.matching.Regex"></a>
+      <a id="validCassandraIdentifier:Regex"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">validCassandraIdentifier</span><span class="result">: <span class="extype" name="scala.util.matching.Regex">Regex</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog$@validCassandraIdentifier:scala.util.matching.Regex" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

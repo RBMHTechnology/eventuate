@@ -149,7 +149,7 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$GetReplicationProgressSuccess.html"><span class="name">GetReplicationProgressSuccess</span></a><span class="params">(<span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storedReplicationProgress">storedReplicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentTargetVectorTime">currentTargetVectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$GetReplicationProgressSuccess.html"><span class="name">GetReplicationProgressSuccess</span></a><span class="params">(<span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storedReplicationProgress">storedReplicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentTargetVersionVector">currentTargetVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@GetReplicationProgressSuccessextendsProductwithSerializable" title="Permalink" target="_top">
@@ -220,7 +220,7 @@ to establish replication connections.
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationRead.html"><span class="name">ReplicationRead</span></a><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="maxNumEvents">maxNumEvents: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicator">replicator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="currentTargetVectorTime">currentTargetVectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$ReplicationRead.html"><span class="name">ReplicationRead</span></a><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="maxNumEvents">maxNumEvents: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicator">replicator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="currentTargetVersionVector">currentTargetVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadextendsReplicationProtocol.FormatwithProductwithSerializable" title="Permalink" target="_top">
@@ -265,7 +265,7 @@ dispatch the request to the appropriate log.</p>
     </span>
       <p class="shortcomment cmt">Failure reply after a <a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a>.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ReplicationReadSuccessextendsReplicationProtocol.FormatwithProductwithSerializable"></a>
+      <a id="ReplicationReadSuccessextendsDurableEventBatchwithReplicationProtocol.FormatwithProductwithSerializable"></a>
       <a id="ReplicationReadSuccess:ReplicationReadSuccess"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -273,10 +273,10 @@ dispatch the request to the appropriate log.</p>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationReadSuccess.html"><span class="name">ReplicationReadSuccess</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="currentSourceVectorTime">currentSourceVectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$ReplicationReadSuccess.html"><span class="name">ReplicationReadSuccess</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="currentSourceVersionVector">currentSourceVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <a href="DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a> with <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadSuccessextendsReplicationProtocol.FormatwithProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadSuccessextendsDurableEventBatchwithReplicationProtocol.FormatwithProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -286,7 +286,7 @@ dispatch the request to the appropriate log.</p>
                            event (if any).
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReplicationWriteextendsProductwithSerializable"></a>
+      <a id="ReplicationWriteextendsDurableEventBatchwithProductwithSerializable"></a>
       <a id="ReplicationWrite:ReplicationWrite"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -294,10 +294,10 @@ dispatch the request to the appropriate log.</p>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationWrite.html"><span class="name">ReplicationWrite</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentSourceVectorTime">currentSourceVectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span> = <span class="symbol">null</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$ReplicationWrite.html"><span class="name">ReplicationWrite</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentSourceVersionVector">currentSourceVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span> = <span class="symbol">null</span></span>)</span><span class="result"> extends <a href="DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationWriteextendsProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationWriteextendsDurableEventBatchwithProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -346,7 +346,7 @@ dispatch the request to the appropriate log.</p>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationWriteSuccess.html"><span class="name">ReplicationWriteSuccess</span></a><span class="params">(<span name="num">num: <span class="extype" name="scala.Int">Int</span></span>, <span name="storedReplicationProgress">storedReplicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentTargetVectorTime">currentTargetVectorTime: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$ReplicationWriteSuccess.html"><span class="name">ReplicationWriteSuccess</span></a><span class="params">(<span name="num">num: <span class="extype" name="scala.Int">Int</span></span>, <span name="storedReplicationProgress">storedReplicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentTargetVersionVector">currentTargetVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationWriteSuccessextendsProductwithSerializable" title="Permalink" target="_top">

@@ -66,8 +66,25 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="LeveldbEventLogextendsActorwithActorLogging"></a>
+              <ol><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LeveldbEventIteratorParametersextendsProductwithSerializable"></a>
+      <a id="LeveldbEventIteratorParameters:LeveldbEventIteratorParameters"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="LeveldbEventIteratorParameters.html"><span class="name">LeveldbEventIteratorParameters</span></a><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="classifier">classifier: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package@LeveldbEventIteratorParametersextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="LeveldbEventLogextendsEventLog[com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters]"></a>
       <a id="LeveldbEventLog:LeveldbEventLog"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -75,10 +92,10 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="LeveldbEventLog.html"><span class="name">LeveldbEventLog</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></span>
+        <a href="LeveldbEventLog.html"><span class="name">LeveldbEventLog</span></a><span class="result"> extends <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="LeveldbEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters">LeveldbEventIteratorParameters</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package@LeveldbEventLogextendsActorwithActorLogging" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package@LeveldbEventLogextendsEventLog[com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
@@ -86,6 +103,23 @@
 for this event log is named after the constructor parameters using the template &quot;<code>prefix</code>-<code>id</code>&quot;
 and stored in a root directory defined by the <code>log.leveldb.dir</code> configuration.</p><p><b>Please note:</b> <code>prefix</code> and <code>id</code> are currently not escaped when creating the directory name.
 </p></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSettings" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LeveldbEventLogSettingsextendsEventLogSettings"></a>
+      <a id="LeveldbEventLogSettings:LeveldbEventLogSettings"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="LeveldbEventLogSettings.html"><span class="name">LeveldbEventLogSettings</span></a><span class="result"> extends <a href="../EventLogSettings.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSettings">EventLogSettings</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package@LeveldbEventLogSettingsextendsEventLogSettings" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li></ol>
             </div>
 

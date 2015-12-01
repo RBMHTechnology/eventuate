@@ -66,19 +66,38 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.log.BatchingEventLog" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="BatchingEventLogextendsActor"></a>
-      <a id="BatchingEventLog:BatchingEventLog"></a>
+              <ol><li name="com.rbmhtechnology.eventuate.log.BatchReadResult" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="BatchReadResultextendsDurableEventBatchwithProductwithSerializable"></a>
+      <a id="BatchReadResult:BatchReadResult"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="BatchReadResult.html"><span class="name">BatchReadResult</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="to">to: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <a href="../DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@BatchReadResultextendsDurableEventBatchwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Result of an event batch-read operation.</p><div class="fullcomment"><div class="comment cmt"><p>Result of an event batch-read operation.
+</p></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>Read event batch.</p></dd><dt class="param">to</dt><dd class="cmt"><p>Last read position in the event log.
+</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.BatchingLayer" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="BatchingLayerextendsActor"></a>
+      <a id="BatchingLayer:BatchingLayer"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="BatchingEventLog.html"><span class="name">BatchingEventLog</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span></span>
+        <a href="BatchingLayer.html"><span class="name">BatchingLayer</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@BatchingEventLogextendsActor" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@BatchingLayerextendsActor" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
@@ -89,6 +108,83 @@ configured with <code>eventuate.log.batch-size-limit</code>. If there is no curr
 <code>Write</code> or <code>ReplicationWrite</code> command is served immediately (as <code>WriteN</code> or <code>ReplicationWriteN</code> batch of size
 1, respectively), keeping latency at a minimum.
 </p></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLog" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="EventLog[A]extendsActorwithEventLogSPI[A]withStashwithActorLogging"></a>
+      <a id="EventLog[A]:EventLog[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EventLog.html"><span class="name">EventLog</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<span class="extype" name="com.rbmhtechnology.eventuate.log.EventLog.A">A</span>] with <span class="extype" name="akka.actor.Stash">Stash</span> with <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLog[A]extendsActorwithEventLogSPI[A]withStashwithActorLogging" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">An abstract event log that handles <a href="../EventsourcingProtocol$.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol">EventsourcingProtocol</a> and <a href="../ReplicationProtocol$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol">ReplicationProtocol</a> messages and
+translates them to read and write operations declared on the <a href="EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a> trait.</p><div class="fullcomment"><div class="comment cmt"><p>An abstract event log that handles <a href="../EventsourcingProtocol$.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol">EventsourcingProtocol</a> and <a href="../ReplicationProtocol$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol">ReplicationProtocol</a> messages and
+translates them to read and write operations declared on the <a href="EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a> trait. Storage providers
+implement an event log by implementing the <a href="EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a> methods.
+</p></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogClock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="EventLogClockextendsProductwithSerializable"></a>
+      <a id="EventLogClock:EventLogClock"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="EventLogClock.html"><span class="name">EventLogClock</span></a><span class="params">(<span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>, <span name="versionVector">versionVector: <a href="../VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a> = <span class="symbol"><span class="name"><a href="../../../package.html">VectorTime.Zero</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLogClockextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A clock that tracks the current sequence number and the version vector of an event log.</p><div class="fullcomment"><div class="comment cmt"><p>A clock that tracks the current sequence number and the version vector of an event log.
+The version vector is the merge result of vector timestamps of all events that have been
+written to that event log.
+</p></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="EventLogSPI[A]extendsAnyRef"></a>
+      <a id="EventLogSPI[A]:EventLogSPI[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="EventLogSPI.html"><span class="name">EventLogSPI</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLogSPI[A]extendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Event log storage provider interface (SPI).</p><div class="fullcomment"><div class="comment cmt"><p>Event log storage provider interface (SPI).</p><p><b>Please note:</b> This interface is preliminary and likely to be changed in future versions.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Event iterator factory parameter type (see <a href="EventLogSPI.html#eventIterator(parameters:A):Iterator[com.rbmhtechnology.eventuate.DurableEvent]withjava.io.Closeable" class="extmbr" name="com.rbmhtechnology.eventuate.log.EventLogSPI#eventIterator">eventIterator</a> factory method).
+</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSettings" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="EventLogSettingsextendsAnyRef"></a>
+      <a id="EventLogSettings:EventLogSettings"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="EventLogSettings.html"><span class="name">EventLogSettings</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLogSettingsextendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Event log settings to be implemented by storage providers.</p>
     </li></ol>
             </div>
 
@@ -96,7 +192,24 @@ configured with <code>eventuate.log.batch-size-limit</code>. If there is no curr
 
         <div id="values" class="values members">
               <h3>Value Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.log.cassandra" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.log.EventLog" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EventLog"></a>
+      <a id="EventLog:EventLog"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="EventLog$.html"><span class="name">EventLog</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLog" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="cassandra"></a>
       <a id="cassandra:cassandra"></a>
       <h4 class="signature">

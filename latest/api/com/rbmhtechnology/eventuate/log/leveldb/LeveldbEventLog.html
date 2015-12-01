@@ -43,7 +43,7 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">LeveldbEventLog</span><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></span>
+        <span class="name">LeveldbEventLog</span><span class="result"> extends <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="LeveldbEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters">LeveldbEventIteratorParameters</a>]</span>
       </span>
       </h4>
       
@@ -52,7 +52,7 @@ for this event log is named after the constructor parameters using the template 
 and stored in a root directory defined by the <code>log.leveldb.dir</code> configuration.</p><p><b>Please note:</b> <code>prefix</code> and <code>id</code> are currently not escaped when creating the directory name.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="LeveldbEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters">LeveldbEventIteratorParameters</a>], <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<a href="LeveldbEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters">LeveldbEventIteratorParameters</a>], <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -70,7 +70,7 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog"><span>LeveldbEventLog</span></li><li class="in" name="akka.actor.ActorLogging"><span>ActorLogging</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog"><span>LeveldbEventLog</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.EventLog"><span>EventLog</span></li><li class="in" name="akka.actor.ActorLogging"><span>ActorLogging</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.EventLogSPI"><span>EventLogSPI</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -347,23 +347,6 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#currentSystemTime" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="currentSystemTime:Long"></a>
-      <a id="currentSystemTime:Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">currentSystemTime</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@currentSystemTime:Long" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -398,6 +381,69 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#eventIterator" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eventIterator(settings:com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters):Iterator[com.rbmhtechnology.eventuate.DurableEvent]withjava.io.Closeable"></a>
+      <a id="eventIterator(LeveldbEventIteratorParameters):Iterator[DurableEvent]withCloseable"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eventIterator</span><span class="params">(<span name="settings">settings: <a href="LeveldbEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters">LeveldbEventIteratorParameters</a></span>)</span><span class="result">: <span class="extype" name="scala.Iterator">Iterator</span>[<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>] with <span class="extype" name="java.io.Closeable">Closeable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@eventIterator(settings:com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters):Iterator[com.rbmhtechnology.eventuate.DurableEvent]withjava.io.Closeable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Creates a event iterator using the given <code>parameters</code> object.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a event iterator using the given <code>parameters</code> object. This method is called on a thread that is
+<b>not</b> a dispatcher thread of an implementing <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> actor. It is therefore important that the
+returned iterator does not close over current actor state. If the initialization of the iterator depends
+on current actor state, it must be captured during <code>eventIteratorParameters</code> calls and returned by these
+methods as parameter object of type <code>A</code>. This object is then passed as argument to this method and used
+for asynchronous event iterator construction.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#eventIteratorParameters" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eventIteratorParameters(fromSequenceNr:Long,toSequenceNr:Long,aggregateId:String):com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters"></a>
+      <a id="eventIteratorParameters(Long,Long,String):LeveldbEventIteratorParameters"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eventIteratorParameters</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="aggregateId">aggregateId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="LeveldbEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters">LeveldbEventIteratorParameters</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@eventIteratorParameters(fromSequenceNr:Long,toSequenceNr:Long,aggregateId:String):com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Creates an event iterator parameter object that encodes the given parameters.</p><div class="fullcomment"><div class="comment cmt"><p>Creates an event iterator parameter object that encodes the given parameters. The returned parameter
+object is passed as argument to <code>eventIterator</code>.
+</p></div><dl class="paramcmts block"><dt class="param">fromSequenceNr</dt><dd class="cmt"><p>sequence number to start iteration (inclusive).</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>sequence number to stop iteration (inclusive).</p></dd><dt class="param">aggregateId</dt><dd class="cmt"><p>must be contained in <a href="../../DurableEvent.html#destinationAggregateIds:Set[String]" class="extmbr" name="com.rbmhtechnology.eventuate.DurableEvent#destinationAggregateIds">DurableEvent.destinationAggregateIds</a>.
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#eventIteratorParameters" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eventIteratorParameters(fromSequenceNr:Long,toSequenceNr:Long):com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters"></a>
+      <a id="eventIteratorParameters(Long,Long):LeveldbEventIteratorParameters"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eventIteratorParameters</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <a href="LeveldbEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters">LeveldbEventIteratorParameters</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@eventIteratorParameters(fromSequenceNr:Long,toSequenceNr:Long):com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Creates an event iterator parameter object that encodes the given parameters.</p><div class="fullcomment"><div class="comment cmt"><p>Creates an event iterator parameter object that encodes the given parameters. The returned parameter
+object is passed as argument to <code>eventIterator</code>.
+</p></div><dl class="paramcmts block"><dt class="param">fromSequenceNr</dt><dd class="cmt"><p>sequence number to start iteration (inclusive).</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>sequence number to stop iteration (inclusive).
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -455,23 +501,6 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#id" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="id:String"></a>
-      <a id="id:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">id</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@id:String" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">unique log id.</p>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -613,8 +642,8 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → Actor</dd></dl></div>
-    </li><li name="akka.actor.Actor#preRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → UnrestrictedStash → Actor</dd></dl></div>
+    </li><li name="akka.actor.UnrestrictedStash#preRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="preRestart(reason:Throwable,message:Option[Any]):Unit"></a>
       <a id="preRestart(Throwable,Option[Any]):Unit"></a>
       <h4 class="signature">
@@ -630,13 +659,7 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd><dt>Annotations</dt><dd>
-                <span class="name">@throws</span><span class="args">(<span>
-      
-      <span class="symbol">classOf[java.lang.Exception]</span>
-    </span>)</span>
-              
-        </dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>UnrestrictedStash → Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#preStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="preStart():Unit"></a>
       <a id="preStart():Unit"></a>
@@ -653,24 +676,135 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="receive:PartialFunction[Any,Unit]"></a>
-      <a id="receive:PartialFunction[Any,Unit]"></a>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> → Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#read" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="read(fromSequenceNr:Long,toSequenceNr:Long,max:Int,filter:com.rbmhtechnology.eventuate.DurableEvent=&gt;Boolean):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]"></a>
+      <a id="read(Long,Long,Int,(DurableEvent)⇒Boolean):Future[BatchReadResult]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
+        <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">receive</span><span class="result">: <span class="extype" name="scala.PartialFunction">PartialFunction</span>[<span class="extype" name="scala.Any">Any</span>, <span class="extype" name="scala.Unit">Unit</span>]</span>
+        <span class="name">read</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: (<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../BatchReadResult.html" class="extype" name="com.rbmhtechnology.eventuate.log.BatchReadResult">BatchReadResult</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@receive:PartialFunction[Any,Unit]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@read(fromSequenceNr:Long,toSequenceNr:Long,max:Int,filter:com.rbmhtechnology.eventuate.DurableEvent=&gt;Boolean):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → Actor</dd></dl></div>
+      <p class="shortcomment cmt">Asynchronously batch-reads events from the raw event log.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously batch-reads events from the raw event log. At most <code>max</code> events must be returned that are
+within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequenceNr</code> and that pass the given <code>filter</code>.
+</p></div><dl class="paramcmts block"><dt class="param">fromSequenceNr</dt><dd class="cmt"><p>sequence number to start reading (inclusive).</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>sequence number to stop reading (inclusive)
+                    or earlier if <code>max</code> events have already been read.
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#readReplicationProgress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="readReplicationProgress(logId:String):scala.concurrent.Future[Long]"></a>
+      <a id="readReplicationProgress(String):Future[Long]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readReplicationProgress</span><span class="params">(<span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@readReplicationProgress(logId:String):scala.concurrent.Future[Long]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Asynchronously reads the replication progress for given source <code>logId</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads the replication progress for given source <code>logId</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#readReplicationProgresses" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="readReplicationProgresses:scala.concurrent.Future[Map[String,Long]]"></a>
+      <a id="readReplicationProgresses:Future[Map[String,Long]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readReplicationProgresses</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Long">Long</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@readReplicationProgresses:scala.concurrent.Future[Map[String,Long]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Asynchronously reads all stored replication progresses.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads all stored replication progresses.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLog#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="receive:EventLog.this.Receive"></a>
+      <a id="receive:Receive"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">receive</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.Receive">Receive</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@receive:EventLog.this.Receive" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> → Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#recoverClock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recoverClock:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.EventLogClock]"></a>
+      <a id="recoverClock:Future[EventLogClock]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">recoverClock</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@recoverClock:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.EventLogClock]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Asynchronously recovers the event log clock during initialization.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously recovers the event log clock during initialization.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverClockFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recoverClockFailure(cause:Throwable):Unit"></a>
+      <a id="recoverClockFailure(Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">recoverClockFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@recoverClockFailure(cause:Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Called after failed event log clock recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after failed event log clock recovery.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverClockSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recoverClockSuccess(clock:com.rbmhtechnology.eventuate.log.EventLogClock):Unit"></a>
+      <a id="recoverClockSuccess(EventLogClock):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">recoverClockSuccess</span><span class="params">(<span name="clock">clock: <a href="../EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@recoverClockSuccess(clock:com.rbmhtechnology.eventuate.log.EventLogClock):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Called after successful event log clock recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after successful event log clock recovery.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#removeActiveIterator" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="removeActiveIterator(iter:org.iq80.leveldb.DBIterator):Unit"></a>
       <a id="removeActiveIterator(DBIterator):Unit"></a>
@@ -722,6 +856,59 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLog.services" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="services"></a>
+      <a id="services:services"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="../EventLog$services$.html"><span class="name">services</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLog@services" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Service context for asynchronous read operations.</p><div class="fullcomment"><div class="comment cmt"><p>Service context for asynchronous read operations.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#settings" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="settings:com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSettings"></a>
+      <a id="settings:LeveldbEventLogSettings"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">settings</span><span class="result">: <a href="LeveldbEventLogSettings.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSettings">LeveldbEventLogSettings</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@settings:com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSettings" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Event log settings.</p><div class="fullcomment"><div class="comment cmt"><p>Event log settings.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+    </li><li name="akka.actor.StashSupport#stash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="stash():Unit"></a>
+      <a id="stash():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">stash</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@stash():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>StashSupport</dd></dl></div>
     </li><li name="akka.actor.Actor#supervisorStrategy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="supervisorStrategy:akka.actor.SupervisorStrategy"></a>
       <a id="supervisorStrategy:SupervisorStrategy"></a>
@@ -790,6 +977,23 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
+    </li><li name="akka.actor.StashSupport#unstashAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="unstashAll():Unit"></a>
+      <a id="unstashAll():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">unstashAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@unstashAll():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>StashSupport</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -859,6 +1063,44 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#write" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="write(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],partition:Long,clock:com.rbmhtechnology.eventuate.log.EventLogClock):Unit"></a>
+      <a id="write(Seq[DurableEvent],Long,EventLogClock):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">write</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="partition">partition: <span class="extype" name="scala.Long">Long</span></span>, <span name="clock">clock: <a href="../EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@write(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],partition:Long,clock:com.rbmhtechnology.eventuate.log.EventLogClock):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Synchronously writes <code>events</code> to the given <code>partition</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Synchronously writes <code>events</code> to the given <code>partition</code>. The partition is calculated from the configured
+<code>partitionSizeMax</code> and the current sequence number. Asynchronous writes will be supported in future versions.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="../EventLogSettings.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSettings">EventLogSettings</a>
+</p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#writeReplicationProgress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="writeReplicationProgress(logId:String,progress:Long):scala.concurrent.Future[Unit]"></a>
+      <a id="writeReplicationProgress(String,Long):Future[Unit]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writeReplicationProgress</span><span class="params">(<span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="progress">progress: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@writeReplicationProgress(logId:String,progress:Long):scala.concurrent.Future[Unit]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Asynchronously writes the replication <code>progress</code> for given source <code>logId</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously writes the replication <code>progress</code> for given source <code>logId</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li></ol>
             </div>
 
@@ -868,8 +1110,20 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="akka.actor.ActorLogging">
+        <div class="parent" name="com.rbmhtechnology.eventuate.log.EventLog">
+              <h3>Inherited from <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="LeveldbEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters">LeveldbEventIteratorParameters</a>]</h3>
+            </div><div class="parent" name="akka.actor.ActorLogging">
               <h3>Inherited from <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></h3>
+            </div><div class="parent" name="akka.actor.Stash">
+              <h3>Inherited from <span class="extype" name="akka.actor.Stash">Stash</span></h3>
+            </div><div class="parent" name="akka.dispatch.RequiresMessageQueue">
+              <h3>Inherited from <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>]</h3>
+            </div><div class="parent" name="akka.actor.UnrestrictedStash">
+              <h3>Inherited from <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span></h3>
+            </div><div class="parent" name="akka.actor.StashSupport">
+              <h3>Inherited from <span class="extype" name="akka.actor.StashSupport">StashSupport</span></h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.log.EventLogSPI">
+              <h3>Inherited from <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<a href="LeveldbEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventIteratorParameters">LeveldbEventIteratorParameters</a>]</h3>
             </div><div class="parent" name="akka.actor.Actor">
               <h3>Inherited from <span class="extype" name="akka.actor.Actor">Actor</span></h3>
             </div><div class="parent" name="scala.AnyRef">
