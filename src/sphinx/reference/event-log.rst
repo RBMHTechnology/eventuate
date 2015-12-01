@@ -215,7 +215,7 @@ Total or partial event loss at a given location is classified as disaster. Event
 
 If a storage backup exists, events can be partially recovered from that backup so that only events not covered by the backup must be copied from other locations. Recovery of events at a given location is only possible to the extend they have been previously replicated to other locations (or written to the backup). Events that have not been replicated to other locations or for which no storage backup exists cannot be recovered. 
 
-Disaster recovery is executed per ``ReplicationEndpoint`` by calling its asynchronous ``recover()`` method. Only if recovery successfully completes, an application may activate the endpoint by calling its ``activate()`` method, otherwise, recovery must be re-tried.
+Disaster recovery is executed per ``ReplicationEndpoint`` by calling its asynchronous ``recover()`` method. During recovery the endpoint is activated to replicate lost events. Only if recovery successfully completes and all events are recovered the application can start to write new local events, otherwise recovery must be re-tried.
 
 .. includecode:: ../code/EventLogDoc.scala
    :snippet: disaster-recovery-1
@@ -223,9 +223,9 @@ Disaster recovery is executed per ``ReplicationEndpoint`` by calling its asynchr
 During execution of disaster recovery, directly connected endpoints must be available. These are endpoints for which replication connections have been configured at the endpoint to be recovered. Availability is needed because connected endpoints need to update internal metadata before they can resume event replication with the recovered endpoint.
 
 .. hint::
-   The ``Future[Unit]`` returned by ``recover()`` completes when the internal metadata update completed. For actually starting the replication of missing events from other locations to the endpoint being recovered, it must be activated with ``activate()``.
+   In theory a ``ReplicationEndpoint`` could always be activated at the beginning by calling its ``recover()`` method. However, as this requires that all directly connected endpoints must be available, it is not recommended.
 
-Disaster recovery also deletes invalid snapshots, in case they survived the disaster. Invalid snapshots are those that cover lost events. 
+Disaster recovery also deletes invalid snapshots, in case they survived the disaster. Invalid snapshots are those that cover lost events.
 
 A complete reference of ``eventuate.disaster-recovery.*`` configuration options is given in section :ref:`configuration`. The example application also implements :ref:`example-disaster-recovery`.
 

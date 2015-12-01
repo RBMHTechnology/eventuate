@@ -93,7 +93,7 @@ object OrderExample extends App {
   import system.dispatcher
 
   def initialize(): Future[Unit] =
-    if (recover) endpoint.recover() else Future.successful(())
+    if (recover) endpoint.recover() else Future.successful(endpoint.activate())
 
   initialize() onComplete {
     case Failure(e) =>
@@ -103,7 +103,6 @@ object OrderExample extends App {
       val manager = system.actorOf(Props(new OrderManager(endpoint.id, endpoint.logs(ReplicationEndpoint.DefaultLogName))))
       val view = system.actorOf(Props(new OrderView(endpoint.id, endpoint.logs(ReplicationEndpoint.DefaultLogName))))
       val driver = system.actorOf(Props(new OrderExample(manager, view)).withDispatcher("eventuate.cli-dispatcher"))
-      endpoint.activate()
   }
 }
 

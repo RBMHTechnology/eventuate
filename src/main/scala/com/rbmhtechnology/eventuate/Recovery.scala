@@ -19,7 +19,7 @@ package com.rbmhtechnology.eventuate
 import java.util.concurrent.TimeUnit
 
 import akka.actor._
-import akka.pattern.ask
+import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
 
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
@@ -27,6 +27,7 @@ import com.rbmhtechnology.eventuate.ReplicationProtocol._
 import com.rbmhtechnology.eventuate.log.EventLogClock
 import com.typesafe.config.Config
 
+import scala.collection.breakOut
 import scala.collection.immutable.Seq
 import scala.concurrent._
 import scala.concurrent.duration._
@@ -50,10 +51,11 @@ private class RecoverySettings(config: Config) {
  *
  * @param logName Common name of the linked local and remote event log.
  * @param localLogId Local event log id.
+ * @param localClock Local event log clock at the beginning of disaster recovery.
  * @param remoteLogId Remote event log id.
- * @param clock Local event log clock at the beginning of disaster recovery.
+ * @param remoteSequenceNr current sequence nr of the remote log
  */
-private case class RecoveryLink(logName: String, localLogId: String, remoteLogId: String, clock: EventLogClock)
+private case class RecoveryLink(logName: String, localLogId: String, localClock: EventLogClock, remoteLogId: String, remoteSequenceNr: Long)
 
 /**
  * Provides disaster recovery primitives.
@@ -72,11 +74,22 @@ private class Recovery(endpoint: ReplicationEndpoint) {
   private implicit val scheduler = endpoint.system.scheduler
 
   /**
+   * Reads [[LogInfo]]s of all local logs.
+   */
+  def readLogInfos: Future[Set[LogInfo]] = {
+    readClocksImpl.map(_.map { case (logName, clock) => LogInfo(logName, clock.sequenceNr) }(breakOut))
+  }
+
+  /**
    * Reads the clocks from local event logs.
    */
   def readEventLogClocks: Future[Map[String, EventLogClock]] = {
     println(s"[recovery of ${endpoint.id}] Read clocks from local event logs ...")
-    Future.sequence(endpoint.logNames.map(name => readEventLogClock(endpoint.logs(name)).map(name -> _))).map(_.toMap)
+    readClocksImpl
+  }
+
+  private def readClocksImpl: Future[Map[String, EventLogClock]] = {
+    Future.traverse(endpoint.logNames)(name => readEventLogClock(endpoint.logs(name)).map(name -> _)).map(_.toMap)
   }
 
   /**
@@ -103,7 +116,7 @@ private class Recovery(endpoint: ReplicationEndpoint) {
     Retry(targetAcceptor.ask(GetReplicationEndpointInfo), remoteOperationRetryDelay, remoteOperationRetryMax).mapTo[GetReplicationEndpointInfoSuccess].map(_.info)
 
   def deleteSnapshots(link: RecoveryLink): Future[Unit] =
-    endpoint.logs(link.logName).ask(DeleteSnapshots(link.clock.sequenceNr + 1L))(Timeout(snapshotDeletionTimeout)).flatMap {
+    endpoint.logs(link.logName).ask(DeleteSnapshots(link.localClock.sequenceNr + 1L))(Timeout(snapshotDeletionTimeout)).flatMap {
       case DeleteSnapshotsSuccess    => Future.successful(())
       case DeleteSnapshotsFailure(e) => Future.failed(e)
     }
@@ -111,7 +124,7 @@ private class Recovery(endpoint: ReplicationEndpoint) {
   def recoveryLinks(endpointInfos: Set[ReplicationEndpointInfo], clocks: Map[String, EventLogClock]) = for {
     endpointInfo <- endpointInfos
     logName <- endpoint.commonLogNames(endpointInfo)
-  } yield RecoveryLink(logName, endpoint.logId(logName), endpointInfo.logId(logName), clocks(logName))
+  } yield RecoveryLink(logName, endpoint.logId(logName), clocks(logName), endpointInfo.logId(logName), endpointInfo.logInfo(logName).get.sequenceNr)
 }
 
 /**
@@ -123,36 +136,51 @@ private class Recovery(endpoint: ReplicationEndpoint) {
  * This actor is also involved in disaster recovery and implements a state machine with the following
  * possible transitions:
  *
- *  - `initializing` -> `recovering` -> `processing` (when calling `endpoint.recover()`)
- *  - `initializing` -> `processing`                 (when calling `endpoint.activate()`)
+ *  - `initializing` -> `recoveringMetadata` -> `recoveringEvents` -> `processing` (when calling `endpoint.recover()`)
+ *  - `initializing` -> `processing`                                               (when calling `endpoint.activate()`)
  */
 private class Acceptor(endpoint: ReplicationEndpoint) extends Actor {
   import Acceptor._
+  import context.dispatcher
+
+  private val recovery = new Recovery(endpoint)
 
   def initializing: Receive = {
     case Process =>
       context.become(processing)
     case Recover(links, promise) =>
       println(s"[recovery of ${endpoint.id}] Checking replication progress with remote endpoints ...")
-      context.become(recovering(context.actorOf(Props(new RecoveryManager(endpoint.id, links))), promise))
+      context.become(recoveringMetadata(context.actorOf(Props(new RecoveryManager(endpoint.id, links))), promise))
   }
 
-  def recovering(recovery: ActorRef, promise: Promise[Unit]): Receive = {
+  def recoveringMetadata(recoveryManager: ActorRef, promise: Promise[Unit]): Receive = {
     case re: ReplicationReadEnvelope =>
-      recovery forward re
-    case RecoveryCompleted =>
-      promise.success(())
+      recoveryManager forward re
+    case MetadataRecoveryCompleted =>
+      endpoint.connectors.foreach(_.activate())
+      context.become(recoveringEvents(recoveryManager, promise) orElse processing)
+  }
+
+  def recoveringEvents(recoveryManager: ActorRef, promise: Promise[Unit]): Receive = {
+    case re: ReplicationReadResponseEnvelope =>
+      recoveryManager forward re
+    case EventRecoveryCompleted =>
       context.become(processing)
+      promise.success(())
   }
 
   def processing: Receive = {
+    case ReplicationReadResponseEnvelope(readResult, _) =>
+      sender() forward readResult
     case ReplicationReadEnvelope(r, logName) =>
       endpoint.logs(logName) forward r
   }
 
   override def unhandled(message: Any): Unit = message match {
     case GetReplicationEndpointInfo =>
-      sender() ! GetReplicationEndpointInfoSuccess(endpoint.info)
+      recovery.readLogInfos.map { logInfos =>
+        GetReplicationEndpointInfoSuccess(ReplicationEndpointInfo(endpoint.id, logInfos))
+      } pipeTo sender()
     case _ =>
       super.unhandled(message)
   }
@@ -167,31 +195,56 @@ private object Acceptor {
   case object Process
   case class Recover(links: Set[RecoveryLink], promise: Promise[Unit])
   case class RecoveryStepCompleted(link: RecoveryLink)
-  case object RecoveryCompleted
+  case object MetadataRecoveryCompleted
+  case object EventRecoveryCompleted
 }
 
 /**
- * Manages [[RecoveryActor]]s to execute the disaster recovery steps for each replication link in `links`
+ * Recovery of an [[ReplicationEndpoint]] is a two steps process:
+ *
+ * - Metadata recovery: A [[ReplicationReadEnvelope]] from remote is responded with
+ *   [[ReplicationReadSuccess]] with the current sequence nr to update remote's replication progress
+ * - Event recovery: [[ReplicationReadResponseEnvelope]] responses are intercepted to detect when all
+ *   events, known to exist remotely at the beginning of recovery, are replicated and recovery is completed.
+ *
+ * [[RecoveryActor]]s are created to execute the disaster recovery steps for each replication link in `links`
  * and tracks the progress made by these actors. When all replication links have been processed this actor
- * notifies [[Acceptor]] (= parent) that recovery completed.
+ * notifies [[Acceptor]] (= parent) that recovery completed and ends itself and its childs.
  */
 private class RecoveryManager(endpointId: String, links: Set[RecoveryLink]) extends Actor {
   import Acceptor._
 
-  var active = links
-
-  var compensators: Map[String, ActorRef] =
+  // (remote) logid -> RecoveryActor for this link
+  val compensators: Map[String, ActorRef] =
     links.map(link => link.remoteLogId -> context.actorOf(Props(new RecoveryActor(endpointId, link)))).toMap
 
-  def receive = {
+  def receive = recoveringMetadata(links)
+
+  def recoveringMetadata(active: Set[RecoveryLink]): Receive = {
     case ReplicationReadEnvelope(r, _) =>
       compensators(r.targetLogId) forward r
     case RecoveryStepCompleted(link) if active.contains(link) =>
-      active = active - link
-      val prg = links.size - active.size
+      val updatedActive = active - link
+      val prg = links.size - updatedActive.size
       val all = links.size
       println(s"[recovery of ${endpointId}] Confirm existence of consistent replication progress at ${link.remoteLogId} ($prg of $all) ...")
-      if (active.isEmpty) context.parent ! RecoveryCompleted
+      if (updatedActive.isEmpty) {
+        context.parent ! MetadataRecoveryCompleted
+        context.become(recoveringEvents(links))
+      } else
+        context.become(recoveringMetadata(updatedActive))
+  }
+
+  def recoveringEvents(active: Set[RecoveryLink]): Receive = {
+    case ReplicationReadResponseEnvelope(readResult, sourceLogId) =>
+      compensators(sourceLogId) forward readResult
+    case RecoveryStepCompleted(link) if active.contains(link) =>
+      val updatedActive = active - link
+      if (updatedActive.isEmpty) {
+        context.parent ! EventRecoveryCompleted
+        self ! PoisonPill
+      } else
+        context.become(recoveringEvents(updatedActive))
   }
 }
 
@@ -212,13 +265,23 @@ private class RecoveryManager(endpointId: String, links: Set[RecoveryLink]) exte
 private class RecoveryActor(endpointId: String, link: RecoveryLink) extends Actor {
   import Acceptor._
 
-  def receive = {
-    case r: ReplicationRead if r.fromSequenceNr > link.clock.sequenceNr + 1L =>
+  def receive = recoveringMetadata
+
+  def recoveringMetadata: Receive = {
+    case r: ReplicationRead if r.fromSequenceNr > link.localClock.sequenceNr + 1L =>
       println(s"[recovery of ${endpointId}] Trigger update of inconsistent replication progress at ${link.remoteLogId} ...")
-      sender() ! ReplicationReadSuccess(Seq(), link.clock.sequenceNr, link.remoteLogId, link.clock.versionVector)
+      sender() ! ReplicationReadSuccess(Seq(), link.localClock.sequenceNr, link.remoteLogId, link.localClock.versionVector)
     case r: ReplicationRead =>
-      sender() ! ReplicationReadSuccess(Seq(), r.fromSequenceNr - 1L, link.remoteLogId, link.clock.versionVector)
+      sender() ! ReplicationReadSuccess(Seq(), r.fromSequenceNr - 1L, link.remoteLogId, link.localClock.versionVector)
       context.parent ! RecoveryStepCompleted(link)
+      context.become(recoveringEvents)
+  }
+
+  def recoveringEvents: Receive = {
+    case readResult @ ReplicationReadSuccess(_, replicationProgress, _, _) =>
+      sender() forward readResult
+      if (link.remoteSequenceNr <= replicationProgress)
+        context.parent ! RecoveryStepCompleted(link)
   }
 }
 
