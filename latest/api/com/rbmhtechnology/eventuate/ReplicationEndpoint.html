@@ -353,23 +353,6 @@ replicated only between event logs with matching names.
       </a>
     </span>
       <p class="shortcomment cmt">Unique replication endpoint id.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#info" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="info:com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo"></a>
-      <a id="info:ReplicationEndpointInfo"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">info</span><span class="result">: <a href="ReplicationProtocol$$ReplicationEndpointInfo.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo">ReplicationEndpointInfo</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@info:com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">This replication endpoint's info object.</p>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -529,8 +512,8 @@ after having installed a storage backup). Recovery copies events from directly c
 to this endpoint and automatically removes invalid snapshots. A snapshot is invalid if it covers events that
 have been lost.</p><p>This procedure requires that event replication between this and directly connected endpoints is bi-directional
 and that these endpoints are available during recovery. Recovery is idempotent and must be repeated in failure
-cases by the application. It is important that recovery successfully completes before calling <a href="#activate():Unit" class="extmbr" name="com.rbmhtechnology.eventuate.ReplicationEndpoint#activate">activate</a> on
-this endpoint again. Activating this endpoint without having successfully recovered from partial or total event
+cases by the application. After successful recovery the endpoint is automatically activated.
+Activating this endpoint without having successfully recovered from partial or total event
 loss may result in inconsistent replica states.
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#settings" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
