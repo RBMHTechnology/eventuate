@@ -40,28 +40,33 @@ object EventsourcedProcessorIntegrationSpec {
     }
   }
 
-  class StatelessSampleProcessor(val id: String, val eventLog: ActorRef, val targetEventLog: ActorRef, probe: ActorRef) extends EventsourcedProcessor {
+  class StatelessSampleProcessor(val id: String, val eventLog: ActorRef, val targetEventLog: ActorRef, eventProbe: ActorRef, progressProbe: ActorRef) extends EventsourcedProcessor {
     override val onCommand: Receive = {
       case "boom" => throw boom
       case "snap" => save("") {
-        case Success(_) => probe ! "snapped"
+        case Success(_) => eventProbe ! "snapped"
         case Failure(_) =>
       }
     }
 
     override val processEvent: Process = {
       case s: String if !s.contains("processed") =>
-        probe ! s
+        eventProbe ! s
         List(s"${s}-processed-1", s"${s}-processed-2")
     }
 
     override val onSnapshot: Receive = {
       case _ =>
     }
+
+    override def writeSuccess(progress: Long): Unit = {
+      super.writeSuccess(progress)
+      progressProbe ! progress
+    }
   }
 
-  class StatefulSampleProcessor(id: String, eventLog: ActorRef, targetEventLog: ActorRef, override val sharedClockEntry: Boolean, probe: ActorRef)
-    extends StatelessSampleProcessor(id, eventLog, targetEventLog, probe) with StatefulProcessor
+  class StatefulSampleProcessor(id: String, eventLog: ActorRef, targetEventLog: ActorRef, override val sharedClockEntry: Boolean, eventProbe: ActorRef, progressProbe: ActorRef)
+    extends StatelessSampleProcessor(id, eventLog, targetEventLog, eventProbe, progressProbe) with StatefulProcessor
 }
 
 abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach {
@@ -79,7 +84,9 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
 
   var sourceProbe: TestProbe = _
   var targetProbe: TestProbe = _
-  var processorProbe: TestProbe = _
+
+  var processorEventProbe: TestProbe = _
+  var processorProgressProbe: TestProbe = _
 
   var a1: ActorRef = _
   var a2: ActorRef = _
@@ -90,23 +97,38 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
 
     sourceProbe = TestProbe()
     targetProbe = TestProbe()
-    processorProbe = TestProbe()
+
+    processorEventProbe = TestProbe()
+    processorProgressProbe = TestProbe()
 
     a1 = system.actorOf(Props(new SampleActor("a1", sourceLog, sourceProbe.ref)))
     a2 = system.actorOf(Props(new SampleActor("a2", targetLog, targetProbe.ref)))
   }
 
+  def statelessProcessor(): ActorRef =
+    system.actorOf(Props(new StatelessSampleProcessor("p", sourceLog, targetLog, processorEventProbe.ref, processorProgressProbe.ref)))
+
+  def statefulProcessor(sourceLog: ActorRef, targetLog: ActorRef, sharedClockEntry: Boolean): ActorRef =
+    system.actorOf(Props(new StatefulSampleProcessor("p", sourceLog, targetLog, sharedClockEntry, processorEventProbe.ref, processorProgressProbe.ref)))
+
+  def waitForProgressWrite(progress: Long): Unit = {
+    processorProgressProbe.fishForMessage() {
+      case `progress` => true
+      case n: Long    => false
+    }
+  }
+
   "A StatefulProcessor" must {
     "write processed events to a target log and recover from scratch" in {
-      val p = system.actorOf(Props(new StatefulSampleProcessor("p", sourceLog, targetLog, sharedClockEntry = true, processorProbe.ref)))
+      val p = statefulProcessor(sourceLog, targetLog, sharedClockEntry = true)
 
       a1 ! "a"
       a1 ! "b"
       a1 ! "c"
 
-      processorProbe.expectMsg("a")
-      processorProbe.expectMsg("b")
-      processorProbe.expectMsg("c")
+      processorEventProbe.expectMsg("a")
+      processorEventProbe.expectMsg("b")
+      processorEventProbe.expectMsg("c")
 
       targetProbe.expectMsg(("a-processed-1", VectorTime(sourceLogId -> 1L, targetLogId -> 1L)))
       targetProbe.expectMsg(("a-processed-2", VectorTime(sourceLogId -> 1L, targetLogId -> 2L)))
@@ -115,30 +137,32 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
       targetProbe.expectMsg(("c-processed-1", VectorTime(sourceLogId -> 3L, targetLogId -> 5L)))
       targetProbe.expectMsg(("c-processed-2", VectorTime(sourceLogId -> 3L, targetLogId -> 6L)))
 
+      waitForProgressWrite(3L)
+
       p ! "boom"
       a1 ! "d"
 
-      processorProbe.expectMsg("d")
+      processorEventProbe.expectMsg("d")
 
       targetProbe.expectMsg(("d-processed-1", VectorTime(sourceLogId -> 4L, targetLogId -> 7L)))
       targetProbe.expectMsg(("d-processed-2", VectorTime(sourceLogId -> 4L, targetLogId -> 8L)))
     }
     "write processed events to a target log and recover from snapshot" in {
-      val p = system.actorOf(Props(new StatefulSampleProcessor("p", sourceLog, targetLog, sharedClockEntry = true, processorProbe.ref)))
+      val p = statefulProcessor(sourceLog, targetLog, sharedClockEntry = true)
 
       a1 ! "a"
       a1 ! "b"
 
-      processorProbe.expectMsg("a")
-      processorProbe.expectMsg("b")
+      processorEventProbe.expectMsg("a")
+      processorEventProbe.expectMsg("b")
 
       p ! "snap"
 
-      processorProbe.expectMsg("snapped")
+      processorEventProbe.expectMsg("snapped")
 
       a1 ! "c"
 
-      processorProbe.expectMsg("c")
+      processorEventProbe.expectMsg("c")
 
       targetProbe.expectMsg(("a-processed-1", VectorTime(sourceLogId -> 1L, targetLogId -> 1L)))
       targetProbe.expectMsg(("a-processed-2", VectorTime(sourceLogId -> 1L, targetLogId -> 2L)))
@@ -147,23 +171,25 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
       targetProbe.expectMsg(("c-processed-1", VectorTime(sourceLogId -> 3L, targetLogId -> 5L)))
       targetProbe.expectMsg(("c-processed-2", VectorTime(sourceLogId -> 3L, targetLogId -> 6L)))
 
+      waitForProgressWrite(3L)
+
       p ! "boom"
       a1 ! "d"
 
-      processorProbe.expectMsg("d")
+      processorEventProbe.expectMsg("d")
 
       targetProbe.expectMsg(("d-processed-1", VectorTime(sourceLogId -> 4L, targetLogId -> 7L)))
       targetProbe.expectMsg(("d-processed-2", VectorTime(sourceLogId -> 4L, targetLogId -> 8L)))
     }
     "update event vector timestamps when having set sharedClockEntry to false" in {
-      val p = system.actorOf(Props(new StatefulSampleProcessor("p", sourceLog, targetLog, sharedClockEntry = false, processorProbe.ref)))
+      val p = statefulProcessor(sourceLog, targetLog, sharedClockEntry = false)
 
       a1 ! "a"
       a1 ! "b"
       a1 ! "c"
 
-      processorProbe.expectMsg("a")
-      processorProbe.expectMsg("b")
+      processorEventProbe.expectMsg("a")
+      processorEventProbe.expectMsg("b")
 
       targetProbe.expectMsg(("a-processed-1", VectorTime(sourceLogId -> 1L, "p" -> 2L)))
       targetProbe.expectMsg(("a-processed-2", VectorTime(sourceLogId -> 1L, "p" -> 3L)))
@@ -186,7 +212,7 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
         sourceProbe.expectMsg(("b", VectorTime(sourceLogId -> 2L)))
         sourceProbe.expectMsg(("c", VectorTime(sourceLogId -> 3L)))
 
-        val p = system.actorOf(Props(new StatefulSampleProcessor("p", sourceLog, sourceLog, sharedClockEntry = false, processorProbe.ref)))
+        val p = statefulProcessor(sourceLog, sourceLog, sharedClockEntry = false)
 
         sourceProbe.expectMsg(("a-processed-1", VectorTime(sourceLogId -> 1L, "p" -> 2L)))
         sourceProbe.expectMsg(("a-processed-2", VectorTime(sourceLogId -> 1L, "p" -> 3L)))
@@ -207,15 +233,15 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
 
   "A stateless EventsourcedProcessor" must {
     "write processed events to a target log and resume from stored position" in {
-      val p = system.actorOf(Props(new StatelessSampleProcessor("p", sourceLog, targetLog, processorProbe.ref)))
+      val p = statelessProcessor()
 
       a1 ! "a"
       a1 ! "b"
       a1 ! "c"
 
-      processorProbe.expectMsg("a")
-      processorProbe.expectMsg("b")
-      processorProbe.expectMsg("c")
+      processorEventProbe.expectMsg("a")
+      processorEventProbe.expectMsg("b")
+      processorEventProbe.expectMsg("c")
 
       targetProbe.expectMsg(("a-processed-1", VectorTime(sourceLogId -> 1L, targetLogId -> 1L)))
       targetProbe.expectMsg(("a-processed-2", VectorTime(sourceLogId -> 1L, targetLogId -> 2L)))
@@ -224,10 +250,12 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
       targetProbe.expectMsg(("c-processed-1", VectorTime(sourceLogId -> 3L, targetLogId -> 5L)))
       targetProbe.expectMsg(("c-processed-2", VectorTime(sourceLogId -> 3L, targetLogId -> 6L)))
 
+      waitForProgressWrite(3L)
+
       p ! "boom"
       a1 ! "d"
 
-      processorProbe.expectMsg("d")
+      processorEventProbe.expectMsg("d")
 
       targetProbe.expectMsg(("d-processed-1", VectorTime(sourceLogId -> 4L, targetLogId -> 7L)))
       targetProbe.expectMsg(("d-processed-2", VectorTime(sourceLogId -> 4L, targetLogId -> 8L)))

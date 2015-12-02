@@ -20,6 +20,7 @@ import java.io.Closeable
 
 import akka.actor._
 import akka.dispatch.MessageDispatcher
+import akka.event.LoggingAdapter
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
@@ -242,6 +243,12 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
   private val snapshotStore: FilesystemSnapshotStore =
     new FilesystemSnapshotStore(new FilesystemSnapshotStoreSettings(context.system), id)
 
+  /**
+   * This event log's logging adapter.
+   */
+  private val logger: LoggingAdapter =
+    log
+
   private def initializing: Receive = {
     case RecoverySuccess(c) =>
       clock = c
@@ -249,7 +256,7 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
       unstashAll()
       context.become(initialized)
     case RecoveryFailure(e) =>
-      log.error(e, "Cannot recover clock")
+      logger.error(e, "Cannot recover clock")
       context.stop(self)
     case other =>
       stash()
@@ -400,7 +407,7 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
               // progress to resume replication will redundantly read events from a
               // source log but these events will be successfully identified as
               // duplicates, either at source or latest at target.
-              log.warning(s"Writing of replication progress failed: ${e.getMessage}")
+              logger.warning(s"Writing of replication progress failed: ${e.getMessage}")
               sdr ! ReplicationWriteFailure(e)
           }
         }
@@ -470,7 +477,7 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
     if (al < bl) {
       val diff = bl - al
       val perc = diff * 100.0 / bl
-      log.info(f"[$id] excluded $diff events ($perc%3.1f%% at $location)")
+      logger.info(f"[$id] excluded $diff events ($perc%3.1f%% at $location)")
     }
   }
 
