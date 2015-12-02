@@ -24,6 +24,7 @@ import com.rbmhtechnology.eventuate.ReplicationProtocol._
 import com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats._
 
 import scala.collection.JavaConverters._
+import scala.collection.breakOut
 import scala.collection.immutable.VectorBuilder
 
 class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Serializer {
@@ -128,7 +129,14 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   private def replicationEndpointInfoFormatBuilder(info: ReplicationEndpointInfo): ReplicationEndpointInfoFormat.Builder = {
     val builder = ReplicationEndpointInfoFormat.newBuilder()
     builder.setEndpointId(info.endpointId)
-    builder.addAllLogNames(info.logNames.asJava)
+    info.logInfos.foreach(logInfo => builder.addLogInfos(logInfoFormatBuilder(logInfo)))
+    builder
+  }
+
+  private def logInfoFormatBuilder(info: LogInfo): LogInfoFormat.Builder = {
+    val builder = LogInfoFormat.newBuilder()
+    builder.setLogName(info.logName)
+    builder.setSequenceNr(info.sequenceNr)
     builder
   }
 
@@ -175,6 +183,9 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   private def replicationEndpointInfo(infoFormat: ReplicationEndpointInfoFormat): ReplicationEndpointInfo = {
     ReplicationEndpointInfo(
       infoFormat.getEndpointId,
-      infoFormat.getLogNamesList.asScala.toSet)
+      infoFormat.getLogInfosList.asScala.map(logInfo)(breakOut))
   }
+
+  private def logInfo(infoFormat: LogInfoFormat): LogInfo =
+    LogInfo(infoFormat.getLogName, infoFormat.getSequenceNr)
 }

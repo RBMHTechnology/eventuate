@@ -33,7 +33,7 @@ import org.scalatest._
 import scala.concurrent.duration._
 
 object RecoverySpec {
-  class ConvergenceView(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedView {
+  class ConvergenceView(val id: String, val eventLog: ActorRef, expectedSize: Int, probe: ActorRef) extends EventsourcedView {
     var state: Set[String] = Set()
 
     val onCommand: Receive = {
@@ -43,7 +43,7 @@ object RecoverySpec {
     val onEvent: Receive = {
       case s: String =>
         state += s
-        if (state.size == 4) probe ! state
+        if (state.size == expectedSize) probe ! state
     }
   }
 
@@ -82,19 +82,36 @@ class RecoverySpec extends WordSpec with Matchers with ReplicationNodeRegistry w
   def nodeId(node: String): String =
     s"${node}_${ctr}"
 
-  def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection], activate: Boolean = false): ReplicationNode =
-    register(new ReplicationNode(nodeId(nodeName), logNames, port, connections, customConfig = RecoverySpec.config, activate = activate))
+  def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection], customConfig: String = "", activate: Boolean = false): ReplicationNode =
+    register(new ReplicationNode(nodeId(nodeName), logNames, port, connections, customConfig = RecoverySpec.config + customConfig, activate = activate))
 
   def assertConvergence(expected: Set[String], nodes: ReplicationNode *): Unit = {
     val probes = nodes.map { node =>
       val probe = new TestProbe(node.system)
-      node.system.actorOf(Props(new ConvergenceView(s"p-${node.id}", node.logs("L1"), probe.ref)))
+      node.system.actorOf(Props(new ConvergenceView(s"p-${node.id}", node.logs("L1"), expected.size, probe.ref)))
       probe
     }
     probes.foreach(_.expectMsg(expected))
   }
 
   "Replication endpoint recovery" must {
+    "disallow activation of endpoint during and after recovery" in {
+      node("B", Set("L1"), 2553, Set(replicationConnection(2552))).endpoint.activate()
+      val endpoint = node("A", Set("L1"), 2552, Set(replicationConnection(2553))).endpoint
+
+      val recovery = endpoint.recover()
+
+      an [IllegalStateException] shouldBe thrownBy(endpoint.activate())
+      recovery.await
+      an [IllegalStateException] shouldBe thrownBy(endpoint.activate())
+    }
+    "fail when connected endpoint is unavailable" in {
+      val endpoint = node("A", Set("L1"), 2552, Set(replicationConnection(2553)),
+        customConfig = "eventuate.disaster-recovery.remote-operation-retry-max = 0")
+        .endpoint
+
+      an [Exception] shouldBe thrownBy(endpoint.recover().await)
+    }
     "repair inconsistencies of an endpoint that has lost all events" in {
       val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2555)))
       val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2555)))
@@ -136,9 +153,10 @@ class RecoverySpec extends WordSpec with Matchers with ReplicationNodeRegistry w
       val nodeD2 = nodeD
 
       nodeD2.endpoint.recover().await
-      nodeD2.endpoint.activate()
+      // disclose bug #152
+      write(nodeD2.endpoint.target("L1"), List("d1"))
 
-      assertConvergence(Set("a", "b", "c", "d"), nodeA, nodeB, nodeC, nodeD2)
+      assertConvergence(Set("a", "b", "c", "d", "d1"), nodeA, nodeB, nodeC, nodeD2)
     }
     "repair inconsistencies of an endpoint that has lost all events but has been partially recovered from a storage backup" in {
       val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2555)))
@@ -193,7 +211,6 @@ class RecoverySpec extends WordSpec with Matchers with ReplicationNodeRegistry w
       val nodeD3 = nodeD
 
       nodeD3.endpoint.recover().await
-      nodeD3.endpoint.activate()
 
       assertConvergence(Set("a", "b", "c", "d"), nodeA, nodeB, nodeC, nodeD3)
     }

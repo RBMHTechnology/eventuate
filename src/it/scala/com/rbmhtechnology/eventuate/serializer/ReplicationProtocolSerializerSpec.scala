@@ -27,7 +27,7 @@ object ReplicationProtocolSerializerSpec {
   import ReplicationFilterSerializerSpec._
 
   val getReplicationEndpointInfoSuccess =
-    GetReplicationEndpointInfoSuccess(ReplicationEndpointInfo("A", Set("B", "C")))
+    GetReplicationEndpointInfoSuccess(ReplicationEndpointInfo("A", Set(LogInfo("B", 0l), LogInfo("C", 10l))))
 
   val replicationReadSuccess =
     ReplicationReadSuccess(List(

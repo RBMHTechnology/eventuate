@@ -87,7 +87,7 @@ trait ReplicationEndpointDoc {
   val recovery: Future[Unit] = endpoint.recover()
 
   recovery onComplete {
-    case Success(_) => endpoint.activate()
+    case Success(_) => // all events recovered, local writes are allowed
     case Failure(e) => // retry recovery ...
   }
   //#

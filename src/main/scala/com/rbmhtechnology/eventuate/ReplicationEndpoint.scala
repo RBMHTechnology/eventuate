@@ -168,12 +168,6 @@ class ReplicationEndpoint(val id: String, val logNames: Set[String], val logFact
     new ReplicationSettings(system.settings.config)
 
   /**
-   * This replication endpoint's info object.
-   */
-  val info: ReplicationEndpointInfo =
-    ReplicationEndpointInfo(id, logNames)
-
-  /**
    * The log actors managed by this endpoint, indexed by their name.
    */
   val logs: Map[String, ActorRef] =
@@ -183,7 +177,7 @@ class ReplicationEndpoint(val id: String, val logNames: Set[String], val logFact
    * Returns the unique log id for given `logName`.
    */
   def logId(logName: String): String =
-    info.logId(logName)
+    ReplicationEndpointInfo.logId(id, logName)
 
   /**
    * Runs an asynchronous disaster recovery procedure. This procedure recovers this endpoint in case of total or
@@ -194,31 +188,33 @@ class ReplicationEndpoint(val id: String, val logNames: Set[String], val logFact
    *
    * This procedure requires that event replication between this and directly connected endpoints is bi-directional
    * and that these endpoints are available during recovery. Recovery is idempotent and must be repeated in failure
-   * cases by the application. It is important that recovery successfully completes before calling [[activate]] on
-   * this endpoint again. Activating this endpoint without having successfully recovered from partial or total event
+   * cases by the application. After successful recovery the endpoint is automatically activated.
+   * Activating this endpoint without having successfully recovered from partial or total event
    * loss may result in inconsistent replica states.
    */
-  def recover(): Future[Unit] = if (active.compareAndSet(false, true)) {
-    import system.dispatcher
+  def recover(): Future[Unit] = {
+    if (connections.isEmpty)
+      Future.failed(new IllegalStateException("Recover an endpoint without connections"))
+    else if (active.compareAndSet(false, true)) {
+      import system.dispatcher
 
-    val promise = Promise[Unit]()
-    val recovery = new Recovery(this)
+      val promise = Promise[Unit]()
+      val recovery = new Recovery(this)
 
-    val phase1 = for {
-      infos <- recovery.readEndpointInfos
-      clocks <- recovery.readEventLogClocks
-      links = recovery.recoveryLinks(infos, clocks)
-      _ <- recovery.deleteSnapshots(links)
-    } yield links
+      val recoveryOperation = for {
+        infos <- recovery.readEndpointInfos
+        clocks <- recovery.readEventLogClocks
+        links = recovery.recoveryLinks(infos, clocks)
+        _ <- recovery.deleteSnapshots(links)
+      } yield acceptor ! Recover(links, promise)
 
-    val phase2 = for {
-      _ <- phase1
-      r <- promise.future
-    } yield { active.set(false); r }
+      recoveryOperation.onFailure {
+        case ex => promise.failure(ex)
+      }
 
-    phase1.onSuccess { case links => acceptor ! Recover(links, promise) }
-    phase2
-  } else Future.failed(new IllegalStateException("Recovery running or endpoint already activated"))
+      promise.future
+    } else Future.failed(new IllegalStateException("Recovery running or endpoint already activated"))
+  }
 
   /**
    * Activates this endpoint by starting event replication from remote endpoints to this endpoint.
@@ -413,9 +409,11 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
   private def read(storedReplicationProgress: Long, currentTargetVersionVector: VectorTime): Unit = {
     implicit val timeout = Timeout(settings.readTimeout)
 
-    source.acceptor ? ReplicationReadEnvelope(ReplicationRead(storedReplicationProgress + 1, settings.batchSizeMax, filter, target.logId, self, currentTargetVersionVector), source.logName) recover {
-      case t => ReplicationReadFailure(t.getMessage, target.logId)
-    } pipeTo self
+    (source.acceptor ? ReplicationReadEnvelope(ReplicationRead(storedReplicationProgress + 1, settings.batchSizeMax, filter, target.logId, self, currentTargetVersionVector), source.logName))
+      .mapTo[ReplicationReadResponse]
+      .recover { case t => ReplicationReadFailure(t.getMessage, target.logId) }
+      .map(ReplicationReadResponseEnvelope(_, source.logId))
+      .pipeTo(target.endpoint.acceptor)
   }
 
   private def write(events: Seq[DurableEvent], replicationProgress: Long, currentSourceVersionVector: VectorTime): Unit = {

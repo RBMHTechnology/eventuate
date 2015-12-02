@@ -24,9 +24,14 @@ option optimize_for = SPEED;
 import "src/main/protobuf/DurableEventFormats.proto";
 import "src/main/protobuf/ReplicationFilterFormats.proto";
 
+message LogInfoFormat {
+  required string logName = 1;
+  required int64 sequenceNr = 2;
+}
+
 message ReplicationEndpointInfoFormat {
   required string endpointId = 1;
-  repeated string logNames = 2;
+  repeated LogInfoFormat logInfos = 2;
 }
 
 message GetReplicationEndpointInfoFormat {

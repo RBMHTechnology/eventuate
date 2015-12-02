@@ -24,6 +24,574 @@ public final class ReplicationProtocolFormats {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
+  public interface LogInfoFormatOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required string logName = 1;
+    /**
+     * <code>required string logName = 1;</code>
+     */
+    boolean hasLogName();
+    /**
+     * <code>required string logName = 1;</code>
+     */
+    java.lang.String getLogName();
+    /**
+     * <code>required string logName = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getLogNameBytes();
+
+    // required int64 sequenceNr = 2;
+    /**
+     * <code>required int64 sequenceNr = 2;</code>
+     */
+    boolean hasSequenceNr();
+    /**
+     * <code>required int64 sequenceNr = 2;</code>
+     */
+    long getSequenceNr();
+  }
+  /**
+   * Protobuf type {@code LogInfoFormat}
+   */
+  public static final class LogInfoFormat extends
+      com.google.protobuf.GeneratedMessage
+      implements LogInfoFormatOrBuilder {
+    // Use LogInfoFormat.newBuilder() to construct.
+    private LogInfoFormat(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private LogInfoFormat(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final LogInfoFormat defaultInstance;
+    public static LogInfoFormat getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public LogInfoFormat getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private LogInfoFormat(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              bitField0_ |= 0x00000001;
+              logName_ = input.readBytes();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              sequenceNr_ = input.readInt64();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.internal_static_LogInfoFormat_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.internal_static_LogInfoFormat_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.class, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<LogInfoFormat> PARSER =
+        new com.google.protobuf.AbstractParser<LogInfoFormat>() {
+      public LogInfoFormat parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new LogInfoFormat(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<LogInfoFormat> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required string logName = 1;
+    public static final int LOGNAME_FIELD_NUMBER = 1;
+    private java.lang.Object logName_;
+    /**
+     * <code>required string logName = 1;</code>
+     */
+    public boolean hasLogName() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required string logName = 1;</code>
+     */
+    public java.lang.String getLogName() {
+      java.lang.Object ref = logName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          logName_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string logName = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getLogNameBytes() {
+      java.lang.Object ref = logName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        logName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required int64 sequenceNr = 2;
+    public static final int SEQUENCENR_FIELD_NUMBER = 2;
+    private long sequenceNr_;
+    /**
+     * <code>required int64 sequenceNr = 2;</code>
+     */
+    public boolean hasSequenceNr() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required int64 sequenceNr = 2;</code>
+     */
+    public long getSequenceNr() {
+      return sequenceNr_;
+    }
+
+    private void initFields() {
+      logName_ = "";
+      sequenceNr_ = 0L;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasLogName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSequenceNr()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getLogNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt64(2, sequenceNr_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, getLogNameBytes());
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, sequenceNr_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code LogInfoFormat}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormatOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.internal_static_LogInfoFormat_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.internal_static_LogInfoFormat_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.class, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.Builder.class);
+      }
+
+      // Construct using com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        logName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        sequenceNr_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.internal_static_LogInfoFormat_descriptor;
+      }
+
+      public com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat getDefaultInstanceForType() {
+        return com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.getDefaultInstance();
+      }
+
+      public com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat build() {
+        com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat buildPartial() {
+        com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat result = new com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.logName_ = logName_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.sequenceNr_ = sequenceNr_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat) {
+          return mergeFrom((com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat other) {
+        if (other == com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.getDefaultInstance()) return this;
+        if (other.hasLogName()) {
+          bitField0_ |= 0x00000001;
+          logName_ = other.logName_;
+          onChanged();
+        }
+        if (other.hasSequenceNr()) {
+          setSequenceNr(other.getSequenceNr());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasLogName()) {
+          
+          return false;
+        }
+        if (!hasSequenceNr()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required string logName = 1;
+      private java.lang.Object logName_ = "";
+      /**
+       * <code>required string logName = 1;</code>
+       */
+      public boolean hasLogName() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required string logName = 1;</code>
+       */
+      public java.lang.String getLogName() {
+        java.lang.Object ref = logName_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          logName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string logName = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getLogNameBytes() {
+        java.lang.Object ref = logName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          logName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string logName = 1;</code>
+       */
+      public Builder setLogName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        logName_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string logName = 1;</code>
+       */
+      public Builder clearLogName() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        logName_ = getDefaultInstance().getLogName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string logName = 1;</code>
+       */
+      public Builder setLogNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+        logName_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required int64 sequenceNr = 2;
+      private long sequenceNr_ ;
+      /**
+       * <code>required int64 sequenceNr = 2;</code>
+       */
+      public boolean hasSequenceNr() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required int64 sequenceNr = 2;</code>
+       */
+      public long getSequenceNr() {
+        return sequenceNr_;
+      }
+      /**
+       * <code>required int64 sequenceNr = 2;</code>
+       */
+      public Builder setSequenceNr(long value) {
+        bitField0_ |= 0x00000002;
+        sequenceNr_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int64 sequenceNr = 2;</code>
+       */
+      public Builder clearSequenceNr() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        sequenceNr_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:LogInfoFormat)
+    }
+
+    static {
+      defaultInstance = new LogInfoFormat(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:LogInfoFormat)
+  }
+
   public interface ReplicationEndpointInfoFormatOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
@@ -42,25 +610,30 @@ public final class ReplicationProtocolFormats {
     com.google.protobuf.ByteString
         getEndpointIdBytes();
 
-    // repeated string logNames = 2;
+    // repeated .LogInfoFormat logInfos = 2;
     /**
-     * <code>repeated string logNames = 2;</code>
+     * <code>repeated .LogInfoFormat logInfos = 2;</code>
      */
-    java.util.List<java.lang.String>
-    getLogNamesList();
+    java.util.List<com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat> 
+        getLogInfosList();
     /**
-     * <code>repeated string logNames = 2;</code>
+     * <code>repeated .LogInfoFormat logInfos = 2;</code>
      */
-    int getLogNamesCount();
+    com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat getLogInfos(int index);
     /**
-     * <code>repeated string logNames = 2;</code>
+     * <code>repeated .LogInfoFormat logInfos = 2;</code>
      */
-    java.lang.String getLogNames(int index);
+    int getLogInfosCount();
     /**
-     * <code>repeated string logNames = 2;</code>
+     * <code>repeated .LogInfoFormat logInfos = 2;</code>
      */
-    com.google.protobuf.ByteString
-        getLogNamesBytes(int index);
+    java.util.List<? extends com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormatOrBuilder> 
+        getLogInfosOrBuilderList();
+    /**
+     * <code>repeated .LogInfoFormat logInfos = 2;</code>
+     */
+    com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormatOrBuilder getLogInfosOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code ReplicationEndpointInfoFormat}
@@ -120,10 +693,10 @@ public final class ReplicationProtocolFormats {
             }
             case 18: {
               if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-                logNames_ = new com.google.protobuf.LazyStringArrayList();
+                logInfos_ = new java.util.ArrayList<com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat>();
                 mutable_bitField0_ |= 0x00000002;
               }
-              logNames_.add(input.readBytes());
+              logInfos_.add(input.readMessage(com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.PARSER, extensionRegistry));
               break;
             }
           }
@@ -135,7 +708,7 @@ public final class ReplicationProtocolFormats {
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-          logNames_ = new com.google.protobuf.UnmodifiableLazyStringList(logNames_);
+          logInfos_ = java.util.Collections.unmodifiableList(logInfos_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -212,39 +785,45 @@ public final class ReplicationProtocolFormats {
       }
     }
 
-    // repeated string logNames = 2;
-    public static final int LOGNAMES_FIELD_NUMBER = 2;
-    private com.google.protobuf.LazyStringList logNames_;
+    // repeated .LogInfoFormat logInfos = 2;
+    public static final int LOGINFOS_FIELD_NUMBER = 2;
+    private java.util.List<com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat> logInfos_;
     /**
-     * <code>repeated string logNames = 2;</code>
+     * <code>repeated .LogInfoFormat logInfos = 2;</code>
      */
-    public java.util.List<java.lang.String>
-        getLogNamesList() {
-      return logNames_;
+    public java.util.List<com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat> getLogInfosList() {
+      return logInfos_;
     }
     /**
-     * <code>repeated string logNames = 2;</code>
+     * <code>repeated .LogInfoFormat logInfos = 2;</code>
      */
-    public int getLogNamesCount() {
-      return logNames_.size();
+    public java.util.List<? extends com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormatOrBuilder> 
+        getLogInfosOrBuilderList() {
+      return logInfos_;
     }
     /**
-     * <code>repeated string logNames = 2;</code>
+     * <code>repeated .LogInfoFormat logInfos = 2;</code>
      */
-    public java.lang.String getLogNames(int index) {
-      return logNames_.get(index);
+    public int getLogInfosCount() {
+      return logInfos_.size();
     }
     /**
-     * <code>repeated string logNames = 2;</code>
+     * <code>repeated .LogInfoFormat logInfos = 2;</code>
      */
-    public com.google.protobuf.ByteString
-        getLogNamesBytes(int index) {
-      return logNames_.getByteString(index);
+    public com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat getLogInfos(int index) {
+      return logInfos_.get(index);
+    }
+    /**
+     * <code>repeated .LogInfoFormat logInfos = 2;</code>
+     */
+    public com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormatOrBuilder getLogInfosOrBuilder(
+        int index) {
+      return logInfos_.get(index);
     }
 
     private void initFields() {
       endpointId_ = "";
-      logNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      logInfos_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -254,6 +833,12 @@ public final class ReplicationProtocolFormats {
       if (!hasEndpointId()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      for (int i = 0; i < getLogInfosCount(); i++) {
+        if (!getLogInfos(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -265,8 +850,8 @@ public final class ReplicationProtocolFormats {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeBytes(1, getEndpointIdBytes());
       }
-      for (int i = 0; i < logNames_.size(); i++) {
-        output.writeBytes(2, logNames_.getByteString(i));
+      for (int i = 0; i < logInfos_.size(); i++) {
+        output.writeMessage(2, logInfos_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -281,14 +866,9 @@ public final class ReplicationProtocolFormats {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(1, getEndpointIdBytes());
       }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < logNames_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeBytesSizeNoTag(logNames_.getByteString(i));
-        }
-        size += dataSize;
-        size += 1 * getLogNamesList().size();
+      for (int i = 0; i < logInfos_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, logInfos_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -398,6 +978,7 @@ public final class ReplicationProtocolFormats {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getLogInfosFieldBuilder();
         }
       }
       private static Builder create() {
@@ -408,8 +989,12 @@ public final class ReplicationProtocolFormats {
         super.clear();
         endpointId_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        logNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
+        if (logInfosBuilder_ == null) {
+          logInfos_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          logInfosBuilder_.clear();
+        }
         return this;
       }
 
@@ -442,12 +1027,15 @@ public final class ReplicationProtocolFormats {
           to_bitField0_ |= 0x00000001;
         }
         result.endpointId_ = endpointId_;
-        if (((bitField0_ & 0x00000002) == 0x00000002)) {
-          logNames_ = new com.google.protobuf.UnmodifiableLazyStringList(
-              logNames_);
-          bitField0_ = (bitField0_ & ~0x00000002);
+        if (logInfosBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            logInfos_ = java.util.Collections.unmodifiableList(logInfos_);
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.logInfos_ = logInfos_;
+        } else {
+          result.logInfos_ = logInfosBuilder_.build();
         }
-        result.logNames_ = logNames_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -469,15 +1057,31 @@ public final class ReplicationProtocolFormats {
           endpointId_ = other.endpointId_;
           onChanged();
         }
-        if (!other.logNames_.isEmpty()) {
-          if (logNames_.isEmpty()) {
-            logNames_ = other.logNames_;
-            bitField0_ = (bitField0_ & ~0x00000002);
-          } else {
-            ensureLogNamesIsMutable();
-            logNames_.addAll(other.logNames_);
+        if (logInfosBuilder_ == null) {
+          if (!other.logInfos_.isEmpty()) {
+            if (logInfos_.isEmpty()) {
+              logInfos_ = other.logInfos_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureLogInfosIsMutable();
+              logInfos_.addAll(other.logInfos_);
+            }
+            onChanged();
           }
-          onChanged();
+        } else {
+          if (!other.logInfos_.isEmpty()) {
+            if (logInfosBuilder_.isEmpty()) {
+              logInfosBuilder_.dispose();
+              logInfosBuilder_ = null;
+              logInfos_ = other.logInfos_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              logInfosBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getLogInfosFieldBuilder() : null;
+            } else {
+              logInfosBuilder_.addAllMessages(other.logInfos_);
+            }
+          }
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -487,6 +1091,12 @@ public final class ReplicationProtocolFormats {
         if (!hasEndpointId()) {
           
           return false;
+        }
+        for (int i = 0; i < getLogInfosCount(); i++) {
+          if (!getLogInfos(i).isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -584,97 +1194,244 @@ public final class ReplicationProtocolFormats {
         return this;
       }
 
-      // repeated string logNames = 2;
-      private com.google.protobuf.LazyStringList logNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      private void ensureLogNamesIsMutable() {
+      // repeated .LogInfoFormat logInfos = 2;
+      private java.util.List<com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat> logInfos_ =
+        java.util.Collections.emptyList();
+      private void ensureLogInfosIsMutable() {
         if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-          logNames_ = new com.google.protobuf.LazyStringArrayList(logNames_);
+          logInfos_ = new java.util.ArrayList<com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat>(logInfos_);
           bitField0_ |= 0x00000002;
          }
       }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.Builder, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormatOrBuilder> logInfosBuilder_;
+
       /**
-       * <code>repeated string logNames = 2;</code>
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
        */
-      public java.util.List<java.lang.String>
-          getLogNamesList() {
-        return java.util.Collections.unmodifiableList(logNames_);
+      public java.util.List<com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat> getLogInfosList() {
+        if (logInfosBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(logInfos_);
+        } else {
+          return logInfosBuilder_.getMessageList();
+        }
       }
       /**
-       * <code>repeated string logNames = 2;</code>
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
        */
-      public int getLogNamesCount() {
-        return logNames_.size();
+      public int getLogInfosCount() {
+        if (logInfosBuilder_ == null) {
+          return logInfos_.size();
+        } else {
+          return logInfosBuilder_.getCount();
+        }
       }
       /**
-       * <code>repeated string logNames = 2;</code>
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
        */
-      public java.lang.String getLogNames(int index) {
-        return logNames_.get(index);
+      public com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat getLogInfos(int index) {
+        if (logInfosBuilder_ == null) {
+          return logInfos_.get(index);
+        } else {
+          return logInfosBuilder_.getMessage(index);
+        }
       }
       /**
-       * <code>repeated string logNames = 2;</code>
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
        */
-      public com.google.protobuf.ByteString
-          getLogNamesBytes(int index) {
-        return logNames_.getByteString(index);
-      }
-      /**
-       * <code>repeated string logNames = 2;</code>
-       */
-      public Builder setLogNames(
-          int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureLogNamesIsMutable();
-        logNames_.set(index, value);
-        onChanged();
+      public Builder setLogInfos(
+          int index, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat value) {
+        if (logInfosBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureLogInfosIsMutable();
+          logInfos_.set(index, value);
+          onChanged();
+        } else {
+          logInfosBuilder_.setMessage(index, value);
+        }
         return this;
       }
       /**
-       * <code>repeated string logNames = 2;</code>
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
        */
-      public Builder addLogNames(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureLogNamesIsMutable();
-        logNames_.add(value);
-        onChanged();
+      public Builder setLogInfos(
+          int index, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.Builder builderForValue) {
+        if (logInfosBuilder_ == null) {
+          ensureLogInfosIsMutable();
+          logInfos_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          logInfosBuilder_.setMessage(index, builderForValue.build());
+        }
         return this;
       }
       /**
-       * <code>repeated string logNames = 2;</code>
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
        */
-      public Builder addAllLogNames(
-          java.lang.Iterable<java.lang.String> values) {
-        ensureLogNamesIsMutable();
-        super.addAll(values, logNames_);
-        onChanged();
+      public Builder addLogInfos(com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat value) {
+        if (logInfosBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureLogInfosIsMutable();
+          logInfos_.add(value);
+          onChanged();
+        } else {
+          logInfosBuilder_.addMessage(value);
+        }
         return this;
       }
       /**
-       * <code>repeated string logNames = 2;</code>
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
        */
-      public Builder clearLogNames() {
-        logNames_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        onChanged();
+      public Builder addLogInfos(
+          int index, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat value) {
+        if (logInfosBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureLogInfosIsMutable();
+          logInfos_.add(index, value);
+          onChanged();
+        } else {
+          logInfosBuilder_.addMessage(index, value);
+        }
         return this;
       }
       /**
-       * <code>repeated string logNames = 2;</code>
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
        */
-      public Builder addLogNamesBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureLogNamesIsMutable();
-        logNames_.add(value);
-        onChanged();
+      public Builder addLogInfos(
+          com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.Builder builderForValue) {
+        if (logInfosBuilder_ == null) {
+          ensureLogInfosIsMutable();
+          logInfos_.add(builderForValue.build());
+          onChanged();
+        } else {
+          logInfosBuilder_.addMessage(builderForValue.build());
+        }
         return this;
+      }
+      /**
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
+       */
+      public Builder addLogInfos(
+          int index, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.Builder builderForValue) {
+        if (logInfosBuilder_ == null) {
+          ensureLogInfosIsMutable();
+          logInfos_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          logInfosBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
+       */
+      public Builder addAllLogInfos(
+          java.lang.Iterable<? extends com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat> values) {
+        if (logInfosBuilder_ == null) {
+          ensureLogInfosIsMutable();
+          super.addAll(values, logInfos_);
+          onChanged();
+        } else {
+          logInfosBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
+       */
+      public Builder clearLogInfos() {
+        if (logInfosBuilder_ == null) {
+          logInfos_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+        } else {
+          logInfosBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
+       */
+      public Builder removeLogInfos(int index) {
+        if (logInfosBuilder_ == null) {
+          ensureLogInfosIsMutable();
+          logInfos_.remove(index);
+          onChanged();
+        } else {
+          logInfosBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.Builder getLogInfosBuilder(
+          int index) {
+        return getLogInfosFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormatOrBuilder getLogInfosOrBuilder(
+          int index) {
+        if (logInfosBuilder_ == null) {
+          return logInfos_.get(index);  } else {
+          return logInfosBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
+       */
+      public java.util.List<? extends com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormatOrBuilder> 
+           getLogInfosOrBuilderList() {
+        if (logInfosBuilder_ != null) {
+          return logInfosBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(logInfos_);
+        }
+      }
+      /**
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.Builder addLogInfosBuilder() {
+        return getLogInfosFieldBuilder().addBuilder(
+            com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
+       */
+      public com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.Builder addLogInfosBuilder(
+          int index) {
+        return getLogInfosFieldBuilder().addBuilder(
+            index, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .LogInfoFormat logInfos = 2;</code>
+       */
+      public java.util.List<com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.Builder> 
+           getLogInfosBuilderList() {
+        return getLogInfosFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.Builder, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormatOrBuilder> 
+          getLogInfosFieldBuilder() {
+        if (logInfosBuilder_ == null) {
+          logInfosBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormat.Builder, com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats.LogInfoFormatOrBuilder>(
+                  logInfos_,
+                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  getParentForChildren(),
+                  isClean());
+          logInfos_ = null;
+        }
+        return logInfosBuilder_;
       }
 
       // @@protoc_insertion_point(builder_scope:ReplicationEndpointInfoFormat)
@@ -5475,6 +6232,11 @@ public final class ReplicationProtocolFormats {
   }
 
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_LogInfoFormat_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_LogInfoFormat_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_ReplicationEndpointInfoFormat_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -5526,77 +6288,85 @@ public final class ReplicationProtocolFormats {
       "\n2src/main/protobuf/ReplicationProtocolF" +
       "ormats.proto\032+src/main/protobuf/DurableE" +
       "ventFormats.proto\0320src/main/protobuf/Rep" +
-      "licationFilterFormats.proto\"E\n\035Replicati" +
-      "onEndpointInfoFormat\022\022\n\nendpointId\030\001 \002(\t" +
-      "\022\020\n\010logNames\030\002 \003(\t\"\"\n GetReplicationEndp" +
-      "ointInfoFormat\"W\n\'GetReplicationEndpoint" +
-      "InfoSuccessFormat\022,\n\004info\030\001 \002(\0132\036.Replic" +
-      "ationEndpointInfoFormat\"Y\n\035ReplicationRe" +
-      "adEnvelopeFormat\022\'\n\007payload\030\001 \001(\0132\026.Repl",
-      "icationReadFormat\022\017\n\007logName\030\002 \001(\t\"\323\001\n\025R" +
-      "eplicationReadFormat\022\026\n\016fromSequenceNr\030\001" +
-      " \001(\003\022\024\n\014maxNumEvents\030\002 \001(\005\022,\n\006filter\030\003 \001" +
-      "(\0132\034.ReplicationFilterTreeFormat\022\023\n\013targ" +
-      "etLogId\030\004 \001(\t\022\022\n\nreplicator\030\005 \001(\t\0225\n\032cur" +
-      "rentTargetVersionVector\030\006 \001(\0132\021.VectorTi" +
-      "meFormat\"\254\001\n\034ReplicationReadSuccessForma" +
-      "t\022#\n\006events\030\001 \003(\0132\023.DurableEventFormat\022\033" +
-      "\n\023replicationProgress\030\002 \001(\003\022\023\n\013targetLog" +
-      "Id\030\003 \001(\t\0225\n\032currentSourceVersionVector\030\004",
-      " \001(\0132\021.VectorTimeFormat\"B\n\034ReplicationRe" +
-      "adFailureFormat\022\r\n\005cause\030\001 \001(\t\022\023\n\013target" +
-      "LogId\030\002 \001(\t\"\026\n\024ReplicationDueFormatB+\n\'c" +
-      "om.rbmhtechnology.eventuate.serializerH\001"
+      "licationFilterFormats.proto\"4\n\rLogInfoFo" +
+      "rmat\022\017\n\007logName\030\001 \002(\t\022\022\n\nsequenceNr\030\002 \002(" +
+      "\003\"U\n\035ReplicationEndpointInfoFormat\022\022\n\nen" +
+      "dpointId\030\001 \002(\t\022 \n\010logInfos\030\002 \003(\0132\016.LogIn" +
+      "foFormat\"\"\n GetReplicationEndpointInfoFo" +
+      "rmat\"W\n\'GetReplicationEndpointInfoSucces" +
+      "sFormat\022,\n\004info\030\001 \002(\0132\036.ReplicationEndpo",
+      "intInfoFormat\"Y\n\035ReplicationReadEnvelope" +
+      "Format\022\'\n\007payload\030\001 \001(\0132\026.ReplicationRea" +
+      "dFormat\022\017\n\007logName\030\002 \001(\t\"\323\001\n\025Replication" +
+      "ReadFormat\022\026\n\016fromSequenceNr\030\001 \001(\003\022\024\n\014ma" +
+      "xNumEvents\030\002 \001(\005\022,\n\006filter\030\003 \001(\0132\034.Repli" +
+      "cationFilterTreeFormat\022\023\n\013targetLogId\030\004 " +
+      "\001(\t\022\022\n\nreplicator\030\005 \001(\t\0225\n\032currentTarget" +
+      "VersionVector\030\006 \001(\0132\021.VectorTimeFormat\"\254" +
+      "\001\n\034ReplicationReadSuccessFormat\022#\n\006event" +
+      "s\030\001 \003(\0132\023.DurableEventFormat\022\033\n\023replicat",
+      "ionProgress\030\002 \001(\003\022\023\n\013targetLogId\030\003 \001(\t\0225" +
+      "\n\032currentSourceVersionVector\030\004 \001(\0132\021.Vec" +
+      "torTimeFormat\"B\n\034ReplicationReadFailureF" +
+      "ormat\022\r\n\005cause\030\001 \001(\t\022\023\n\013targetLogId\030\002 \001(" +
+      "\t\"\026\n\024ReplicationDueFormatB+\n\'com.rbmhtec" +
+      "hnology.eventuate.serializerH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
             com.google.protobuf.Descriptors.FileDescriptor root) {
           descriptor = root;
-          internal_static_ReplicationEndpointInfoFormat_descriptor =
+          internal_static_LogInfoFormat_descriptor =
             getDescriptor().getMessageTypes().get(0);
+          internal_static_LogInfoFormat_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_LogInfoFormat_descriptor,
+              new java.lang.String[] { "LogName", "SequenceNr", });
+          internal_static_ReplicationEndpointInfoFormat_descriptor =
+            getDescriptor().getMessageTypes().get(1);
           internal_static_ReplicationEndpointInfoFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationEndpointInfoFormat_descriptor,
-              new java.lang.String[] { "EndpointId", "LogNames", });
+              new java.lang.String[] { "EndpointId", "LogInfos", });
           internal_static_GetReplicationEndpointInfoFormat_descriptor =
-            getDescriptor().getMessageTypes().get(1);
+            getDescriptor().getMessageTypes().get(2);
           internal_static_GetReplicationEndpointInfoFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_GetReplicationEndpointInfoFormat_descriptor,
               new java.lang.String[] { });
           internal_static_GetReplicationEndpointInfoSuccessFormat_descriptor =
-            getDescriptor().getMessageTypes().get(2);
+            getDescriptor().getMessageTypes().get(3);
           internal_static_GetReplicationEndpointInfoSuccessFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_GetReplicationEndpointInfoSuccessFormat_descriptor,
               new java.lang.String[] { "Info", });
           internal_static_ReplicationReadEnvelopeFormat_descriptor =
-            getDescriptor().getMessageTypes().get(3);
+            getDescriptor().getMessageTypes().get(4);
           internal_static_ReplicationReadEnvelopeFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationReadEnvelopeFormat_descriptor,
               new java.lang.String[] { "Payload", "LogName", });
           internal_static_ReplicationReadFormat_descriptor =
-            getDescriptor().getMessageTypes().get(4);
+            getDescriptor().getMessageTypes().get(5);
           internal_static_ReplicationReadFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationReadFormat_descriptor,
               new java.lang.String[] { "FromSequenceNr", "MaxNumEvents", "Filter", "TargetLogId", "Replicator", "CurrentTargetVersionVector", });
           internal_static_ReplicationReadSuccessFormat_descriptor =
-            getDescriptor().getMessageTypes().get(5);
+            getDescriptor().getMessageTypes().get(6);
           internal_static_ReplicationReadSuccessFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationReadSuccessFormat_descriptor,
               new java.lang.String[] { "Events", "ReplicationProgress", "TargetLogId", "CurrentSourceVersionVector", });
           internal_static_ReplicationReadFailureFormat_descriptor =
-            getDescriptor().getMessageTypes().get(6);
+            getDescriptor().getMessageTypes().get(7);
           internal_static_ReplicationReadFailureFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationReadFailureFormat_descriptor,
               new java.lang.String[] { "Cause", "TargetLogId", });
           internal_static_ReplicationDueFormat_descriptor =
-            getDescriptor().getMessageTypes().get(7);
+            getDescriptor().getMessageTypes().get(8);
           internal_static_ReplicationDueFormat_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ReplicationDueFormat_descriptor,
