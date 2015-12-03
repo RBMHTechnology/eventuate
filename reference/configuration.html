@@ -240,9 +240,9 @@ eventuate {
     # event log.
     batch-size-max = 512
 
-    # Event replication retry interval. Event replication is re-tried at this
-    # interval if previous transfer batch was empty or failed.
-    retry-interval = 5s
+    # Event replication retry delay. Event replication is delayed for the
+    # given duration if a previous transfer batch was empty or failed.
+    retry-delay = 5s
 
     # Timeout for reading events from the remote source log.
     read-timeout = 10s
@@ -253,6 +253,14 @@ eventuate {
     # Maximum duration of missing heartbeats from a remote location until
     # that location is considered unavailable.
     failure-detection-limit = 60s
+
+    # If turned on, notifications about updates in a source event log are sent
+    # to remote replication endpoints which reduces event replication latency.
+    # The impact of sending update notifications on average replication latency
+    # decreases with increasing event write load. Applications with high event
+    # write load may even experience increased event replication throughput if
+    # update notifications are turned off.
+    update-notifications = on
   }
 
   log.leveldb {

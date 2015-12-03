@@ -108,7 +108,7 @@ or the Java version with::
 Recovery may take up to 20 seconds when using the default :ref:`configuration` settings for event replication and disaster recovery. To speed up the process you may want to the use following configuration settings::
 
     eventuate.log.replication.read-timeout = 2s
-    eventuate.log.replication.retry-interval = 1s
+    eventuate.log.replication.retry-delay = 1s
     eventuate.disaster-recovery.remote-operation-retry-max = 10
     eventuate.disaster-recovery.remote-operation-retry-delay = 1s
     eventuate.disaster-recovery.remote-operation-timeout = 1s
