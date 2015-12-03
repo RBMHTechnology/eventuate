@@ -55,7 +55,7 @@ object BasicReplicationThroughputConfig extends MultiNodeConfig {
       |akka.remote.netty.tcp.maximum-frame-size = 1048576b
       |
       |eventuate.log.replication.batch-size-max = 2000
-      |eventuate.log.replication.retry-interval = 10s
+      |eventuate.log.replication.retry-delay = 10s
       |eventuate.log.cassandra.index-update-limit = 200
     """.stripMargin))
 }

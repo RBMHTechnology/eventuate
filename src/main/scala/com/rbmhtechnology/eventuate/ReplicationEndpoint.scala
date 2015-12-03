@@ -36,8 +36,8 @@ import scala.concurrent.duration._
 import ReplicationProtocol._
 
 class ReplicationSettings(config: Config) {
-  val retryInterval: FiniteDuration =
-    config.getDuration("eventuate.log.replication.retry-interval", TimeUnit.MILLISECONDS).millis
+  val retryDelay: FiniteDuration =
+    config.getDuration("eventuate.log.replication.retry-delay", TimeUnit.MILLISECONDS).millis
 
   val readTimeout: FiniteDuration =
     config.getDuration("eventuate.log.replication.read-timeout", TimeUnit.MILLISECONDS).millis
@@ -318,7 +318,7 @@ private class Connector(sourceConnector: SourceConnector) extends Actor {
   }
 
   private def scheduleAcceptorRequest(acceptor: ActorSelection): Cancellable =
-    context.system.scheduler.schedule(0.seconds, sourceConnector.targetEndpoint.settings.retryInterval, new Runnable {
+    context.system.scheduler.schedule(0.seconds, sourceConnector.targetEndpoint.settings.retryDelay, new Runnable {
       override def run() = acceptor ! GetReplicationEndpointInfo
     })
 
@@ -380,7 +380,7 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
       context.become(reading)
       read(storedReplicationProgress, currentTargetVersionVector)
     case ReplicationWriteFailure(cause) =>
-      log.error(cause, s"replication write failed")
+      log.error(cause, "replication write failed")
       context.become(fetching)
       fetch()
   }
@@ -393,10 +393,10 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
   }
 
   private def scheduleFetch(): Unit =
-    scheduler.scheduleOnce(settings.retryInterval)(fetch())
+    scheduler.scheduleOnce(settings.retryDelay)(fetch())
 
   private def scheduleRead(): Unit =
-    readSchedule = Some(scheduler.scheduleOnce(settings.retryInterval, self, ReplicationDue))
+    readSchedule = Some(scheduler.scheduleOnce(settings.retryDelay, self, ReplicationDue))
 
   private def fetch(): Unit = {
     implicit val timeout = Timeout(settings.readTimeout)

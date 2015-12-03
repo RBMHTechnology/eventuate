@@ -50,7 +50,7 @@ object RecoverySpec {
   val config =
     """
       |eventuate.log.replication.read-timeout = 2s
-      |eventuate.log.replication.retry-interval = 1s
+      |eventuate.log.replication.retry-delay = 1s
       |eventuate.disaster-recovery.remote-operation-retry-max = 10
       |eventuate.disaster-recovery.remote-operation-retry-delay = 1s
       |eventuate.disaster-recovery.remote-operation-timeout = 1s
