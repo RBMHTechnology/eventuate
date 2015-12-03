@@ -181,6 +181,7 @@ trait EventLogSPI[A] { this: Actor =>
  * implement an event log by implementing the [[EventLogSPI]] methods.
  */
 abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with Stash with ActorLogging {
+  import NotificationChannel._
   import EventLog._
 
   // ---------------------------------------------------------------------------
@@ -232,10 +233,13 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
     SubscriberRegistry()
 
   /**
-   * Channel to notify [[Replicator]]s, reading from this event log, about updates.
+   * Optional channel to notify [[Replicator]]s, reading from this event log, about updates.
    */
-  private val channel: ActorRef =
-    context.actorOf(Props(new NotificationChannel(id)))
+  private val channel: Option[ActorRef] =
+    if (context.system.settings.config.getBoolean("eventuate.log.replication.update-notifications"))
+      Some(context.actorOf(Props(new NotificationChannel(id))))
+    else
+      None
 
   /**
    * This event log's snapshot store.
@@ -298,7 +302,7 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
     case r @ ReplicationRead(from, max, filter, targetLogId, _, currentTargetVersionVector) =>
       import services.readDispatcher
       val sdr = sender()
-      channel ! r
+      channel.foreach(_ ! r)
       read(from, clock.sequenceNr, max, evt => evt.replicable(currentTargetVersionVector, filter)) onComplete {
         case Success(BatchReadResult(events, progress)) =>
           val reply = ReplicationReadSuccess(events, progress, targetLogId, null)
@@ -306,7 +310,7 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
         case Failure(cause) =>
           val reply = ReplicationReadFailure(cause.getMessage, targetLogId)
           sdr ! reply
-          channel ! reply
+          channel.foreach(_ ! reply)
       }
     case r @ ReplicationReadSuccess(events, _, targetLogId, _) =>
       // Post-exclude events using a possibly updated version vector received from the
@@ -317,7 +321,7 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
       val updated = events.filterNot(_.before(currentTargetVersionVector))
       val reply = r.copy(updated, currentSourceVersionVector = clock.versionVector)
       sender() ! reply
-      channel ! reply
+      channel.foreach(_ ! reply)
       logFilterStatistics("source", events, updated)
     case w: Write =>
       processWrites(Seq(w))
@@ -373,7 +377,7 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
       case Success((updatedWrites, updatedEvents, clock2)) =>
         clock = clock2
         updatedWrites.foreach(w => registry.pushWriteSuccess(w.events, w.initiator, w.requestor, w.instanceId))
-        channel ! NotificationChannel.Updated(updatedEvents)
+        channel.foreach(_ ! Updated(updatedEvents))
       case Failure(e) =>
         writes.foreach(w => registry.pushWriteFailure(w.events, w.initiator, w.requestor, w.instanceId, e))
     }
@@ -397,7 +401,7 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
           val rws = ReplicationWriteSuccess(w.size, w.replicationProgress, clock2.versionVector)
           val sdr = w.initiator
           registry.pushReplicateSuccess(w.events)
-          channel ! w
+          channel.foreach(_ ! w)
           implicit val dispatcher = context.system.dispatchers.defaultGlobalDispatcher
           writeReplicationProgress(w.sourceLogId, w.replicationProgress) onComplete {
             case Success(_) =>
@@ -411,7 +415,7 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
               sdr ! ReplicationWriteFailure(e)
           }
         }
-        channel ! NotificationChannel.Updated(updatedEvents)
+        channel.foreach(_ ! Updated(updatedEvents))
       case Failure(e) =>
         writes.foreach { write =>
           write.initiator ! ReplicationWriteFailure(e)

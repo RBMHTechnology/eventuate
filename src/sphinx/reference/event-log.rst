@@ -189,7 +189,24 @@ Applications that increase the maximum batch size and/or store rather large even
 .. includecode:: ../conf/common.conf
    :snippet: maximum-frame-size
 
-otherwise, replication will fail.
+otherwise, replication may fail.
+
+.. _update-notifications:
+
+Update notifications
+^^^^^^^^^^^^^^^^^^^^
+
+After having replicated a non-empty event batch, a replication endpoint immediately makes another replication attempt. On the other hand, if the replicated event batch is empty, the next replication attempt is delayed by a duration that can be configured with:
+
+.. includecode:: ../conf/common.conf
+   :snippet: retry-delay
+
+Consequently, event replication latency has an upper bound that is determined by this parameter. To minimize event replication latency, replication endpoints by default send event log update notifications to each other. The corresponding configuration parameter is:
+
+.. includecode:: ../conf/common.conf
+   :snippet: update-notifications
+
+The impact of sending update notifications on average event replication latency, however, decreases with increasing event write load. Applications under high event write load may even experience increased event replication throughput if update notifications are turned ``off``.
 
 Failure detection
 ^^^^^^^^^^^^^^^^^

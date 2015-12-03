@@ -27,7 +27,7 @@ object MultiNodeReplicationConfig {
          |akka.loglevel = "ERROR"
          |
          |eventuate.log.replication.batch-size-max = 3
-         |eventuate.log.replication.retry-interval = 1s
+         |eventuate.log.replication.retry-delay = 1s
          |eventuate.log.replication.failure-detection-limit = 60s
          |
          |eventuate.snapshot.filesystem.dir = target/test-snapshot
