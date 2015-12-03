@@ -24,6 +24,7 @@ import akka.util.Timeout
 
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
+import com.rbmhtechnology.eventuate.log.EventLog
 import com.rbmhtechnology.eventuate.log.EventLogClock
 import com.typesafe.config.Config
 
@@ -50,12 +51,12 @@ private class RecoverySettings(config: Config) {
  * Represents a link between a local and remote event log that are subject to disaster recovery.
  *
  * @param logName Common name of the linked local and remote event log.
- * @param localLogId Local event log id.
  * @param localClock Local event log clock at the beginning of disaster recovery.
+ * @param localLogActor Local [[EventLog]] actor
  * @param remoteLogId Remote event log id.
- * @param remoteSequenceNr current sequence nr of the remote log
+ * @param remoteSequenceNr Current sequence nr of the remote log
  */
-private case class RecoveryLink(logName: String, localLogId: String, localClock: EventLogClock, remoteLogId: String, remoteSequenceNr: Long)
+private case class RecoveryLink(logName: String, localLogActor: ActorRef, localClock: EventLogClock, remoteLogId: String, remoteSequenceNr: Long)
 
 /**
  * Provides disaster recovery primitives.
@@ -124,7 +125,7 @@ private class Recovery(endpoint: ReplicationEndpoint) {
   def recoveryLinks(endpointInfos: Set[ReplicationEndpointInfo], clocks: Map[String, EventLogClock]) = for {
     endpointInfo <- endpointInfos
     logName <- endpoint.commonLogNames(endpointInfo)
-  } yield RecoveryLink(logName, endpoint.logId(logName), clocks(logName), endpointInfo.logId(logName), endpointInfo.logInfo(logName).get.sequenceNr)
+  } yield RecoveryLink(logName, endpoint.logs(logName), clocks(logName), endpointInfo.logId(logName), endpointInfo.logInfo(logName).get.sequenceNr)
 }
 
 /**
@@ -136,8 +137,8 @@ private class Recovery(endpoint: ReplicationEndpoint) {
  * This actor is also involved in disaster recovery and implements a state machine with the following
  * possible transitions:
  *
- *  - `initializing` -> `recoveringMetadata` -> `recoveringEvents` -> `processing` (when calling `endpoint.recover()`)
- *  - `initializing` -> `processing`                                               (when calling `endpoint.activate()`)
+ *  - `initializing` -> `recovering` -> `processing` (when calling `endpoint.recover()`)
+ *  - `initializing` -> `processing`                 (when calling `endpoint.activate()`)
  */
 private class Acceptor(endpoint: ReplicationEndpoint) extends Actor {
   import Acceptor._
@@ -150,28 +151,20 @@ private class Acceptor(endpoint: ReplicationEndpoint) extends Actor {
       context.become(processing)
     case Recover(links, promise) =>
       println(s"[recovery of ${endpoint.id}] Checking replication progress with remote endpoints ...")
-      context.become(recoveringMetadata(context.actorOf(Props(new RecoveryManager(endpoint.id, links))), promise))
+      context.become(recovering(context.actorOf(Props(new RecoveryManager(endpoint.id, links))), promise))
   }
 
-  def recoveringMetadata(recoveryManager: ActorRef, promise: Promise[Unit]): Receive = {
+  def recovering(recoveryManager: ActorRef, promise: Promise[Unit]): Receive = {
     case re: ReplicationReadEnvelope =>
       recoveryManager forward re
     case MetadataRecoveryCompleted =>
       endpoint.connectors.foreach(_.activate())
-      context.become(recoveringEvents(recoveryManager, promise) orElse processing)
-  }
-
-  def recoveringEvents(recoveryManager: ActorRef, promise: Promise[Unit]): Receive = {
-    case re: ReplicationReadResponseEnvelope =>
-      recoveryManager forward re
     case EventRecoveryCompleted =>
-      context.become(processing)
       promise.success(())
+      context.become(processing)
   }
 
   def processing: Receive = {
-    case ReplicationReadResponseEnvelope(readResult, _) =>
-      sender() forward readResult
     case ReplicationReadEnvelope(r, logName) =>
       endpoint.logs(logName) forward r
   }
@@ -204,11 +197,11 @@ private object Acceptor {
  *
  * - Metadata recovery: A [[ReplicationReadEnvelope]] from remote is responded with
  *   [[ReplicationReadSuccess]] with the current sequence nr to update remote's replication progress
- * - Event recovery: [[ReplicationReadResponseEnvelope]] responses are intercepted to detect when all
+ * - Event recovery: A [[ReplicationReadEnvelope]] from remote is intercepted to detect when all
  *   events, known to exist remotely at the beginning of recovery, are replicated and recovery is completed.
  *
  * [[RecoveryActor]]s are created to execute the disaster recovery steps for each replication link in `links`
- * and tracks the progress made by these actors. When all replication links have been processed this actor
+ * and the progress made by these actors is tracked. When all replication links have been processed this actor
  * notifies [[Acceptor]] (= parent) that recovery completed and ends itself and its childs.
  */
 private class RecoveryManager(endpointId: String, links: Set[RecoveryLink]) extends Actor {
@@ -236,8 +229,8 @@ private class RecoveryManager(endpointId: String, links: Set[RecoveryLink]) exte
   }
 
   def recoveringEvents(active: Set[RecoveryLink]): Receive = {
-    case ReplicationReadResponseEnvelope(readResult, sourceLogId) =>
-      compensators(sourceLogId) forward readResult
+    case ReplicationReadEnvelope(readRequest, _) =>
+      compensators(readRequest.targetLogId) forward readRequest
     case RecoveryStepCompleted(link) if active.contains(link) =>
       val updatedActive = active - link
       if (updatedActive.isEmpty) {
@@ -278,9 +271,9 @@ private class RecoveryActor(endpointId: String, link: RecoveryLink) extends Acto
   }
 
   def recoveringEvents: Receive = {
-    case readResult @ ReplicationReadSuccess(_, replicationProgress, _, _) =>
-      sender() forward readResult
-      if (link.remoteSequenceNr <= replicationProgress)
+    case readRequest: ReplicationRead =>
+      link.localLogActor forward readRequest
+      if (link.remoteSequenceNr < readRequest.fromSequenceNr)
         context.parent ! RecoveryStepCompleted(link)
   }
 }

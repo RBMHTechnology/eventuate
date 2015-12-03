@@ -152,17 +152,6 @@ object ReplicationProtocol {
   case class ReplicationRead(fromSequenceNr: Long, maxNumEvents: Int, filter: ReplicationFilter, targetLogId: String, replicator: ActorRef, currentTargetVersionVector: VectorTime) extends Format
 
   /**
-   * Marks all possible responses to a [[ReplicationRead]] request
-   */
-  trait ReplicationReadResponse extends Format
-
-  /**
-   * Wraps a [[ReplicationReadResponse]] and includes the id of the source log.
-   * This id is used to track replication progress per log in case of endpoint recovery.
-   */
-  case class ReplicationReadResponseEnvelope(payload: ReplicationReadResponse, sourceLogId: String)
-
-  /**
    * Success reply after a [[ReplicationRead]].
    *
    * @param events read events.
@@ -170,12 +159,12 @@ object ReplicationProtocol {
    *                            or equal to the sequence number of the last read
    *                            event (if any).
    */
-  case class ReplicationReadSuccess(events: Seq[DurableEvent], replicationProgress: Long, targetLogId: String, currentSourceVersionVector: VectorTime) extends DurableEventBatch with ReplicationReadResponse
+  case class ReplicationReadSuccess(events: Seq[DurableEvent], replicationProgress: Long, targetLogId: String, currentSourceVersionVector: VectorTime) extends DurableEventBatch with Format
 
   /**
    * Failure reply after a [[ReplicationRead]].
    */
-  case class ReplicationReadFailure(cause: String, targetLogId: String) extends ReplicationReadResponse
+  case class ReplicationReadFailure(cause: String, targetLogId: String) extends Format
 
   /**
    * Instructs an event log to batch-execute the given `writes`.

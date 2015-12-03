@@ -410,10 +410,8 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
     implicit val timeout = Timeout(settings.readTimeout)
 
     (source.acceptor ? ReplicationReadEnvelope(ReplicationRead(storedReplicationProgress + 1, settings.batchSizeMax, filter, target.logId, self, currentTargetVersionVector), source.logName))
-      .mapTo[ReplicationReadResponse]
       .recover { case t => ReplicationReadFailure(t.getMessage, target.logId) }
-      .map(ReplicationReadResponseEnvelope(_, source.logId))
-      .pipeTo(target.endpoint.acceptor)
+      .pipeTo(self)
   }
 
   private def write(events: Seq[DurableEvent], replicationProgress: Long, currentSourceVersionVector: VectorTime): Unit = {
