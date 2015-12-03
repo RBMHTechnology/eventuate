@@ -106,11 +106,8 @@ class NotificationChannelSpec extends TestKit(ActorSystem("test")) with WordSpec
     }
     "not send a notification if an update does not pass the target's replication filter" in {
       sourceRead(targetLogId1, vectorTime(0, 1, 0), new PayloadFilter("a"))
-      sourceUpdate(Seq(
-        event("a", vectorTime(1, 0, 0)),
-        event("b", vectorTime(2, 0, 0))))
+      sourceUpdate(Seq(event("b", vectorTime(1, 0, 0))))
 
-      probe.expectMsg(ReplicationDue)
       probe.expectNoMsg(timeout)
     }
     "not send a notification if a target is currently running a replication read" in {
