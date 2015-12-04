@@ -30,6 +30,7 @@ import com.rbmhtechnology.eventuate.utilities._
 import org.apache.commons.io.FileUtils
 import org.scalatest._
 
+import scala.collection.breakOut
 import scala.concurrent.duration._
 
 object RecoverySpec {
@@ -112,6 +113,26 @@ class RecoverySpec extends WordSpec with Matchers with ReplicationNodeRegistry w
 
       an [Exception] shouldBe thrownBy(endpoint.recover().await)
     }
+    "succeed normally if the endpoint was healthy" in {
+      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
+      val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2552)))
+
+      nodeA.endpoint.activate()
+      nodeB.endpoint.activate()
+      val targetA = nodeA.endpoint.target("L1")
+      val targetB = nodeB.endpoint.target("L1")
+
+      write(targetA, (0 to 20).map("A" + _))
+      write(targetB, (0 to 20).map("B" + _))
+
+      Thread.sleep(50) // let some replication take place
+      nodeA.terminate().await
+      val restartedA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
+
+      restartedA.endpoint.recover().await
+
+      assertConvergence((0 to 20).flatMap(i => Set(s"A$i", s"B$i"))(breakOut), restartedA, nodeB)
+    }
     "repair inconsistencies of an endpoint that has lost all events" in {
       val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2555)))
       val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2555)))
@@ -157,6 +178,33 @@ class RecoverySpec extends WordSpec with Matchers with ReplicationNodeRegistry w
       write(nodeD2.endpoint.target("L1"), List("d1"))
 
       assertConvergence(Set("a", "b", "c", "d", "d1"), nodeA, nodeB, nodeC, nodeD2)
+    }
+    "repair inconsistencies if recovery was stopped and restarted" in {
+      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
+      val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2552)))
+
+      nodeA.endpoint.activate()
+      nodeB.endpoint.activate()
+      val targetA = nodeA.endpoint.target("L1")
+      val logDirA = logDirectory(targetA)
+      val targetB = nodeB.endpoint.target("L1")
+
+      write(targetA, (0 to 20).map("A" + _))
+      write(targetB, (0 to 20).map("B" + _))
+      assertConvergence((0 to 20).flatMap(i => Set(s"A$i", s"B$i"))(breakOut), nodeA, nodeB)
+
+      nodeA.terminate().await
+      FileUtils.deleteDirectory(logDirA)
+
+      val restartedA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
+      restartedA.endpoint.recover()
+      Thread.sleep(2000) // Let some recovery take place
+      restartedA.terminate()
+
+      val restartedA2 = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
+      restartedA2.endpoint.recover().await
+
+      assertConvergence((0 to 20).flatMap(i => Set(s"A$i", s"B$i"))(breakOut), restartedA2, nodeB)
     }
     "repair inconsistencies of an endpoint that has lost all events but has been partially recovered from a storage backup" in {
       val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2555)))
