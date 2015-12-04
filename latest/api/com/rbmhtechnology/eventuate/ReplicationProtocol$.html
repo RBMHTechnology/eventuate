@@ -267,7 +267,7 @@ and applying the given replication <code>filter</code>.</p>
       <p class="shortcomment cmt"><a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a> requests are sent within this envelope to allow a remote acceptor to
 dispatch the request to the appropriate log.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReplicationReadFailureextendsReplicationProtocol.ReplicationReadResponsewithProductwithSerializable"></a>
+      <a id="ReplicationReadFailureextendsReplicationProtocol.FormatwithProductwithSerializable"></a>
       <a id="ReplicationReadFailure:ReplicationReadFailure"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -275,53 +275,16 @@ dispatch the request to the appropriate log.</p>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationReadFailure.html"><span class="name">ReplicationReadFailure</span></a><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$ReplicationReadResponse.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadResponse">ReplicationReadResponse</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$ReplicationReadFailure.html"><span class="name">ReplicationReadFailure</span></a><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadFailureextendsReplicationProtocol.ReplicationReadResponsewithProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadFailureextendsReplicationProtocol.FormatwithProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Failure reply after a <a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadResponse" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="ReplicationReadResponseextendsReplicationProtocol.Format"></a>
-      <a id="ReplicationReadResponse:ReplicationReadResponse"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationReadResponse.html"><span class="name">ReplicationReadResponse</span></a><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadResponseextendsReplicationProtocol.Format" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Marks all possible responses to a <a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a> request
-</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadResponseEnvelope" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ReplicationReadResponseEnvelopeextendsProductwithSerializable"></a>
-      <a id="ReplicationReadResponseEnvelope:ReplicationReadResponseEnvelope"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationReadResponseEnvelope.html"><span class="name">ReplicationReadResponseEnvelope</span></a><span class="params">(<span name="payload">payload: <a href="ReplicationProtocol$$ReplicationReadResponse.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadResponse">ReplicationReadResponse</a></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadResponseEnvelopeextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Wraps a <a href="ReplicationProtocol$$ReplicationReadResponse.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadResponse">ReplicationReadResponse</a> and includes the id of the source log.</p><div class="fullcomment"><div class="comment cmt"><p>Wraps a <a href="ReplicationProtocol$$ReplicationReadResponse.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadResponse">ReplicationReadResponse</a> and includes the id of the source log.
-This id is used to track replication progress per log in case of endpoint recovery.
-</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ReplicationReadSuccessextendsDurableEventBatchwithReplicationProtocol.ReplicationReadResponsewithProductwithSerializable"></a>
+      <a id="ReplicationReadSuccessextendsDurableEventBatchwithReplicationProtocol.FormatwithProductwithSerializable"></a>
       <a id="ReplicationReadSuccess:ReplicationReadSuccess"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -329,10 +292,10 @@ This id is used to track replication progress per log in case of endpoint recove
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationReadSuccess.html"><span class="name">ReplicationReadSuccess</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="currentSourceVersionVector">currentSourceVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <a href="DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a> with <a href="ReplicationProtocol$$ReplicationReadResponse.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadResponse">ReplicationReadResponse</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$ReplicationReadSuccess.html"><span class="name">ReplicationReadSuccess</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="currentSourceVersionVector">currentSourceVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <a href="DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a> with <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadSuccessextendsDurableEventBatchwithReplicationProtocol.ReplicationReadResponsewithProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadSuccessextendsDurableEventBatchwithReplicationProtocol.FormatwithProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
