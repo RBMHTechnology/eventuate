@@ -141,13 +141,13 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfter
     val offset = currentSequenceNr + 1L
     val expected = expectedReplicatedEvents(events, offset)
     log.tell(ReplicationWrite(events, remoteLogId, replicationProgress, VectorTime()), replicatorProbe.ref)
-    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(_, `replicationProgress`, _) => }
+    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(_, _, `replicationProgress`, _) => }
     expected
   }
 
   def writeReplicationProgress(replicationProgress: Long, expectedStoredReplicationProgress: Long, remoteLogId: String = remoteLogId): Unit = {
     log.tell(ReplicationWrite(Seq(), remoteLogId, replicationProgress, VectorTime()), replicatorProbe.ref)
-    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(0, `expectedStoredReplicationProgress`, _) => }
+    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(0, _, `expectedStoredReplicationProgress`, _) => }
   }
 
   def registerCollaborator(aggregateId: Option[String] = None, collaborator: TestProbe = TestProbe()): TestProbe = {

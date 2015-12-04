@@ -398,7 +398,7 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
       case Success((updatedWrites, updatedEvents, clock2)) =>
         clock = clock2
         updatedWrites.foreach { w =>
-          val rws = ReplicationWriteSuccess(w.size, w.replicationProgress, clock2.versionVector)
+          val rws = ReplicationWriteSuccess(w.size, w.sourceLogId, w.replicationProgress, clock2.versionVector)
           val sdr = w.initiator
           registry.pushReplicateSuccess(w.events)
           channel.foreach(_ ! w)

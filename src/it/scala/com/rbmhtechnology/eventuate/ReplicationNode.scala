@@ -17,11 +17,32 @@
 package com.rbmhtechnology.eventuate
 
 import akka.actor._
+import akka.testkit.TestProbe
+import com.rbmhtechnology.eventuate.ReplicationNode.EventListener
 
 import org.scalatest._
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+
+object ReplicationNode {
+  class EventListener(locationId: String, eventLog: ActorRef)(implicit system: ActorSystem) extends TestProbe(system, s"${locationId}_EventListener") {
+
+    private class ListenerView(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedView {
+      override def onEvent = {
+        case event => probe ! event
+      }
+      override def onCommand = Actor.emptyBehavior
+    }
+
+    system.actorOf(Props(new ListenerView(testActorName, eventLog, ref)))
+
+    def waitForMessage(msg: Any) = fishForMessage(hint = msg.toString) {
+      case `msg` => true
+      case _ => false
+    }
+  }
+}
 
 class ReplicationNode(val id: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection], customConfig: String = "", activate: Boolean = true)(implicit logFactory: String => Props) {
   val system: ActorSystem =
@@ -39,6 +60,8 @@ class ReplicationNode(val id: String, logNames: Set[String], port: Int, connecti
   def terminate(): Future[Terminated] = {
     system.terminate()
   }
+
+  def eventListener(logName: String) = new EventListener(id, logs(logName))(system)
 
   private def localEndpoint(port: Int) =
     s"127.0.0.1:${port}"
