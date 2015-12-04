@@ -1,3 +1,9 @@
+import Keys.{compile => comp, _}
+
+val akkaVersion = "2.4.0"
+
+val protobufVersion = "2.5.0"
+
 organization := "com.rbmhtechnology"
 
 name := "eventuate"
@@ -6,34 +12,27 @@ version := "0.5-SNAPSHOT"
 
 scalaVersion := "2.11.7"
 
-val akkaVersion = "2.4.0"
-
 scalacOptions in (Compile, doc) := List("-skip-packages", "akka")
 
-scalacOptions ++= Seq(
-  "-feature",
-  "-unchecked",
-  "-deprecation",
-  "-Xlint"
-)
+scalacOptions ++= Seq("-feature", "-unchecked", "-deprecation", "-Xlint")
 
-connectInput in run := true
+fork in Test := true
 
 parallelExecution in Test := false
 
-fork in Test := true
+connectInput in run := true
 
 resolvers += "krasserm at bintray" at "http://dl.bintray.com/krasserm/maven"
 
 libraryDependencies ++= Seq(
   "com.datastax.cassandra"           % "cassandra-driver-core"         % "2.1.5",
   "com.google.guava"                 % "guava"                         % "16.0",
-  "com.google.protobuf"              % "protobuf-java"                 % "2.5.0",
+  "com.google.protobuf"              % "protobuf-java"                 % protobufVersion,
   "com.typesafe.akka"               %% "akka-remote"                   % akkaVersion,
   "com.typesafe.akka"               %% "akka-testkit"                  % akkaVersion  % "test,it",
   "com.typesafe.akka"               %% "akka-multi-node-testkit"       % akkaVersion  % "test",
   "commons-io"                       % "commons-io"                    % "2.4",
-  "org.cassandraunit"                % "cassandra-unit"                % "2.0.2.2"    % "test,it" excludeAll(ExclusionRule(organization = "ch.qos.logback")),
+  "org.cassandraunit"                % "cassandra-unit"                % "2.0.2.2"    % "test,it" excludeAll ExclusionRule(organization = "ch.qos.logback"),
   "org.functionaljava"               % "functionaljava"                % "4.2-beta-1" % "test",
   "org.functionaljava"               % "functionaljava-java8"          % "4.2-beta-1" % "test,it",
   "org.fusesource.leveldbjni"        % "leveldbjni-all"                % "1.8",
@@ -79,6 +78,17 @@ publishTo := {
 publishMavenStyle := true
 
 // ----------------------------------------------------------------------
+//  Protobuf compilation
+// ----------------------------------------------------------------------
+
+protobufSettings
+
+version in protobufConfig := "2.5.0"
+runProtoc in protobufConfig := (args =>
+  com.github.os72.protocjar.Protoc.runProtoc("-v250" +: args.toArray)
+)
+
+// ----------------------------------------------------------------------
 //  Integration and Multi-JVM testing
 // ----------------------------------------------------------------------
 
@@ -99,14 +109,14 @@ lazy val root = (project in file("."))
   .settings(multiJvmSettings: _*)
 
 lazy val itSettings = Defaults.itSettings ++ Seq(
-  compile in IntegrationTest <<= (compile in IntegrationTest) triggeredBy (compile in Test),
+  comp in IntegrationTest <<= (comp in IntegrationTest) triggeredBy (comp in Test),
   test in IntegrationTest <<= (test in IntegrationTest) triggeredBy (test in Test),
   parallelExecution in IntegrationTest := false,
   fork in IntegrationTest := true
 )
 
 lazy val multiJvmSettings = SbtMultiJvm.multiJvmSettings ++ Seq(
-  compile in MultiJvm <<= (compile in MultiJvm) triggeredBy (compile in Test),
+  comp in MultiJvm <<= (comp in MultiJvm) triggeredBy (comp in Test),
   parallelExecution in Test := false,
   executeTests in Test <<=
     ((executeTests in Test), (executeTests in MultiJvm)) map {
@@ -126,7 +136,7 @@ lazy val multiJvmSettings = SbtMultiJvm.multiJvmSettings ++ Seq(
 
 lazy val exampleClasspath = taskKey[Unit]("generate example classpath script")
 
-exampleClasspath <<= exampleClasspath.dependsOn(compile in Test)
+exampleClasspath <<= exampleClasspath.dependsOn(comp in Test)
 
 exampleClasspath := {
   import java.nio.file.{Paths, Files, StandardOpenOption}
@@ -147,8 +157,9 @@ exampleClasspath := {
 }
 
 // ----------------------------------------------------------------------
-//  source code formatting
+//  Source code formatting
 // ----------------------------------------------------------------------
+
 com.rbmhtechnology.eventuate.Formatting.formatSettings
 
 // ----------------------------------------------------------------------
@@ -178,5 +189,5 @@ headers := Map(
   "scala" -> (HeaderPattern.cStyleBlockComment, header),
   "java"  -> (HeaderPattern.cStyleBlockComment, header))
 
-inConfig(Compile)(compileInputs.in(compile) <<= compileInputs.in(compile).dependsOn(createHeaders.in(compile)))
-inConfig(Test)(compileInputs.in(compile) <<= compileInputs.in(compile).dependsOn(createHeaders.in(compile)))
+inConfig(Compile)(compileInputs.in(comp) <<= compileInputs.in(comp).dependsOn(createHeaders.in(comp)))
+inConfig(Test)(compileInputs.in(comp) <<= compileInputs.in(comp).dependsOn(createHeaders.in(comp)))

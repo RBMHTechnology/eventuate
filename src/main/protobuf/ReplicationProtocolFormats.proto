@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-// ------------------------------------------------------------------------
-//  Run 'build.proto' from the project's root directory for compilation
-// ------------------------------------------------------------------------
-
 option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
-import "src/main/protobuf/DurableEventFormats.proto";
-import "src/main/protobuf/ReplicationFilterFormats.proto";
+import "DurableEventFormats.proto";
+import "ReplicationFilterFormats.proto";
 
 message LogInfoFormat {
   required string logName = 1;

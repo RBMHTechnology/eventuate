@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-// ------------------------------------------------------------------------
-//  Run 'build.proto' from the project's root directory for compilation
-// ------------------------------------------------------------------------
-
 option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
