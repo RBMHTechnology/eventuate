@@ -45,43 +45,53 @@ abstract class ReplicationCycleSpec extends WordSpec with Matchers with Replicat
   def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection]): ReplicationNode =
     register(new ReplicationNode(nodeId(nodeName), logNames, port, connections, "eventuate.log.replication.batch-size-max = 50"))
 
+  def testReplication(nodeA: ReplicationNode, nodeB: ReplicationNode, nodeC: ReplicationNode): Unit = {
+    val probeA = new TestProbe(nodeA.system)
+    val probeB = new TestProbe(nodeB.system)
+    val probeC = new TestProbe(nodeC.system)
+
+    val actorA = nodeA.system.actorOf(Props(new ReplicatedActor("pa", nodeA.logs("L1"), probeA.ref)))
+    val actorB = nodeB.system.actorOf(Props(new ReplicatedActor("pb", nodeB.logs("L1"), probeB.ref)))
+    val actorC = nodeB.system.actorOf(Props(new ReplicatedActor("pc", nodeC.logs("L1"), probeC.ref)))
+
+    actorA ! "a1"
+    actorB ! "b1"
+    actorC ! "c1"
+
+    val expected = List("a1", "b1", "c1")
+
+    val eventsA = probeA.expectMsgAllOf(expected: _*)
+    val eventsB = probeB.expectMsgAllOf(expected: _*)
+    val eventsC = probeC.expectMsgAllOf(expected: _*)
+
+    val num = 100
+    val expectedA = 2 to num map { i => s"a$i"}
+    val expectedB = 2 to num map { i => s"b$i"}
+    val expectedC = 2 to num map { i => s"c$i"}
+    val all = expectedA ++ expectedB ++ expectedC
+
+    expectedA.foreach(s => actorA ! s)
+    expectedB.foreach(s => actorB ! s)
+    expectedC.foreach(s => actorC ! s)
+
+    probeA.expectMsgAllOf(all: _*)
+    probeB.expectMsgAllOf(all: _*)
+    probeC.expectMsgAllOf(all: _*)
+  }
+
   "Event log replication" must {
-    "support cyclic replication networks" in {
-      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553), replicationConnection(2554)))
-      val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2552), replicationConnection(2554)))
-      val nodeC = node("C", Set("L1"), 2554, Set(replicationConnection(2552), replicationConnection(2553)))
+    "support bi-directional cyclic replication networks" in {
+      testReplication(
+        node("A", Set("L1"), 2552, Set(replicationConnection(2553), replicationConnection(2554))),
+        node("B", Set("L1"), 2553, Set(replicationConnection(2552), replicationConnection(2554))),
+        node("C", Set("L1"), 2554, Set(replicationConnection(2552), replicationConnection(2553))))
 
-      val probeA = new TestProbe(nodeA.system)
-      val probeB = new TestProbe(nodeB.system)
-      val probeC = new TestProbe(nodeC.system)
-
-      val actorA = nodeA.system.actorOf(Props(new ReplicatedActor("pa", nodeA.logs("L1"), probeA.ref)))
-      val actorB = nodeB.system.actorOf(Props(new ReplicatedActor("pb", nodeB.logs("L1"), probeB.ref)))
-      val actorC = nodeB.system.actorOf(Props(new ReplicatedActor("pc", nodeC.logs("L1"), probeC.ref)))
-
-      actorA ! "a1"
-      actorB ! "b1"
-      actorC ! "c1"
-
-      val expected = List("a1", "b1", "c1")
-
-      val eventsA = probeA.expectMsgAllOf(expected: _*)
-      val eventsB = probeB.expectMsgAllOf(expected: _*)
-      val eventsC = probeC.expectMsgAllOf(expected: _*)
-
-      val num = 100
-      val expectedA = 2 to num map { i => s"a$i"}
-      val expectedB = 2 to num map { i => s"b$i"}
-      val expectedC = 2 to num map { i => s"c$i"}
-      val all = expectedA ++ expectedB ++ expectedC
-
-      expectedA.foreach(s => actorA ! s)
-      expectedB.foreach(s => actorB ! s)
-      expectedC.foreach(s => actorC ! s)
-
-      probeA.expectMsgAllOf(all: _*)
-      probeB.expectMsgAllOf(all: _*)
-      probeC.expectMsgAllOf(all: _*)
+    }
+    "support uni-directional cyclic replication networks" in {
+      testReplication(
+        node("A", Set("L1"), 2552, Set(replicationConnection(2553))),
+        node("B", Set("L1"), 2553, Set(replicationConnection(2554))),
+        node("C", Set("L1"), 2554, Set(replicationConnection(2552))))
     }
   }
 }
