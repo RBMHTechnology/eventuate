@@ -182,7 +182,7 @@ trait CRDTService[A, B] {
     override def stateSync: Boolean =
       ops.precondition
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case Get(`crdtId`) =>
         sender() ! GetReply(crdtId, ops.value(crdt))
       case Update(`crdtId`, operation) =>
@@ -192,7 +192,6 @@ trait CRDTService[A, B] {
           case Some(op) =>
             persist(ValueUpdated(crdtId, op)) {
               case Success(evt) =>
-                onEvent(evt)
                 sender() ! UpdateReply(crdtId, ops.value(crdt))
               case Failure(err) =>
                 sender() ! Status.Failure(err)
@@ -207,13 +206,13 @@ trait CRDTService[A, B] {
         }
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case evt @ ValueUpdated(id, operation) =>
         crdt = ops.update(crdt, operation, lastHandledEvent)
         context.parent ! OnChange(crdt, operation)
     }
 
-    override val onSnapshot: Receive = {
+    override def onSnapshot = {
       case snapshot =>
         crdt = snapshot.asInstanceOf[A]
         context.parent ! OnChange(crdt, null)

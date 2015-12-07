@@ -15,16 +15,16 @@ A command handler is partial function of type ``PartialFunction[Any, Unit]`` for
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: command-handler
 
-Messages sent by an application to an event-sourced actor are received by its command handler. Usually, a command handler first validates a command, then derives one or more events from it, persists these events with ``persist`` and if persistence succeeds, calls the event handler\ [#]_ and replies to the command sender. The ``persist`` method has the following signature\ [#]_:
+Messages sent by an application to an event-sourced actor are received by its command handler. Usually, a command handler first validates a command, then derives one or more events from it, persists these events with ``persist`` and replies with the persistence result. The ``persist`` method has the following signature\ [#]_:
 
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: persist-signature
 
 The ``persist`` method can be called one ore more times per received command. Calling ``persist`` does not immediately write events to the event log. Instead, events from ``persist`` calls are collected in memory and written to the event log when ``onCommand`` returns. 
 
-Events are written asynchronously to the event-sourced actor’s ``eventLog``. After writing, the ``eventLog`` actor internally replies to the event-sourced actor with a success or failure message which is passed as argument to the persist ``handler``. 
+Events are written asynchronously to the event-sourced actor’s ``eventLog``. After writing, the ``eventLog`` actor internally replies to the event-sourced actor with a success or failure message which is passed as argument to the persist ``handler``. Before calling the persist ``handler``, the event-sourced actor internally calls the ``onEvent`` handler with the written event if writing was successful and ``onEvent`` is defined at that event.
 
-The persist handler is called during a normal actor message dispatch. It can therefore safely access an actor’s internal state. The ``sender()`` reference of the original command sender is also preserved, so that a persist handler can reply to the initial command sender.
+Both, event handler and persist handler are called on a dispatcher thread of the actor. They can therefore safely access internal actor state. The ``sender()`` reference of the original command sender is also preserved, so that a persist handler can reply to the initial command sender.
 
 .. hint::
    The ``EventsourcedActor`` trait also defines a ``persistN`` method. Refer to the EventsourcedActor_ API documentation for details.
@@ -335,7 +335,6 @@ Custom snapshot serialization also works for state managed with ``ConcurrentVers
 
 Custom serializers can also be configured for the type parameter ``A`` of ``MVRegister[A]``, ``LWWRegister[A]`` and ``ORSet[A]``, :ref:`commutative-replicated-data-types` for which the corresponding CRDT service interfaces provide a ``save`` method for saving snapshots.
 
-.. [#] An explicit ``onEvent`` call may become obsolete in future releases.
 .. [#] The ``customDestinationAggregateIds`` parameter is described in section :ref:`event-routing`.
 .. [#] Writes from different event-sourced actors that have ``stateSync`` set to ``true`` are still batched, but not the writes from a single event-sourced actor.
 .. [#] Event replay can optionally start from :ref:`snapshots` of actor state.

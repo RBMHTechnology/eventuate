@@ -30,14 +30,14 @@ import scala.util._
 
 object EventsourcedActorCausalitySpec {
   class Collaborator(val id: String, val eventLog: ActorRef, override val sharedClockEntry: Boolean, handles: Set[String], probe: ActorRef) extends EventsourcedActor {
-    val onCommand: Receive = {
+    def onCommand = {
       case s: String => persist(s) {
-        case Success(e) => onEvent(e)
+        case Success(e) =>
         case Failure(e) => throw e
       }
     }
 
-    val onEvent: Receive = {
+    def onEvent = {
       case s: String if handles.contains(s) =>
         probe ! ((s, lastVectorTimestamp, currentVectorTime))
     }

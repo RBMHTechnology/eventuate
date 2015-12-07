@@ -119,7 +119,6 @@ public class OrderActor extends AbstractEventsourcedActor {
     private <E> void processEvent(E event) {
         persist(event, (evt, err) -> {
             if (err == null) {
-                onEvent().apply(evt);
                 sender().tell(new CommandSuccess(orderId), self());
             } else {
                 sender().tell(new CommandFailure(orderId, err), self());

@@ -30,8 +30,8 @@ object EventsourcedActorIntegrationSpec {
   case class Cmd(payloads: String*)
   case class State(state: Vector[String])
 
-  class SampleActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
-    override val onCommand: Receive = {
+  class ReplyActor(val id: String, val eventLog: ActorRef) extends EventsourcedActor {
+    override def onCommand = {
       case "reply-success" => persist("okay") {
         case Success(r) => sender() ! r
         case Failure(_) => sender() ! "unexpected failure"
@@ -40,6 +40,15 @@ object EventsourcedActorIntegrationSpec {
         case Success(_) => sender() ! "unexpected success"
         case Failure(e) => sender() ! e.getMessage
       }
+    }
+
+    override def onEvent = {
+      case evt: String =>
+    }
+  }
+
+  class BatchActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
+    override def onCommand = {
       case "boom" =>
         throw boom
       case Cmd(ps @ _*) =>
@@ -51,23 +60,23 @@ object EventsourcedActorIntegrationSpec {
         }
     }
 
-    override val onEvent: Receive = {
-      case evt: String => probe ! evt
+    override def onEvent = {
+      case evt: String => if (recovering) probe ! evt
     }
   }
   
   class AccActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     var acc: Vector[String] = Vector.empty
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case "get-acc" => sender() ! acc
       case s: String => persist(s) {
-        case Success(r) => onEvent(r)
+        case Success(r) =>
         case Failure(e) => throw e
       }
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case s: String =>
         acc = acc :+ s
         if (acc.size == 4) probe ! acc
@@ -75,38 +84,38 @@ object EventsourcedActorIntegrationSpec {
   }
 
   class ConfirmedDeliveryActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor with ConfirmedDelivery {
-    override val onCommand: Receive = {
+    override def onCommand = {
       case "boom" => throw boom
       case "end" => probe ! "end"
       case "cmd-1" => persist("evt-1")(_ => probe ! "out-1")
-      case "cmd-2" => persist("evt-2")(r => onEvent(r.get))
-      case "cmd-2-confirm" => persist("evt-2-confirm")(r => onEvent(r.get))
+      case "cmd-2" => persist("evt-2")(r => ())
+      case "cmd-2-confirm" => persist("evt-2-confirm")(r => ())
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case "evt-2" => deliver("2", "out-2", probe.path)
       case "evt-2-confirm" => confirm("2")
     }
   }
 
   class ConditionalActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor with ConditionalRequests {
-    override val onCommand: Receive = {
+    override def onCommand = {
       case "persist"      => persist("a")(r => probe ! r.get)
       case "persist-mute" => persist("a")(_ => ())
       case other          => probe ! other
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case "a" =>
     }
   }
 
   class ConditionalView(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedView with ConditionalRequests {
-    override val onCommand: Receive = {
+    override def onCommand = {
       case other => probe ! other
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case "a" =>
     }
   }
@@ -117,13 +126,13 @@ object EventsourcedActorIntegrationSpec {
   class CollabActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     var initialized = false
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case CollabCmd(to) =>
         persist(CollabEvt(to, id))(_ => ())
         initialized = true
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case evt @ CollabEvt(`id`, from) =>
         if (initialized) probe ! lastVectorTimestamp else self ! CollabCmd(from)
     }
@@ -136,14 +145,14 @@ object EventsourcedActorIntegrationSpec {
                     override val eventLog: ActorRef,
                     probe: ActorRef) extends EventsourcedActor {
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case Route(s, destinations) => persist(s, destinations) {
-        case Success(s) => onEvent(s)
+        case Success(s) =>
         case Failure(e) => throw e
       }
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case s: String => probe ! s
     }
   }
@@ -151,7 +160,7 @@ object EventsourcedActorIntegrationSpec {
   class SnapshotActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     var state: Vector[String] = Vector.empty
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case "boom" =>
         throw boom
       case "snap" => save(State(state)) {
@@ -159,18 +168,18 @@ object EventsourcedActorIntegrationSpec {
         case Failure(e) => throw e
       }
       case s: String => persist(s) {
-        case Success(r) => onEvent(r)
+        case Success(r) =>
         case Failure(e) => throw e
       }
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case s: String =>
         state = state :+ s
         probe ! state
     }
 
-    override val onSnapshot: Receive = {
+    override def onSnapshot = {
       case State(s) =>
         this.state = s
         probe ! state
@@ -180,7 +189,7 @@ object EventsourcedActorIntegrationSpec {
   class SnapshotView(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedView {
     var state: Vector[String] = Vector.empty
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case "boom" =>
         throw boom
       case "snap" => save(State(state)) {
@@ -189,13 +198,13 @@ object EventsourcedActorIntegrationSpec {
       }
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case s: String =>
         state = state :+ s"v-${s}"
         probe ! state
     }
 
-    override val onSnapshot: Receive = {
+    override def onSnapshot = {
       case State(s) =>
         this.state = s
         probe ! state
@@ -207,19 +216,19 @@ object EventsourcedActorIntegrationSpec {
 
     override def replayChunkSizeMax: Int = 2
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case "boom" =>
         throw boom
       case "state" =>
         probe ! state
       case s: String =>
         persist(s) {
-          case Success(r) => onEvent(r)
+          case Success(r) =>
           case Failure(e) => throw e
         }
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case s: String => state = state :+ s
     }
   }
@@ -240,17 +249,18 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
   
   "An EventsourcedActor" can {
     "preserve the command sender when invoking the persist handler on success" in {
-      val actor = system.actorOf(Props(new SampleActor("1", log, probe.ref)))
+      val actor = system.actorOf(Props(new ReplyActor("1", log)))
       actor.tell("reply-success", probe.ref)
       probe.expectMsg("okay")
     }
     "preserve the command sender when invoking the persist handler on failure" in {
-      val actor = system.actorOf(Props(new SampleActor("1", log, probe.ref)))
+      val sdrProbe = TestProbe()
+      val actor = system.actorOf(Props(new ReplyActor("1", log)))
       actor.tell("reply-failure", probe.ref)
       probe.expectMsg("boom")
     }
     "persist multiple events per command as atomic batch" in {
-      val actor = system.actorOf(Props(new SampleActor("1", log, probe.ref)))
+      val actor = system.actorOf(Props(new BatchActor("1", log, probe.ref)))
       actor.tell(Cmd("a", "boom", "c"), probe.ref)
       probe.expectMsg("boom")
       probe.expectMsg("boom")

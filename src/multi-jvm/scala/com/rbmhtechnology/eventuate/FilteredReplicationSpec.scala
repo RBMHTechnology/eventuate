@@ -47,14 +47,14 @@ object FilteredReplicationSpec {
   }
 
   class ReplicatedActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
-    val onCommand: Receive = {
+    def onCommand = {
       case s: String => persist(s) {
-        case Success(e) => onEvent(e)
+        case Success(e) =>
         case Failure(e) => throw e
       }
     }
 
-    val onEvent: Receive = {
+    def onEvent = {
       case s: String => probe ! s
     }
   }

@@ -45,24 +45,22 @@ case class AddressUpdated(cid: Long, address: String)
 class Emitter(val id: String, val eventLog: ActorRef) extends EventsourcedActor {
   private var highestCustomerId = 0L
 
-  override val onCommand: Receive = {
+  override def onCommand = {
     case CreateCustomer(first, last, address) =>
       persist(CustomerCreated(highestCustomerId + 1L, first, last, address)) {
-        case Success(c) =>
-          onEvent(c); sender() ! c
+        case Success(c) => sender() ! c
         case Failure(e) => throw e
       }
     case UpdateAddress(cid, address) if cid <= highestCustomerId =>
       persist(AddressUpdated(cid, address)) {
-        case Success(c) =>
-          onEvent(c); sender() ! c
+        case Success(c) => sender() ! c
         case Failure(e) => throw e
       }
     case UpdateAddress(cid, _) =>
       sender() ! new Exception(s"Customer with $cid does not exist")
   }
 
-  override val onEvent: Receive = {
+  override def onEvent = {
     case CustomerCreated(cid, first, last, address) =>
       highestCustomerId = cid
     case AddressUpdated(_, _) =>

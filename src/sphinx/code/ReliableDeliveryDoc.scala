@@ -46,22 +46,22 @@ object ReliableDelivery extends App {
       receiver = self,
       message = Redeliver)
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case DeliverCommand(message) =>
         persist(DeliverEvent(message)) {
-          case Success(evt) => onEvent(evt)
+          case Success(evt) => // ...
           case Failure(err) => // ...
         }
       case Confirmation(deliveryId) =>
         persist(ConfirmationEvent(deliveryId)) {
-          case Success(evt) => onEvent(evt)
+          case Success(evt) => // ...
           case Failure(err) => // ...
         }
       case Redeliver =>
         redeliverUnconfirmed()
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
         case DeliverEvent(message) =>
           val deliveryId = lastSequenceNr.toString
           deliver(deliveryId, ReliableMessage(deliveryId, message), destination)

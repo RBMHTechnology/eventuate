@@ -37,11 +37,11 @@ object RecoverySpec {
   class ConvergenceView(val id: String, val eventLog: ActorRef, expectedSize: Int, probe: ActorRef) extends EventsourcedView {
     var state: Set[String] = Set()
 
-    val onCommand: Receive = {
+    def onCommand = {
       case _ =>
     }
 
-    val onEvent: Receive = {
+    def onEvent = {
       case s: String =>
         state += s
         if (state.size == expectedSize) probe ! state

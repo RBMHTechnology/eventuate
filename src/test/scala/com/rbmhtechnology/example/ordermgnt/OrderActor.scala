@@ -82,7 +82,7 @@ class OrderActor(orderId: String, replicaId: String, val eventLog: ActorRef) ext
 
   private var order = VersionedAggregate(orderId, commandValidation, eventProjection)
 
-  override val onCommand: Receive = {
+  override def onCommand = {
     case c: CreateOrder =>
       processValidationResult(c.orderId, order.validateCreate(c))
     case c: OrderCommand =>
@@ -106,7 +106,7 @@ class OrderActor(orderId: String, replicaId: String, val eventLog: ActorRef) ext
     }
   }
 
-  override val onEvent: Receive = {
+  override def onEvent = {
     case e: OrderCreated =>
       order = order.handleCreated(e, lastVectorTimestamp, lastSequenceNr)
       if (!recovering) printOrder(order.versions)
@@ -118,7 +118,7 @@ class OrderActor(orderId: String, replicaId: String, val eventLog: ActorRef) ext
       if (!recovering) printOrder(order.versions)
   }
 
-  override val onSnapshot: Receive = {
+  override def onSnapshot = {
     case aggregate: ConcurrentVersionsTree[Order, OrderEvent] =>
       order = order.withAggregate(aggregate.withProjection(eventProjection))
       println(s"[$orderId] Snapshot loaded:")
@@ -134,11 +134,8 @@ class OrderActor(orderId: String, replicaId: String, val eventLog: ActorRef) ext
     case Failure(err) =>
       sender() ! CommandFailure(orderId, err)
     case Success(evt) => persist(evt) {
-      case Success(e) =>
-        onEvent(e)
-        sender() ! CommandSuccess(orderId)
-      case Failure(e) =>
-        sender() ! CommandFailure(orderId, e)
+      case Success(e) => sender() ! CommandSuccess(orderId)
+      case Failure(e) => sender() ! CommandFailure(orderId, e)
     }
   }
 

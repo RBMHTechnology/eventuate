@@ -33,16 +33,16 @@ object EventsourcedActorThroughputSpec {
     var stopTime: Long = 0L
     var num: Int = 0
 
-    val onCommand: Receive = {
+    def onCommand = {
       case "stats" =>
         probe ! s"${(1000.0 * 1000 * 1000 * num) / (stopTime - startTime) } events/sec"
       case s: String => persist(s) {
-        case Success(e) => onEvent(e)
+        case Success(e) =>
         case Failure(e) => throw e
       }
     }
 
-    val onEvent: Receive = {
+    def onEvent = {
       case "start" =>
         startTime = System.nanoTime()
       case "stop" =>
@@ -54,7 +54,7 @@ object EventsourcedActorThroughputSpec {
   }
 
   class Writer2(val id: String, val eventLog: ActorRef, collector: ActorRef) extends EventsourcedActor {
-    val onCommand: Receive = {
+    def onCommand = {
       case s: String =>
         persist(s) {
           case Success(e) => collector ! e
@@ -62,7 +62,7 @@ object EventsourcedActorThroughputSpec {
         }
     }
 
-    val onEvent: Receive = {
+    def onEvent = {
       case "ignore" =>
     }
   }

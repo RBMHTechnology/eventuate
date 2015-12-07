@@ -141,8 +141,8 @@ trait EventsourcedWriter[R, W] extends EventsourcedView {
   /**
    * Internal API.
    */
-  override private[eventuate] def onEventInternal(event: DurableEvent): Unit = {
-    super.onEventInternal(event)
+  override private[eventuate] def receiveEventInternal(event: DurableEvent): Unit = {
+    super.receiveEventInternal(event)
     numPending += 1
   }
 

@@ -39,19 +39,16 @@ object EventsourcedActors extends App {
 
     private var currentState: Vector[String] = Vector.empty
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case Print =>
         println(s"[id = $id, aggregate id = ${aggregateId.getOrElse("<undefined>")}] ${currentState.mkString(",")}")
       case Append(entry) => persist(Appended(entry)) {
-        case Success(evt) =>
-          onEvent(evt)
-          sender() ! AppendSuccess(entry)
-        case Failure(err) =>
-          sender() ! AppendFailure(err)
+        case Success(evt) => sender() ! AppendSuccess(entry)
+        case Failure(err) => sender() ! AppendFailure(err)
       }
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case Appended(entry) => currentState = currentState :+ entry
     }
   }
@@ -145,14 +142,14 @@ object EventsourcedActorsUpdated {
       private var currentState: Vector[String] = Vector.empty
       private var updateTimestamp: VectorTime = VectorTime()
 
-      override val onCommand: Receive = {
+      override def onCommand = {
         // ...
     //#
         case _ =>
     //#detecting-concurrent-update
       }
 
-      override val onEvent: Receive = {
+      override def onEvent = {
         case Appended(entry) =>
           if (updateTimestamp < lastVectorTimestamp) {
             // regular update
@@ -180,14 +177,14 @@ object EventsourcedActorsUpdated {
       private var versionedState: ConcurrentVersions[Vector[String], String] =
         ConcurrentVersions(Vector.empty, (s, a) => s :+ a)
 
-      override val onCommand: Receive = {
+      override def onCommand = {
         // ...
     //#
         case _ =>
     //#tracking-conflicting-versions
       }
 
-      override val onEvent: Receive = {
+      override def onEvent = {
         case Appended(entry) =>
           versionedState = versionedState.update(entry, lastVectorTimestamp)
           if (versionedState.conflict) {
@@ -213,14 +210,14 @@ object EventsourcedActorsUpdated {
       private var versionedState: ConcurrentVersions[Vector[String], String] =
         ConcurrentVersions(Vector.empty, (s, a) => s :+ a)
 
-      override val onCommand: Receive = {
+      override def onCommand = {
         // ...
     //#
         case _ =>
     //#automated-conflict-resolution
       }
 
-      override val onEvent: Receive = {
+      override def onEvent = {
         case Appended(entry) =>
           versionedState = versionedState.update(entry, lastVectorTimestamp, creator = lastEmitterId)
           if (versionedState.conflict) {
@@ -251,21 +248,18 @@ object EventsourcedActorsUpdated {
       private var versionedState: ConcurrentVersions[Vector[String], String] =
         ConcurrentVersions(Vector.empty, (s, a) => s :+ a)
 
-      override val onCommand: Receive = {
+      override def onCommand = {
         case Append(entry) if versionedState.conflict =>
           sender() ! AppendRejected(entry, versionedState.all)
         case Append(entry) =>
           // ...
         case Resolve(selectedTimestamp) => persist(Resolved(selectedTimestamp)) {
-          case Success(evt) =>
-            onEvent(evt)
-            // reply to sender omitted ...
-          case Failure(err) =>
-            // reply to sender omitted ...
+          case Success(evt) => // reply to sender omitted ...
+          case Failure(err) => // reply to sender omitted ...
         }
       }
 
-      override val onEvent: Receive = {
+      override def onEvent = {
         case Appended(entry) =>
           versionedState = versionedState.update(entry, lastVectorTimestamp, lastEmitterId)
         case Resolved(selectedTimestamp) =>
@@ -295,12 +289,12 @@ object EventsourcedViews {
     private var appendCount: Long = 0L
     private var resolveCount: Long = 0L
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case GetAppendCount => sender() ! GetAppendCountReply(appendCount)
       case GetResolveCount => sender() ! GetResolveCountReply(resolveCount)
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case Appended(_) => appendCount += 1L
       case Resolved(_) => resolveCount += 1L
     }
@@ -334,17 +328,16 @@ object ConditionalRequests extends App {
     private var currentState: Vector[String] = Vector.empty
     override val aggregateId = Some(id)
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case Append(entry) => persist(Appended(entry)) {
         case Success(evt) =>
-          onEvent(evt)
           sender() ! AppendSuccess(entry, lastVectorTimestamp)
         // ...
       }
       // ...
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case Appended(entry) => currentState = currentState :+ entry
     }
   }
@@ -356,12 +349,12 @@ object ConditionalRequests extends App {
     private var appendCount: Long = 0L
     private var resolveCount: Long = 0L
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case GetAppendCount => sender() ! GetAppendCountReply(appendCount)
       case GetResolveCount => sender() ! GetResolveCountReply(resolveCount)
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case Appended(_) => appendCount += 1L
       case Resolved(_) => resolveCount += 1L
     }

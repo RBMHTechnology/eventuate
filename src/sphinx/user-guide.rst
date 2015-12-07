@@ -31,9 +31,9 @@ Concrete event-sourced actors must implement the ``EventsourcedActor`` trait. Th
 .. includecode:: code/UserGuideDoc.scala
    :snippet: event-sourced-actor
 
-For modifying ``currentState``, applications send ``Append`` commands which are handled by the ``onCommand`` handler. From an ``Append`` command, the handler derives an ``Appended`` event and ``persist``\ s it to the given ``eventLog``. If persistence succeeds, the ``onEvent`` handler is called with the persisted event and the command sender is informed about successful processing. If persistence fails, the command sender is informed about the failure so it can retry, if needed. 
+For modifying ``currentState``, applications send ``Append`` commands which are handled by the ``onCommand`` handler. From an ``Append`` command, the handler derives an ``Appended`` event and ``persist``\ s it to the given ``eventLog``. If persistence succeeds, the command sender is informed about successful processing. If persistence fails, the command sender is informed about the failure so it can retry, if needed. 
 
-The ``onEvent`` handler updates ``currentState`` from successfully persisted events. If the actor is re-started, either after a crash or during normal application start, persisted events are replayed to ``onEvent`` which recovers internal state before new commands are processed.
+The ``onEvent`` handler updates ``currentState`` from persisted events and is automatically called after a successful ``persist``. If the actor is re-started, either after a crash or during normal application start, persisted events are replayed to ``onEvent`` which recovers internal state before new commands are processed.
 
 ``EventsourcedActor`` implementations must define a global unique ``id`` and require an ``eventLog`` actor reference for writing and replaying events. An event-sourced actor may also define an optional ``aggregateId`` which has an impact how events are routed between event-sourced actors.
 
