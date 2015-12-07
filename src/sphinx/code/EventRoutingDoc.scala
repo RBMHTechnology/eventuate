@@ -30,7 +30,7 @@ object EventRouting {
 
     override def aggregateId: Option[String] = Some("a1")
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case ExampleCommand(data) =>
         persist(ExampleEvent(data), customDestinationAggregateIds = Set("a2", "a3")) {
           case Success(evt)   => // ...
@@ -40,7 +40,7 @@ object EventRouting {
 
     // ...
   //#
-    override val onEvent: Receive = {
+    override def onEvent = {
       case ExampleEvent(data) => // ...
     }
   //#custom-routing

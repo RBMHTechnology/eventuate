@@ -31,7 +31,7 @@ object EventSourcing {
                      override val eventLog: ActorRef) extends EventsourcedActor {
 
     /** Command handler */
-    override val onCommand: Receive = {
+    override def onCommand = {
       case ExampleCommand(data) =>
         // validate command
         // ...
@@ -41,8 +41,6 @@ object EventSourcing {
         // persist event (asynchronously)
         persist(event) {
           case Success(evt) =>
-            // handle event
-            onEvent(evt)
             // success reply
             sender() ! ExampleCommandSuccess(data)
           case Failure(cause) =>
@@ -51,7 +49,7 @@ object EventSourcing {
         }
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case ExampleEvent(data) => // ...
     }
   }
@@ -66,10 +64,10 @@ object EventSourcing {
   class EventsourcedActorAPIImpl extends EventsourcedActorAPI with EventsourcedActor {
     override def eventLog: ActorRef = ???
     override def id: String = ???
-    override def onCommand: Receive = ???
+    override def onCommand = ???
     //#event-handler
     /** Event handler */
-    override val onEvent: Receive = {
+    override def onEvent = {
       case ExampleEvent(details) =>
         val eventSequenceNr = lastSequenceNr
         val eventVectorTimestamp = lastVectorTimestamp
@@ -99,7 +97,7 @@ object SaveSnapshot {
 
     var state: ExampleState = ExampleState()
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case Save =>
         // save snapshot of internal state (asynchronously)
         save(state) {
@@ -113,7 +111,7 @@ object SaveSnapshot {
       case cmd => // ...
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case evt => // update state ...
     }
   }
@@ -133,17 +131,17 @@ object LoadSnapshot {
 
     var state: ExampleState = ExampleState()
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case Save => // ...
       case cmd => // ...
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case evt => // update state ...
     }
 
     /** Snapshot handler */
-    override val onSnapshot: Receive = {
+    override def onSnapshot = {
       case s: ExampleState =>
         // initialize internal state from loaded snapshot
         state = s
@@ -164,11 +162,11 @@ object ClockEntryClass {
 
     // ...
   //#
-    override val onCommand: Receive = {
+    override def onCommand = {
       case cmd => // ...
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case evt => // ...
     }
   //#clock-entry-class
@@ -187,11 +185,11 @@ object ClockEntryInstance {
 
     // ..
   //#
-    override val onCommand: Receive = {
+    override def onCommand = {
       case cmd => // ...
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case evt => // ...
     }
   //#clock-entry-instance
@@ -211,11 +209,11 @@ object ChunkedReplay {
 
     // ...
   //#
-    override val onCommand: Receive = {
+    override def onCommand = {
       case cmd => // ...
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case evt => // ...
     }
   //#chunk-size-max
@@ -237,7 +235,7 @@ object Processor {
     // ...
 
   //#
-    override val onCommand: Receive = {
+    override def onCommand = {
       case cmd => // ...
     }
 

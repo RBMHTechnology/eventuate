@@ -26,6 +26,8 @@ import com.rbmhtechnology.eventuate.log.leveldb._
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import org.scalatest._
 
+import scala.concurrent.Future
+
 abstract class ReplicationCycleSpec extends WordSpec with Matchers with ReplicationNodeRegistry {
   import ReplicationIntegrationSpec._
 
@@ -70,9 +72,11 @@ abstract class ReplicationCycleSpec extends WordSpec with Matchers with Replicat
     val expectedC = 2 to num map { i => s"c$i"}
     val all = expectedA ++ expectedB ++ expectedC
 
-    expectedA.foreach(s => actorA ! s)
-    expectedB.foreach(s => actorB ! s)
-    expectedC.foreach(s => actorC ! s)
+    import nodeA.system.dispatcher
+
+    Future(expectedA.foreach(s => actorA ! s))
+    Future(expectedB.foreach(s => actorB ! s))
+    Future(expectedC.foreach(s => actorC ! s))
 
     probeA.expectMsgAllOf(all: _*)
     probeB.expectMsgAllOf(all: _*)

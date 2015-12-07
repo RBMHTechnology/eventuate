@@ -48,12 +48,12 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
   //#
 
   /**
-   * Asynchronously persists a sequence of `events` and calls `handler` with the persist
-   * results. The `handler` is called for each event in the sequence during a separate
-   * message dispatch by this actor, hence, it is safe to modify internal state within
-   * `handler`. The `handler` can also obtain a reference to the initial command sender
-   * via `sender()`. The `onLast` handler is additionally called for the last event in
-   * the sequence.
+   * Asynchronously persists a sequence of `events` and calls `handler` with the persist result
+   * for each event in the sequence. If persistence was successful, `onEvent` is called with a
+   * persisted event before `handler` is called. Both, `onEvent` and `handler`, are called on a
+   * dispatcher thread of this actor, hence, it is safe to modify internal state within them.
+   * The `handler` can also obtain a reference to the initial command sender via `sender()`. The
+   * `onLast` handler is additionally called for the last event in the sequence.
    *
    * By default, the event is routed to event-sourced destinations with an undefined `aggregateId`.
    * If this actor's `aggregateId` is defined it is additionally routed to all actors with the same
@@ -73,10 +73,11 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
   }
 
   /**
-   * Asynchronously persists the given `event` and calls `handler` with the persist result.
-   * The `handler` is called during a separate message dispatch by this actor, hence, it is
-   * safe to modify internal state within `handler`. The `handler` can also obtain a reference
-   * to the initial command sender via `sender()`.
+   * Asynchronously persists the given `event` and calls `handler` with the persist result. If
+   * persistence was successful, `onEvent` is called with the persisted event before `handler`
+   * is called. Both, `onEvent` and `handler`, are called on a dispatcher thread of this actor,
+   * hence, it is safe to modify internal state within them. The `handler` can also obtain a
+   * reference to the initial command sender via `sender()`.
    *
    * By default, the event is routed to event-sourced destinations with an undefined `aggregateId`.
    * If this actor's `aggregateId` is defined it is additionally routed to all actors with the same
@@ -93,8 +94,7 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
    */
   override private[eventuate] def unhandledMessage(msg: Any): Unit = msg match {
     case WriteSuccess(event, iid) => if (iid == instanceId) {
-      onEventInternal(event)
-      conditionChanged(currentVectorTime)
+      receiveEvent(event)
       writeHandlers.head(Success(event.payload))
       writeHandlers = writeHandlers.tail
       if (stateSync && writeHandlers.isEmpty) {
@@ -103,7 +103,7 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
       }
     }
     case WriteFailure(event, cause, iid) => if (iid == instanceId) {
-      onEventInternal(event, cause)
+      receiveEventInternal(event, cause)
       writeHandlers.head(Failure(cause))
       writeHandlers = writeHandlers.tail
       if (stateSync && writeHandlers.isEmpty) {
@@ -113,7 +113,7 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
     }
     case cmd =>
       if (writing) messageStash.stash() else {
-        onCommand(cmd)
+        super.unhandledMessage(cmd)
 
         val wPending = writePending
         if (wPending) write()

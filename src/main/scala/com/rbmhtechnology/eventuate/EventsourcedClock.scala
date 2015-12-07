@@ -98,8 +98,8 @@ trait EventsourcedClock extends EventsourcedView {
   /**
    * Internal API.
    */
-  override private[eventuate] def onEventInternal(event: DurableEvent): Unit = {
-    super.onEventInternal(event)
+  override private[eventuate] def receiveEventInternal(event: DurableEvent): Unit = {
+    super.receiveEventInternal(event)
     updateVectorTime(event)
   }
 

@@ -28,20 +28,20 @@ import scala.util._
 
 object EventsourcedProcessorIntegrationSpec {
   class SampleActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
-    override val onCommand: Receive = {
+    override def onCommand = {
       case s: String => persist(s) {
-        case Success(_) => onEvent(s)
+        case Success(_) =>
         case Failure(_) =>
       }
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case s: String => probe ! ((s, lastVectorTimestamp))
     }
   }
 
   class StatelessSampleProcessor(val id: String, val eventLog: ActorRef, val targetEventLog: ActorRef, eventProbe: ActorRef, progressProbe: ActorRef) extends EventsourcedProcessor {
-    override val onCommand: Receive = {
+    override def onCommand = {
       case "boom" => throw boom
       case "snap" => save("") {
         case Success(_) => eventProbe ! "snapped"
@@ -55,7 +55,7 @@ object EventsourcedProcessorIntegrationSpec {
         List(s"${s}-processed-1", s"${s}-processed-2")
     }
 
-    override val onSnapshot: Receive = {
+    override def onSnapshot = {
       case _ =>
     }
 

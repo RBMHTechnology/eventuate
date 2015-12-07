@@ -68,16 +68,16 @@ object BasicReplicationThroughputSpec {
     var startTime: Long = 0L
     var stopTime: Long = 0L
 
-    val onCommand: Receive = {
+    def onCommand = {
       case "stats" =>
         probe ! s"${(1000.0 * 1000 * 1000 * events.size) / (stopTime - startTime) } events/sec"
       case s: String => persist(s) {
-        case Success(e) => onEvent(e)
+        case Success(e) =>
         case Failure(e) => throw e
       }
     }
 
-    val onEvent: Receive = {
+    def onEvent = {
       case "start" =>
         startTime = System.nanoTime()
       case "stop" =>

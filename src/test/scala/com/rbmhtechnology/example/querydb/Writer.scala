@@ -59,7 +59,7 @@ class Writer(val id: String, val eventLog: ActorRef, session: Session)
   override def replayChunkSizeMax: Int =
     16
 
-  override val onCommand: Receive = {
+  override def onCommand = {
     case _ =>
   }
 
@@ -68,7 +68,7 @@ class Writer(val id: String, val eventLog: ActorRef, session: Session)
    * database when `write` is called. An event handler never writes to the
    * database directly.
    */
-  override val onEvent: Receive = {
+  override def onEvent = {
     case c @ CustomerCreated(cid, first, last, address) =>
       batch = batch :+ insertCustomerStmt.bind(cid: JLong, first, last, address)
     case u @ AddressUpdated(cid, address) =>

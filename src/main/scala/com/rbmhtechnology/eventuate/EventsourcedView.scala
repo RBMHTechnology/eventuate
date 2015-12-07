@@ -76,10 +76,19 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
   private val settings = new EventsourcedViewSettings(context.system.settings.config)
   private var saveRequests: Map[SnapshotMetadata, Handler[SnapshotMetadata]] = Map.empty
 
+  private lazy val currentOnCommand: Receive = onCommand
+  private lazy val currentOnEvent: Receive = onEvent
+
   /**
    * Internal API.
    */
   private[eventuate] val messageStash = new MessageStash()
+
+  /**
+   * Internal API.
+   */
+  private[eventuate] lazy val currentOnSnapshot: Receive =
+    onSnapshot
 
   /**
    * Optional aggregate id. It is used for routing [[DurableEvent]]s to event-sourced destinations
@@ -152,9 +161,9 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
    * Internal API.
    */
   private[eventuate] def receiveEvent(event: DurableEvent): Unit = {
-    if (onEvent.isDefinedAt(event.payload)) {
-      onEventInternal(event)
-      onEvent(event.payload)
+    if (currentOnEvent.isDefinedAt(event.payload)) {
+      receiveEventInternal(event)
+      currentOnEvent(event.payload)
       if (!recovering) conditionChanged(currentVectorTime)
     }
   }
@@ -162,14 +171,14 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
   /**
    * Internal API.
    */
-  private[eventuate] def onEventInternal(event: DurableEvent): Unit = {
+  private[eventuate] def receiveEventInternal(event: DurableEvent): Unit = {
     _lastHandledEvent = event
   }
 
   /**
    * Internal API.
    */
-  private[eventuate] def onEventInternal(event: DurableEvent, failure: Throwable): Unit = {
+  private[eventuate] def receiveEventInternal(event: DurableEvent, failure: Throwable): Unit = {
     _lastHandledEvent = event
   }
 
@@ -266,7 +275,7 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
    * Internal API.
    */
   private[eventuate] def unhandledMessage(msg: Any): Unit =
-    onCommand(msg)
+    if (currentOnCommand.isDefinedAt(msg)) currentOnCommand(msg) else unhandled(msg)
 
   /**
    * Internal API.
@@ -293,9 +302,9 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
    */
   private[eventuate] def initiating: Receive = {
     case LoadSnapshotSuccess(Some(snapshot), iid) => if (iid == instanceId) {
-      if (onSnapshot.isDefinedAt(snapshot.payload)) {
+      if (currentOnSnapshot.isDefinedAt(snapshot.payload)) {
         snapshotLoaded(snapshot)
-        onSnapshot(snapshot.payload)
+        currentOnSnapshot(snapshot.payload)
         replay(snapshot.metadata.sequenceNr + 1L)
       } else {
         log.warning(s"snapshot loaded (metadata = ${snapshot.metadata}) but onSnapshot doesn't handle it, replaying from scratch")
@@ -385,9 +394,9 @@ abstract class AbstractEventsourcedView(val id: String, val eventLog: ActorRef) 
   private var _onEvent: Receive = Actor.emptyBehavior
   private var _onSnapshot: Receive = Actor.emptyBehavior
 
-  final override def onCommand: Receive = _onCommand
-  final override def onEvent: Receive = _onEvent
-  final override def onSnapshot: Receive = _onSnapshot
+  final override def onCommand = _onCommand
+  final override def onEvent = _onEvent
+  final override def onSnapshot = _onSnapshot
 
   override def aggregateId: Option[String] =
     Option(getAggregateId.orElse(null))

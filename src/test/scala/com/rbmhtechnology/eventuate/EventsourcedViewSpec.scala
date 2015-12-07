@@ -44,12 +44,12 @@ object EventsourcedViewSpec {
       case None    => super.replayChunkSizeMax
     }
 
-    override val onCommand: Receive = {
+    override def onCommand = {
       case "boom"  => throw boom
       case Ping(i) => dstProbe ! Pong(i)
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case "boom" => throw boom
       case evt    => dstProbe ! ((evt, lastVectorTimestamp, lastSequenceNr))
     }

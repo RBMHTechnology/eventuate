@@ -37,11 +37,11 @@ object EventsourcedWriterSpec {
     override val eventLog = logProbe
     override val replayChunkSizeMax: Int = 2
 
-    override def onCommand: Receive = {
+    override def onCommand = {
       case cmd => appProbe ! cmd
     }
 
-    override val onEvent: Receive = {
+    override def onEvent = {
       case evt: String =>
         appProbe ! ((evt, lastSequenceNr))
     }

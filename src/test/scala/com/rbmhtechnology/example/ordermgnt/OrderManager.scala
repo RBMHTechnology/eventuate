@@ -49,7 +49,7 @@ class OrderManager(replicaId: String, val eventLog: ActorRef) extends Eventsourc
 
   override val id = s"s-om-$replicaId"
 
-  override val onCommand: Receive = {
+  override def onCommand = {
     case c: OrderCommand => orderActor(c.orderId) forward c
     case c: SaveSnapshot => orderActor(c.orderId) forward c
     case r: Resolve      => orderActor(r.id) forward r
@@ -64,7 +64,7 @@ class OrderManager(replicaId: String, val eventLog: ActorRef) extends Eventsourc
       }
   }
 
-  override val onEvent: Receive = {
+  override def onEvent = {
     // eagerly create order actor so that their console output is immediately visible
     case OrderCreated(orderId, _) if !orderActors.contains(orderId) => orderActor(orderId)
   }

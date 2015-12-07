@@ -28,12 +28,12 @@ object ConditionalRequestsSpec {
     val id = "test"
     val eventLog = context.system.deadLetters
 
-    val onCommand: Receive = {
+    def onCommand = {
       case t: VectorTime => conditionChanged(t)
       case cmd           => sender() ! s"re: ${cmd}"
     }
 
-    val onEvent: Receive = {
+    def onEvent = {
       case _ =>
     }
   }
