@@ -763,10 +763,11 @@ is defined it will only receive events with a matching aggregate id in
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously persists the given <code>event</code> and calls <code>handler</code> with the persist result.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously persists the given <code>event</code> and calls <code>handler</code> with the persist result.
-The <code>handler</code> is called during a separate message dispatch by this actor, hence, it is
-safe to modify internal state within <code>handler</code>. The <code>handler</code> can also obtain a reference
-to the initial command sender via <code>sender()</code>.</p><p>By default, the event is routed to event-sourced destinations with an undefined <code>aggregateId</code>.
+      <p class="shortcomment cmt">Asynchronously persists the given <code>event</code> and calls <code>handler</code> with the persist result.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously persists the given <code>event</code> and calls <code>handler</code> with the persist result. If
+persistence was successful, <code>onEvent</code> is called with the persisted event before <code>handler</code>
+is called. Both, <code>onEvent</code> and <code>handler</code>, are called on a dispatcher thread of this actor,
+hence, it is safe to modify internal state within them. The <code>handler</code> can also obtain a
+reference to the initial command sender via <code>sender()</code>.</p><p>By default, the event is routed to event-sourced destinations with an undefined <code>aggregateId</code>.
 If this actor's <code>aggregateId</code> is defined it is additionally routed to all actors with the same
 <code>aggregateId</code>. Further routing destinations can be defined with the <code>customDestinationAggregateIds</code>
 parameter.
@@ -787,13 +788,13 @@ parameter.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously persists a sequence of <code>events</code> and calls <code>handler</code> with the persist
-results.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously persists a sequence of <code>events</code> and calls <code>handler</code> with the persist
-results. The <code>handler</code> is called for each event in the sequence during a separate
-message dispatch by this actor, hence, it is safe to modify internal state within
-<code>handler</code>. The <code>handler</code> can also obtain a reference to the initial command sender
-via <code>sender()</code>. The <code>onLast</code> handler is additionally called for the last event in
-the sequence.</p><p>By default, the event is routed to event-sourced destinations with an undefined <code>aggregateId</code>.
+      <p class="shortcomment cmt">Asynchronously persists a sequence of <code>events</code> and calls <code>handler</code> with the persist result
+for each event in the sequence.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously persists a sequence of <code>events</code> and calls <code>handler</code> with the persist result
+for each event in the sequence. If persistence was successful, <code>onEvent</code> is called with a
+persisted event before <code>handler</code> is called. Both, <code>onEvent</code> and <code>handler</code>, are called on a
+dispatcher thread of this actor, hence, it is safe to modify internal state within them.
+The <code>handler</code> can also obtain a reference to the initial command sender via <code>sender()</code>. The
+<code>onLast</code> handler is additionally called for the last event in the sequence.</p><p>By default, the event is routed to event-sourced destinations with an undefined <code>aggregateId</code>.
 If this actor's <code>aggregateId</code> is defined it is additionally routed to all actors with the same
 <code>aggregateId</code>. Further routing destinations can be defined with the <code>customDestinationAggregateIds</code>
 parameter.
