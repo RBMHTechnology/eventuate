@@ -171,7 +171,7 @@ class ReplicationEndpoint(val id: String, val logNames: Set[String], val logFact
    * The log actors managed by this endpoint, indexed by their name.
    */
   val logs: Map[String, ActorRef] =
-    logNames.map(logName => logName -> system.actorOf(logFactory(logId(logName)))).toMap
+    logNames.map(logName => logName -> system.actorOf(logFactory(logId(logName)), logId(logName))).toMap
 
   /**
    * Returns the unique log id for given `logName`.
@@ -373,10 +373,12 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
   }
 
   val writing: Receive = {
-    case ReplicationWriteSuccess(num, _, _) if num == 0 =>
+    case writeSuccess @ ReplicationWriteSuccess(_, num, _, _) if num == 0 =>
+      notifyLocalAcceptor(writeSuccess)
       context.become(idle)
       scheduleRead()
-    case ReplicationWriteSuccess(num, storedReplicationProgress, currentTargetVersionVector) =>
+    case writeSuccess @ ReplicationWriteSuccess(_, num, storedReplicationProgress, currentTargetVersionVector) =>
+      notifyLocalAcceptor(writeSuccess)
       context.become(reading)
       read(storedReplicationProgress, currentTargetVersionVector)
     case ReplicationWriteFailure(cause) =>
@@ -391,6 +393,9 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
     case ReplicationDue => // currently replicating, ignore
     case other          => super.unhandled(message)
   }
+
+  private def notifyLocalAcceptor(writeSuccess: ReplicationWriteSuccess): Unit =
+    target.endpoint.acceptor ! writeSuccess
 
   private def scheduleFetch(): Unit =
     scheduler.scheduleOnce(settings.retryDelay)(fetch())

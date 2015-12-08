@@ -110,8 +110,8 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
   override final def write(): Future[Long] =
     if (lastSequenceNr > processingProgress) {
       val result = targetEventLog.ask(ReplicationWrite(processedEvents, id, lastSequenceNr, VectorTime.Zero))(Timeout(writeTimeout)).flatMap {
-        case ReplicationWriteSuccess(_, progress, _) => Future.successful(progress)
-        case ReplicationWriteFailure(cause)          => Future.failed(cause)
+        case ReplicationWriteSuccess(_, _, progress, _) => Future.successful(progress)
+        case ReplicationWriteFailure(cause)             => Future.failed(cause)
       }
       processedEvents = Vector.empty
       result
