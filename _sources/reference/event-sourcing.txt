@@ -71,7 +71,7 @@ An event handler is partial function of type ``PartialFunction[Any, Unit]`` for 
 Event metadata of the last handled event can be obtained with the ``last*`` methods defined by ``EventsourcedActor``. For example, ``lastSequenceNr`` returns the event’s local sequence number, ``lastVectorTimestamp`` returns the event’s vector timestamp. A complete reference is given by the EventsourcedActor_ API documentation.
 
 .. note::
-   An event handler should only update internal actor state without having further side-effects. An exception is :ref:`reliable-delivery` of messages.
+   An event handler should only update internal actor state without having further side-effects. An exception is :ref:`reliable-delivery` of messages and :ref:`guide-event-collaboration` with PersistOnEvent_.
 
 Causality tracking
 ~~~~~~~~~~~~~~~~~~
@@ -288,6 +288,13 @@ The destination confirms the delivery of the message by sending a ``Confirmation
 
 When the actor is re-started, unconfirmed ``ReliableMessage``\ s are automatically re-delivered to their ``destination``\ s. The example actor additionally schedules ``redeliverUnconfirmed`` calls to periodically re-deliver unconfirmed messages. This is done within the actor’s command handler.
 
+.. _ref-event-collaboration:
+
+Event collaboration
+-------------------
+
+Event collaboration is covered in the :ref:`guide-event-collaboration` section of the :ref:`user-guide`.
+
 .. _ref-conditional-requests:
 
 Conditional requests
@@ -358,3 +365,4 @@ Custom serializers can also be configured for the type parameter ``A`` of ``MVRe
 .. _EventsourcedProcessor: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor
 .. _StatefulProcessor: ../latest/api/index.html#com.rbmhtechnology.eventuate.StatefulProcessor
 .. _ReplicationFilter: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationFilter
+.. _PersistOnEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.PersistOnEvent

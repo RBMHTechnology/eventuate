@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-sourced-views">Event-sourced views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#conditional-requests">Conditional requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-collaboration">Event collaboration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
@@ -106,6 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-routing">Event routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-collaboration">Event collaboration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#conditional-requests">Conditional requests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
@@ -233,6 +235,11 @@ Three replicated event logs. Log X (blue) is replicated across locations 1, 2 an
 <div class="line">during command processing. Derived state</div>
 <div class="line">is an in-memory write model, representing</div>
 <div class="line">the command-side (C) of CQRS.</div>
+<div class="line"><br /></div>
+<div class="line">An event-sourced actor may also emit new</div>
+<div class="line">events during event processing which is</div>
+<div class="line">most relevant for <a class="reference internal" href="user-guide.html#guide-event-collaboration"><span>Event collaboration</span></a> use</div>
+<div class="line">cases.</div>
 </div>
 </td>
 <td><ul class="first last simple">
@@ -299,15 +306,15 @@ Three replicated event logs. Log X (blue) is replicated across locations 1, 2 an
 An event-sourced actor, producing events to and consuming events from an event log.</div>
 </div>
 <p>When an event-sourced actor is re-started, internal state is recovered by replaying events from its local event log. Events are replayed in local storage order which is consistent with causal order. Consequently, event replay at a given location is deterministic i.e. doesn’t change when replay is repeated. Event replay can also be started from a snapshot of internal state which is an optimization to reduce recovery times.</p>
-<p>In addition to consuming their own events, event-sourced actors can also consume events produced by other event-sourced actors to the same event log. This enables <a class="reference external" href="http://martinfowler.com/eaaDev/EventCollaboration.html">event collaboration</a> between actors (<a class="reference internal" href="#arch-fig5"><span>Fig. 5</span></a>). Applications can customize <a class="reference internal" href="reference/event-sourcing.html#event-routing"><span>Event routing</span></a> between actors.</p>
-<p>A special form of event collaboration is state replication where actors of the same type consume the same events at different locations to re-construct state. Another example is a distributed business process where actors of different type collaborate by exchanging events to achieve a common goal.</p>
+<p>In addition to consuming their own events, event-sourced actors can also consume events produced by other event-sourced actors to the same event log. This enables <a class="reference external" href="http://martinfowler.com/eaaDev/EventCollaboration.html">event collaboration</a> between actors (<a class="reference internal" href="#arch-fig5"><span>Fig. 5</span></a>) with or without custom <a class="reference internal" href="reference/event-sourcing.html#event-routing"><span>Event routing</span></a> rules.</p>
+<p>A special form of event collaboration is state replication where actors of the same type consume each other’s events to re-construct actor state at different locations. A more general form of event collaboration, for example, is a distributed business process where actors of different type collaborate by exchanging events to achieve a common goal. In this context, event-sourced actor often emit new events on receiving events from collaborators. This is covered in section <a class="reference internal" href="user-guide.html#guide-event-collaboration"><span>Event collaboration</span></a> of the user guide.</p>
 <div class="figure" id="id23" style="width: 70%">
 <span id="arch-fig5"></span><img alt="_images/architecture-4.png" src="_images/architecture-4.png" />
 <p class="caption"><span class="caption-text">Fig. 5</span></p>
 <div class="legend">
 Two event-sourced actors exchanging events over a replicated event log.</div>
 </div>
-<p>Event-sourced actors may also interact with external services by sending commands and processing replies. Commands can be sent with <em>at-most-once</em> or <em>at-least-once</em> delivery semantics, depending on the reliability requirements of an application. Replies from external services are usually processed like external commands which may result in further events to be written. This way, external services can be included into reliable, event-driven business processes controlled by event-sourced actors.</p>
+<p>Event-sourced actors may also interact with external services by sending commands and processing replies. Commands can be sent with <em>at-most-once</em> or <em>at-least-once</em> delivery semantics, depending on the reliability requirements of an application. Replies from external services are usually processed like external commands which may result in further events to be written. This way, external services can be included into reliable, event-driven business processes controlled by event-sourced actors (see also <a class="reference internal" href="reference/event-sourcing.html#reliable-delivery"><span>Reliable delivery</span></a>).</p>
 <div class="figure" id="id24" style="width: 70%">
 <img alt="_images/architecture-5.png" src="_images/architecture-5.png" />
 <p class="caption"><span class="caption-text">Fig. 6</span></p>

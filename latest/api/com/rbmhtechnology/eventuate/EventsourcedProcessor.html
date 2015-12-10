@@ -57,7 +57,7 @@ event-sourced processors or defined on a per class or instance basis by overridi
 for write operations to the target log can be configured with the <code>eventuate.processor.write-timeout</code> parameter
 for all event-sourced processors or defined on a per class or instance basis by overriding <code>writeTimeout</code>.</p><p>An <code>EventsourcedProcessor</code> is a stateless processor i.e. in-memory state created from source events can
 not be recovered. An application that needs stateful event processing should use <a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a>
-instead.</p><p>An <code>EventsourcedProcessor</code> processor emits events with vector timestamps set to source event vector timestamp.
+instead.</p><p>An <code>EventsourcedProcessor</code> processor writes events with vector timestamps set to source event vector timestamp.
 In other words, it does not modify event vector timestamps.</p><p>The source event log and the target event log of an <code>EventsourcedProcessor</code> must be different. Writing
 processed events back to the source event log has no effect.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a>
@@ -107,7 +107,7 @@ processed events back to the source event log has no effect.
         <div id="types" class="types members">
               <h3>Type Members</h3>
               <ol><li name="com.rbmhtechnology.eventuate.EventsourcedView.Handler" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Handler[A]=scala.util.Try[A]=&gt;Unit"></a>
+      <a id="Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]"></a>
       <a id="Handler[A]:Handler[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -118,7 +118,7 @@ processed events back to the source event log has no effect.
         <span class="name">Handler</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> = (<span class="extype" name="scala.util.Try">Try</span>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView.Handler.A">A</span>]) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@Handler[A]=scala.util.Try[A]=&gt;Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -307,6 +307,23 @@ processed events back to the source event log has no effect.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView.Handler" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Handler"></a>
+      <a id="Handler:Handler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcedView$Handler$.html"><span class="name">Handler</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedView@Handler" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#aggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="aggregateId:Option[String]"></a>
       <a id="aggregateId:Option[String]"></a>
@@ -1028,7 +1045,7 @@ is resumed automatically after all replayed events haven been handled by this ac
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">save</span><span class="params">(<span name="snapshot">snapshot: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor.Handler">Handler</a>[<a href="SnapshotMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.SnapshotMetadata">SnapshotMetadata</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">save</span><span class="params">(<span name="snapshot">snapshot: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor.Handler">Handler</a>[<a href="SnapshotMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.SnapshotMetadata">SnapshotMetadata</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" title="Permalink" target="_top">

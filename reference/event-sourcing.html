@@ -94,6 +94,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../user-guide.html#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user-guide.html#event-sourced-views">Event-sourced views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../user-guide.html#conditional-requests">Conditional requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#event-collaboration">Event collaboration</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../reference.html">Reference</a><ul class="current">
@@ -107,6 +108,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#event-routing">Event routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reliable-delivery">Reliable delivery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-collaboration">Event collaboration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#conditional-requests">Conditional requests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#custom-serialization">Custom serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuration</a></li>
@@ -278,7 +280,7 @@
 <p>Event metadata of the last handled event can be obtained with the <code class="docutils literal"><span class="pre">last*</span></code> methods defined by <code class="docutils literal"><span class="pre">EventsourcedActor</span></code>. For example, <code class="docutils literal"><span class="pre">lastSequenceNr</span></code> returns the event’s local sequence number, <code class="docutils literal"><span class="pre">lastVectorTimestamp</span></code> returns the event’s vector timestamp. A complete reference is given by the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> API documentation.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">An event handler should only update internal actor state without having further side-effects. An exception is <a class="reference internal" href="#reliable-delivery"><span>Reliable delivery</span></a> of messages.</p>
+<p class="last">An event handler should only update internal actor state without having further side-effects. An exception is <a class="reference internal" href="#reliable-delivery"><span>Reliable delivery</span></a> of messages and <a class="reference internal" href="../user-guide.html#guide-event-collaboration"><span>Event collaboration</span></a> with <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a>.</p>
 </div>
 </div>
 <div class="section" id="causality-tracking">
@@ -692,6 +694,10 @@
 <p>The generated <code class="docutils literal"><span class="pre">DeliverEvent</span></code> calls <code class="docutils literal"><span class="pre">deliver</span></code> to deliver a <code class="docutils literal"><span class="pre">ReliableMessage</span></code> to <code class="docutils literal"><span class="pre">destination</span></code>. The <code class="docutils literal"><span class="pre">deliveryId</span></code> is the correlation identifier for the delivery <code class="docutils literal"><span class="pre">Confirmation</span></code>. The <code class="docutils literal"><span class="pre">deliveryId</span></code> can be any application-defined id. Here, the event’s sequence number is used which can be obtained with <code class="docutils literal"><span class="pre">lastSequenceNumber</span></code>.</p>
 <p>The destination confirms the delivery of the message by sending a <code class="docutils literal"><span class="pre">Confirmation</span></code> reply to the event-sourced actor from which the actor generates a <code class="docutils literal"><span class="pre">ConfirmationEvent</span></code>. When handling the event, message delivery can be confirmed by calling <code class="docutils literal"><span class="pre">confirm</span></code> with the <code class="docutils literal"><span class="pre">deliveryId</span></code> as argument.</p>
 <p>When the actor is re-started, unconfirmed <code class="docutils literal"><span class="pre">ReliableMessage</span></code>s are automatically re-delivered to their <code class="docutils literal"><span class="pre">destination</span></code>s. The example actor additionally schedules <code class="docutils literal"><span class="pre">redeliverUnconfirmed</span></code> calls to periodically re-deliver unconfirmed messages. This is done within the actor’s command handler.</p>
+</div>
+<div class="section" id="event-collaboration">
+<span id="ref-event-collaboration"></span><h1>Event collaboration<a class="headerlink" href="#event-collaboration" title="Permalink to this headline">¶</a></h1>
+<p>Event collaboration is covered in the <a class="reference internal" href="../user-guide.html#guide-event-collaboration"><span>Event collaboration</span></a> section of the <a class="reference internal" href="../user-guide.html#user-guide"><span>User guide</span></a>.</p>
 </div>
 <div class="section" id="conditional-requests">
 <span id="ref-conditional-requests"></span><h1>Conditional requests<a class="headerlink" href="#conditional-requests" title="Permalink to this headline">¶</a></h1>

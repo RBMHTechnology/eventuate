@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#event-sourced-views">Event-sourced views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#conditional-requests">Conditional requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-collaboration">Event collaboration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
@@ -106,6 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-routing">Event routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-collaboration">Event collaboration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#conditional-requests">Conditional requests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
@@ -188,14 +190,19 @@
 <li>track conflicts from concurrent updates</li>
 <li>resolve conflicts automatically and interactively</li>
 <li>make concurrent updates conflict-free with operation-based CRDTs</li>
-<li>implement an event-sourced view over many event-sourced actors and</li>
-<li>achieve causal read consistency across event-sourced actors and views.</li>
+<li>implement an event-sourced view over many event-sourced actors</li>
+<li>achieve causal read consistency across event-sourced actors and views and</li>
+<li>implement event collaboration between event-sourced actors.</li>
 </ul>
 <p>The user guide only scratches the surface of Eventuate. You can find further details in the <a class="reference internal" href="reference.html#reference"><span>Reference</span></a>.</p>
 <div class="section" id="event-sourced-actors">
 <span id="guide-event-sourced-actors"></span><h2>Event-sourced actors<a class="headerlink" href="#event-sourced-actors" title="Permalink to this headline">¶</a></h2>
 <p>An event-sourced actor is an actor that captures changes to its internal state as a sequence of events. It <em>persists</em> these events to an event log and <em>replays</em> them to recover internal state after a crash or a planned re-start. This is the basic idea behind <a class="reference external" href="http://martinfowler.com/eaaDev/EventSourcing.html">event sourcing</a>: instead of storing current application state, the full history of changes is stored as <em>immutable facts</em> and current state is derived from these facts.</p>
 <p>Event-sourced actors distinguish between <em>commands</em> and <em>events</em>. During command processing they usually validate external commands against internal state and, if validation succeeds, write one or more events to their event log. During event processing they consume events they have written and update internal state by handling these events.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Event-sourced actors can also write new events during event processing. This is covered in section <a class="reference internal" href="#guide-event-collaboration"><span>Event collaboration</span></a>.</p>
+</div>
 <p>Concrete event-sourced actors must implement the <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> trait. The following <code class="docutils literal"><span class="pre">ExampleActor</span></code> maintains state of type <code class="docutils literal"><span class="pre">Vector[String]</span></code> to which entries can be appended:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
@@ -633,6 +640,63 @@
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Not only event-sourced views but also event-sourced actors, stateful event-sourced writers and processors can extend <code class="docutils literal"><span class="pre">ConditionalRequests</span></code>. Delaying conditional requests may re-order them relative to other conditional and non-conditional requests.</p>
+</div>
+</div>
+<div class="section" id="event-collaboration">
+<span id="guide-event-collaboration"></span><h2>Event collaboration<a class="headerlink" href="#event-collaboration" title="Permalink to this headline">¶</a></h2>
+<p>Earlier sections have already shown a special case of event collaboration: state replication. For that purpose, event-sourced actors of the same type exchange their events to re-construct actor state at different locations.</p>
+<p>In more general cases, event-sourced actors of different type exchange events to achieve a common goal. In the following example, two event-actors collaborate in a ping-pong game where</p>
+<ul class="simple">
+<li>a <code class="docutils literal"><span class="pre">PingActor</span></code> emits a <code class="docutils literal"><span class="pre">Ping</span></code> event on receiving a <code class="docutils literal"><span class="pre">Pong</span></code> event and</li>
+<li>a <code class="docutils literal"><span class="pre">PongActor</span></code> emits a <code class="docutils literal"><span class="pre">Pong</span></code> event on receiving a <code class="docutils literal"><span class="pre">Ping</span></code> event</li>
+</ul>
+<div class="highlight-scala"><div class="highlight"><pre><span class="c1">// some imports omitted ...</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.PersistOnEvent</span>
+
+<span class="k">case</span> <span class="k">class</span> <span class="nc">Ping</span><span class="o">(</span><span class="n">num</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">Pong</span><span class="o">(</span><span class="n">num</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span>
+
+<span class="k">class</span> <span class="nc">PingActor</span><span class="o">(</span><span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">,</span> <span class="n">completion</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span>
+  <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="k">with</span> <span class="nc">PersistOnEvent</span> <span class="o">{</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">onCommand</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="s">&quot;serve&quot;</span> <span class="k">=&gt;</span> <span class="n">persist</span><span class="o">(</span><span class="nc">Ping</span><span class="o">(</span><span class="mi">1</span><span class="o">))(</span><span class="nc">Handler</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">onEvent</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Pong</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span> <span class="k">if</span> <span class="o">!</span><span class="n">recovering</span> <span class="k">=&gt;</span> <span class="n">completion</span> <span class="o">!</span> <span class="s">&quot;done&quot;</span>
+    <span class="k">case</span> <span class="nc">Pong</span><span class="o">(</span><span class="n">i</span><span class="o">)</span>  <span class="k">=&gt;</span> <span class="n">persistOnEvent</span><span class="o">(</span><span class="nc">Ping</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">))(</span><span class="nc">Handler</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">class</span> <span class="nc">PongActor</span><span class="o">(</span><span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span>
+  <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="k">with</span> <span class="nc">PersistOnEvent</span> <span class="o">{</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">onCommand</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+  <span class="o">}</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">onEvent</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Ping</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">persistOnEvent</span><span class="o">(</span><span class="nc">Pong</span><span class="o">(</span><span class="n">i</span><span class="o">))(</span><span class="nc">Handler</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">pingActor</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">PingActor</span><span class="o">(</span><span class="s">&quot;ping&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">,</span> <span class="n">system</span><span class="o">.</span><span class="n">deadLetters</span><span class="o">)))</span>
+<span class="k">val</span> <span class="n">pongActor</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">PongActor</span><span class="o">(</span><span class="s">&quot;pong&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">)))</span>
+
+<span class="n">pingActor</span> <span class="o">!</span> <span class="s">&quot;serve&quot;</span>
+</pre></div>
+</div>
+<p>The ping-pong game is started by sending the <code class="docutils literal"><span class="pre">PingActor</span></code> a <code class="docutils literal"><span class="pre">”serve”</span></code> command which <code class="docutils literal"><span class="pre">persist</span></code>s the first <code class="docutils literal"><span class="pre">Ping</span></code> event. This event however is not consumed by the emitter but rather by the <code class="docutils literal"><span class="pre">PongActor</span></code>. The <code class="docutils literal"><span class="pre">PongActor</span></code> reacts on the <code class="docutils literal"><span class="pre">Ping</span></code> event by emitting a <code class="docutils literal"><span class="pre">Pong</span></code> event. Other than in previous examples, the event is not emitted in the actor’s <code class="docutils literal"><span class="pre">onCommand</span></code> handler but rather in the <code class="docutils literal"><span class="pre">onEvent</span></code> handler. For that purpose, the actor has to mixin the <code class="docutils literal"><span class="pre">PersistOnEvent</span></code> trait and use the <code class="docutils literal"><span class="pre">persistOnEvent</span></code> method. The emitted <code class="docutils literal"><span class="pre">Pong</span></code> too isn’t consumed by its emitter but rather by the <code class="docutils literal"><span class="pre">PingActor</span></code>, emitting another <code class="docutils literal"><span class="pre">Ping</span></code>, and so on. The game ends when the <code class="docutils literal"><span class="pre">PingActor</span></code> received the 10th <code class="docutils literal"><span class="pre">Pong</span></code>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The ping-pong game is <strong>reliable</strong>. When an actor crashes and is re-started, the game is reliably resumed from where it was interrupted. The <code class="docutils literal"><span class="pre">persistOnEvent</span></code> method is idempotent i.e. no duplicates are written under failure conditions and later event replay. When deployed at different location, the ping-pong actors are also <strong>partition-tolerant</strong>. When their game is interrupted by a network partition, it is automatically resumed when the partition heals.</p>
+<p class="last">Furthermore, the actors don’t need to care about idempotency in their business logic i.e. they can assume to receive a <strong>de-duplicated</strong> and <strong>causally-ordered</strong> event stream in their <code class="docutils literal"><span class="pre">onEvent</span></code> handler. This is a significant advantage over at-least-once delivery based communication with <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a>, for example, which can lead to duplicates and message re-ordering.</p>
+</div>
+<p>In a more real-world example, there would be several actors of different type collaborating to achieve a common goal, for example, in a distributed business process. These actors can be considered as event-driven and event-sourced <em>microservices</em>, collaborating on a causally ordered event stream in a reliable and partition-tolerant way. Furthermore, when partitioned, they remain available for local writes and automatically catch up with their collaborators when the partition heals.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Further <code class="docutils literal"><span class="pre">persistOnEvent</span></code> failure handling options for are covered in the <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a> API docs.</p>
 </div>
 <table class="docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>

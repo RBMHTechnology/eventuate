@@ -48,8 +48,8 @@
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>An <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> that supports stateful event processing. In-memory state created from source
-events is recovered during event replay, either starting from scratch or from a previously saved snapshot.</p><p>A <code>StatefulProcessor</code> emits events with vector timestamps set to the processor's current vector time. In
-other words, an emitted event has a potential causal relationship to all past source events.</p><p>Usually, a <code>StatefulProcessor</code>'s source event log is different from its target event log. If a processor
+events is recovered during event replay, either starting from scratch or from a previously saved snapshot.</p><p>A <code>StatefulProcessor</code> writes events with vector timestamps set to the processor's current vector time. In
+other words, a written event has a potential causal relationship to all past source events.</p><p>Usually, a <code>StatefulProcessor</code>'s source event log is different from its target event log. If a processor
 needs to write processed events back to its source event log, it must reserve its own entry in the vector
 clock by setting <code>sharedClockEntry</code> to <code>false</code>, otherwise, writing to the source event log has no effect.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>.
@@ -96,7 +96,7 @@ clock by setting <code>sharedClockEntry</code> to <code>false</code>, otherwise,
         <div id="types" class="types members">
               <h3>Type Members</h3>
               <ol><li name="com.rbmhtechnology.eventuate.EventsourcedView.Handler" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Handler[A]=scala.util.Try[A]=&gt;Unit"></a>
+      <a id="Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]"></a>
       <a id="Handler[A]:Handler[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -107,7 +107,7 @@ clock by setting <code>sharedClockEntry</code> to <code>false</code>, otherwise,
         <span class="name">Handler</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> = (<span class="extype" name="scala.util.Try">Try</span>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView.Handler.A">A</span>]) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.StatefulProcessor@Handler[A]=scala.util.Try[A]=&gt;Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.StatefulProcessor@Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -298,6 +298,23 @@ clock by setting <code>sharedClockEntry</code> to <code>false</code>, otherwise,
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView.Handler" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Handler"></a>
+      <a id="Handler:Handler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcedView$Handler$.html"><span class="name">Handler</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedView@Handler" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#aggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="aggregateId:Option[String]"></a>
       <a id="aggregateId:Option[String]"></a>
@@ -1019,7 +1036,7 @@ is resumed automatically after all replayed events haven been handled by this ac
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">save</span><span class="params">(<span name="snapshot">snapshot: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=scala.util.Try[A]=&gt;Unit" class="extmbr" name="com.rbmhtechnology.eventuate.StatefulProcessor.Handler">Handler</a>[<a href="SnapshotMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.SnapshotMetadata">SnapshotMetadata</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">save</span><span class="params">(<span name="snapshot">snapshot: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.StatefulProcessor.Handler">Handler</a>[<a href="SnapshotMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.SnapshotMetadata">SnapshotMetadata</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.StatefulProcessor@save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" title="Permalink" target="_top">
