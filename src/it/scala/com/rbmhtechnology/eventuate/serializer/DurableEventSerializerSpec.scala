@@ -55,7 +55,8 @@ object DurableEventSerializerSpec {
     vectorTimestamp = VectorTime("p1" -> 1L, "p2" -> 2L),
     processId = "p4",
     localLogId = "p3",
-    localSequenceNr = 17L)
+    localSequenceNr = 17L,
+    deliveryId = "xyz")
 }
 
 class DurableEventSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {

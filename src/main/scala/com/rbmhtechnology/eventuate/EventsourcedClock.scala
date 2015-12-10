@@ -16,6 +16,8 @@
 
 package com.rbmhtechnology.eventuate
 
+import com.rbmhtechnology.eventuate.DurableEvent._
+
 /**
  * Manages a [[VectorClock]] and implements rules for updating the clock from [[DurableEvent]]s.
  */
@@ -67,7 +69,7 @@ trait EventsourcedClock extends EventsourcedView {
   /**
    * Internal API.
    */
-  private[eventuate] def durableEvent(payload: Any, customDestinationAggregateIds: Set[String]): DurableEvent = {
+  private[eventuate] def durableEvent(payload: Any, customDestinationAggregateIds: Set[String], deliveryId: String = UndefinedDeliveryId): DurableEvent = {
     if (sharedClockEntry) {
       DurableEvent(
         payload = payload,
@@ -75,7 +77,8 @@ trait EventsourcedClock extends EventsourcedView {
         emitterAggregateId = aggregateId,
         customDestinationAggregateIds = customDestinationAggregateIds,
         vectorTimestamp = currentVectorTime,
-        processId = DurableEvent.UndefinedLogId)
+        processId = UndefinedLogId,
+        deliveryId = deliveryId)
     } else {
       DurableEvent(
         payload = payload,
@@ -83,7 +86,8 @@ trait EventsourcedClock extends EventsourcedView {
         emitterAggregateId = aggregateId,
         customDestinationAggregateIds = customDestinationAggregateIds,
         vectorTimestamp = updateLocalTime(),
-        processId = id)
+        processId = id,
+        deliveryId = deliveryId)
     }
   }
 

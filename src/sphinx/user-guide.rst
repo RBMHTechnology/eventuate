@@ -12,8 +12,9 @@ This is a brief user guide to Eventuate. It is recommended to read sections :ref
 - track conflicts from concurrent updates
 - resolve conflicts automatically and interactively
 - make concurrent updates conflict-free with operation-based CRDTs
-- implement an event-sourced view over many event-sourced actors and
-- achieve causal read consistency across event-sourced actors and views.
+- implement an event-sourced view over many event-sourced actors
+- achieve causal read consistency across event-sourced actors and views and
+- implement event collaboration between event-sourced actors.
 
 The user guide only scratches the surface of Eventuate. You can find further details in the :ref:`reference`.
 
@@ -25,6 +26,9 @@ Event-sourced actors
 An event-sourced actor is an actor that captures changes to its internal state as a sequence of events. It *persists* these events to an event log and *replays* them to recover internal state after a crash or a planned re-start. This is the basic idea behind `event sourcing`_: instead of storing current application state, the full history of changes is stored as *immutable facts* and current state is derived from these facts.
 
 Event-sourced actors distinguish between *commands* and *events*. During command processing they usually validate external commands against internal state and, if validation succeeds, write one or more events to their event log. During event processing they consume events they have written and update internal state by handling these events.
+
+.. hint::
+   Event-sourced actors can also write new events during event processing. This is covered in section :ref:`guide-event-collaboration`. 
 
 Concrete event-sourced actors must implement the ``EventsourcedActor`` trait. The following ``ExampleActor`` maintains state of type ``Vector[String]`` to which entries can be appended:
 
@@ -255,6 +259,33 @@ Here, the ``ExampleActor`` includes the event’s vector timestamp in its ``Appe
 .. note::
    Not only event-sourced views but also event-sourced actors, stateful event-sourced writers and processors can extend ``ConditionalRequests``. Delaying conditional requests may re-order them relative to other conditional and non-conditional requests.
 
+.. _guide-event-collaboration:
+
+Event collaboration
+-------------------
+
+Earlier sections have already shown a special case of event collaboration: state replication. For that purpose, event-sourced actors of the same type exchange their events to re-construct actor state at different locations. 
+
+In more general cases, event-sourced actors of different type exchange events to achieve a common goal. In the following example, two event-actors collaborate in a ping-pong game where 
+
+- a ``PingActor`` emits a ``Ping`` event on receiving a ``Pong`` event and
+- a ``PongActor`` emits a ``Pong`` event on receiving a ``Ping`` event
+
+.. includecode:: code/UserGuideDoc.scala
+   :snippet: event-collaboration
+
+The ping-pong game is started by sending the ``PingActor`` a ``”serve”`` command which ``persist``\ s the first ``Ping`` event. This event however is not consumed by the emitter but rather by the ``PongActor``. The ``PongActor`` reacts on the ``Ping`` event by emitting a ``Pong`` event. Other than in previous examples, the event is not emitted in the actor’s ``onCommand`` handler but rather in the ``onEvent`` handler. For that purpose, the actor has to mixin the ``PersistOnEvent`` trait and use the ``persistOnEvent`` method. The emitted ``Pong`` too isn’t consumed by its emitter but rather by the ``PingActor``, emitting another ``Ping``, and so on. The game ends when the ``PingActor`` received the 10th ``Pong``.
+
+.. note::
+   The ping-pong game is **reliable**. When an actor crashes and is re-started, the game is reliably resumed from where it was interrupted. The ``persistOnEvent`` method is idempotent i.e. no duplicates are written under failure conditions and later event replay. When deployed at different location, the ping-pong actors are also **partition-tolerant**. When their game is interrupted by a network partition, it is automatically resumed when the partition heals. 
+
+   Furthermore, the actors don’t need to care about idempotency in their business logic i.e. they can assume to receive a **de-duplicated** and **causally-ordered** event stream in their ``onEvent`` handler. This is a significant advantage over at-least-once delivery based communication with ConfirmedDelivery_, for example, which can lead to duplicates and message re-ordering.
+
+In a more real-world example, there would be several actors of different type collaborating to achieve a common goal, for example, in a distributed business process. These actors can be considered as event-driven and event-sourced *microservices*, collaborating on a causally ordered event stream in a reliable and partition-tolerant way. Furthermore, when partitioned, they remain available for local writes and automatically catch up with their collaborators when the partition heals.
+
+.. hint::
+   Further ``persistOnEvent`` failure handling options for are covered in the PersistOnEvent_ API docs.
+
 .. _ZooKeeper: http://zookeeper.apache.org/
 .. _event sourcing: http://martinfowler.com/eaaDev/EventSourcing.html
 .. _vector clock update rules: http://en.wikipedia.org/wiki/Vector_clock
@@ -270,6 +301,8 @@ Here, the ``ExampleActor`` includes the event’s vector timestamp in its ``Appe
 .. _ORSetService: latest/api/index.html#com.rbmhtechnology.eventuate.crdt.ORSetService
 .. _CRDTService: latest/api/index.html#com.rbmhtechnology.eventuate.crdt.CRDTService
 .. _CRDTServiceOps: latest/api/index.html#com.rbmhtechnology.eventuate.crdt.CRDTServiceOps
+.. _ConfirmedDelivery: latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery
+.. _PersistOnEvent: latest/api/index.html#com.rbmhtechnology.eventuate.PersistOnEvent
 
 .. [#] ``EventsourcedActor``\ s and ``EventsourcedView``\ s that have an undefined ``aggregateId`` can consume events from all other actors on the same event log.
 .. [#] Attached update timestamps are not version vectors because Eventuate uses `vector clock update rules`_ instead of `version vector update rules`_. Consequently, update timestamp equivalence cannot be used as criterion for replica convergence.

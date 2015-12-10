@@ -31,8 +31,16 @@ private class EventsourcedViewSettings(config: Config) {
   val chunkSizeMax = config.getInt("eventuate.replay.chunk-size-max")
 }
 
-private object EventsourcedView {
-  val instanceIdCounter = new AtomicInteger(0)
+object EventsourcedView {
+  /**
+   * Callback handler invoked on an actor's dispatcher thread.
+   */
+  type Handler[A] = Try[A] => Unit
+
+  /**
+   * Internal API.
+   */
+  private[eventuate] val instanceIdCounter = new AtomicInteger(0)
 }
 
 /**
@@ -66,7 +74,11 @@ private object EventsourcedView {
 trait EventsourcedView extends Actor with Stash with ActorLogging {
   import EventsourcedView._
 
-  type Handler[A] = Try[A] => Unit
+  type Handler[A] = EventsourcedView.Handler[A]
+
+  object Handler {
+    def empty[A]: Handler[A] = (_: Try[A]) => Unit
+  }
 
   val instanceId: Int = instanceIdCounter.getAndIncrement()
 

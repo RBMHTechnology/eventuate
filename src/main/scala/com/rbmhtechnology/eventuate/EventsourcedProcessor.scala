@@ -62,7 +62,7 @@ object EventsourcedProcessor {
  * not be recovered. An application that needs stateful event processing should use [[StatefulProcessor]]
  * instead.
  *
- * An `EventsourcedProcessor` processor emits events with vector timestamps set to source event vector timestamp.
+ * An `EventsourcedProcessor` processor writes events with vector timestamps set to source event vector timestamp.
  * In other words, it does not modify event vector timestamps.
  *
  * The source event log and the target event log of an `EventsourcedProcessor` must be different. Writing
@@ -174,8 +174,8 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
  * An [[EventsourcedProcessor]] that supports stateful event processing. In-memory state created from source
  * events is recovered during event replay, either starting from scratch or from a previously saved snapshot.
  *
- * A `StatefulProcessor` emits events with vector timestamps set to the processor's current vector time. In
- * other words, an emitted event has a potential causal relationship to all past source events.
+ * A `StatefulProcessor` writes events with vector timestamps set to the processor's current vector time. In
+ * other words, a written event has a potential causal relationship to all past source events.
  *
  * Usually, a `StatefulProcessor`'s source event log is different from its target event log. If a processor
  * needs to write processed events back to its source event log, it must reserve its own entry in the vector
