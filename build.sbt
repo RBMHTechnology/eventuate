@@ -1,6 +1,6 @@
 import Keys.{compile => comp, _}
 
-val akkaVersion = "2.4.0"
+val akkaVersion = "2.4.1"
 
 val protobufVersion = "2.5.0"
 
