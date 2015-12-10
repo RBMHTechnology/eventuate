@@ -69,6 +69,11 @@ Eventuate provides several abstractions for building event-sourced application c
        | during command processing. Derived state 
        | is an in-memory write model, representing 
        | the command-side (C) of CQRS.
+       |
+       | An event-sourced actor may also emit new
+       | events during event processing which is
+       | most relevant for :ref:`guide-event-collaboration` use
+       | cases.
      - - :ref:`User guide <guide-event-sourced-actors>`
        - :ref:`Reference <ref-event-sourced-actors>`
        - `API docs <latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor>`_
@@ -113,9 +118,9 @@ Event-sourced actors produce events to and consume events from an event log. Dur
 
 When an event-sourced actor is re-started, internal state is recovered by replaying events from its local event log. Events are replayed in local storage order which is consistent with causal order. Consequently, event replay at a given location is deterministic i.e. doesn’t change when replay is repeated. Event replay can also be started from a snapshot of internal state which is an optimization to reduce recovery times.
 
-In addition to consuming their own events, event-sourced actors can also consume events produced by other event-sourced actors to the same event log. This enables `event collaboration`_ between actors (:ref:`arch-fig5`). Applications can customize :ref:`event-routing` between actors.
+In addition to consuming their own events, event-sourced actors can also consume events produced by other event-sourced actors to the same event log. This enables `event collaboration`_ between actors (:ref:`arch-fig5`) with or without custom :ref:`event-routing` rules.
 
-A special form of event collaboration is state replication where actors of the same type consume the same events at different locations to re-construct state. Another example is a distributed business process where actors of different type collaborate by exchanging events to achieve a common goal.
+A special form of event collaboration is state replication where actors of the same type consume each other’s events to re-construct actor state at different locations. A more general form of event collaboration, for example, is a distributed business process where actors of different type collaborate by exchanging events to achieve a common goal. In this context, event-sourced actor often emit new events on receiving events from collaborators. This is covered in section :ref:`guide-event-collaboration` of the user guide.
 
 .. _arch-fig5:
 
@@ -126,7 +131,7 @@ A special form of event collaboration is state replication where actors of the s
 
    Two event-sourced actors exchanging events over a replicated event log.
 
-Event-sourced actors may also interact with external services by sending commands and processing replies. Commands can be sent with *at-most-once* or *at-least-once* delivery semantics, depending on the reliability requirements of an application. Replies from external services are usually processed like external commands which may result in further events to be written. This way, external services can be included into reliable, event-driven business processes controlled by event-sourced actors.
+Event-sourced actors may also interact with external services by sending commands and processing replies. Commands can be sent with *at-most-once* or *at-least-once* delivery semantics, depending on the reliability requirements of an application. Replies from external services are usually processed like external commands which may result in further events to be written. This way, external services can be included into reliable, event-driven business processes controlled by event-sourced actors (see also :ref:`reliable-delivery`).
 
 .. figure:: images/architecture-5.png
    :figwidth: 70%

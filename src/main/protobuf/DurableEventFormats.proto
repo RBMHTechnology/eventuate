@@ -27,6 +27,7 @@ message DurableEventFormat {
   optional string processId = 7;
   optional string localLogId = 8;
   optional int64 localSequenceNr = 9;
+  optional string deliveryId = 10;
 }
 
 message PayloadFormat {

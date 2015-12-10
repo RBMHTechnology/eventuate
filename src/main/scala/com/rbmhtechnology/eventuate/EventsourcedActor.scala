@@ -23,12 +23,18 @@ import scala.util._
 import akka.actor._
 
 /**
- * An `EventsourcedActor` is an [[EventsourcedView]] that can also produce (= emit) new events to its
- * event log. New events can be emitted with methods `persist` and `persistN`. They must only be used
- * within the `onCommand` command handler. The command handler may only read internal state but must
- * not modify it. Internal state may only be modified within `onEvent`.
+ * An `EventsourcedActor` is an [[EventsourcedView]] that can also write new events to its event log.
+ * New events are written with the asynchronous [[persist]] and [[persistN]] methods. They must only
+ * be used within the `onCommand` command handler. After successful persistence, the `onEvent` handler
+ * is automatically called with the persisted event(s). The `onEvent` handler is the place where actor
+ * state may be updated. The `onCommand` handler should not update actor state but only read it e.g.
+ * for command validation. `EventsourcedActor`s that want to persist new events within the `onEvent`
+ * handler should additionally mixin the [[PersistOnEvent]] trait and use the methods
+ * [[PersistOnEvent.persistOnEvent persistOnEvent]] and
+ * [[PersistOnEvent.persistOnEventN persistOnEventN]].
  *
  * @see [[EventsourcedView]]
+ * @see [[PersistOnEvent]]
  */
 trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
   import EventsourcingProtocol._
@@ -86,7 +92,7 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
    */
   final def persist[A](event: A, customDestinationAggregateIds: Set[String] = Set())(handler: Handler[A]): Unit = {
     writeRequests = writeRequests :+ durableEvent(event, customDestinationAggregateIds)
-    writeHandlers = writeHandlers :+ handler.asInstanceOf[Try[Any] => Unit]
+    writeHandlers = writeHandlers :+ handler.asInstanceOf[Handler[Any]]
   }
 
   /**
@@ -111,23 +117,36 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
         messageStash.unstash()
       }
     }
-    case cmd =>
-      if (writing) messageStash.stash() else {
-        super.unhandledMessage(cmd)
-
-        val wPending = writePending
-        if (wPending) write()
-        if (wPending && stateSync) writing = true else if (stateSync) messageStash.unstash()
+    case PersistOnEventRequest(deliveryId: String, parameters, handlers, iid) => if (iid == instanceId) {
+      writeOrDelay {
+        writeHandlers = handlers
+        writeRequests = parameters.map {
+          case PersistOnEventParameters(event, customDestinationAggregateIds) =>
+            durableEvent(event, customDestinationAggregateIds, deliveryId)
+        }
       }
+    }
+    case cmd =>
+      writeOrDelay(super.unhandledMessage(cmd))
   }
 
-  private def writePending: Boolean =
-    writeRequests.nonEmpty
+  private def writeOrDelay(writeRequestProducer: => Unit): Unit = {
+    if (writing) messageStash.stash() else {
+      writeRequestProducer
+
+      val wPending = writePending
+      if (wPending) write()
+      if (wPending && stateSync) writing = true else if (stateSync) messageStash.unstash()
+    }
+  }
 
   private def write(): Unit = {
     eventLog ! Write(writeRequests, sender(), self, instanceId)
     writeRequests = Vector.empty
   }
+
+  private def writePending: Boolean =
+    writeRequests.nonEmpty
 }
 
 /**
@@ -137,9 +156,11 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
  */
 abstract class AbstractEventsourcedActor(id: String, eventLog: ActorRef) extends AbstractEventsourcedView(id, eventLog) with EventsourcedActor with ConfirmedDelivery {
   /**
-   * Persists the given `event` and asynchronously calls `handler` with the persist result.
-   * The `handler` is called during a separate message dispatch by this actor, hence, it
-   * is safe to modify internal state within `handler`.
+   * Asynchronously persists the given `event` and calls `handler` with the persist result. If
+   * persistence was successful, `onEvent` is called with the persisted event before `handler`
+   * is called. Both, `onReceiveEvent` and `handler`, are called on a dispatcher thread of this
+   * actor, hence, it is safe to modify internal state within them. The `handler` can also obtain
+   * a reference to the initial command sender via `sender()`.
    */
   def persist[A](event: A, handler: BiConsumer[A, Throwable]): Unit = persist[A](event) {
     case Success(a) => handler.accept(a, null)

@@ -373,3 +373,48 @@ object ConditionalRequests extends App {
   } println(s"append count = $count")
   //#
 }
+
+object EventCollaboration {
+  import akka.actor._
+
+  var system: ActorSystem = _
+  var eventLog: ActorRef = _
+
+  //#event-collaboration
+  // some imports omitted ...
+  import com.rbmhtechnology.eventuate.EventsourcedActor
+  import com.rbmhtechnology.eventuate.PersistOnEvent
+
+  case class Ping(num: Int)
+  case class Pong(num: Int)
+
+  class PingActor(val id: String, val eventLog: ActorRef, completion: ActorRef)
+    extends EventsourcedActor with PersistOnEvent {
+
+    override def onCommand = {
+      case "serve" => persist(Ping(1))(Handler.empty)
+    }
+
+    override def onEvent = {
+      case Pong(10) if !recovering => completion ! "done"
+      case Pong(i)  => persistOnEvent(Ping(i + 1))(Handler.empty)
+    }
+  }
+
+  class PongActor(val id: String, val eventLog: ActorRef)
+    extends EventsourcedActor with PersistOnEvent {
+
+    override def onCommand = {
+      case _ =>
+    }
+    override def onEvent = {
+      case Ping(i) => persistOnEvent(Pong(i))(Handler.empty)
+    }
+  }
+
+  val pingActor = system.actorOf(Props(new PingActor("ping", eventLog, system.deadLetters)))
+  val pongActor = system.actorOf(Props(new PongActor("pong", eventLog)))
+
+  pingActor ! "serve"
+  //#
+}
