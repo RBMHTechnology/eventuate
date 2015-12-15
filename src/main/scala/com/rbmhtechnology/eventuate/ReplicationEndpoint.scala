@@ -373,7 +373,7 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
   }
 
   val writing: Receive = {
-    case writeSuccess @ ReplicationWriteSuccess(_, num, _, _) if num == 0 =>
+    case writeSuccess @ ReplicationWriteSuccess(num, _, _, _) if num == 0 =>
       notifyLocalAcceptor(writeSuccess)
       context.become(idle)
       scheduleRead()
