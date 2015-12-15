@@ -38,6 +38,7 @@ object ReplicationConfig {
          |eventuate.log.cassandra.index-update-limit = 3
          |eventuate.log.replication.batch-size-max = 3
          |eventuate.log.replication.retry-delay = 1s
+         |eventuate.log.leveldb.deletion-retry-delay = 1 ms
          |eventuate.log.replication.failure-detection-limit = 3s
        """.stripMargin)
 

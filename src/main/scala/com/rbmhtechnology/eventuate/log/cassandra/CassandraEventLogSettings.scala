@@ -76,6 +76,8 @@ class CassandraEventLogSettings(config: Config) extends EventLogSettings {
   val initRetryDelay: FiniteDuration =
     config.getDuration("eventuate.log.cassandra.init-retry-delay", TimeUnit.MILLISECONDS).millis
 
+  val deletionRetryDelay: FiniteDuration = 10.minutes
+
   val initialConnectRetryMax: Int =
     config.getInt("eventuate.log.cassandra.initial-connect-retry-max")
 

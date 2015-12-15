@@ -78,6 +78,7 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventIteratorParam
   cassandra.createAggregateEventTable(id)
 
   private val progressStore = createReplicationProgressStore(cassandra, id)
+  private val deletedToStore = createDeletedToStore(cassandra, id)
   private val eventLogStore = createEventLogStore(cassandra, id)
   private val indexStore = createIndexStore(cassandra, id)
   private val index = createIndex(cassandra, indexStore, eventLogStore, id)
@@ -121,6 +122,14 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventIteratorParam
     }
   }
 
+  override def writeDeletionMetadata(deleteMetadata: DeletionMetadata) =
+    deletedToStore.writeDeletedToSync(deleteMetadata.toSequenceNr)(context.system.dispatchers.defaultGlobalDispatcher)
+
+  override def readDeletionMetadata = {
+    import services.readDispatcher
+    deletedToStore.readDeletedToAsync.map(DeletionMetadata(_, Set.empty))
+  }
+
   override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit = {
     eventLogStore.writeSync(events, partition)
     updateCount += events.size
@@ -153,6 +162,9 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventIteratorParam
 
   private[eventuate] def createReplicationProgressStore(cassandra: Cassandra, logId: String) =
     new CassandraReplicationProgressStore(cassandra, logId)
+
+  private[eventuate] def createDeletedToStore(cassandra: Cassandra, logId: String) =
+    new CassandraDeletedToStore(cassandra, logId)
 
   private def compositeEventIterator(aggregateId: String, fromSequenceNr: Long, indexSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] with Closeable =
     new CompositeEventIterator(aggregateId, fromSequenceNr, indexSequenceNr, toSequenceNr)

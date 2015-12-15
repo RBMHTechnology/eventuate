@@ -95,7 +95,9 @@ object ReplicationProtocol {
   case class GetEventLogClockSuccess(clock: EventLogClock)
 
   /**
-   * Requests all replication progresses from a log.
+   * Requests all local replication progresses from a log.
+   * The local replication progress is the sequence nr in the remote log up to which
+   * the local log has replicated all events from the remote log
    */
   case object GetReplicationProgresses
 
@@ -110,7 +112,8 @@ object ReplicationProtocol {
   case class GetReplicationProgressesFailure(cause: Throwable)
 
   /**
-   * Requests the replication progress for given `sourceLogId` from a target log.
+   * Requests the local replication progress for given `sourceLogId` from a target log.
+   * @see GetReplicationProgresses
    */
   case class GetReplicationProgress(sourceLogId: String)
 

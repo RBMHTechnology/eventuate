@@ -128,3 +128,24 @@ private[eventuate] trait CassandraReplicationProgressStatements extends Cassandr
 
   def replicationProgressTable = table("rp")
 }
+
+private[eventuate] trait CassandraDeletedToStatements extends CassandraStatements {
+  def createDeletedToTableStatement = s"""
+      CREATE TABLE IF NOT EXISTS ${deletedToTable} (
+        log_id text,
+        deleted_to bigint,
+        PRIMARY KEY (log_id))
+    """
+
+  def writeDeletedToStatement: String = s"""
+      INSERT INTO ${deletedToTable} (log_id, deleted_to)
+      VALUES (?, ?)
+    """
+
+  def readDeletedToStatement: String = s"""
+      SELECT deleted_to FROM ${deletedToTable}
+      WHERE log_id = ?
+    """
+
+  def deletedToTable = table("del")
+}
