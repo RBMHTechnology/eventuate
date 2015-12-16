@@ -87,12 +87,12 @@ object ReplicationProtocol {
   /**
    * Requests the clock from an event log.
    */
-  private[eventuate] case object GetEventLogClock
+  case object GetEventLogClock
 
   /**
    * Success reply after a [[GetEventLogClock]].
    */
-  private[eventuate] case class GetEventLogClockSuccess(clock: EventLogClock)
+  case class GetEventLogClockSuccess(clock: EventLogClock)
 
   /**
    * Requests all replication progresses from a log.
