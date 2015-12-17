@@ -17,6 +17,7 @@
 package com.rbmhtechnology.eventuate.log.cassandra
 
 import java.nio.ByteBuffer
+import java.util.concurrent.TimeUnit
 
 import akka.actor._
 import akka.event.{ LogSource, Logging }
@@ -218,7 +219,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
     serializer.deserialize(Bytes.getArray(buffer), classOf[EventLogClock]).get
 
   private[eventuate] def executeBatch(body: BatchStatement => Unit): Unit =
-    session.execute(withBatch(body))
+    session.executeAsync(withBatch(body)).getUninterruptibly(2000, TimeUnit.MILLISECONDS)
 
   private[eventuate] def executeBatchAsync(body: BatchStatement => Unit): Future[Unit] = {
     implicit val dispatcher = system.dispatchers.defaultGlobalDispatcher

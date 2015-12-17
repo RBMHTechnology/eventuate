@@ -17,7 +17,7 @@
 package com.rbmhtechnology.eventuate.log.cassandra
 
 import java.io.Closeable
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.{ TimeoutException, TimeUnit }
 
 import akka.actor.Props
 import akka.pattern.ask
@@ -121,7 +121,28 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventIteratorParam
     }
   }
 
-  override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit = {
+  override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
+    writeRetry(events, partition, clock)
+
+  import scala.util._
+
+  private def writeRetry(events: Seq[DurableEvent], partition: Long, clock: EventLogClock, num: Int = 0): Unit = {
+    Try(writeLow(events, partition, clock)) match {
+      case Success(r) =>
+      case Failure(e: TimeoutException) =>
+        println(s"!!> [$id] retry ($num) write after timeout exception: $e")
+        writeRetry(events, partition, clock, num + 1)
+      case Failure(e) =>
+        println(s"!!> [$id] retry ($num) write after other exception: $e")
+        Thread.sleep(2000)
+        writeRetry(events, partition, clock, num + 1)
+    }
+  }
+
+  private def writeLow(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit = {
+    events.foreach { event =>
+      println(s"++> [$id] trying to write event ${event.payload}")
+    }
     eventLogStore.writeSync(events, partition)
     updateCount += events.size
     if (updateCount >= cassandra.settings.indexUpdateLimit) {

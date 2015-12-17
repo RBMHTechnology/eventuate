@@ -70,7 +70,7 @@ object CRDTService {
    * @param id id of CRDT instance.
    * @param operation update operation.
    */
-  case class ValueUpdated(id: String, operation: Any)
+  case class ValueUpdated(id: String, operation: Any, source: String = "", ctr: Int = 0)
 }
 
 /**
@@ -182,6 +182,8 @@ trait CRDTService[A, B] {
     override def stateSync: Boolean =
       ops.precondition
 
+    var ctr = 0
+
     override def onCommand = {
       case Get(`crdtId`) =>
         sender() ! GetReply(crdtId, ops.value(crdt))
@@ -190,7 +192,8 @@ trait CRDTService[A, B] {
           case None =>
             sender() ! UpdateReply(crdtId, ops.value(crdt))
           case Some(op) =>
-            persist(ValueUpdated(crdtId, op)) {
+            ctr += 1
+            persist(ValueUpdated(crdtId, op, serviceId, ctr)) {
               case Success(evt) =>
                 sender() ! UpdateReply(crdtId, ops.value(crdt))
               case Failure(err) =>
@@ -207,7 +210,7 @@ trait CRDTService[A, B] {
     }
 
     override def onEvent = {
-      case evt @ ValueUpdated(id, operation) =>
+      case evt @ ValueUpdated(id, operation, _, _) =>
         crdt = ops.update(crdt, operation, lastHandledEvent)
         context.parent ! OnChange(crdt, operation)
     }

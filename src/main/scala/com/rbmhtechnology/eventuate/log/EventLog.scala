@@ -267,6 +267,10 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
   }
 
   private def initialized: Receive = {
+    case "dump" =>
+      eventIterator(eventIteratorParameters(1L, Long.MaxValue)).foreach { event =>
+        println(s"--> $id dmp ${event.localSequenceNr} ${eventToString(event.payload)}")
+      }
     case GetEventLogClock =>
       sender() ! GetEventLogClockSuccess(clock)
     case GetReplicationProgresses =>
@@ -376,9 +380,13 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
     result match {
       case Success((updatedWrites, updatedEvents, clock2)) =>
         clock = clock2
-        updatedWrites.foreach(w => registry.pushWriteSuccess(w.events, w.initiator, w.requestor, w.instanceId))
+        updatedWrites.foreach(w => {
+          registry.pushWriteSuccess(w.events, w.initiator, w.requestor, w.instanceId)
+          w.events.foreach { event => println(s"--> $id loc ${event.localSequenceNr} ${eventToString(event.payload)}") }
+        })
         channel.foreach(_ ! Updated(updatedEvents))
       case Failure(e) =>
+        println(s"##> [$id] locWrite failure: $e")
         writes.foreach(w => registry.pushWriteFailure(w.events, w.initiator, w.requestor, w.instanceId, e))
     }
   }
@@ -402,6 +410,7 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
           val sdr = w.initiator
           registry.pushReplicateSuccess(w.events)
           channel.foreach(_ ! w)
+          w.events.foreach { event => println(s"--> $id rep ${event.localSequenceNr} ${eventToString(event.payload)}") }
           implicit val dispatcher = context.system.dispatchers.defaultGlobalDispatcher
           writeReplicationProgress(w.sourceLogId, w.replicationProgress) onComplete {
             case Success(_) =>
@@ -417,6 +426,7 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
         }
         channel.foreach(_ ! Updated(updatedEvents))
       case Failure(e) =>
+        println(s"##> [$id] repWrite failure: $e")
         writes.foreach { write =>
           write.initiator ! ReplicationWriteFailure(e)
         }
@@ -495,6 +505,13 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
 }
 
 object EventLog {
+  import crdt.CRDTService._
+
+  def eventToString(event: Any): String = event match {
+    case ValueUpdated(_, op, src, ctr) => s"$src $ctr $op"
+    case e                             => e.toString
+  }
+
   /**
    * Internally sent to an [[EventLog]] after successful clock recovery.
    */
