@@ -47,8 +47,8 @@ class BatchingLayer(eventLogProps: Props) extends Actor {
   val eventLog: ActorRef =
     context.actorOf(eventLogProps)
 
-  val emissionBatcher: ActorRef =
-    context.actorOf(Props(new EmissionBatcher(eventLog)))
+  val defaultBatcher: ActorRef =
+    context.actorOf(Props(new DefaultBatcher(eventLog)))
 
   val replicationBatcher: ActorRef =
     context.actorOf(Props(new ReplicationBatcher(eventLog)))
@@ -56,8 +56,10 @@ class BatchingLayer(eventLogProps: Props) extends Actor {
   def receive = {
     case r: ReplicationWrite =>
       replicationBatcher forward r.copy(initiator = sender())
+    case r: ReplicationRead =>
+      replicationBatcher forward r
     case cmd =>
-      emissionBatcher forward cmd
+      defaultBatcher forward cmd
   }
 }
 
@@ -85,16 +87,17 @@ private trait Batcher[A <: DurableEventBatch] extends Actor {
     batch = r
     batch.nonEmpty
   } else false
+
+  override def unhandled(message: Any): Unit =
+    eventLog forward message
 }
 
-private class EmissionBatcher(val eventLog: ActorRef) extends Batcher[Write] {
+private class DefaultBatcher(val eventLog: ActorRef) extends Batcher[Write] {
   val idle: Receive = {
     case w: Write =>
       batch = batch :+ w
       writeBatch()
       context.become(writing)
-    case cmd =>
-      eventLog forward cmd
   }
 
   val writing: Receive = {
@@ -108,8 +111,6 @@ private class EmissionBatcher(val eventLog: ActorRef) extends Batcher[Write] {
       writeAll() // ensures that Replay commands are properly ordered relative to Write commands
       eventLog forward r
       context.become(idle)
-    case cmd =>
-      eventLog forward cmd
   }
 
   def writeRequest(batches: Seq[Write]) =
