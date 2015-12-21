@@ -276,6 +276,13 @@ eventuate {
     # snapshot of the log&#39;s internal state (sequence number and merged vector
     # time) is written.
     state-snapshot-limit = 128
+
+    # Maximal number of events that are deleted in a single leveldb batch
+    deletion-batch-size-max = 100
+
+    # Delay between two tries to physically delete all requested events while keeping
+    # those that are not yet replicated.
+    deletion-retry-delay = 1 m
   }
 
   log.cassandra {

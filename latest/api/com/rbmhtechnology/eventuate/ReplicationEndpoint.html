@@ -245,6 +245,36 @@ replicated only between event logs with matching names.
       </a>
     </span>
       <p class="shortcomment cmt">Replication connections to other replication endpoints.</p>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#delete" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="delete(logName:String,toSequenceNr:Long,remoteEndpointIds:Set[String]):scala.concurrent.Future[Long]"></a>
+      <a id="delete(String,Long,Set[String]):Future[Long]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">delete</span><span class="params">(<span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="remoteEndpointIds">remoteEndpointIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@delete(logName:String,toSequenceNr:Long,remoteEndpointIds:Set[String]):scala.concurrent.Future[Long]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Delete events from local log <code>logName</code> with a sequence nr less or equal <code>toSequenceNr</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Delete events from local log <code>logName</code> with a sequence nr less or equal <code>toSequenceNr</code>.</p><p>Deletion is split into logical deletion and physical deletion of events. Logical deletion is
+supported by any storage backend and ensures that the events are not replayed any more. It has immediate effect.
+Logical deleted events might still be replicated to remote <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>s, but they
+are eventually physically deleted, if physical deletion
+is supported by the storage backend (currently LevelDB). It is implemented as reliable
+background process that survives restarts. Physical deletion can be further delayed until
+remote replication endpoints have successfully replicated events by adding them to the <code>remoteEndpointIds</code> argument</p><p>Use with care! When events are physically deleted they cannot be replicated any more to new
+replication endpoints (that were unknown at the time of deletion). Also a node that has deleted
+local events may not be suitable any more for disaster recovery of neighbor nodes.
+</p></div><dl class="paramcmts block"><dt class="param">logName</dt><dd class="cmt"><p>Events are deleted from the local log with this name.</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>All events with a less or equal sequence nr are not replayed any more.</p></dd><dt class="param">remoteEndpointIds</dt><dd class="cmt"><p>A set of remote <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a> ids that must have replicated events
+                         to their logs before they are allowed to be physically deleted.</p></dd><dt>returns</dt><dd class="cmt"><p>A <span class="extype" name="Future">Future</span> containing the sequence nr until which events are logically deleted.
+        When the <span class="extype" name="Future">Future</span> completes logical deletion is effective. The returned
+        sequence nr can differ from the requested one, if:</p><ul><li>the log's current sequence number is smaller than the requested number. In this case the current sequence number is returned.</li><li>there was a previous successful deletion request with a higher sequence number. In this case that number is returned.
+</li></ul></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>

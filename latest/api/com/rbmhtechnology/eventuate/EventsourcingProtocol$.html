@@ -89,7 +89,46 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteSnapshots" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="DeleteextendsProductwithSerializable"></a>
+      <a id="Delete:Delete"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcingProtocol$$Delete.html"><span class="name">Delete</span></a><span class="params">(<span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="remoteLogIds">remoteLogIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set.empty</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DeleteextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Instructs an event log to delete events with a sequence nr less or equal a given one.</p><div class="fullcomment"><div class="comment cmt"><p>Instructs an event log to delete events with a sequence nr less or equal a given one.
+Deleted events are not replayed any more, however
+depending on the log implementation and <code>remoteLogIds</code> they might still be replicated.
+</p></div><dl class="paramcmts block"><dt class="param">toSequenceNr</dt><dd class="cmt"><p>All events with a less or equal sequence nr are not replayed any more.</p></dd><dt class="param">remoteLogIds</dt><dd class="cmt"><p>A set of remote log ids that must have replicated events before they are allowed to be physically deleted.
+</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DeleteFailureextendsProductwithSerializable"></a>
+      <a id="DeleteFailure:DeleteFailure"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcingProtocol$$DeleteFailure.html"><span class="name">DeleteFailure</span></a><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DeleteFailureextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Failure reply after a <a href="EventsourcingProtocol$$Delete.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete">Delete</a>
+</p>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteSnapshots" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="DeleteSnapshotsextendsProductwithSerializable"></a>
       <a id="DeleteSnapshots:DeleteSnapshots"></a>
       <h4 class="signature">
@@ -123,6 +162,27 @@
       </a>
     </span>
       <p class="shortcomment cmt">Failure reply after a <a href="EventsourcingProtocol$$DeleteSnapshots.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteSnapshots">DeleteSnapshots</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="DeleteSuccessextendsProductwithSerializable"></a>
+      <a id="DeleteSuccess:DeleteSuccess"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="EventsourcingProtocol$$DeleteSuccess.html"><span class="name">DeleteSuccess</span></a><span class="params">(<span name="deletedTo">deletedTo: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DeleteSuccessextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Success reply after a <a href="EventsourcingProtocol$$Delete.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete">Delete</a>
+</p><div class="fullcomment"><div class="comment cmt"><p>Success reply after a <a href="EventsourcingProtocol$$Delete.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete">Delete</a>
+</p></div><dl class="paramcmts block"><dt class="param">deletedTo</dt><dd class="cmt"><p>The actually written deleted to marker. Minimum of <a href="EventsourcingProtocol$$Delete.html#toSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete#toSequenceNr">Delete.toSequenceNr</a> and
+                 the current sequence nr
+</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.LoadSnapshot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="LoadSnapshotextendsProductwithSerializable"></a>
       <a id="LoadSnapshot:LoadSnapshot"></a>

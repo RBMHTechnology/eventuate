@@ -338,6 +338,28 @@ the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span 
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#deleteAsync" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="deleteAsync(sequenceNr:Long):scala.concurrent.Future[Unit]"></a>
+      <a id="deleteAsync(Long):Future[Unit]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">deleteAsync</span><span class="params">(<span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@deleteAsync(sequenceNr:Long):scala.concurrent.Future[Unit]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A backend that supports physical deletion of event starts asynchronous deletion process
+to actually delete events up to <a href="../DeletionMetadata.html#toSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.log.DeletionMetadata#toSequenceNr">DeletionMetadata.toSequenceNr</a>.</p><div class="fullcomment"><div class="comment cmt"><p>A backend that supports physical deletion of event starts asynchronous deletion process
+to actually delete events up to <a href="../DeletionMetadata.html#toSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.log.DeletionMetadata#toSequenceNr">DeletionMetadata.toSequenceNr</a>.</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>A <span class="extype" name="Future">Future</span> that completes when the deletion process is finished. A
+        backend that does not support physical deletion returns a failed <span class="extype" name="Future">Future</span> containing
+        a <a href="../PhysicalDeletionNotSupportedException.html" class="extype" name="com.rbmhtechnology.eventuate.log.PhysicalDeletionNotSupportedException">PhysicalDeletionNotSupportedException</a>.
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -672,6 +694,25 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
 </p></div><dl class="paramcmts block"><dt class="param">fromSequenceNr</dt><dd class="cmt"><p>sequence number to start reading (inclusive).</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>sequence number to stop reading (inclusive)
                     or earlier if <code>max</code> events have already been read.
 </p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#readDeletionMetadata" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="readDeletionMetadata:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.DeletionMetadata]"></a>
+      <a id="readDeletionMetadata:Future[DeletionMetadata]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readDeletionMetadata</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@readDeletionMetadata:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.DeletionMetadata]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Return the current <a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a>
+</p><div class="fullcomment"><div class="comment cmt"><p>Return the current <a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#readReplicationProgress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="readReplicationProgress(logId:String):scala.concurrent.Future[Long]"></a>
       <a id="readReplicationProgress(String):Future[Long]"></a>
@@ -688,8 +729,8 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously reads the replication progress for given source <code>logId</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads the replication progress for given source <code>logId</code>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+      <p class="shortcomment cmt">Asynchronously reads the replication progress for given source <code>logId</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads the replication progress for given source <code>logId</code>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd><dt>See also</dt><dd><span class="cmt"><p>GetReplicationProgress
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#readReplicationProgresses" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="readReplicationProgresses:scala.concurrent.Future[Map[String,Long]]"></a>
       <a id="readReplicationProgresses:Future[Map[String,Long]]"></a>
@@ -706,8 +747,8 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously reads all stored replication progresses.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads all stored replication progresses.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+      <p class="shortcomment cmt">Asynchronously reads all stored local replication progresses.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads all stored local replication progresses.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd><dt>See also</dt><dd><span class="cmt"><p>GetReplicationProgresses
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.EventLog#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="receive:EventLog.this.Receive"></a>
       <a id="receive:Receive"></a>
@@ -1040,6 +1081,26 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
 <code>partitionSizeMax</code> and the current sequence number. Asynchronous writes will be supported in future versions.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="../EventLogSettings.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSettings">EventLogSettings</a>
 </p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#writeDeletionMetadata" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="writeDeletionMetadata(deleteMetadata:com.rbmhtechnology.eventuate.log.DeletionMetadata):Unit"></a>
+      <a id="writeDeletionMetadata(DeletionMetadata):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writeDeletionMetadata</span><span class="params">(<span name="deleteMetadata">deleteMetadata: <a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@writeDeletionMetadata(deleteMetadata:com.rbmhtechnology.eventuate.log.DeletionMetadata):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Store metadata regarding a <span class="extype" name="Delete">Delete</span> request.</p><div class="fullcomment"><div class="comment cmt"><p>Store metadata regarding a <span class="extype" name="Delete">Delete</span> request. This
+marks events upto <a href="../DeletionMetadata.html#toSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.log.DeletionMetadata#toSequenceNr">DeletionMetadata.toSequenceNr</a> as deleted, i.e. they are not read on replay
+and indicates which remote logs must have replicated events before they are allowed to be physically deleted
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#writeReplicationProgress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="writeReplicationProgress(logId:String,progress:Long):scala.concurrent.Future[Unit]"></a>
       <a id="writeReplicationProgress(String,Long):Future[Unit]"></a>

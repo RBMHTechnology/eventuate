@@ -1,22 +1,22 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>EventLogSettings - com.rbmhtechnology.eventuate.log.EventLogSettings</title>
-          <meta name="description" content="EventLogSettings - com.rbmhtechnology.eventuate.log.EventLogSettings" />
-          <meta name="keywords" content="EventLogSettings com.rbmhtechnology.eventuate.log.EventLogSettings" />
+          <title>LeveldbDeletionMetadataStore - com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore</title>
+          <meta name="description" content="LeveldbDeletionMetadataStore - com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore" />
+          <meta name="keywords" content="LeveldbDeletionMetadataStore com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
-      <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
-      <link href="../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../../../../lib/jquery.js" id="jquery-js"></script>
-      <script type="text/javascript" src="../../../../lib/jquery-ui.js"></script>
-      <script type="text/javascript" src="../../../../lib/template.js"></script>
-      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
+      <link href="../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../lib/tools.tooltip.js"></script>
       
       <script type="text/javascript">
          if(top === self) {
-            var url = '../../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.log.EventLogSettings';
+            var url = '../../../../../index.html';
+            var hash = 'com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -28,11 +28,11 @@
         </head>
         <body class="type">
       <div id="definition">
-        <img src="../../../../lib/trait_big.png" />
-        <p id="owner"><a href="../../../package.html" class="extype" name="com">com</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.log">log</a></p>
-        <h1>EventLogSettings</h1> <span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../../lib/class_big.png" />
+        <p id="owner"><a href="../../../../package.html" class="extype" name="com">com</a>.<a href="../../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate.log">log</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb">leveldb</a></p>
+        <h1>LeveldbDeletionMetadataStore</h1> <span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       </div>
@@ -40,21 +40,17 @@
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">trait</span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">EventLogSettings</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">LeveldbDeletionMetadataStore</span><span class="result"> extends <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">WithBatch</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Event log settings to be implemented by storage providers.
-</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
-        </div><div class="toggleContainer block">
-            <span class="toggle">Known Subclasses</span>
-            <div class="subClasses hiddenContent"><a href="cassandra/CassandraEventLogSettings.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings">CassandraEventLogSettings</a>, <a href="leveldb/LeveldbEventLogSettings.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSettings">LeveldbEventLogSettings</a></div>
-          </div></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">WithBatch</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
         
 
       <div id="mbrsel">
@@ -71,7 +67,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.log.EventLogSettings"><span>EventLogSettings</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore"><span>LeveldbDeletionMetadataStore</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch"><span>WithBatch</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -89,91 +85,34 @@
 
       <div id="template">
         <div id="allMembers">
-        
-
-        
-
-        <div id="values" class="values members">
-              <h3>Abstract Value Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.log.EventLogSettings#deletionRetryDelay" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="deletionRetryDelay:scala.concurrent.duration.FiniteDuration"></a>
-      <a id="deletionRetryDelay:FiniteDuration"></a>
+        <div id="constructors" class="members">
+              <h3>Instance Constructors</h3>
+              <ol><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(leveldb:org.iq80.leveldb.DB,leveldbWriteOptions:org.iq80.leveldb.WriteOptions,classifier:Int):com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore"></a>
+      <a id="&lt;init&gt;:LeveldbDeletionMetadataStore"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
+        <span class="modifier"></span>
+        <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">deletionRetryDelay</span><span class="result">: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span></span>
+        <span class="name">LeveldbDeletionMetadataStore</span><span class="params">(<span name="leveldb">leveldb: <span class="extype" name="org.iq80.leveldb.DB">DB</span></span>, <span name="leveldbWriteOptions">leveldbWriteOptions: <span class="extype" name="org.iq80.leveldb.WriteOptions">WriteOptions</span></span>, <span name="classifier">classifier: <span class="extype" name="scala.Int">Int</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@deletionRetryDelay:scala.concurrent.duration.FiniteDuration" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@&lt;init&gt;(leveldb:org.iq80.leveldb.DB,leveldbWriteOptions:org.iq80.leveldb.WriteOptions,classifier:Int):com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Delay between two tries to physically delete all requested events while keeping
-those that are not yet replicated.</p>
-    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSettings#initRetryDelay" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="initRetryDelay:scala.concurrent.duration.FiniteDuration"></a>
-      <a id="initRetryDelay:FiniteDuration"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">initRetryDelay</span><span class="result">: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@initRetryDelay:scala.concurrent.duration.FiniteDuration" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Delay between clock recovery retries.</p>
-    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSettings#initRetryMax" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="initRetryMax:Int"></a>
-      <a id="initRetryMax:Int"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">initRetryMax</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@initRetryMax:Int" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Maximum number of clock recovery retries.</p>
-    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSettings#partitionSizeMax" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="partitionSizeMax:Long"></a>
-      <a id="partitionSizeMax:Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">partitionSizeMax</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@partitionSizeMax:Long" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Maximum number of events to store per partition.</p><div class="fullcomment"><div class="comment cmt"><p>Maximum number of events to store per partition. If a storage provider does not support
-partitioned event storage it should return <code>Long.MaxValue</code>, otherwise the appropriate
-partition size. Eventuate internally calculates the target partition for batch writes.
-If an event batch doesn't fit into the current partition, it will be written to the next
-partition, so that batch writes are always single-partition writes.
-</p></div></div>
+      
     </li></ol>
             </div>
 
+        
+
+        
+
         <div id="values" class="values members">
-              <h3>Concrete Value Members</h3>
+              <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
@@ -186,8 +125,8 @@ partition, so that batch writes are always single-partition writes.
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@!=(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -203,8 +142,8 @@ partition, so that batch writes are always single-partition writes.
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@##():Int" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@##():Int" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -220,8 +159,8 @@ partition, so that batch writes are always single-partition writes.
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@==(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -237,8 +176,8 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@asInstanceOf[T0]:T0" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
@@ -254,11 +193,11 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@clone():Object" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@clone():Object" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
       <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
@@ -277,8 +216,8 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -294,8 +233,8 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@equals(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -311,11 +250,11 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@finalize():Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@finalize():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
       <span class="symbol">classOf[java.lang.Throwable]</span>
@@ -334,8 +273,8 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@getClass():Class[_]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -351,8 +290,8 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@hashCode():Int" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@hashCode():Int" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -368,11 +307,45 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore#leveldb" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="leveldb:org.iq80.leveldb.DB"></a>
+      <a id="leveldb:DB"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">leveldb</span><span class="result">: <span class="extype" name="org.iq80.leveldb.DB">DB</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@leveldb:org.iq80.leveldb.DB" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore">LeveldbDeletionMetadataStore</a> → WithBatch</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore#leveldbWriteOptions" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="leveldbWriteOptions:org.iq80.leveldb.WriteOptions"></a>
+      <a id="leveldbWriteOptions:WriteOptions"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">leveldbWriteOptions</span><span class="result">: <span class="extype" name="org.iq80.leveldb.WriteOptions">WriteOptions</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@leveldbWriteOptions:org.iq80.leveldb.WriteOptions" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore">LeveldbDeletionMetadataStore</a> → WithBatch</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -385,8 +358,8 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -402,8 +375,8 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@notify():Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@notify():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -419,11 +392,28 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@notifyAll():Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore#readDeletionMetadata" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="readDeletionMetadata():com.rbmhtechnology.eventuate.log.DeletionMetadata"></a>
+      <a id="readDeletionMetadata():DeletionMetadata"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readDeletionMetadata</span><span class="params">()</span><span class="result">: <a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@readDeletionMetadata():com.rbmhtechnology.eventuate.log.DeletionMetadata" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -436,8 +426,8 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -453,8 +443,8 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@toString():String" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@toString():String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -470,8 +460,8 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@wait():Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@wait():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -493,8 +483,8 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -516,8 +506,8 @@ partition, so that batch writes are always single-partition writes.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSettings@wait(x$1:Long):Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -527,6 +517,40 @@ partition, so that batch writes are always single-partition writes.
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch#withBatch" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="withBatch[R](body:org.iq80.leveldb.WriteBatch=&gt;R):R"></a>
+      <a id="withBatch[R]((WriteBatch)⇒R):R"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">withBatch</span><span class="tparams">[<span name="R">R</span>]</span><span class="params">(<span name="body">body: (<span class="extype" name="org.iq80.leveldb.WriteBatch">WriteBatch</span>) ⇒ <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch.withBatch.R">R</span></span>)</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch.withBatch.R">R</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@withBatch[R](body:org.iq80.leveldb.WriteBatch=&gt;R):R" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>WithBatch</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore#writeDeletionMetadata" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="writeDeletionMetadata(info:com.rbmhtechnology.eventuate.log.DeletionMetadata):Unit"></a>
+      <a id="writeDeletionMetadata(DeletionMetadata):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writeDeletionMetadata</span><span class="params">(<span name="info">info: <a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbDeletionMetadataStore@writeDeletionMetadata(info:com.rbmhtechnology.eventuate.log.DeletionMetadata):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li></ol>
             </div>
 
@@ -536,7 +560,9 @@ partition, so that batch writes are always single-partition writes.
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
+        <div class="parent" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">
+              <h3>Inherited from <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">WithBatch</span></h3>
+            </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>

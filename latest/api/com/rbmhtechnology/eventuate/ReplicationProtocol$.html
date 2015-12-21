@@ -123,7 +123,7 @@
       </a>
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="ReplicationProtocol$$GetEventLogClock$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetEventLogClock">GetEventLogClock</a>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgress" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="GetReplicationProgressextendsProductwithSerializable"></a>
       <a id="GetReplicationProgress:GetReplicationProgress"></a>
       <h4 class="signature">
@@ -139,7 +139,8 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Requests the replication progress for given <code>sourceLogId</code> from a target log.</p>
+      <p class="shortcomment cmt">Requests the local replication progress for given <code>sourceLogId</code> from a target log.</p><div class="fullcomment"><div class="comment cmt"><p>Requests the local replication progress for given <code>sourceLogId</code> from a target log.</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p>GetReplicationProgresses
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgressFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="GetReplicationProgressFailureextendsProductwithSerializable"></a>
       <a id="GetReplicationProgressFailure:GetReplicationProgressFailure"></a>
@@ -518,7 +519,7 @@ dispatch the request to the appropriate log.</p>
       </a>
     </span>
       <p class="shortcomment cmt">Requests the clock from an event log.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgresses" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgresses" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="GetReplicationProgresses"></a>
       <a id="GetReplicationProgresses:GetReplicationProgresses"></a>
       <h4 class="signature">
@@ -534,7 +535,10 @@ dispatch the request to the appropriate log.</p>
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Requests all replication progresses from a log.</p>
+      <p class="shortcomment cmt">Requests all local replication progresses from a log.</p><div class="fullcomment"><div class="comment cmt"><p>Requests all local replication progresses from a log.
+The local replication progress is the sequence nr in the remote log up to which
+the local log has replicated all events from the remote log
+</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicationEndpointInfo"></a>
       <a id="ReplicationEndpointInfo:ReplicationEndpointInfo"></a>

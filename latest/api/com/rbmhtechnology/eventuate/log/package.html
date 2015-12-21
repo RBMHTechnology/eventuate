@@ -108,6 +108,24 @@ configured with <code>eventuate.log.batch-size-limit</code>. If there is no curr
 <code>Write</code> or <code>ReplicationWrite</code> command is served immediately (as <code>WriteN</code> or <code>ReplicationWriteN</code> batch of size
 1, respectively), keeping latency at a minimum.
 </p></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.DeletionMetadata" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="DeletionMetadataextendsProductwithSerializable"></a>
+      <a id="DeletionMetadata:DeletionMetadata"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="DeletionMetadata.html"><span class="name">DeletionMetadata</span></a><span class="params">(<span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="remoteLogIds">remoteLogIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@DeletionMetadataextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">toSequenceNr</dt><dd class="cmt"><p>A marker that indicates that all event with a smaller sequence nr are not replayed any more.</p></dd><dt class="param">remoteLogIds</dt><dd class="cmt"><p>A set of remote log ids that must have replicated events before they are allowed to be physically deleted.
+</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.EventLog" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EventLog[A]extendsActorwithEventLogSPI[A]withStashwithActorLogging"></a>
       <a id="EventLog[A]:EventLog[A]"></a>
@@ -185,6 +203,23 @@ written to that event log.
       </a>
     </span>
       <p class="shortcomment cmt">Event log settings to be implemented by storage providers.</p>
+    </li><li name="com.rbmhtechnology.eventuate.log.PhysicalDeletionNotSupportedException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PhysicalDeletionNotSupportedExceptionextendsUnsupportedOperationException"></a>
+      <a id="PhysicalDeletionNotSupportedException:PhysicalDeletionNotSupportedException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="PhysicalDeletionNotSupportedException.html"><span class="name">PhysicalDeletionNotSupportedException</span></a><span class="result"> extends <span class="extype" name="scala.UnsupportedOperationException">UnsupportedOperationException</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@PhysicalDeletionNotSupportedExceptionextendsUnsupportedOperationException" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Indicates that a storage backend doesn't support physical deletion of events.</p>
     </li></ol>
             </div>
 
