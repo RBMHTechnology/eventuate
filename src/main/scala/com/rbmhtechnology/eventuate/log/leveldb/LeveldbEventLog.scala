@@ -18,12 +18,14 @@ package com.rbmhtechnology.eventuate.log.leveldb
 
 import java.io._
 import java.nio.ByteBuffer
+import java.util.concurrent.TimeUnit
 
 import akka.actor._
 import akka.serialization.SerializationExtension
 
 import com.rbmhtechnology.eventuate.DurableEvent
 import com.rbmhtechnology.eventuate.log._
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch
 import com.typesafe.config.Config
 
 import org.fusesource.leveldbjni.JniDBFactory._
@@ -32,6 +34,7 @@ import org.iq80.leveldb._
 import scala.collection.JavaConverters._
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
+import scala.concurrent.Promise
 import scala.concurrent.duration._
 import scala.util._
 
@@ -45,11 +48,17 @@ class LeveldbEventLogSettings(config: Config) extends EventLogSettings {
   val stateSnapshotLimit: Int =
     config.getInt("eventuate.log.leveldb.state-snapshot-limit")
 
+  val deletionBatchSizeMax: Int =
+    config.getInt("eventuate.log.leveldb.deletion-batch-size-max")
+
   val initRetryDelay: FiniteDuration =
     Duration.Zero
 
   val initRetryMax: Int =
     0
+
+  val deletionRetryDelay: FiniteDuration =
+    config.getDuration("eventuate.log.leveldb.deletion-retry-delay", TimeUnit.MILLISECONDS).millis
 
   val partitionSizeMax: Long =
     Long.MaxValue
@@ -67,22 +76,23 @@ case class LeveldbEventIteratorParameters(fromSequenceNr: Long, classifier: Int)
  * @param id unique log id.
  * @param prefix prefix of the directory that contains the LevelDB files
  */
-class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventIteratorParameters](id) {
+class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventIteratorParameters](id) with WithBatch {
   import LeveldbEventLog._
 
   override val settings = new LeveldbEventLogSettings(context.system.settings.config)
   private val serialization = SerializationExtension(context.system)
 
   private val leveldbOptions = new Options().createIfMissing(true)
-  private val leveldbWriteOptions = new WriteOptions().sync(settings.fsync).snapshot(false)
+  protected val leveldbWriteOptions = new WriteOptions().sync(settings.fsync).snapshot(false)
   private def leveldbReadOptions = new ReadOptions().verifyChecksums(false)
 
   private val leveldbDir = new File(settings.rootDir, s"${prefix}-${id}"); leveldbDir.mkdirs()
-  private val leveldb = factory.open(leveldbDir, leveldbOptions)
+  protected val leveldb = factory.open(leveldbDir, leveldbOptions)
 
-  private val replicationProgressMap = new LeveldbReplicationProgressStore(leveldb, -3, eventLogIdMap.numericId, eventLogIdMap.findId)
   private val aggregateIdMap = new LeveldbNumericIdentifierStore(leveldb, -1)
   private val eventLogIdMap = new LeveldbNumericIdentifierStore(leveldb, -2)
+  private val replicationProgressMap = new LeveldbReplicationProgressStore(leveldb, -3, eventLogIdMap.numericId, eventLogIdMap.findId)
+  private val deletionMetadataStore = new LeveldbDeletionMetadataStore(leveldb, leveldbWriteOptions, -4)
 
   private var updateCount: Long = 0L
 
@@ -119,7 +129,7 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventI
   override def recoverClock: Future[EventLogClock] = completed {
     val snap = leveldb.get(clockKeyBytes) match {
       case null => EventLogClock()
-      case cval => clock(cval)
+      case cval => clockFromBytes(cval)
     }
 
     withEventIterator(snap.sequenceNr + 1L, EventKey.DefaultClassifier) { iter =>
@@ -128,6 +138,21 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventI
       }
     }
   }
+
+  override def readDeletionMetadata: Future[DeletionMetadata] =
+    completed(deletionMetadataStore.readDeletionMetadata())
+
+  override def writeDeletionMetadata(deleteMetadata: DeletionMetadata) =
+    deletionMetadataStore.writeDeletionMetadata(deleteMetadata)
+
+  override def deleteAsync(sequenceNr: Long): Future[Unit] = {
+    val promise = Promise[Unit]()
+    spawnDeletionActor(sequenceNr, promise)
+    promise.future
+  }
+
+  private def spawnDeletionActor(sequenceNr: Long, promise: Promise[Unit]): ActorRef =
+    context.actorOf(LeveldbDeletionActor.props(leveldb, leveldbReadOptions, leveldbWriteOptions, settings.deletionBatchSizeMax, sequenceNr, promise))
 
   private def readSync(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: DurableEvent => Boolean): BatchReadResult = {
     val first = 1L max fromSequenceNr
@@ -156,17 +181,6 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventI
     if (updateCount >= settings.stateSnapshotLimit) {
       batch.put(clockKeyBytes, clockBytes(clock))
       updateCount = 0
-    }
-  }
-
-  private def withBatch[R](body: WriteBatch => R): R = {
-    val batch = leveldb.createWriteBatch()
-    try {
-      val r = body(batch)
-      leveldb.write(batch, leveldbWriteOptions)
-      r
-    } finally {
-      batch.close()
     }
   }
 
@@ -223,7 +237,7 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventI
   private def clockBytes(clock: EventLogClock): Array[Byte] =
     serialization.serialize(clock).get
 
-  private def clock(a: Array[Byte]): EventLogClock =
+  private def clockFromBytes(a: Array[Byte]): EventLogClock =
     serialization.deserialize(a, classOf[EventLogClock]).get
 
   private def snapshotOptions(): ReadOptions =
@@ -276,17 +290,32 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventI
 }
 
 object LeveldbEventLog {
-  private case class EventKey(classifier: Int, sequenceNr: Long)
 
-  private object EventKey {
+  private[leveldb]type CloseableIterator[A] = Iterator[A] with Closeable
+
+  private[leveldb] case class EventKey(classifier: Int, sequenceNr: Long)
+
+  private[leveldb] object EventKey {
     val DefaultClassifier: Int = 0
+  }
+
+  private[leveldb] val eventKeyEnd: EventKey =
+    EventKey(Int.MaxValue, Long.MaxValue)
+
+  private[leveldb] def eventKeyBytes(classifier: Int, sequenceNr: Long): Array[Byte] = {
+    val bb = ByteBuffer.allocate(12)
+    bb.putInt(classifier)
+    bb.putLong(sequenceNr)
+    bb.array
+  }
+
+  private[leveldb] def eventKey(a: Array[Byte]): EventKey = {
+    val bb = ByteBuffer.wrap(a)
+    EventKey(bb.getInt, bb.getLong)
   }
 
   private val clockKeyBytes: Array[Byte] =
     eventKeyBytes(0, 0L)
-
-  private val eventKeyEnd: EventKey =
-    EventKey(Int.MaxValue, Long.MaxValue)
 
   private val eventKeyEndBytes: Array[Byte] =
     eventKeyBytes(eventKeyEnd.classifier, eventKeyEnd.sequenceNr)
@@ -297,20 +326,25 @@ object LeveldbEventLog {
   private[leveldb] def longFromBytes(a: Array[Byte]): Long =
     ByteBuffer.wrap(a).getLong
 
-  private def eventKeyBytes(classifier: Int, sequenceNr: Long): Array[Byte] = {
-    val bb = ByteBuffer.allocate(12)
-    bb.putInt(classifier)
-    bb.putLong(sequenceNr)
-    bb.array
-  }
-
-  private def eventKey(a: Array[Byte]): EventKey = {
-    val bb = ByteBuffer.wrap(a)
-    EventKey(bb.getInt, bb.getLong)
-  }
-
   private def completed[A](body: => A): Future[A] =
     Future.fromTry(Try(body))
+
+  private[leveldb] trait WithBatch {
+
+    protected def leveldb: DB
+    protected def leveldbWriteOptions: WriteOptions
+
+    protected def withBatch[R](body: WriteBatch => R): R = {
+      val batch = leveldb.createWriteBatch()
+      try {
+        val r = body(batch)
+        leveldb.write(batch, leveldbWriteOptions)
+        r
+      } finally {
+        batch.close()
+      }
+    }
+  }
 
   /**
    * Creates a [[LeveldbEventLog]] configuration object.

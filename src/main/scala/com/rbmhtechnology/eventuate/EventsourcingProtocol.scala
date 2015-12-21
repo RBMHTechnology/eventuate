@@ -102,6 +102,29 @@ object EventsourcingProtocol {
   case class ReplayFailure(cause: Throwable, instanceId: Int)
 
   /**
+   * Instructs an event log to delete events with a sequence nr less or equal a given one.
+   * Deleted events are not replayed any more, however
+   * depending on the log implementation and `remoteLogIds` they might still be replicated.
+   *
+   * @param toSequenceNr All events with a less or equal sequence nr are not replayed any more.
+   * @param remoteLogIds A set of remote log ids that must have replicated events before they are allowed to be physically deleted.
+   */
+  case class Delete(toSequenceNr: Long, remoteLogIds: Set[String] = Set.empty)
+
+  /**
+   * Success reply after a [[Delete]]
+   *
+   * @param deletedTo The actually written deleted to marker. Minimum of [[Delete.toSequenceNr]] and
+   *                  the current sequence nr
+   */
+  case class DeleteSuccess(deletedTo: Long)
+
+  /**
+   * Failure reply after a [[Delete]]
+   */
+  case class DeleteFailure(cause: Throwable)
+
+  /**
    * Instructs an event log to save the given `snapshot`.
    */
   case class SaveSnapshot(snapshot: Snapshot, initiator: ActorRef, requestor: ActorRef, instanceId: Int)

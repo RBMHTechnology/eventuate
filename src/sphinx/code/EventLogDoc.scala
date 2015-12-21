@@ -92,6 +92,18 @@ trait ReplicationEndpointDoc {
   }
   //#
 
+  //#event-deletion-1
+  // logically delete all events from log L1 with a sequence number <= 100
+  // defer physical deletion until they are replicated to the given endpoints
+  val logicallyDeleted: Future[Long] =
+    endpoint.delete("L1", 100L, Set("remoteEndpointId1", "remoteEndpointId2"))
+
+  logicallyDeleted onComplete {
+    case Success(sequenceNr) => // events up to sequenceNr are logically deleted
+    case Failure(e) => // deletion failed
+  }
+  //#
+
 }
 
 trait ReplicationFilterDoc {

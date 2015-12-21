@@ -112,7 +112,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   private[eventuate] val serializer = SerializationExtension(system)
 
   private val logging = Logging(system, this)
-  private val statements = new CassandraEventStatements with CassandraAggregateEventStatements with CassandraEventLogClockStatements with CassandraReplicationProgressStatements {
+  private val statements = new CassandraEventStatements with CassandraAggregateEventStatements with CassandraEventLogClockStatements with CassandraReplicationProgressStatements with CassandraDeletedToStatements {
 
     override def settings: CassandraEventLogSettings =
       extension.settings
@@ -131,6 +131,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
 
     _session.execute(createEventLogClockTableStatement)
     _session.execute(createReplicationProgressTableStatement)
+    _session.execute(createDeletedToTableStatement)
   } match {
     case Success(_) => logging.info("Cassandra extension initialized")
     case Failure(e) =>
@@ -204,6 +205,12 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
 
   private[eventuate] val preparedReadReplicationProgressStatement: PreparedStatement =
     session.prepare(readReplicationProgressStatement).setConsistencyLevel(readConsistency)
+
+  private[eventuate] val preparedWriteDeletedToStatement: PreparedStatement =
+    session.prepare(writeDeletedToStatement).setConsistencyLevel(writeConsistency)
+
+  private[eventuate] val preparedReadDeletedToStatement: PreparedStatement =
+    session.prepare(readDeletedToStatement).setConsistencyLevel(readConsistency)
 
   private[eventuate] def eventToByteBuffer(event: DurableEvent): ByteBuffer =
     ByteBuffer.wrap(serializer.serialize(event).get)

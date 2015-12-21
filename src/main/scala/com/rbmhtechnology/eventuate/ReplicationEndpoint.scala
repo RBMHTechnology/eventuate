@@ -24,7 +24,11 @@ import akka.actor._
 import akka.pattern.ask
 import akka.pattern.pipe
 import akka.util.Timeout
+import com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete
+import com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteFailure
+import com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteSuccess
 import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
+import com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo
 
 import com.typesafe.config.Config
 
@@ -214,6 +218,41 @@ class ReplicationEndpoint(val id: String, val logNames: Set[String], val logFact
 
       promise.future
     } else Future.failed(new IllegalStateException("Recovery running or endpoint already activated"))
+  }
+
+  /**
+   * Delete events from local log `logName` with a sequence nr less or equal `toSequenceNr`.
+   *
+   * Deletion is split into logical deletion and physical deletion of events. Logical deletion is
+   * supported by any storage backend and ensures that the events are not replayed any more. It has immediate effect.
+   * Logical deleted events might still be replicated to remote [[ReplicationEndpoint]]s, but they
+   * are eventually physically deleted, if physical deletion
+   * is supported by the storage backend (currently LevelDB). It is implemented as reliable
+   * background process that survives restarts. Physical deletion can be further delayed until
+   * remote replication endpoints have successfully replicated events by adding them to the `remoteEndpointIds` argument
+   *
+   * Use with care! When events are physically deleted they cannot be replicated any more to new
+   * replication endpoints (that were unknown at the time of deletion). Also a node that has deleted
+   * local events may not be suitable any more for disaster recovery of neighbor nodes.
+   *
+   * @param logName Events are deleted from the local log with this name.
+   * @param toSequenceNr All events with a less or equal sequence nr are not replayed any more.
+   * @param remoteEndpointIds A set of remote [[ReplicationEndpoint]] ids that must have replicated events
+   *                          to their logs before they are allowed to be physically deleted.
+   * @return A [[Future]] containing the sequence nr until which events are logically deleted.
+   *         When the [[Future]] completes logical deletion is effective. The returned
+   *         sequence nr can differ from the requested one, if:
+   *
+   *         - the log's current sequence number is smaller than the requested number. In this case the current sequence number is returned.
+   *         - there was a previous successful deletion request with a higher sequence number. In this case that number is returned.
+   */
+  def delete(logName: String, toSequenceNr: Long, remoteEndpointIds: Set[String]): Future[Long] = {
+    import system.dispatcher
+    implicit val timeout = Timeout(settings.writeTimeout)
+    (logs(logName) ? Delete(toSequenceNr, remoteEndpointIds.map(ReplicationEndpointInfo.logId(_, logName)))).flatMap {
+      case DeleteSuccess(deletedTo) => Future.successful(deletedTo)
+      case DeleteFailure(ex)        => Future.failed(ex)
+    }
   }
 
   /**

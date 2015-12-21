@@ -19,6 +19,7 @@ package com.rbmhtechnology.eventuate.log
 import java.io.Closeable
 
 import akka.actor._
+import akka.pattern.pipe
 import akka.dispatch.MessageDispatcher
 import akka.event.LoggingAdapter
 
@@ -54,6 +55,12 @@ trait EventLogSettings {
    * Delay between clock recovery retries.
    */
   def initRetryDelay: FiniteDuration
+
+  /**
+   * Delay between two tries to physically delete all requested events while keeping
+   * those that are not yet replicated.
+   */
+  def deletionRetryDelay: FiniteDuration
 }
 
 /**
@@ -85,6 +92,17 @@ case class EventLogClock(sequenceNr: Long = 0L, versionVector: VectorTime = Vect
 case class BatchReadResult(events: Seq[DurableEvent], to: Long) extends DurableEventBatch
 
 /**
+ * @param toSequenceNr A marker that indicates that all event with a smaller sequence nr are not replayed any more.
+ * @param remoteLogIds A set of remote log ids that must have replicated events before they are allowed to be physically deleted.
+ */
+case class DeletionMetadata(toSequenceNr: Long, remoteLogIds: Set[String])
+
+/**
+ * Indicates that a storage backend doesn't support physical deletion of events.
+ */
+class PhysicalDeletionNotSupportedException extends UnsupportedOperationException
+
+/**
  * Event log storage provider interface (SPI).
  *
  * '''Please note:''' This interface is preliminary and likely to be changed in future versions.
@@ -113,12 +131,14 @@ trait EventLogSPI[A] { this: Actor =>
   def recoverClockFailure(cause: Throwable): Unit = ()
 
   /**
-   * Asynchronously reads all stored replication progresses.
+   * Asynchronously reads all stored local replication progresses.
+   * @see GetReplicationProgresses
    */
   def readReplicationProgresses: Future[Map[String, Long]]
 
   /**
    * Asynchronously reads the replication progress for given source `logId`.
+   * @see GetReplicationProgress
    */
   def readReplicationProgress(logId: String): Future[Long]
 
@@ -173,6 +193,27 @@ trait EventLogSPI[A] { this: Actor =>
    * @see [[EventLogSettings]]
    */
   def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit
+
+  /**
+   * Store metadata regarding a [[Delete]] request. This
+   * marks events upto [[DeletionMetadata.toSequenceNr]] as deleted, i.e. they are not read on replay
+   * and indicates which remote logs must have replicated events before they are allowed to be physically deleted
+   */
+  def writeDeletionMetadata(data: DeletionMetadata): Unit
+
+  /**
+   * A backend that supports physical deletion of event starts asynchronous deletion process
+   * to actually delete events up to [[DeletionMetadata.toSequenceNr]].
+   * @return A [[Future]] that completes when the deletion process is finished. A
+   *         backend that does not support physical deletion returns a failed [[Future]] containing
+   *         a [[PhysicalDeletionNotSupportedException]].
+   */
+  def deleteAsync(sequenceNr: Long): Future[Unit] = Future.failed(new PhysicalDeletionNotSupportedException)
+
+  /**
+   * Return the current [[DeletionMetadata]]
+   */
+  def readDeletionMetadata: Future[DeletionMetadata]
 }
 
 /**
@@ -216,6 +257,24 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
     EventLogClock()
 
   /**
+   * Current [[DeletionMetadata]]
+   */
+  private var deletionMetadata = DeletionMetadata(0, Set.empty)
+
+  /**
+   * A flag indicating if a physical deletion process is currently running in the background
+   */
+  private var physicalDeletionRunning = false
+
+  /**
+   * An cache for the remote replication progress.
+   * The remote replication progress is the sequence nr in the local log up to which
+   * a remote log has replicated events. Events with a sequence number less than or equal
+   * the corresponding replication progress are allowed to be physically deleted locally.
+   */
+  private var remoteReplicationProgress: Map[String, Long] = Map.empty
+
+  /**
    * Cached version vectors of event log replicas. They are used to exclude redundantly read events from
    * being transferred to a replication target. This is an optimization to save network bandwidth. Even
    * without this optimization, redundantly transferred events are reliably excluded at the target site,
@@ -254,13 +313,15 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
     log
 
   private def initializing: Receive = {
-    case RecoverySuccess(c) =>
-      clock = c
-      recoverClockSuccess(c)
+    case RecoverySuccess(state) =>
+      clock = state.clock
+      deletionMetadata = state.deleteMetadata
+      if (deletionMetadata.toSequenceNr > 0) self ! PhysicalDelete
+      recoverClockSuccess(clock)
       unstashAll()
       context.become(initialized)
     case RecoveryFailure(e) =>
-      logger.error(e, "Cannot recover clock")
+      logger.error(e, "Cannot recover log state")
       context.stop(self)
     case other =>
       stash()
@@ -292,17 +353,20 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
         case Failure(e) => sdr ! SetReplicationProgressFailure(e)
       }
     case Replay(fromSequenceNr, max, requestor, Some(emitterAggregateId), iid) =>
-      val iteratorSettings = eventIteratorParameters(fromSequenceNr, clock.sequenceNr, emitterAggregateId) // avoid async evaluation
+      val adjustedFromSequenceNr = adjustFromSequenceNr(fromSequenceNr)
+      val iteratorSettings = eventIteratorParameters(adjustedFromSequenceNr, clock.sequenceNr, emitterAggregateId) // avoid async evaluation
       registry = registry.registerAggregateSubscriber(context.watch(requestor), emitterAggregateId)
-      replayer(requestor, eventIterator(iteratorSettings), fromSequenceNr) ! ReplayNext(max, iid)
+      replayer(requestor, eventIterator(iteratorSettings), adjustedFromSequenceNr) ! ReplayNext(max, iid)
     case Replay(fromSequenceNr, max, requestor, None, iid) =>
-      val iteratorSettings = eventIteratorParameters(fromSequenceNr, clock.sequenceNr) // avoid async evaluation
+      val adjustedFromSequenceNr = adjustFromSequenceNr(fromSequenceNr)
+      val iteratorSettings = eventIteratorParameters(adjustedFromSequenceNr, clock.sequenceNr) // avoid async evaluation
       registry = registry.registerDefaultSubscriber(context.watch(requestor))
-      replayer(requestor, eventIterator(iteratorSettings), fromSequenceNr) ! ReplayNext(max, iid)
+      replayer(requestor, eventIterator(iteratorSettings), adjustedFromSequenceNr) ! ReplayNext(max, iid)
     case r @ ReplicationRead(from, max, filter, targetLogId, _, currentTargetVersionVector) =>
       import services.readDispatcher
       val sdr = sender()
       channel.foreach(_ ! r)
+      remoteReplicationProgress += targetLogId -> (0L max from - 1)
       read(from, clock.sequenceNr, max, evt => evt.replicable(currentTargetVersionVector, filter)) onComplete {
         case Success(BatchReadResult(events, progress)) =>
           val reply = ReplicationReadSuccess(events, progress, targetLogId, null)
@@ -333,6 +397,46 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
     case ReplicationWriteN(writes) =>
       processReplicationWrites(writes)
       sender() ! ReplicationWriteNComplete
+    case Delete(toSequenceNr, remoteLogIds: Set[String]) =>
+      Try {
+        val actualDeletedToSeqNr = (toSequenceNr min clock.sequenceNr) max deletionMetadata.toSequenceNr
+        if (actualDeletedToSeqNr > deletionMetadata.toSequenceNr) {
+          val updatedDeletionMetadata = DeletionMetadata(actualDeletedToSeqNr, remoteLogIds)
+          writeDeletionMetadata(updatedDeletionMetadata)
+          deletionMetadata = updatedDeletionMetadata
+          self ! PhysicalDelete
+        }
+      } match {
+        case Success(_)  => sender() ! DeleteSuccess(deletionMetadata.toSequenceNr)
+        case Failure(ex) => sender() ! DeleteFailure(ex)
+      }
+    case PhysicalDelete =>
+      import context.dispatcher
+      if (!physicalDeletionRunning) {
+        // Becomes Long.MaxValue in case of an empty-set to indicate that all event are replicated as required
+        val replicatedSeqNr =
+          (deletionMetadata.remoteLogIds.map(remoteReplicationProgress.getOrElse(_, 0L)) + Long.MaxValue).min
+        physicalDeletionRunning = true
+        val deleteTo = deletionMetadata.toSequenceNr min replicatedSeqNr
+        deleteAsync(deleteTo).onComplete {
+          case Success(_)  => self ! PhysicalDeleteSuccess(deleteTo)
+          case Failure(ex) => self ! PhysicalDeleteFailure(ex)
+        }
+      }
+    case PhysicalDeleteSuccess(deletedTo) =>
+      import services._
+      physicalDeletionRunning = false
+      if (deletionMetadata.toSequenceNr > deletedTo)
+        scheduler.scheduleOnce(settings.deletionRetryDelay, self, PhysicalDelete)
+    case PhysicalDeleteFailure(ex) =>
+      import services._
+      ex match {
+        case ex: PhysicalDeletionNotSupportedException =>
+        case ex =>
+          log.error(ex, "Physical deletion of events failed. Retry in {}", settings.deletionRetryDelay)
+          physicalDeletionRunning = false
+          scheduler.scheduleOnce(settings.deletionRetryDelay, self, PhysicalDelete)
+      }
     case LoadSnapshot(emitterId, requestor, iid) =>
       import services.readDispatcher
       snapshotStore.loadAsync(emitterId) onComplete {
@@ -361,6 +465,8 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
 
   private[eventuate] def currentSystemTime: Long =
     System.currentTimeMillis
+
+  private[eventuate] def adjustFromSequenceNr(seqNr: Long): Long = seqNr max (deletionMetadata.toSequenceNr + 1)
 
   private def replayer(requestor: ActorRef, iterator: => Iterator[DurableEvent] with Closeable, fromSequenceNr: Long): ActorRef =
     context.actorOf(Props(new ChunkedEventReplay(requestor, iterator)).withDispatcher(services.readDispatcher.id))
@@ -485,25 +591,56 @@ abstract class EventLog[A](id: String) extends Actor with EventLogSPI[A] with St
     }
   }
 
+  private def recoverState: Future[RecoveredState] = {
+    import context.dispatcher
+    for {
+      clock <- recoverClock
+      deleteMetadata <- readDeletionMetadata
+    } yield RecoveredState(clock, deleteMetadata)
+  }
+
   override def preStart(): Unit = {
     import services._
-    Retry(recoverClock, settings.initRetryDelay, settings.initRetryMax) onComplete {
-      case Success(c) => self ! RecoverySuccess(c)
+    Retry(recoverState, settings.initRetryDelay, settings.initRetryMax) onComplete {
+      case Success(s) => self ! RecoverySuccess(s)
       case Failure(e) => self ! RecoveryFailure(e)
     }
   }
 }
 
 object EventLog {
-  /**
-   * Internally sent to an [[EventLog]] after successful clock recovery.
-   */
-  private case class RecoverySuccess(clock: EventLogClock)
 
   /**
-   * Internally sent to an [[EventLog]] after failed clock recovery.
+   * State that is recovered from storage at startup
+   */
+  private case class RecoveredState(clock: EventLogClock, deleteMetadata: DeletionMetadata)
+
+  /**
+   * Internally sent to an [[EventLog]] after successful recovery of [[RecoveredState]].
+   */
+  private case class RecoverySuccess(state: RecoveredState)
+
+  /**
+   * Internally sent to an [[EventLog]] after failed recovery of [[RecoveredState]].
    */
   private case class RecoveryFailure(cause: Throwable)
+
+  /**
+   * Periodically sent to an [[EventLog]] after reception of a [[Delete]]-command to
+   * instruct the log to physically delete logically deleted events that are alreday replicated.
+   * @see DeletionMetadata
+   */
+  private case object PhysicalDelete
+
+  /**
+   * Internally sent to an [[EventLog]] after successful physical deletion
+   */
+  private case class PhysicalDeleteSuccess(deletedTo: Long)
+
+  /**
+   * Internally sent to an [[EventLog]] after failed physical deletion
+   */
+  private case class PhysicalDeleteFailure(ex: Throwable)
 
   /**
    * Partition number for given `sequenceNr`.

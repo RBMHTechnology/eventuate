@@ -22,9 +22,11 @@ import akka.actor._
 import akka.testkit.{TestProbe, TestKit}
 
 import com.rbmhtechnology.eventuate._
+import com.rbmhtechnology.eventuate.log.EventLogLifecycle.ErrorSequenceNr
 import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.log.cassandra.CassandraIndex._
 import com.rbmhtechnology.eventuate.log.leveldb._
+import com.rbmhtechnology.eventuate.utilities.RestarterActor
 import com.typesafe.config.Config
 
 import org.apache.commons.io.FileUtils
@@ -83,7 +85,7 @@ trait EventLogLifecycleLeveldb extends EventLogCleanupLeveldb with BeforeAndAfte
     _logCtr.toString
 
   def logProps(logId: String): Props =
-    TestEventLog.props(logId, batching)
+    RestarterActor.props(TestEventLog.props(logId, batching))
 }
 
 object EventLogLifecycleLeveldb {
@@ -94,17 +96,13 @@ object EventLogLifecycleLeveldb {
     }
   }
 
-  class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") {
-    override def currentSystemTime: Long = 0L
+  class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") with EventLogLifecycle.TestEventLog[LeveldbEventIteratorParameters] {
 
     override def eventIterator(parameters: LeveldbEventIteratorParameters): Iterator[DurableEvent] with Closeable =
-      if (parameters.fromSequenceNr == -1L) EventLogLifecycle.failingEventIterator else super.eventIterator(parameters)
+      if (parameters.fromSequenceNr == ErrorSequenceNr) EventLogLifecycle.failingEventIterator else super.eventIterator(parameters)
 
     override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: (DurableEvent) => Boolean): Future[BatchReadResult] =
-      if (fromSequenceNr == -1L) Future.failed(boom) else super.read(fromSequenceNr, toSequenceNr, max, filter)
-
-    override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
-      if (events.map(_.payload).contains("boom")) throw boom else super.write(events, partition, clock)
+      if (fromSequenceNr == ErrorSequenceNr) Future.failed(boom) else super.read(fromSequenceNr, toSequenceNr, max, filter)
 
     override def unhandled(message: Any): Unit = message match {
       case "boom" =>
@@ -204,8 +202,8 @@ object EventLogLifecycleCassandra {
     }
   }
 
-  class TestEventLog(id: String, failureSpec: TestFailureSpec, indexProbe: Option[ActorRef]) extends CassandraEventLog(id) {
-    private var index: ActorRef = _
+  class TestEventLog(id: String, failureSpec: TestFailureSpec, indexProbe: Option[ActorRef])
+    extends CassandraEventLog(id) with EventLogLifecycle.TestEventLog[CassandraEventIteratorParameters] {
 
     override def currentSystemTime: Long = 0L
 
@@ -218,9 +216,6 @@ object EventLogLifecycleCassandra {
 
     override def eventIterator(parameters: CassandraEventIteratorParameters): Iterator[DurableEvent] with Closeable =
       if (parameters.fromSequenceNr == -1L) EventLogLifecycle.failingEventIterator else super.eventIterator(parameters)
-
-    override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
-      if (events.map(_.payload).contains("boom")) throw boom else super.write(events, partition, clock)
 
     private[eventuate] override def createEventLogStore(cassandra: Cassandra, logId: String) =
       new TestEventLogStore(cassandra, logId)
@@ -266,5 +261,21 @@ object EventLogLifecycle {
     override def hasNext: Boolean = true
     override def next(): DurableEvent = throw boom
     override def close(): Unit = ()
+  }
+
+  val ErrorSequenceNr = -1L
+  val IgnoreDeletedSequenceNr = -2L
+
+  trait TestEventLog[A] extends EventLog[A] {
+    override def currentSystemTime: Long = 0L
+
+    abstract override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
+      if (events.map(_.payload).contains("boom")) throw boom else super.write(events, partition, clock)
+
+    override private[eventuate] def adjustFromSequenceNr(seqNr: Long) = seqNr match {
+      case ErrorSequenceNr => seqNr
+      case IgnoreDeletedSequenceNr => 0
+      case s => super.adjustFromSequenceNr(s)
+    }
   }
 }

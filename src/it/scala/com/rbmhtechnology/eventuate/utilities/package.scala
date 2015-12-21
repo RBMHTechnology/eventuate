@@ -13,8 +13,11 @@ import scala.concurrent._
 import scala.concurrent.duration._
 
 package object utilities {
+
+  val timeoutDuration = 10.seconds
+
   implicit class AwaitHelper[T](awaitable: Awaitable[T]) {
-    def await: T = Await.result(awaitable, 10.seconds)
+    def await: T = Await.result(awaitable, timeoutDuration)
   }
 
   def write(target: ReplicationTarget, events: Seq[String]): Unit = {
