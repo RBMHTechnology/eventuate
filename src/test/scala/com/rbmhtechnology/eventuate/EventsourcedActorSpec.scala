@@ -73,8 +73,7 @@ object EventsourcedActorSpec {
 
   class TestStashingActor(
     val logProbe: ActorRef,
-    val cmdProbe: ActorRef,
-    val evtProbe: ActorRef,
+    val msgProbe: ActorRef,
     override val stateSync: Boolean) extends EventsourcedActor {
 
     val id = emitterIdA
@@ -94,17 +93,17 @@ object EventsourcedActorSpec {
       case Ping(i) if stashing =>
         stash()
       case Ping(i) =>
-        cmdProbe ! Pong(i)
+        msgProbe ! Pong(i)
       case Cmd(p, num) => 1 to num foreach { i =>
         persist(s"${p}-${i}") {
           case Success(evt) =>
-          case Failure(err) => cmdProbe ! err
+          case Failure(err) => msgProbe ! err
         }
       }
     }
 
     override def onEvent = {
-      case evt => evtProbe ! evt
+      case evt => msgProbe ! evt
     }
   }
 
@@ -220,8 +219,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
   def recoveredCausalityActor(sharedClockEntry: Boolean): ActorRef =
     processRecover(unrecoveredCausalityActor(sharedClockEntry))
 
-  def stashingActor(stateSync: Boolean): ActorRef =
-    processRecover(system.actorOf(Props(new TestStashingActor(logProbe.ref, cmdProbe.ref, evtProbe.ref, stateSync))))
+  def stashingActor(probe: ActorRef, stateSync: Boolean): ActorRef =
+    processRecover(system.actorOf(Props(new TestStashingActor(logProbe.ref, probe, stateSync))))
 
   def processRecover(actor: ActorRef): ActorRef = {
     logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId))
@@ -284,7 +283,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         evtProbe.expectMsg(("b-2", timestamp(4), timestamp(4), 4))
       }
       "support user stash operations" in {
-        val actor = stashingActor(stateSync = true)
+        val probe = TestProbe()
+        val actor = stashingActor(probe.ref, stateSync = true)
 
         actor ! Cmd("a", 1)
         actor ! "stash-on"
@@ -299,10 +299,10 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
 
         processWrite(actor, 1)
 
-        evtProbe.expectMsg("a-1")
-        cmdProbe.expectMsg(Pong(2))
-        evtProbe.expectMsg("b-1")
-        cmdProbe.expectMsg(Pong(1))
+        probe.expectMsg("a-1")
+        probe.expectMsg(Pong(2))
+        probe.expectMsg("b-1")
+        probe.expectMsg(Pong(1))
 
         actor ! Cmd("c", 1)
         actor ! "stash-on"
@@ -317,13 +317,14 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
 
         processWrite(actor, 4)
 
-        evtProbe.expectMsg("c-1")
-        cmdProbe.expectMsg(Pong(4))
-        cmdProbe.expectMsg(Pong(3))
-        evtProbe.expectMsg("d-1")
+        probe.expectMsg("c-1")
+        probe.expectMsg(Pong(4))
+        probe.expectMsg(Pong(3))
+        probe.expectMsg("d-1")
       }
       "support user stash operations under failure conditions" in {
-        val actor = stashingActor(stateSync = true)
+        val probe = TestProbe()
+        val actor = stashingActor(probe.ref, stateSync = true)
 
         actor ! Cmd("a", 1)
         actor ! "stash-on"
@@ -333,7 +334,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         actor ! Ping(2)
 
         processWrite(actor, 1)
-        evtProbe.expectMsg("a-1")
+        probe.expectMsg("a-1")
 
         logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId + 1))
         actor ! LoadSnapshotSuccess(None, instanceId + 1)
@@ -341,9 +342,9 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test")) with WordSpecLi
         actor ! Replaying(event("a-1", 1), instanceId + 1)
         actor ! ReplaySuccess(instanceId + 1)
 
-        evtProbe.expectMsg("a-1")
-        cmdProbe.expectMsg(Pong(1))
-        cmdProbe.expectMsg(Pong(2))
+        probe.expectMsg("a-1")
+        probe.expectMsg(Pong(1))
+        probe.expectMsg(Pong(2))
       }
     }
     "in stateSync = false mode" must {
