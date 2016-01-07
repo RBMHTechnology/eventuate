@@ -106,9 +106,10 @@
       </a>
     </span>
       <p class="shortcomment cmt">Instructs an event log to delete events with a sequence nr less or equal a given one.</p><div class="fullcomment"><div class="comment cmt"><p>Instructs an event log to delete events with a sequence nr less or equal a given one.
-Deleted events are not replayed any more, however
-depending on the log implementation and <code>remoteLogIds</code> they might still be replicated.
-</p></div><dl class="paramcmts block"><dt class="param">toSequenceNr</dt><dd class="cmt"><p>All events with a less or equal sequence nr are not replayed any more.</p></dd><dt class="param">remoteLogIds</dt><dd class="cmt"><p>A set of remote log ids that must have replicated events before they are allowed to be physically deleted.
+Deleted events are not replayed any more, however depending on the log implementation
+and <code>remoteLogIds</code> they might still be replicated.
+</p></div><dl class="paramcmts block"><dt class="param">toSequenceNr</dt><dd class="cmt"><p>All events with a less or equal sequence nr are not replayed any more.</p></dd><dt class="param">remoteLogIds</dt><dd class="cmt"><p>A set of remote log ids that must have replicated events before they
+                    are allowed to be physically deleted.
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="DeleteFailureextendsProductwithSerializable"></a>
@@ -192,14 +193,14 @@ depending on the log implementation and <code>remoteLogIds</code> they might sti
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="EventsourcingProtocol$$LoadSnapshot.html"><span class="name">LoadSnapshot</span></a><span class="params">(<span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="EventsourcingProtocol$$LoadSnapshot.html"><span class="name">LoadSnapshot</span></a><span class="params">(<span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@LoadSnapshotextendsProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Instructs an event log to load the most recent snapshot for <code>requestor</code> identified by <code>emitterId</code>.</p>
+      <p class="shortcomment cmt">Instructs an event log to load the most recent snapshot for <code>emitterId</code>.</p>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.LoadSnapshotFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="LoadSnapshotFailureextendsProductwithSerializable"></a>
       <a id="LoadSnapshotFailure:LoadSnapshotFailure"></a>
@@ -243,18 +244,16 @@ depending on the log implementation and <code>remoteLogIds</code> they might sti
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="EventsourcingProtocol$$Replay.html"><span class="name">Replay</span></a><span class="params">(<span name="from">from: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="aggregateId">aggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="EventsourcingProtocol$$Replay.html"><span class="name">Replay</span></a><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="subscriber">subscriber: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="akka.actor.ActorRef">ActorRef</span>]</span>, <span name="aggregateId">aggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ReplayextendsProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Instructs an event log to replay events from sequence number <code>from</code> to the given <code>requestor</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Instructs an event log to replay events from sequence number <code>from</code> to the given <code>requestor</code>.
-Replayed events are sent within <a href="EventsourcingProtocol$$Replaying.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replaying">Replaying</a> messages. If replay successfully completes the
-event log must additionally send a <a href="EventsourcingProtocol$$ReplaySuccess.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.ReplaySuccess">ReplaySuccess</a> message, otherwise, a <a href="EventsourcingProtocol$$ReplayFailure.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.ReplayFailure">ReplayFailure</a>
-message.</p><p>If <code>aggregateId</code> is defined, only events with a matching <code>aggregateId</code> are replayed, otherwise,
-all events.
+      <p class="shortcomment cmt">Instructs an event log to read up to <code>max</code> events starting at <code>fromSequenceNr</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Instructs an event log to read up to <code>max</code> events starting at <code>fromSequenceNr</code>. If <code>aggregateId</code>
+is defined, only those events that have the aggregate id in their  <code>destinationAggregateIds</code> are
+returned.
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.ReplayFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplayFailureextendsProductwithSerializable"></a>
@@ -273,25 +272,8 @@ all events.
       </a>
     </span>
       <p class="shortcomment cmt">Failure reply after a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">Replay</a>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.ReplayNext" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReplayNextextendsProductwithSerializable"></a>
-      <a id="ReplayNext:ReplayNext"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="EventsourcingProtocol$$ReplayNext.html"><span class="name">ReplayNext</span></a><span class="params">(<span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ReplayNextextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Instructs and event log to continue replay with at most <code>max</code> events.</p>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.ReplaySuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReplaySuccessextendsProductwithSerializable"></a>
+      <a id="ReplaySuccessextendsDurableEventBatchwithProductwithSerializable"></a>
       <a id="ReplaySuccess:ReplaySuccess"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -299,48 +281,14 @@ all events.
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="EventsourcingProtocol$$ReplaySuccess.html"><span class="name">ReplaySuccess</span></a><span class="params">(<span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="EventsourcingProtocol$$ReplaySuccess.html"><span class="name">ReplaySuccess</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="replayProgress">replayProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ReplaySuccessextendsProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ReplaySuccessextendsDurableEventBatchwithProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Success reply after a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">Replay</a>, sent when all <a href="EventsourcingProtocol$$Replaying.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replaying">Replaying</a> messages have been sent.</p>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.ReplaySuspended" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReplaySuspendedextendsProductwithSerializable"></a>
-      <a id="ReplaySuspended:ReplaySuspended"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="EventsourcingProtocol$$ReplaySuspended.html"><span class="name">ReplaySuspended</span></a><span class="params">(<span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ReplaySuspendedextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Control reply that replay has been suspended.</p>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replaying" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReplayingextendsProductwithSerializable"></a>
-      <a id="Replaying:Replaying"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="EventsourcingProtocol$$Replaying.html"><span class="name">Replaying</span></a><span class="params">(<span name="event">event: <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ReplayingextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Single <code>event</code> replay after a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">Replay</a>.</p>
+      <p class="shortcomment cmt">Success reply after a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">Replay</a>.</p>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.SaveSnapshot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SaveSnapshotextendsProductwithSerializable"></a>
       <a id="SaveSnapshot:SaveSnapshot"></a>
@@ -350,7 +298,7 @@ all events.
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="EventsourcingProtocol$$SaveSnapshot.html"><span class="name">SaveSnapshot</span></a><span class="params">(<span name="snapshot">snapshot: <a href="Snapshot.html" class="extype" name="com.rbmhtechnology.eventuate.Snapshot">Snapshot</a></span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="EventsourcingProtocol$$SaveSnapshot.html"><span class="name">SaveSnapshot</span></a><span class="params">(<span name="snapshot">snapshot: <a href="Snapshot.html" class="extype" name="com.rbmhtechnology.eventuate.Snapshot">Snapshot</a></span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@SaveSnapshotextendsProductwithSerializable" title="Permalink" target="_top">
@@ -392,8 +340,8 @@ all events.
       </a>
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="EventsourcingProtocol$$SaveSnapshot.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.SaveSnapshot">SaveSnapshot</a>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="WriteextendsDurableEventBatchwithProductwithSerializable"></a>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="WriteextendsUpdateableEventBatch[com.rbmhtechnology.eventuate.EventsourcingProtocol.Write]withProductwithSerializable"></a>
       <a id="Write:Write"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -401,18 +349,14 @@ all events.
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="EventsourcingProtocol$$Write.html"><span class="name">Write</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="EventsourcingProtocol$$Write.html"><span class="name">Write</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="replyTo">replyTo: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="correlationId">correlationId: <span class="extype" name="scala.Int">Int</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="UpdateableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.UpdateableEventBatch">UpdateableEventBatch</a>[<a href="EventsourcingProtocol$$Write.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">Write</a>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@WriteextendsDurableEventBatchwithProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@WriteextendsUpdateableEventBatch[com.rbmhtechnology.eventuate.EventsourcingProtocol.Write]withProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Instructs an event log to write the given <code>events</code> and send the written events one-by-one
-to the given <code>requestor</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Instructs an event log to write the given <code>events</code> and send the written events one-by-one
-to the given <code>requestor</code>. In case of a successful write, events are sent within <a href="EventsourcingProtocol$$WriteSuccess.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteSuccess">WriteSuccess</a>
-messages, otherwise within <a href="EventsourcingProtocol$$WriteFailure.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteFailure">WriteFailure</a> messages with <code>initiator</code> as message sender.
-</p></div></div>
+      <p class="shortcomment cmt">Instructs an event log to write the given <code>events</code>.</p>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="WriteFailureextendsProductwithSerializable"></a>
       <a id="WriteFailure:WriteFailure"></a>
@@ -422,7 +366,7 @@ messages, otherwise within <a href="EventsourcingProtocol$$WriteFailure.html" cl
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="EventsourcingProtocol$$WriteFailure.html"><span class="name">WriteFailure</span></a><span class="params">(<span name="event">event: <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>, <span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="EventsourcingProtocol$$WriteFailure.html"><span class="name">WriteFailure</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="correlationId">correlationId: <span class="extype" name="scala.Int">Int</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@WriteFailureextendsProductwithSerializable" title="Permalink" target="_top">
@@ -456,7 +400,7 @@ messages, otherwise within <a href="EventsourcingProtocol$$WriteFailure.html" cl
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="EventsourcingProtocol$$WriteSuccess.html"><span class="name">WriteSuccess</span></a><span class="params">(<span name="event">event: <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="EventsourcingProtocol$$WriteSuccess.html"><span class="name">WriteSuccess</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="correlationId">correlationId: <span class="extype" name="scala.Int">Int</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@WriteSuccessextendsProductwithSerializable" title="Permalink" target="_top">

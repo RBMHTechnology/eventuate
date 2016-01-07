@@ -43,7 +43,7 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">WriteFailure</span><span class="params">(<span name="event">event: <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>, <span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">WriteFailure</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="correlationId">correlationId: <span class="extype" name="scala.Int">Int</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
@@ -89,7 +89,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteFailure#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(event:com.rbmhtechnology.eventuate.DurableEvent,cause:Throwable,instanceId:Int):com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteFailure"></a>
+      <a id="&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],cause:Throwable,correlationId:Int,instanceId:Int):com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteFailure"></a>
       <a id="&lt;init&gt;:WriteFailure"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -97,10 +97,10 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">WriteFailure</span><span class="params">(<span name="event">event: <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>, <span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span>
+        <span class="name">WriteFailure</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="correlationId">correlationId: <span class="extype" name="scala.Int">Int</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$WriteFailure@&lt;init&gt;(event:com.rbmhtechnology.eventuate.DurableEvent,cause:Throwable,instanceId:Int):com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteFailure" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$WriteFailure@&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],cause:Throwable,correlationId:Int,instanceId:Int):com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteFailure" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -222,6 +222,23 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteFailure#correlationId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="correlationId:Int"></a>
+      <a id="correlationId:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">correlationId</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$WriteFailure@correlationId:Int" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -239,19 +256,19 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteFailure#event" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="event:com.rbmhtechnology.eventuate.DurableEvent"></a>
-      <a id="event:DurableEvent"></a>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteFailure#events" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]"></a>
+      <a id="events:Seq[DurableEvent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">event</span><span class="result">: <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>
+        <span class="name">events</span><span class="result">: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$WriteFailure@event:com.rbmhtechnology.eventuate.DurableEvent" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$WriteFailure@events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>

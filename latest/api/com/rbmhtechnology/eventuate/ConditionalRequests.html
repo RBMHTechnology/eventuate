@@ -797,7 +797,7 @@ is defined it will only receive events with a matching aggregate id in
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Unstashes all commands from internal stash and calls <code>super.postStop</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Unstashes all commands from internal stash and calls <code>super.postStop</code>.
+      <p class="shortcomment cmt">Sets <code>recovering</code> to <code>false</code> before calling <code>super.postStop</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Sets <code>recovering</code> to <code>false</code> before calling <code>super.postStop</code>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → UnrestrictedStash → Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#preRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="preRestart(reason:Throwable,message:Option[Any]):Unit"></a>
@@ -815,7 +815,7 @@ is defined it will only receive events with a matching aggregate id in
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Unstashes all commands from internal stash and calls <code>super.preRestart</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Unstashes all commands from internal stash and calls <code>super.preRestart</code>.
+      <p class="shortcomment cmt">Sets <code>recovering</code> to <code>false</code> before calling <code>super.preRestart</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Sets <code>recovering</code> to <code>false</code> before calling <code>super.preRestart</code>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → UnrestrictedStash → Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedClock#preStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="preStart():Unit"></a>
@@ -874,26 +874,26 @@ replayed events from the event log.</p><div class="fullcomment"><div class="comm
 replayed events from the event log. Returns <code>false</code> after recovery completed and
 the actor switches to consuming live events.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#replayChunkSizeMax" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="replayChunkSizeMax:Int"></a>
-      <a id="replayChunkSizeMax:Int"></a>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#replayBatchSize" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="replayBatchSize:Int"></a>
+      <a id="replayBatchSize:Int"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">replayChunkSizeMax</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+        <span class="name">replayBatchSize</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConditionalRequests@replayChunkSizeMax:Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConditionalRequests@replayBatchSize:Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Maximum number of events to be replayed to this actor before replaying is suspended.</p><div class="fullcomment"><div class="comment cmt"><p>Maximum number of events to be replayed to this actor before replaying is suspended. A suspended replay
 is resumed automatically after all replayed events haven been handled by this actor's event handler
-(= backpressure). The default value for the maximum replay chunk size is given by configuration item
-<code>eventuate.replay.chunk-size-max</code>. Configured values can be overridden by overriding this method.
+(= backpressure). The default value for the maximum replay batch size is given by configuration item
+<code>eventuate.log.replay-batch-size</code>. Configured values can be overridden by overriding this method.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#save" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit"></a>
@@ -971,7 +971,7 @@ that have set <code>sharedClockEntry</code> to <code>true</code> as well.</p><di
 that have set <code>sharedClockEntry</code> to <code>true</code> as well. Otherwise, this actor has its own entry in
 the vector clock.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a></dd></dl></div>
-    </li><li name="akka.actor.StashSupport#stash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#stash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="stash():Unit"></a>
       <a id="stash():Unit"></a>
       <h4 class="signature">
@@ -987,7 +987,8 @@ the vector clock.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>StashSupport</dd></dl></div>
+      <p class="shortcomment cmt">Adds the current command to the user's command stash.</p><div class="fullcomment"><div class="comment cmt"><p>Adds the current command to the user's command stash. Must not be used in the event handler.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → StashSupport</dd></dl></div>
     </li><li name="akka.actor.Actor#supervisorStrategy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="supervisorStrategy:akka.actor.SupervisorStrategy"></a>
       <a id="supervisorStrategy:SupervisorStrategy"></a>
@@ -1056,7 +1057,7 @@ the vector clock.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
-    </li><li name="akka.actor.StashSupport#unstashAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#unstashAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="unstashAll():Unit"></a>
       <a id="unstashAll():Unit"></a>
       <h4 class="signature">
@@ -1072,7 +1073,9 @@ the vector clock.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>StashSupport</dd></dl></div>
+      <p class="shortcomment cmt">Prepends all stashed commands to the actor's mailbox and then clears the command stash.</p><div class="fullcomment"><div class="comment cmt"><p>Prepends all stashed commands to the actor's mailbox and then clears the command stash.
+Has no effect if the actor is recovering i.e. if <code>recovering</code> returns <code>true</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → StashSupport</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

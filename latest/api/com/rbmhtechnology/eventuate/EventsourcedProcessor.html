@@ -52,9 +52,9 @@ is an idempotent writer that guarantees that no duplicates are ever written to t
 also under failure conditions. Hence, applications don't need to take extra care about idempotency.
 Processed events are those returned by <code>processEvent</code>, an application-defined event handler that is
 invoked with events from the source <code>eventLog</code>.</p><p>During initialization, a processor reads the processing progress from the target event log. The timeout
-for this read operation can be configured with the <code>eventuate.processor.read-timeout</code> parameter for all
+for this read operation can be configured with the <code>eventuate.log.read-timeout</code> parameter for all
 event-sourced processors or defined on a per class or instance basis by overriding <code>readTimeout</code>. The timeout
-for write operations to the target log can be configured with the <code>eventuate.processor.write-timeout</code> parameter
+for write operations to the target log can be configured with the <code>eventuate.log.write-timeout</code> parameter
 for all event-sourced processors or defined on a per class or instance basis by overriding <code>writeTimeout</code>.</p><p>An <code>EventsourcedProcessor</code> is a stateless processor i.e. in-memory state created from source events can
 not be recovered. An application that needs stateful event processing should use <a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a>
 instead.</p><p>An <code>EventsourcedProcessor</code> processor writes events with vector timestamps set to source event vector timestamp.
@@ -864,7 +864,7 @@ is defined it will only receive events with a matching aggregate id in
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Unstashes all commands from internal stash and calls <code>super.postStop</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Unstashes all commands from internal stash and calls <code>super.postStop</code>.
+      <p class="shortcomment cmt">Sets <code>recovering</code> to <code>false</code> before calling <code>super.postStop</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Sets <code>recovering</code> to <code>false</code> before calling <code>super.postStop</code>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → UnrestrictedStash → Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#preRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="preRestart(reason:Throwable,message:Option[Any]):Unit"></a>
@@ -882,7 +882,7 @@ is defined it will only receive events with a matching aggregate id in
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Unstashes all commands from internal stash and calls <code>super.preRestart</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Unstashes all commands from internal stash and calls <code>super.preRestart</code>.
+      <p class="shortcomment cmt">Sets <code>recovering</code> to <code>false</code> before calling <code>super.preRestart</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Sets <code>recovering</code> to <code>false</code> before calling <code>super.preRestart</code>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → UnrestrictedStash → Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#preStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="preStart():Unit"></a>
@@ -973,7 +973,7 @@ by default (causing the writer to restart) and can be overridden.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">The default read timeout configured with the <code>eventuate.processor.read-timeout</code> parameter.</p><div class="fullcomment"><div class="comment cmt"><p>The default read timeout configured with the <code>eventuate.processor.read-timeout</code> parameter.
+      <p class="shortcomment cmt">The default read timeout configured with the <code>eventuate.log.read-timeout</code> parameter.</p><div class="fullcomment"><div class="comment cmt"><p>The default read timeout configured with the <code>eventuate.log.read-timeout</code> parameter.
 Can be overridden.
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -1015,27 +1015,24 @@ replayed events from the event log.</p><div class="fullcomment"><div class="comm
 replayed events from the event log. Returns <code>false</code> after recovery completed and
 the actor switches to consuming live events.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#replayChunkSizeMax" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="replayChunkSizeMax:Int"></a>
-      <a id="replayChunkSizeMax:Int"></a>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#replayBatchSize" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="replayBatchSize:Int"></a>
+      <a id="replayBatchSize:Int"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">replayChunkSizeMax</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+        <span class="name">replayBatchSize</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@replayChunkSizeMax:Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor@replayBatchSize:Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Maximum number of events to be replayed to this actor before replaying is suspended.</p><div class="fullcomment"><div class="comment cmt"><p>Maximum number of events to be replayed to this actor before replaying is suspended. A suspended replay
-is resumed automatically after all replayed events haven been handled by this actor's event handler
-(= backpressure). The default value for the maximum replay chunk size is given by configuration item
-<code>eventuate.replay.chunk-size-max</code>. Configured values can be overridden by overriding this method.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+      <p class="shortcomment cmt">Limits the replay batch size to <code>eventuate.log.write-batch-size</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Limits the replay batch size to <code>eventuate.log.write-batch-size</code>. Can be overridden.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#save" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit"></a>
       <a id="save(Any)(Handler[SnapshotMetadata]):Unit"></a>
@@ -1091,7 +1088,7 @@ sender with <code>sender()</code>.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
-    </li><li name="akka.actor.StashSupport#stash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#stash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="stash():Unit"></a>
       <a id="stash():Unit"></a>
       <h4 class="signature">
@@ -1107,7 +1104,8 @@ sender with <code>sender()</code>.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>StashSupport</dd></dl></div>
+      <p class="shortcomment cmt">Adds the current command to the user's command stash.</p><div class="fullcomment"><div class="comment cmt"><p>Adds the current command to the user's command stash. Must not be used in the event handler.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → StashSupport</dd></dl></div>
     </li><li name="akka.actor.Actor#supervisorStrategy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="supervisorStrategy:akka.actor.SupervisorStrategy"></a>
       <a id="supervisorStrategy:SupervisorStrategy"></a>
@@ -1176,7 +1174,7 @@ sender with <code>sender()</code>.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
-    </li><li name="akka.actor.StashSupport#unstashAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#unstashAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="unstashAll():Unit"></a>
       <a id="unstashAll():Unit"></a>
       <h4 class="signature">
@@ -1192,7 +1190,9 @@ sender with <code>sender()</code>.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>StashSupport</dd></dl></div>
+      <p class="shortcomment cmt">Prepends all stashed commands to the actor's mailbox and then clears the command stash.</p><div class="fullcomment"><div class="comment cmt"><p>Prepends all stashed commands to the actor's mailbox and then clears the command stash.
+Has no effect if the actor is recovering i.e. if <code>recovering</code> returns <code>true</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → StashSupport</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -1335,7 +1335,7 @@ by default (causing the writer to restart) and can be overridden.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">The default write timeout configured with the <code>eventuate.processor.write-timeout</code> parameter.</p><div class="fullcomment"><div class="comment cmt"><p>The default write timeout configured with the <code>eventuate.processor.write-timeout</code> parameter.
+      <p class="shortcomment cmt">The default write timeout configured with the <code>eventuate.log.write-timeout</code> parameter.</p><div class="fullcomment"><div class="comment cmt"><p>The default write timeout configured with the <code>eventuate.log.write-timeout</code> parameter.
 Can be overridden.
 </p></div></div>
     </li></ol>

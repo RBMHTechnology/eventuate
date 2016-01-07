@@ -221,6 +221,40 @@
       </a>
     </span>
       
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings#connectRetryDelay" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="connectRetryDelay:scala.concurrent.duration.FiniteDuration"></a>
+      <a id="connectRetryDelay:FiniteDuration"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">connectRetryDelay</span><span class="result">: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings@connectRetryDelay:scala.concurrent.duration.FiniteDuration" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings#connectRetryMax" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="connectRetryMax:Int"></a>
+      <a id="connectRetryMax:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">connectRetryMax</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings@connectRetryMax:Int" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings#contactPoints" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="contactPoints:Seq[java.net.InetSocketAddress]"></a>
       <a id="contactPoints:Seq[InetSocketAddress]"></a>
@@ -261,7 +295,7 @@
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">val</span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">deletionRetryDelay</span><span class="result">: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span></span>
@@ -419,40 +453,6 @@ those that are not yet replicated.
     </span>
       <p class="shortcomment cmt">Maximum number of clock recovery retries.</p><div class="fullcomment"><div class="comment cmt"><p>Maximum number of clock recovery retries.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings">CassandraEventLogSettings</a> → <a href="../EventLogSettings.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSettings">EventLogSettings</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings#initialConnectRetryDelay" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="initialConnectRetryDelay:scala.concurrent.duration.FiniteDuration"></a>
-      <a id="initialConnectRetryDelay:FiniteDuration"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">initialConnectRetryDelay</span><span class="result">: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings@initialConnectRetryDelay:scala.concurrent.duration.FiniteDuration" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings#initialConnectRetryMax" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="initialConnectRetryMax:Int"></a>
-      <a id="initialConnectRetryMax:Int"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">initialConnectRetryMax</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings@initialConnectRetryMax:Int" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -555,19 +555,19 @@ those that are not yet replicated.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings#partitionSizeMax" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="partitionSizeMax:Long"></a>
-      <a id="partitionSizeMax:Long"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings#partitionSize" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="partitionSize:Long"></a>
+      <a id="partitionSize:Long"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">partitionSizeMax</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+        <span class="name">partitionSize</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings@partitionSizeMax:Long" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings@partitionSize:Long" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
@@ -731,6 +731,23 @@ partition, so that batch writes are always single-partition writes.
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings#writeBatchSize" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="writeBatchSize:Int"></a>
+      <a id="writeBatchSize:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writeBatchSize</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings@writeBatchSize:Int" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings#writeConsistency" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="writeConsistency:com.datastax.driver.core.ConsistencyLevel"></a>
       <a id="writeConsistency:ConsistencyLevel"></a>
@@ -744,6 +761,23 @@ partition, so that batch writes are always single-partition writes.
       </span>
       </h4><span class="permalink">
       <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings@writeConsistency:com.datastax.driver.core.ConsistencyLevel" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings#writeTimeout" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="writeTimeout:Long"></a>
+      <a id="writeTimeout:Long"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writeTimeout</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings@writeTimeout:Long" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>

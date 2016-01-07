@@ -110,6 +110,7 @@
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#event-collaboration">Event collaboration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#conditional-requests">Conditional requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#command-stashing">Command stashing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#custom-serialization">Custom serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuration</a></li>
 </ul>
@@ -364,7 +365,7 @@ akka.remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
 <div class="section" id="batch-replication">
 <h3>Batch replication<a class="headerlink" href="#batch-replication" title="Permalink to this headline">¶</a></h3>
 <p>Events are replicated in batches. The maximum number of events per batch can be configured with</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">512</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">512</span>
 </pre></div>
 </div>
 <p>Applications that increase the maximum batch size and/or store rather large events should also increase</p>
@@ -422,7 +423,7 @@ akka.remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
 <p class="last">In theory a <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> could always be activated at the beginning by calling its <code class="docutils literal"><span class="pre">recover()</span></code> method. However, as this requires that all directly connected endpoints must be available, it is not recommended.</p>
 </div>
 <p>Disaster recovery also deletes invalid snapshots, in case they survived the disaster. Invalid snapshots are those that cover lost events.</p>
-<p>A complete reference of <code class="docutils literal"><span class="pre">eventuate.disaster-recovery.*</span></code> configuration options is given in section <a class="reference internal" href="configuration.html#configuration"><span>Configuration</span></a>. The example application also implements <a class="reference internal" href="../example-application.html#example-disaster-recovery"><span>Disaster recovery</span></a>.</p>
+<p>A complete reference of <code class="docutils literal"><span class="pre">eventuate.log.recovery.*</span></code> configuration options is given in section <a class="reference internal" href="configuration.html#configuration"><span>Configuration</span></a>. The example application also implements <a class="reference internal" href="../example-application.html#example-disaster-recovery"><span>Disaster recovery</span></a>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Installing a storage backup is a separate administrative task that is not covered by running <code class="docutils literal"><span class="pre">recover()</span></code>.</p>
@@ -431,13 +432,14 @@ akka.remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
 </div>
 <div class="section" id="deleting-events">
 <h2>Deleting events<a class="headerlink" href="#deleting-events" title="Permalink to this headline">¶</a></h2>
-<p>As outlined in the <a class="reference internal" href="../introduction.html#introduction"><span>Introduction</span></a> an event log is a continuously growing store of immutable facts. Depending on the implementation of the application not all events are necessarily required to recover application state after an application or actor restart. For example, if the application writes sanpshots only those events that occurred after the snapshot need to be available. But even without snapshots there can be application-specific boundary conditions that allow an application to recover its state from a certain sequence number on. To keep a store from growing indefinitely in these cases a <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> allows to delete events up to a given sequence number from a local log. Deletion of events actually differentiates between:</p>
+<p>As outlined in the <a class="reference internal" href="../introduction.html#introduction"><span>Introduction</span></a> an event log is a continuously growing store of immutable facts. Depending on the implementation of the application, not all events are necessarily needed to recover application state after an application or actor restart. For example, if the application saves snapshots, only those events that occurred after the snapshot need to be available. But even without snapshots there can be application-specific boundary conditions that allow an application to recover its state from a certain sequence number on. To keep a store from growing indefinitely in these cases a <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> allows the deletion events up to a given sequence number from a local log. Deletion of events actually differentiates between:</p>
 <ul class="simple">
 <li>Logical deletion of events: Events that are logically deleted are not replayed in case of an actor restart. However they are still available for replication to event logs of connected <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code>s. All storage backends support logical deletion of events.</li>
 <li>Physical deletion of events: Depending on the storage backend logically deleted events are eventually physically deleted. Physical deleted events are of course not available any more for local replay or replication. Physical deletion is currently only supported by the LevelDB backend.</li>
 </ul>
-<p>Eventuate is a toolkit for implementing distributed applications. While an application can very well decide, if it needs certain events from the event log to recover its state, it is much less clear if these events might be needed in the future for replication to logs of other <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code>s. Eventuate can defer physical deletion of events until they are replicated to known <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code>s. However once they are deleted it might get impossible to add new <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code>s or support disaster recovery of an existing <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code>. Therefore deleting events physically from a local log must be used with great care. In a replication network a leaf-<code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> that connects to a single <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> maybe even through a <code class="docutils literal"><span class="pre">ReplicationFilter</span></code> is for example a candidate where physical deletion cause small risk as this endpoint is typically not suitable for further connections.</p>
-<p>Considering this deletion is invoked through the method <code class="docutils literal"><span class="pre">delete</span></code> of a <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code></p>
+<p>While a location can very well decide if it needs certain events from a local event log to recover its state, it may be much less clear if these events might be needed in the future for replication to other locations.
+Eventuate can defer physical deletion of events until they are replicated to known <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code>s. In case a newly added location wants to catch up with the application&#8217;s full event history, it has to connect to a location that actually has the full event history.</p>
+<p>Considering this, deletion is invoked through the <code class="docutils literal"><span class="pre">delete</span></code> method of a <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="c1">// logically delete all events from log L1 with a sequence number &lt;= 100</span>
 <span class="c1">// defer physical deletion until they are replicated to the given endpoints</span>
 <span class="k">val</span> <span class="n">logicallyDeleted</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Long</span><span class="o">]</span> <span class="k">=</span>
@@ -449,12 +451,12 @@ akka.remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
 <span class="o">}</span>
 </pre></div>
 </div>
-<p>This method returns the sequence number until which events are logically deleted. The returned number can differ from the requested one (here <code class="docutils literal"><span class="pre">100L</span></code>), if</p>
+<p>This method returns the sequence number up to which events are logically deleted. The returned sequence number can differ from the requested one (here <code class="docutils literal"><span class="pre">100L</span></code>), if</p>
 <ul class="simple">
 <li>the log&#8217;s current sequence number is smaller than the requested number. In this case the current sequence number is returned.</li>
-<li>there was a previous successful deletion request with a higher sequence number. In this case that number is returned.</li>
+<li>there was a previous successful deletion request with a higher sequence number. In this case that sequence number is returned.</li>
 </ul>
-<p>Depending on the storage backend this call also triggers physical deletion of events in a reliable background process that survives restarts. To defer deletion of non-replicated events, the third parameter takes a set of <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> ids. Events are not deleted until they are replicated to all specified endpoints. If an empty set is specified asynchronous deletion is triggered immediately.</p>
+<p>Depending on the storage backend, this call also triggers physical deletion of events in a reliable background process that survives event log restarts. To defer physical deletion of not yet replicated events, the third parameter takes a set of <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> ids. Events are not physically deleted until they are replicated to these endpoints. If the set is empty, asynchronous deletion is triggered immediately.</p>
 <table class="docutils footnote" frame="void" id="id12" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">

@@ -43,15 +43,13 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">Replay</span><span class="params">(<span name="from">from: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="aggregateId">aggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Replay</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="subscriber">subscriber: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="akka.actor.ActorRef">ActorRef</span>]</span>, <span name="aggregateId">aggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Instructs an event log to replay events from sequence number <code>from</code> to the given <code>requestor</code>.
-Replayed events are sent within <a href="EventsourcingProtocol$$Replaying.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replaying">Replaying</a> messages. If replay successfully completes the
-event log must additionally send a <a href="EventsourcingProtocol$$ReplaySuccess.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.ReplaySuccess">ReplaySuccess</a> message, otherwise, a <a href="EventsourcingProtocol$$ReplayFailure.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.ReplayFailure">ReplayFailure</a>
-message.</p><p>If <code>aggregateId</code> is defined, only events with a matching <code>aggregateId</code> are replayed, otherwise,
-all events.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Instructs an event log to read up to <code>max</code> events starting at <code>fromSequenceNr</code>. If <code>aggregateId</code>
+is defined, only those events that have the aggregate id in their  <code>destinationAggregateIds</code> are
+returned.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -93,7 +91,7 @@ all events.
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(from:Long,max:Int,requestor:akka.actor.ActorRef,aggregateId:Option[String],instanceId:Int):com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay"></a>
+      <a id="&lt;init&gt;(fromSequenceNr:Long,max:Int,subscriber:Option[akka.actor.ActorRef],aggregateId:Option[String],instanceId:Int):com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay"></a>
       <a id="&lt;init&gt;:Replay"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -101,10 +99,10 @@ all events.
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Replay</span><span class="params">(<span name="from">from: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="aggregateId">aggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span>
+        <span class="name">Replay</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="subscriber">subscriber: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="akka.actor.ActorRef">ActorRef</span>]</span>, <span name="aggregateId">aggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$Replay@&lt;init&gt;(from:Long,max:Int,requestor:akka.actor.ActorRef,aggregateId:Option[String],instanceId:Int):com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$Replay@&lt;init&gt;(fromSequenceNr:Long,max:Int,subscriber:Option[akka.actor.ActorRef],aggregateId:Option[String],instanceId:Int):com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -266,19 +264,19 @@ all events.
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay#from" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="from:Long"></a>
-      <a id="from:Long"></a>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay#fromSequenceNr" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="fromSequenceNr:Long"></a>
+      <a id="fromSequenceNr:Long"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">from</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+        <span class="name">fromSequenceNr</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$Replay@from:Long" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$Replay@fromSequenceNr:Long" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -402,19 +400,19 @@ all events.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay#requestor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="requestor:akka.actor.ActorRef"></a>
-      <a id="requestor:ActorRef"></a>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay#subscriber" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="subscriber:Option[akka.actor.ActorRef]"></a>
+      <a id="subscriber:Option[ActorRef]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">requestor</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
+        <span class="name">subscriber</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="akka.actor.ActorRef">ActorRef</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$Replay@requestor:akka.actor.ActorRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$Replay@subscriber:Option[akka.actor.ActorRef]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>

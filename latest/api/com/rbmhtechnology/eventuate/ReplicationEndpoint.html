@@ -261,19 +261,23 @@ replicated only between event logs with matching names.
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Delete events from local log <code>logName</code> with a sequence nr less or equal <code>toSequenceNr</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Delete events from local log <code>logName</code> with a sequence nr less or equal <code>toSequenceNr</code>.</p><p>Deletion is split into logical deletion and physical deletion of events. Logical deletion is
-supported by any storage backend and ensures that the events are not replayed any more. It has immediate effect.
-Logical deleted events might still be replicated to remote <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>s, but they
-are eventually physically deleted, if physical deletion
-is supported by the storage backend (currently LevelDB). It is implemented as reliable
-background process that survives restarts. Physical deletion can be further delayed until
-remote replication endpoints have successfully replicated events by adding them to the <code>remoteEndpointIds</code> argument</p><p>Use with care! When events are physically deleted they cannot be replicated any more to new
-replication endpoints (that were unknown at the time of deletion). Also a node that has deleted
-local events may not be suitable any more for disaster recovery of neighbor nodes.
-</p></div><dl class="paramcmts block"><dt class="param">logName</dt><dd class="cmt"><p>Events are deleted from the local log with this name.</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>All events with a less or equal sequence nr are not replayed any more.</p></dd><dt class="param">remoteEndpointIds</dt><dd class="cmt"><p>A set of remote <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a> ids that must have replicated events
-                         to their logs before they are allowed to be physically deleted.</p></dd><dt>returns</dt><dd class="cmt"><p>A <span class="extype" name="Future">Future</span> containing the sequence nr until which events are logically deleted.
+      <p class="shortcomment cmt">Delete events from a local log identified by <code>logName</code> with a sequence number less than or equal to
+<code>toSequenceNr</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Delete events from a local log identified by <code>logName</code> with a sequence number less than or equal to
+<code>toSequenceNr</code>. Deletion is split into logical deletion and physical deletion. Logical deletion is
+supported by any storage backend and ensures that deleted events are not replayed any more. It has
+immediate effect. Logically deleted events can still be replicated to remote <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>s.
+They are only physically deleted if the storage backend supports that (currently LevelDB only). Furthermore,
+physical deletion only starts after all remote replication endpoints identified by <code>remoteEndpointIds</code>
+have successfully replicated these events. Physical deletion is implemented as reliable background
+process that survives event log restarts.</p><p>Use with care! When events are physically deleted they cannot be replicated any more to new replication
+endpoints (i.e. those that were unknown at the time of deletion). Also, a location with deleted events
+may not be suitable any more for disaster recovery of other locations.
+</p></div><dl class="paramcmts block"><dt class="param">logName</dt><dd class="cmt"><p>Events are deleted from the local log with this name.</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>Sequence number up to which events shall be deleted (inclusive).</p></dd><dt class="param">remoteEndpointIds</dt><dd class="cmt"><p>A set of remote <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a> ids that must have replicated events
+                         to their logs before they are allowed to be physically deleted at this endpoint.</p></dd><dt>returns</dt><dd class="cmt"><p>A <span class="extype" name="Future">Future</span> containing the sequence number up to which events have been logically deleted.
         When the <span class="extype" name="Future">Future</span> completes logical deletion is effective. The returned
-        sequence nr can differ from the requested one, if:</p><ul><li>the log's current sequence number is smaller than the requested number. In this case the current sequence number is returned.</li><li>there was a previous successful deletion request with a higher sequence number. In this case that number is returned.
+        sequence number can differ from the requested one, if:</p><ul><li>the log's current sequence number is smaller than the requested number. In this case the current
+         sequence number is returned.</li><li>there was a previous successful deletion request with a higher sequence number. In this case that
+         number is returned.
 </li></ul></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>

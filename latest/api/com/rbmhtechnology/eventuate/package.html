@@ -366,9 +366,9 @@ is an idempotent writer that guarantees that no duplicates are ever written to t
 also under failure conditions. Hence, applications don't need to take extra care about idempotency.
 Processed events are those returned by <code>processEvent</code>, an application-defined event handler that is
 invoked with events from the source <code>eventLog</code>.</p><p>During initialization, a processor reads the processing progress from the target event log. The timeout
-for this read operation can be configured with the <code>eventuate.processor.read-timeout</code> parameter for all
+for this read operation can be configured with the <code>eventuate.log.read-timeout</code> parameter for all
 event-sourced processors or defined on a per class or instance basis by overriding <code>readTimeout</code>. The timeout
-for write operations to the target log can be configured with the <code>eventuate.processor.write-timeout</code> parameter
+for write operations to the target log can be configured with the <code>eventuate.log.write-timeout</code> parameter
 for all event-sourced processors or defined on a per class or instance basis by overriding <code>writeTimeout</code>.</p><p>An <code>EventsourcedProcessor</code> is a stateless processor i.e. in-memory state created from source events can
 not be recovered. An application that needs stateful event processing should use <a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a>
 instead.</p><p>An <code>EventsourcedProcessor</code> processor writes events with vector timestamps set to source event vector timestamp.
@@ -402,7 +402,7 @@ not covered by the snapshot are handled by <code>onEvent</code> after <code>onSn
 pushes all events to this actor. If it defines an <code>aggregateId</code>, the <code>eventLog</code> actor only pushes
 those events that contain that <code>aggregateId</code> value in their <code>routingDestinations</code> set.</p><p>An <code>EventsourcedView</code> can only consume events from its <code>eventLog</code> but cannot produce new events.
 Commands sent to an <code>EventsourcedView</code> during recovery are delayed until recovery completes.</p><p>Event replay is subject to backpressure. After a configurable number of events
-(see <code>eventuate.replay.chunk-size-max</code> configuration parameter), replay is suspended until these
+(see <code>eventuate.log.replay-batch-size</code> configuration parameter), replay is suspended until these
 events have been handled by <code>onEvent</code> and then resumed again. There's no backpressure mechanism
 for live event processing yet (but will come in future releases).
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>
@@ -439,7 +439,7 @@ recovery, it may define a custom starting position in the event log by returning
 (which is the default).</p><p>Implementation notes:</p><ul><li>After having started an asynchronous write but before returning from <code>write</code>, a writer should clear the
    prepared write batch so that further events can be processed while the asynchronous write operation is
    in progress.</li><li>Event processing during replay (either starting from a default or application-defined position) is subject
-   to backpressure. After a configurable number of events (see <code>eventuate.replay.chunk-size-max</code> configuration
+   to backpressure. After a configurable number of events (see <code>eventuate.log.replay-batch-size</code> configuration
    parameter), replay is suspended until these events have been written to the target database and then resumed
    again. There's no backpressure mechanism for live event processing yet (but will come in future releases).
 </li></ul></div><dl class="paramcmts block"><dt class="tparam">R</dt><dd class="cmt"><p>Result type of the asynchronous read operation.</p></dd><dt class="tparam">W</dt><dd class="cmt"><p>Result type of the asynchronous write operations.
@@ -594,6 +594,23 @@ and <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology
 </p></div><dl class="paramcmts block"><dt class="param">emitterId</dt><dd class="cmt"><p>Id of the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, stateful <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>
                  or <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> that saves the snapshot.</p></dd><dt class="param">sequenceNr</dt><dd class="cmt"><p>The highest event sequence number covered by the snapshot.
 </p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.StashError" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="StashErrorextendsError"></a>
+      <a id="StashError:StashError"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="StashError.html"><span class="name">StashError</span></a><span class="result"> extends <span class="extype" name="scala.Error">Error</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@StashErrorextendsError" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Thrown to indicate that a <code>stash()</code> operation was used at an illegal location.</p>
     </li><li name="com.rbmhtechnology.eventuate.StatefulProcessor" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="StatefulProcessorextendsEventsourcedProcessorwithEventsourcedClock"></a>
       <a id="StatefulProcessor:StatefulProcessor"></a>
@@ -617,6 +634,23 @@ needs to write processed events back to its source event log, it must reserve it
 clock by setting <code>sharedClockEntry</code> to <code>false</code>, otherwise, writing to the source event log has no effect.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>.
 </p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.UpdateableEventBatch" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="UpdateableEventBatch[A&lt;:com.rbmhtechnology.eventuate.UpdateableEventBatch[A]]extendsDurableEventBatch"></a>
+      <a id="UpdateableEventBatch[A&lt;:UpdateableEventBatch[A]]:UpdateableEventBatch[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="UpdateableEventBatch.html"><span class="name">UpdateableEventBatch</span></a><span class="tparams">[<span name="A">A &lt;: <a href="UpdateableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.UpdateableEventBatch">UpdateableEventBatch</a>[<span class="extype" name="com.rbmhtechnology.eventuate.UpdateableEventBatch.A">A</span>]</span>]</span><span class="result"> extends <a href="DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@UpdateableEventBatch[A&lt;:com.rbmhtechnology.eventuate.UpdateableEventBatch[A]]extendsDurableEventBatch" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Implemented by protocol messages whose event sequence can be updated.</p>
     </li><li name="com.rbmhtechnology.eventuate.VectorClock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="VectorClockextendsProductwithSerializable"></a>
       <a id="VectorClock:VectorClock"></a>

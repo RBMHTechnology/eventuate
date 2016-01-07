@@ -139,7 +139,8 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Requests the local replication progress for given <code>sourceLogId</code> from a target log.</p><div class="fullcomment"><div class="comment cmt"><p>Requests the local replication progress for given <code>sourceLogId</code> from a target log.</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p>GetReplicationProgresses
+      <p class="shortcomment cmt">Requests the local replication progress for given <code>sourceLogId</code> from a target log.</p><div class="fullcomment"><div class="comment cmt"><p>Requests the local replication progress for given <code>sourceLogId</code> from a target log.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p>GetReplicationProgresses
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgressFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="GetReplicationProgressFailureextendsProductwithSerializable"></a>
@@ -225,7 +226,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Info about an event log.</p><div class="fullcomment"><div class="comment cmt"><p>Info about an event log. Part of <a href="ReplicationProtocol$$ReplicationEndpointInfo.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo">ReplicationEndpointInfo</a>
+      <p class="shortcomment cmt">Info about an event log.</p><div class="fullcomment"><div class="comment cmt"><p>Info about an event log. Part of <a href="ReplicationProtocol$$ReplicationEndpointInfo.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo">ReplicationEndpointInfo</a>.
 </p></div><dl class="paramcmts block"><dt class="param">logName</dt><dd class="cmt"><p>Name of the log this info object is about</p></dd><dt class="param">sequenceNr</dt><dd class="cmt"><p>Current sequence number of this log
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -244,8 +245,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt"><a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a> info object.</p><div class="fullcomment"><div class="comment cmt"><p><a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a> info object. Exchanged between replication endpoints
-to establish replication connections.
+      <p class="shortcomment cmt"><a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a> info object.</p><div class="fullcomment"><div class="comment cmt"><p><a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a> info object. Exchanged between replication endpoints to establish replication connections.
 </p></div><dl class="paramcmts block"><dt class="param">endpointId</dt><dd class="cmt"><p>Replication endpoint id.</p></dd><dt class="param">logInfos</dt><dd class="cmt"><p><a href="ReplicationProtocol$$LogInfo.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.LogInfo">LogInfo</a>s of logs managed by the replication endpoint.
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
@@ -257,15 +257,15 @@ to establish replication connections.
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationRead.html"><span class="name">ReplicationRead</span></a><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="maxNumEvents">maxNumEvents: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicator">replicator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="currentTargetVersionVector">currentTargetVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$ReplicationRead.html"><span class="name">ReplicationRead</span></a><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicator">replicator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="currentTargetVersionVector">currentTargetVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadextendsReplicationProtocol.FormatwithProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Instructs a source log to read up to <code>maxNumEvents</code> starting <code>fromSequenceNr</code>
-and applying the given replication <code>filter</code>.</p>
+      <p class="shortcomment cmt">Instructs a source log to read up to <code>max</code> events starting at <code>fromSequenceNr</code> and applying
+the given replication <code>filter</code>.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicationReadEnvelopeextendsReplicationProtocol.FormatwithProductwithSerializable"></a>
       <a id="ReplicationReadEnvelope:ReplicationReadEnvelope"></a>
@@ -318,12 +318,12 @@ dispatch the request to the appropriate log.</p>
       </a>
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Success reply after a <a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a>.
-</p></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>read events.</p></dd><dt class="param">replicationProgress</dt><dd class="cmt"><p>last read sequence number. This is greater than
+</p></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>Read events.</p></dd><dt class="param">replicationProgress</dt><dd class="cmt"><p>Last read sequence number. This is greater than
                            or equal to the sequence number of the last read
                            event (if any).
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReplicationWriteextendsDurableEventBatchwithProductwithSerializable"></a>
+      <a id="ReplicationWriteextendsUpdateableEventBatch[com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite]withProductwithSerializable"></a>
       <a id="ReplicationWrite:ReplicationWrite"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -331,10 +331,10 @@ dispatch the request to the appropriate log.</p>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationWrite.html"><span class="name">ReplicationWrite</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentSourceVersionVector">currentSourceVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span> = <span class="symbol">null</span></span>)</span><span class="result"> extends <a href="DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$ReplicationWrite.html"><span class="name">ReplicationWrite</span></a><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicationProgress">replicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentSourceVersionVector">currentSourceVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="replyTo">replyTo: <span class="extype" name="akka.actor.ActorRef">ActorRef</span> = <span class="symbol">null</span></span>)</span><span class="result"> extends <a href="UpdateableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.UpdateableEventBatch">UpdateableEventBatch</a>[<a href="ReplicationProtocol$$ReplicationWrite.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite">ReplicationWrite</a>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationWriteextendsDurableEventBatchwithProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationWriteextendsUpdateableEventBatch[com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite]withProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -391,7 +391,7 @@ dispatch the request to the appropriate log.</p>
       </a>
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="ReplicationProtocol$$ReplicationWrite.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite">ReplicationWrite</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Success reply after a <a href="ReplicationProtocol$$ReplicationWrite.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite">ReplicationWrite</a>.
-</p></div><dl class="paramcmts block"><dt class="param">num</dt><dd class="cmt"><p>Number of events actually replicated.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>id of the log the written events were replicated from</p></dd><dt class="param">storedReplicationProgress</dt><dd class="cmt"><p>Last source log read position stored in the target log.</p></dd><dt class="param">currentTargetVersionVector</dt><dd class="cmt"><p><span class="extype" name="EventLogClock.versionVector">EventLogClock.versionVector</span> of the target log after the events were written
+</p></div><dl class="paramcmts block"><dt class="param">num</dt><dd class="cmt"><p>Number of events actually replicated.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Id of the log the written events were replicated from.</p></dd><dt class="param">storedReplicationProgress</dt><dd class="cmt"><p>Last source log read position stored in the target log.</p></dd><dt class="param">currentTargetVersionVector</dt><dd class="cmt"><p><span class="extype" name="EventLogClock.versionVector">EventLogClock.versionVector</span> of the target log after the events were written
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.SetReplicationProgress" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SetReplicationProgressextendsProductwithSerializable"></a>
@@ -535,9 +535,8 @@ dispatch the request to the appropriate log.</p>
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Requests all local replication progresses from a log.</p><div class="fullcomment"><div class="comment cmt"><p>Requests all local replication progresses from a log.
-The local replication progress is the sequence nr in the remote log up to which
-the local log has replicated all events from the remote log
+      <p class="shortcomment cmt">Requests all local replication progresses from a log.</p><div class="fullcomment"><div class="comment cmt"><p>Requests all local replication progresses from a log. The local replication progress is the sequence number
+in the remote log up to which the local log has replicated all events from the remote log.
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicationEndpointInfo"></a>

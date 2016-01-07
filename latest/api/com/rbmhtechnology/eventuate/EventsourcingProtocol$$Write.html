@@ -43,16 +43,14 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">Write</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">Write</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="replyTo">replyTo: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="correlationId">correlationId: <span class="extype" name="scala.Int">Int</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="UpdateableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.UpdateableEventBatch">UpdateableEventBatch</a>[<a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">Write</a>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Instructs an event log to write the given <code>events</code> and send the written events one-by-one
-to the given <code>requestor</code>. In case of a successful write, events are sent within <a href="EventsourcingProtocol$$WriteSuccess.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteSuccess">WriteSuccess</a>
-messages, otherwise within <a href="EventsourcingProtocol$$WriteFailure.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteFailure">WriteFailure</a> messages with <code>initiator</code> as message sender.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Instructs an event log to write the given <code>events</code>.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="UpdateableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.UpdateableEventBatch">UpdateableEventBatch</a>[<a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">Write</a>], <a href="DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -70,7 +68,7 @@ messages, otherwise within <a href="EventsourcingProtocol$$WriteFailure.html" cl
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write"><span>Write</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="com.rbmhtechnology.eventuate.DurableEventBatch"><span>DurableEventBatch</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write"><span>Write</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="com.rbmhtechnology.eventuate.UpdateableEventBatch"><span>UpdateableEventBatch</span></li><li class="in" name="com.rbmhtechnology.eventuate.DurableEventBatch"><span>DurableEventBatch</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -91,7 +89,7 @@ messages, otherwise within <a href="EventsourcingProtocol$$WriteFailure.html" cl
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],initiator:akka.actor.ActorRef,requestor:akka.actor.ActorRef,instanceId:Int):com.rbmhtechnology.eventuate.EventsourcingProtocol.Write"></a>
+      <a id="&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],initiator:akka.actor.ActorRef,replyTo:akka.actor.ActorRef,correlationId:Int,instanceId:Int):com.rbmhtechnology.eventuate.EventsourcingProtocol.Write"></a>
       <a id="&lt;init&gt;:Write"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -99,10 +97,10 @@ messages, otherwise within <a href="EventsourcingProtocol$$WriteFailure.html" cl
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Write</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="requestor">requestor: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span>
+        <span class="name">Write</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="initiator">initiator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="replyTo">replyTo: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="correlationId">correlationId: <span class="extype" name="scala.Int">Int</span></span>, <span name="instanceId">instanceId: <span class="extype" name="scala.Int">Int</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$Write@&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],initiator:akka.actor.ActorRef,requestor:akka.actor.ActorRef,instanceId:Int):com.rbmhtechnology.eventuate.EventsourcingProtocol.Write" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$Write@&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],initiator:akka.actor.ActorRef,replyTo:akka.actor.ActorRef,correlationId:Int,instanceId:Int):com.rbmhtechnology.eventuate.EventsourcingProtocol.Write" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -207,6 +205,23 @@ messages, otherwise within <a href="EventsourcingProtocol$$WriteFailure.html" cl
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write#correlationId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="correlationId:Int"></a>
+      <a id="correlationId:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">correlationId</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$Write@correlationId:Int" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -384,19 +399,19 @@ messages, otherwise within <a href="EventsourcingProtocol$$WriteFailure.html" cl
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write#requestor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="requestor:akka.actor.ActorRef"></a>
-      <a id="requestor:ActorRef"></a>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write#replyTo" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="replyTo:akka.actor.ActorRef"></a>
+      <a id="replyTo:ActorRef"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">requestor</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
+        <span class="name">replyTo</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$Write@requestor:akka.actor.ActorRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$Write@replyTo:akka.actor.ActorRef" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -436,6 +451,24 @@ messages, otherwise within <a href="EventsourcingProtocol$$WriteFailure.html" cl
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write#update" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="update(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]):com.rbmhtechnology.eventuate.EventsourcingProtocol.Write"></a>
+      <a id="update(Seq[DurableEvent]):Write"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">update</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">Write</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$$Write@update(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent]):com.rbmhtechnology.eventuate.EventsourcingProtocol.Write" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Replaces this batch's events with the given <code>events</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Replaces this batch's events with the given <code>events</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">Write</a> → <a href="UpdateableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.UpdateableEventBatch">UpdateableEventBatch</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -522,6 +555,8 @@ messages, otherwise within <a href="EventsourcingProtocol$$WriteFailure.html" cl
               <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
             </div><div class="parent" name="scala.Equals">
               <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.UpdateableEventBatch">
+              <h3>Inherited from <a href="UpdateableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.UpdateableEventBatch">UpdateableEventBatch</a>[<a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">Write</a>]</h3>
             </div><div class="parent" name="com.rbmhtechnology.eventuate.DurableEventBatch">
               <h3>Inherited from <a href="DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a></h3>
             </div><div class="parent" name="scala.AnyRef">

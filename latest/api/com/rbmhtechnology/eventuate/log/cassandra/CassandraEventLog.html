@@ -43,7 +43,7 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">CassandraEventLog</span><span class="result"> extends <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="CassandraEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters">CassandraEventIteratorParameters</a>]</span>
+        <span class="name">CassandraEventLog</span><span class="result"> extends <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a></span>
       </span>
       </h4>
       
@@ -60,7 +60,7 @@ the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span 
 </li></ul></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>
 </p></span><span class="cmt"><p><a href="Cassandra.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.Cassandra">Cassandra</a></p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="CassandraEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters">CassandraEventIteratorParameters</a>], <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<a href="CassandraEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters">CassandraEventIteratorParameters</a>], <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>, <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -338,28 +338,26 @@ the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span 
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#deleteAsync" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="deleteAsync(sequenceNr:Long):scala.concurrent.Future[Unit]"></a>
-      <a id="deleteAsync(Long):Future[Unit]"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#delete" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="delete(toSequenceNr:Long):scala.concurrent.Future[Unit]"></a>
+      <a id="delete(Long):Future[Unit]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">deleteAsync</span><span class="params">(<span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+        <span class="name">delete</span><span class="params">(<span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@deleteAsync(sequenceNr:Long):scala.concurrent.Future[Unit]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@delete(toSequenceNr:Long):scala.concurrent.Future[Unit]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">A backend that supports physical deletion of event starts asynchronous deletion process
-to actually delete events up to <a href="../DeletionMetadata.html#toSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.log.DeletionMetadata#toSequenceNr">DeletionMetadata.toSequenceNr</a>.</p><div class="fullcomment"><div class="comment cmt"><p>A backend that supports physical deletion of event starts asynchronous deletion process
-to actually delete events up to <a href="../DeletionMetadata.html#toSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.log.DeletionMetadata#toSequenceNr">DeletionMetadata.toSequenceNr</a>.</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>A <span class="extype" name="Future">Future</span> that completes when the deletion process is finished. A
-        backend that does not support physical deletion returns a failed <span class="extype" name="Future">Future</span> containing
-        a <a href="../PhysicalDeletionNotSupportedException.html" class="extype" name="com.rbmhtechnology.eventuate.log.PhysicalDeletionNotSupportedException">PhysicalDeletionNotSupportedException</a>.
-</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+      <p class="shortcomment cmt">Asynchronously and physically deletes events up to <code>toSequenceNr</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously and physically deletes events up to <code>toSequenceNr</code>. This operation completes when
+physical deletion completed. A backend that does not support physical deletion should not override
+this method.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -394,69 +392,6 @@ to actually delete events up to <a href="../DeletionMetadata.html#toSequenceNr:L
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#eventIterator" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="eventIterator(parameters:com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters):Iterator[com.rbmhtechnology.eventuate.DurableEvent]withjava.io.Closeable"></a>
-      <a id="eventIterator(CassandraEventIteratorParameters):Iterator[DurableEvent]withCloseable"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">eventIterator</span><span class="params">(<span name="parameters">parameters: <a href="CassandraEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters">CassandraEventIteratorParameters</a></span>)</span><span class="result">: <span class="extype" name="scala.Iterator">Iterator</span>[<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>] with <span class="extype" name="java.io.Closeable">Closeable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@eventIterator(parameters:com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters):Iterator[com.rbmhtechnology.eventuate.DurableEvent]withjava.io.Closeable" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Creates a event iterator using the given <code>parameters</code> object.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a event iterator using the given <code>parameters</code> object. This method is called on a thread that is
-<b>not</b> a dispatcher thread of an implementing <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> actor. It is therefore important that the
-returned iterator does not close over current actor state. If the initialization of the iterator depends
-on current actor state, it must be captured during <code>eventIteratorParameters</code> calls and returned by these
-methods as parameter object of type <code>A</code>. This object is then passed as argument to this method and used
-for asynchronous event iterator construction.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#eventIteratorParameters" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="eventIteratorParameters(fromSequenceNr:Long,toSequenceNr:Long,aggregateId:String):com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters"></a>
-      <a id="eventIteratorParameters(Long,Long,String):CassandraEventIteratorParameters"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">eventIteratorParameters</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="aggregateId">aggregateId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="CassandraEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters">CassandraEventIteratorParameters</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@eventIteratorParameters(fromSequenceNr:Long,toSequenceNr:Long,aggregateId:String):com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Creates an event iterator parameter object that encodes the given parameters.</p><div class="fullcomment"><div class="comment cmt"><p>Creates an event iterator parameter object that encodes the given parameters. The returned parameter
-object is passed as argument to <code>eventIterator</code>.
-</p></div><dl class="paramcmts block"><dt class="param">fromSequenceNr</dt><dd class="cmt"><p>sequence number to start iteration (inclusive).</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>sequence number to stop iteration (inclusive).</p></dd><dt class="param">aggregateId</dt><dd class="cmt"><p>must be contained in <a href="../../DurableEvent.html#destinationAggregateIds:Set[String]" class="extmbr" name="com.rbmhtechnology.eventuate.DurableEvent#destinationAggregateIds">DurableEvent.destinationAggregateIds</a>.
-</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#eventIteratorParameters" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="eventIteratorParameters(fromSequenceNr:Long,toSequenceNr:Long):com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters"></a>
-      <a id="eventIteratorParameters(Long,Long):CassandraEventIteratorParameters"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">eventIteratorParameters</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <a href="CassandraEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters">CassandraEventIteratorParameters</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@eventIteratorParameters(fromSequenceNr:Long,toSequenceNr:Long):com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Creates an event iterator parameter object that encodes the given parameters.</p><div class="fullcomment"><div class="comment cmt"><p>Creates an event iterator parameter object that encodes the given parameters. The returned parameter
-object is passed as argument to <code>eventIterator</code>.
-</p></div><dl class="paramcmts block"><dt class="param">fromSequenceNr</dt><dd class="cmt"><p>sequence number to start iteration (inclusive).</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>sequence number to stop iteration (inclusive).
-</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -674,23 +609,44 @@ object is passed as argument to <code>eventIterator</code>.
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> → Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#read" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="read(fromSequenceNr:Long,toSequenceNr:Long,max:Int,filter:com.rbmhtechnology.eventuate.DurableEvent=&gt;Boolean):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]"></a>
-      <a id="read(Long,Long,Int,(DurableEvent)⇒Boolean):Future[BatchReadResult]"></a>
+      <a id="read(fromSequenceNr:Long,toSequenceNr:Long,max:Int,aggregateId:String):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]"></a>
+      <a id="read(Long,Long,Int,String):Future[BatchReadResult]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">read</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: (<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../BatchReadResult.html" class="extype" name="com.rbmhtechnology.eventuate.log.BatchReadResult">BatchReadResult</a>]</span>
+        <span class="name">read</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="aggregateId">aggregateId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../BatchReadResult.html" class="extype" name="com.rbmhtechnology.eventuate.log.BatchReadResult">BatchReadResult</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@read(fromSequenceNr:Long,toSequenceNr:Long,max:Int,filter:com.rbmhtechnology.eventuate.DurableEvent=&gt;Boolean):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@read(fromSequenceNr:Long,toSequenceNr:Long,max:Int,aggregateId:String):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Asynchronously batch-reads events whose <code>destinationAggregateIds</code> contains the given <code>aggregateId</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously batch-reads events whose <code>destinationAggregateIds</code> contains the given <code>aggregateId</code>. At most
+<code>max</code> events must be returned that are within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequenceNr</code>.
+</p></div><dl class="paramcmts block"><dt class="param">fromSequenceNr</dt><dd class="cmt"><p>sequence number to start reading (inclusive).</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>sequence number to stop reading (inclusive)
+                    or earlier if <code>max</code> events have already been read.
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#read" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="read(fromSequenceNr:Long,toSequenceNr:Long,max:Int):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]"></a>
+      <a id="read(Long,Long,Int):Future[BatchReadResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">read</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../BatchReadResult.html" class="extype" name="com.rbmhtechnology.eventuate.log.BatchReadResult">BatchReadResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@read(fromSequenceNr:Long,toSequenceNr:Long,max:Int):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Asynchronously batch-reads events from the raw event log.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously batch-reads events from the raw event log. At most <code>max</code> events must be returned that are
-within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequenceNr</code> and that pass the given <code>filter</code>.
+within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequenceNr</code>.
 </p></div><dl class="paramcmts block"><dt class="param">fromSequenceNr</dt><dd class="cmt"><p>sequence number to start reading (inclusive).</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>sequence number to stop reading (inclusive)
                     or earlier if <code>max</code> events have already been read.
 </p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
@@ -729,7 +685,8 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously reads the replication progress for given source <code>logId</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads the replication progress for given source <code>logId</code>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd><dt>See also</dt><dd><span class="cmt"><p>GetReplicationProgress
+      <p class="shortcomment cmt">Asynchronously reads the replication progress for given source <code>logId</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads the replication progress for given source <code>logId</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd><dt>See also</dt><dd><span class="cmt"><p><span class="extype" name="GetReplicationProgress">GetReplicationProgress</span>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#readReplicationProgresses" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="readReplicationProgresses:scala.concurrent.Future[Map[String,Long]]"></a>
@@ -747,7 +704,8 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously reads all stored local replication progresses.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads all stored local replication progresses.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd><dt>See also</dt><dd><span class="cmt"><p>GetReplicationProgresses
+      <p class="shortcomment cmt">Asynchronously reads all stored local replication progresses.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads all stored local replication progresses.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd><dt>See also</dt><dd><span class="cmt"><p><span class="extype" name="GetReplicationProgresses">GetReplicationProgresses</span>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.EventLog#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="receive:EventLog.this.Receive"></a>
@@ -820,6 +778,27 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
     </span>
       <p class="shortcomment cmt">Called after successful event log clock recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after successful event log clock recovery.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#replicationRead" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="replicationRead(fromSequenceNr:Long,toSequenceNr:Long,max:Int,filter:com.rbmhtechnology.eventuate.DurableEvent=&gt;Boolean):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]"></a>
+      <a id="replicationRead(Long,Long,Int,(DurableEvent)⇒Boolean):Future[BatchReadResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">replicationRead</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: (<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../BatchReadResult.html" class="extype" name="com.rbmhtechnology.eventuate.log.BatchReadResult">BatchReadResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@replicationRead(fromSequenceNr:Long,toSequenceNr:Long,max:Int,filter:com.rbmhtechnology.eventuate.DurableEvent=&gt;Boolean):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Asynchronously batch-reads events from the raw event log.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously batch-reads events from the raw event log. At most <code>max</code> events must be returned that are
+within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequenceNr</code> and that pass the given <code>filter</code>.
+</p></div><dl class="paramcmts block"><dt class="param">fromSequenceNr</dt><dd class="cmt"><p>sequence number to start reading (inclusive).</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>sequence number to stop reading (inclusive)
+                    or earlier if <code>max</code> events have already been read.
+</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="akka.actor.Actor#self" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="self:akka.actor.ActorRef"></a>
       <a id="self:ActorRef"></a>
@@ -1097,9 +1076,9 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Store metadata regarding a <span class="extype" name="Delete">Delete</span> request.</p><div class="fullcomment"><div class="comment cmt"><p>Store metadata regarding a <span class="extype" name="Delete">Delete</span> request. This
-marks events upto <a href="../DeletionMetadata.html#toSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.log.DeletionMetadata#toSequenceNr">DeletionMetadata.toSequenceNr</a> as deleted, i.e. they are not read on replay
-and indicates which remote logs must have replicated events before they are allowed to be physically deleted
+      <p class="shortcomment cmt">Synchronously writes metadata for a <a href="../../EventsourcingProtocol$$Delete.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete">Delete</a> request.</p><div class="fullcomment"><div class="comment cmt"><p>Synchronously writes metadata for a <a href="../../EventsourcingProtocol$$Delete.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete">Delete</a> request. This marks events up to
+<a href="../DeletionMetadata.html#toSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.log.DeletionMetadata#toSequenceNr">DeletionMetadata.toSequenceNr</a> as deleted, i.e. they are not read on replay and indicates which remote logs
+must have replicated these events before they are allowed to be physically deleted locally.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#writeReplicationProgress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="writeReplicationProgress(logId:String,progress:Long):scala.concurrent.Future[Unit]"></a>
@@ -1129,7 +1108,7 @@ and indicates which remote logs must have replicated events before they are allo
 
         <div id="inheritedMembers">
         <div class="parent" name="com.rbmhtechnology.eventuate.log.EventLog">
-              <h3>Inherited from <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="CassandraEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters">CassandraEventIteratorParameters</a>]</h3>
+              <h3>Inherited from <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a></h3>
             </div><div class="parent" name="akka.actor.ActorLogging">
               <h3>Inherited from <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></h3>
             </div><div class="parent" name="akka.actor.Stash">
@@ -1141,7 +1120,7 @@ and indicates which remote logs must have replicated events before they are allo
             </div><div class="parent" name="akka.actor.StashSupport">
               <h3>Inherited from <span class="extype" name="akka.actor.StashSupport">StashSupport</span></h3>
             </div><div class="parent" name="com.rbmhtechnology.eventuate.log.EventLogSPI">
-              <h3>Inherited from <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<a href="CassandraEventIteratorParameters.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventIteratorParameters">CassandraEventIteratorParameters</a>]</h3>
+              <h3>Inherited from <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></h3>
             </div><div class="parent" name="akka.actor.Actor">
               <h3>Inherited from <span class="extype" name="akka.actor.Actor">Actor</span></h3>
             </div><div class="parent" name="scala.AnyRef">

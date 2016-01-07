@@ -244,7 +244,7 @@ During execution of disaster recovery, directly connected endpoints must be avai
 
 Disaster recovery also deletes invalid snapshots, in case they survived the disaster. Invalid snapshots are those that cover lost events.
 
-A complete reference of ``eventuate.disaster-recovery.*`` configuration options is given in section :ref:`configuration`. The example application also implements :ref:`example-disaster-recovery`.
+A complete reference of ``eventuate.log.recovery.*`` configuration options is given in section :ref:`configuration`. The example application also implements :ref:`example-disaster-recovery`.
 
 .. note::
    Installing a storage backup is a separate administrative task that is not covered by running ``recover()``.
@@ -252,24 +252,25 @@ A complete reference of ``eventuate.disaster-recovery.*`` configuration options 
 Deleting events
 ~~~~~~~~~~~~~~~
 
-As outlined in the :ref:`introduction` an event log is a continuously growing store of immutable facts. Depending on the implementation of the application not all events are necessarily required to recover application state after an application or actor restart. For example, if the application writes sanpshots only those events that occurred after the snapshot need to be available. But even without snapshots there can be application-specific boundary conditions that allow an application to recover its state from a certain sequence number on. To keep a store from growing indefinitely in these cases a ``ReplicationEndpoint`` allows to delete events up to a given sequence number from a local log. Deletion of events actually differentiates between:
+As outlined in the :ref:`introduction` an event log is a continuously growing store of immutable facts. Depending on the implementation of the application, not all events are necessarily needed to recover application state after an application or actor restart. For example, if the application saves snapshots, only those events that occurred after the snapshot need to be available. But even without snapshots there can be application-specific boundary conditions that allow an application to recover its state from a certain sequence number on. To keep a store from growing indefinitely in these cases a ``ReplicationEndpoint`` allows the deletion events up to a given sequence number from a local log. Deletion of events actually differentiates between:
 
 - Logical deletion of events: Events that are logically deleted are not replayed in case of an actor restart. However they are still available for replication to event logs of connected ``ReplicationEndpoint``\ s. All storage backends support logical deletion of events.
 - Physical deletion of events: Depending on the storage backend logically deleted events are eventually physically deleted. Physical deleted events are of course not available any more for local replay or replication. Physical deletion is currently only supported by the LevelDB backend.
 
-Eventuate is a toolkit for implementing distributed applications. While an application can very well decide, if it needs certain events from the event log to recover its state, it is much less clear if these events might be needed in the future for replication to logs of other ``ReplicationEndpoint``\ s. Eventuate can defer physical deletion of events until they are replicated to known ``ReplicationEndpoint``\ s. However once they are deleted it might get impossible to add new ``ReplicationEndpoint``\ s or support disaster recovery of an existing ``ReplicationEndpoint``. Therefore deleting events physically from a local log must be used with great care. In a replication network a leaf-``ReplicationEndpoint`` that connects to a single ``ReplicationEndpoint`` maybe even through a ``ReplicationFilter`` is for example a candidate where physical deletion cause small risk as this endpoint is typically not suitable for further connections.
+While a location can very well decide if it needs certain events from a local event log to recover its state, it may be much less clear if these events might be needed in the future for replication to other locations.
+Eventuate can defer physical deletion of events until they are replicated to known ``ReplicationEndpoint``\ s. In case a newly added location wants to catch up with the application's full event history, it has to connect to a location that actually has the full event history.
 
-Considering this deletion is invoked through the method ``delete`` of a ``ReplicationEndpoint``
+Considering this, deletion is invoked through the ``delete`` method of a ``ReplicationEndpoint``:
 
 .. includecode:: ../code/EventLogDoc.scala
    :snippet: event-deletion-1
 
-This method returns the sequence number until which events are logically deleted. The returned number can differ from the requested one (here ``100L``), if
+This method returns the sequence number up to which events are logically deleted. The returned sequence number can differ from the requested one (here ``100L``), if
 
 - the log's current sequence number is smaller than the requested number. In this case the current sequence number is returned.
-- there was a previous successful deletion request with a higher sequence number. In this case that number is returned.
+- there was a previous successful deletion request with a higher sequence number. In this case that sequence number is returned.
 
-Depending on the storage backend this call also triggers physical deletion of events in a reliable background process that survives restarts. To defer deletion of non-replicated events, the third parameter takes a set of ``ReplicationEndpoint`` ids. Events are not deleted until they are replicated to all specified endpoints. If an empty set is specified asynchronous deletion is triggered immediately.
+Depending on the storage backend, this call also triggers physical deletion of events in a reliable background process that survives event log restarts. To defer physical deletion of not yet replicated events, the third parameter takes a set of ``ReplicationEndpoint`` ids. Events are not physically deleted until they are replicated to these endpoints. If the set is empty, asynchronous deletion is triggered immediately.
 
 .. _Cassandra: http://cassandra.apache.org/
 .. _Getting Started: https://wiki.apache.org/cassandra/GettingStarted

@@ -43,12 +43,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationRead</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="maxNumEvents">maxNumEvents: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicator">replicator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="currentTargetVersionVector">currentTargetVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">ReplicationRead</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicator">replicator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="currentTargetVersionVector">currentTargetVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Instructs a source log to read up to <code>maxNumEvents</code> starting <code>fromSequenceNr</code>
-and applying the given replication <code>filter</code>.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Instructs a source log to read up to <code>max</code> events starting at <code>fromSequenceNr</code> and applying
+the given replication <code>filter</code>.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a>, <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -90,7 +90,7 @@ and applying the given replication <code>filter</code>.
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(fromSequenceNr:Long,maxNumEvents:Int,filter:com.rbmhtechnology.eventuate.ReplicationFilter,targetLogId:String,replicator:akka.actor.ActorRef,currentTargetVersionVector:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead"></a>
+      <a id="&lt;init&gt;(fromSequenceNr:Long,max:Int,filter:com.rbmhtechnology.eventuate.ReplicationFilter,targetLogId:String,replicator:akka.actor.ActorRef,currentTargetVersionVector:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead"></a>
       <a id="&lt;init&gt;:ReplicationRead"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -98,10 +98,10 @@ and applying the given replication <code>filter</code>.
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationRead</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="maxNumEvents">maxNumEvents: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicator">replicator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="currentTargetVersionVector">currentTargetVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span>
+        <span class="name">ReplicationRead</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="replicator">replicator: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="currentTargetVersionVector">currentTargetVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationRead@&lt;init&gt;(fromSequenceNr:Long,maxNumEvents:Int,filter:com.rbmhtechnology.eventuate.ReplicationFilter,targetLogId:String,replicator:akka.actor.ActorRef,currentTargetVersionVector:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationRead@&lt;init&gt;(fromSequenceNr:Long,max:Int,filter:com.rbmhtechnology.eventuate.ReplicationFilter,targetLogId:String,replicator:akka.actor.ActorRef,currentTargetVersionVector:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -331,19 +331,19 @@ and applying the given replication <code>filter</code>.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead#maxNumEvents" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="maxNumEvents:Int"></a>
-      <a id="maxNumEvents:Int"></a>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead#max" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="max:Int"></a>
+      <a id="max:Int"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">maxNumEvents</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+        <span class="name">max</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationRead@maxNumEvents:Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationRead@max:Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
