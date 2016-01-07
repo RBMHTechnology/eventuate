@@ -108,7 +108,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   private def replicationReadFormatBuilder(message: ReplicationRead): ReplicationReadFormat.Builder = {
     val builder = ReplicationReadFormat.newBuilder()
     builder.setFromSequenceNr(message.fromSequenceNr)
-    builder.setMaxNumEvents(message.maxNumEvents)
+    builder.setMax(message.max)
     builder.setFilter(filterSerializer.filterTreeFormatBuilder(message.filter))
     builder.setTargetLogId(message.targetLogId)
     builder.setReplicator(Serialization.serializedActorPath(message.replicator))
@@ -166,7 +166,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   private def replicationRead(messageFormat: ReplicationReadFormat): ReplicationRead =
     ReplicationRead(
       messageFormat.getFromSequenceNr,
-      messageFormat.getMaxNumEvents,
+      messageFormat.getMax,
       filterSerializer.filterTree(messageFormat.getFilter),
       messageFormat.getTargetLogId,
       system.provider.resolveActorRef(messageFormat.getReplicator),

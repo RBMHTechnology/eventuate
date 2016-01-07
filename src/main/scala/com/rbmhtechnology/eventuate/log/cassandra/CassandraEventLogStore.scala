@@ -19,7 +19,7 @@ package com.rbmhtechnology.eventuate.log.cassandra
 import java.io.Closeable
 import java.lang.{ Long => JLong }
 
-import com.datastax.driver.core.{ PreparedStatement, Row }
+import com.datastax.driver.core._
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.log._
 
@@ -34,46 +34,46 @@ private[eventuate] class CassandraEventLogStore(cassandra: Cassandra, logId: Str
   val preparedReadEventsStatement: PreparedStatement =
     cassandra.prepareReadEvents(logId)
 
-  def writeSync(events: Seq[DurableEvent], partition: Long) =
+  def write(events: Seq[DurableEvent], partition: Long) =
     cassandra.executeBatch { batch =>
       events.foreach { event =>
         batch.add(preparedWriteEventStatement.bind(partition: JLong, event.localSequenceNr: JLong, cassandra.eventToByteBuffer(event)))
       }
     }
 
-  def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int)(implicit executor: ExecutionContext): Future[BatchReadResult] =
-    readAsync(fromSequenceNr, toSequenceNr, max, _ => true)
+  def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int, fetchSize: Int)(implicit executor: ExecutionContext): Future[BatchReadResult] =
+    readAsync(fromSequenceNr, toSequenceNr, max, fetchSize, _ => true)
 
-  def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: DurableEvent => Boolean)(implicit executor: ExecutionContext): Future[BatchReadResult] =
-    Future(read(fromSequenceNr, toSequenceNr, max, filter))
+  def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int, fetchSize: Int, filter: DurableEvent => Boolean)(implicit executor: ExecutionContext): Future[BatchReadResult] =
+    Future(read(fromSequenceNr, toSequenceNr, max, fetchSize, filter))
 
-  def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: DurableEvent => Boolean): BatchReadResult = {
+  def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, fetchSize: Int, filter: DurableEvent => Boolean): BatchReadResult = {
     var lastSequenceNr = fromSequenceNr - 1L
-    val events = eventIterator(fromSequenceNr, toSequenceNr).filter { evt =>
+    val events = eventIterator(fromSequenceNr, toSequenceNr, fetchSize).filter { evt =>
       lastSequenceNr = evt.localSequenceNr
       filter(evt)
     }.take(max).toVector
     BatchReadResult(events, lastSequenceNr)
   }
 
-  def eventIterator(fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] with Closeable =
-    new EventIterator(fromSequenceNr, toSequenceNr)
+  def eventIterator(fromSequenceNr: Long, toSequenceNr: Long, fetchSize: Int): Iterator[DurableEvent] with Closeable =
+    new EventIterator(fromSequenceNr, toSequenceNr, fetchSize)
 
-  private class EventIterator(fromSequenceNr: Long, toSequenceNr: Long) extends Iterator[DurableEvent] with Closeable {
+  private class EventIterator(fromSequenceNr: Long, toSequenceNr: Long, fetchSize: Int) extends Iterator[DurableEvent] with Closeable {
     import cassandra.settings._
     import EventLog._
 
     var currentSequenceNr = math.max(fromSequenceNr, 1L)
-    var currentPartition = partitionOf(currentSequenceNr, partitionSizeMax)
+    var currentPartition = partitionOf(currentSequenceNr, partitionSize)
 
     var currentIter = newIter()
-    var read = currentSequenceNr != firstSequenceNr(currentPartition, partitionSizeMax)
+    var read = currentSequenceNr != firstSequenceNr(currentPartition, partitionSize)
 
     def newIter(): Iterator[Row] =
-      if (currentSequenceNr > toSequenceNr) Iterator.empty else {
-        val upperSequenceNumber = lastSequenceNr(currentPartition, partitionSizeMax) min toSequenceNr
-        cassandra.session.execute(preparedReadEventsStatement.bind(currentPartition: JLong, currentSequenceNr: JLong, upperSequenceNumber: JLong)).iterator.asScala
-      }
+      if (currentSequenceNr > toSequenceNr) Iterator.empty else read(lastSequenceNr(currentPartition, partitionSize) min toSequenceNr).iterator.asScala
+
+    def read(upperSequenceNr: Long): ResultSet =
+      cassandra.session.execute(preparedReadEventsStatement.bind(currentPartition: JLong, currentSequenceNr: JLong, upperSequenceNr: JLong).setFetchSize(fetchSize))
 
     @annotation.tailrec
     final def hasNext: Boolean = {
@@ -82,7 +82,7 @@ private[eventuate] class CassandraEventLogStore(cassandra: Cassandra, logId: Str
       } else if (read) {
         // some events read from current partition, try next partition
         currentPartition += 1
-        currentSequenceNr = firstSequenceNr(currentPartition, partitionSizeMax)
+        currentSequenceNr = firstSequenceNr(currentPartition, partitionSize)
         currentIter = newIter()
         read = false
         hasNext

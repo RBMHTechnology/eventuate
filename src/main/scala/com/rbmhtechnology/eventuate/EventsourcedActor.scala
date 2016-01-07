@@ -16,11 +16,21 @@
 
 package com.rbmhtechnology.eventuate
 
+import java.util.concurrent.TimeUnit
 import java.util.function.BiConsumer
 
+import akka.actor._
+import akka.pattern.AskTimeoutException
+
+import com.typesafe.config.Config
+
+import scala.concurrent.duration._
 import scala.util._
 
-import akka.actor._
+private class EventsourcedActorSettings(config: Config) {
+  val writeTimeout =
+    config.getDuration("eventuate.log.write-timeout", TimeUnit.MILLISECONDS).millis
+}
 
 /**
  * An `EventsourcedActor` is an [[EventsourcedView]] that can also write new events to its event log.
@@ -39,9 +49,23 @@ import akka.actor._
 trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
   import EventsourcingProtocol._
 
+  private val settings =
+    new EventsourcedActorSettings(context.system.settings.config)
+
+  private val writeRequestTimeoutException =
+    new AskTimeoutException(s"Write timeout after ${settings.writeTimeout}")
+
+  private val messageStash = new MessageStash()
+  private val commandStash = new MessageStash()
+
   private var writeRequests: Vector[DurableEvent] = Vector.empty
   private var writeHandlers: Vector[Handler[Any]] = Vector.empty
+
+  private var writeRequestCorrelationId: Int = 0
+  private var writeRequestTimeoutSchedules: Map[Int, Cancellable] = Map.empty
+
   private var writing: Boolean = false
+  private var writeReplyHandling: Boolean = false
 
   /**
    * State synchronization. If set to `true`, commands see internal state that is consistent
@@ -99,20 +123,24 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
    * Internal API.
    */
   override private[eventuate] def unhandledMessage(msg: Any): Unit = msg match {
-    case WriteSuccess(event, iid) => if (iid == instanceId) {
-      receiveEvent(event)
-      writeHandlers.head(Success(event.payload))
-      writeHandlers = writeHandlers.tail
-      if (stateSync && writeHandlers.isEmpty) {
+    case WriteSuccess(events, cid, iid) => if (writeRequestTimeoutSchedules.contains(cid) && iid == instanceId) writeReplyHandling(cid) {
+      events.foreach { event =>
+        receiveEvent(event)
+        writeHandlers.head(Success(event.payload))
+        writeHandlers = writeHandlers.tail
+      }
+      if (stateSync) {
         writing = false
         messageStash.unstash()
       }
     }
-    case WriteFailure(event, cause, iid) => if (iid == instanceId) {
-      receiveEventInternal(event, cause)
-      writeHandlers.head(Failure(cause))
-      writeHandlers = writeHandlers.tail
-      if (stateSync && writeHandlers.isEmpty) {
+    case WriteFailure(events, cause, cid, iid) => if (writeRequestTimeoutSchedules.contains(cid) && iid == instanceId) writeReplyHandling(cid) {
+      events.foreach { event =>
+        receiveEventInternal(event, cause)
+        writeHandlers.head(Failure(cause))
+        writeHandlers = writeHandlers.tail
+      }
+      if (stateSync) {
         writing = false
         messageStash.unstash()
       }
@@ -130,23 +158,72 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
       writeOrDelay(super.unhandledMessage(cmd))
   }
 
+  private def writeReplyHandling(correlationId: Int)(body: => Unit): Unit =
+    try {
+      writeReplyHandling = true
+      body
+    } finally {
+      writeReplyHandling = false
+      unscheduleWriteRequestTimeout(correlationId)
+    }
+
+  private def writePending: Boolean =
+    writeRequests.nonEmpty
+
   private def writeOrDelay(writeRequestProducer: => Unit): Unit = {
     if (writing) messageStash.stash() else {
       writeRequestProducer
 
       val wPending = writePending
-      if (wPending) write()
+      if (wPending) write(nextCorrelationId())
       if (wPending && stateSync) writing = true else if (stateSync) messageStash.unstash()
     }
   }
 
-  private def write(): Unit = {
-    eventLog ! Write(writeRequests, sender(), self, instanceId)
+  private def write(correlationId: Int): Unit = {
+    // Write replies and Written messages must be kept in an order as sent by the
+    // event log actor. Hence, we cannot *ask* the event log actor to Write as it
+    // would bring Write replies and Written messages out of order. Write replies
+    // would need to be sent to self (after the ask future completes) which could
+    // re-order them relative to directly received Written messages.
+    eventLog ! Write(writeRequests, sender(), self, correlationId, instanceId)
+    scheduleWriteRequestTimeout(correlationId, sender())
     writeRequests = Vector.empty
   }
 
-  private def writePending: Boolean =
-    writeRequests.nonEmpty
+  private def nextCorrelationId(): Int = {
+    writeRequestCorrelationId += 1
+    writeRequestCorrelationId
+  }
+
+  private def scheduleWriteRequestTimeout(correlationId: Int, sender: ActorRef): Unit = {
+    val reply = WriteFailure(writeRequests, writeRequestTimeoutException, correlationId, instanceId)
+    val schedule = context.system.scheduler.scheduleOnce(settings.writeTimeout, self, reply)(context.dispatcher, sender)
+    writeRequestTimeoutSchedules = writeRequestTimeoutSchedules.updated(correlationId, schedule)
+  }
+
+  private def unscheduleWriteRequestTimeout(correlationId: Int): Unit = {
+    writeRequestTimeoutSchedules.get(correlationId).foreach(_.cancel())
+    writeRequestTimeoutSchedules -= correlationId
+  }
+
+  /**
+   * Adds the current command to the user's command stash. Must not be used in the event handler
+   * or `persist` handler.
+   */
+  override def stash(): Unit =
+    if (writeReplyHandling || eventHandling) throw new StashError("stash() must not be used in event handler or persist handler") else commandStash.stash()
+
+  /**
+   * Prepends all stashed commands to the actor's mailbox and then clears the command stash.
+   * Has no effect if the actor is recovering i.e. if `recovering` returns `true`.
+   */
+  override def unstashAll(): Unit =
+    if (!recovering) {
+      commandStash ++: messageStash
+      commandStash.clear()
+      messageStash.unstashAll()
+    }
 }
 
 /**

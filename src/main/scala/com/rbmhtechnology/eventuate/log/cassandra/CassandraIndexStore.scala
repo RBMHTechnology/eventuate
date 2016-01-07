@@ -57,22 +57,25 @@ private[eventuate] class CassandraIndexStore(cassandra: Cassandra, logId: String
   def writeEventLogClockAsync(clock: EventLogClock)(implicit executor: ExecutionContext): Future[EventLogClock] =
     cassandra.session.executeAsync(cassandra.preparedWriteEventLogClockStatement.bind(logId, cassandra.clockToByteBuffer(clock))).map(_ => clock)
 
-  def aggregateEventIterator(aggregateId: String, fromSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] =
-    new AggregateEventIterator(aggregateId, fromSequenceNr, toSequenceNr)
+  def aggregateEventIterator(aggregateId: String, fromSequenceNr: Long, toSequenceNr: Long, fetchSize: Int): Iterator[DurableEvent] =
+    new AggregateEventIterator(aggregateId, fromSequenceNr, toSequenceNr, fetchSize)
 
-  private class AggregateEventIterator(aggregateId: String, fromSequenceNr: Long, toSequenceNr: Long) extends Iterator[DurableEvent] {
+  private class AggregateEventIterator(aggregateId: String, fromSequenceNr: Long, toSequenceNr: Long, fetchSize: Int) extends Iterator[DurableEvent] {
     var currentSequenceNr = fromSequenceNr
     var currentIter = newIter()
     var rowCount = 0
 
     def newIter(): Iterator[Row] =
-      if (currentSequenceNr > toSequenceNr) Iterator.empty else cassandra.session.execute(preparedReadAggregateEventStatement.bind(aggregateId, currentSequenceNr: JLong, toSequenceNr: JLong)).iterator.asScala
+      if (currentSequenceNr > toSequenceNr) Iterator.empty else read().iterator.asScala
+
+    def read(): ResultSet =
+      cassandra.session.execute(preparedReadAggregateEventStatement.bind(aggregateId, currentSequenceNr: JLong, toSequenceNr: JLong).setFetchSize(fetchSize))
 
     @annotation.tailrec
     final def hasNext: Boolean = {
       if (currentIter.hasNext) {
         true
-      } else if (rowCount < cassandra.settings.partitionSizeMax) {
+      } else if (rowCount < cassandra.settings.partitionSize) {
         // all events consumed
         false
       } else {

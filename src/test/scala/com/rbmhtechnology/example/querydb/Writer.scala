@@ -56,7 +56,7 @@ class Writer(val id: String, val eventLog: ActorRef, session: Session)
    * needed if writing to the database is slower than replaying from the
    * `eventLog` (which is usually the case).
    */
-  override def replayChunkSizeMax: Int =
+  override def replayBatchSize: Int =
     16
 
   override def onCommand = {

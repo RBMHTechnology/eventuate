@@ -125,3 +125,13 @@ trait DurableEventBatch {
   def size: Int = events.size
 }
 
+/**
+ * Implemented by protocol messages whose event sequence can be updated.
+ */
+trait UpdateableEventBatch[A <: UpdateableEventBatch[A]] extends DurableEventBatch {
+  /**
+   * Replaces this batch's events with the given `events`.
+   */
+  def update(events: Seq[DurableEvent]): A
+}
+

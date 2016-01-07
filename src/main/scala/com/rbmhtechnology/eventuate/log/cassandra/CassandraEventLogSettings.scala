@@ -24,7 +24,6 @@ import akka.util.Helpers.Requiring
 import com.datastax.driver.core.{ Cluster, ConsistencyLevel }
 import com.typesafe.config.Config
 
-import com.rbmhtechnology.eventuate.ReplicationSettings
 import com.rbmhtechnology.eventuate.log._
 
 import scala.collection.JavaConverters._
@@ -33,8 +32,11 @@ import scala.concurrent.duration._
 class CassandraEventLogSettings(config: Config) extends EventLogSettings {
   import CassandraEventLogSettings._
 
-  private val batchingSettings = new BatchingSettings(config)
-  private val replicationSettings = new ReplicationSettings(config)
+  val writeTimeout: Long =
+    config.getDuration("eventuate.log.write-timeout", TimeUnit.MILLISECONDS)
+
+  val writeBatchSize: Int =
+    config.getInt("eventuate.log.write-batch-size")
 
   val keyspace: String =
     config.getString("eventuate.log.cassandra.keyspace")
@@ -60,12 +62,10 @@ class CassandraEventLogSettings(config: Config) extends EventLogSettings {
   val contactPoints =
     getContactPoints(config.getStringList("eventuate.log.cassandra.contact-points").asScala, defaultPort)
 
-  val partitionSizeMax: Long =
-    config.getLong("eventuate.log.cassandra.partition-size-max")
-      .requiring(_ > batchingSettings.batchSizeLimit,
-        s"eventuate.log.cassandra.partition-size-max must be greater than eventuate.log.batching.batch-size-limit (${batchingSettings.batchSizeLimit})")
-      .requiring(_ > replicationSettings.batchSizeMax,
-        s"eventuate.log.cassandra.partition-size-max must be greater than eventuate.log.replication.batch-size-max (${replicationSettings.batchSizeMax})")
+  val partitionSize: Long =
+    config.getLong("eventuate.log.cassandra.partition-size")
+      .requiring(_ > writeBatchSize,
+        s"eventuate.log.cassandra.partition-size must be greater than eventuate.log.write-batch-size (${writeBatchSize})")
 
   val indexUpdateLimit: Int =
     config.getInt("eventuate.log.cassandra.index-update-limit")
@@ -76,13 +76,14 @@ class CassandraEventLogSettings(config: Config) extends EventLogSettings {
   val initRetryDelay: FiniteDuration =
     config.getDuration("eventuate.log.cassandra.init-retry-delay", TimeUnit.MILLISECONDS).millis
 
-  val deletionRetryDelay: FiniteDuration = 10.minutes
+  def deletionRetryDelay: FiniteDuration =
+    ???
 
-  val initialConnectRetryMax: Int =
-    config.getInt("eventuate.log.cassandra.initial-connect-retry-max")
+  val connectRetryMax: Int =
+    config.getInt("eventuate.log.cassandra.connect-retry-max")
 
-  val initialConnectRetryDelay: FiniteDuration =
-    config.getDuration("eventuate.log.cassandra.initial-connect-retry-delay", TimeUnit.MILLISECONDS).millis
+  val connectRetryDelay: FiniteDuration =
+    config.getDuration("eventuate.log.cassandra.connect-retry-delay", TimeUnit.MILLISECONDS).millis
 
   val clusterBuilder: Cluster.Builder =
     Cluster.builder.addContactPointsWithPorts(contactPoints.asJava).withCredentials(

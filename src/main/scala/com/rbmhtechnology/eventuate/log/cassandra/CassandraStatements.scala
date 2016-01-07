@@ -48,7 +48,7 @@ private[eventuate] trait CassandraEventStatements extends CassandraStatements {
         partition_nr = ? AND
         sequence_nr >= ? AND
         sequence_nr <= ?
-      LIMIT ${settings.partitionSizeMax}
+      LIMIT ${settings.partitionSize}
     """
 
   def eventTable(logId: String) = table(logId)
@@ -74,7 +74,7 @@ private[eventuate] trait CassandraAggregateEventStatements extends CassandraStat
         aggregate_id = ? AND
         sequence_nr >= ? AND
         sequence_nr <= ?
-      LIMIT ${settings.partitionSizeMax}
+      LIMIT ${settings.partitionSize}
     """
 
   def aggregateEventTable(logId: String) = s"${table(logId)}_agg"

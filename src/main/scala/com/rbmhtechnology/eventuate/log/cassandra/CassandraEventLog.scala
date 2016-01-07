@@ -23,14 +23,13 @@ import akka.actor.Props
 import akka.pattern.ask
 import akka.util.Timeout
 
+import com.datastax.driver.core.QueryOptions
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.log._
 
 import scala.collection.immutable.Seq
-import scala.concurrent.Future
+import scala.concurrent._
 import scala.language.postfixOps
-
-case class CassandraEventIteratorParameters(fromSequenceNr: Long, indexSequenceNr: Long, toSequenceNr: Long, aggregateId: Option[String])
 
 /**
  * An event log actor with [[http://cassandra.apache.org/ Apache Cassandra]] as storage backend. It uses
@@ -64,7 +63,7 @@ case class CassandraEventIteratorParameters(fromSequenceNr: Long, indexSequenceN
  * @see [[Cassandra]]
  * @see [[DurableEvent]]
  */
-class CassandraEventLog(id: String) extends EventLog[CassandraEventIteratorParameters](id) {
+class CassandraEventLog(id: String) extends EventLog(id) {
   import CassandraEventLog._
   import CassandraIndex._
 
@@ -86,17 +85,6 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventIteratorParam
   private var indexSequenceNr: Long = 0L
   private var updateCount: Long = 0L
 
-  override def eventIteratorParameters(fromSequenceNr: Long, toSequenceNr: Long): CassandraEventIteratorParameters =
-    CassandraEventIteratorParameters(fromSequenceNr, indexSequenceNr, toSequenceNr, None)
-
-  override def eventIteratorParameters(fromSequenceNr: Long, toSequenceNr: Long, aggregateId: String): CassandraEventIteratorParameters =
-    CassandraEventIteratorParameters(fromSequenceNr, indexSequenceNr, toSequenceNr, Some(aggregateId))
-
-  override def eventIterator(parameters: CassandraEventIteratorParameters): Iterator[DurableEvent] with Closeable = parameters match {
-    case CassandraEventIteratorParameters(from, idx, to, Some(aggregateId)) => compositeEventIterator(aggregateId, from, idx, to)
-    case CassandraEventIteratorParameters(from, idx, to, None)              => eventLogStore.eventIterator(from, to)
-  }
-
   override def readReplicationProgresses: Future[Map[String, Long]] =
     progressStore.readReplicationProgressesAsync(services.readDispatcher)
 
@@ -106,8 +94,14 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventIteratorParam
   override def writeReplicationProgress(logId: String, progress: Long): Future[Unit] =
     progressStore.writeReplicationProgressAsync(logId, progress)(context.system.dispatchers.defaultGlobalDispatcher)
 
-  override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: (DurableEvent) => Boolean): Future[BatchReadResult] =
-    eventLogStore.readAsync(fromSequenceNr, toSequenceNr, max, filter)(services.readDispatcher)
+  override def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: DurableEvent => Boolean): Future[BatchReadResult] =
+    eventLogStore.readAsync(fromSequenceNr, toSequenceNr, max, QueryOptions.DEFAULT_FETCH_SIZE, filter)(services.readDispatcher)
+
+  override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int): Future[BatchReadResult] =
+    eventLogStore.readAsync(fromSequenceNr, toSequenceNr, max, max + 1, _ => true)(services.readDispatcher)
+
+  override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, aggregateId: String): Future[BatchReadResult] =
+    compositeReadAsync(fromSequenceNr, indexSequenceNr, toSequenceNr, max, max + 1, aggregateId)(services.readDispatcher)
 
   override def recoverClockSuccess(clock: EventLogClock): Unit =
     indexSequenceNr = clock.sequenceNr
@@ -123,7 +117,7 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventIteratorParam
   }
 
   override def writeDeletionMetadata(deleteMetadata: DeletionMetadata) =
-    deletedToStore.writeDeletedToSync(deleteMetadata.toSequenceNr)(context.system.dispatchers.defaultGlobalDispatcher)
+    deletedToStore.writeDeletedTo(deleteMetadata.toSequenceNr)
 
   override def readDeletionMetadata = {
     import services.readDispatcher
@@ -131,7 +125,7 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventIteratorParam
   }
 
   override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit = {
-    eventLogStore.writeSync(events, partition)
+    eventLogStore.write(events, partition)
     updateCount += events.size
     if (updateCount >= cassandra.settings.indexUpdateLimit) {
       index ! UpdateIndex(null, clock.sequenceNr)
@@ -166,11 +160,23 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventIteratorParam
   private[eventuate] def createDeletedToStore(cassandra: Cassandra, logId: String) =
     new CassandraDeletedToStore(cassandra, logId)
 
-  private def compositeEventIterator(aggregateId: String, fromSequenceNr: Long, indexSequenceNr: Long, toSequenceNr: Long): Iterator[DurableEvent] with Closeable =
-    new CompositeEventIterator(aggregateId, fromSequenceNr, indexSequenceNr, toSequenceNr)
+  private def compositeReadAsync(fromSequenceNr: Long, indexSequenceNr: Long, toSequenceNr: Long, max: Int, fetchSize: Int, aggregateId: String)(implicit executor: ExecutionContext): Future[BatchReadResult] =
+    Future(compositeRead(fromSequenceNr, toSequenceNr, max, fetchSize, aggregateId))
 
-  private class CompositeEventIterator(aggregateId: String, fromSequenceNr: Long, indexSequenceNr: Long, toSequenceNr: Long) extends Iterator[DurableEvent] with Closeable {
-    private var iter: Iterator[DurableEvent] = indexStore.aggregateEventIterator(aggregateId, fromSequenceNr, indexSequenceNr)
+  private def compositeRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, fetchSize: Int, aggregateId: String): BatchReadResult = {
+    var lastSequenceNr = fromSequenceNr - 1L
+    val events = compositeEventIterator(aggregateId, fromSequenceNr, indexSequenceNr, toSequenceNr, fetchSize).map { evt =>
+      lastSequenceNr = evt.localSequenceNr
+      evt
+    }.take(max).toVector
+    BatchReadResult(events, lastSequenceNr)
+  }
+
+  private def compositeEventIterator(aggregateId: String, fromSequenceNr: Long, indexSequenceNr: Long, toSequenceNr: Long, fetchSize: Int): Iterator[DurableEvent] with Closeable =
+    new CompositeEventIterator(aggregateId, fromSequenceNr, indexSequenceNr, toSequenceNr, fetchSize)
+
+  private class CompositeEventIterator(aggregateId: String, fromSequenceNr: Long, indexSequenceNr: Long, toSequenceNr: Long, fetchSize: Int) extends Iterator[DurableEvent] with Closeable {
+    private var iter: Iterator[DurableEvent] = indexStore.aggregateEventIterator(aggregateId, fromSequenceNr, indexSequenceNr, fetchSize)
     private var last = fromSequenceNr - 1L
     private var idxr = true
 
@@ -180,7 +186,7 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventIteratorParam
         true
       } else if (idxr) {
         idxr = false
-        iter = eventLogStore.eventIterator((indexSequenceNr max last) + 1L, toSequenceNr).filter(_.destinationAggregateIds.contains(aggregateId))
+        iter = eventLogStore.eventIterator((indexSequenceNr max last) + 1L, toSequenceNr, fetchSize).filter(_.destinationAggregateIds.contains(aggregateId))
         hasNext
       } else {
         iter.hasNext

@@ -24,9 +24,9 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest._
 
 object ConditionalRequestsSpec {
-  class ConditionalRequestReceiver extends EventsourcedView with ConditionalRequests {
+  class ConditionalRequestReceiver(logProbe: ActorRef) extends EventsourcedView with ConditionalRequests {
     val id = "test"
-    val eventLog = context.system.deadLetters
+    val eventLog = logProbe
 
     def onCommand = {
       case t: VectorTime => conditionChanged(t)
@@ -52,10 +52,13 @@ class ConditionalRequestsSpec extends TestKit(ActorSystem("test", ConfigFactory.
   var receiver: ActorRef = _
 
   override def beforeEach: Unit = {
+    val probe = TestProbe()
     instanceId = EventsourcedView.instanceIdCounter.get()
-    receiver = system.actorOf(Props[ConditionalRequestReceiver])
-    receiver ! LoadSnapshotSuccess(None, instanceId)
-    receiver ! ReplaySuccess(instanceId)
+    receiver = system.actorOf(Props(new ConditionalRequestReceiver(probe.ref)))
+    probe.expectMsg(LoadSnapshot("test", instanceId))
+    probe.sender() ! LoadSnapshotSuccess(None, instanceId)
+    probe.expectMsg(Replay(1L, Some(receiver), instanceId))
+    probe.sender() ! ReplaySuccess(Nil, 0L, instanceId)
   }
 
   override def afterAll: Unit =

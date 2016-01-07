@@ -32,21 +32,21 @@ object EventsourcingProtocol {
   case object WriteNComplete
 
   /**
-   * Instructs an event log to write the given `events` and send the written events one-by-one
-   * to the given `requestor`. In case of a successful write, events are sent within [[WriteSuccess]]
-   * messages, otherwise within [[WriteFailure]] messages with `initiator` as message sender.
+   * Instructs an event log to write the given `events`.
    */
-  case class Write(events: Seq[DurableEvent], initiator: ActorRef, requestor: ActorRef, instanceId: Int) extends DurableEventBatch
+  case class Write(events: Seq[DurableEvent], initiator: ActorRef, replyTo: ActorRef, correlationId: Int, instanceId: Int) extends UpdateableEventBatch[Write] {
+    override def update(events: Seq[DurableEvent]): Write = copy(events = events)
+  }
 
   /**
    * Success reply after a [[Write]].
    */
-  case class WriteSuccess(event: DurableEvent, instanceId: Int)
+  case class WriteSuccess(events: Seq[DurableEvent], correlationId: Int, instanceId: Int)
 
   /**
    * Failure reply after a [[Write]].
    */
-  case class WriteFailure(event: DurableEvent, cause: Throwable, instanceId: Int)
+  case class WriteFailure(events: Seq[DurableEvent], cause: Throwable, correlationId: Int, instanceId: Int)
 
   /**
    * Sent by an event log to all registered participants, if `event` has been successfully written.
@@ -55,46 +55,27 @@ object EventsourcingProtocol {
   case class Written(event: DurableEvent)
 
   object Replay {
-    def apply(from: Long, max: Int, requestor: ActorRef, instanceId: Int): Replay =
-      new Replay(from, max, requestor, None, instanceId)
+    def apply(from: Long, max: Int, subscriber: Option[ActorRef], instanceId: Int): Replay =
+      new Replay(from, max, subscriber, None, instanceId)
 
-    def apply(from: Long, requestor: ActorRef, aggregateId: Option[String], instanceId: Int): Replay =
-      new Replay(from, 65536, requestor, aggregateId, instanceId)
+    def apply(from: Long, subscriber: Option[ActorRef], aggregateId: Option[String], instanceId: Int): Replay =
+      new Replay(from, 4096, subscriber, aggregateId, instanceId)
 
-    def apply(from: Long, requestor: ActorRef, instanceId: Int): Replay =
-      new Replay(from, 65536, requestor, None, instanceId)
+    def apply(from: Long, subscriber: Option[ActorRef], instanceId: Int): Replay =
+      new Replay(from, 4096, subscriber, None, instanceId)
   }
 
   /**
-   * Instructs an event log to replay events from sequence number `from` to the given `requestor`.
-   * Replayed events are sent within [[Replaying]] messages. If replay successfully completes the
-   * event log must additionally send a [[ReplaySuccess]] message, otherwise, a [[ReplayFailure]]
-   * message.
-   *
-   * If `aggregateId` is defined, only events with a matching `aggregateId` are replayed, otherwise,
-   * all events.
+   * Instructs an event log to read up to `max` events starting at `fromSequenceNr`. If `aggregateId`
+   * is defined, only those events that have the aggregate id in their  `destinationAggregateIds` are
+   * returned.
    */
-  case class Replay(from: Long, max: Int, requestor: ActorRef, aggregateId: Option[String], instanceId: Int)
+  case class Replay(fromSequenceNr: Long, max: Int, subscriber: Option[ActorRef], aggregateId: Option[String], instanceId: Int)
 
   /**
-   * Instructs and event log to continue replay with at most `max` events.
+   * Success reply after a [[Replay]].
    */
-  case class ReplayNext(max: Int, instanceId: Int)
-
-  /**
-   * Single `event` replay after a [[Replay]].
-   */
-  case class Replaying(event: DurableEvent, instanceId: Int)
-
-  /**
-   * Control reply that replay has been suspended.
-   */
-  case class ReplaySuspended(instanceId: Int)
-
-  /**
-   * Success reply after a [[Replay]], sent when all [[Replaying]] messages have been sent.
-   */
-  case class ReplaySuccess(instanceId: Int)
+  case class ReplaySuccess(events: Seq[DurableEvent], replayProgress: Long, instanceId: Int) extends DurableEventBatch
 
   /**
    * Failure reply after a [[Replay]].
@@ -103,11 +84,12 @@ object EventsourcingProtocol {
 
   /**
    * Instructs an event log to delete events with a sequence nr less or equal a given one.
-   * Deleted events are not replayed any more, however
-   * depending on the log implementation and `remoteLogIds` they might still be replicated.
+   * Deleted events are not replayed any more, however depending on the log implementation
+   * and `remoteLogIds` they might still be replicated.
    *
    * @param toSequenceNr All events with a less or equal sequence nr are not replayed any more.
-   * @param remoteLogIds A set of remote log ids that must have replicated events before they are allowed to be physically deleted.
+   * @param remoteLogIds A set of remote log ids that must have replicated events before they
+   *                     are allowed to be physically deleted.
    */
   case class Delete(toSequenceNr: Long, remoteLogIds: Set[String] = Set.empty)
 
@@ -127,7 +109,7 @@ object EventsourcingProtocol {
   /**
    * Instructs an event log to save the given `snapshot`.
    */
-  case class SaveSnapshot(snapshot: Snapshot, initiator: ActorRef, requestor: ActorRef, instanceId: Int)
+  case class SaveSnapshot(snapshot: Snapshot, initiator: ActorRef, instanceId: Int)
 
   /**
    * Success reply after a [[SaveSnapshot]].
@@ -140,9 +122,9 @@ object EventsourcingProtocol {
   case class SaveSnapshotFailure(metadata: SnapshotMetadata, cause: Throwable, instanceId: Int)
 
   /**
-   * Instructs an event log to load the most recent snapshot for `requestor` identified by `emitterId`.
+   * Instructs an event log to load the most recent snapshot for `emitterId`.
    */
-  case class LoadSnapshot(emitterId: String, requestor: ActorRef, instanceId: Int)
+  case class LoadSnapshot(emitterId: String, instanceId: Int)
 
   /**
    * Success reply after a [[LoadSnapshot]].

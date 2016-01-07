@@ -22,6 +22,12 @@ class MessageStash(implicit context: ActorContext, self: ActorRef) {
   private var envelopes: Vector[Envelope] =
     Vector.empty
 
+  def ++:(stash: MessageStash): Unit =
+    envelopes = stash.envelopes.foldRight(envelopes)(_ +: _)
+
+  def clear(): Unit =
+    envelopes = Vector.empty
+
   def stash(): Unit =
     envelopes :+= cell.currentMessage
 
@@ -30,7 +36,7 @@ class MessageStash(implicit context: ActorContext, self: ActorRef) {
 
   def unstashAll(): Unit = {
     val iter = envelopes.reverseIterator
-    try while (iter.hasNext) enqueueFirst(iter.next()) finally envelopes = Vector.empty
+    try while (iter.hasNext) enqueueFirst(iter.next()) finally clear()
   }
 
   protected val mailbox: DequeBasedMessageQueueSemantics =

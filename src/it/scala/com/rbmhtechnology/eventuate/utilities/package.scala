@@ -23,8 +23,8 @@ package object utilities {
   def write(target: ReplicationTarget, events: Seq[String]): Unit = {
     val system = target.endpoint.system
     val probe = TestProbe()(system)
-    target.log ! Write(events.map(DurableEvent(_, target.logId)), system.deadLetters, probe.ref, 0)
-    events.foreach(_ => probe.expectMsgClass(classOf[WriteSuccess]))
+    target.log ! Write(events.map(DurableEvent(_, target.logId)), system.deadLetters, probe.ref, 0, 0)
+    probe.expectMsgClass(classOf[WriteSuccess])
   }
 
   def read(target: ReplicationTarget): Seq[String] = {

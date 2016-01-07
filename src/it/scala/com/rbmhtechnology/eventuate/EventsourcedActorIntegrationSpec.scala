@@ -214,7 +214,7 @@ object EventsourcedActorIntegrationSpec {
   class ChunkedReplayActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     var state: Vector[String] = Vector.empty
 
-    override def replayChunkSizeMax: Int = 2
+    override def replayBatchSize: Int = 2
 
     override def onCommand = {
       case "boom" =>
@@ -412,7 +412,7 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
       viewProbe.expectMsg(Vector("v-a", "v-b"))
       viewProbe.expectMsg(Vector("v-a", "v-b", "v-c"))
     }
-    "support chunked event replay" in {
+    "support batch event replay" in {
       val probe = TestProbe()
       val actor = system.actorOf(Props(new ChunkedReplayActor("1", log, probe.ref)))
 

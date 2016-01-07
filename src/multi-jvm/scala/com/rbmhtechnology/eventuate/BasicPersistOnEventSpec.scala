@@ -37,7 +37,7 @@ object BasicPersistOnEventConfig extends MultiNodeConfig {
 
   testTransport(on = true)
 
-  commonConfig(MultiNodeReplicationConfig.create("eventuate.log.replication.read-timeout = 2s"))
+  commonConfig(MultiNodeReplicationConfig.create("eventuate.log.replication.remote-read-timeout = 2s"))
 
   case class Ping(num: Int)
   case class Pong(num: Int)

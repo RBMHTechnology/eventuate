@@ -37,7 +37,7 @@ object FailureDetectionConfig extends MultiNodeConfig {
   testTransport(on = true)
 
   commonConfig(MultiNodeReplicationConfig.create("""
-    |eventuate.log.replication.read-timeout = 1s
+    |eventuate.log.replication.remote-read-timeout = 1s
     |eventuate.log.replication.failure-detection-limit = 3s
   """.stripMargin))
 }

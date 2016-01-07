@@ -43,7 +43,7 @@ object EventsourcedProcessorSpec {
     override val id = emitterIdB
     override val eventLog = srcProbe
     override val targetEventLog = trgProbe
-    override val replayChunkSizeMax = 2
+    override val replayBatchSize = 2
 
     override def onCommand = {
       case cmd => appProbe ! cmd
@@ -113,17 +113,16 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
   }
 
   def processLoad(actor: ActorRef, instanceId: Int = instanceId): Unit = {
-    srcProbe.expectMsg(LoadSnapshot(emitterIdB, actor, instanceId))
-    actor ! LoadSnapshotSuccess(None, instanceId)
+    srcProbe.expectMsg(LoadSnapshot(emitterIdB, instanceId))
+    srcProbe.sender() ! LoadSnapshotSuccess(None, instanceId)
   }
 
   def processReplay(actor: ActorRef, fromSequenceNr: Long, instanceId: Int = instanceId): Unit =
     processReplay(actor, fromSequenceNr, fromSequenceNr - 1L, instanceId)
 
   def processReplay(actor: ActorRef, fromSequenceNr: Long, storedSequenceNr: Long, instanceId: Int): Unit = {
-    srcProbe.expectMsg(Replay(fromSequenceNr, 2, actor, instanceId))
-    actor ! ReplaySuccess(instanceId)
-    appProbe.expectMsg(storedSequenceNr)
+    srcProbe.expectMsg(Replay(fromSequenceNr, 2, Some(actor), instanceId))
+    srcProbe.sender() ! ReplaySuccess(Nil, 0L, instanceId)
   }
 
   def processRead(progress: Long, success: Boolean = true): Unit = {
@@ -170,19 +169,18 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
       actor ! Written(eventA)
       processWrite(1, Seq(eventA1, eventA2))
     }
-    "write to target log during and after recovery" in {
+    "write to target log during recovery" in {
       val actor = unrecoveredStatefulProcessor()
       processRead(0)
       processLoad(actor)
-      srcProbe.expectMsg(Replay(1, 2, actor, instanceId))
-      actor ! Replaying(eventA, instanceId)
-      actor ! Replaying(eventB, instanceId)
-      actor.tell(ReplaySuspended(instanceId), srcProbe.ref)
+      srcProbe.expectMsg(Replay(1, 2, Some(actor), instanceId))
+      srcProbe.sender() ! ReplaySuccess(List(eventA, eventB), eventB.localSequenceNr, instanceId)
       processWrite(2, Seq(eventA1, eventA2, eventB1, eventB2))
-      srcProbe.expectMsg(ReplayNext(2, instanceId))
-      actor ! Replaying(eventC, instanceId)
-      actor ! ReplaySuccess(instanceId)
+      srcProbe.expectMsg(Replay(eventB.localSequenceNr + 1L, 2, None, instanceId))
+      srcProbe.sender() ! ReplaySuccess(List(eventC), eventC.localSequenceNr, instanceId)
       processWrite(3, Seq(eventC1, eventC2))
+      srcProbe.expectMsg(Replay(eventC.localSequenceNr + 1L, 2, None, instanceId))
+      srcProbe.sender() ! ReplaySuccess(Nil, eventC.localSequenceNr, instanceId)
     }
     "write to target log and process concurrently" in {
       val actor = recoveredStatefulProcessor()
