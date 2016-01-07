@@ -43,7 +43,7 @@ object BasicCausalityConfig extends MultiNodeConfig {
 
   commonConfig(MultiNodeReplicationConfig.create(
     """
-      |eventuate.log.replication.read-timeout = 2s
+      |eventuate.log.replication.remote-read-timeout = 2s
     """.stripMargin))
 
   class ReplicatedActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {

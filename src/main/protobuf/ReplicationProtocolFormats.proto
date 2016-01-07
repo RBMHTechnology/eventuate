@@ -45,7 +45,7 @@ message ReplicationReadEnvelopeFormat {
 
 message ReplicationReadFormat {
   optional int64 fromSequenceNr = 1;
-  optional int32 maxNumEvents = 2;
+  optional int32 max = 2;
   optional ReplicationFilterTreeFormat filter = 3;
   optional string targetLogId = 4;
   optional string replicator = 5;

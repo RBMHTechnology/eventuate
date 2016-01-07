@@ -34,16 +34,16 @@ import scala.concurrent.duration._
 
 private class RecoverySettings(config: Config) {
   val remoteOperationRetryMax: Int =
-    config.getInt("eventuate.disaster-recovery.remote-operation-retry-max")
+    config.getInt("eventuate.log.recovery.remote-operation-retry-max")
 
   val remoteOperationRetryDelay: FiniteDuration =
-    config.getDuration("eventuate.disaster-recovery.remote-operation-retry-delay", TimeUnit.MILLISECONDS).millis
+    config.getDuration("eventuate.log.recovery.remote-operation-retry-delay", TimeUnit.MILLISECONDS).millis
 
   val remoteOperationTimeout: FiniteDuration =
-    config.getDuration("eventuate.disaster-recovery.remote-operation-timeout", TimeUnit.MILLISECONDS).millis
+    config.getDuration("eventuate.log.recovery.remote-operation-timeout", TimeUnit.MILLISECONDS).millis
 
   val snapshotDeletionTimeout: FiniteDuration =
-    config.getDuration("eventuate.disaster-recovery.snapshot-deletion-timeout", TimeUnit.MILLISECONDS).millis
+    config.getDuration("eventuate.log.recovery.snapshot-deletion-timeout", TimeUnit.MILLISECONDS).millis
 }
 
 /**

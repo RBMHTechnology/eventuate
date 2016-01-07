@@ -30,10 +30,13 @@ import scala.concurrent.duration._
 
 private class EventsourcedProcessorSettings(config: Config) {
   val readTimeout =
-    config.getDuration("eventuate.processor.read-timeout", TimeUnit.MILLISECONDS).millis
+    config.getDuration("eventuate.log.read-timeout", TimeUnit.MILLISECONDS).millis
 
   val writeTimeout =
-    config.getDuration("eventuate.processor.write-timeout", TimeUnit.MILLISECONDS).millis
+    config.getDuration("eventuate.log.write-timeout", TimeUnit.MILLISECONDS).millis
+
+  val writeBatchSize =
+    config.getInt("eventuate.log.write-batch-size")
 }
 
 object EventsourcedProcessor {
@@ -53,9 +56,9 @@ object EventsourcedProcessor {
  * invoked with events from the source `eventLog`.
  *
  * During initialization, a processor reads the processing progress from the target event log. The timeout
- * for this read operation can be configured with the `eventuate.processor.read-timeout` parameter for all
+ * for this read operation can be configured with the `eventuate.log.read-timeout` parameter for all
  * event-sourced processors or defined on a per class or instance basis by overriding `readTimeout`. The timeout
- * for write operations to the target log can be configured with the `eventuate.processor.write-timeout` parameter
+ * for write operations to the target log can be configured with the `eventuate.log.write-timeout` parameter
  * for all event-sourced processors or defined on a per class or instance basis by overriding `writeTimeout`.
  *
  * An `EventsourcedProcessor` is a stateless processor i.e. in-memory state created from source events can
@@ -128,6 +131,12 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
   }
 
   /**
+   * Limits the replay batch size to `eventuate.log.write-batch-size`. Can be overridden.
+   */
+  override def replayBatchSize: Int =
+    settings.writeBatchSize
+
+  /**
    * Sets the written processing progress for this processor.
    */
   override def writeSuccess(progress: Long): Unit = {
@@ -144,14 +153,14 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
   }
 
   /**
-   * The default write timeout configured with the `eventuate.processor.write-timeout` parameter.
+   * The default write timeout configured with the `eventuate.log.write-timeout` parameter.
    * Can be overridden.
    */
   def writeTimeout: FiniteDuration =
     settings.writeTimeout
 
   /**
-   * The default read timeout configured with the `eventuate.processor.read-timeout` parameter.
+   * The default read timeout configured with the `eventuate.log.read-timeout` parameter.
    * Can be overridden.
    */
   def readTimeout: FiniteDuration =

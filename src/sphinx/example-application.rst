@@ -107,11 +107,11 @@ or the Java version with::
 
 Recovery may take up to 20 seconds when using the default :ref:`configuration` settings for event replication and disaster recovery. To speed up the process you may want to the use following configuration settings::
 
-    eventuate.log.replication.read-timeout = 2s
     eventuate.log.replication.retry-delay = 1s
-    eventuate.disaster-recovery.remote-operation-retry-max = 10
-    eventuate.disaster-recovery.remote-operation-retry-delay = 1s
-    eventuate.disaster-recovery.remote-operation-timeout = 1s
+    eventuate.log.replication.remote-read-timeout = 2s
+    eventuate.log.recovery.remote-operation-retry-max = 10
+    eventuate.log.recovery.remote-operation-retry-delay = 1s
+    eventuate.log.recovery.remote-operation-timeout = 1s
 
 Disaster recovery can also start from a previous, older backup of the LevelDB directory. After having removed the current LevelDB directory, install the backup and try running disaster recovery again.
 

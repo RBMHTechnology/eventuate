@@ -35,7 +35,7 @@ object EventsourcedWriterSpec {
 
     override val id = emitterIdB
     override val eventLog = logProbe
-    override val replayChunkSizeMax: Int = 2
+    override val replayBatchSize: Int = 2
 
     override def onCommand = {
       case cmd => appProbe ! cmd
@@ -107,18 +107,17 @@ class EventsourcedWriterSpec extends TestKit(ActorSystem("test")) with WordSpecL
         processLoad(actor)
         processReplay(actor, 1)
     }
-    processWrite(Success("ws"))
     actor
   }
 
   def processLoad(actor: ActorRef, instanceId: Int = instanceId): Unit = {
-    logProbe.expectMsg(LoadSnapshot(emitterIdB, actor, instanceId))
-    actor ! LoadSnapshotSuccess(None, instanceId)
+    logProbe.expectMsg(LoadSnapshot(emitterIdB, instanceId))
+    logProbe.sender() ! LoadSnapshotSuccess(None, instanceId)
   }
 
   def processReplay(actor: ActorRef, fromSequenceNr: Long): Unit = {
-    logProbe.expectMsg(Replay(fromSequenceNr, 2, actor, instanceId))
-    actor ! ReplaySuccess(instanceId)
+    logProbe.expectMsg(Replay(fromSequenceNr, 2, Some(actor), instanceId))
+    logProbe.sender() ! ReplaySuccess(Nil, 0L, instanceId)
   }
 
   def processRead(result: Try[String]): Unit = {
@@ -152,24 +151,21 @@ class EventsourcedWriterSpec extends TestKit(ActorSystem("test")) with WordSpecL
         processRead(Failure(boom))
         processRead(Success("rs"))
         processLoad(actor, instanceId + 1)
-        logProbe.expectMsg(Replay(1, 2, actor, instanceId + 1))
-        actor ! ReplaySuccess(instanceId + 1)
-        processWrite(Success("ws"))
+        logProbe.expectMsg(Replay(1L, 2, Some(actor), instanceId + 1))
+        logProbe.sender() ! ReplaySuccess(Nil, 0L, instanceId + 1)
       }
       "restart on failed write by default" in {
         val actor = unrecoveredEventsourcedWriter()
         processRead(Success("rs"))
         processLoad(actor)
-        logProbe.expectMsg(Replay(1, 2, actor, instanceId))
-        actor ! Replaying(event("a", 1), instanceId)
-        actor ! ReplaySuccess(instanceId)
+        logProbe.expectMsg(Replay(1L, 2, Some(actor), instanceId))
+        logProbe.sender() ! ReplaySuccess(List(event("a", 1)), 1L, instanceId)
         appProbe.expectMsg(("a", 1))
         processWrite(Failure(boom))
         processRead(Success("rs"))
         processLoad(actor, instanceId + 1)
-        logProbe.expectMsg(Replay(1, 2, actor, instanceId + 1))
-        actor ! Replaying(event("a", 1), instanceId + 1)
-        actor ! ReplaySuccess(instanceId + 1)
+        logProbe.expectMsg(Replay(1L, 2, Some(actor), instanceId + 1))
+        logProbe.sender() ! ReplaySuccess(List(event("a", 1)), 1L, instanceId + 1)
         appProbe.expectMsg(("a", 1))
         processWrite(Success("ws"))
       }
@@ -177,16 +173,13 @@ class EventsourcedWriterSpec extends TestKit(ActorSystem("test")) with WordSpecL
         val actor = unrecoveredEventsourcedWriter()
         processRead(Success("rs"))
         processLoad(actor)
-        logProbe.expectMsg(Replay(1, 2, actor, instanceId))
-        actor ! Replaying(event("a", 1), instanceId)
-        actor ! Replaying(event("b", 2), instanceId)
-        actor.tell(ReplaySuspended(instanceId), logProbe.ref)
+        logProbe.expectMsg(Replay(1L, 2, Some(actor), instanceId))
+        logProbe.sender() ! ReplaySuccess(List(event("a", 1), event("b", 2)), 2L, instanceId)
         appProbe.expectMsg(("a", 1))
         appProbe.expectMsg(("b", 2))
         processWrite(Success("ws"))
-        logProbe.expectMsg(ReplayNext(2, instanceId))
-        actor ! Replaying(event("c", 3), instanceId)
-        actor ! ReplaySuccess(instanceId)
+        logProbe.expectMsg(Replay(3, 2, None, instanceId))
+        logProbe.sender() ! ReplaySuccess(List(event("c", 3)), 3L, instanceId)
         appProbe.expectMsg(("c", 3))
         processWrite(Success("ws"))
       }
@@ -198,26 +191,24 @@ class EventsourcedWriterSpec extends TestKit(ActorSystem("test")) with WordSpecL
         processLoad(actor)
         processReplay(actor, 1)
         appProbe.expectMsg("cmd")
-        processWrite(Success("ws"))
       }
       "stash commands while write is in progress after suspended replay" in {
         val actor = unrecoveredEventsourcedWriter()
         processRead(Success("rs"))
         processLoad(actor)
-        logProbe.expectMsg(Replay(1, 2, actor, instanceId))
-        actor ! Replaying(event("a", 1), instanceId)
-        actor ! Replaying(event("b", 2), instanceId)
-        actor.tell(ReplaySuspended(instanceId), logProbe.ref)
+        logProbe.expectMsg(Replay(1, 2, Some(actor), instanceId))
+        logProbe.sender() ! ReplaySuccess(List(event("a", 1), event("b", 2)), 2L, instanceId)
         actor ! "cmd"
         appProbe.expectMsg(("a", 1))
         appProbe.expectMsg(("b", 2))
         processWrite(Success("ws"))
-        logProbe.expectMsg(ReplayNext(2, instanceId))
-        actor ! Replaying(event("c", 3), instanceId)
-        actor ! ReplaySuccess(instanceId)
+        logProbe.expectMsg(Replay(3L, 2, None, instanceId))
+        logProbe.sender() ! ReplaySuccess(List(event("c", 3L)), 3L, instanceId)
         appProbe.expectMsg(("c", 3))
-        appProbe.expectMsg("cmd")
         processWrite(Success("ws"))
+        logProbe.expectMsg(Replay(4L, 2, None, instanceId))
+        logProbe.sender() ! ReplaySuccess(Nil, 3L, instanceId)
+        appProbe.expectMsg("cmd")
       }
       "handle commands while write is in progress after completed replay" in {
         val promise = Promise[String]()
@@ -227,7 +218,6 @@ class EventsourcedWriterSpec extends TestKit(ActorSystem("test")) with WordSpecL
         processReplay(actor, 1)
         actor ! "cmd"
         appProbe.expectMsg("cmd")
-        processWrite(Success("ws"))
       }
     }
 

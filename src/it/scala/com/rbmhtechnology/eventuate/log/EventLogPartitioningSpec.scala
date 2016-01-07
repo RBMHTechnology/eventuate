@@ -33,9 +33,8 @@ object EventLogPartitioningSpecCassandra {
       |
       |eventuate.snapshot.filesystem.dir = target/test-snapshot
       |
-      |eventuate.log.batching.batch-size-limit = 3
-      |eventuate.log.replication.batch-size-max = 3
-      |eventuate.log.cassandra.partition-size-max = 5
+      |eventuate.log.write-batch-size = 3
+      |eventuate.log.cassandra.partition-size = 5
       |eventuate.log.cassandra.default-port = 9142
     """.stripMargin)
 }
@@ -45,9 +44,9 @@ class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", Even
 
   def replay(fromSequenceNr: Long): Seq[(Any, Long)] = {
     val probe = TestProbe()
-    log ! Replay(fromSequenceNr, probe.ref, None, 0)
-    probe.receiveWhile[(Any, Long)]() {
-      case r: Replaying => (r.event.payload, r.event.localSequenceNr)
+    log.tell(Replay(fromSequenceNr, None, 0), replyToProbe.ref)
+    replyToProbe.expectMsgClass(classOf[ReplaySuccess]).events.map { event =>
+      (event.payload, event.localSequenceNr)
     }
   }
 
@@ -77,8 +76,8 @@ class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", Even
       val eventsA = List(event("a"), event("b"), event("c"), event("d"))
       val eventsB = List(event("f"), event("g"))
 
-      log ! Write(eventsA, system.deadLetters, requestorProbe.ref, 0)
-      log ! Write(eventsB, system.deadLetters, requestorProbe.ref, 0)
+      log ! Write(eventsA, system.deadLetters, replyToProbe.ref, 0, 0)
+      log ! Write(eventsB, system.deadLetters, replyToProbe.ref, 0, 0)
 
       val expectedA = eventsA.zipWithIndex.map {
         case (event, idx) => event.copy(vectorTimestamp = timestamp(1L + idx), processId = logId, localLogId = logId, localSequenceNr = 1L + idx)
@@ -88,18 +87,17 @@ class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", Even
         case (event, idx) => event.copy(vectorTimestamp = timestamp(6L + idx), processId = logId, localLogId = logId, localSequenceNr = 6L + idx)
       }
 
-      expectedA.foreach(event => requestorProbe.expectMsg(WriteSuccess(event, 0)))
-      expectedB.foreach(event => requestorProbe.expectMsg(WriteSuccess(event, 0)))
+      replyToProbe.expectMsg(WriteSuccess(expectedA, 0, 0))
+      replyToProbe.expectMsg(WriteSuccess(expectedB, 0, 0))
 
       replay(1L) should be (List(("a", 1L), ("b", 2L), ("c", 3L), ("d", 4L), ("f", 6L), ("g", 7L)))
       replay(5L) should be (List(("f", 6L), ("g", 7L)))
       replay(6L) should be (List(("f", 6L), ("g", 7L)))
     }
     "reject batches larger than the maximum partition size" in {
-      val probe = TestProbe()
       val events = Vector(event("a"), event("b"), event("c"), event("d"), event("e"), event("f"))
-      log ! Write(events, system.deadLetters, probe.ref, 0)
-      1 to events.size foreach { _ => probe.expectMsgClass(classOf[WriteFailure]) }
+      log ! Write(events, system.deadLetters, replyToProbe.ref, 0, 0)
+      replyToProbe.expectMsgClass(classOf[WriteFailure])
     }
   }
 }

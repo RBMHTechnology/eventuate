@@ -23,8 +23,8 @@ import scala.concurrent.Future
 
 private[eventuate] class CassandraDeletedToStore(cassandra: Cassandra, logId: String) {
 
-  def writeDeletedToSync(deletedTo: Long)(implicit executor: ExecutionContext): Unit =
-    cassandra.session.execute(cassandra.preparedWriteDeletedToStatement.bind(logId, deletedTo: JLong))
+  def writeDeletedTo(deletedTo: Long): Unit =
+    cassandra.execute(cassandra.preparedWriteDeletedToStatement.bind(logId, deletedTo: JLong), cassandra.settings.writeTimeout)
 
   def readDeletedToAsync(implicit executor: ExecutionContext): Future[Long] = {
     cassandra.session.executeAsync(cassandra.preparedReadDeletedToStatement.bind(logId)).map { resultSet =>

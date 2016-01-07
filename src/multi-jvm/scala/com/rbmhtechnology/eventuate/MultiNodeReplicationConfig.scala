@@ -26,7 +26,7 @@ object MultiNodeReplicationConfig {
          |akka.testconductor.barrier-timeout = 60s
          |akka.loglevel = "ERROR"
          |
-         |eventuate.log.replication.batch-size-max = 3
+         |eventuate.log.write-batch-size = 3
          |eventuate.log.replication.retry-delay = 1s
          |eventuate.log.replication.failure-detection-limit = 60s
          |

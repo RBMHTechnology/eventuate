@@ -138,7 +138,7 @@ On a high level, the example ``Writer`` implements the following behavior:
 - During initialization (after start or restart) it asynchronously ``read``\ s the stored update progress from the ``PROGRESS`` table. The read result is passed as argument to ``readSuccess`` and incremented by ``1`` before returning it to the caller. This causes the ``Writer`` to resume event processing from that position in the event log.
 - Event are processed in ``onEvent`` by translating them to Cassandra update statements which are added to an in-memory ``batch`` of type ``Vector[BoundStatement]``. The batch is written to Cassandra when Eventuate calls the ``write`` method.
 - The ``write`` method asynchronously updates the ``CUSTOMER`` table with the statements contained in ``batch`` and then updates the ``PROGRESS`` table with the sequence number of the last processed event. After having submitted the statements to Cassandra, the batch is cleared for further event processing. Event processing can run concurrently to write operations. 
-- A ``batch`` that has been updated while a write operation is in progress is written directly after the current write operation successfully completes. If no write operation is in progress, a change to ``batch`` is written immediately. This keeps read model update delays at a minimum and increases batch sizes under increasing load. Batch sizes can be limited with ``replayChunkSizeMax``.
+- A ``batch`` that has been updated while a write operation is in progress is written directly after the current write operation successfully completes. If no write operation is in progress, a change to ``batch`` is written immediately. This keeps read model update delays at a minimum and increases batch sizes under increasing load. Batch sizes can be limited with ``replayBatchSize``.
 
 If a ``write`` (or ``read``) operation fails, the writer is restarted, by default, and resumes event processing from the last stored sequence number + ``1``. This behavior can be changed by overriding ``writeFailure`` (or ``readFailure``) from ``EventsourcedWriter``.
 
@@ -183,14 +183,9 @@ Processed events, to be written to the target event log, are returned by the han
 State recovery
 --------------
 
-When an event-sourced actor or view is started or re-started, events are replayed to its ``onEvent`` handler so that internal state can be recovered\ [#]_. This is also the case for stateful event-sourced writers and processors. Event replay is initiated internally by sending a ``Replay`` message to the ``eventLog`` actor:
+When an event-sourced actor or view is started or re-started, events are replayed to its ``onEvent`` handler so that internal state can be recovered\ [#]_. This is also the case for stateful event-sourced writers and processors.
 
-.. includecode:: ../../main/scala/com/rbmhtechnology/eventuate/EventsourcedView.scala
-   :snippet: replay
-
-The ``replay`` method is defined by EventsourcedView_ and automatically called when an ``EventsourcedView`` or ``EventsourcedActor`` is started or re-started.
-
-Sending a ``Replay`` message automatically registers the sending actor at its event log, so that newly written events can be immediately routed to that actor. If the actor is stopped it is automatically de-registered.
+At the beginning of event replay, the initiating actor is registered at its event log so that newly written events can be immediately routed to that actor. If the actor is stopped it is automatically de-registered.
 
 While an event-sourced actor, view, writer or processor is recovering i.e. replaying messages, its ``recovering`` method returns ``true``. If recovery successfully completes, its empty ``onRecovered()`` method is called which can be overridden by applications.
 
@@ -199,17 +194,15 @@ During recovery, new commands are stashed_ and dispatched to ``onCommand`` after
 Backpressure
 ~~~~~~~~~~~~
 
-If event handling is slower than event replay, events are buffered in the mailboxes of event-sourced actors, views, writers and processors. In order to avoid out-of-memory errors, Eventuate has a built-in backpressure mechanism for event replay.
-
-After a configurable number of events, replay is suspended for giving event handlers time to catch up. When they are done, replay is automatically resumed. The default number of events to be replayed before replay is suspended can be configured with:
+Events are replayed in batches. A given batch must have been handled by an event handler before the next batch is replayed. This allows slow event handlers to put backpressure on event replay. The default replay batch size can be configured with:
 
 .. includecode:: ../conf/common.conf
-   :snippet: chunk-size-max
+   :snippet: replay-batch-size
 
-Concrete event-sourced actors, views, writers and processors can override the configured default value by overriding ``replayChunkSizeMax``:
+Concrete event-sourced actors, views, writers and processors can override the configured default value by overriding ``replayBatchSize``:
 
 .. includecode:: ../code/EventSourcingDoc.scala
-   :snippet: chunk-size-max
+   :snippet: replay-batch-size
 
 .. _snapshots:
 
@@ -301,6 +294,20 @@ Conditional requests
 --------------------
 
 Conditional requests are covered in the :ref:`conditional-requests` section of the :ref:`user-guide`.
+
+.. _command-stashing:
+
+Command stashing
+----------------
+
+``EventsourcedView`` and ``EventsourcedActor`` override ``stash()`` and ``unstashAll()`` of ``akka.actor.Stash`` so that application-specific subclasses can safely stash and unstash commands. Stashing of events is not allowed. Hence, ``stash()`` must only be used in a command handler, using it in an event handler will throw ``StashError``. On the other hand, ``unsatshAll()`` can be used anywhere i.e. in a command handler, persist handler or event handler. The following is a trivial usage example which calls ``stash()`` in the command handler and ``unstashAll()`` in the persist handler:
+
+.. includecode:: ../code/EventSourcingDoc.scala
+   :snippet: command-stash
+
+The ``UserManager`` maintains a persistent ``users`` map. User can be added to the map by sending a ``CreateUser`` command and updated by sending and ``UpdateUser`` command. Should these commands arrive in wrong order i.e. ``UpdateUser`` before a corresponding ``CreateUser``, the ``UserManager`` stashes ``UpdateUser`` and unstashes it after having successfully processed another ``CreateUser`` command. 
+
+In the above implementation, an ``UpdateUser`` command might be repeatedly stashed and unstashed if the corresponding ``CreateUser`` command is preceded by other unrelated ``CreateUser`` commands. Assuming that out-of-order user commands are rare, the performance impact is limited. Alternatively, one could record stashed user ids in transient actor state and conditionally call ``unstashAll()`` by checking that state.
 
 Custom serialization
 --------------------

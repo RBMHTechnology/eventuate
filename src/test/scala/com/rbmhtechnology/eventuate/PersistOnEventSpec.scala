@@ -112,11 +112,19 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
     processRecover(unrecoveredTestActor(stateSync))
 
   def processRecover(actor: ActorRef, instanceId: Int = instanceId, events: Seq[DurableEvent] = Seq()): ActorRef = {
-    logProbe.expectMsg(LoadSnapshot(emitterIdA, actor, instanceId))
-    actor ! LoadSnapshotSuccess(None, instanceId)
-    logProbe.expectMsg(Replay(1, actor, instanceId))
-    events.foreach(event => actor ! Replaying(event, instanceId))
-    actor ! ReplaySuccess(instanceId)
+    logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
+    logProbe.sender() ! LoadSnapshotSuccess(None, instanceId)
+
+    events.lastOption match {
+      case Some(event) =>
+        logProbe.expectMsg(Replay(1L, Some(actor), instanceId))
+        logProbe.sender() ! ReplaySuccess(events, event.localSequenceNr, instanceId)
+        logProbe.expectMsg(Replay(event.localSequenceNr + 1L, None, instanceId))
+        logProbe.sender() ! ReplaySuccess(Nil, event.localSequenceNr, instanceId)
+      case None =>
+        logProbe.expectMsg(Replay(1L, Some(actor), instanceId))
+        logProbe.sender() ! ReplaySuccess(events, 0L, instanceId)
+    }
     actor
   }
 
@@ -130,9 +138,9 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
       val write = logProbe.expectMsgClass(classOf[Write])
       write.events(0).deliveryId should be("1")
       write.events(1).deliveryId should be("1")
-
-      actor ! WriteSuccess(event(write.events(0).payload, 2L, "1"), instanceId)
-      actor ! WriteSuccess(event(write.events(1).payload, 3L, "1"), instanceId)
+      logProbe.sender() ! WriteSuccess(Seq(
+        event(write.events(0).payload, 2L, "1"),
+        event(write.events(1).payload, 3L, "1")), write.correlationId, instanceId)
 
       deliverProbe.expectMsg(Set())
       deliverProbe.expectMsg(Set())
@@ -150,9 +158,9 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
 
       write.events(0).deliveryId should be("1")
       write.events(1).deliveryId should be("1")
-
-      actor ! WriteSuccess(event(write.events(0).payload, 2L, "1"), instanceId)
-      actor ! WriteSuccess(event(write.events(1).payload, 3L, "1"), instanceId)
+      logProbe.sender() ! WriteSuccess(Seq(
+        event(write.events(0).payload, 2L, "1"),
+        event(write.events(1).payload, 3L, "1")), write.correlationId, instanceId)
 
       deliverProbe.expectMsg(Set())
       deliverProbe.expectMsg(Set())
@@ -169,14 +177,14 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
 
       val write1 = logProbe.expectMsgClass(classOf[Write])
       write1.events(0).deliveryId should be("1")
-      actor ! WriteSuccess(event(write1.events(0).payload, 2L, "1"), instanceId)
+      logProbe.sender() ! WriteSuccess(Seq(event(write1.events(0).payload, 2L, "1")), write1.correlationId, instanceId)
 
       deliverProbe.expectMsg(Set("2"))
       persistProbe.expectMsg(Success("c"))
 
       val write2 = logProbe.expectMsgClass(classOf[Write])
       write2.events(0).deliveryId should be("2")
-      actor ! WriteSuccess(event(write2.events(0).payload, 3L, "2"), instanceId)
+      logProbe.sender() ! WriteSuccess(Seq(event(write2.events(0).payload, 3L, "2")), write2.correlationId, instanceId)
 
       deliverProbe.expectMsg(Set())
       persistProbe.expectMsg(Success("d"))
@@ -195,8 +203,9 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
       deliverProbe.expectMsg(Set("1"))
       deliverProbe.expectMsg(Set("1"))
 
-      actor ! WriteSuccess(event(write.events(0).payload, 4L, "1"), instanceId)
-      actor ! WriteSuccess(event(write.events(1).payload, 5L, "1"), instanceId)
+      logProbe.sender() ! WriteSuccess(Seq(
+        event(write.events(0).payload, 4L, "1"),
+        event(write.events(1).payload, 5L, "1")), write.correlationId, instanceId)
 
       deliverProbe.expectMsg(Set())
       deliverProbe.expectMsg(Set())
@@ -227,8 +236,9 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
       write1.events(1).deliveryId should be("1")
 
       // application crash and restart
-      actor ! WriteFailure(event(write1.events(0).payload, 0L, "1"), boom, instanceId)
-      actor ! WriteFailure(event(write1.events(1).payload, 0L, "1"), boom, instanceId)
+      logProbe.sender() ! WriteFailure(Seq(
+        event(write1.events(0).payload, 0L, "1"),
+        event(write1.events(1).payload, 0L, "1")), boom, write1.correlationId, instanceId)
       processRecover(actor, instanceId + 1, Seq(event("a", 1L)))
 
       deliverProbe.expectMsg(Set("1"))
@@ -238,8 +248,9 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
       write2.events(0).deliveryId should be("1")
       write2.events(1).deliveryId should be("1")
 
-      actor ! WriteSuccess(event(write2.events(0).payload, 2L, "1"), instanceId + 1)
-      actor ! WriteSuccess(event(write2.events(1).payload, 3L, "1"), instanceId + 1)
+      logProbe.sender() ! WriteSuccess(Seq(
+        event(write2.events(0).payload, 2L, "1"),
+        event(write2.events(1).payload, 3L, "1")), write2.correlationId, instanceId + 1)
 
       deliverProbe.expectMsg(Set())
       deliverProbe.expectMsg(Set())
@@ -258,8 +269,9 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
       write.events(0).deliveryId should be("1")
       write.events(1).deliveryId should be("1")
 
-      actor ! WriteSuccess(event(write.events(0).payload, 2L, "1"), instanceId)
-      actor ! WriteSuccess(event(write.events(1).payload, 3L, "1"), instanceId)
+      logProbe.sender() ! WriteSuccess(Seq(
+        event(write.events(0).payload, 2L, "1"),
+        event(write.events(1).payload, 3L, "1")), write.correlationId, instanceId)
 
       deliverProbe.expectMsg(Set())
       deliverProbe.expectMsg(Set())
@@ -287,10 +299,9 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
       processRecover(actor, instanceId + 1, Seq(event("a", 1L)))
 
       val write = logProbe.expectMsgClass(classOf[Write])
-
-      actor ! WriteSuccess(event(write.events(0).payload, 2L, "1"), instanceId + 1)
-      actor ! WriteSuccess(event(write.events(1).payload, 3L, "1"), instanceId + 1)
-
+      logProbe.sender() ! WriteSuccess(Seq(
+        event(write.events(0).payload, 2L, "1"),
+        event(write.events(1).payload, 3L, "1")), write.correlationId, instanceId + 1)
       logProbe.expectNoMsg(timeout)
     }
   }

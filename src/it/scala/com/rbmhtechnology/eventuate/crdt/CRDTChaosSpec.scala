@@ -35,7 +35,7 @@ abstract class CRDTChaosSpec extends WordSpec with Matchers with ReplicationNode
     ReplicationConfig.create()
 
   def node(nodeName: String, port: Int, connections: Set[ReplicationConnection]): ReplicationNode =
-    register(new ReplicationNode(nodeName, Set(ReplicationEndpoint.DefaultLogName), port, connections, "eventuate.log.replication.batch-size-max = 3"))
+    register(new ReplicationNode(nodeName, Set(ReplicationEndpoint.DefaultLogName), port, connections, "eventuate.log.write-batch-size = 3"))
 
   def service(node: ReplicationNode): (ORSetService[String], TestProbe) = {
     implicit val system = node.system

@@ -159,7 +159,7 @@ private class CassandraIndexUpdater(cassandra: Cassandra, eventLogStore: Cassand
 
   def updateAsync(fromSequenceNr: Long, toSequenceNr: Long, increment: IndexIncrement): Future[(IndexIncrement, Boolean)] =
     for {
-      res <- eventLogStore.readAsync(fromSequenceNr, toSequenceNr, cassandra.settings.indexUpdateLimit)
+      res <- eventLogStore.readAsync(fromSequenceNr, toSequenceNr, cassandra.settings.indexUpdateLimit, cassandra.settings.indexUpdateLimit + 1)
       inc <- writeAsync(increment.update(res.events))
     } yield (inc, res.events.nonEmpty)
 

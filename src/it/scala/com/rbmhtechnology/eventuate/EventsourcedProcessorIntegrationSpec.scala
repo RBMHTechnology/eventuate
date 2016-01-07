@@ -196,9 +196,6 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
       targetProbe.expectMsg(("b-processed-1", VectorTime(sourceLogId -> 2L, "p" -> 5L)))
       targetProbe.expectMsg(("b-processed-2", VectorTime(sourceLogId -> 2L, "p" -> 6L)))
     }
-    "be able to write to the source event log" in {
-
-    }
   }
 
   "A stateful EventsourcedProcessor" when {

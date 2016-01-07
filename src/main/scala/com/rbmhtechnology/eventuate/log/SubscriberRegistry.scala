@@ -38,36 +38,17 @@ private case class SubscriberRegistry(
       case None              => copy(defaultRegistry = defaultRegistry - subscriber)
     }
 
-  def pushReplicateSuccess(events: Seq[DurableEvent]): Unit = {
+  def notifySubscribers(events: Seq[DurableEvent], condition: ActorRef => Boolean = _ => true): Unit =
     events.foreach { event =>
       val written = Written(event)
       // in any case, notify all default subscribers
-      defaultRegistry.foreach(_ ! written)
+      // for which condition evaluates to true
+      defaultRegistry.foreach(r => if (condition(r)) r ! written)
       // notify subscribers with matching aggregate id
       for {
         aggregateId <- event.destinationAggregateIds
-        aggregate <- aggregateRegistry(aggregateId)
+        aggregate <- aggregateRegistry(aggregateId) if condition(aggregate)
       } aggregate ! written
-    }
-  }
-
-  def pushWriteSuccess(events: Seq[DurableEvent], initiator: ActorRef, requestor: ActorRef, instanceId: Int): Unit = {
-    events.foreach { event =>
-      requestor.tell(WriteSuccess(event, instanceId), initiator)
-      val written = Written(event)
-      // in any case, notify all default subscribers (except requestor)
-      defaultRegistry.foreach(r => if (r != requestor) r ! written)
-      // notify subscribers with matching aggregate id (except requestor)
-      for {
-        aggregateId <- event.destinationAggregateIds
-        aggregate <- aggregateRegistry(aggregateId) if aggregate != requestor
-      } aggregate ! written
-    }
-  }
-
-  def pushWriteFailure(events: Seq[DurableEvent], initiator: ActorRef, requestor: ActorRef, instanceId: Int, cause: Throwable): Unit =
-    events.foreach { event =>
-      requestor.tell(WriteFailure(event, cause, instanceId), initiator)
     }
 }
 

@@ -49,8 +49,8 @@ object RecoverySpec {
 
   val config =
     """
-      |eventuate.log.replication.read-timeout = 2s
       |eventuate.log.replication.retry-delay = 1s
+      |eventuate.log.replication.remote-read-timeout = 2s
       |eventuate.disaster-recovery.remote-operation-retry-max = 10
       |eventuate.disaster-recovery.remote-operation-retry-delay = 1s
       |eventuate.disaster-recovery.remote-operation-timeout = 1s
@@ -180,8 +180,7 @@ class RecoverySpec extends WordSpec with Matchers with ReplicationNodeRegistry w
       assertConvergence(Set("a", "b", "c", "d", "d1"), nodeA, nodeB, nodeC, nodeD2)
     }
     "repair inconsistencies if recovery was stopped during event recovery and restarted" in {
-      def newNodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)),
-        customConfig = "eventuate.log.replication.batch-size-max = 1")
+      def newNodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)), customConfig = "eventuate.log.write-batch-size = 1")
       val nodeA = newNodeA
       val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2552)))
 

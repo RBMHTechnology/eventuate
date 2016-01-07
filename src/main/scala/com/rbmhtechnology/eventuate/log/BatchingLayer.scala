@@ -26,8 +26,8 @@ import com.typesafe.config.Config
 
 import scala.collection.immutable.Seq
 
-private[eventuate] class BatchingSettings(config: Config) {
-  val batchSizeLimit = config.getInt("eventuate.log.batching.batch-size-limit")
+private class BatchingSettings(config: Config) {
+  val writeBatchSize = config.getInt("eventuate.log.write-batch-size")
 }
 
 /**
@@ -36,7 +36,7 @@ private[eventuate] class BatchingSettings(config: Config) {
  * commands are sent as [[ReplicationProtocol.ReplicationWriteN]] batch to the wrapped event event log.
  *
  * Batch sizes dynamically increase to a configurable limit under increasing load. The batch size limit can be
- * configured with `eventuate.log.batch-size-limit`. If there is no current write operation in progress, a new
+ * configured with `eventuate.log.write-batch-size`. If there is no current write operation in progress, a new
  * `Write` or `ReplicationWrite` command is served immediately (as `WriteN` or `ReplicationWriteN` batch of size
  * 1, respectively), keeping latency at a minimum.
  *
@@ -55,7 +55,7 @@ class BatchingLayer(eventLogProps: Props) extends Actor {
 
   def receive = {
     case r: ReplicationWrite =>
-      replicationBatcher forward r.copy(initiator = sender())
+      replicationBatcher forward r
     case r: ReplicationRead =>
       replicationBatcher forward r
     case cmd =>
@@ -81,7 +81,7 @@ private trait Batcher[A <: DurableEventBatch] extends Actor {
     var num = 0
     val (w, r) = batch.span { w =>
       num += w.size
-      num <= settings.batchSizeLimit || num == w.size
+      num <= settings.writeBatchSize || num == w.size
     }
     eventLog ! writeRequest(w)
     batch = r
@@ -120,14 +120,14 @@ private class DefaultBatcher(val eventLog: ActorRef) extends Batcher[Write] {
 private class ReplicationBatcher(val eventLog: ActorRef) extends Batcher[ReplicationWrite] {
   val idle: Receive = {
     case w: ReplicationWrite =>
-      batch = batch :+ w
+      batch = batch :+ w.copy(replyTo = sender())
       writeBatch()
       context.become(writing)
   }
 
   val writing: Receive = {
     case w: ReplicationWrite =>
-      batch = batch :+ w.copy(initiator = sender())
+      batch = batch :+ w.copy(replyTo = sender())
     case ReplicationWriteNComplete if batch.isEmpty =>
       context.become(idle)
     case ReplicationWriteNComplete =>

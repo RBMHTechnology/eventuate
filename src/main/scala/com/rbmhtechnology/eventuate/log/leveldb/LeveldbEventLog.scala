@@ -48,8 +48,8 @@ class LeveldbEventLogSettings(config: Config) extends EventLogSettings {
   val stateSnapshotLimit: Int =
     config.getInt("eventuate.log.leveldb.state-snapshot-limit")
 
-  val deletionBatchSizeMax: Int =
-    config.getInt("eventuate.log.leveldb.deletion-batch-size-max")
+  val deletionBatchSize: Int =
+    config.getInt("eventuate.log.leveldb.deletion-batch-size")
 
   val initRetryDelay: FiniteDuration =
     Duration.Zero
@@ -60,11 +60,9 @@ class LeveldbEventLogSettings(config: Config) extends EventLogSettings {
   val deletionRetryDelay: FiniteDuration =
     config.getDuration("eventuate.log.leveldb.deletion-retry-delay", TimeUnit.MILLISECONDS).millis
 
-  val partitionSizeMax: Long =
+  val partitionSize: Long =
     Long.MaxValue
 }
-
-case class LeveldbEventIteratorParameters(fromSequenceNr: Long, classifier: Int)
 
 /**
  * An event log actor with LevelDB as storage backend. The directory containing the LevelDB files
@@ -76,17 +74,17 @@ case class LeveldbEventIteratorParameters(fromSequenceNr: Long, classifier: Int)
  * @param id unique log id.
  * @param prefix prefix of the directory that contains the LevelDB files
  */
-class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventIteratorParameters](id) with WithBatch {
+class LeveldbEventLog(id: String, prefix: String) extends EventLog(id) with WithBatch {
   import LeveldbEventLog._
 
   override val settings = new LeveldbEventLogSettings(context.system.settings.config)
   private val serialization = SerializationExtension(context.system)
 
+  private val leveldbDir = new File(settings.rootDir, s"${prefix}-${id}"); leveldbDir.mkdirs()
   private val leveldbOptions = new Options().createIfMissing(true)
-  protected val leveldbWriteOptions = new WriteOptions().sync(settings.fsync).snapshot(false)
   private def leveldbReadOptions = new ReadOptions().verifyChecksums(false)
 
-  private val leveldbDir = new File(settings.rootDir, s"${prefix}-${id}"); leveldbDir.mkdirs()
+  protected val leveldbWriteOptions = new WriteOptions().sync(settings.fsync).snapshot(false)
   protected val leveldb = factory.open(leveldbDir, leveldbOptions)
 
   private val aggregateIdMap = new LeveldbNumericIdentifierStore(leveldb, -1)
@@ -105,15 +103,6 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventI
   override def writeReplicationProgress(logId: String, progress: Long): Future[Unit] =
     completed(withBatch(batch => replicationProgressMap.writeReplicationProgress(logId, progress, batch)))
 
-  override def eventIteratorParameters(fromSequenceNr: Long, toSequenceNr: Long): LeveldbEventIteratorParameters =
-    LeveldbEventIteratorParameters(fromSequenceNr, EventKey.DefaultClassifier)
-
-  override def eventIteratorParameters(fromSequenceNr: Long, toSequenceNr: Long, aggregateId: String): LeveldbEventIteratorParameters =
-    LeveldbEventIteratorParameters(fromSequenceNr, aggregateIdMap.numericId(aggregateId))
-
-  override def eventIterator(settings: LeveldbEventIteratorParameters): Iterator[DurableEvent] with Closeable =
-    eventIterator(1L max settings.fromSequenceNr, settings.classifier)
-
   private def eventIterator(from: Long, classifier: Int): EventIterator =
     new EventIterator(from, classifier)
 
@@ -123,8 +112,16 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventI
   override def readReplicationProgress(logId: String): Future[Long] =
     completed(withIterator(iter => replicationProgressMap.readReplicationProgress(logId)))
 
-  override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: DurableEvent => Boolean): Future[BatchReadResult] =
-    Future(readSync(fromSequenceNr, toSequenceNr, max, filter))(services.readDispatcher)
+  override def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: DurableEvent => Boolean): Future[BatchReadResult] =
+    Future(readSync(fromSequenceNr, toSequenceNr, EventKey.DefaultClassifier, max, filter))(services.readDispatcher)
+
+  override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int): Future[BatchReadResult] =
+    Future(readSync(fromSequenceNr, toSequenceNr, EventKey.DefaultClassifier, max, _ => true))(services.readDispatcher)
+
+  override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, aggregateId: String): Future[BatchReadResult] = {
+    val numericId = aggregateIdMap.numericId(aggregateId)
+    Future(readSync(fromSequenceNr, toSequenceNr, numericId, max, _ => true))(services.readDispatcher)
+  }
 
   override def recoverClock: Future[EventLogClock] = completed {
     val snap = leveldb.get(clockKeyBytes) match {
@@ -145,18 +142,18 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventI
   override def writeDeletionMetadata(deleteMetadata: DeletionMetadata) =
     deletionMetadataStore.writeDeletionMetadata(deleteMetadata)
 
-  override def deleteAsync(sequenceNr: Long): Future[Unit] = {
+  override def delete(toSequenceNr: Long): Future[Unit] = {
     val promise = Promise[Unit]()
-    spawnDeletionActor(sequenceNr, promise)
+    spawnDeletionActor(toSequenceNr, promise)
     promise.future
   }
 
-  private def spawnDeletionActor(sequenceNr: Long, promise: Promise[Unit]): ActorRef =
-    context.actorOf(LeveldbDeletionActor.props(leveldb, leveldbReadOptions, leveldbWriteOptions, settings.deletionBatchSizeMax, sequenceNr, promise))
+  private def spawnDeletionActor(toSequenceNr: Long, promise: Promise[Unit]): ActorRef =
+    context.actorOf(LeveldbDeletionActor.props(leveldb, leveldbReadOptions, leveldbWriteOptions, settings.deletionBatchSize, toSequenceNr, promise))
 
-  private def readSync(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: DurableEvent => Boolean): BatchReadResult = {
+  private def readSync(fromSequenceNr: Long, toSequenceNr: Long, classifier: Int, max: Int, filter: DurableEvent => Boolean): BatchReadResult = {
     val first = 1L max fromSequenceNr
-    withEventIterator(first, EventKey.DefaultClassifier) { iter =>
+    withEventIterator(first, classifier) { iter =>
       var last = first - 1L
       val evts = iter.filter { evt =>
         last = evt.localSequenceNr

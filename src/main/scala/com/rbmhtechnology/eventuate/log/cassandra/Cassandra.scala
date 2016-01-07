@@ -17,6 +17,7 @@
 package com.rbmhtechnology.eventuate.log.cassandra
 
 import java.nio.ByteBuffer
+import java.util.concurrent.TimeUnit
 
 import akka.actor._
 import akka.event.{ LogSource, Logging }
@@ -29,7 +30,7 @@ import com.datastax.driver.core.utils.Bytes
 import com.rbmhtechnology.eventuate.DurableEvent
 import com.rbmhtechnology.eventuate.log.EventLogClock
 
-import scala.concurrent.Future
+import scala.concurrent._
 import scala.util._
 
 object Cassandra extends ExtensionId[Cassandra] with ExtensionIdProvider {
@@ -143,12 +144,12 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   @annotation.tailrec
   private def connect(retries: Int = 0): Session = {
     val curAttempt = retries + 1
-    val maxAttempts = settings.initialConnectRetryMax + 1
+    val maxAttempts = settings.connectRetryMax + 1
 
     Try(clusterBuilder.build().connect()) match {
-      case Failure(e: NoHostAvailableException) if retries < settings.initialConnectRetryMax =>
+      case Failure(e: NoHostAvailableException) if retries < settings.connectRetryMax =>
         logging.error(e, s"Cannot connect to cluster (attempt ${curAttempt}/${maxAttempts} ...)")
-        Thread.sleep(settings.initialConnectRetryDelay.toMillis)
+        Thread.sleep(settings.connectRetryDelay.toMillis)
         connect(retries + 1)
       case Failure(e) =>
         logging.error(e, s"Cannot connect to cluster (attempt ${curAttempt}/${maxAttempts} ...)")
@@ -224,13 +225,14 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   private[eventuate] def clockFromByteBuffer(buffer: ByteBuffer): EventLogClock =
     serializer.deserialize(Bytes.getArray(buffer), classOf[EventLogClock]).get
 
-  private[eventuate] def executeBatch(body: BatchStatement => Unit): Unit =
-    session.execute(withBatch(body))
+  private[eventuate] def execute(statement: Statement, timeout: Long): Unit =
+    session.executeAsync(statement).getUninterruptibly(timeout, TimeUnit.MILLISECONDS)
 
-  private[eventuate] def executeBatchAsync(body: BatchStatement => Unit): Future[Unit] = {
-    implicit val dispatcher = system.dispatchers.defaultGlobalDispatcher
+  private[eventuate] def executeBatch(body: BatchStatement => Unit): Unit =
+    execute(withBatch(body), settings.writeTimeout)
+
+  private[eventuate] def executeBatchAsync(body: BatchStatement => Unit)(implicit executor: ExecutionContext): Future[Unit] =
     session.executeAsync(withBatch(body)).map(_ => ())
-  }
 
   private def withBatch(body: BatchStatement => Unit): BatchStatement = {
     val batch = new BatchStatement().setConsistencyLevel(writeConsistency).asInstanceOf[BatchStatement]

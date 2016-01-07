@@ -30,16 +30,15 @@ object ReplicationConfig {
          |akka.test.single-expect-default = 20s
          |akka.loglevel = "ERROR"
          |
-         |eventuate.snapshot.filesystem.dir = target/test-snapshot
-         |
+         |eventuate.log.write-batch-size = 3
+         |eventuate.log.replication.retry-delay = 1s
+         |eventuate.log.replication.failure-detection-limit = 3s
          |eventuate.log.leveldb.dir = target/test-log
          |eventuate.log.leveldb.index-update-limit = 3
          |eventuate.log.cassandra.default-port = 9142
          |eventuate.log.cassandra.index-update-limit = 3
-         |eventuate.log.replication.batch-size-max = 3
-         |eventuate.log.replication.retry-delay = 1s
          |eventuate.log.leveldb.deletion-retry-delay = 1 ms
-         |eventuate.log.replication.failure-detection-limit = 3s
+         |eventuate.snapshot.filesystem.dir = target/test-snapshot
        """.stripMargin)
 
     ConfigFactory.parseString(customConfig).withFallback(defaultConfig)

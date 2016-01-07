@@ -41,8 +41,8 @@ object ReplicatedORSetConfig extends MultiNodeConfig {
 
   commonConfig(MultiNodeReplicationConfig.create(
     """
-      |eventuate.log.replication.batch-size-max = 200
-      |eventuate.log.replication.read-timeout = 2s
+      |eventuate.log.write-batch-size = 200
+      |eventuate.log.replication.remote-read-timeout = 2s
     """.stripMargin))
 }
 

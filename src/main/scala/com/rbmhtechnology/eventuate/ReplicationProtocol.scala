@@ -29,7 +29,7 @@ object ReplicationProtocol {
   trait Format extends Serializable
 
   /**
-   * Info about an event log. Part of [[ReplicationEndpointInfo]]
+   * Info about an event log. Part of [[ReplicationEndpointInfo]].
    *
    * @param logName Name of the log this info object is about
    * @param sequenceNr Current sequence number of this log
@@ -38,33 +38,32 @@ object ReplicationProtocol {
 
   object ReplicationEndpointInfo {
     /**
-     * Creates a log identifier from `endpointId` and `logName`
+     * Creates a log identifier from `endpointId` and `logName`.
      */
     def logId(endpointId: String, logName: String): String =
       s"${endpointId}_${logName}"
   }
 
   /**
-   * [[ReplicationEndpoint]] info object. Exchanged between replication endpoints
-   * to establish replication connections.
+   * [[ReplicationEndpoint]] info object. Exchanged between replication endpoints to establish replication connections.
    *
    * @param endpointId Replication endpoint id.
    * @param logInfos [[LogInfo]]s of logs managed by the replication endpoint.
    */
   case class ReplicationEndpointInfo(endpointId: String, logInfos: Set[LogInfo]) extends Format {
     /**
-     * The names of logs managed by the [[ReplicationEndpoint]]
+     * The names of logs managed by the [[ReplicationEndpoint]].
      */
     val logNames: Set[String] = logInfos.map(_.logName)
 
     /**
-     * Creates a log identifier from this info object's `endpointId` and `logName`
+     * Creates a log identifier from this info object's `endpointId` and `logName`.
      */
     def logId(logName: String): String =
       ReplicationEndpointInfo.logId(endpointId, logName)
 
     /**
-     * Returns a [[LogInfo]] for the given `logName`
+     * Returns a [[LogInfo]] for the given `logName`.
      */
     def logInfo(logName: String): Option[LogInfo] = logInfos.find(_.logName == logName)
   }
@@ -95,9 +94,8 @@ object ReplicationProtocol {
   case class GetEventLogClockSuccess(clock: EventLogClock)
 
   /**
-   * Requests all local replication progresses from a log.
-   * The local replication progress is the sequence nr in the remote log up to which
-   * the local log has replicated all events from the remote log
+   * Requests all local replication progresses from a log. The local replication progress is the sequence number
+   * in the remote log up to which the local log has replicated all events from the remote log.
    */
   case object GetReplicationProgresses
 
@@ -113,6 +111,7 @@ object ReplicationProtocol {
 
   /**
    * Requests the local replication progress for given `sourceLogId` from a target log.
+   *
    * @see GetReplicationProgresses
    */
   case class GetReplicationProgress(sourceLogId: String)
@@ -149,16 +148,16 @@ object ReplicationProtocol {
   case class ReplicationReadEnvelope(payload: ReplicationRead, logName: String) extends Format
 
   /**
-   * Instructs a source log to read up to `maxNumEvents` starting `fromSequenceNr`
-   * and applying the given replication `filter`.
+   * Instructs a source log to read up to `max` events starting at `fromSequenceNr` and applying
+   * the given replication `filter`.
    */
-  case class ReplicationRead(fromSequenceNr: Long, maxNumEvents: Int, filter: ReplicationFilter, targetLogId: String, replicator: ActorRef, currentTargetVersionVector: VectorTime) extends Format
+  case class ReplicationRead(fromSequenceNr: Long, max: Int, filter: ReplicationFilter, targetLogId: String, replicator: ActorRef, currentTargetVersionVector: VectorTime) extends Format
 
   /**
    * Success reply after a [[ReplicationRead]].
    *
-   * @param events read events.
-   * @param replicationProgress last read sequence number. This is greater than
+   * @param events Read events.
+   * @param replicationProgress Last read sequence number. This is greater than
    *                            or equal to the sequence number of the last read
    *                            event (if any).
    */
@@ -183,13 +182,15 @@ object ReplicationProtocol {
    * Instructs a target log to write replicated `events` from the source log identified by
    * `sourceLogId` along with the last read position in the source log (`replicationProgress`).
    */
-  case class ReplicationWrite(events: Seq[DurableEvent], sourceLogId: String, replicationProgress: Long, currentSourceVersionVector: VectorTime, initiator: ActorRef = null) extends DurableEventBatch
+  case class ReplicationWrite(events: Seq[DurableEvent], sourceLogId: String, replicationProgress: Long, currentSourceVersionVector: VectorTime, replyTo: ActorRef = null) extends UpdateableEventBatch[ReplicationWrite] {
+    override def update(events: Seq[DurableEvent]): ReplicationWrite = copy(events = events)
+  }
 
   /**
    * Success reply after a [[ReplicationWrite]].
    *
    * @param num Number of events actually replicated.
-   * @param sourceLogId id of the log the written events were replicated from
+   * @param sourceLogId Id of the log the written events were replicated from.
    * @param storedReplicationProgress Last source log read position stored in the target log.
    * @param currentTargetVersionVector [[EventLogClock.versionVector]] of the target log after the events were written
    */

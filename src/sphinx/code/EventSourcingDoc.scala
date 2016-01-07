@@ -197,15 +197,15 @@ object ClockEntryInstance {
   //#
 }
 
-object ChunkedReplay {
+object BatchReplay {
   import akka.actor._
   import com.rbmhtechnology.eventuate.EventsourcedActor
 
-  //#chunk-size-max
+  //#replay-batch-size
   class ExampleActor(override val id: String,
                      override val eventLog: ActorRef) extends EventsourcedActor {
 
-    override def replayChunkSizeMax: Int = 64
+    override def replayBatchSize: Int = 64
 
     // ...
   //#
@@ -216,7 +216,7 @@ object ChunkedReplay {
     override def onEvent = {
       case evt => // ...
     }
-  //#chunk-size-max
+  //#replay-batch-size
   }
   //#
 }
@@ -248,6 +248,58 @@ object Processor {
       // transform and split event
       case "my-event-3" => Seq("my-event-3a", "my-event-3b")
     }
+  }
+  //#
+}
+
+object CommandStash {
+  import akka.actor._
+  import com.rbmhtechnology.eventuate.EventsourcedActor
+  import scala.util._
+
+  //#command-stash
+  case class CreateUser(userId: String, name: String)
+  case class UpdateUser(userId: String, name: String)
+
+  sealed trait UserEvent
+
+  case class UserCreated(userId: String, name: String) extends UserEvent
+  case class UserUpdated(userId: String, name: String) extends UserEvent
+
+  case class User(userId: String, name: String)
+
+  class UserManager(val eventLog: ActorRef) extends EventsourcedActor {
+    private var users: Map[String, User] = Map.empty
+
+    override val id = "example"
+
+    override def onCommand = {
+      case CreateUser(userId, name) =>
+        persistUserEvent(UserCreated(userId, name), unstashAll())
+      case UpdateUser(userId, name) if users.contains(userId) =>
+        // UpdateUser received after CreateUser
+        persistUserEvent(UserUpdated(userId, name))
+      case UpdateUser(userId, name) =>
+        // UpdateUser received before CreateUser
+        stash()
+      // ...
+    }
+
+    override def onEvent = {
+      case UserCreated(userId, name) =>
+        users = users.updated(userId, User(userId, name))
+      case UserUpdated(userId, name) =>
+        users = users.updated(userId, User(userId, name))
+    }
+
+    private def persistUserEvent(event: UserEvent, onSuccess: => Unit = ()) =
+      persist(event) {
+        case Success(evt) =>
+          sender() ! evt
+          onSuccess
+        case Failure(err) =>
+          sender() ! err
+      }
   }
   //#
 }

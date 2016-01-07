@@ -96,14 +96,7 @@ object EventLogLifecycleLeveldb {
     }
   }
 
-  class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") with EventLogLifecycle.TestEventLog[LeveldbEventIteratorParameters] {
-
-    override def eventIterator(parameters: LeveldbEventIteratorParameters): Iterator[DurableEvent] with Closeable =
-      if (parameters.fromSequenceNr == ErrorSequenceNr) EventLogLifecycle.failingEventIterator else super.eventIterator(parameters)
-
-    override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: (DurableEvent) => Boolean): Future[BatchReadResult] =
-      if (fromSequenceNr == ErrorSequenceNr) Future.failed(boom) else super.read(fromSequenceNr, toSequenceNr, max, filter)
-
+  class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") with EventLogLifecycle.TestEventLog {
     override def unhandled(message: Any): Unit = message match {
       case "boom" =>
         throw boom
@@ -185,7 +178,7 @@ trait EventLogLifecycleCassandra extends EventLogCleanupCassandra with BeforeAnd
 
 object EventLogLifecycleCassandra {
   case class TestFailureSpec(
-    failOnSequenceNrRead: Boolean = false,
+    failOnClockRead: Boolean = false,
     failBeforeIndexIncrementWrite: Boolean = false,
     failAfterIndexIncrementWrite: Boolean = false)
 
@@ -203,7 +196,7 @@ object EventLogLifecycleCassandra {
   }
 
   class TestEventLog(id: String, failureSpec: TestFailureSpec, indexProbe: Option[ActorRef])
-    extends CassandraEventLog(id) with EventLogLifecycle.TestEventLog[CassandraEventIteratorParameters] {
+    extends CassandraEventLog(id) with EventLogLifecycle.TestEventLog {
 
     override def currentSystemTime: Long = 0L
 
@@ -214,12 +207,6 @@ object EventLogLifecycleCassandra {
         super.unhandled(message)
     }
 
-    override def eventIterator(parameters: CassandraEventIteratorParameters): Iterator[DurableEvent] with Closeable =
-      if (parameters.fromSequenceNr == -1L) EventLogLifecycle.failingEventIterator else super.eventIterator(parameters)
-
-    private[eventuate] override def createEventLogStore(cassandra: Cassandra, logId: String) =
-      new TestEventLogStore(cassandra, logId)
-
     private[eventuate] override def createIndexStore(cassandra: Cassandra, logId: String) =
       new TestIndexStore(cassandra, logId, failureSpec)
 
@@ -227,21 +214,16 @@ object EventLogLifecycleCassandra {
       indexProbe.foreach(_ ! event)
   }
 
-  class TestEventLogStore(cassandra: Cassandra, logId: String) extends CassandraEventLogStore(cassandra, logId) {
-    override def read(from: Long, to: Long, max: Int, filter: DurableEvent => Boolean): BatchReadResult =
-      if (from == -1L) throw boom else super.read(from, to: Long, max, filter)
-  }
-
   class TestIndexStore(cassandra: Cassandra, logId: String, failureSpec: TestFailureSpec) extends CassandraIndexStore(cassandra, logId) {
-    private var writeIndexIncrementFailed = false
-    private var readSequenceNumberFailed = false
+    private var writeIncrementFailed = false
+    private var readClockFailed = false
 
     override def writeAsync(aggregateEvents: AggregateEvents, clock: EventLogClock)(implicit executor: ExecutionContext): Future[EventLogClock] =
-      if (failureSpec.failBeforeIndexIncrementWrite && !writeIndexIncrementFailed) {
-        writeIndexIncrementFailed = true
+      if (failureSpec.failBeforeIndexIncrementWrite && !writeIncrementFailed) {
+        writeIncrementFailed = true
         Future.failed(boom)
-      } else if (failureSpec.failAfterIndexIncrementWrite && !writeIndexIncrementFailed) {
-        writeIndexIncrementFailed = true
+      } else if (failureSpec.failAfterIndexIncrementWrite && !writeIncrementFailed) {
+        writeIncrementFailed = true
         for {
           _ <- super.writeAsync(aggregateEvents, clock)
           r <- Future.failed(boom)
@@ -249,25 +231,28 @@ object EventLogLifecycleCassandra {
       } else super.writeAsync(aggregateEvents, clock)
 
     override def readEventLogClockAsync(implicit executor: ExecutionContext): Future[EventLogClock] =
-      if (failureSpec.failOnSequenceNrRead && !readSequenceNumberFailed) {
-        readSequenceNumberFailed = true
+      if (failureSpec.failOnClockRead && !readClockFailed) {
+        readClockFailed = true
         Future.failed(boom)
       } else super.readEventLogClockAsync
   }
 }
 
 object EventLogLifecycle {
-  val failingEventIterator = new Iterator[DurableEvent] with Closeable {
-    override def hasNext: Boolean = true
-    override def next(): DurableEvent = throw boom
-    override def close(): Unit = ()
-  }
-
   val ErrorSequenceNr = -1L
   val IgnoreDeletedSequenceNr = -2L
 
-  trait TestEventLog[A] extends EventLog[A] {
+  trait TestEventLog extends EventLog {
     override def currentSystemTime: Long = 0L
+
+    abstract override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int): Future[BatchReadResult] =
+      if (fromSequenceNr == ErrorSequenceNr) Future.failed(boom) else super.read(fromSequenceNr, toSequenceNr, max)
+
+    abstract override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, aggregateId: String): Future[BatchReadResult] =
+      if (fromSequenceNr == ErrorSequenceNr) Future.failed(boom) else super.read(fromSequenceNr, toSequenceNr, max, aggregateId)
+
+    abstract override def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: (DurableEvent) => Boolean): Future[BatchReadResult] =
+      if (fromSequenceNr == ErrorSequenceNr) Future.failed(boom) else super.replicationRead(fromSequenceNr, toSequenceNr, max, filter)
 
     abstract override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
       if (events.map(_.payload).contains("boom")) throw boom else super.write(events, partition, clock)
