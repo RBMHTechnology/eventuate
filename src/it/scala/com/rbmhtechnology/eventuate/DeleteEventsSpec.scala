@@ -16,11 +16,8 @@
 
 package com.rbmhtechnology.eventuate
 
-import akka.actor.Actor
-import akka.actor.ActorLogging
-import akka.actor.ActorRef
-import akka.actor.ActorSystem
-import akka.actor.Props
+import akka.actor._
+
 import com.rbmhtechnology.eventuate.ReplicationIntegrationSpec.replicationConnection
 import com.rbmhtechnology.eventuate.log.EventLogCleanupLeveldb
 import com.rbmhtechnology.eventuate.log.EventLogLifecycleLeveldb.TestEventLog
@@ -32,7 +29,7 @@ import org.scalatest.WordSpec
 import scala.util.Failure
 import scala.util.Success
 
-object DeleteEventsSpec {
+object DeleteEventsSpecLeveldb {
   val L1 = "L1"
 
   val portA = 2552
@@ -62,9 +59,8 @@ object DeleteEventsSpec {
     node.system.actorOf(Props(new Emitter(node.id, node.logs(logName))))
 }
 
-class DeleteEventsSpec extends WordSpec with Matchers with ReplicationNodeRegistry with EventLogCleanupLeveldb {
-
-  import DeleteEventsSpec._
+class DeleteEventsSpecLeveldb extends WordSpec with Matchers with ReplicationNodeRegistry with EventLogCleanupLeveldb {
+  import DeleteEventsSpecLeveldb._
 
   implicit val logFactory: String => Props = id => TestEventLog.props(id, batching = true)
 
@@ -80,7 +76,7 @@ class DeleteEventsSpec extends WordSpec with Matchers with ReplicationNodeRegist
     s"${node}_${ctr}"
 
   def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection], customConfig: String = "", activate: Boolean = false): ReplicationNode =
-    register(new ReplicationNode(nodeId(nodeName), logNames, port, connections, customConfig = RecoverySpec.config + customConfig, activate = activate))
+    register(new ReplicationNode(nodeId(nodeName), logNames, port, connections, customConfig = RecoverySpecLeveldb.config + customConfig, activate = activate))
 
   "Deleting events" must {
     "not replay deleted events on restart" in {

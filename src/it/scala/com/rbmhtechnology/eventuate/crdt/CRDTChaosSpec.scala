@@ -164,6 +164,6 @@ class CRDTChaosSpecCassandra  extends CRDTChaosSpec with EventLogCleanupCassandr
 
   def logProps(logId: String, batching: Boolean = true): Props = {
     val logProps = Props(new TestEventLog(logId)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
-    if (batching) Props(new BatchingLayer(logProps)) else logProps
+    Props(new CircuitBreaker(logProps, batching))
   }
 }

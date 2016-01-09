@@ -32,7 +32,7 @@ import org.scalatest._
 
 import scala.concurrent.duration._
 
-object RecoverySpec {
+object RecoverySpecLeveldb {
   class ConvergenceView(val id: String, val eventLog: ActorRef, expectedSize: Int, probe: ActorRef) extends EventsourcedView {
     var state: Set[String] = Set()
 
@@ -65,9 +65,9 @@ object RecoverySpec {
   }
 }
 
-class RecoverySpec extends WordSpec with Matchers with ReplicationNodeRegistry with EventLogCleanupLeveldb {
+class RecoverySpecLeveldb extends WordSpec with Matchers with ReplicationNodeRegistry with EventLogCleanupLeveldb {
   import ReplicationIntegrationSpec.replicationConnection
-  import RecoverySpec._
+  import RecoverySpecLeveldb._
 
   implicit val logFactory: String => Props = id => EventLogLifecycleLeveldb.TestEventLog.props(id, batching = true)
 
@@ -83,7 +83,7 @@ class RecoverySpec extends WordSpec with Matchers with ReplicationNodeRegistry w
     s"${node}_${ctr}"
 
   def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection], customConfig: String = "", activate: Boolean = false): ReplicationNode =
-    register(new ReplicationNode(nodeId(nodeName), logNames, port, connections, customConfig = RecoverySpec.config + customConfig, activate = activate))
+    register(new ReplicationNode(nodeId(nodeName), logNames, port, connections, customConfig = RecoverySpecLeveldb.config + customConfig, activate = activate))
 
   def assertConvergence(expected: Set[String], nodes: ReplicationNode *): Unit = {
     val probes = nodes.map { node =>

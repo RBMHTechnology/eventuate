@@ -24,12 +24,16 @@ import akka.pattern.ask
 import akka.util.Timeout
 
 import com.datastax.driver.core.QueryOptions
+import com.datastax.driver.core.exceptions._
+
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.log._
+import com.rbmhtechnology.eventuate.log.CircuitBreaker._
 
 import scala.collection.immutable.Seq
 import scala.concurrent._
 import scala.language.postfixOps
+import scala.util._
 
 /**
  * An event log actor with [[http://cassandra.apache.org/ Apache Cassandra]] as storage backend. It uses
@@ -103,8 +107,15 @@ class CassandraEventLog(id: String) extends EventLog(id) {
   override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, aggregateId: String): Future[BatchReadResult] =
     compositeReadAsync(fromSequenceNr, indexSequenceNr, toSequenceNr, max, max + 1, aggregateId)(services.readDispatcher)
 
-  override def recoverClockSuccess(clock: EventLogClock): Unit =
+  override def readDeletionMetadata = {
+    import services.readDispatcher
+    deletedToStore.readDeletedToAsync.map(DeletionMetadata(_, Set.empty))
+  }
+
+  override def recoverClockSuccess(clock: EventLogClock): Unit = {
     indexSequenceNr = clock.sequenceNr
+    context.parent ! ServiceInitialized
+  }
 
   override def recoverClock: Future[EventLogClock] = {
     implicit val timeout = Timeout(Int.MaxValue /* FIXME */ , TimeUnit.MILLISECONDS)
@@ -119,12 +130,44 @@ class CassandraEventLog(id: String) extends EventLog(id) {
   override def writeDeletionMetadata(deleteMetadata: DeletionMetadata) =
     deletedToStore.writeDeletedTo(deleteMetadata.toSequenceNr)
 
-  override def readDeletionMetadata = {
-    import services.readDispatcher
-    deletedToStore.readDeletedToAsync.map(DeletionMetadata(_, Set.empty))
+  override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
+    writeRetry(events, partition, clock)
+
+  @annotation.tailrec
+  private def writeRetry(events: Seq[DurableEvent], partition: Long, clock: EventLogClock, num: Int = 0): Unit = {
+    Try(writeBatch(events, partition, clock)) match {
+      case Success(r) =>
+        context.parent ! ServiceNormal
+      case Failure(e) if num >= cassandra.settings.writeRetryMax =>
+        log.error(e, s"write attempt ${num} failed: reached maximum number of retries - stop self")
+        context.stop(self)
+        throw e
+      case Failure(e: TimeoutException) =>
+        context.parent ! ServiceFailed(num)
+        log.error(e, s"write attempt ${num} failed: timeout after ${cassandra.settings.writeTimeout} ms - retry now")
+        writeRetry(events, partition, clock, num + 1)
+      case Failure(e: QueryTimeoutException) =>
+        context.parent ! ServiceFailed(num)
+        log.error(e, s"write attempt ${num} failed - retry now")
+        writeRetry(events, partition, clock, num + 1)
+      case Failure(e: QueryExecutionException) =>
+        context.parent ! ServiceFailed(num)
+        log.error(e, s"write attempt ${num} failed - retry in ${cassandra.settings.writeTimeout} ms")
+        Thread.sleep(cassandra.settings.writeTimeout)
+        writeRetry(events, partition, clock, num + 1)
+      case Failure(e: NoHostAvailableException) =>
+        context.parent ! ServiceFailed(num)
+        log.error(e, s"write attempt ${num} failed - retry in ${cassandra.settings.writeTimeout} ms")
+        Thread.sleep(cassandra.settings.writeTimeout)
+        writeRetry(events, partition, clock, num + 1)
+      case Failure(e) =>
+        log.error(e, s"write attempt ${num} failed - stop self")
+        context.stop(self)
+        throw e
+    }
   }
 
-  override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit = {
+  private def writeBatch(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit = {
     eventLogStore.write(events, partition)
     updateCount += events.size
     if (updateCount >= cassandra.settings.indexUpdateLimit) {
@@ -227,6 +270,6 @@ object CassandraEventLog {
    */
   def props(logId: String, batching: Boolean = true): Props = {
     val logProps = Props(new CassandraEventLog(logId)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
-    if (batching) Props(new BatchingLayer(logProps)) else logProps
+    Props(new CircuitBreaker(logProps, batching))
   }
 }

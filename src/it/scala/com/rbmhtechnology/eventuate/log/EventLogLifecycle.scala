@@ -58,16 +58,21 @@ trait EventLogLifecycleLeveldb extends EventLogCleanupLeveldb with BeforeAndAfte
   private var _logCtr: Int = 0
   private var _log: ActorRef = _
 
-  override def afterAll(): Unit = {
-    TestKit.shutdownActorSystem(system)
-    super.afterAll()
-  }
-
   override def beforeEach(): Unit = {
     super.beforeEach()
 
     _logCtr += 1
     _log = system.actorOf(logProps(logId))
+  }
+
+  override def afterEach(): Unit = {
+    system.stop(log)
+    super.afterEach()
+  }
+
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
   }
 
   def system: ActorSystem
@@ -142,6 +147,11 @@ trait EventLogLifecycleCassandra extends EventLogCleanupCassandra with BeforeAnd
     _log = createLog(TestFailureSpec(), indexProbe.ref)
   }
 
+  override def afterEach(): Unit = {
+    system.stop(log)
+    super.afterEach()
+  }
+
   override def beforeAll(): Unit = {
     super.beforeAll()
     EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
@@ -191,7 +201,7 @@ object EventLogLifecycleCassandra {
 
     def props(logId: String, failureSpec: TestFailureSpec, indexProbe: Option[ActorRef], batching: Boolean): Props = {
       val logProps = Props(new TestEventLog(logId, failureSpec, indexProbe)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
-      if (batching) Props(new BatchingLayer(logProps)) else logProps
+      Props(new CircuitBreaker(logProps, batching))
     }
   }
 

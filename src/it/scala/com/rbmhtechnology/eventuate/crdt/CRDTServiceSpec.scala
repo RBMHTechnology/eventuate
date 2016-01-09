@@ -8,7 +8,7 @@ import com.rbmhtechnology.eventuate.utilities._
 
 import org.scalatest._
 
-class CRDTServiceSpec  extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with EventLogLifecycleLeveldb {
+class CRDTServiceSpecLeveldb extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with EventLogLifecycleLeveldb {
   "A CRDTService" must {
     "manage multiple CRDTs identified by name" in {
       val service = new CounterService[Int]("a", log)

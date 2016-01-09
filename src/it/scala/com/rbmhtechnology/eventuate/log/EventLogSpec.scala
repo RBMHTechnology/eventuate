@@ -30,7 +30,7 @@ import com.rbmhtechnology.eventuate.log.EventLogLifecycle._
 import com.rbmhtechnology.eventuate.log.EventLogLifecycleCassandra.TestFailureSpec
 import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.utilities.RestarterActor.restartActor
-import com.rbmhtechnology.eventuate.utilities.{AwaitHelper, timeoutDuration}
+import com.rbmhtechnology.eventuate.utilities._
 
 import com.typesafe.config.{ConfigFactory, Config}
 
@@ -51,8 +51,6 @@ object EventLogSpec {
       |akka.loglevel = "ERROR"
       |akka.test.single-expect-default = 10s
       |
-      |eventuate.snapshot.filesystem.dir = target/test-snapshot
-      |
       |eventuate.log.leveldb.dir = target/test-log
       |eventuate.log.leveldb.index-update-limit = 6
       |eventuate.log.leveldb.deletion-batch-size = 2
@@ -60,6 +58,7 @@ object EventLogSpec {
       |eventuate.log.cassandra.default-port = 9142
       |eventuate.log.cassandra.index-update-limit = 3
       |eventuate.log.cassandra.init-retry-delay = 1s
+      |eventuate.snapshot.filesystem.dir = target/test-snapshot
     """.stripMargin)
 
   val emitterIdA = "A"
@@ -469,7 +468,7 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
     "replication-read events from a custom position with a batch size limit" in {
       generateEmittedEvents()
       log.tell(ReplicationRead(2, 1, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents.drop(1).take(1), 2, UndefinedLogId, VectorTime(logId -> 3L)))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents.slice(1, 2), 2, UndefinedLogId, VectorTime(logId -> 3L)))
     }
     "replication-read events with exclusion" in {
       generateEmittedEvents()
