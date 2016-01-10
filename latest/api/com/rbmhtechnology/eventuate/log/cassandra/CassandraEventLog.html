@@ -686,7 +686,7 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
       </a>
     </span>
       <p class="shortcomment cmt">Asynchronously reads the replication progress for given source <code>logId</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads the replication progress for given source <code>logId</code>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd><dt>See also</dt><dd><span class="cmt"><p><span class="extype" name="GetReplicationProgress">GetReplicationProgress</span>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="../../ReplicationProtocol$$GetReplicationProgress.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgress">ReplicationProtocol.GetReplicationProgress</a>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#readReplicationProgresses" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="readReplicationProgresses:scala.concurrent.Future[Map[String,Long]]"></a>
@@ -705,7 +705,7 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
       </a>
     </span>
       <p class="shortcomment cmt">Asynchronously reads all stored local replication progresses.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads all stored local replication progresses.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd><dt>See also</dt><dd><span class="cmt"><p><span class="extype" name="GetReplicationProgresses">GetReplicationProgresses</span>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="../../ReplicationProtocol$$GetReplicationProgresses$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgresses">ReplicationProtocol.GetReplicationProgresses</a>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.EventLog#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="receive:EventLog.this.Receive"></a>
@@ -1057,7 +1057,12 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
       </a>
     </span>
       <p class="shortcomment cmt">Synchronously writes <code>events</code> to the given <code>partition</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Synchronously writes <code>events</code> to the given <code>partition</code>. The partition is calculated from the configured
-<code>partitionSizeMax</code> and the current sequence number. Asynchronous writes will be supported in future versions.
+<code>partitionSizeMax</code> and the current sequence number. Asynchronous writes will be supported in future versions.</p><p>This method may only throw an exception if it can guarantee that <code>events</code> have not been written to the storage
+backend. If this is not the case (e.g. after a timeout communicating with a remote storage backend) this method
+must retry writing or give up by stopping the actor with <code>context.stop(self)</code>. This is necessary to avoid that
+<code>events</code> are erroneously excluded from the event stream sent to event-sourced actors, views, writers and
+processors, as they may later re-appear during recovery which would violate ordering/causality guarantees.</p><p>Implementations that potentially retry a write for a longer time should use a <a href="../CircuitBreaker.html" class="extype" name="com.rbmhtechnology.eventuate.log.CircuitBreaker">CircuitBreaker</a> for protecting
+themselves against request overload.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="../EventLogSettings.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSettings">EventLogSettings</a>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#writeDeletionMetadata" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">

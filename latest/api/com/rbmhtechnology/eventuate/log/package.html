@@ -108,6 +108,32 @@ configured with <code>eventuate.log.write-batch-size</code>. If there is no curr
 <code>Write</code> or <code>ReplicationWrite</code> command is served immediately (as <code>WriteN</code> or <code>ReplicationWriteN</code> batch of size
 1, respectively), keeping latency at a minimum.
 </p></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.CircuitBreaker" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="CircuitBreakerextendsActor"></a>
+      <a id="CircuitBreaker:CircuitBreaker"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="CircuitBreaker.html"><span class="name">CircuitBreaker</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@CircuitBreakerextendsActor" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A wrapper that can protect <a href="EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> implementations from being overloaded while they are retrying to
+serve a write request.</p><div class="fullcomment"><div class="comment cmt"><p>A wrapper that can protect <a href="EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> implementations from being overloaded while they are retrying to
+serve a write request. If the circuit breaker is closed, it forwards all requests to the underlying event
+log. If it is open, it replies with a failure message to the requestor. The circuit breaker can be opened
+by sending it <code>ServiceFailure</code> messages with a <code>retry</code> value greater than or equal to the configuration
+parameter <code>eventuate.log.circuit-breaker.open-after-retries</code>. It can be closed again by sending it a
+<code>ServiceNormal</code> or <code>ServiceInitialized</code> message. These messages are usually sent by <a href="EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>
+implementations and not by applications.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventLogSPI.html#write(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],partition:Long,clock:com.rbmhtechnology.eventuate.log.EventLogClock):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.log.EventLogSPI#write">EventLogSPI.write</a>
+</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.DeletionMetadata" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="DeletionMetadataextendsProductwithSerializable"></a>
       <a id="DeletionMetadata:DeletionMetadata"></a>

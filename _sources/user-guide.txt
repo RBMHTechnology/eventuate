@@ -291,7 +291,7 @@ In a more real-world example, there would be several actors of different type co
 .. _vector clock update rules: http://en.wikipedia.org/wiki/Vector_clock
 .. _version vector update rules: http://en.wikipedia.org/wiki/Version_vector
 .. _Lamport timestamps: http://en.wikipedia.org/wiki/Lamport_timestamps
-.. _multi node testkit: http://doc.akka.io/docs/akka/2.3.9/dev/multi-node-testing.html
+.. _multi node testkit: http://doc.akka.io/docs/akka/2.4.1/dev/multi-node-testing.html
 .. _ReplicatedOrSetSpec: https://github.com/RBMHTechnology/eventuate/blob/master/src/multi-jvm/scala/com/rbmhtechnology/eventuate/crdt/ReplicatedORSetSpec.scala
 .. _CRDT sources: https://github.com/RBMHTechnology/eventuate/tree/master/src/main/scala/com/rbmhtechnology/eventuate/crdt
 .. _A comprehensive study of Convergent and Commutative Replicated Data Types: http://hal.upmc.fr/file/index/docid/555588/filename/techreport.pdf

@@ -465,11 +465,11 @@ recovery, it may define a custom starting position in the event log by returning
 New events are written with the asynchronous <a href="PersistOnEvent.html#persistOnEvent[A](event:A,customDestinationAggregateIds:Set[String])(handler:PersistOnEvent.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.PersistOnEvent#persistOnEvent">persistOnEvent</a> and <a href="PersistOnEvent.html#persistOnEventN[A](events:Seq[A],onLast:PersistOnEvent.this.Handler[A],customDestinationAggregateIds:Set[String])(handler:PersistOnEvent.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.PersistOnEvent#persistOnEventN">persistOnEventN</a> methods. In contrast
 to <a href="EventsourcedActor.html#persist[A](event:A,customDestinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor#persist">persist</a> and <a href="EventsourcedActor.html#persist[A](event:A,customDestinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor#persist">persistN</a>, one can <b>not</b> prevent
 them from running concurrently to command processing by setting <a href="EventsourcedActor.html#stateSync:Boolean" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor#stateSync">stateSync</a>
-to <code>true</code>.</p><p>Persistence operations executed by <code>persistOnEvent</code> and <code>persistOnEventN</code> are reliable and idempotent.
-Once successfully completed, they have no effect on event replay during actor (re)starts. If
-writing fails, they are automatically retried on next actor (re)start. Applications that want to
-retry writing earlier should call the <a href="ConfirmedDelivery.html#redeliverUnconfirmed():Unit" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery#redeliverUnconfirmed">redeliverUnconfirmed</a>
-method (for example, scheduled with an application-defined delay).</p><p>An <code>EventsourcedActor</code> that has a <code>PersistOnEvent</code> mixin is to some extend comparable to a <a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a>
+to <code>true</code>.</p><p>Persistence operations executed by <code>persistOnEvent</code> and <code>persistOnEventN</code> are reliable and idempotent. Once
+successfully completed, they have no effect on event replay during actor (re)starts. If writing fails, they
+are automatically retried on next actor (re)start. Applications that want to retry writing earlier should
+force an actor restart by throwing an exception. They should <b>not</b> call
+<a href="ConfirmedDelivery.html#redeliverUnconfirmed():Unit" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery#redeliverUnconfirmed">redeliverUnconfirmed</a> as it may generate duplicates.</p><p>An <code>EventsourcedActor</code> that has a <code>PersistOnEvent</code> mixin is to some extend comparable to a <a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a>
 configured to write events to its source event log. Both write new events on receiving events, however, a
 <code>StatefulProcessor</code> writing new events to its source event log requires its own entry in the vector clock,
 whereas <code>PersistOnEvent</code> does not. Furthermore, a <code>StatefulProcessor</code> can not write new events during command
@@ -634,6 +634,23 @@ needs to write processed events back to its source event log, it must reserve it
 clock by setting <code>sharedClockEntry</code> to <code>false</code>, otherwise, writing to the source event log has no effect.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>.
 </p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.UnavailableException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="UnavailableExceptionextendsRuntimeException"></a>
+      <a id="UnavailableException:UnavailableException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="UnavailableException.html"><span class="name">UnavailableException</span></a><span class="result"> extends <span class="extype" name="scala.RuntimeException">RuntimeException</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@UnavailableExceptionextendsRuntimeException" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Indicates that an event log or event-sourced actor is currently unavailable for serving requests.</p>
     </li><li name="com.rbmhtechnology.eventuate.UpdateableEventBatch" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="UpdateableEventBatch[A&lt;:com.rbmhtechnology.eventuate.UpdateableEventBatch[A]]extendsDurableEventBatch"></a>
       <a id="UpdateableEventBatch[A&lt;:UpdateableEventBatch[A]]:UpdateableEventBatch[A]"></a>

@@ -111,6 +111,7 @@
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#event-collaboration">Event collaboration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#conditional-requests">Conditional requests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#command-stashing">Command stashing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#custom-serialization">Custom serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuration</a></li>
 </ul>
@@ -287,7 +288,7 @@
 <span class="n">M1</span> <span class="o">----</span> <span class="n">M2</span>
 </pre></div>
 </div>
-<p>Each location has a <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> that manages the local event logs. Replication endpoints communicate with each other via <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/remoting.html">Akka Remoting</a> which must be enabled by all locations in their <code class="docutils literal"><span class="pre">application.conf</span></code>:</p>
+<p>Each location has a <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> that manages the local event logs. Replication endpoints communicate with each other via <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.1/scala/remoting.html">Akka Remoting</a> which must be enabled by all locations in their <code class="docutils literal"><span class="pre">application.conf</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre>akka.actor.provider = &quot;akka.remote.RemoteActorRefProvider&quot;
 akka.remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
 </pre></div>
@@ -390,8 +391,8 @@ akka.remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
 <h3>Failure detection<a class="headerlink" href="#failure-detection" title="Permalink to this headline">¶</a></h3>
 <p>Replication endpoints can notify applications about availability and un-availability of remote event logs. They can become unavailable during a network partition or during a downtime of their hosting application, for example. A local replication endpoint publishes</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">Available(endpointId:</span> <span class="pre">String,</span> <span class="pre">logName:</span> <span class="pre">String)</span></code> messages to the local <code class="docutils literal"><span class="pre">ActorSystem</span></code>s <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/event-bus.html#event-stream">event stream</a> if the remote replication endpoint is available, and</li>
-<li><code class="docutils literal"><span class="pre">Unavailable(endpointId:</span> <span class="pre">String,</span> <span class="pre">logName:</span> <span class="pre">String)</span></code> messages to the local <code class="docutils literal"><span class="pre">ActorSystem</span></code>s <a class="reference external" href="http://doc.akka.io/docs/akka/2.3.9/scala/event-bus.html#event-stream">event stream</a> if the remote replication endpoint is unavailable</li>
+<li><code class="docutils literal"><span class="pre">Available(endpointId:</span> <span class="pre">String,</span> <span class="pre">logName:</span> <span class="pre">String)</span></code> messages to the local <code class="docutils literal"><span class="pre">ActorSystem</span></code>s <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.1/scala/event-bus.html#event-stream">event stream</a> if the remote replication endpoint is available, and</li>
+<li><code class="docutils literal"><span class="pre">Unavailable(endpointId:</span> <span class="pre">String,</span> <span class="pre">logName:</span> <span class="pre">String)</span></code> messages to the local <code class="docutils literal"><span class="pre">ActorSystem</span></code>s <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.1/scala/event-bus.html#event-stream">event stream</a> if the remote replication endpoint is unavailable</li>
 </ul>
 <p>Both messages are defined in <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint$">ReplicationEndpoint</a>. Their <code class="docutils literal"><span class="pre">endpointId</span></code> parameter is the id of the remote replication endpoint, the <code class="docutils literal"><span class="pre">logName</span></code> parameter is the name of an event log that is managed by the remote endpoint. The failure detection limit can be configured with:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">failure</span><span class="o">-</span><span class="n">detection</span><span class="o">-</span><span class="n">limit</span> <span class="k">=</span> <span class="mi">60</span><span class="n">s</span>

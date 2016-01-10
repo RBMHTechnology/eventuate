@@ -273,9 +273,9 @@ process that survives event log restarts.</p><p>Use with care! When events are p
 endpoints (i.e. those that were unknown at the time of deletion). Also, a location with deleted events
 may not be suitable any more for disaster recovery of other locations.
 </p></div><dl class="paramcmts block"><dt class="param">logName</dt><dd class="cmt"><p>Events are deleted from the local log with this name.</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>Sequence number up to which events shall be deleted (inclusive).</p></dd><dt class="param">remoteEndpointIds</dt><dd class="cmt"><p>A set of remote <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a> ids that must have replicated events
-                         to their logs before they are allowed to be physically deleted at this endpoint.</p></dd><dt>returns</dt><dd class="cmt"><p>A <span class="extype" name="Future">Future</span> containing the sequence number up to which events have been logically deleted.
-        When the <span class="extype" name="Future">Future</span> completes logical deletion is effective. The returned
-        sequence number can differ from the requested one, if:</p><ul><li>the log's current sequence number is smaller than the requested number. In this case the current
+                         to their logs before they are allowed to be physically deleted at this endpoint.</p></dd><dt>returns</dt><dd class="cmt"><p>The sequence number up to which events have been logically deleted. When the returned <code>Future</code>
+        completes logical deletion is effective. The returned sequence number can differ from the requested
+        one, if:</p><ul><li>the log's current sequence number is smaller than the requested number. In this case the current
          sequence number is returned.</li><li>there was a previous successful deletion request with a higher sequence number. In this case that
          number is returned.
 </li></ul></dd></dl></div>

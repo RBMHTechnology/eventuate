@@ -111,6 +111,7 @@
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#event-collaboration">Event collaboration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#conditional-requests">Conditional requests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#command-stashing">Command stashing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#custom-serialization">Custom serialization</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">Configuration</a></li>
 </ul>
@@ -217,8 +218,8 @@ eventuate {
     read-timeout = 10s
 
     # Timeout for write operations to a local event log. These are batch
-    # event writes made by event-sourced actors and processors as well
-    # as batch event writes made by replicators.
+    # event writes made by event-sourced processors and replicators. This
+    # timeout does not apply to event-sourced actor writes.
     write-timeout = 10s
 
     # Target batch size for writing events. It is used by the batching layer
@@ -235,6 +236,11 @@ eventuate {
     # resumed automatically after the replayed event batch has been handled
     # (= replay backpressure).
     replay-batch-size = 4096
+  }
+
+  log.circuit-breaker {
+    # Number of write retries after which the circuit breaker should be opened.
+    open-after-retries = 2
   }
 
   log.replication {
@@ -320,6 +326,10 @@ eventuate {
 
     # Replication factor to use when creating the keyspace.
     replication-factor = 1
+
+    # Maximum number of times a failed write should be retried until the event
+    # log actor gives up and stops itself.
+    write-retry-max = 65536
 
     # Write consistency level
     write-consistency = &quot;QUORUM&quot;
