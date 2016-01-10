@@ -163,12 +163,6 @@ class ReplicationEndpoint(val id: String, val logNames: Set[String], val logFact
   private val active: AtomicBoolean =
     new AtomicBoolean(false)
 
-  private[eventuate] val acceptor: ActorRef =
-    system.actorOf(Props(new Acceptor(this)), name = Acceptor.Name)
-
-  private[eventuate] val connectors: Set[SourceConnector] =
-    connections.map(new SourceConnector(this, _))
-
   /**
    * The actor system's replication settings.
    */
@@ -180,6 +174,12 @@ class ReplicationEndpoint(val id: String, val logNames: Set[String], val logFact
    */
   val logs: Map[String, ActorRef] =
     logNames.map(logName => logName -> system.actorOf(logFactory(logId(logName)), logId(logName))).toMap
+
+  private[eventuate] val connectors: Set[SourceConnector] =
+    connections.map(new SourceConnector(this, _))
+
+  private[eventuate] lazy val acceptor: ActorRef =
+    system.actorOf(Props(new Acceptor(this)), name = Acceptor.Name)
 
   /**
    * Returns the unique log id for given `logName`.
