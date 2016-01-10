@@ -62,8 +62,6 @@ object EventsourcedActorSpec {
       case Cmd(p, num) => 1 to num foreach { i =>
         persist(s"${p}-${i}") {
           case Success(evt) =>
-          case Failure(err: AskTimeoutException) =>
-            sender() ! "timeout"
           case Failure(err) =>
             cmdProbe ! ((err, lastVectorTimestamp, currentVectorTime, lastSequenceNr))
         }
@@ -774,16 +772,17 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
         actor ! "unhandled-command"
         cmdProbe.expectMsg("unhandled-command")
       }
-      "report write timeouts to persist handler and ignore later replies from event log" in {
+      "ignore duplicate replies from event log" in {
         val actor = recoveredEventsourcedActor(stateSync = true)
         actor.tell(Cmd("a", 1), cmdProbe.ref)
 
         val write = logProbe.expectMsgClass(classOf[Write])
-        val event = write.events(0)
+        val event = write.events(0).copy(localLogId = logIdA, localSequenceNr = 1L)
 
-        cmdProbe.expectMsg("timeout")
+        logProbe.sender() ! WriteSuccess(Seq(event.copy()), write.correlationId, instanceId)
+        evtProbe.expectMsg((event.payload, event.vectorTimestamp, timestamp(1), event.localSequenceNr))
         logProbe.sender() ! WriteSuccess(Seq(event), write.correlationId, instanceId)
-        cmdProbe.expectNoMsg(timeout)
+        evtProbe.expectNoMsg(timeout)
       }
       "apply Write replies and Written messages in received order" in {
         val probe = TestProbe()

@@ -47,11 +47,14 @@ class ReplicationSettings(config: Config) {
   val writeTimeout: FiniteDuration =
     config.getDuration("eventuate.log.write-timeout", TimeUnit.MILLISECONDS).millis
 
-  val retryDelay: FiniteDuration =
-    config.getDuration("eventuate.log.replication.retry-delay", TimeUnit.MILLISECONDS).millis
+  val readTimeout: FiniteDuration =
+    config.getDuration("eventuate.log.read-timeout", TimeUnit.MILLISECONDS).millis
 
   val remoteReadTimeout: FiniteDuration =
     config.getDuration("eventuate.log.replication.remote-read-timeout", TimeUnit.MILLISECONDS).millis
+
+  val retryDelay: FiniteDuration =
+    config.getDuration("eventuate.log.replication.retry-delay", TimeUnit.MILLISECONDS).millis
 
   val failureDetectionLimit =
     config.getDuration("eventuate.log.replication.failure-detection-limit", TimeUnit.MILLISECONDS).millis
@@ -239,9 +242,9 @@ class ReplicationEndpoint(val id: String, val logNames: Set[String], val logFact
    * @param toSequenceNr Sequence number up to which events shall be deleted (inclusive).
    * @param remoteEndpointIds A set of remote [[ReplicationEndpoint]] ids that must have replicated events
    *                          to their logs before they are allowed to be physically deleted at this endpoint.
-   * @return A [[Future]] containing the sequence number up to which events have been logically deleted.
-   *         When the [[Future]] completes logical deletion is effective. The returned
-   *         sequence number can differ from the requested one, if:
+   * @return The sequence number up to which events have been logically deleted. When the returned `Future`
+   *         completes logical deletion is effective. The returned sequence number can differ from the requested
+   *         one, if:
    *
    *         - the log's current sequence number is smaller than the requested number. In this case the current
    *          sequence number is returned.
@@ -445,7 +448,7 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
     readSchedule = Some(scheduler.scheduleOnce(settings.retryDelay, self, ReplicationDue))
 
   private def fetch(): Unit = {
-    implicit val timeout = Timeout(settings.remoteReadTimeout)
+    implicit val timeout = Timeout(settings.readTimeout)
 
     target.log ? GetReplicationProgress(source.logId) recover {
       case t => GetReplicationProgressFailure(t)

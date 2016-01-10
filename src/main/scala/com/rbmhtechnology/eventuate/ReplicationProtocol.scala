@@ -192,7 +192,7 @@ object ReplicationProtocol {
    * @param num Number of events actually replicated.
    * @param sourceLogId Id of the log the written events were replicated from.
    * @param storedReplicationProgress Last source log read position stored in the target log.
-   * @param currentTargetVersionVector [[EventLogClock.versionVector]] of the target log after the events were written
+   * @param currentTargetVersionVector [[log.EventLogClock.versionVector Version vector]] of the target log after the events were written
    */
   case class ReplicationWriteSuccess(num: Int, sourceLogId: String, storedReplicationProgress: Long, currentTargetVersionVector: VectorTime)
 

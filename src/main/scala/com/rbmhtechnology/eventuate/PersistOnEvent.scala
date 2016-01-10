@@ -31,11 +31,11 @@ private case class PersistOnEventRequest(deliveryId: String, parameters: Vector[
  * them from running concurrently to command processing by setting [[EventsourcedActor.stateSync stateSync]]
  * to `true`.
  *
- * Persistence operations executed by `persistOnEvent` and `persistOnEventN` are reliable and idempotent.
- * Once successfully completed, they have no effect on event replay during actor (re)starts. If
- * writing fails, they are automatically retried on next actor (re)start. Applications that want to
- * retry writing earlier should call the [[ConfirmedDelivery.redeliverUnconfirmed redeliverUnconfirmed]]
- * method (for example, scheduled with an application-defined delay).
+ * Persistence operations executed by `persistOnEvent` and `persistOnEventN` are reliable and idempotent. Once
+ * successfully completed, they have no effect on event replay during actor (re)starts. If writing fails, they
+ * are automatically retried on next actor (re)start. Applications that want to retry writing earlier should
+ * force an actor restart by throwing an exception. They should '''not''' call
+ * [[ConfirmedDelivery.redeliverUnconfirmed redeliverUnconfirmed]] as it may generate duplicates.
  *
  * An `EventsourcedActor` that has a `PersistOnEvent` mixin is to some extend comparable to a [[StatefulProcessor]]
  * configured to write events to its source event log. Both write new events on receiving events, however, a
@@ -73,9 +73,9 @@ trait PersistOnEvent extends ConfirmedDelivery {
    * `Success`, `handler` and `onLast` are not called again during event replay.
    *
    * If `handler` is called with `Failure`, writing to the event log is automatically retried on
-   * next actor (re)start. Applications that want to retry writing earlier should call the
-   * [[ConfirmedDelivery.redeliverUnconfirmed redeliverUnconfirmed]] method (for example, scheduled
-   * with an application-defined delay).
+   * next actor (re)start. Applications that want to retry writing earlier should force an actor
+   * restart by throwing an exception. They should '''not''' call
+   * [[ConfirmedDelivery.redeliverUnconfirmed redeliverUnconfirmed]] as it may generate duplicates.
    *
    * By default, the event is routed to event-sourced destinations with an undefined `aggregateId`.
    * If this actor's `aggregateId` is defined it is additionally routed to all actors with the same
@@ -101,10 +101,10 @@ trait PersistOnEvent extends ConfirmedDelivery {
    * hence, it is safe to modify internal state within them. Once called with `Success`, the
    * `handler` is not called again during event replay.
    *
-   * If `handler` is called with a `Failure`, writing to the event log is automatically retried on
-   * next actor (re)start. Applications that want to retry writing earlier should call the
-   * [[ConfirmedDelivery.redeliverUnconfirmed redeliverUnconfirmed]] method (for example, scheduled
-   * with an application-defined delay).
+   * If `handler` is called with `Failure`, writing to the event log is automatically retried on
+   * next actor (re)start. Applications that want to retry writing earlier should force an actor
+   * restart by throwing an exception. They should '''not''' call
+   * [[ConfirmedDelivery.redeliverUnconfirmed redeliverUnconfirmed]] as it may generate duplicates.
    *
    * By default, the event is routed to event-sourced destinations with an undefined `aggregateId`.
    * If this actor's `aggregateId` is defined it is additionally routed to all actors with the same
@@ -116,6 +116,10 @@ trait PersistOnEvent extends ConfirmedDelivery {
     handlers = handlers :+ handler.asInstanceOf[Handler[Any]]
   }
 
+  /**
+   * Creates a delivery id from the given `event`. By default, a string representation of
+   * [[DurableEvent.localSequenceNr]] is created. Can be overridden by applications.
+   */
   def deliveryId(event: DurableEvent): String =
     event.localSequenceNr.toString
 }

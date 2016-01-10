@@ -32,15 +32,6 @@ Both, event handler and persist handler are called on a dispatcher thread of the
 .. note::
    A command handler should not modify persistent actor state i.e. state that is derived from events. 
 
-Handling persistence failures
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Persistence may fail for several reasons. For example, event serialization or writing to the storage backend may fail, to mention only two examples. In general, a persist handler that is called with a ``Failure`` argument should not make any assumptions whether the corresponding event has been written or not. For example, an event could have been actually written to the storage backend but the ACK was lost which causes ``persist`` to complete with a failure.
-
-One way to deal with this situation is to restart the event-sourced actor and inspect the recovered state whether that event has been processed or not. If it has been processed, the application can continue with the next command, otherwise it should re-send the failed command. This strategy avoids duplicates in the event log.
-
-Duplicates are not an issue if state update operations executed by an event handler are idempotent. In this case, an application may simply re-send a failed command without restarting the event-sourced actor. 
-
 State synchronization
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -309,6 +300,38 @@ The ``UserManager`` maintains a persistent ``users`` map. User can be added to t
 
 In the above implementation, an ``UpdateUser`` command might be repeatedly stashed and unstashed if the corresponding ``CreateUser`` command is preceded by other unrelated ``CreateUser`` commands. Assuming that out-of-order user commands are rare, the performance impact is limited. Alternatively, one could record stashed user ids in transient actor state and conditionally call ``unstashAll()`` by checking that state.
 
+Failure handling
+----------------
+
+.. _persist-failure-handling:
+
+``persist`` failure handling
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Asynchronous ``persist`` operations may fail for several reasons. For example, event serialization or writing to the storage backend may fail, to mention only two examples. In general, a persist handler that is called with a ``Failure`` argument can make the assumption that the write actually did not happen in the storage backend so that there’s no need to restart the calling actor to find out if writing was successful or not.
+
+Consequently, an EventLog_ actor may only report a write failure if it can guarantee that the write actually did not happen in the storage backend. This is, for example, **not** the case if the event log actor experiences a timeout when trying to write to a remote storage backend: the write might have been successful but the ACK got lost. In this case, the event log either has to verify if the write succeeded or not, or retry the write to the storage backend (if writes are idempotent), before reporting a result. 
+
+Without this strategy, event-sourced actors, views, writers or processors could miss events that may later re-appear during recovery. This would violate message ordering and causality guarantees made by Eventuate. Although stopping all related actors on write failure would solve the problem of missing events, this would make them unavailable for in-memory reads. Assuming a longer-lasting problem with the storage backend, they couldn’t recover successfully during storage backend unavailability and hence cannot rebuild internal state. It is therefore a better default to keep these actors alive, so that an application may at least continue to read in-memory state during storage backend unavailability.
+
+To prevent overload with pending requests, event log actors that are busy retrying a write will reject further requests until the write succeeds. For this reason, a CassandraEventLog_ is wrapped by a CircuitBreaker_ that rejects further requests if the number of current write retries exceeds a configurable limit (see ``eventuate.log.circuit-breaker.open-after-retries`` configuration parameter). ``EventsourcedActor``\ s may therefore see an ``UnavailableException`` reported to a persist handler, if the event log actor is busy retrying a write. After reaching a configurable maximum number of retries (see ``eventuate.log.cassandra.write-retry-max`` configuration parameter), the event log actor finally gives up and stops itself. Applications should therefore watch event log actors and terminate all dependent event-sourced actors, views, writers and processors if the event log actor terminates.
+
+Because of write retries, performed by an event log actor, persist handler calls may be delayed indefinitely. For an ``EventsourcedActor`` with ``stateSync`` set to ``true``, this means that further commands sent to that actor will be stashed until the current write completes. In this case, it is the responsibility of the application not to overload that actor with further commands. For example, an application could use timeouts for command replies and prevent sending further commands to that actor if a timeout occurred. After an application-defined delay, command sending can be resumed. This is comparable to an application-level circuit breaker. 
+
+Alternatively, an application could restart an ``EventsourcedActor`` on command timeout and continue sending new commands after recovery succeeded. This however may take a while depending on the unavailability duration of the storage backend. On the other hand, event-sourced actors that see an ``UnavailableException`` reported to a persist handler don’t pile up new commands while the event log actor’s circuit breaker is open. This is generally the case for event-sourced actors with ``stateSync`` set to ``false``. Event-sourced actors with ``stateSync`` set to ``true`` will only see an ``UnavailableException`` if they had no write operation in progress when the circuit breaker opened.
+
+.. _persist-on-event-failure-handling:
+
+``persistOnEvent`` failure handling
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Event-sourced actors can also persist new events in the event handler if they additionally extend PersistOnEvent_. An asynchronous ``persistOnEvent`` operation may also fail for reasons explained in :ref:`persist-failure-handling`. If a ``persistOnEvent`` operation fails, it may only be retried by restarting the actor. Applications should not call ``redeliverUnconfirmed`` as it may generate duplicates.
+
+Recovery failure handling
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
 Custom serialization
 --------------------
 
@@ -356,9 +379,10 @@ Custom serializers can also be configured for the type parameter ``A`` of ``MVRe
 .. [#] The routing destinations of a DurableEvent_ can be obtained with its ``destinationAggregateIds`` method.
 
 .. _CQRS: http://martinfowler.com/bliki/CQRS.html
-.. _stashed: http://doc.akka.io/docs/akka/2.3.9/scala/actors.html#stash
-.. _serialization extension: http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html
-.. _Serializer: http://doc.akka.io/api/akka/2.3.9/#akka.serialization.Serializer
+.. _stashed: http://doc.akka.io/docs/akka/2.4.1/scala/actors.html#stash
+.. _watch: http://doc.akka.io/docs/akka/2.4.1/scala/actors.html#deathwatch-scala
+.. _serialization extension: http://doc.akka.io/docs/akka/2.4.1/scala/serialization.html
+.. _Serializer: http://doc.akka.io/api/akka/2.4.1/#akka.serialization.Serializer
 .. _Protocol Buffers: https://developers.google.com/protocol-buffers/
 .. _plausible clocks: https://github.com/RBMHTechnology/eventuate/issues/68
 .. _Cassandra: http://cassandra.apache.org/
@@ -373,3 +397,7 @@ Custom serializers can also be configured for the type parameter ``A`` of ``MVRe
 .. _StatefulProcessor: ../latest/api/index.html#com.rbmhtechnology.eventuate.StatefulProcessor
 .. _ReplicationFilter: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationFilter
 .. _PersistOnEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.PersistOnEvent
+.. _UnavailableException: ../latest/api/index.html#com.rbmhtechnology.eventuate.UnavailableException
+.. _CircuitBreaker: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.CircuitBreaker
+.. _EventLog: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.EventLog
+.. _CassandraEventLog: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog

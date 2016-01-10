@@ -40,12 +40,14 @@ private class BatchingSettings(config: Config) {
  * `Write` or `ReplicationWrite` command is served immediately (as `WriteN` or `ReplicationWriteN` batch of size
  * 1, respectively), keeping latency at a minimum.
  *
- * @param eventLogProps configuration object of the wrapped event log actor. The wrapped event log actor is
- *                      created as child actor of this wrapper.
+ * @param logProps configuration object of the wrapped event log actor. The wrapped event log actor is
+ *                 created as child actor of this wrapper.
  */
-class BatchingLayer(eventLogProps: Props) extends Actor {
+class BatchingLayer(logProps: Props) extends Actor {
+  import CircuitBreaker._
+
   val eventLog: ActorRef =
-    context.actorOf(eventLogProps)
+    context.watch(context.actorOf(logProps))
 
   val defaultBatcher: ActorRef =
     context.actorOf(Props(new DefaultBatcher(eventLog)))
@@ -58,6 +60,10 @@ class BatchingLayer(eventLogProps: Props) extends Actor {
       replicationBatcher forward r
     case r: ReplicationRead =>
       replicationBatcher forward r
+    case e: ServiceEvent =>
+      context.parent ! e
+    case Terminated(_) =>
+      context.stop(self)
     case cmd =>
       defaultBatcher forward cmd
   }

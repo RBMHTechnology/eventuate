@@ -12,5 +12,5 @@ The following is a list of known limitations that are going to be addressed in f
 
 - No performance optimizations have been made yet.
 
-.. _Akka Cluster: http://doc.akka.io/docs/akka/2.3.9/scala/cluster-usage.html
+.. _Akka Cluster: http://doc.akka.io/docs/akka/2.4.1/scala/cluster-usage.html
 .. _let us know: https://groups.google.com/forum/#!forum/eventuate

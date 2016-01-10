@@ -56,6 +56,9 @@ class CassandraEventLogSettings(config: Config) extends EventLogSettings {
   val writeConsistency: ConsistencyLevel =
     ConsistencyLevel.valueOf(config.getString("eventuate.log.cassandra.write-consistency"))
 
+  val writeRetryMax: Int =
+    config.getInt("eventuate.log.cassandra.write-retry-max")
+
   val defaultPort: Int =
     config.getInt("eventuate.log.cassandra.default-port")
 

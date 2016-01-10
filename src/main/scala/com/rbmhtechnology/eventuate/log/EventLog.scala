@@ -16,8 +16,6 @@
 
 package com.rbmhtechnology.eventuate.log
 
-import java.io.Closeable
-
 import akka.actor._
 import akka.dispatch.MessageDispatcher
 import akka.event.LoggingAdapter
@@ -131,14 +129,14 @@ trait EventLogSPI { this: Actor =>
   /**
    * Asynchronously reads all stored local replication progresses.
    *
-   * @see [[GetReplicationProgresses]]
+   * @see [[ReplicationProtocol.GetReplicationProgresses]]
    */
   def readReplicationProgresses: Future[Map[String, Long]]
 
   /**
    * Asynchronously reads the replication progress for given source `logId`.
    *
-   * @see [[GetReplicationProgress]]
+   * @see [[ReplicationProtocol.GetReplicationProgress]]
    */
   def readReplicationProgress(logId: String): Future[Long]
 
@@ -180,6 +178,15 @@ trait EventLogSPI { this: Actor =>
   /**
    * Synchronously writes `events` to the given `partition`. The partition is calculated from the configured
    * `partitionSizeMax` and the current sequence number. Asynchronous writes will be supported in future versions.
+   *
+   * This method may only throw an exception if it can guarantee that `events` have not been written to the storage
+   * backend. If this is not the case (e.g. after a timeout communicating with a remote storage backend) this method
+   * must retry writing or give up by stopping the actor with `context.stop(self)`. This is necessary to avoid that
+   * `events` are erroneously excluded from the event stream sent to event-sourced actors, views, writers and
+   * processors, as they may later re-appear during recovery which would violate ordering/causality guarantees.
+   *
+   * Implementations that potentially retry a write for a longer time should use a [[CircuitBreaker]] for protecting
+   * themselves against request overload.
    *
    * @see [[EventLogSettings]]
    */
