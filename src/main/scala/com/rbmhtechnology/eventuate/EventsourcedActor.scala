@@ -177,11 +177,6 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
   }
 
   private def write(correlationId: Int): Unit = {
-    // Write replies and Written messages must be kept in an order as sent by the
-    // event log actor. Hence, we cannot *ask* the event log actor to Write as it
-    // would bring Write replies and Written messages out of order. Write replies
-    // would need to be sent to self (after the ask future completes) which could
-    // re-order them relative to directly received Written messages.
     eventLog ! Write(writeRequests, sender(), self, correlationId, instanceId)
     writesInProgress = writesInProgress + correlationId
     writeRequests = Vector.empty

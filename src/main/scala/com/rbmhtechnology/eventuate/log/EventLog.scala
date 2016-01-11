@@ -215,7 +215,7 @@ trait EventLogSPI { this: Actor =>
 /**
  * An abstract event log that handles [[EventsourcingProtocol]] and [[ReplicationProtocol]] messages and
  * translates them to read and write operations declared on the [[EventLogSPI]] trait. Storage providers
- * implement an event log by implementing the [[EventLogSPI]] methods.
+ * implement an event log by implementing the [[EventLogSPI]].
  */
 abstract class EventLog(id: String) extends Actor with EventLogSPI with Stash with ActorLogging {
   import NotificationChannel._
@@ -458,8 +458,8 @@ abstract class EventLog(id: String) extends Actor with EventLogSPI with Stash wi
         case Success(_) => sdr ! DeleteSnapshotsSuccess
         case Failure(e) => sdr ! DeleteSnapshotsFailure(e)
       }
-    case Terminated(replyTo) =>
-      registry = registry.unregisterSubscriber(replyTo)
+    case Terminated(subscriber) =>
+      registry = registry.unregisterSubscriber(subscriber)
   }
 
   override def receive =
