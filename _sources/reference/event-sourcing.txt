@@ -303,29 +303,46 @@ In the above implementation, an ``UpdateUser`` command might be repeatedly stash
 Failure handling
 ----------------
 
+Event-sourced actors, views, writers and processors register themselves at an EventLog_ actor in order to be notified about changes in the event log. Directly after registration, during recovery, they read from the event log in order to recover internal state from past events. After recovery has completed, the event log actor **pushes** newly written events to registered actors so that they can update application state with minimal latency. If a registered actor is restarted, it recovers again from the event log and continues to process push-updates after recovery has completed.
+
+An EventLog_ actor processes write requests from :ref:`ref-event-sourced-actors`, :ref:`ref-event-sourced-processors` and :ref:`replication-endpoints`. If a write succeeds it pushes the written events to registered actors (under consideration of :ref:`event-routing` rules) and handles the next write request. Writing to a storage backend may also fail for several reasons. In the following, it is assumed that writes are made to a remote storage backend such as the :ref:`cassandra-storage-backend`.
+
+A write failure reported from a storage backend driver does not necessarily mean that the events have not been written to the storage backend. For example, a write could have been actually applied to the remote storage backend but the ACK message got lost. This usually causes the driver to report a timeout. If an event log actor would simply continue with the next write request, after having informed the event emitter about the failure, the emitter and and other registered actors would erroneously assume that the emitted events do not exist in the event log. However, these events may become visible to newly registered actors that are about to recover or to replication endpoints that read events for replication. 
+
+This would violate the event ordering and consistency guarantees made by Eventuate because some registered actors would see an event stream with missing events. The following describes two options to deal with that situation:
+
+#. After a failed write, the event log actor notifies all registered actors to restart themselves so that another recovery phase would find out whether the events have been actually written or not. This is fine if the write failure was actually a lost ACK and the storage backend is immediately available for subsequent reads (neglecting a potentially high read load). If the write failure was because of a longer-lasting problem, such as a longer network partition that disconnects the application from the storage backend, registered actors would fail to recover and would be therefore be unavailable for in-memory reads.
+
+#. The event log actor itself tries to find out whether the write was successful or not, either by reading from the storage backend or by retrying the write until it succeeds, before continuing with the next write request. In this case, the log actor would inform the event emitter either about a failed write if it can guarantee that the write has not been applied to the storage backend or about a successful write if retrying the write finally succeeded. Retrying writes can only be made to storage backends that support idempotent writes. With this strategy, registered actors don’t need be restarted and remain available for in-memory reads.
+
+In Eventuate, the second approach is taken. Should there be a longer-lasting problem with the storage backend, it may take a longer time for an event log actor to make a decision about the success or failure of a write. During that time, it will reject further writes in order to avoid being overloaded with pending write requests. This is an application of the `circuit breaker`_ design pattern.
+
+Consequently, a write failure reported by an event log actor means that the write was actually **not** applied to the storage backend. This additional guarantee comes at the cost of potentially long write reply delays but allows registered actors to remain available for in-memory reads during storage backend unavailability. It also provides clearer semantics of write failures. 
+
+.. _circuit-breaker:
+
+Circuit breaker
+~~~~~~~~~~~~~~~
+
+The strategy described above can be implemented by wrapping a CassandraEventLog_ in a CircuitBreaker_ actor. This is the default when creating the log actor for a :ref:`cassandra-storage-backend`. Should the event log actor need to retry a write ``eventuate.log.circuit-breaker.open-after-retries`` times or more, the circuit breaker opens. If open, it rejects all requests by replying with a failure message that contains an ``UnavailableException``. If retrying the write finally succeeds, the circuit breaker closes again. The maximum number of write retries can be configured with ``eventuate.log.cassandra.write-retry-max`` and the delay between write retries with ``eventuate.log.write-timeout``. If the maximum number of retries is reached, the event log actor gives up and stops itself which also stops all registered actors.
+
 .. _persist-failure-handling:
 
 ``persist`` failure handling
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Asynchronous ``persist`` operations may fail for several reasons. For example, event serialization or writing to the storage backend may fail, to mention only two examples. In general, a persist handler that is called with a ``Failure`` argument can make the assumption that the write actually did not happen in the storage backend so that there’s no need to restart the calling actor to find out if writing was successful or not.
+Asynchronous ``persist`` operations send write requests to an EventLog_ actor. The write reply is passed as argument to the persist handler (see section :ref:`command-handler`). If the persist handler is called with a ``Failure`` one can safely assume that the events have not been written to the storage backend. As already explained above, a consequence of this additional guarantee is that persist handler callbacks may be delayed indefinitely.
 
-Consequently, an EventLog_ actor may only report a write failure if it can guarantee that the write actually did not happen in the storage backend. This is, for example, **not** the case if the event log actor experiences a timeout when trying to write to a remote storage backend: the write might have been successful but the ACK got lost. In this case, the event log either has to verify if the write succeeded or not, or retry the write to the storage backend (if writes are idempotent), before reporting a result. 
+For an ``EventsourcedActor`` with ``stateSync`` set to ``true``, this means that further commands sent to that actor will be stashed until the current write completes. In this case, it is the responsibility of the application not to overload that actor with further commands. For example, an application could use timeouts for command replies and prevent sending further commands to that actor if a timeout occurred. After an application-defined delay, command sending can be resumed. This is comparable to using an application-level circuit breaker. Alternatively, an application could restart an event-sourced actor on command timeout and continue sending new commands to that actor after recovery succeeded. This however may take a while depending on the unavailability duration of the storage backend. 
 
-Without this strategy, event-sourced actors, views, writers or processors could miss events that may later re-appear during recovery. This would violate message ordering and causality guarantees made by Eventuate. Although stopping all related actors on write failure would solve the problem of missing events, this would make them unavailable for in-memory reads. Assuming a longer-lasting problem with the storage backend, they couldn’t recover successfully during storage backend unavailability and hence cannot rebuild internal state. It is therefore a better default to keep these actors alive, so that an application may at least continue to read in-memory state during storage backend unavailability.
-
-To prevent overload with pending requests, event log actors that are busy retrying a write will reject further requests until the write succeeds. For this reason, a CassandraEventLog_ is wrapped by a CircuitBreaker_ that rejects further requests if the number of current write retries exceeds a configurable limit (see ``eventuate.log.circuit-breaker.open-after-retries`` configuration parameter). ``EventsourcedActor``\ s may therefore see an ``UnavailableException`` reported to a persist handler, if the event log actor is busy retrying a write. After reaching a configurable maximum number of retries (see ``eventuate.log.cassandra.write-retry-max`` configuration parameter), the event log actor finally gives up and stops itself. Applications should therefore watch event log actors and terminate all dependent event-sourced actors, views, writers and processors if the event log actor terminates.
-
-Because of write retries, performed by an event log actor, persist handler calls may be delayed indefinitely. For an ``EventsourcedActor`` with ``stateSync`` set to ``true``, this means that further commands sent to that actor will be stashed until the current write completes. In this case, it is the responsibility of the application not to overload that actor with further commands. For example, an application could use timeouts for command replies and prevent sending further commands to that actor if a timeout occurred. After an application-defined delay, command sending can be resumed. This is comparable to an application-level circuit breaker. 
-
-Alternatively, an application could restart an ``EventsourcedActor`` on command timeout and continue sending new commands after recovery succeeded. This however may take a while depending on the unavailability duration of the storage backend. On the other hand, event-sourced actors that see an ``UnavailableException`` reported to a persist handler don’t pile up new commands while the event log actor’s circuit breaker is open. This is generally the case for event-sourced actors with ``stateSync`` set to ``false``. Event-sourced actors with ``stateSync`` set to ``true`` will only see an ``UnavailableException`` if they had no write operation in progress when the circuit breaker opened.
+``EventsourcedActor``\ s with ``stateSync`` set to ``false`` do not stash commands but rather send write requests immediately to the event log actor. If the log actor is busy retrying a write and the :ref:`circuit-breaker` opens, later persist operations will be completed immediately with an ``UnavailableException`` failure, regardless whether the event-sourced actor has persist operations in progress or not. A persist operation of an ``EventsourcedActor`` with ``stateSync`` set to ``true`` will only be completed with an ``UnavailableException`` failure if that actor had no persist operation in progress at the time the circuit breaker opened.
 
 .. _persist-on-event-failure-handling:
 
 ``persistOnEvent`` failure handling
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Event-sourced actors can also persist new events in the event handler if they additionally extend PersistOnEvent_. An asynchronous ``persistOnEvent`` operation may also fail for reasons explained in :ref:`persist-failure-handling`. If a ``persistOnEvent`` operation fails, it may only be retried by restarting the actor. Applications should not call ``redeliverUnconfirmed`` as it may generate duplicates.
+``EventsourcedActor``\ s can also persist events in the :ref:`event-handler` if they additionally extend PersistOnEvent_. An asynchronous ``persistOnEvent`` operation may also fail for reasons explained in :ref:`persist-failure-handling`. If a ``persistOnEvent`` operation fails, it may only be retried by restarting the actor. Applications should not call ``redeliverUnconfirmed`` as it may generate duplicates.
 
 Recovery failure handling
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -386,6 +403,7 @@ Custom serializers can also be configured for the type parameter ``A`` of ``MVRe
 .. _Protocol Buffers: https://developers.google.com/protocol-buffers/
 .. _plausible clocks: https://github.com/RBMHTechnology/eventuate/issues/68
 .. _Cassandra: http://cassandra.apache.org/
+.. _circuit breaker: http://martinfowler.com/bliki/CircuitBreaker.html
 
 .. _ConfirmedDelivery: ../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery
 .. _DurableEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent
