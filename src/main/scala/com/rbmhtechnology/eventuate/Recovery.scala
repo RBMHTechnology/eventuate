@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Red Bull Media House GmbH <http://www.redbullmediahouse.com> - all rights reserved.
+ * Copyright (C) 2015 - 2016 Red Bull Media House GmbH <http://www.redbullmediahouse.com> - all rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -289,4 +289,3 @@ private class RecoveryActor(endpointId: String, link: RecoveryLink) extends Acto
         context.parent ! RecoveryStepCompleted(link)
   }
 }
-
