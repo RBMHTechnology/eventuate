@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.example.ordermgnt.japi;
+package com.rbmhtechnology.example.japi.ordermgnt;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,7 @@ import akka.actor.ActorRef;
 import akka.japi.pf.ReceiveBuilder;
 
 import com.rbmhtechnology.eventuate.AbstractEventsourcedView;
-import com.rbmhtechnology.example.ordermgnt.japi.OrderActor.*;
+import com.rbmhtechnology.example.japi.ordermgnt.OrderActor.*;
 
 public class OrderView extends AbstractEventsourcedView {
     private Map<String, Integer> updateCounts;

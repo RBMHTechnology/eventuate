@@ -10,7 +10,7 @@ while [[ $# > 1 ]]; do
         EXAMPLE_MODE=recover
         ;;
         -j|--java)
-        EXAMPLE_MAIN=com.rbmhtechnology.example.ordermgnt.japi.OrderExample
+        EXAMPLE_MAIN=com.rbmhtechnology.example.japi.ordermgnt.OrderExample
         ;;
         *)
         # unknown option

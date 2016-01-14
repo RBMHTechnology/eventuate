@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.example.ordermgnt.japi;
+package com.rbmhtechnology.example.japi.ordermgnt;
 
 import akka.actor.ExtendedActorSystem;
 import akka.serialization.*;

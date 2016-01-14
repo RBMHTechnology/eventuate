@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.example.ordermgnt.japi;
+package com.rbmhtechnology.example.japi.ordermgnt;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,8 +33,8 @@ import com.rbmhtechnology.eventuate.VersionedAggregate.*;
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog;
 import com.typesafe.config.ConfigFactory;
 
-import static com.rbmhtechnology.example.ordermgnt.japi.OrderActor.*;
-import static com.rbmhtechnology.example.ordermgnt.japi.OrderView.*;
+import static com.rbmhtechnology.example.japi.ordermgnt.OrderActor.*;
+import static com.rbmhtechnology.example.japi.ordermgnt.OrderView.*;
 
 public class OrderExample extends AbstractActor {
     private static Pattern pExit    = Pattern.compile("^exit\\s*");
