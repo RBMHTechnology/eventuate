@@ -95,7 +95,7 @@ runProtoc in protobufConfig := (args =>
 import com.typesafe.sbt.SbtMultiJvm
 import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.MultiJvm
 
-lazy val IntegrationTest = config("it") extend(Test)
+lazy val IntegrTest = config("it") extend(Test)
 
 evictionWarningOptions in update := EvictionWarningOptions.default
   .withWarnTransitiveEvictions(false)
@@ -103,16 +103,16 @@ evictionWarningOptions in update := EvictionWarningOptions.default
   .withWarnScalaVersionEviction(false)
 
 lazy val root = (project in file("."))
-  .configs(IntegrationTest)
+  .configs(IntegrTest)
   .settings(itSettings: _*)
   .configs(MultiJvm)
   .settings(multiJvmSettings: _*)
 
 lazy val itSettings = Defaults.itSettings ++ Seq(
-  comp in IntegrationTest <<= (comp in IntegrationTest) triggeredBy (comp in Test),
-  test in IntegrationTest <<= (test in IntegrationTest) triggeredBy (test in Test),
-  parallelExecution in IntegrationTest := false,
-  fork in IntegrationTest := true
+  comp in IntegrTest <<= (comp in IntegrTest) triggeredBy (comp in Test),
+  test in IntegrTest <<= (test in IntegrTest) triggeredBy (test in Test),
+  parallelExecution in IntegrTest := false,
+  fork in IntegrTest := true
 )
 
 lazy val multiJvmSettings = SbtMultiJvm.multiJvmSettings ++ Seq(
@@ -166,7 +166,7 @@ com.rbmhtechnology.eventuate.Formatting.formatSettings
 //  File headers
 // ----------------------------------------------------------------------
 
-val header =
+val header = (HeaderPattern.cStyleBlockComment,
   """|/*
      | * Copyright (C) 2015 - 2016 Red Bull Media House GmbH <http://www.redbullmediahouse.com> - all rights reserved.
      | *
@@ -183,11 +183,18 @@ val header =
      | * limitations under the License.
      | */
      |
-     |""".stripMargin
+     |""".stripMargin)
 
 headers := Map(
-  "scala" -> (HeaderPattern.cStyleBlockComment, header),
-  "java"  -> (HeaderPattern.cStyleBlockComment, header))
+  "scala" -> header,
+  "java"  -> header)
 
-inConfig(Compile)(compileInputs.in(comp) <<= compileInputs.in(comp).dependsOn(createHeaders.in(comp)))
-inConfig(Test)(compileInputs.in(comp) <<= compileInputs.in(comp).dependsOn(createHeaders.in(comp)))
+inConfig(IntegrTest)(SbtHeader.toBeScopedSettings)
+inConfig(MultiJvm)(SbtHeader.toBeScopedSettings)
+
+val createHeaderDep = compileInputs.in(comp) <<= compileInputs.in(comp).dependsOn(createHeaders.in(comp))
+
+inConfig(Compile)(createHeaderDep)
+inConfig(Test)(createHeaderDep)
+inConfig(IntegrTest)(createHeaderDep)
+inConfig(MultiJvm)(createHeaderDep)
