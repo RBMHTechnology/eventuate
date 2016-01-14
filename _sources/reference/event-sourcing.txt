@@ -389,6 +389,8 @@ Custom snapshot serialization also works for state managed with ``ConcurrentVers
 
 Custom serializers can also be configured for the type parameter ``A`` of ``MVRegister[A]``, ``LWWRegister[A]`` and ``ORSet[A]``, :ref:`commutative-replicated-data-types` for which the corresponding CRDT service interfaces provide a ``save`` method for saving snapshots.
 
+Event-sourced actors that extend ``ConfirmedDelivery`` for :ref:`reliable-delivery` of messages to destinations will also include unconfirmed messages as ``deliveryAttempts`` in a Snapshot_. The ``message`` field of a DeliveryAttempt_ can also be custom-serialized by configuring a serializer.
+
 .. [#] The ``customDestinationAggregateIds`` parameter is described in section :ref:`event-routing`.
 .. [#] Writes from different event-sourced actors that have ``stateSync`` set to ``true`` are still batched, but not the writes from a single event-sourced actor.
 .. [#] Event replay can optionally start from :ref:`snapshots` of actor state.
@@ -414,6 +416,8 @@ Custom serializers can also be configured for the type parameter ``A`` of ``MVRe
 .. _EventsourcedProcessor: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor
 .. _StatefulProcessor: ../latest/api/index.html#com.rbmhtechnology.eventuate.StatefulProcessor
 .. _ReplicationFilter: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationFilter
+.. _Snapshot: ../latest/api/index.html#com.rbmhtechnology.eventuate.Snapshot
+.. _DeliveryAttempt: ../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery$$DeliveryAttempt
 .. _PersistOnEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.PersistOnEvent
 .. _UnavailableException: ../latest/api/index.html#com.rbmhtechnology.eventuate.UnavailableException
 .. _CircuitBreaker: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.CircuitBreaker
