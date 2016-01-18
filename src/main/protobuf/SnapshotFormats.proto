@@ -25,12 +25,24 @@ message SnapshotFormat {
   optional DurableEventFormat lastEvent = 3;
   optional VectorTimeFormat currentTime = 4;
   repeated DeliveryAttemptFormat deliveryAttempts = 5;
+  repeated PersistOnEventRequestFormat persistOnEventRequests = 6;
 }
 
 message DeliveryAttemptFormat {
   optional string deliveryId = 1;
   optional PayloadFormat message = 2;
   optional string destination = 3;
+}
+
+message PersistOnEventRequestFormat {
+  optional int64 persistOnEventSequenceNr = 1;
+  repeated PersistOnEventInvocationFormat invocation = 2;
+  optional int32 instanceId = 3;
+}
+
+message PersistOnEventInvocationFormat {
+  optional PayloadFormat event = 1;
+  repeated string customDestinationAggregateIds = 2;
 }
 
 message ConcurrentVersionsTreeFormat {

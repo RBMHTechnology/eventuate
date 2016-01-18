@@ -51,6 +51,10 @@ object EventsourcedView {
    */
   type Handler[A] = Try[A] => Unit
 
+  object Handler {
+    def empty[A]: Handler[A] = (_: Try[A]) => Unit
+  }
+
   /**
    * Internal API.
    */
@@ -90,10 +94,6 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
   import context.dispatcher
 
   type Handler[A] = EventsourcedView.Handler[A]
-
-  object Handler {
-    def empty[A]: Handler[A] = (_: Try[A]) => Unit
-  }
 
   val instanceId: Int = instanceIdCounter.getAndIncrement()
 

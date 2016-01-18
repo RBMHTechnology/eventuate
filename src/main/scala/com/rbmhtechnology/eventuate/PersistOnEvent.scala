@@ -16,110 +16,128 @@
 
 package com.rbmhtechnology.eventuate
 
-import com.rbmhtechnology.eventuate.DurableEvent.UndefinedDeliveryId
+import scala.collection.immutable.SortedMap
+
 import com.rbmhtechnology.eventuate.EventsourcedView.Handler
 
-import scala.util.Try
+import scala.util._
 
-private case class PersistOnEventParameters(event: Any, customDestinationAggregateIds: Set[String])
-private case class PersistOnEventRequest(deliveryId: String, parameters: Vector[PersistOnEventParameters], handlers: Vector[Handler[Any]], instanceId: Int)
+object PersistOnEvent {
+  /**
+   * Records a `persistOnEvent` invocation.
+   */
+  case class PersistOnEventInvocation(event: Any, customDestinationAggregateIds: Set[String])
+
+  /**
+   * A request sent by [[PersistOnEvent]] instances to `self` in order to persist events recorded by `invocations`.
+   */
+  case class PersistOnEventRequest(persistOnEventSequenceNr: Long, invocations: Vector[PersistOnEventInvocation], instanceId: Int)
+
+  /**
+   * Default `persist` handler to use when processing [[PersistOnEventRequest]]s in [[EventsourcedActor]].
+   */
+  private[eventuate] val DefaultHandler: Handler[Any] = {
+    case Success(_) =>
+    case Failure(e) => throw new PersistOnEventException(e)
+  }
+}
+/**
+ * Thrown to indicate that an asynchronous `persisOnEvent` operation failed.
+ */
+class PersistOnEventException(cause: Throwable) extends RuntimeException(cause)
 
 /**
- * Can be mixed in to [[EventsourcedActor]]s for writing new events within the `onEvent` handler.
- * New events are written with the asynchronous [[persistOnEvent]] and [[persistOnEventN]] methods. In contrast
- * to [[EventsourcedActor.persist persist]] and [[EventsourcedActor.persist persistN]], one can '''not''' prevent
- * them from running concurrently to command processing by setting [[EventsourcedActor.stateSync stateSync]]
- * to `true`.
+ * Can be mixed into [[EventsourcedActor]] for writing new events within the `onEvent` handler. New events are
+ * written with the asynchronous [[persistOnEvent]] method. In contrast to [[EventsourcedActor.persist persist]],
+ * one can '''not''' prevent command processing from running concurrently to [[persistOnEvent]] by setting
+ * [[EventsourcedActor.stateSync stateSync]] to `true`.
  *
- * Persistence operations executed by `persistOnEvent` and `persistOnEventN` are reliable and idempotent. Once
- * successfully completed, they have no effect on event replay during actor (re)starts. If writing fails, they
- * are automatically retried on next actor (re)start. Applications that want to retry writing earlier should
- * force an actor restart by throwing an exception. They should '''not''' call
- * [[ConfirmedDelivery.redeliverUnconfirmed redeliverUnconfirmed]] as it may generate duplicates.
+ * A `persistOnEvent` operation is reliable and idempotent. Once the event has been successfully written, a repeated
+ * `persistOnEvent` call for that event during event replay has no effect. A failed `persistOnEvent` operation will
+ * restart the actor by throwing a [[PersistOnEventException]]. After restart, failed `persistOnEvent` operations
+ * are automatically re-tried.
  *
  * An `EventsourcedActor` that has a `PersistOnEvent` mixin is to some extend comparable to a [[StatefulProcessor]]
- * configured to write events to its source event log. Both write new events on receiving events, however, a
- * `StatefulProcessor` writing new events to its source event log requires its own entry in the vector clock,
+ * that is configured to write events to its source event log. Both write new events on receiving events, however,
+ * a `StatefulProcessor` that writes new events to its source event log requires its own entry in the vector clock,
  * whereas `PersistOnEvent` does not. Furthermore, a `StatefulProcessor` can not write new events during command
- * processing. As a general rule, when operating on a single event log, applications should prefer
- * `PersistOnEvent` over `StatefulProcessor`.
+ * processing. As a general rule, when operating on a single event log, applications should prefer `PersistOnEvent`
+ * over `StatefulProcessor`.
  */
-trait PersistOnEvent extends ConfirmedDelivery {
-  private var parameters: Vector[PersistOnEventParameters] = Vector.empty
-  private var handlers: Vector[Handler[Any]] = Vector.empty
+trait PersistOnEvent extends EventsourcedActor {
+  import PersistOnEvent._
 
+  private var invocations: Vector[PersistOnEventInvocation] = Vector.empty
+  private var requests: SortedMap[Long, PersistOnEventRequest] = SortedMap.empty
+
+  /**
+   * Asynchronously persists the given `event`. Applications that want to handle the persisted event should define
+   * the event handler at that event. By default, the event is routed to event-sourced destinations with an undefined
+   * `aggregateId`. If this actor's `aggregateId` is defined it is additionally routed to all actors with the same
+   * `aggregateId`. Further routing destinations can be defined with the `customDestinationAggregateIds` parameter.
+   */
+  final def persistOnEvent[A](event: A, customDestinationAggregateIds: Set[String] = Set()): Unit =
+    invocations = invocations :+ PersistOnEventInvocation(event, customDestinationAggregateIds)
+
+  /**
+   * Internal API.
+   */
   override private[eventuate] def receiveEvent(event: DurableEvent): Unit = {
     super.receiveEvent(event)
 
-    if (event.deliveryId != UndefinedDeliveryId && event.emitterId == id)
-      confirm(event.deliveryId)
+    event.persistOnEventSequenceNr.foreach { persistOnEventSequenceNr =>
+      if (event.emitterId == id) confirmRequest(persistOnEventSequenceNr)
+    }
 
-    if (parameters.nonEmpty) {
-      val persistenceId = deliveryId(event)
-
-      deliver(persistenceId, PersistOnEventRequest(persistenceId, parameters, handlers, instanceId), self.path)
-
-      parameters = Vector.empty
-      handlers = Vector.empty
+    if (invocations.nonEmpty) {
+      deliverRequest(PersistOnEventRequest(lastSequenceNr, invocations, instanceId))
+      invocations = Vector.empty
     }
   }
 
   /**
-   * Asynchronously persists a sequence of `events` and calls `handler` with the persist result
-   * for each event in the sequence. If persistence was successful, `onEvent` is called with a
-   * persisted event before `handler` is called. Both, `onEvent` and `handler`, are called on a
-   * dispatcher thread of this actor, hence, it is safe to modify internal state within them. The
-   * `onLast` handler is additionally called for the last event in the sequence. Once called with
-   * `Success`, `handler` and `onLast` are not called again during event replay.
-   *
-   * If `handler` is called with `Failure`, writing to the event log is automatically retried on
-   * next actor (re)start. Applications that want to retry writing earlier should force an actor
-   * restart by throwing an exception. They should '''not''' call
-   * [[ConfirmedDelivery.redeliverUnconfirmed redeliverUnconfirmed]] as it may generate duplicates.
-   *
-   * By default, the event is routed to event-sourced destinations with an undefined `aggregateId`.
-   * If this actor's `aggregateId` is defined it is additionally routed to all actors with the same
-   * `aggregateId`. Further routing destinations can be defined with the `customDestinationAggregateIds`
-   * parameter.
+   * Internal API.
    */
-  final def persistOnEventN[A](events: Seq[A], onLast: Handler[A] = (_: Try[A]) => (), customDestinationAggregateIds: Set[String] = Set())(handler: Handler[A]): Unit = events match {
-    case Seq() =>
-    case es :+ e =>
-      es.foreach { event =>
-        persistOnEvent(event, customDestinationAggregateIds)(handler)
-      }
-      persistOnEvent(e, customDestinationAggregateIds) { r =>
-        handler(r)
-        onLast(r)
-      }
+  override private[eventuate] def snapshotCaptured(snapshot: Snapshot): Snapshot = {
+    requests.values.foldLeft(super.snapshotCaptured(snapshot)) {
+      case (s, pr) => s.addPersistOnEventRequest(pr)
+    }
   }
 
   /**
-   * Asynchronously persists the given `event` and calls `handler` with the persist result. If
-   * persistence was successful, `onEvent` is called with the persisted event before `handler`
-   * is called. Both, `onEvent` and `handler`, are called on a dispatcher thread of this actor,
-   * hence, it is safe to modify internal state within them. Once called with `Success`, the
-   * `handler` is not called again during event replay.
-   *
-   * If `handler` is called with `Failure`, writing to the event log is automatically retried on
-   * next actor (re)start. Applications that want to retry writing earlier should force an actor
-   * restart by throwing an exception. They should '''not''' call
-   * [[ConfirmedDelivery.redeliverUnconfirmed redeliverUnconfirmed]] as it may generate duplicates.
-   *
-   * By default, the event is routed to event-sourced destinations with an undefined `aggregateId`.
-   * If this actor's `aggregateId` is defined it is additionally routed to all actors with the same
-   * `aggregateId`. Further routing destinations can be defined with the `customDestinationAggregateIds`
-   * parameter.
+   * Internal API.
    */
-  final def persistOnEvent[A](event: A, customDestinationAggregateIds: Set[String] = Set())(handler: Handler[A]): Unit = {
-    parameters = parameters :+ PersistOnEventParameters(event, customDestinationAggregateIds)
-    handlers = handlers :+ handler.asInstanceOf[Handler[Any]]
+  override private[eventuate] def snapshotLoaded(snapshot: Snapshot): Unit = {
+    super.snapshotLoaded(snapshot)
+    snapshot.persistOnEventRequests.foreach { pr =>
+      requests = requests + (pr.persistOnEventSequenceNr -> pr)
+    }
   }
 
   /**
-   * Creates a delivery id from the given `event`. By default, a string representation of
-   * [[DurableEvent.localSequenceNr]] is created. Can be overridden by applications.
+   * Internal API.
    */
-  def deliveryId(event: DurableEvent): String =
-    event.localSequenceNr.toString
+  private[eventuate] override def recovered(): Unit = {
+    super.recovered()
+    redeliverUnconfirmedRequests()
+  }
+
+  /**
+   * Internal API.
+   */
+  private[eventuate] def unconfirmedRequests: Set[Long] =
+    requests.keySet
+
+  private def deliverRequest(request: PersistOnEventRequest): Unit = {
+    requests = requests + (request.persistOnEventSequenceNr -> request)
+    if (!recovering) self ! request
+  }
+
+  private def confirmRequest(persistOnEventSequenceNr: Long): Unit = {
+    requests = requests - persistOnEventSequenceNr
+  }
+
+  private def redeliverUnconfirmedRequests(): Unit = requests.foreach {
+    case (_, request) => self ! request
+  }
 }

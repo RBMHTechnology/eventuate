@@ -274,7 +274,7 @@ In more general cases, event-sourced actors of different type exchange events to
 .. includecode:: code/UserGuideDoc.scala
    :snippet: event-collaboration
 
-The ping-pong game is started by sending the ``PingActor`` a ``”serve”`` command which ``persist``\ s the first ``Ping`` event. This event however is not consumed by the emitter but rather by the ``PongActor``. The ``PongActor`` reacts on the ``Ping`` event by emitting a ``Pong`` event. Other than in previous examples, the event is not emitted in the actor’s ``onCommand`` handler but rather in the ``onEvent`` handler. For that purpose, the actor has to mixin the ``PersistOnEvent`` trait and use the ``persistOnEvent`` method. The emitted ``Pong`` too isn’t consumed by its emitter but rather by the ``PingActor``, emitting another ``Ping``, and so on. The game ends when the ``PingActor`` received the 10th ``Pong``.
+The ping-pong game is started by sending the ``PingActor`` a ``”serve”`` command which ``persist``\ s the first ``Ping`` event. This event however is not consumed by the emitter but rather by the ``PongActor``. The ``PongActor`` reacts on the ``Ping`` event by emitting a ``Pong`` event. Other than in previous examples, the event is not emitted in the actor’s ``onCommand`` handler but in the ``onEvent`` handler. For that purpose, the actor has to mixin the ``PersistOnEvent`` trait and use the ``persistOnEvent`` method. The emitted ``Pong`` too isn’t consumed by its emitter but rather by the ``PingActor``, emitting another ``Ping``, and so on. The game ends when the ``PingActor`` received the 10th ``Pong``.
 
 .. note::
    The ping-pong game is **reliable**. When an actor crashes and is re-started, the game is reliably resumed from where it was interrupted. The ``persistOnEvent`` method is idempotent i.e. no duplicates are written under failure conditions and later event replay. When deployed at different location, the ping-pong actors are also **partition-tolerant**. When their game is interrupted by a network partition, it is automatically resumed when the partition heals. 
@@ -284,7 +284,7 @@ The ping-pong game is started by sending the ``PingActor`` a ``”serve”`` com
 In a more real-world example, there would be several actors of different type collaborating to achieve a common goal, for example, in a distributed business process. These actors can be considered as event-driven and event-sourced *microservices*, collaborating on a causally ordered event stream in a reliable and partition-tolerant way. Furthermore, when partitioned, they remain available for local writes and automatically catch up with their collaborators when the partition heals.
 
 .. hint::
-   Further ``persistOnEvent`` failure handling options for are covered in the PersistOnEvent_ API docs.
+   Further ``persistOnEvent`` details are described in the PersistOnEvent_ API docs.
 
 .. _ZooKeeper: http://zookeeper.apache.org/
 .. _event sourcing: http://martinfowler.com/eaaDev/EventSourcing.html

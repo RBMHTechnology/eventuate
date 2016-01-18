@@ -27,13 +27,14 @@ object ConfirmedDelivery {
 /**
  * Supports the reliable delivery of messages to destinations by enabling applications
  * to redeliver messages until they are confirmed by their destinations. Both, message
- * delivery and confirmation must be executed within an [[EventsourcedActor]]'s event handler.
- * New messages are delivered by calling `deliver`. When the destination replies with a confirmation
- * message, the [[EventsourcedActor]] must generate an event for which the handler calls `confirm`.
- * Until confirmation, delivered messages are tracked as ''unconfirmed'' messages. Unconfirmed
- * messages can be redelivered by calling `redeliverUnconfirmed`. This is usually done within a
- * command handler by processing scheduler messages. Redelivery occurs automatically when the
- * [[EventsourcedActor]] successfully recovered after initial start or a re-start.
+ * delivery and confirmation processing must be done within an [[EventsourcedActor]]'s
+ * event handler. New messages are delivered by calling `deliver`. When the destination
+ * replies with a confirmation message, the [[EventsourcedActor]] must generate an event
+ * for which the handler calls `confirm`. Until confirmation, delivered messages are
+ * tracked as ''unconfirmed'' messages. Unconfirmed messages can be redelivered by calling
+ * `redeliverUnconfirmed`. This is usually done within a command handler by processing
+ * scheduler messages. Redelivery occurs automatically when the [[EventsourcedActor]]
+ * successfully recovered after initial start or a re-start.
  */
 trait ConfirmedDelivery extends EventsourcedActor {
   import ConfirmedDelivery._
@@ -75,7 +76,7 @@ trait ConfirmedDelivery extends EventsourcedActor {
    */
   override private[eventuate] def snapshotCaptured(snapshot: Snapshot): Snapshot = {
     _unconfirmed.values.foldLeft(super.snapshotCaptured(snapshot)) {
-      case (s, da) => s.add(da)
+      case (s, da) => s.addDeliveryAttempt(da)
     }
   }
 

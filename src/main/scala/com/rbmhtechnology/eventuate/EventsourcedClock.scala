@@ -69,7 +69,7 @@ trait EventsourcedClock extends EventsourcedView {
   /**
    * Internal API.
    */
-  private[eventuate] def durableEvent(payload: Any, customDestinationAggregateIds: Set[String], deliveryId: String = UndefinedDeliveryId): DurableEvent = {
+  private[eventuate] def durableEvent(payload: Any, customDestinationAggregateIds: Set[String], persistOnEventSequenceNr: Option[Long] = None): DurableEvent = {
     if (sharedClockEntry) {
       DurableEvent(
         payload = payload,
@@ -78,7 +78,7 @@ trait EventsourcedClock extends EventsourcedView {
         customDestinationAggregateIds = customDestinationAggregateIds,
         vectorTimestamp = currentVectorTime,
         processId = UndefinedLogId,
-        deliveryId = deliveryId)
+        persistOnEventSequenceNr = persistOnEventSequenceNr)
     } else {
       DurableEvent(
         payload = payload,
@@ -87,7 +87,7 @@ trait EventsourcedClock extends EventsourcedView {
         customDestinationAggregateIds = customDestinationAggregateIds,
         vectorTimestamp = updateLocalTime(),
         processId = id,
-        deliveryId = deliveryId)
+        persistOnEventSequenceNr = persistOnEventSequenceNr)
     }
   }
 

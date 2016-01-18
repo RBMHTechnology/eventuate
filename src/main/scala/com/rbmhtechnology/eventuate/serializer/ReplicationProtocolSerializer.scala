@@ -152,7 +152,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   private def replicationReadSuccess(messageFormat: ReplicationReadSuccessFormat): ReplicationReadSuccess = {
     val builder = new VectorBuilder[DurableEvent]
 
-    messageFormat.getEventsList.iterator().asScala.foreach { eventFormat =>
+    messageFormat.getEventsList.iterator.asScala.foreach { eventFormat =>
       builder += eventSerializer.durableEvent(eventFormat)
     }
 

@@ -21,7 +21,8 @@ import akka.serialization.SerializationExtension
 import akka.testkit.TestProbe
 
 import com.rbmhtechnology.eventuate._
-import com.rbmhtechnology.eventuate.ConfirmedDelivery.DeliveryAttempt
+import com.rbmhtechnology.eventuate.ConfirmedDelivery._
+import com.rbmhtechnology.eventuate.PersistOnEvent._
 import com.rbmhtechnology.eventuate.log.EventLogClock
 import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.{event, ExamplePayload}
 
@@ -38,12 +39,18 @@ object SnapshotSerializerSpec {
   def last(payload: Any) =
     event.copy(payload = payload)
 
-  def unconfirmed(payload: Any, destination: ActorPath) = Vector(
+  def deliveryAttempts(payload: Any, destination: ActorPath) = Vector(
     DeliveryAttempt("3", payload, destination),
     DeliveryAttempt("4", payload, destination))
 
+  def persistOnEventRequests(payload: Any) = Vector(
+    PersistOnEventRequest(7L, Vector(PersistOnEventInvocation(payload, Set("a"))), 17),
+    PersistOnEventRequest(8L, Vector(PersistOnEventInvocation(payload, Set("b"))), 17))
+
   def snapshot(payload: Any, destination: ActorPath) =
-    Snapshot(payload, "x", last(payload), vectorTime(17, 18), unconfirmed(payload, destination))
+    Snapshot(payload, "x", last(payload), vectorTime(17, 18),
+      deliveryAttempts(payload, destination),
+      persistOnEventRequests(payload))
 
   def vectorTime(t1: Long, t2: Long): VectorTime =
     VectorTime("p1" -> t1, "p2" -> t2)

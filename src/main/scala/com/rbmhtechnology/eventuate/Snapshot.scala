@@ -17,6 +17,7 @@
 package com.rbmhtechnology.eventuate
 
 import com.rbmhtechnology.eventuate.ConfirmedDelivery.DeliveryAttempt
+import com.rbmhtechnology.eventuate.PersistOnEvent.PersistOnEventRequest
 
 /**
  * Snapshot metadata.
@@ -38,19 +39,25 @@ case class SnapshotMetadata(emitterId: String, sequenceNr: Long)
  * @param emitterId Id of the event-sourced actor, view, stateful writer or processor that saved the snapshot.
  * @param lastEvent Last handled event before the snapshot was saved.
  * @param currentTime Current vector time when the snapshot was saved.
- * @param deliveryAttempts Unconfirmed delivery attempts when the snapshot was saved (can only be
- *                         non-empty if the actor implements [[ConfirmedDelivery]]).
+ * @param deliveryAttempts Unconfirmed [[ConfirmedDelivery.DeliveryAttempt DeliveryAttempt]]s when the snapshot was
+ *                         saved (can only be non-empty if the actor implements [[ConfirmedDelivery]]).
+ * @param persistOnEventRequests Unconfirmed [[PersistOnEvent.PersistOnEventRequest PersistOnEventRequest]]s when the
+ *                               snapshot was saved (can only be non-empty if the actor implements [[PersistOnEvent]]).
  */
 case class Snapshot(
   payload: Any,
   emitterId: String,
   lastEvent: DurableEvent,
   currentTime: VectorTime,
-  deliveryAttempts: Vector[DeliveryAttempt] = Vector.empty) {
+  deliveryAttempts: Vector[DeliveryAttempt] = Vector.empty,
+  persistOnEventRequests: Vector[PersistOnEventRequest] = Vector.empty) {
 
   val metadata: SnapshotMetadata =
     SnapshotMetadata(emitterId, lastEvent.localSequenceNr)
 
-  def add(deliveryAttempt: DeliveryAttempt): Snapshot =
+  def addDeliveryAttempt(deliveryAttempt: DeliveryAttempt): Snapshot =
     copy(deliveryAttempts = deliveryAttempts :+ deliveryAttempt)
+
+  def addPersistOnEventRequest(persistOnEventRequest: PersistOnEventRequest): Snapshot =
+    copy(persistOnEventRequests = persistOnEventRequests :+ persistOnEventRequest)
 }

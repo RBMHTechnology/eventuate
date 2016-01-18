@@ -21,6 +21,7 @@ import java.util.function.BiConsumer
 
 import akka.actor._
 
+import com.rbmhtechnology.eventuate.PersistOnEvent._
 import com.typesafe.config.Config
 
 import scala.concurrent.duration._
@@ -38,9 +39,8 @@ private class EventsourcedActorSettings(config: Config) {
  * is automatically called with the persisted event(s). The `onEvent` handler is the place where actor
  * state may be updated. The `onCommand` handler should not update actor state but only read it e.g.
  * for command validation. `EventsourcedActor`s that want to persist new events within the `onEvent`
- * handler should additionally mixin the [[PersistOnEvent]] trait and use the methods
- * [[PersistOnEvent.persistOnEvent persistOnEvent]] and
- * [[PersistOnEvent.persistOnEventN persistOnEventN]].
+ * handler should additionally mixin the [[PersistOnEvent]] trait and use the
+ * [[PersistOnEvent.persistOnEvent persistOnEvent]] method.
  *
  * @see [[EventsourcedView]]
  * @see [[PersistOnEvent]]
@@ -141,12 +141,12 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
         messageStash.unstash()
       }
     }
-    case PersistOnEventRequest(deliveryId: String, parameters, handlers, iid) => if (iid == instanceId) {
+    case PersistOnEventRequest(persistOnEventSequenceNr: Long, parameters, iid) => if (iid == instanceId) {
       writeOrDelay {
-        writeHandlers = handlers
+        writeHandlers = Vector.fill(parameters.length)(PersistOnEvent.DefaultHandler)
         writeRequests = parameters.map {
-          case PersistOnEventParameters(event, customDestinationAggregateIds) =>
-            durableEvent(event, customDestinationAggregateIds, deliveryId)
+          case PersistOnEventInvocation(event, customDestinationAggregateIds) =>
+            durableEvent(event, customDestinationAggregateIds, Some(persistOnEventSequenceNr))
         }
       }
     }

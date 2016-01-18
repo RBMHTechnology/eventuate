@@ -19,6 +19,7 @@ package com.rbmhtechnology.eventuate
 import akka.actor._
 import akka.testkit._
 
+import com.rbmhtechnology.eventuate.EventsourcedView.Handler
 import com.rbmhtechnology.eventuate.log.EventLogLifecycleCassandra
 import com.rbmhtechnology.eventuate.log.EventLogLifecycleLeveldb
 
@@ -34,7 +35,7 @@ object PersistOnEventIntegrationSpec {
     }
     override def onEvent = {
       case Pong(10) => probe ! "done"
-      case Pong(i)  => persistOnEvent(Ping(i + 1))(Handler.empty)
+      case Pong(i)  => persistOnEvent(Ping(i + 1))
     }
   }
 
@@ -43,7 +44,7 @@ object PersistOnEventIntegrationSpec {
       case _ =>
     }
     override def onEvent = {
-      case Ping(i) => persistOnEvent(Pong(i))(Handler.empty)
+      case Ping(i) => persistOnEvent(Pong(i))
     }
   }
 }

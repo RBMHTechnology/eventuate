@@ -342,7 +342,7 @@ For an ``EventsourcedActor`` with ``stateSync`` set to ``true``, this means that
 ``persistOnEvent`` failure handling
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``EventsourcedActor``\ s can also persist events in the :ref:`event-handler` if they additionally extend PersistOnEvent_. An asynchronous ``persistOnEvent`` operation may also fail for reasons explained in :ref:`persist-failure-handling`. If a ``persistOnEvent`` operation fails, it may only be retried by restarting the actor. Applications should not call ``redeliverUnconfirmed`` as it may generate duplicates.
+``EventsourcedActor``\ s can also persist events in the :ref:`event-handler` if they additionally extend PersistOnEvent_. An asynchronous ``persistOnEvent`` operation may also fail for reasons explained in :ref:`persist-failure-handling`. If a ``persistOnEvent`` operation fails, the actor is automatically restarted by throwing a ``PersistOnEventException``.
 
 Recovery failure handling
 ~~~~~~~~~~~~~~~~~~~~~~~~~

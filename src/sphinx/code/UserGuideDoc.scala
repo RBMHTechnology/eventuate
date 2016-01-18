@@ -382,6 +382,7 @@ object EventCollaboration {
 
   //#event-collaboration
   // some imports omitted ...
+  import com.rbmhtechnology.eventuate.EventsourcedView.Handler
   import com.rbmhtechnology.eventuate.EventsourcedActor
   import com.rbmhtechnology.eventuate.PersistOnEvent
 
@@ -397,7 +398,7 @@ object EventCollaboration {
 
     override def onEvent = {
       case Pong(10) if !recovering => completion ! "done"
-      case Pong(i)  => persistOnEvent(Ping(i + 1))(Handler.empty)
+      case Pong(i)  => persistOnEvent(Ping(i + 1))
     }
   }
 
@@ -408,7 +409,7 @@ object EventCollaboration {
       case _ =>
     }
     override def onEvent = {
-      case Ping(i) => persistOnEvent(Pong(i))(Handler.empty)
+      case Ping(i) => persistOnEvent(Pong(i))
     }
   }
 
