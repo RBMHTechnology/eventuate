@@ -41,8 +41,9 @@ import scala.collection.immutable.Seq
  *                  set `sharedClockEntry` to `false` then this is the id of that actor or processor (which is the `emitterId`).
  * @param localLogId Id of the local event log.
  * @param localSequenceNr Sequence number in the local event log.
- * @param deliveryId Set if an [[EventsourcedActor]] with a [[PersistOnEvent]] mixin emitted this event with `persistOnEvent`
- *                   or `persistOnEventN`.
+ * @param persistOnEventSequenceNr Sequence number of the event that caused the emission of this event in an event handler.
+ *                                 Defined if an [[EventsourcedActor]] with a [[PersistOnEvent]] mixin emitted this event
+ *                                 with `persistOnEvent`.
  */
 case class DurableEvent(
   payload: Any,
@@ -54,7 +55,7 @@ case class DurableEvent(
   processId: String = DurableEvent.UndefinedLogId,
   localLogId: String = DurableEvent.UndefinedLogId,
   localSequenceNr: Long = DurableEvent.UndefinedSequenceNr,
-  deliveryId: String = DurableEvent.UndefinedDeliveryId) {
+  persistOnEventSequenceNr: Option[Long] = None) {
 
   import DurableEvent._
 
@@ -103,7 +104,6 @@ case class DurableEvent(
 
 object DurableEvent {
   val UndefinedLogId = ""
-  val UndefinedDeliveryId = ""
   val UndefinedSequenceNr = 0L
 
   def apply(emitterId: String): DurableEvent =

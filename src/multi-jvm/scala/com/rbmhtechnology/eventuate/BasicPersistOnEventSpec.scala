@@ -21,6 +21,8 @@ import akka.remote.testkit._
 import akka.remote.transport.ThrottlerTransportAdapter.Direction
 import akka.testkit.TestProbe
 
+import com.rbmhtechnology.eventuate.EventsourcedView.Handler
+
 class BasicPersistOnEventSpecLeveldb extends BasicPersistOnEventSpec with MultiNodeSupportLeveldb
 class BasicPersistOnEventSpecLeveldbMultiJvmNode1 extends BasicPersistOnEventSpecLeveldb
 class BasicPersistOnEventSpecLeveldbMultiJvmNode2 extends BasicPersistOnEventSpecLeveldb
@@ -50,7 +52,7 @@ object BasicPersistOnEventConfig extends MultiNodeConfig {
       case p @ Pong(10) => probe ! p
       case p @ Pong(5) => probe ! p
       case p @ Ping(6) => probe ! p
-      case Pong(i)  => persistOnEvent(Ping(i + 1))(Handler.empty)
+      case Pong(i)  => persistOnEvent(Ping(i + 1))
     }
   }
 
@@ -59,7 +61,7 @@ object BasicPersistOnEventConfig extends MultiNodeConfig {
       case _ =>
     }
     override def onEvent = {
-      case Ping(i) => persistOnEvent(Pong(i))(Handler.empty)
+      case Ping(i) => persistOnEvent(Pong(i))
     }
   }
 }

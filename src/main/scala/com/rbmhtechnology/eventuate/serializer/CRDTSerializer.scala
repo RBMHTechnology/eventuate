@@ -111,7 +111,7 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private def mvRegister(mvRegisterFormat: MVRegisterFormat): MVRegister[Any] = {
     val builder = new VectorBuilder[Registered[Any]]
 
-    val rs = mvRegisterFormat.getRegisteredList.asScala.iterator.foldLeft(Set.empty[Registered[Any]]) {
+    val rs = mvRegisterFormat.getRegisteredList.iterator.asScala.foldLeft(Set.empty[Registered[Any]]) {
       case (acc, r) => acc + registered(r)
     }
 
@@ -121,7 +121,7 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private def orSet(orSetFormat: ORSetFormat): ORSet[Any] = {
     val builder = new VectorBuilder[Versioned[Any]]
 
-    val ves = orSetFormat.getVersionedEntriesList.asScala.iterator.foldLeft(Set.empty[Versioned[Any]]) {
+    val ves = orSetFormat.getVersionedEntriesList.iterator.asScala.foldLeft(Set.empty[Versioned[Any]]) {
       case (acc, ve) => acc + snapshotSerializer.versioned(ve)
     }
 
