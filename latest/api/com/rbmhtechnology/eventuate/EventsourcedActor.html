@@ -53,9 +53,8 @@ be used within the <code>onCommand</code> command handler. After successful pers
 is automatically called with the persisted event(s). The <code>onEvent</code> handler is the place where actor
 state may be updated. The <code>onCommand</code> handler should not update actor state but only read it e.g.
 for command validation. <code>EventsourcedActor</code>s that want to persist new events within the <code>onEvent</code>
-handler should additionally mixin the <a href="PersistOnEvent.html" class="extype" name="com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a> trait and use the methods
-<a href="PersistOnEvent.html#persistOnEvent[A](event:A,customDestinationAggregateIds:Set[String])(handler:PersistOnEvent.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.PersistOnEvent#persistOnEvent">persistOnEvent</a> and
-<a href="PersistOnEvent.html#persistOnEventN[A](events:Seq[A],onLast:PersistOnEvent.this.Handler[A],customDestinationAggregateIds:Set[String])(handler:PersistOnEvent.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.PersistOnEvent#persistOnEventN">persistOnEventN</a>.
+handler should additionally mixin the <a href="PersistOnEvent.html" class="extype" name="com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a> trait and use the
+<a href="PersistOnEvent.html#persistOnEvent[A](event:A,customDestinationAggregateIds:Set[String]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.PersistOnEvent#persistOnEvent">persistOnEvent</a> method.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="PersistOnEvent.html" class="extype" name="com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a>
 </p></span><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
@@ -269,23 +268,6 @@ handler should additionally mixin the <a href="PersistOnEvent.html" class="extyp
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView.Handler" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Handler"></a>
-      <a id="Handler:Handler"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="EventsourcedView$Handler$.html"><span class="name">Handler</span></a>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedView@Handler" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#aggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="aggregateId:Option[String]"></a>
       <a id="aggregateId:Option[String]"></a>

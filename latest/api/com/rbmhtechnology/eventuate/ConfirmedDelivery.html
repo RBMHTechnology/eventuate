@@ -49,19 +49,20 @@
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Supports the reliable delivery of messages to destinations by enabling applications
 to redeliver messages until they are confirmed by their destinations. Both, message
-delivery and confirmation must be executed within an <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>'s event handler.
-New messages are delivered by calling <code>deliver</code>. When the destination replies with a confirmation
-message, the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> must generate an event for which the handler calls <code>confirm</code>.
-Until confirmation, delivered messages are tracked as <i>unconfirmed</i> messages. Unconfirmed
-messages can be redelivered by calling <code>redeliverUnconfirmed</code>. This is usually done within a
-command handler by processing scheduler messages. Redelivery occurs automatically when the
-<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> successfully recovered after initial start or a re-start.
+delivery and confirmation processing must be done within an <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>'s
+event handler. New messages are delivered by calling <code>deliver</code>. When the destination
+replies with a confirmation message, the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> must generate an event
+for which the handler calls <code>confirm</code>. Until confirmation, delivered messages are
+tracked as <i>unconfirmed</i> messages. Unconfirmed messages can be redelivered by calling
+<code>redeliverUnconfirmed</code>. This is usually done within a command handler by processing
+scheduler messages. Redelivery occurs automatically when the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>
+successfully recovered after initial start or a re-start.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>, <a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
             <span class="toggle">Known Subclasses</span>
-            <div class="subClasses hiddenContent"><a href="AbstractEventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor">AbstractEventsourcedActor</a>, <a href="PersistOnEvent.html" class="extype" name="com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a></div>
+            <div class="subClasses hiddenContent"><a href="AbstractEventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor">AbstractEventsourcedActor</a></div>
           </div></div>
         
 
@@ -268,23 +269,6 @@ command handler by processing scheduler messages. Redelivery occurs automaticall
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView.Handler" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Handler"></a>
-      <a id="Handler:Handler"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="EventsourcedView$Handler$.html"><span class="name">Handler</span></a>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedView@Handler" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#aggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="aggregateId:Option[String]"></a>
       <a id="aggregateId:Option[String]"></a>
