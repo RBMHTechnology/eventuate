@@ -103,7 +103,7 @@ public class OrderActor extends AbstractEventsourcedActor {
     }
 
     @Override
-    public void onRecovered() {
+    public void onRecoverySuccess() {
         System.out.println(String.format("[%s] Recovery complete:", orderId));
         printOrder(order.getVersions());
     }

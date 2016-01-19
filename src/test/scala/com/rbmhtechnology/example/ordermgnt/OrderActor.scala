@@ -125,9 +125,11 @@ class OrderActor(orderId: String, replicaId: String, val eventLog: ActorRef) ext
       printOrder(order.versions)
   }
 
-  override def onRecovered(): Unit = {
-    println(s"[$orderId] Recovery complete:")
-    printOrder(order.versions)
+  override def onRecovery = {
+    case Failure(e) =>
+    case Success(_) =>
+      println(s"[$orderId] Recovery succeeded:")
+      printOrder(order.versions)
   }
 
   private def processValidationResult(orderId: String, result: Try[Any]): Unit = result match {

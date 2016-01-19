@@ -21,6 +21,8 @@ import akka.testkit._
 
 import org.scalatest._
 
+import scala.util._
+
 object EventsourcedViewSpec {
   val emitterIdA = "A"
   val emitterIdB = "B"
@@ -85,6 +87,27 @@ object EventsourcedViewSpec {
     }
   }
 
+  class TestCompletionView(
+    val logProbe: ActorRef,
+    val msgProbe: ActorRef) extends EventsourcedView {
+
+    val id = emitterIdA
+    val eventLog = logProbe
+
+    override def onRecovery: Handler[Unit] = {
+      case Success(_) => msgProbe ! "success"
+      case Failure(e) => msgProbe ! e
+    }
+
+    override def onCommand: Receive = {
+      case _ =>
+    }
+
+    override def onEvent: Receive = {
+      case _ =>
+    }
+  }
+
   val event1a = event("a", 1L)
   val event1b = event("b", 2L)
   val event1c = event("c", 3L)
@@ -127,6 +150,12 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
 
   def unrecoveredEventsourcedView(customReplayBatchSize: Int): ActorRef =
     system.actorOf(Props(new TestEventsourcedView(logProbe.ref, msgProbe.ref, Some(customReplayBatchSize))))
+
+  def unrecoveredCompletionView(): ActorRef =
+    system.actorOf(Props(new TestCompletionView(logProbe.ref, msgProbe.ref)))
+
+  def recoveredCompletionView(): ActorRef =
+    processRecover(unrecoveredCompletionView())
 
   def recoveredStashingView(): ActorRef =
     processRecover(system.actorOf(Props(new TestStashingView(logProbe.ref, msgProbe.ref))))
@@ -362,6 +391,19 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
       msgProbe.expectMsg(Pong(2))
       msgProbe.expectMsg(Pong(3))
       msgProbe.expectMsg(Pong(4))
+    }
+    "call the recovery completion handler with Success if recovery succeeds" in {
+      recoveredCompletionView()
+      msgProbe.expectMsg("success")
+    }
+    "call the recovery completion handler with Failure if recovery fails" in {
+      val actor = unrecoveredCompletionView()
+      logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
+      logProbe.sender() ! LoadSnapshotSuccess(None, instanceId)
+      logProbe.expectMsg(Replay(1L, Some(actor), instanceId))
+      actor ! ReplayFailure(boom, instanceId)
+      msgProbe.expectMsg(boom)
+
     }
   }
 }
