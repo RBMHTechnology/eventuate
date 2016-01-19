@@ -174,13 +174,14 @@ Processed events, to be written to the target event log, are returned by the han
 State recovery
 --------------
 
-When an event-sourced actor or view is started or re-started, events are replayed to its ``onEvent`` handler so that internal state can be recovered\ [#]_. This is also the case for stateful event-sourced writers and processors.
+When an event-sourced actor or view is started or re-started, events are replayed to its ``onEvent`` handler so that internal state can be recovered\ [#]_. This is also the case for stateful event-sourced writers and processors. During event replay the ``recovering`` method returns ``true``. Applications can also define a recovery completion handler by overriding ``onRecovery``:
 
-At the beginning of event replay, the initiating actor is registered at its event log so that newly written events can be immediately routed to that actor. If the actor is stopped it is automatically de-registered.
+.. includecode:: ../code/EventSourcingDoc.scala
+   :snippet: recovery-handler
 
-While an event-sourced actor, view, writer or processor is recovering i.e. replaying messages, its ``recovering`` method returns ``true``. If recovery successfully completes, its empty ``onRecovered()`` method is called which can be overridden by applications.
+If replay fails the completion handler is called with a ``Failure`` and the actor will be stopped, regardless of the action taken by the handler. The default recovery completion handler does nothing.
 
-During recovery, new commands are stashed_ and dispatched to ``onCommand`` after recovery successfully completed. This ensures that new commands never see partially recovered state.
+At the beginning of event replay, the initiating actor is registered at its event log so that newly written events can be routed to that actor. During replay, the actor internally stashes these newly written events and dispatches them to ``onEvent`` after successful replay. In a similar way, the actor also stashes new commands and dispatches them to ``onCommand`` afterwards. This ensures that new commands never see partially recovered state. When the actor is stopped it is automatically de-registered from its event log.
 
 Backpressure
 ~~~~~~~~~~~~

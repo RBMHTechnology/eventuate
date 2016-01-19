@@ -797,24 +797,63 @@ is defined it will only receive events with a matching aggregate id in
     </span>
       <p class="shortcomment cmt">Sets this actor's snapshot handler.</p><div class="fullcomment"><div class="comment cmt"><p>Sets this actor's snapshot handler.
 </p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#onRecovered" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onRecovered():Unit"></a>
-      <a id="onRecovered():Unit"></a>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onRecovery" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onRecovery:AbstractEventsourcedView.this.Handler[Unit]"></a>
+      <a id="onRecovery:Handler[Unit]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onRecovered</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">onRecovery</span><span class="result">: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Handler">Handler</a>[<span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onRecovered():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onRecovery:AbstractEventsourcedView.this.Handler[Unit]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Called after recovery successfully completed.</p><div class="fullcomment"><div class="comment cmt"><p>Called after recovery successfully completed. Can be overridden by implementations.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+      <p class="shortcomment cmt">Recovery completion handler.</p><div class="fullcomment"><div class="comment cmt"><p>Recovery completion handler. If called with a <code>Failure</code>, the actor will be stopped in
+any case, regardless of the action taken by the returned handler. The default handler
+implementation does nothing and can be overridden by implementations.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onRecoveryFailure" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onRecoveryFailure(cause:Throwable):Unit"></a>
+      <a id="onRecoveryFailure(Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">onRecoveryFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onRecoveryFailure(cause:Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Called after failed recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after failed recovery. Does nothing by default and can be overridden.
+Regardless of the action taken by this method, the actor will be stopped.
+</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onRecoverySuccess" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onRecoverySuccess():Unit"></a>
+      <a id="onRecoverySuccess():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">onRecoverySuccess</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onRecoverySuccess():Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Called after successful recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after successful recovery. Does nothing by default and can be overridden.
+</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onSnapshot" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="onSnapshot:AbstractEventsourcedView.this.Receive"></a>
       <a id="onSnapshot:Receive"></a>
