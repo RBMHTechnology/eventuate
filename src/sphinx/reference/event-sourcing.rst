@@ -349,6 +349,59 @@ Recovery failure handling
 
 TODO
 
+Batch write failure handling
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Events are written in batches. When using the :ref:`cassandra-storage-backend`, there’s a *warn threshold* and *fail threshold* for batch sizes. The default settings in ``cassandra.yaml`` are::
+
+    # Caution should be taken on increasing the size of this threshold as it can 
+    # lead to node instability.
+    batch_size_warn_threshold_in_kb: 5
+
+    # Fail any batch exceeding this value. 50kb (10x warn threshold) by default.
+    batch_size_fail_threshold_in_kb: 50
+
+When the size of an event batch exceeds the *fail threshold*, the batch write fails with::
+
+    com.datastax.driver.core.exceptions.InvalidQueryException: Batch too large
+
+The corresponding entry in the Cassandra system log is::
+
+    ERROR <timestamp> Batch of prepared statements for [eventuate.log_<id>] is of size 103800, exceeding specified threshold of 51200 by 52600. (see batch_size_fail_threshold_in_kb)
+
+In this case, applications should reduce
+
+.. includecode:: ../conf/common.conf
+   :snippet: write-batch-size
+
+and
+
+.. includecode:: ../conf/common.conf
+   :snippet: index-update-limit
+
+to a smaller value like ``32``, for example, or even smaller. Failed replication writes or index writes are re-tried automatically by Eventuate. Failed ``persist`` operations must be re-tried by the application. 
+  
+.. note::
+   Batch sizes in Eventuate are currently defined in units of events whereas those in Cassandra are defined in kB. This mismatch will be removed in a later release (see also `ticket 166`_).
+
+Batch replication failure handling
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+During replication, events are batch-transferred over the network. The maximum number of events per batch can be configured with:
+
+.. includecode:: ../conf/common.conf
+   :snippet: write-batch-size
+
+The maximum batch size in bytes the transport will accept is limited. If this limit is exceeded, batch transfer will fail. In this case, applications should either increase
+
+.. includecode:: ../conf/common.conf
+   :snippet: maximum-frame-size
+
+or decrease the event batch size.
+
+.. note::
+   Batch sizes in Eventuate are currently defined in units of events whereas ``maximum-frame-size`` is defined in bytes. This mismatch will be removed in a later release (see also `ticket 166`_).
+
 Custom serialization
 --------------------
 
@@ -406,6 +459,7 @@ Event-sourced actors that extend ``ConfirmedDelivery`` for :ref:`reliable-delive
 .. _plausible clocks: https://github.com/RBMHTechnology/eventuate/issues/68
 .. _Cassandra: http://cassandra.apache.org/
 .. _circuit breaker: http://martinfowler.com/bliki/CircuitBreaker.html
+.. _ticket 166: https://github.com/RBMHTechnology/eventuate/issues/166
 
 .. _ConfirmedDelivery: ../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery
 .. _DurableEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent
