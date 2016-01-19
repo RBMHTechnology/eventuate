@@ -363,18 +363,6 @@ akka.remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
 <p class="last">Serialization of replication filters can be customized as described in section <a class="reference internal" href="event-sourcing.html#replication-filter-serialization"><span>Custom replication filter serialization</span></a>.</p>
 </div>
 </div>
-<div class="section" id="batch-replication">
-<h3>Batch replication<a class="headerlink" href="#batch-replication" title="Permalink to this headline">¶</a></h3>
-<p>Events are replicated in batches. The maximum number of events per batch can be configured with</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">512</span>
-</pre></div>
-</div>
-<p>Applications that increase the maximum batch size and/or store rather large events should also increase</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">netty</span><span class="o">.</span><span class="n">tcp</span><span class="o">.</span><span class="n">maximum</span><span class="o">-</span><span class="n">frame</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">128000</span><span class="n">b</span>
-</pre></div>
-</div>
-<p>otherwise, replication may fail.</p>
-</div>
 <div class="section" id="update-notifications">
 <span id="id11"></span><h3>Update notifications<a class="headerlink" href="#update-notifications" title="Permalink to this headline">¶</a></h3>
 <p>After having replicated a non-empty event batch, a replication endpoint immediately makes another replication attempt. On the other hand, if the replicated event batch is empty, the next replication attempt is delayed by a duration that can be configured with:</p>

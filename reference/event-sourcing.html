@@ -774,6 +774,55 @@
 <h2>Recovery failure handling<a class="headerlink" href="#recovery-failure-handling" title="Permalink to this headline">¶</a></h2>
 <p>TODO</p>
 </div>
+<div class="section" id="batch-write-failure-handling">
+<h2>Batch write failure handling<a class="headerlink" href="#batch-write-failure-handling" title="Permalink to this headline">¶</a></h2>
+<p>Events are written in batches. When using the <a class="reference internal" href="event-log.html#cassandra-storage-backend"><span>Cassandra storage backend</span></a>, there’s a <em>warn threshold</em> and <em>fail threshold</em> for batch sizes. The default settings in <code class="docutils literal"><span class="pre">cassandra.yaml</span></code> are:</p>
+<div class="highlight-scala"><div class="highlight"><pre># Caution should be taken on increasing the size of this threshold as it can
+# lead to node instability.
+batch_size_warn_threshold_in_kb: 5
+
+# Fail any batch exceeding this value. 50kb (10x warn threshold) by default.
+batch_size_fail_threshold_in_kb: 50
+</pre></div>
+</div>
+<p>When the size of an event batch exceeds the <em>fail threshold</em>, the batch write fails with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">com</span><span class="o">.</span><span class="n">datastax</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="nc">InvalidQueryException</span><span class="k">:</span> <span class="kt">Batch</span> <span class="kt">too</span> <span class="kt">large</span>
+</pre></div>
+</div>
+<p>The corresponding entry in the Cassandra system log is:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="nc">ERROR</span> <span class="o">&lt;</span><span class="n">timestamp</span><span class="o">&gt;</span> <span class="nc">Batch</span> <span class="n">of</span> <span class="n">prepared</span> <span class="n">statements</span> <span class="k">for</span> <span class="o">[</span><span class="kt">eventuate.log_&lt;id&gt;</span><span class="o">]</span> <span class="n">is</span> <span class="n">of</span> <span class="n">size</span> <span class="mi">103800</span><span class="o">,</span> <span class="n">exceeding</span> <span class="n">specified</span> <span class="n">threshold</span> <span class="n">of</span> <span class="mi">51200</span> <span class="n">by</span> <span class="mf">52600.</span> <span class="o">(</span><span class="n">see</span> <span class="n">batch_size_fail_threshold_in_kb</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>In this case, applications should reduce</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">64</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">cassandra</span><span class="o">.</span><span class="n">index</span><span class="o">-</span><span class="n">update</span><span class="o">-</span><span class="n">limit</span> <span class="k">=</span> <span class="mi">64</span>
+</pre></div>
+</div>
+<p>to a smaller value like <code class="docutils literal"><span class="pre">32</span></code>, for example, or even smaller. Failed replication writes or index writes are re-tried automatically by Eventuate. Failed <code class="docutils literal"><span class="pre">persist</span></code> operations must be re-tried by the application.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Batch sizes in Eventuate are currently defined in units of events whereas those in Cassandra are defined in kB. This mismatch will be removed in a later release (see also <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/166">ticket 166</a>).</p>
+</div>
+</div>
+<div class="section" id="batch-replication-failure-handling">
+<h2>Batch replication failure handling<a class="headerlink" href="#batch-replication-failure-handling" title="Permalink to this headline">¶</a></h2>
+<p>During replication, events are batch-transferred over the network. The maximum number of events per batch can be configured with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">64</span>
+</pre></div>
+</div>
+<p>The maximum batch size in bytes the transport will accept is limited. If this limit is exceeded, batch transfer will fail. In this case, applications should either increase</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">netty</span><span class="o">.</span><span class="n">tcp</span><span class="o">.</span><span class="n">maximum</span><span class="o">-</span><span class="n">frame</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">128000</span><span class="n">b</span>
+</pre></div>
+</div>
+<p>or decrease the event batch size.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Batch sizes in Eventuate are currently defined in units of events whereas <code class="docutils literal"><span class="pre">maximum-frame-size</span></code> is defined in bytes. This mismatch will be removed in a later release (see also <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/166">ticket 166</a>).</p>
+</div>
+</div>
 </div>
 <div class="section" id="custom-serialization">
 <h1>Custom serialization<a class="headerlink" href="#custom-serialization" title="Permalink to this headline">¶</a></h1>
