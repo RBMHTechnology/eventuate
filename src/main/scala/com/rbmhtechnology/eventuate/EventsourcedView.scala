@@ -159,10 +159,12 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
     Actor.emptyBehavior
 
   /**
-   * Called after recovery successfully completed. Can be overridden by implementations.
+   * Recovery completion handler. If called with a `Failure`, the actor will be stopped in
+   * any case, regardless of the action taken by the returned handler. The default handler
+   * implementation does nothing and can be overridden by implementations.
    */
-  def onRecovered(): Unit =
-    ()
+  def onRecovery: Handler[Unit] =
+    Handler.empty[Unit]
 
   /**
    * Returns `true` if this actor is currently recovering internal state by consuming
@@ -183,7 +185,7 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
    */
   private[eventuate] def recovered(): Unit = {
     _recovering = false
-    onRecovered()
+    onRecovery(Success(()))
   }
 
   /**
@@ -375,6 +377,7 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
     }
     case ReplayFailure(cause, iid) => if (iid == instanceId) {
       log.error(cause, s"replay failed, stopping self")
+      Try(onRecovery(Failure(cause)))
       context.stop(self)
     }
     case other =>
@@ -475,6 +478,24 @@ abstract class AbstractEventsourcedView(val id: String, val eventLog: ActorRef) 
     case Success(a) => handler.accept(a, null)
     case Failure(e) => handler.accept(null.asInstanceOf[SnapshotMetadata], e)
   }
+
+  override def onRecovery: Handler[Unit] = {
+    case Success(_) => onRecoverySuccess()
+    case Failure(e) => onRecoveryFailure(e)
+  }
+
+  /**
+   * Called after successful recovery. Does nothing by default and can be overridden.
+   */
+  protected def onRecoverySuccess(): Unit =
+    ()
+
+  /**
+   * Called after failed recovery. Does nothing by default and can be overridden.
+   * Regardless of the action taken by this method, the actor will be stopped.
+   */
+  protected def onRecoveryFailure(cause: Throwable): Unit =
+    ()
 
   /**
    * Sets this actor's command handler.

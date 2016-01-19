@@ -118,6 +118,28 @@ object SaveSnapshot {
   //#
 }
 
+object Recovery {
+  import akka.actor._
+  import com.rbmhtechnology.eventuate.EventsourcedActor
+  import scala.util._
+
+  //#recovery-handler
+  class ExampleActor(override val id: String,
+                     override val eventLog: ActorRef) extends EventsourcedActor {
+  //#
+    override def onCommand: Receive = ???
+    override def onEvent: Receive = ???
+  //#recovery-handler
+  // ...
+
+    override def onRecovery = {
+      case Success(_) => // ...
+      case Failure(_) => // ...
+    }
+  }
+  //#
+}
+
 object LoadSnapshot {
   import akka.actor._
   import com.rbmhtechnology.eventuate.EventsourcedActor
