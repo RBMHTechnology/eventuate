@@ -488,6 +488,13 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
         probe.expectMsg(Pong(1))
         probe.expectMsg(Pong(2))
       }
+      "stop during write if its event log is stopped" in {
+        val actor = watch(recoveredEventsourcedActor(stateSync = true))
+        actor ! Cmd("a")
+        logProbe.expectMsgClass(classOf[Write])
+        system.stop(logProbe.ref)
+        expectTerminated(actor)
+      }
     }
     "in stateSync = false mode" must {
       "process further commands while persistence is in progress" in {

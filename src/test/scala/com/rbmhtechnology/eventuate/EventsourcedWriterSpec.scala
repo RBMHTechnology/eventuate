@@ -219,11 +219,38 @@ class EventsourcedWriterSpec extends TestKit(ActorSystem("test")) with WordSpecL
         actor ! "cmd"
         appProbe.expectMsg("cmd")
       }
+      "stop during write if its event log is stopped" in {
+        val actor = unrecoveredEventsourcedWriter()
+        processRead(Success("rs"))
+        processLoad(actor)
+        logProbe.expectMsg(Replay(1, 2, Some(actor), instanceId))
+        logProbe.sender() ! ReplaySuccess(List(event("a", 1), event("b", 2)), 2L, instanceId)
+        appProbe.expectMsg(("a", 1))
+        appProbe.expectMsg(("b", 2))
+        rwProbe.expectMsg("w")
+
+        watch(actor)
+        system.stop(logProbe.ref)
+        expectTerminated(actor)
+      }
     }
 
     "resuming" must {
       "replay after an initial read using the defined return value as starting position" in {
         recoveredEventsourcedWriter(Some(3))
+      }
+      "stop during write if its event log is stopped" in {
+        val actor = unrecoveredEventsourcedWriter(Some(1))
+        processRead(Success("rs"))
+        logProbe.expectMsg(Replay(1, 2, Some(actor), instanceId))
+        logProbe.sender() ! ReplaySuccess(List(event("a", 1), event("b", 2)), 2L, instanceId)
+        appProbe.expectMsg(("a", 1))
+        appProbe.expectMsg(("b", 2))
+        rwProbe.expectMsg("w")
+
+        watch(actor)
+        system.stop(logProbe.ref)
+        expectTerminated(actor)
       }
     }
 
@@ -245,6 +272,16 @@ class EventsourcedWriterSpec extends TestKit(ActorSystem("test")) with WordSpecL
         appProbe.expectMsg(("b", 2))
         processWrite(Success("ws"))
         processWrite(Success("ws"))
+      }
+      "stop during write if its event log is stopped" in {
+        val actor = recoveredEventsourcedWriter()
+        actor ! Written(event("a", 1)) // trigger write
+        appProbe.expectMsg(("a", 1))
+        rwProbe.expectMsg("w")
+
+        watch(actor)
+        system.stop(logProbe.ref)
+        expectTerminated(actor)
       }
     }
   }
