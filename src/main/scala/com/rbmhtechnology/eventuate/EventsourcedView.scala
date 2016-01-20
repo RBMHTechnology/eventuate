@@ -397,6 +397,8 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
       Try(onRecovery(Failure(cause)))
       context.stop(self)
     }
+    case Terminated(ref) if ref == eventLog =>
+      context.stop(self)
     case other =>
       stash()
   }
@@ -418,6 +420,8 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
       saveRequests.get(metadata).foreach(handler => handler(Failure(cause)))
       saveRequests = saveRequests - metadata
     }
+    case Terminated(ref) if ref == eventLog =>
+      context.stop(self)
     case msg =>
       unhandledMessage(msg)
   }
@@ -453,6 +457,7 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
    */
   override def preStart(): Unit = {
     _lastHandledEvent = DurableEvent(id)
+    context.watch(eventLog)
     init()
   }
 

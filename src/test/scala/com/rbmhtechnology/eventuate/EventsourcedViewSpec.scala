@@ -463,5 +463,15 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
       msgProbe.expectMsg(3)
       msgProbe.expectMsg(0)
     }
+    "stop during recovery if its event log is stopped" in {
+      val actor = watch(unrecoveredEventsourcedView())
+      system.stop(logProbe.ref)
+      expectTerminated(actor)
+    }
+    "stop after recovery if its event log is stopped" in {
+      val actor = watch(processRecover(unrecoveredEventsourcedView()))
+      system.stop(logProbe.ref)
+      expectTerminated(actor)
+    }
   }
 }
