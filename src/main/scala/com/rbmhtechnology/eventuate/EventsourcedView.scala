@@ -104,14 +104,9 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
   private val settings = new EventsourcedViewSettings(context.system.settings.config)
   private var saveRequests: Map[SnapshotMetadata, Handler[SnapshotMetadata]] = Map.empty
 
-  private lazy val currentOnCommand: Receive = onCommand
-  private lazy val currentOnEvent: Receive = onEvent
-
-  /**
-   * Internal API.
-   */
-  private[eventuate] lazy val currentOnSnapshot: Receive =
-    onSnapshot
+  private lazy val _commandContext: BehaviorContext = new DefaultBehaviorContext(onCommand)
+  private lazy val _eventContext: BehaviorContext = new DefaultBehaviorContext(onEvent)
+  private lazy val _snapshotContext: BehaviorContext = new DefaultBehaviorContext(onSnapshot)
 
   /**
    * Optional aggregate id. It is used for routing [[DurableEvent]]s to event-sourced destinations
@@ -141,6 +136,24 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
    * Event log actor.
    */
   def eventLog: ActorRef
+
+  /**
+   * Returns the command [[BehaviorContext]].
+   */
+  def commandContext: BehaviorContext =
+    _commandContext
+
+  /**
+   * Returns the event [[BehaviorContext]].
+   */
+  def eventContext: BehaviorContext =
+    _eventContext
+
+  /**
+   * Returns the snapshot [[BehaviorContext]].
+   */
+  def snapshotContext: BehaviorContext =
+    _snapshotContext
 
   /**
    * Command handler.
@@ -192,10 +205,11 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
    * Internal API.
    */
   private[eventuate] def receiveEvent(event: DurableEvent): Unit = {
-    if (currentOnEvent.isDefinedAt(event.payload)) try {
+    val behavior = _eventContext.current
+    if (behavior.isDefinedAt(event.payload)) try {
       _eventHandling = true
       receiveEventInternal(event)
-      currentOnEvent(event.payload)
+      behavior(event.payload)
       if (!recovering) conditionChanged(currentVectorTime)
     } finally _eventHandling = false
   }
@@ -311,8 +325,10 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
   /**
    * Internal API.
    */
-  private[eventuate] def unhandledMessage(msg: Any): Unit =
-    if (currentOnCommand.isDefinedAt(msg)) currentOnCommand(msg) else unhandled(msg)
+  private[eventuate] def unhandledMessage(msg: Any): Unit = {
+    val behavior = _commandContext.current
+    if (behavior.isDefinedAt(msg)) behavior(msg) else unhandled(msg)
+  }
 
   /**
    * Internal API.
@@ -350,9 +366,10 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
    */
   private[eventuate] def initiating: Receive = {
     case LoadSnapshotSuccess(Some(snapshot), iid) => if (iid == instanceId) {
-      if (currentOnSnapshot.isDefinedAt(snapshot.payload)) {
+      val behavior = _snapshotContext.current
+      if (behavior.isDefinedAt(snapshot.payload)) {
         snapshotLoaded(snapshot)
-        currentOnSnapshot(snapshot.payload)
+        behavior(snapshot.payload)
         replay(snapshot.metadata.sequenceNr + 1L, subscribe = true)
       } else {
         log.warning(s"snapshot loaded (metadata = ${snapshot.metadata}) but onSnapshot doesn't handle it, replaying from scratch")
@@ -454,13 +471,9 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
  * @see [[EventsourcedView]]
  */
 abstract class AbstractEventsourcedView(val id: String, val eventLog: ActorRef) extends EventsourcedView {
-  private var _onCommand: Receive = Actor.emptyBehavior
-  private var _onEvent: Receive = Actor.emptyBehavior
-  private var _onSnapshot: Receive = Actor.emptyBehavior
-
-  final override def onCommand = _onCommand
-  final override def onEvent = _onEvent
-  final override def onSnapshot = _onSnapshot
+  final override def onCommand = Actor.emptyBehavior
+  final override def onEvent = Actor.emptyBehavior
+  final override def onSnapshot = Actor.emptyBehavior
 
   override def aggregateId: Option[String] =
     Option(getAggregateId.orElse(null))
@@ -501,17 +514,17 @@ abstract class AbstractEventsourcedView(val id: String, val eventLog: ActorRef) 
    * Sets this actor's command handler.
    */
   protected def onReceiveCommand(handler: Receive): Unit =
-    _onCommand = handler
+    commandContext.become(handler)
 
   /**
    * Sets this actor's event handler.
    */
-  protected def onReceiveEvent(handler: Receive) =
-    _onEvent = handler
+  protected def onReceiveEvent(handler: Receive): Unit =
+    eventContext.become(handler)
 
   /**
    * Sets this actor's snapshot handler.
    */
-  protected def onReceiveSnapshot(handler: Receive) =
-    _onSnapshot = handler
+  protected def onReceiveSnapshot(handler: Receive): Unit =
+    snapshotContext.become(handler)
 }
