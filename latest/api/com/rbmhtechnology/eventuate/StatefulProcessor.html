@@ -445,6 +445,24 @@ is defined it will only receive events with a matching aggregate id in
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#commandContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="commandContext:com.rbmhtechnology.eventuate.BehaviorContext"></a>
+      <a id="commandContext:BehaviorContext"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">commandContext</span><span class="result">: <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.StatefulProcessor@commandContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Returns the command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="akka.actor.Actor#context" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="context:akka.actor.ActorContext"></a>
       <a id="context:ActorContext"></a>
@@ -496,6 +514,26 @@ is defined it will only receive events with a matching aggregate id in
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#eventContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eventContext:com.rbmhtechnology.eventuate.BehaviorContext"></a>
+      <a id="eventContext:BehaviorContext"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">lazy val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eventContext</span><span class="result">: <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.StatefulProcessor@eventContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Returns an command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a> that doesn't allow event handler behavior changes.</p><div class="fullcomment"><div class="comment cmt"><p>Returns an command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a> that doesn't allow event handler behavior changes. An
+attempt to change the event handler behavior with <code>eventContext.become()</code> will throw an
+<span class="extype" name="UnsupportedOperationException">UnsupportedOperationException</span>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -1085,6 +1123,24 @@ that have set <code>sharedClockEntry</code> to <code>true</code> as well.</p><di
 that have set <code>sharedClockEntry</code> to <code>true</code> as well. Otherwise, this actor has its own entry in
 the vector clock.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#snapshotContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext"></a>
+      <a id="snapshotContext:BehaviorContext"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">snapshotContext</span><span class="result">: <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.StatefulProcessor@snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Returns the snapshot <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the snapshot <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#stash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="stash():Unit"></a>
       <a id="stash():Unit"></a>

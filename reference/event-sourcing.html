@@ -111,6 +111,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#event-collaboration">Event collaboration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#conditional-requests">Conditional requests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#command-stashing">Command stashing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#custom-serialization">Custom serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuration</a></li>
@@ -228,7 +229,7 @@
 <span class="o">}</span>
 </pre></div>
 </div>
-<p>Messages sent by an application to an event-sourced actor are received by its command handler. Usually, a command handler first validates a command, then derives one or more events from it, persists these events with <code class="docutils literal"><span class="pre">persist</span></code> and replies with the persistence result. The <code class="docutils literal"><span class="pre">persist</span></code> method has the following signature<a class="footnote-reference" href="#id15" id="id2">[1]</a>:</p>
+<p>Messages sent by an application to an event-sourced actor are received by its command handler. Usually, a command handler first validates a command, then derives one or more events from it, persists these events with <code class="docutils literal"><span class="pre">persist</span></code> and replies with the persistence result. The <code class="docutils literal"><span class="pre">persist</span></code> method has the following signature<a class="footnote-reference" href="#id16" id="id2">[1]</a>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">def</span> <span class="n">persist</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">event</span><span class="k">:</span> <span class="kt">A</span><span class="o">,</span> <span class="n">customDestinationAggregateIds</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">())(</span><span class="n">handler</span><span class="k">:</span> <span class="kt">Try</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span>
 </pre></div>
 </div>
@@ -250,7 +251,7 @@
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">def</span> <span class="n">stateSync</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">true</span>
 </pre></div>
 </div>
-<p>If <code class="docutils literal"><span class="pre">stateSync</span></code> is <code class="docutils literal"><span class="pre">true</span></code> (default), new commands are <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.1/scala/actors.html#stash">stashed</a> while persistence is in progress. Consequently, new commands see actor state that is <em>in sync</em> with the events in the event log. A consequence is limited write throughput, because <a class="reference internal" href="../architecture.html#batching"><span>Batching</span></a> of write requests is not possible in this case<a class="footnote-reference" href="#id16" id="id3">[2]</a>. This setting is recommended for event-sourced actors that must validate commands against current state.</p>
+<p>If <code class="docutils literal"><span class="pre">stateSync</span></code> is <code class="docutils literal"><span class="pre">true</span></code> (default), new commands are <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.1/scala/actors.html#stash">stashed</a> while persistence is in progress. Consequently, new commands see actor state that is <em>in sync</em> with the events in the event log. A consequence is limited write throughput, because <a class="reference internal" href="../architecture.html#batching"><span>Batching</span></a> of write requests is not possible in this case<a class="footnote-reference" href="#id17" id="id3">[2]</a>. This setting is recommended for event-sourced actors that must validate commands against current state.</p>
 <p>If <code class="docutils literal"><span class="pre">stateSync</span></code> is <code class="docutils literal"><span class="pre">false</span></code>, new commands are dispatched to <code class="docutils literal"><span class="pre">onCommand</span></code> immediately. Consequently, new commands may see stale actor state. The advantage is significantly higher write throughput as <a class="reference internal" href="../architecture.html#batching"><span>Batching</span></a> of write requests is possible. This setting is recommended for event-sourced actors that don’t need to validate commands against current state.</p>
 <p>If a sender sends several (update) commands followed by a query to an event-sourced actor that has <code class="docutils literal"><span class="pre">stateSync</span></code> set to <code class="docutils literal"><span class="pre">false</span></code>, the query will probably not see the state change from the preceding commands. To achieve read-your-write consistency, the command sender should wait for a reply from the last command before sending the query. The reply must of course be sent from within a <code class="docutils literal"><span class="pre">persist</span></code> handler.</p>
 <div class="admonition note">
@@ -484,8 +485,8 @@
 </div>
 </div>
 <div class="section" id="state-recovery">
-<h1>State recovery<a class="headerlink" href="#state-recovery" title="Permalink to this headline">¶</a></h1>
-<p>When an event-sourced actor or view is started or re-started, events are replayed to its <code class="docutils literal"><span class="pre">onEvent</span></code> handler so that internal state can be recovered<a class="footnote-reference" href="#id17" id="id6">[3]</a>. This is also the case for stateful event-sourced writers and processors. During event replay the <code class="docutils literal"><span class="pre">recovering</span></code> method returns <code class="docutils literal"><span class="pre">true</span></code>. Applications can also define a recovery completion handler by overriding <code class="docutils literal"><span class="pre">onRecovery</span></code>:</p>
+<span id="id6"></span><h1>State recovery<a class="headerlink" href="#state-recovery" title="Permalink to this headline">¶</a></h1>
+<p>When an event-sourced actor or view is started or re-started, events are replayed to its <code class="docutils literal"><span class="pre">onEvent</span></code> handler so that internal state can be recovered<a class="footnote-reference" href="#id18" id="id7">[3]</a>. This is also the case for stateful event-sourced writers and processors. During event replay the <code class="docutils literal"><span class="pre">recovering</span></code> method returns <code class="docutils literal"><span class="pre">true</span></code>. Applications can also define a recovery completion handler by overriding <code class="docutils literal"><span class="pre">onRecovery</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
                    <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
 <span class="c1">// ...</span>
@@ -518,7 +519,7 @@
 </div>
 </div>
 <div class="section" id="snapshots">
-<span id="id7"></span><h1>Snapshots<a class="headerlink" href="#snapshots" title="Permalink to this headline">¶</a></h1>
+<span id="id8"></span><h1>Snapshots<a class="headerlink" href="#snapshots" title="Permalink to this headline">¶</a></h1>
 <p>Recovery times increase with the number of events that are replayed to event-sourced actors, views, stateful writers or stateful processors. They can be decreased by starting event replay from a previously saved snapshot of internal state rather than replaying events from scratch. Event-sourced actors, views, stateful writers and stateful processors can save snapshots by calling <code class="docutils literal"><span class="pre">save</span></code> within their command handler:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
@@ -601,13 +602,13 @@
 </div>
 </div>
 <div class="section" id="event-routing">
-<span id="id8"></span><h1>Event routing<a class="headerlink" href="#event-routing" title="Permalink to this headline">¶</a></h1>
-<p>An event that is emitted by an event-sourced actor or processor can be routed to other event-sourced actors, views, writers and processors if they share an <a class="reference internal" href="event-log.html#event-log"><span>Event log</span></a><a class="footnote-reference" href="#id18" id="id9">[4]</a> . The default event routing rules are:</p>
+<span id="id9"></span><h1>Event routing<a class="headerlink" href="#event-routing" title="Permalink to this headline">¶</a></h1>
+<p>An event that is emitted by an event-sourced actor or processor can be routed to other event-sourced actors, views, writers and processors if they share an <a class="reference internal" href="event-log.html#event-log"><span>Event log</span></a><a class="footnote-reference" href="#id19" id="id10">[4]</a> . The default event routing rules are:</p>
 <ul class="simple">
 <li>If an event-sourced actor, view, writer or processor has an undefined <code class="docutils literal"><span class="pre">aggregateId</span></code>, all events are routed to it. It may choose to handle only a subset of them though.</li>
 <li>If an event-sourced actor, view, writer or processor has a defined <code class="docutils literal"><span class="pre">aggregateId</span></code>, only events emitted by event-sourced actors or processors with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> are routed to it.</li>
 </ul>
-<p>Routing destinations are defined during emission of an event and are persisted together with the event<a class="footnote-reference" href="#id19" id="id10">[5]</a>. This makes routing decisions repeatable during event replay and allows for routing rule changes without affecting past routing decisions. Applications can define additional routing destinations with the <code class="docutils literal"><span class="pre">customDestinationAggregateIds</span></code> parameter of <code class="docutils literal"><span class="pre">persist</span></code>:</p>
+<p>Routing destinations are defined during emission of an event and are persisted together with the event<a class="footnote-reference" href="#id20" id="id11">[5]</a>. This makes routing decisions repeatable during event replay and allows for routing rule changes without affecting past routing decisions. Applications can define additional routing destinations with the <code class="docutils literal"><span class="pre">customDestinationAggregateIds</span></code> parameter of <code class="docutils literal"><span class="pre">persist</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
@@ -635,7 +636,7 @@
 <p>Here, <code class="docutils literal"><span class="pre">ExampleEvent</span></code> is routed to destinations with <code class="docutils literal"><span class="pre">aggregateId</span></code>s <code class="docutils literal"><span class="pre">Some(“a2”)</span></code> and <code class="docutils literal"><span class="pre">Some(“a3”)</span></code> in addition to the default routing destinations with <code class="docutils literal"><span class="pre">aggregateId</span></code>s <code class="docutils literal"><span class="pre">Some(“a1”)</span></code> and <code class="docutils literal"><span class="pre">None</span></code>.</p>
 </div>
 <div class="section" id="reliable-delivery">
-<span id="id11"></span><h1>Reliable delivery<a class="headerlink" href="#reliable-delivery" title="Permalink to this headline">¶</a></h1>
+<span id="id12"></span><h1>Reliable delivery<a class="headerlink" href="#reliable-delivery" title="Permalink to this headline">¶</a></h1>
 <p>Reliable, event-based remote communication between event-sourced actors should be done via a <a class="reference internal" href="event-log.html#replicated-event-log"><span>Replicated event log</span></a>. For reliable communication with other services that cannot connect to a replicated event log, event-sourced actors should use the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a> trait:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
 <span class="k">import</span> <span class="nn">scala.util._</span>
@@ -704,7 +705,7 @@
 <p>Conditional requests are covered in the <a class="reference internal" href="../user-guide.html#conditional-requests"><span>Conditional requests</span></a> section of the <a class="reference internal" href="../user-guide.html#user-guide"><span>User guide</span></a>.</p>
 </div>
 <div class="section" id="command-stashing">
-<span id="id12"></span><h1>Command stashing<a class="headerlink" href="#command-stashing" title="Permalink to this headline">¶</a></h1>
+<span id="id13"></span><h1>Command stashing<a class="headerlink" href="#command-stashing" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal"><span class="pre">EventsourcedView</span></code> and <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> override <code class="docutils literal"><span class="pre">stash()</span></code> and <code class="docutils literal"><span class="pre">unstashAll()</span></code> of <code class="docutils literal"><span class="pre">akka.actor.Stash</span></code> so that application-specific subclasses can safely stash and unstash commands. Stashing of events is not allowed. Hence, <code class="docutils literal"><span class="pre">stash()</span></code> must only be used in a command handler, using it in an event handler will throw <code class="docutils literal"><span class="pre">StashError</span></code>. On the other hand, <code class="docutils literal"><span class="pre">unsatshAll()</span></code> can be used anywhere i.e. in a command handler, persist handler or event handler. The following is a trivial usage example which calls <code class="docutils literal"><span class="pre">stash()</span></code> in the command handler and <code class="docutils literal"><span class="pre">unstashAll()</span></code> in the persist handler:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span class="k">case</span> <span class="k">class</span> <span class="nc">CreateUser</span><span class="o">(</span><span class="n">userId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
 <span class="k">case</span> <span class="k">class</span> <span class="nc">UpdateUser</span><span class="o">(</span><span class="n">userId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
@@ -754,6 +755,39 @@
 <p>The <code class="docutils literal"><span class="pre">UserManager</span></code> maintains a persistent <code class="docutils literal"><span class="pre">users</span></code> map. User can be added to the map by sending a <code class="docutils literal"><span class="pre">CreateUser</span></code> command and updated by sending and <code class="docutils literal"><span class="pre">UpdateUser</span></code> command. Should these commands arrive in wrong order i.e. <code class="docutils literal"><span class="pre">UpdateUser</span></code> before a corresponding <code class="docutils literal"><span class="pre">CreateUser</span></code>, the <code class="docutils literal"><span class="pre">UserManager</span></code> stashes <code class="docutils literal"><span class="pre">UpdateUser</span></code> and unstashes it after having successfully processed another <code class="docutils literal"><span class="pre">CreateUser</span></code> command.</p>
 <p>In the above implementation, an <code class="docutils literal"><span class="pre">UpdateUser</span></code> command might be repeatedly stashed and unstashed if the corresponding <code class="docutils literal"><span class="pre">CreateUser</span></code> command is preceded by other unrelated <code class="docutils literal"><span class="pre">CreateUser</span></code> commands. Assuming that out-of-order user commands are rare, the performance impact is limited. Alternatively, one could record stashed user ids in transient actor state and conditionally call <code class="docutils literal"><span class="pre">unstashAll()</span></code> by checking that state.</p>
 </div>
+<div class="section" id="behavior-changes">
+<h1>Behavior changes<a class="headerlink" href="#behavior-changes" title="Permalink to this headline">¶</a></h1>
+<p>Event-sourced actors, views writers and processors distinguish command processing from event processing. Consequently, applications should be able to change the behavior of command handlers and event handlers independent of each other, at runtime. Command handling behavior can be changed with <code class="docutils literal"><span class="pre">commandContext.become()</span></code> and <code class="docutils literal"><span class="pre">commandContext.unbecome()</span></code>, event handling behavior with <code class="docutils literal"><span class="pre">eventContext.become()</span></code> and <code class="docutils literal"><span class="pre">eventContext.unbecome()</span></code> (for details, see the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a> API docs):</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">trait</span> <span class="nc">ExampleActor</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
+  <span class="c1">// default command handler</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="s">&quot;a&quot;</span> <span class="k">=&gt;</span> <span class="n">commandContext</span><span class="o">.</span><span class="n">become</span><span class="o">(</span><span class="n">newCommandHandler</span><span class="o">)</span>
+  <span class="o">}</span>
+
+  <span class="c1">// default event handler</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">onEvent</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="s">&quot;x&quot;</span> <span class="k">=&gt;</span> <span class="n">eventContext</span><span class="o">.</span><span class="n">become</span><span class="o">(</span><span class="n">newEventHandler</span><span class="o">)</span>
+  <span class="o">}</span>
+
+  <span class="k">def</span> <span class="n">newCommandHandler</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="s">&quot;b&quot;</span> <span class="k">=&gt;</span>
+      <span class="c1">// restores default command handler</span>
+      <span class="n">commandContext</span><span class="o">.</span><span class="n">unbecome</span><span class="o">()</span>
+  <span class="o">}</span>
+
+  <span class="k">def</span> <span class="n">newEventHandler</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="s">&quot;y&quot;</span> <span class="k">=&gt;</span>
+      <span class="c1">// restores default event handler</span>
+      <span class="n">eventContext</span><span class="o">.</span><span class="n">unbecome</span><span class="o">()</span>
+  <span class="o">}</span>
+</pre></div>
+</div>
+<p>This works for all event-sourcing abstractions except for <code class="docutils literal"><span class="pre">EventsourcedProcessor</span></code>. Its <code class="docutils literal"><span class="pre">eventContext</span></code> does not allow behavior changes as <code class="docutils literal"><span class="pre">EventsourcedProcessor</span></code> implements default <code class="docutils literal"><span class="pre">onEvent</span></code> behavior that should be changed by applications. An attempt to change that behavior will throw an <code class="docutils literal"><span class="pre">UnsupportedOperationException</span></code>. Changing an <code class="docutils literal"><span class="pre">EventsourcedProcessor</span></code>’s <code class="docutils literal"><span class="pre">processEvent</span></code> behavior is not supported yet.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Command and event handling behaviors are managed by internal behavior stacks. Eventuate does <strong>not</strong> include these behavior stacks into <a class="reference internal" href="#snapshots"><span>Snapshots</span></a> when applications <code class="docutils literal"><span class="pre">save</span></code> actor state. Although the state of an event handling behavior stack can be recovered by replaying events from scratch, that stack is not automatically recovered when a snapshot is loaded. Applications are therefore responsible to restore the required command and event handling behavior from application-specific snapshot details in the <code class="docutils literal"><span class="pre">onSnapshot</span></code> handler. Of course, this is only necessary if the required behavior differs from the default <code class="docutils literal"><span class="pre">onEvent</span></code> and <code class="docutils literal"><span class="pre">onCommand</span></code> behavior.</p>
+</div>
+</div>
 <div class="section" id="failure-handling">
 <h1>Failure handling<a class="headerlink" href="#failure-handling" title="Permalink to this headline">¶</a></h1>
 <p>Event-sourced actors, views, writers and processors register themselves at an <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> actor in order to be notified about changes in the event log. Directly after registration, during recovery, they read from the event log in order to recover internal state from past events. After recovery has completed, the event log actor <strong>pushes</strong> newly written events to registered actors so that they can update application state with minimal latency. If a registered actor is restarted, it recovers again from the event log and continues to process push-updates after recovery has completed.</p>
@@ -767,11 +801,11 @@
 <p>In Eventuate, the second approach is taken. Should there be a longer-lasting problem with the storage backend, it may take a longer time for an event log actor to make a decision about the success or failure of a write. During that time, it will reject further writes in order to avoid being overloaded with pending write requests. This is an application of the <a class="reference external" href="http://martinfowler.com/bliki/CircuitBreaker.html">circuit breaker</a> design pattern.</p>
 <p>Consequently, a write failure reported by an event log actor means that the write was actually <strong>not</strong> applied to the storage backend. This additional guarantee comes at the cost of potentially long write reply delays but allows registered actors to remain available for in-memory reads during storage backend unavailability. It also provides clearer semantics of write failures.</p>
 <div class="section" id="circuit-breaker">
-<span id="id13"></span><h2>Circuit breaker<a class="headerlink" href="#circuit-breaker" title="Permalink to this headline">¶</a></h2>
+<span id="id14"></span><h2>Circuit breaker<a class="headerlink" href="#circuit-breaker" title="Permalink to this headline">¶</a></h2>
 <p>The strategy described above can be implemented by wrapping a <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> in a <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.log.CircuitBreaker">CircuitBreaker</a> actor. This is the default when creating the log actor for a <a class="reference internal" href="event-log.html#cassandra-storage-backend"><span>Cassandra storage backend</span></a>. Should the event log actor need to retry a write <code class="docutils literal"><span class="pre">eventuate.log.circuit-breaker.open-after-retries</span></code> times or more, the circuit breaker opens. If open, it rejects all requests by replying with a failure message that contains an <code class="docutils literal"><span class="pre">UnavailableException</span></code>. If retrying the write finally succeeds, the circuit breaker closes again. The maximum number of write retries can be configured with <code class="docutils literal"><span class="pre">eventuate.log.cassandra.write-retry-max</span></code> and the delay between write retries with <code class="docutils literal"><span class="pre">eventuate.log.write-timeout</span></code>. If the maximum number of retries is reached, the event log actor gives up and stops itself which also stops all registered actors.</p>
 </div>
 <div class="section" id="persist-failure-handling">
-<span id="id14"></span><h2><code class="docutils literal"><span class="pre">persist</span></code> failure handling<a class="headerlink" href="#persist-failure-handling" title="Permalink to this headline">¶</a></h2>
+<span id="id15"></span><h2><code class="docutils literal"><span class="pre">persist</span></code> failure handling<a class="headerlink" href="#persist-failure-handling" title="Permalink to this headline">¶</a></h2>
 <p>Asynchronous <code class="docutils literal"><span class="pre">persist</span></code> operations send write requests to an <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> actor. The write reply is passed as argument to the persist handler (see section <a class="reference internal" href="#command-handler"><span>Command handler</span></a>). If the persist handler is called with a <code class="docutils literal"><span class="pre">Failure</span></code> one can safely assume that the events have not been written to the storage backend. As already explained above, a consequence of this additional guarantee is that persist handler callbacks may be delayed indefinitely.</p>
 <p>For an <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> with <code class="docutils literal"><span class="pre">stateSync</span></code> set to <code class="docutils literal"><span class="pre">true</span></code>, this means that further commands sent to that actor will be stashed until the current write completes. In this case, it is the responsibility of the application not to overload that actor with further commands. For example, an application could use timeouts for command replies and prevent sending further commands to that actor if a timeout occurred. After an application-defined delay, command sending can be resumed. This is comparable to using an application-level circuit breaker. Alternatively, an application could restart an event-sourced actor on command timeout and continue sending new commands to that actor after recovery succeeded. This however may take a while depending on the unavailability duration of the storage backend.</p>
 <p><code class="docutils literal"><span class="pre">EventsourcedActor</span></code>s with <code class="docutils literal"><span class="pre">stateSync</span></code> set to <code class="docutils literal"><span class="pre">false</span></code> do not stash commands but rather send write requests immediately to the event log actor. If the log actor is busy retrying a write and the <a class="reference internal" href="#circuit-breaker"><span>Circuit breaker</span></a> opens, later persist operations will be completed immediately with an <code class="docutils literal"><span class="pre">UnavailableException</span></code> failure, regardless whether the event-sourced actor has persist operations in progress or not. A persist operation of an <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> with <code class="docutils literal"><span class="pre">stateSync</span></code> set to <code class="docutils literal"><span class="pre">true</span></code> will only be completed with an <code class="docutils literal"><span class="pre">UnavailableException</span></code> failure if that actor had no persist operation in progress at the time the circuit breaker opened.</p>
@@ -782,7 +816,7 @@
 </div>
 <div class="section" id="recovery-failure-handling">
 <h2>Recovery failure handling<a class="headerlink" href="#recovery-failure-handling" title="Permalink to this headline">¶</a></h2>
-<p>TODO</p>
+<p>As explained in section <a class="reference internal" href="#state-recovery"><span>State recovery</span></a>, event-sourced actors, views, writers and processors are stopped if their recovery fails. Applications should either define a custom <code class="docutils literal"><span class="pre">onRecovery</span></code> completion handler to obtain information about recovery failure details or just watch these actors if recovery failure details are not relevant.</p>
 </div>
 <div class="section" id="batch-write-failure-handling">
 <h2>Batch write failure handling<a class="headerlink" href="#batch-write-failure-handling" title="Permalink to this headline">¶</a></h2>
@@ -875,34 +909,34 @@ batch_size_fail_threshold_in_kb: 50
 <p>Custom snapshot serialization also works for state managed with <code class="docutils literal"><span class="pre">ConcurrentVersions[A,</span> <span class="pre">B]</span></code>. A custom serializer configured for type parameter <code class="docutils literal"><span class="pre">A</span></code> is used whenever a snapshot of type <code class="docutils literal"><span class="pre">ConcurrentVersions[A,</span> <span class="pre">B]</span></code> is saved (see also <a class="reference internal" href="../user-guide.html#tracking-conflicting-versions"><span>Tracking conflicting versions</span></a>).</p>
 <p>Custom serializers can also be configured for the type parameter <code class="docutils literal"><span class="pre">A</span></code> of <code class="docutils literal"><span class="pre">MVRegister[A]</span></code>, <code class="docutils literal"><span class="pre">LWWRegister[A]</span></code> and <code class="docutils literal"><span class="pre">ORSet[A]</span></code>, <a class="reference internal" href="../user-guide.html#commutative-replicated-data-types"><span>Operation-based CRDTs</span></a> for which the corresponding CRDT service interfaces provide a <code class="docutils literal"><span class="pre">save</span></code> method for saving snapshots.</p>
 <p>Event-sourced actors that extend <code class="docutils literal"><span class="pre">ConfirmedDelivery</span></code> for <a class="reference internal" href="#reliable-delivery"><span>Reliable delivery</span></a> of messages to destinations will also include unconfirmed messages as <code class="docutils literal"><span class="pre">deliveryAttempts</span></code> in a <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.Snapshot">Snapshot</a>. The <code class="docutils literal"><span class="pre">message</span></code> field of a <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery$$DeliveryAttempt">DeliveryAttempt</a> can also be custom-serialized by configuring a serializer.</p>
-<table class="docutils footnote" frame="void" id="id15" rules="none">
+<table class="docutils footnote" frame="void" id="id16" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>The <code class="docutils literal"><span class="pre">customDestinationAggregateIds</span></code> parameter is described in section <a class="reference internal" href="#event-routing"><span>Event routing</span></a>.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id16" rules="none">
+<table class="docutils footnote" frame="void" id="id17" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>Writes from different event-sourced actors that have <code class="docutils literal"><span class="pre">stateSync</span></code> set to <code class="docutils literal"><span class="pre">true</span></code> are still batched, but not the writes from a single event-sourced actor.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id17" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id6">[3]</a></td><td>Event replay can optionally start from <a class="reference internal" href="#snapshots"><span>Snapshots</span></a> of actor state.</td></tr>
-</tbody>
-</table>
 <table class="docutils footnote" frame="void" id="id18" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id9">[4]</a></td><td>Event-sourced processors can additionally route events between event logs.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id7">[3]</a></td><td>Event replay can optionally start from <a class="reference internal" href="#snapshots"><span>Snapshots</span></a> of actor state.</td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id19" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id10">[5]</a></td><td>The routing destinations of a <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a> can be obtained with its <code class="docutils literal"><span class="pre">destinationAggregateIds</span></code> method.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id10">[4]</a></td><td>Event-sourced processors can additionally route events between event logs.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id20" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id11">[5]</a></td><td>The routing destinations of a <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a> can be obtained with its <code class="docutils literal"><span class="pre">destinationAggregateIds</span></code> method.</td></tr>
 </tbody>
 </table>
 </div>

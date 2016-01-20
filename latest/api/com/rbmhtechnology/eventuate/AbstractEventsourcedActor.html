@@ -350,6 +350,24 @@ is defined it will only receive events with a matching aggregate id in
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#commandContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="commandContext:com.rbmhtechnology.eventuate.BehaviorContext"></a>
+      <a id="commandContext:BehaviorContext"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">commandContext</span><span class="result">: <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@commandContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Returns the command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ConfirmedDelivery#confirm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="confirm(deliveryId:String):Unit"></a>
       <a id="confirm(String):Unit"></a>
@@ -440,6 +458,24 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#eventContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eventContext:com.rbmhtechnology.eventuate.BehaviorContext"></a>
+      <a id="eventContext:BehaviorContext"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eventContext</span><span class="result">: <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@eventContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Returns the event <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the event <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#eventLog" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eventLog:akka.actor.ActorRef"></a>
       <a id="eventLog:ActorRef"></a>
@@ -744,36 +780,36 @@ tracked as unconfirmed message until delivery is confirmed with <code>confirm</c
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onCommand" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onCommand:AbstractEventsourcedView.this.Receive"></a>
-      <a id="onCommand:Receive"></a>
+      <a id="onCommand:akka.actor.Actor.emptyBehavior.type"></a>
+      <a id="onCommand:emptyBehavior.type"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onCommand</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor.Receive">Receive</a></span>
+        <span class="name">onCommand</span><span class="result">: <span class="extype" name="akka.actor.Actor.emptyBehavior">emptyBehavior</span>.type</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@onCommand:AbstractEventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@onCommand:akka.actor.Actor.emptyBehavior.type" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Command handler.</p><div class="fullcomment"><div class="comment cmt"><p>Command handler.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onEvent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onEvent:AbstractEventsourcedView.this.Receive"></a>
-      <a id="onEvent:Receive"></a>
+      <a id="onEvent:akka.actor.Actor.emptyBehavior.type"></a>
+      <a id="onEvent:emptyBehavior.type"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onEvent</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor.Receive">Receive</a></span>
+        <span class="name">onEvent</span><span class="result">: <span class="extype" name="akka.actor.Actor.emptyBehavior">emptyBehavior</span>.type</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@onEvent:AbstractEventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@onEvent:akka.actor.Actor.emptyBehavior.type" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -891,18 +927,18 @@ Regardless of the action taken by this method, the actor will be stopped.
       <p class="shortcomment cmt">Called after successful recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after successful recovery. Does nothing by default and can be overridden.
 </p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onSnapshot" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onSnapshot:AbstractEventsourcedView.this.Receive"></a>
-      <a id="onSnapshot:Receive"></a>
+      <a id="onSnapshot:akka.actor.Actor.emptyBehavior.type"></a>
+      <a id="onSnapshot:emptyBehavior.type"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onSnapshot</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor.Receive">Receive</a></span>
+        <span class="name">onSnapshot</span><span class="result">: <span class="extype" name="akka.actor.Actor.emptyBehavior">emptyBehavior</span>.type</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@onSnapshot:AbstractEventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@onSnapshot:akka.actor.Actor.emptyBehavior.type" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1231,6 +1267,24 @@ that have set <code>sharedClockEntry</code> to <code>true</code> as well.</p><di
 that have set <code>sharedClockEntry</code> to <code>true</code> as well. Otherwise, this actor has its own entry in
 the vector clock.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#snapshotContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext"></a>
+      <a id="snapshotContext:BehaviorContext"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">snapshotContext</span><span class="result">: <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Returns the snapshot <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the snapshot <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#stash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="stash():Unit"></a>
       <a id="stash():Unit"></a>
