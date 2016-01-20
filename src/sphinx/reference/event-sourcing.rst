@@ -171,6 +171,8 @@ Processed events, to be written to the target event log, are returned by the han
 .. note::
    ``EventsourcedProcessor`` and ``StatefulProcessor`` internally ensure that writing to the target event log is idempotent. Applications don’t need to take extra care about idempotency.
 
+.. _state-recovery:
+
 State recovery
 --------------
 
@@ -301,6 +303,19 @@ The ``UserManager`` maintains a persistent ``users`` map. User can be added to t
 
 In the above implementation, an ``UpdateUser`` command might be repeatedly stashed and unstashed if the corresponding ``CreateUser`` command is preceded by other unrelated ``CreateUser`` commands. Assuming that out-of-order user commands are rare, the performance impact is limited. Alternatively, one could record stashed user ids in transient actor state and conditionally call ``unstashAll()`` by checking that state.
 
+Behavior changes
+----------------
+
+Event-sourced actors, views writers and processors distinguish command processing from event processing. Consequently, applications should be able to change the behavior of command handlers and event handlers independent of each other, at runtime. Command handling behavior can be changed with ``commandContext.become()`` and ``commandContext.unbecome()``, event handling behavior with ``eventContext.become()`` and ``eventContext.unbecome()`` (for details, see the BehaviorContext_ API docs):
+
+.. includecode:: ../code/EventSourcingDoc.scala
+   :snippet: behavior-changes
+
+This works for all event-sourcing abstractions except for ``EventsourcedProcessor``. Its ``eventContext`` does not allow behavior changes as ``EventsourcedProcessor`` implements default ``onEvent`` behavior that should be changed by applications. An attempt to change that behavior will throw an ``UnsupportedOperationException``. Changing an ``EventsourcedProcessor``’s ``processEvent`` behavior is not supported yet.
+
+.. note::
+   Command and event handling behaviors are managed by internal behavior stacks. Eventuate does **not** include these behavior stacks into :ref:`snapshots` when applications ``save`` actor state. Although the state of an event handling behavior stack can be recovered by replaying events from scratch, that stack is not automatically recovered when a snapshot is loaded. Applications are therefore responsible to restore the required command and event handling behavior from application-specific snapshot details in the ``onSnapshot`` handler. Of course, this is only necessary if the required behavior differs from the default ``onEvent`` and ``onCommand`` behavior.
+
 Failure handling
 ----------------
 
@@ -348,7 +363,7 @@ For an ``EventsourcedActor`` with ``stateSync`` set to ``true``, this means that
 Recovery failure handling
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+As explained in section :ref:`state-recovery`, event-sourced actors, views, writers and processors are stopped if their recovery fails. Applications should either define a custom ``onRecovery`` completion handler to obtain information about recovery failure details or just watch these actors if recovery failure details are not relevant.
 
 Batch write failure handling
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -474,6 +489,7 @@ Event-sourced actors that extend ``ConfirmedDelivery`` for :ref:`reliable-delive
 .. _Snapshot: ../latest/api/index.html#com.rbmhtechnology.eventuate.Snapshot
 .. _DeliveryAttempt: ../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery$$DeliveryAttempt
 .. _PersistOnEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.PersistOnEvent
+.. _BehaviorContext: ../latest/api/index.html#com.rbmhtechnology.eventuate.BehaviorContext
 .. _UnavailableException: ../latest/api/index.html#com.rbmhtechnology.eventuate.UnavailableException
 .. _CircuitBreaker: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.CircuitBreaker
 .. _EventLog: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.EventLog

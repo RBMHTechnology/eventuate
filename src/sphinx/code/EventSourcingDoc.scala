@@ -325,3 +325,33 @@ object CommandStash {
   }
   //#
 }
+
+object BehaviorChanges {
+  import com.rbmhtechnology.eventuate.EventsourcedActor
+
+  //#behavior-changes
+  trait ExampleActor extends EventsourcedActor {
+    // default command handler
+    override def onCommand: Receive = {
+      case "a" => commandContext.become(newCommandHandler)
+    }
+
+    // default event handler
+    override def onEvent: Receive = {
+      case "x" => eventContext.become(newEventHandler)
+    }
+
+    def newCommandHandler: Receive = {
+      case "b" =>
+        // restores default command handler
+        commandContext.unbecome()
+    }
+
+    def newEventHandler: Receive = {
+      case "y" =>
+        // restores default event handler
+        eventContext.unbecome()
+    }
+    //#
+  }
+}

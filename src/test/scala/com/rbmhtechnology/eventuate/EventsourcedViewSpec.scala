@@ -108,6 +108,38 @@ object EventsourcedViewSpec {
     }
   }
 
+  class TestBehaviorView(
+    val logProbe: ActorRef,
+    val msgProbe: ActorRef) extends EventsourcedView {
+
+    val id = emitterIdA
+    val eventLog = logProbe
+    var total: Int = 0
+
+    val add: Receive = {
+      case i: Int =>
+        total += i
+        msgProbe ! total
+    }
+
+    val sub: Receive = {
+      case i: Int =>
+        total -= i
+        msgProbe ! total
+    }
+
+    def change(context: => BehaviorContext): Receive = {
+      case "add" => context.become(add orElse change(context))
+      case "sub" => context.become(sub orElse change(context))
+    }
+
+    override def onCommand =
+      add orElse change(commandContext)
+
+    override def onEvent: Receive =
+      add orElse change(eventContext)
+  }
+
   val event1a = event("a", 1L)
   val event1b = event("b", 2L)
   val event1c = event("c", 3L)
@@ -159,6 +191,9 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
 
   def recoveredStashingView(): ActorRef =
     processRecover(system.actorOf(Props(new TestStashingView(logProbe.ref, msgProbe.ref))))
+
+  def recoveredBehaviorView(): ActorRef =
+    processRecover(system.actorOf(Props(new TestBehaviorView(logProbe.ref, msgProbe.ref))))
 
   def processRecover(actor: ActorRef, instanceId: Int = instanceId): ActorRef = {
     logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
@@ -403,7 +438,30 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
       logProbe.expectMsg(Replay(1L, Some(actor), instanceId))
       actor ! ReplayFailure(boom, instanceId)
       msgProbe.expectMsg(boom)
+    }
+    "support command handler behavior changes" in {
+      val actor = recoveredBehaviorView()
 
+      actor ! 1
+      actor ! 2
+      actor ! "sub"
+      actor ! 3
+
+      msgProbe.expectMsg(1)
+      msgProbe.expectMsg(3)
+      msgProbe.expectMsg(0)
+    }
+    "support event handler behavior changes" in {
+      val actor = recoveredBehaviorView()
+
+      actor ! Written(event(1, 1L))
+      actor ! Written(event(2, 2L))
+      actor ! Written(event("sub", 3L))
+      actor ! Written(event(3, 4L))
+
+      msgProbe.expectMsg(1)
+      msgProbe.expectMsg(3)
+      msgProbe.expectMsg(0)
     }
   }
 }

@@ -60,7 +60,7 @@ public class OrderSerializer extends JSerializer {
         OrderFormat orderFormat = new OrderFormat();
 
         orderFormat.id = order.getId();
-        orderFormat.items = new ArrayList<>(order.getItems().toCollection());
+        orderFormat.items = new ArrayList<>(order.getItems().reverse().toCollection());
         orderFormat.cancelled = order.isCancelled();
 
         return SerializationExtension.get(system).serialize(orderFormat).get();
