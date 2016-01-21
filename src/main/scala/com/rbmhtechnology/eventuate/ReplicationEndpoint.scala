@@ -56,8 +56,13 @@ class ReplicationSettings(config: Config) {
   val retryDelay: FiniteDuration =
     config.getDuration("eventuate.log.replication.retry-delay", TimeUnit.MILLISECONDS).millis
 
-  val failureDetectionLimit =
+  val failureDetectionLimit: FiniteDuration =
     config.getDuration("eventuate.log.replication.failure-detection-limit", TimeUnit.MILLISECONDS).millis
+
+  require(failureDetectionLimit >= retryDelay * 2, s"""
+     |eventuate.log.replication.failure-detection-limit ($failureDetectionLimit) must be at least twice the
+     |eventuate.log.replication.retry-delay ($retryDelay)
+   """.stripMargin)
 }
 
 object ReplicationEndpoint {
