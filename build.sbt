@@ -8,7 +8,7 @@ organization := "com.rbmhtechnology"
 
 name := "eventuate"
 
-version := "0.6-SNAPSHOT"
+version := "0.5"
 
 scalaVersion := "2.11.7"
 
