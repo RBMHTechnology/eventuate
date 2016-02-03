@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.example.japi.ordermgnt;
+package com.rbmhtechnology.eventuate
 
-import java.io.Serializable;
+import akka.actor.ActorRef
 
-public abstract class OrderId implements Serializable {
-    public final String orderId;
-
-    protected OrderId(String orderId) {
-        this.orderId = orderId;
-    }
+/**
+ * Java API for actors that implement [[StatefulProcessor]].
+ *
+ * @see [[AbstractEventsourcedView]] for a detailed usage of the Java API
+ * @see [[StatefulProcessor]]
+ */
+class AbstractEventsourcedStatefulProcessor(id: String, eventLog: ActorRef, val targetEventLog: ActorRef) extends AbstractEventsourcedView(id, eventLog)
+  with StatefulProcessor with EventSourcedProcessorAdapter with EventsourcedProcessorWriteSuccessHandlerAdapter {
 }

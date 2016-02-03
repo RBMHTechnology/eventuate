@@ -18,7 +18,9 @@ package com.rbmhtechnology.eventuate
 
 import scala.collection.immutable.SortedMap
 
+import java.util.{ Set => JSet }
 import akka.actor._
+import scala.collection.JavaConverters._
 
 object ConfirmedDelivery {
   case class DeliveryAttempt(deliveryId: String, message: Any, destination: ActorPath)

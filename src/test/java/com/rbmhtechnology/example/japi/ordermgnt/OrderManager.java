@@ -16,94 +16,89 @@
 
 package com.rbmhtechnology.example.japi.ordermgnt;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import scala.concurrent.Future;
-
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.dispatch.Futures;
-import akka.dispatch.Mapper;
-import akka.dispatch.OnComplete;
 import akka.japi.pf.ReceiveBuilder;
 import akka.pattern.Patterns;
-
 import com.rbmhtechnology.eventuate.AbstractEventsourcedView;
+import javaslang.collection.HashMap;
+import javaslang.collection.Map;
+import scala.concurrent.ExecutionContextExecutor;
+import scala.concurrent.Future;
 
-import static java.util.stream.Collectors.reducing;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-import static com.rbmhtechnology.eventuate.VersionedAggregate.*;
-import static com.rbmhtechnology.example.japi.ordermgnt.OrderActor.*;
+import static com.rbmhtechnology.eventuate.VersionedAggregate.Resolve;
+import static com.rbmhtechnology.example.japi.ordermgnt.OrderActor.GetState;
+import static com.rbmhtechnology.example.japi.ordermgnt.OrderActor.GetStateFailure;
+import static com.rbmhtechnology.example.japi.ordermgnt.OrderActor.GetStateSuccess;
+import static com.rbmhtechnology.example.japi.ordermgnt.OrderActor.OrderCommand;
+import static com.rbmhtechnology.example.japi.ordermgnt.OrderActor.OrderCreated;
+import static com.rbmhtechnology.example.japi.ordermgnt.OrderActor.SaveSnapshot;
+import static scala.compat.java8.JFunction.func;
+import static scala.compat.java8.JFunction.proc;
 
 public class OrderManager extends AbstractEventsourcedView {
 
     private final String replicaId;
-    private final Map<String, ActorRef> orderActors;
-
+    private Map<String, ActorRef> orderActors;
 
     public OrderManager(String replicaId, ActorRef eventLog) {
         super(String.format("j-om-%s", replicaId), eventLog);
         this.replicaId = replicaId;
-        this.orderActors = new HashMap<>();
+        this.orderActors = HashMap.empty();
 
-        onReceiveCommand(ReceiveBuilder
-                .match(OrderCommand.class, c -> orderActor(c.getOrderId()).tell(c, sender()))
-                .match(SaveSnapshot.class, c -> orderActor(c.getOrderId()).tell(c, sender()))
+        setOnCommand(ReceiveBuilder
+                .match(OrderCommand.class, c -> orderActor(c.orderId).tell(c, sender()))
+                .match(SaveSnapshot.class, c -> orderActor(c.orderId).tell(c, sender()))
                 .match(Resolve.class, c -> orderActor(c.id()).tell(c, sender()))
                 .match(GetState.class, c -> orderActors.isEmpty(), c -> replyStateZero(sender()))
-                .match(GetState.class, c -> !orderActors.isEmpty(), c -> replyState(sender())).build());
+                .match(GetState.class, c -> !orderActors.isEmpty(), c -> replyState(sender()))
+                .build());
 
-        onReceiveEvent(ReceiveBuilder
-                .match(OrderCreated.class, e -> !orderActors.containsKey(e.getOrderId()), e -> orderActor(e.getOrderId())).build());
+        setOnEvent(ReceiveBuilder
+                .match(OrderCreated.class, e -> !orderActors.containsKey(e.orderId), e -> orderActor(e.orderId))
+                .build());
     }
 
-    private ActorRef orderActor(String orderId) {
-        if (!orderActors.containsKey(orderId)) {
-            ActorRef orderActor = context().actorOf(Props.create(OrderActor.class, orderId, replicaId, eventLog()));
-            orderActors.put(orderId, orderActor);
-        }
-        return orderActors.get(orderId);
+    private ActorRef orderActor(final String orderId) {
+        return orderActors.get(orderId)
+                .getOrElse(() -> {
+                    final ActorRef orderActor = context().actorOf(Props.create(OrderActor.class, orderId, replicaId, eventLog()));
+                    orderActors = orderActors.put(orderId, orderActor);
+                    return orderActor;
+                });
     }
 
     private void replyStateZero(ActorRef target) {
-        target.tell(new GetStateSuccess(new HashMap<>()), self());
+        target.tell(GetStateSuccess.empty(), self());
     }
 
     private void replyState(ActorRef target) {
-        OnComplete<GetStateSuccess> completionHandler = new OnComplete<GetStateSuccess>() {
-            public void onComplete(Throwable failure, GetStateSuccess success) throws Throwable {
-                if (failure == null) {
-                    target.tell(success, self());
-                }  else {
-                    target.tell(new GetStateFailure(failure), self());
-                }
-            }
-        };
+        final ExecutionContextExecutor dispatcher = context().dispatcher();
 
-        Stream<Future<GetStateSuccess>> resultStream = orderActors.values().stream()
-                .map(this::asyncGetState);
-
-        Futures.sequence(resultStream::iterator, context().dispatcher())
-                .map(resultsReducer, context().dispatcher())
-                .onComplete(completionHandler, context().dispatcher());
+        Futures.sequence(getActorStates()::iterator, dispatcher)
+                .map(func(this::toStateSuccess), dispatcher)
+                .onComplete(proc(result -> {
+                    if (result.isSuccess()) {
+                        target.tell(result.get(), self());
+                    } else {
+                        target.tell(new GetStateFailure(result.failed().get()), self());
+                    }
+                }), dispatcher);
     }
 
-    private Future<GetStateSuccess> asyncGetState(ActorRef actor) {
-        return Patterns.ask(actor, GetState.instance, 10000L).map(resultMapper, context().dispatcher());
+    private Stream<Future<GetStateSuccess>> getActorStates() {
+        return orderActors.values().toJavaStream().map(this::asyncGetState);
     }
 
-    private static Mapper<Object, GetStateSuccess> resultMapper = new Mapper<Object, GetStateSuccess>() {
-        public GetStateSuccess apply(Object result) {
-            return (GetStateSuccess)result;
-        }
-    };
+    private Future<GetStateSuccess> asyncGetState(final ActorRef actor) {
+        return Patterns.ask(actor, GetState.instance, 10000L).map(func(o -> (GetStateSuccess) o), context().dispatcher());
+    }
 
-    private static Mapper<Iterable<GetStateSuccess>, GetStateSuccess> resultsReducer = new Mapper<Iterable<GetStateSuccess>, GetStateSuccess>() {
-        public GetStateSuccess apply(Iterable<GetStateSuccess> results) {
-            return StreamSupport.stream(results.spliterator(), false).collect(reducing((a, b) -> a.merge(b))).get();
-        }
-    };
+    private GetStateSuccess toStateSuccess(final Iterable<GetStateSuccess> states) {
+        return StreamSupport.stream(states.spliterator(), false).reduce(GetStateSuccess::merge).get();
+    }
 }

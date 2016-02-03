@@ -17,17 +17,16 @@
 package com.rbmhtechnology.example.japi.ordermgnt;
 
 import akka.actor.ExtendedActorSystem;
-import akka.serialization.*;
-
-import fj.data.List;
+import akka.serialization.JSerializer;
+import akka.serialization.SerializationExtension;
+import javaslang.collection.List;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 public class OrderSerializer extends JSerializer {
     private static class OrderFormat implements Serializable {
         public String id;
-        public ArrayList<String> items;
+        public java.util.List<String> items;
         public boolean cancelled;
     }
 
@@ -51,16 +50,16 @@ public class OrderSerializer extends JSerializer {
     public Object fromBinaryJava(byte[] bytes, Class<?> manifest) {
         OrderFormat orderFormat = SerializationExtension.get(system).deserialize(bytes, OrderFormat.class).get();
 
-        return new Order(orderFormat.id, List.iterableList(orderFormat.items), orderFormat.cancelled);
+        return new Order(orderFormat.id, List.ofAll(orderFormat.items), orderFormat.cancelled);
     }
 
     @Override
     public byte[] toBinary(Object o) {
-        Order order = (Order)o;
+        Order order = (Order) o;
         OrderFormat orderFormat = new OrderFormat();
 
         orderFormat.id = order.getId();
-        orderFormat.items = new ArrayList<>(order.getItems().reverse().toCollection());
+        orderFormat.items = order.getItems().reverse().toJavaList();
         orderFormat.cancelled = order.isCancelled();
 
         return SerializationExtension.get(system).serialize(orderFormat).get();

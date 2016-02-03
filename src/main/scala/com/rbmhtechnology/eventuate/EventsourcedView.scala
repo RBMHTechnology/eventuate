@@ -17,14 +17,11 @@
 package com.rbmhtechnology.eventuate
 
 import java.util.concurrent.TimeUnit
-import java.util.function.BiConsumer
-import java.util.{ Optional => JOption }
 import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor._
 import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
-
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.typesafe.config.Config
 
@@ -472,68 +469,4 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
     _recovering = false
     super.postStop()
   }
-}
-
-/**
- * Java API.
- *
- * @see [[EventsourcedView]]
- */
-abstract class AbstractEventsourcedView(val id: String, val eventLog: ActorRef) extends EventsourcedView {
-  final override def onCommand = Actor.emptyBehavior
-  final override def onEvent = Actor.emptyBehavior
-  final override def onSnapshot = Actor.emptyBehavior
-
-  override def aggregateId: Option[String] =
-    Option(getAggregateId.orElse(null))
-
-  /**
-   * Optional aggregate id. Not defined by default.
-   */
-  def getAggregateId: JOption[String] =
-    JOption.empty()
-
-  /**
-   * Asynchronously saves the given `snapshot`.
-   */
-  def save(snapshot: Any, handler: BiConsumer[SnapshotMetadata, Throwable]): Unit = save(snapshot) {
-    case Success(a) => handler.accept(a, null)
-    case Failure(e) => handler.accept(null.asInstanceOf[SnapshotMetadata], e)
-  }
-
-  override def onRecovery: Handler[Unit] = {
-    case Success(_) => onRecoverySuccess()
-    case Failure(e) => onRecoveryFailure(e)
-  }
-
-  /**
-   * Called after successful recovery. Does nothing by default and can be overridden.
-   */
-  protected def onRecoverySuccess(): Unit =
-    ()
-
-  /**
-   * Called after failed recovery. Does nothing by default and can be overridden.
-   * Regardless of the action taken by this method, the actor will be stopped.
-   */
-  protected def onRecoveryFailure(cause: Throwable): Unit =
-    ()
-
-  /**
-   * Sets this actor's command handler.
-   */
-  protected def onReceiveCommand(handler: Receive): Unit =
-    commandContext.become(handler)
-
-  /**
-   * Sets this actor's event handler.
-   */
-  protected def onReceiveEvent(handler: Receive): Unit =
-    eventContext.become(handler)
-
-  /**
-   * Sets this actor's snapshot handler.
-   */
-  protected def onReceiveSnapshot(handler: Receive): Unit =
-    snapshotContext.become(handler)
 }

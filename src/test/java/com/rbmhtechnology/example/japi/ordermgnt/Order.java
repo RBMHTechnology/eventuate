@@ -16,26 +16,22 @@
 
 package com.rbmhtechnology.example.japi.ordermgnt;
 
-import fj.data.List;
+import javaslang.collection.List;
 
 /**
  * An immutable order.
  */
 public class Order {
 
-    // ------------------------------------------------------------------------------------
-    //  Order instances are shared across actors/threads and should therefore be immutable
-    // ------------------------------------------------------------------------------------
+    private final String id;
+    private final List<String> items;
+    private final boolean cancelled;
 
-    private String id;
-    private List<String> items;
-    private boolean cancelled;
-
-    public Order(String id) {
-        this(id, List.nil(), false);
+    public Order(final String id) {
+        this(id, List.empty(), false);
     }
 
-    public Order(String id, List<String> items, boolean cancelled) {
+    Order(final String id, final List<String> items, final boolean cancelled) {
         this.id = id;
         this.items = items;
         this.cancelled = cancelled;
@@ -54,7 +50,7 @@ public class Order {
     }
 
     public Order addItem(String item) {
-        return new Order(id, items.cons(item), cancelled);
+        return new Order(id, items.prepend(item), cancelled);
     }
 
     public Order removeItem(String item) {

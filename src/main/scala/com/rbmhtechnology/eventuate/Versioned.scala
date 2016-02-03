@@ -67,9 +67,7 @@ trait ConcurrentVersions[A, B] extends Serializable {
   def all: Seq[Versioned[A]]
 
   /**
-   * Java API.
-   *
-   * Returns all (un-resolved) concurrent versions.
+   * Java API of [[all]].
    */
   def getAll: JList[Versioned[A]] = all.asJava
 
@@ -262,9 +260,9 @@ object ConcurrentVersionsTree {
     apply(null.asInstanceOf[A] /* FIXME: use Monoid[A].zero */ )(f).withProjection(f)
 
   /**
-   * Java API.
+   * Java API that creates a new [[ConcurrentVersionsTree]].
    *
-   * Creates a new [[ConcurrentVersionsTree]] that uses projection function `f` to compute
+   * The [[ConcurrentVersionsTree]] uses projection function `f` to compute
    * new (potentially concurrent) versions from a parent version.
    *
    * @param f Projection function for updates.

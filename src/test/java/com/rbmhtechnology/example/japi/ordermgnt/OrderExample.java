@@ -37,14 +37,14 @@ import static com.rbmhtechnology.example.japi.ordermgnt.OrderActor.*;
 import static com.rbmhtechnology.example.japi.ordermgnt.OrderView.*;
 
 public class OrderExample extends AbstractActor {
-    private static Pattern pExit    = Pattern.compile("^exit\\s*");
-    private static Pattern pState   = Pattern.compile("^state\\s*");
-    private static Pattern pCount   = Pattern.compile("^count\\s+(\\w+)\\s*");
-    private static Pattern pCreate  = Pattern.compile("^create\\s+(\\w+)\\s*");
-    private static Pattern pCancel  = Pattern.compile("^cancel\\s+(\\w+)\\s*");
-    private static Pattern pSave  =   Pattern.compile("^save\\s+(\\w+)\\s*");
-    private static Pattern pAdd     = Pattern.compile("^add\\s+(\\w+)\\s+(\\w+)\\s*");
-    private static Pattern pRemove  = Pattern.compile("^remove\\s+(\\w+)\\s+(\\w+)\\s*");
+    private static Pattern pExit = Pattern.compile("^exit\\s*");
+    private static Pattern pState = Pattern.compile("^state\\s*");
+    private static Pattern pCount = Pattern.compile("^count\\s+(\\w+)\\s*");
+    private static Pattern pCreate = Pattern.compile("^create\\s+(\\w+)\\s*");
+    private static Pattern pCancel = Pattern.compile("^cancel\\s+(\\w+)\\s*");
+    private static Pattern pSave = Pattern.compile("^save\\s+(\\w+)\\s*");
+    private static Pattern pAdd = Pattern.compile("^add\\s+(\\w+)\\s+(\\w+)\\s*");
+    private static Pattern pRemove = Pattern.compile("^remove\\s+(\\w+)\\s+(\\w+)\\s*");
     private static Pattern pResolve = Pattern.compile("^resolve\\s+(\\w+)\\s+(\\d+)\\s*");
 
     private ActorRef manager;
@@ -60,37 +60,37 @@ public class OrderExample extends AbstractActor {
 
         receive(ReceiveBuilder
                 .match(GetStateSuccess.class, r -> {
-                    r.getState().values().stream().forEach(OrderActor::printOrder);
+                    r.state.values().stream().forEach(OrderActor::printOrder);
                     prompt();
                 })
                 .match(GetStateFailure.class, r -> {
-                    System.out.println(r.getCause().getMessage());
+                    System.out.println(r.cause.getMessage());
                     prompt();
                 })
                 .match(SaveSnapshotSuccess.class, r -> {
-                    System.out.println(String.format("[%s] saved snapshot at sequence number %d", r.getOrderId(), r.getMetadata().sequenceNr()));
+                    System.out.println(String.format("[%s] saved snapshot at sequence number %d", r.orderId, r.metadata.sequenceNr()));
                     prompt();
                 })
                 .match(SaveSnapshotFailure.class, r -> {
-                    System.out.println(String.format("[%s] saved snapshot failed: %s", r.getOrderId(), r.getCause()));
+                    System.out.println(String.format("[%s] saved snapshot failed: %s", r.orderId, r.cause));
                     prompt();
                 })
                 .match(GetUpdateCountSuccess.class, r -> {
-                    System.out.println("[" + r.getOrderId() + "]" + " update count = " + r.getCount());
+                    System.out.println("[" + r.orderId + "]" + " update count = " + r.count);
                     prompt();
                 })
-                .match(CommandFailure.class, r -> r.getCause() instanceof ConflictDetectedException, r -> {
-                    ConflictDetectedException cause = (ConflictDetectedException) r.getCause();
+                .match(CommandFailure.class, r -> r.cause instanceof ConflictDetectedException, r -> {
+                    ConflictDetectedException cause = (ConflictDetectedException) r.cause;
                     System.out.println(cause.getMessage() + ", select one of the following versions to resolve conflict");
                     printOrder(cause.getVersions());
                     prompt();
                 })
                 .match(CommandFailure.class, r -> {
-                    System.out.println(r.getCause().getMessage());
+                    System.out.println(r.cause.getMessage());
                     prompt();
                 })
                 .match(CommandSuccess.class, r -> prompt())
-                .match(String.class, cmd -> process(cmd)).build());
+                .match(String.class, this::process).build());
     }
 
     private void prompt() throws IOException {
@@ -101,14 +101,14 @@ public class OrderExample extends AbstractActor {
 
     private void process(String cmd) throws IOException {
         // okay, a bit eager, but anyway ...
-        Matcher mExit    = pExit.matcher(cmd);
-        Matcher mState   = pState.matcher(cmd);
-        Matcher mCount   = pCount.matcher(cmd);
-        Matcher mCreate  = pCreate.matcher(cmd);
-        Matcher mCancel  = pCancel.matcher(cmd);
-        Matcher mSave    = pSave.matcher(cmd);
-        Matcher mAdd     = pAdd.matcher(cmd);
-        Matcher mRemove  = pRemove.matcher(cmd);
+        Matcher mExit = pExit.matcher(cmd);
+        Matcher mState = pState.matcher(cmd);
+        Matcher mCount = pCount.matcher(cmd);
+        Matcher mCreate = pCreate.matcher(cmd);
+        Matcher mCancel = pCancel.matcher(cmd);
+        Matcher mSave = pSave.matcher(cmd);
+        Matcher mAdd = pAdd.matcher(cmd);
+        Matcher mRemove = pRemove.matcher(cmd);
         Matcher mResolve = pResolve.matcher(cmd);
 
         if (mExit.matches()) {

@@ -130,7 +130,7 @@ object ReplicationEndpoint {
   }
 
   /**
-   * Java API.
+   * Java API that creates a [[ReplicationEndpoint]].
    *
    * Creates a [[ReplicationEndpoint]] with a single event log with name [[DefaultLogName]]. The
    * replication endpoint id and replication connections must be configured as follows in `application.conf`:
