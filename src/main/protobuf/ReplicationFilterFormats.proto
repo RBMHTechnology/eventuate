@@ -17,11 +17,7 @@
 option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
-message ReplicationFilterLeafFormat {
-  optional int32 serializerId = 1;
-  optional bytes filter = 2;
-  optional bytes filterManifest = 3;
-}
+import "PayloadFormats.proto";
 
 message ReplicationFilterTreeFormat {
   enum NodeType {
@@ -31,7 +27,7 @@ message ReplicationFilterTreeFormat {
   }
   required NodeType nodeType = 1;
   repeated ReplicationFilterTreeFormat children = 2; // set if nodeType == AND | OR
-  optional ReplicationFilterLeafFormat filter = 3;   // set if nodeType == LEAF
+  optional PayloadFormat filter = 3;   // set if nodeType == LEAF
 }
 
 message NoFilterFormat {

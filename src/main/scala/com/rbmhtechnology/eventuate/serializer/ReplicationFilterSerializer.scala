@@ -29,7 +29,7 @@ import com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats._
 import scala.collection.JavaConverters._
 import scala.language.existentials
 
-class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serializer {
+class ReplicationFilterSerializer(protected val system: ExtendedActorSystem) extends Serializer with PayloadSerializer {
   import ReplicationFilterTreeFormat.NodeType._
 
   val AndFilterClass = classOf[AndFilter]
@@ -75,20 +75,8 @@ class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serialize
         filters.foreach(filter => builder.addChildren(filterTreeFormatBuilder(filter)))
       case filter =>
         builder.setNodeType(LEAF)
-        builder.setFilter(filterLeafFormatBuilder(filter))
+        builder.setFilter(payloadFormatBuilder(filter))
     }
-    builder
-  }
-
-  private def filterLeafFormatBuilder(filterLeaf: ReplicationFilter): ReplicationFilterLeafFormat.Builder = {
-    val serializer = SerializationExtension(system).findSerializerFor(filterLeaf)
-    val builder = ReplicationFilterLeafFormat.newBuilder()
-
-    if (serializer.includeManifest)
-      builder.setFilterManifest(ByteString.copyFromUtf8(filterLeaf.getClass.getName))
-
-    builder.setFilter(ByteString.copyFrom(serializer.toBinary(filterLeaf)))
-    builder.setSerializerId(serializer.identifier)
     builder
   }
 
@@ -100,17 +88,7 @@ class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serialize
     filterTreeFormat.getNodeType match {
       case AND  => AndFilter(filterTreeFormat.getChildrenList.asScala.map(filterTree).toList)
       case OR   => OrFilter(filterTreeFormat.getChildrenList.asScala.map(filterTree).toList)
-      case LEAF => filterLeaf(filterTreeFormat.getFilter)
+      case LEAF => payload(filterTreeFormat.getFilter).asInstanceOf[ReplicationFilter]
     }
-  }
-
-  private def filterLeaf(filterMessage: ReplicationFilterLeafFormat): ReplicationFilter = {
-    val filterClass = if (filterMessage.hasFilterManifest)
-      Some(system.dynamicAccess.getClassFor[ReplicationFilter](filterMessage.getFilterManifest.toStringUtf8).get) else None
-
-    SerializationExtension(system).deserialize(
-      filterMessage.getFilter.toByteArray,
-      filterMessage.getSerializerId,
-      filterClass).get
   }
 }

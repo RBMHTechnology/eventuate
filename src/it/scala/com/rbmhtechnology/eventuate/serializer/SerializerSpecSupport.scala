@@ -17,6 +17,7 @@
 package com.rbmhtechnology.eventuate.serializer
 
 import akka.actor._
+import akka.serialization.Serialization
 import akka.serialization.SerializationExtension
 import akka.testkit.TestProbe
 
@@ -39,21 +40,13 @@ object SerializerSpecSupport {
   }
 }
 
-class SerializerSpecSupport(config1: Config, config2: Config) {
-  import SerializerSpecSupport._
+class SerializerSpecSupport(configs: Config*) {
 
-  val system1 = ActorSystem("test-system-1", config1)
-  val system2 = ActorSystem("test-system-2", config2)
+  val systems = configs.zipWithIndex.map { case (config, idx) => ActorSystem(s"test-system-${idx+1}", config) }
 
-  val serialization1 = SerializationExtension(system1)
-  val serialization2 = SerializationExtension(system2)
-
-  val receiverProbe = new TestProbe(system2)
-  val receiverActor = system2.actorOf(Props(new ReceiverActor(receiverProbe.ref)), "receiver")
-  val senderActor = system1.actorOf(Props(new SenderActor(system1.actorSelection("akka.tcp://test-system-2@127.0.0.1:2553/user/receiver"))))
+  val serializations: Seq[Serialization] = systems.map(SerializationExtension(_))
 
   def shutdown(): Unit = {
-    Await.result(system1.terminate(), 10.seconds)
-    Await.result(system2.terminate(), 10.seconds)
+    systems.foreach(system => Await.result(system.terminate(), 10.seconds))
   }
 }

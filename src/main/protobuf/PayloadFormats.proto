@@ -17,26 +17,13 @@
 option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
-import "DurableEventFormats.proto";
-import "SnapshotFormats.proto";
-import "PayloadFormats.proto";
-
-message ORSetFormat {
-  repeated VersionedFormat versionedEntries = 1;
+/*
+ * This message is used for (de-)serializing custom payloads, like
+ * custom events, snapshots or replication filters
+ */
+message PayloadFormat {
+  optional int32 serializerId = 1;
+  optional bytes payload = 2;
+  optional string payloadManifest = 3;
+  optional bool isStringManifest = 4;
 }
-
-message LWWRegisterFormat {
-  optional MVRegisterFormat mvRegister = 1;
-}
-
-message MVRegisterFormat {
-  repeated RegisteredFormat registered = 1;
-}
-
-message RegisteredFormat {
-  optional VectorTimeFormat updateTimestamp = 1;
-  optional int64 systemTimestamp = 2;
-  optional string emitterId = 3;
-  optional PayloadFormat payload = 4;
-}
-

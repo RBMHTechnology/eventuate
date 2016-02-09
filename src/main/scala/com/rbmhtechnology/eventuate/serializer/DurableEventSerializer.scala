@@ -19,7 +19,6 @@ package com.rbmhtechnology.eventuate.serializer
 import akka.actor._
 import akka.serialization._
 
-import com.google.protobuf.ByteString
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.serializer.DurableEventFormats._
 
@@ -31,7 +30,7 @@ import scala.language.existentials
  * Serialization of `DurableEvent`'s `payload` is delegated to a serializer that is configured with Akka's
  * [[http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html serialization extension]] mechanism.
  */
-class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
+class DurableEventSerializer(protected val system: ExtendedActorSystem) extends Serializer with PayloadSerializer {
   val DurableEventClass = classOf[DurableEvent]
 
   override def identifier: Int = 22563
@@ -84,18 +83,6 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
     builder
   }
 
-  def payloadFormatBuilder(payload: AnyRef) = {
-    val serializer = SerializationExtension(system).findSerializerFor(payload)
-    val builder = PayloadFormat.newBuilder()
-
-    if (serializer.includeManifest)
-      builder.setPayloadManifest(ByteString.copyFromUtf8(payload.getClass.getName))
-
-    builder.setPayload(ByteString.copyFrom(serializer.toBinary(payload)))
-    builder.setSerializerId(serializer.identifier)
-    builder
-  }
-
   def vectorTimeFormatBuilder(vectorTime: VectorTime): VectorTimeFormat.Builder = {
     val builder = VectorTimeFormat.newBuilder
     vectorTime.value.foreach { entry =>
@@ -131,16 +118,6 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
       localLogId = durableEventFormat.getLocalLogId,
       localSequenceNr = durableEventFormat.getLocalSequenceNr,
       persistOnEventSequenceNr = persistOnEventSequenceNr)
-  }
-
-  def payload(payloadFormat: PayloadFormat): Any = {
-    val payloadClass = if (payloadFormat.hasPayloadManifest)
-      Some(system.dynamicAccess.getClassFor[AnyRef](payloadFormat.getPayloadManifest.toStringUtf8).get) else None
-
-    SerializationExtension(system).deserialize(
-      payloadFormat.getPayload.toByteArray,
-      payloadFormat.getSerializerId,
-      payloadClass).get
   }
 
   def vectorTime(vectorTimeFormat: VectorTimeFormat): VectorTime = {

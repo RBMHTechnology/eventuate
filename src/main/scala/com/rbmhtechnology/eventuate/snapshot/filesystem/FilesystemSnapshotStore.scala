@@ -73,7 +73,7 @@ class FilesystemSnapshotStore(settings: FilesystemSnapshotStoreSettings, logId: 
       case Some(snr) => Try(withInputStream(dir, snr)(deserialize)) match {
         case Success(s) => Some(s)
         case Failure(e) =>
-          log.error(s"error loading snapshot ${dstFile(dir, snr)}")
+          log.error(e, s"error loading snapshot ${dstFile(dir, snr)}")
           go(snrs.tail)
       }
     }
