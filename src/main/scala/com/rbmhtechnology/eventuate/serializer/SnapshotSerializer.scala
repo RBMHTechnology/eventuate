@@ -139,7 +139,8 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
   def versionedFormatBuilder(versioned: Versioned[_]): VersionedFormat.Builder = {
     val builder = VersionedFormat.newBuilder
     builder.setPayload(eventSerializer.payloadFormatBuilder(versioned.value.asInstanceOf[AnyRef]))
-    builder.setUpdateTimestamp(eventSerializer.vectorTimeFormatBuilder(versioned.updateTimestamp))
+    builder.setVectorTimestamp(eventSerializer.vectorTimeFormatBuilder(versioned.vectorTimestamp))
+    builder.setSystemTimestamp(versioned.systemTimestamp)
     builder.setCreator(versioned.creator)
   }
 
@@ -224,7 +225,8 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
   def versioned(versionedFormat: VersionedFormat): Versioned[Any] = {
     Versioned[Any](
       eventSerializer.payload(versionedFormat.getPayload),
-      eventSerializer.vectorTime(versionedFormat.getUpdateTimestamp),
+      eventSerializer.vectorTime(versionedFormat.getVectorTimestamp),
+      versionedFormat.getSystemTimestamp,
       versionedFormat.getCreator)
   }
 

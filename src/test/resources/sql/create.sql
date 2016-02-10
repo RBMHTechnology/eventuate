@@ -1,0 +1,29 @@
+CREATE TABLE IF NOT EXISTS Asset (
+  id VARCHAR(64) PRIMARY KEY,
+  subject VARCHAR(64),
+  content VARCHAR(64),
+);
+
+CREATE TABLE IF NOT EXISTS ReplicationProgress (
+  logId VARCHAR(64) PRIMARY KEY,
+  progress BIGINT
+);
+
+CREATE TABLE IF NOT EXISTS AssetClock (
+  assetId VARCHAR(64) PRIMARY KEY,
+  vectorClock BLOB
+);
+
+CREATE TABLE IF NOT EXISTS AssetEventLogVersion (
+  id INT PRIMARY KEY,
+  versionVector BLOB
+);
+
+CREATE TABLE IF NOT EXISTS AssetEventLog (
+  id BIGINT PRIMARY KEY,
+  assetId VARCHAR(64),
+  event BLOB
+);
+
+CREATE SEQUENCE IF NOT EXISTS AssetEventLogSequence AS BIGINT START WITH 1 INCREMENT BY 1;
+

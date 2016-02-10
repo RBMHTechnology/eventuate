@@ -426,14 +426,14 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
       notifyLocalAcceptor(writeSuccess)
       context.become(idle)
       scheduleRead()
-    case writeSuccess @ ReplicationWriteSuccess(_, num, storedReplicationProgress, currentTargetVersionVector) =>
+    case writeSuccess @ ReplicationWriteSuccess(_, _, storedReplicationProgress, currentTargetVersionVector) =>
       notifyLocalAcceptor(writeSuccess)
       context.become(reading)
       read(storedReplicationProgress, currentTargetVersionVector)
     case ReplicationWriteFailure(cause) =>
       log.error(cause, "replication write failed")
-      context.become(fetching)
-      fetch()
+      context.become(idle)
+      scheduleRead()
   }
 
   def receive = fetching

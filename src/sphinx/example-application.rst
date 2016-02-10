@@ -68,19 +68,19 @@ Before you can run the example application, install sbt_ and run::
 
 from the project's root directory (needs to be done only once). Then, run::
 
-    ./example
+    ./example/ordermgnt
 
 This should open six terminal windows, representing locations A - F. For running the Java version of the example application use the ``-j`` or ``--java`` option::
 
-    ./example --java
+    ./example/ordermgnt --java
 
 Create and update some orders and see how changes are propagated to other locations. To make concurrent updates to an order, for example, enter ``exit`` at location ``C``, and add different items to that order at locations ``B`` and ``F``. When starting location ``C`` again with:: 
 
-    ./example-location A
+    ./example/ordermgnt-location A
 
 or the Java version with::
 
-    ./example-location --java A
+    ./example/ordermgnt-location --java A
 
 both updates propagate to all other locations which are then displayed as conflict. Resolve the conflict with the ``resolve`` command. Conflict resolution writes a conflict resolution event to the replicated event log so that the conflict is automatically resolved at all locations.
 
@@ -99,11 +99,11 @@ To delete the event log written by the Java version of the example application r
 
 To start location ``C`` again with disaster recovery enabled, use the ``-r`` or ``--recover`` option::
 
-    ./example-location --recover C
+    ./example/ordermgnt-location --recover C
 
 or the Java version with::
 
-    ./example-location --recover --java C
+    ./example/ordermgnt-location --recover --java C
 
 Recovery may take up to 20 seconds when using the default :ref:`configuration` settings for event replication and disaster recovery. To speed up the process you may want to the use following configuration settings::
 
@@ -120,6 +120,6 @@ Disaster recovery can also start from a previous, older backup of the LevelDB di
 .. _sbt: http://www.scala-sbt.org/
 
 .. _Scala version: https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example/ordermgnt
-.. _Java 8 version: https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/ordermgnt/japi
+.. _Java 8 version: https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/japi/ordermgnt
 .. _activator: https://www.typesafe.com/community/core-tools/activator-and-sbt
 .. _akka-eventuate-scala: https://www.typesafe.com/activator/template/akka-eventuate-scala

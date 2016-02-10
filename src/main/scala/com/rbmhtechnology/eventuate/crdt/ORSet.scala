@@ -48,7 +48,7 @@ case class ORSet[A](versionedEntries: Set[Versioned[A]] = Set.empty[Versioned[A]
    * Collects all timestamps of given `entry`.
    */
   def prepareRemove(entry: A): Set[VectorTime] =
-    versionedEntries.collect { case Versioned(`entry`, timestamp, _) => timestamp }
+    versionedEntries.collect { case Versioned(`entry`, timestamp, _, _) => timestamp }
 
   /**
    * Removes [[Versioned]] entries matching `entry` and `timestamps` and returns an updated OR-Set.
