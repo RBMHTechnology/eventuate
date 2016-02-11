@@ -18,6 +18,7 @@ option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
 import "DurableEventFormats.proto";
+import "PayloadFormats.proto";
 
 message SnapshotFormat {
   optional PayloadFormat payload = 1;

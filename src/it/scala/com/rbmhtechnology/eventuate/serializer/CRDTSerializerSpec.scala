@@ -17,11 +17,12 @@
 package com.rbmhtechnology.eventuate.serializer
 
 import akka.serialization.SerializationExtension
-import akka.testkit.TestProbe
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.crdt._
 import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.ExamplePayload
+import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.serializerConfig
+import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.serializerWithStringManifestConfig
 
 import org.scalatest._
 
@@ -40,19 +41,10 @@ class CRDTSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   import DurableEventSerializerSpec.ExamplePayload
   import CRDTSerializerSpec._
 
-  val config =
-    """
-      |akka.actor.serializers {
-      |  eventuate-test = "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayloadSerializer"
-      |}
-      |akka.actor.serialization-bindings {
-      |  "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayload" = eventuate-test
-      |}
-    """.stripMargin
-
   val support = new SerializerSpecSupport(
     ReplicationConfig.create(2552),
-    ReplicationConfig.create(2553, config))
+    ReplicationConfig.create(2553, serializerConfig),
+    ReplicationConfig.create(2554, serializerWithStringManifestConfig))
 
   override def afterAll(): Unit =
     support.shutdown()
@@ -61,54 +53,38 @@ class CRDTSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
 
   "A CRDTSerializer" must {
     "support ORSet serialization with default payload serialization" in {
-      val probe = new TestProbe(system1)
-      val serialization = SerializationExtension(system1)
+      val serialization = SerializationExtension(systems(0))
 
       val initial = orSet(ExamplePayload("foo", "bar"))
       val expected = initial
 
       serialization.deserialize(serialization.serialize(initial).get, classOf[ORSet[_]]).get should be(expected)
     }
-    "support ORSet serialization with custom payload serialization" in {
-      val probe = new TestProbe(system2)
-      val serialization = SerializationExtension(system2)
-
+    "support ORSet serialization with custom payload serialization" in serializations.tail.foreach { serialization =>
       val initial = orSet(ExamplePayload("foo", "bar"))
       val expected = orSet(ExamplePayload("bar", "foo"))
 
       serialization.deserialize(serialization.serialize(initial).get, classOf[ORSet[_]]).get should be(expected)
     }
     "support MVRegister serialization with default payload serialization" in {
-      val probe = new TestProbe(system1)
-      val serialization = SerializationExtension(system1)
-
       val initial = mvRegister(ExamplePayload("foo", "bar"))
       val expected = initial
 
-      serialization.deserialize(serialization.serialize(initial).get, classOf[MVRegister[_]]).get should be(expected)
+      serializations(0).deserialize(serializations(0).serialize(initial).get, classOf[MVRegister[_]]).get should be(expected)
     }
-    "support MVRegister serialization with custom payload serialization" in {
-      val probe = new TestProbe(system2)
-      val serialization = SerializationExtension(system2)
-
+    "support MVRegister serialization with custom payload serialization" in serializations.tail.foreach { serialization =>
       val initial = mvRegister(ExamplePayload("foo", "bar"))
       val expected = mvRegister(ExamplePayload("bar", "foo"))
 
       serialization.deserialize(serialization.serialize(initial).get, classOf[MVRegister[_]]).get should be(expected)
     }
     "support LWWRegister serialization with default payload serialization" in {
-      val probe = new TestProbe(system1)
-      val serialization = SerializationExtension(system1)
-
       val initial = lwwRegister(ExamplePayload("foo", "bar"))
       val expected = initial
 
-      serialization.deserialize(serialization.serialize(initial).get, classOf[LWWRegister[_]]).get should be(expected)
+      serializations(0).deserialize(serializations(0).serialize(initial).get, classOf[LWWRegister[_]]).get should be(expected)
     }
-    "support LWWRegister serialization with custom payload serialization" in {
-      val probe = new TestProbe(system2)
-      val serialization = SerializationExtension(system2)
-
+    "support LWWRegister serialization with custom payload serialization" in serializations.tail.foreach { serialization =>
       val initial = lwwRegister(ExamplePayload("foo", "bar"))
       val expected = lwwRegister(ExamplePayload("bar", "foo"))
 

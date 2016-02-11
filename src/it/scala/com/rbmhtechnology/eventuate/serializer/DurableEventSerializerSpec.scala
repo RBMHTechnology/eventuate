@@ -17,7 +17,8 @@
 package com.rbmhtechnology.eventuate.serializer
 
 import akka.actor._
-import akka.serialization.{SerializationExtension, Serializer}
+import akka.serialization.SerializerWithStringManifest
+import akka.serialization.Serializer
 
 import com.rbmhtechnology.eventuate._
 
@@ -26,23 +27,59 @@ import org.scalatest._
 object DurableEventSerializerSpec {
   case class ExamplePayload(foo: String, bar: String)
 
+  val serializerConfig =
+    """
+      |akka.actor.serializers {
+      |  eventuate-test = "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayloadSerializer"
+      |}
+      |akka.actor.serialization-bindings {
+      |  "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayload" = eventuate-test
+      |}
+    """.stripMargin
+
+  val serializerWithStringManifestConfig =
+    """
+      |akka.actor.serializers {
+      |  eventuate-test = "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayloadSerializerWithStringManifest"
+      |}
+      |akka.actor.serialization-bindings {
+      |  "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayload" = eventuate-test
+      |}
+    """.stripMargin
   /**
    * Swaps `foo` and `bar` of `ExamplePayload`.
    */
-  class ExamplePayloadSerializer(system: ExtendedActorSystem) extends Serializer {
+  trait SwappingExamplePayloadSerializer {
+    def toBinary(o: AnyRef): Array[Byte] = o match {
+      case ExamplePayload(foo, bar) => s"${foo}-${bar}".getBytes("UTF-8")
+    }
+
+    def _fromBinary(bytes: Array[Byte]): AnyRef = {
+      val s = new String(bytes, "UTF-8").split("-")
+      ExamplePayload(s(1), s(0))
+    }
+  }
+
+  class ExamplePayloadSerializer(system: ExtendedActorSystem) extends Serializer with SwappingExamplePayloadSerializer {
     val ExamplePayloadClass = classOf[ExamplePayload]
 
     override def identifier: Int = 44085
     override def includeManifest: Boolean = true
 
-    override def toBinary(o: AnyRef): Array[Byte] = o match {
-      case ExamplePayload(foo, bar) => s"${foo}-${bar}".getBytes("UTF-8")
-    }
-
     override def fromBinary(bytes: Array[Byte], manifest: Option[Class[_]]): AnyRef = manifest.get match {
-      case ExamplePayloadClass =>
-        val s = new String(bytes, "UTF-8").split("-")
-        ExamplePayload(s(1), s(0))
+      case ExamplePayloadClass => _fromBinary(bytes)
+    }
+  }
+
+  class ExamplePayloadSerializerWithStringManifest(system: ExtendedActorSystem) extends SerializerWithStringManifest with SwappingExamplePayloadSerializer {
+    val StringManifest = "manifest"
+
+    override def identifier: Int = 44084
+
+    override def manifest(o: AnyRef) = StringManifest
+
+    override def fromBinary(bytes: Array[Byte], manifest: String): AnyRef = manifest match {
+      case StringManifest => _fromBinary(bytes)
     }
   }
 
@@ -62,19 +99,10 @@ object DurableEventSerializerSpec {
 class DurableEventSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   import DurableEventSerializerSpec._
 
-  val config =
-    """
-      |akka.actor.serializers {
-      |  eventuate-test = "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayloadSerializer"
-      |}
-      |akka.actor.serialization-bindings {
-      |  "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayload" = eventuate-test
-      |}
-    """.stripMargin
-
   val support = new SerializerSpecSupport(
     ReplicationConfig.create(2552),
-    ReplicationConfig.create(2553, config))
+    ReplicationConfig.create(2553, serializerConfig),
+    ReplicationConfig.create(2554, serializerWithStringManifestConfig))
 
   override def afterAll(): Unit =
     support.shutdown()
@@ -83,13 +111,11 @@ class DurableEventSerializerSpec extends WordSpec with Matchers with BeforeAndAf
 
   "A DurableEventSerializer" must {
     "support default payload serialization" in {
-      val serialization = SerializationExtension(system1)
       val expected = event
 
-      serialization.deserialize(serialization.serialize(event).get, classOf[DurableEvent]).get should be(expected)
+      serializations(0).deserialize(serializations(0).serialize(event).get, classOf[DurableEvent]).get should be(expected)
     }
-    "support custom payload serialization" in {
-      val serialization = SerializationExtension(system2)
+    "support custom payload serialization" in serializations.tail.foreach { serialization =>
       val expected = event.copy(ExamplePayload("bar", "foo"))
 
       serialization.deserialize(serialization.serialize(event).get, classOf[DurableEvent]).get should be(expected)

@@ -17,9 +17,13 @@
 package com.rbmhtechnology.eventuate.serializer
 
 import akka.actor.ActorRef
+import akka.actor.Props
+import akka.testkit.TestProbe
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
+import com.rbmhtechnology.eventuate.serializer.SerializerSpecSupport.ReceiverActor
+import com.rbmhtechnology.eventuate.serializer.SerializerSpecSupport.SenderActor
 
 import org.scalatest._
 
@@ -59,29 +63,33 @@ class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with Befo
 
   import support._
 
-  val dl1 = system1.deadLetters
-  val dl2 = system2.deadLetters
+  val receiverProbe = new TestProbe(systems(1))
+  val receiverActor = systems(1).actorOf(Props(new ReceiverActor(receiverProbe.ref)), "receiver")
+  val senderActor = systems(0).actorOf(Props(new SenderActor(systems(0).actorSelection("akka.tcp://test-system-2@127.0.0.1:2553/user/receiver"))))
+
+  val dl1 = systems(0).deadLetters
+  val dl2 = systems(1).deadLetters
 
   "A ReplicationProtocolSerializer" must {
     "serialize GetReplicationEndpointInfo messages" in {
-      serialization1.deserialize(serialization1.serialize(GetReplicationEndpointInfo).get, GetReplicationEndpointInfo.getClass).get should be(GetReplicationEndpointInfo)
+      serializations(0).deserialize(serializations(0).serialize(GetReplicationEndpointInfo).get, GetReplicationEndpointInfo.getClass).get should be(GetReplicationEndpointInfo)
     }
     "serialize GetReplicationEndpointInfoSuccess messages" in {
-      serialization1.deserialize(serialization1.serialize(getReplicationEndpointInfoSuccess).get, classOf[GetReplicationEndpointInfoSuccess]).get should be(getReplicationEndpointInfoSuccess)
+      serializations(0).deserialize(serializations(0).serialize(getReplicationEndpointInfoSuccess).get, classOf[GetReplicationEndpointInfoSuccess]).get should be(getReplicationEndpointInfoSuccess)
     }
     "serialize ReplicationReadEnvelope messages" in {
-      serialization1.deserialize(serialization1.serialize(replicationReadEnvelope(replicationRead1(dl1))).get, classOf[ReplicationReadEnvelope]).get should be(replicationReadEnvelope(replicationRead1(dl1)))
-      serialization1.deserialize(serialization1.serialize(replicationReadEnvelope(replicationRead2(dl2))).get, classOf[ReplicationReadEnvelope]).get should be(replicationReadEnvelope(replicationRead2(dl2)))
+      serializations(0).deserialize(serializations(0).serialize(replicationReadEnvelope(replicationRead1(dl1))).get, classOf[ReplicationReadEnvelope]).get should be(replicationReadEnvelope(replicationRead1(dl1)))
+      serializations(0).deserialize(serializations(0).serialize(replicationReadEnvelope(replicationRead2(dl2))).get, classOf[ReplicationReadEnvelope]).get should be(replicationReadEnvelope(replicationRead2(dl2)))
     }
     "serialize ReplicationRead messages" in {
-      serialization1.deserialize(serialization1.serialize(replicationRead1(dl1)).get, classOf[ReplicationRead]).get should be(replicationRead1(dl1))
-      serialization1.deserialize(serialization1.serialize(replicationRead2(dl2)).get, classOf[ReplicationRead]).get should be(replicationRead2(dl2))
+      serializations(0).deserialize(serializations(0).serialize(replicationRead1(dl1)).get, classOf[ReplicationRead]).get should be(replicationRead1(dl1))
+      serializations(0).deserialize(serializations(0).serialize(replicationRead2(dl2)).get, classOf[ReplicationRead]).get should be(replicationRead2(dl2))
     }
     "serialize ReplicationReadSuccess messages" in {
-      serialization1.deserialize(serialization1.serialize(replicationReadSuccess).get, classOf[ReplicationReadSuccess]).get should be(replicationReadSuccess)
+      serializations(0).deserialize(serializations(0).serialize(replicationReadSuccess).get, classOf[ReplicationReadSuccess]).get should be(replicationReadSuccess)
     }
     "serialize ReplicationReadFailure messages" in {
-      serialization1.deserialize(serialization1.serialize(replicationReadFailure).get, classOf[ReplicationReadFailure]).get should be(replicationReadFailure)
+      serializations(0).deserialize(serializations(0).serialize(replicationReadFailure).get, classOf[ReplicationReadFailure]).get should be(replicationReadFailure)
     }
     "support remoting of GetReplicationEndpointInfo messages" in {
       senderActor ! GetReplicationEndpointInfo

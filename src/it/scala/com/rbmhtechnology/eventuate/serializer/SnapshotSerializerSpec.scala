@@ -24,6 +24,8 @@ import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.ConfirmedDelivery._
 import com.rbmhtechnology.eventuate.PersistOnEvent._
 import com.rbmhtechnology.eventuate.log.EventLogClock
+import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.serializerConfig
+import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.serializerWithStringManifestConfig
 import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.{event, ExamplePayload}
 
 import org.scalatest._
@@ -60,19 +62,10 @@ class SnapshotSerializerSpec extends WordSpec with Matchers with BeforeAndAfterA
   import DurableEventSerializerSpec.ExamplePayload
   import SnapshotSerializerSpec._
 
-  val config =
-    """
-      |akka.actor.serializers {
-      |  eventuate-test = "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayloadSerializer"
-      |}
-      |akka.actor.serialization-bindings {
-      |  "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayload" = eventuate-test
-      |}
-    """.stripMargin
-
   val support = new SerializerSpecSupport(
     ReplicationConfig.create(2552),
-    ReplicationConfig.create(2553, config))
+    ReplicationConfig.create(2553, serializerConfig),
+    ReplicationConfig.create(2554, serializerWithStringManifestConfig))
 
   override def afterAll(): Unit =
     support.shutdown()
@@ -81,17 +74,17 @@ class SnapshotSerializerSpec extends WordSpec with Matchers with BeforeAndAfterA
 
   "A SnapshotSerializer" must {
     "support snapshot serialization with default payload serialization" in {
-      val probe = new TestProbe(system1)
-      val serialization = SerializationExtension(system1)
+      val probe = new TestProbe(systems(0))
+      val serialization = SerializationExtension(systems(0))
 
       val initial = snapshot(ExamplePayload("foo", "bar"), probe.ref.path)
       val expected = initial
 
       serialization.deserialize(serialization.serialize(initial).get, classOf[Snapshot]).get should be(expected)
     }
-    "support snapshot serialization with custom payload serialization" in {
-      val probe = new TestProbe(system2)
-      val serialization = SerializationExtension(system2)
+    "support snapshot serialization with custom payload serialization" in systems.tail.foreach { system =>
+      val probe = new TestProbe(system)
+      val serialization = SerializationExtension(system)
 
       val initial = snapshot(ExamplePayload("foo", "bar"), probe.ref.path)
       val expected = snapshot(ExamplePayload("bar", "foo"), probe.ref.path)
@@ -99,19 +92,17 @@ class SnapshotSerializerSpec extends WordSpec with Matchers with BeforeAndAfterA
       serialization.deserialize(serialization.serialize(initial).get, classOf[Snapshot]).get should be(expected)
     }
     "support ConcurrentVersionsTree serialization with default node payload serialization" in {
-      val serialization = SerializationExtension(system1)
       val initial = ConcurrentVersionsTree[ExamplePayload, String](ExamplePayload("a", "x"))((s, a) => s.copy(foo = a))
         .update("b", vectorTime(1, 0), "cb")
         .update("c", vectorTime(2, 0), "cc")
         .update("d", vectorTime(1, 1), "cd")
         .resolve(vectorTime(2, 0), vectorTime(3, 1))
       val expected = initial
-      val actual = serialization.deserialize(serialization.serialize(initial).get, classOf[ConcurrentVersionsTree[ExamplePayload, String]]).get
+      val actual = serializations(0).deserialize(serializations(0).serialize(initial).get, classOf[ConcurrentVersionsTree[ExamplePayload, String]]).get
 
       actual.nodeTuples should be(expected.nodeTuples)
     }
-    "support ConcurrentVersionsTree serialization with custom node payload serialization" in {
-      val serialization = SerializationExtension(system2)
+    "support ConcurrentVersionsTree serialization with custom node payload serialization" in serializations.tail.foreach { serialization =>
       val initial = ConcurrentVersionsTree[ExamplePayload, String](ExamplePayload("a", "x"))((s, a) => s.copy(foo = a))
         .update("b", vectorTime(1, 0), "cb")
         .update("c", vectorTime(2, 0), "cc")
@@ -127,12 +118,10 @@ class SnapshotSerializerSpec extends WordSpec with Matchers with BeforeAndAfterA
       actual.nodeTuples should be(expected.nodeTuples)
     }
     "support event log clock serialization" in {
-      val serialization = SerializationExtension(system1)
-
       val initial = clock
       val expected = initial
 
-      serialization.deserialize(serialization.serialize(initial).get, classOf[EventLogClock]).get should be(expected)
+      serializations(0).deserialize(serializations(0).serialize(initial).get, classOf[EventLogClock]).get should be(expected)
     }
   }
 }

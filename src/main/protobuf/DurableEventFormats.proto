@@ -17,6 +17,8 @@
 option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
+import "PayloadFormats.proto";
+
 message DurableEventFormat {
   optional PayloadFormat payload = 1;
   optional string emitterId = 2;
@@ -28,12 +30,6 @@ message DurableEventFormat {
   optional string localLogId = 8;
   optional int64 localSequenceNr = 9;
   optional int64 persistOnEventSequenceNr = 10;
-}
-
-message PayloadFormat {
-  optional int32 serializerId = 1;
-  optional bytes payload = 2;
-  optional bytes payloadManifest = 3;
 }
 
 message VectorTimeEntryFormat {
