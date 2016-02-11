@@ -43,13 +43,13 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationFilterSerializer</span><span class="result"> extends <span class="extype" name="akka.serialization.Serializer">Serializer</span></span>
+        <span class="name">ReplicationFilterSerializer</span><span class="result"> extends <span class="extype" name="akka.serialization.Serializer">Serializer</span> with <a href="PayloadSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer">PayloadSerializer</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="akka.serialization.Serializer">Serializer</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="PayloadSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer">PayloadSerializer</a>, <span class="extype" name="akka.serialization.Serializer">Serializer</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -67,7 +67,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer"><span>ReplicationFilterSerializer</span></li><li class="in" name="akka.serialization.Serializer"><span>Serializer</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer"><span>ReplicationFilterSerializer</span></li><li class="in" name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer"><span>PayloadSerializer</span></li><li class="in" name="akka.serialization.Serializer"><span>Serializer</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -533,6 +533,40 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer#payload" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="payload(payloadFormat:com.rbmhtechnology.eventuate.serializer.PayloadFormats.PayloadFormat):Any"></a>
+      <a id="payload(PayloadFormat):Any"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">payload</span><span class="params">(<span name="payloadFormat">payloadFormat: <span class="extype" name="com.rbmhtechnology.eventuate.serializer.PayloadFormats.PayloadFormat">PayloadFormat</span></span>)</span><span class="result">: <span class="extype" name="scala.Any">Any</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@payload(payloadFormat:com.rbmhtechnology.eventuate.serializer.PayloadFormats.PayloadFormat):Any" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="PayloadSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer">PayloadSerializer</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer#payloadFormatBuilder" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="payloadFormatBuilder(payload:AnyRef):com.rbmhtechnology.eventuate.serializer.PayloadFormats.PayloadFormat.Builder"></a>
+      <a id="payloadFormatBuilder(AnyRef):Builder"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">payloadFormatBuilder</span><span class="params">(<span name="payload">payload: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.serializer.PayloadFormats.PayloadFormat.Builder">Builder</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@payloadFormatBuilder(payload:AnyRef):com.rbmhtechnology.eventuate.serializer.PayloadFormats.PayloadFormat.Builder" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="PayloadSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer">PayloadSerializer</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -550,6 +584,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer#system" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="system:akka.actor.ExtendedActorSystem"></a>
+      <a id="system:ExtendedActorSystem"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">system</span><span class="result">: <span class="extype" name="akka.actor.ExtendedActorSystem">ExtendedActorSystem</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@system:akka.actor.ExtendedActorSystem" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer">ReplicationFilterSerializer</a> → <a href="PayloadSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer">PayloadSerializer</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer#toBinary" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toBinary(o:AnyRef):Array[Byte]"></a>
       <a id="toBinary(AnyRef):Array[Byte]"></a>
@@ -662,7 +713,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="akka.serialization.Serializer">
+        <div class="parent" name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer">
+              <h3>Inherited from <a href="PayloadSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer">PayloadSerializer</a></h3>
+            </div><div class="parent" name="akka.serialization.Serializer">
               <h3>Inherited from <span class="extype" name="akka.serialization.Serializer">Serializer</span></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>

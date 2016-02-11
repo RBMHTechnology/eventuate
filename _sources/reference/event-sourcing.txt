@@ -460,6 +460,15 @@ Custom serializers can also be configured for the type parameter ``A`` of ``MVRe
 
 Event-sourced actors that extend ``ConfirmedDelivery`` for :ref:`reliable-delivery` of messages to destinations will also include unconfirmed messages as ``deliveryAttempts`` in a Snapshot_. The ``message`` field of a DeliveryAttempt_ can also be custom-serialized by configuring a serializer.
 
+Resolution of serializers when deserializing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When eventuate serializes application-defined events, :ref:`replication-filters` or snapshots it includes the ``identifier`` of the Akka serializer and the class or string based manifest_ when available. When deserializing these application-defined payloads a serializer is selected as follows:
+
+- If a class-based manifest is included, the serializer that is configured in the Akka configuration for this class is selected
+- In case of a string-based manifest or no manifest the serializer is selected by the included ``identifier``
+
+
 .. [#] The ``customDestinationAggregateIds`` parameter is described in section :ref:`event-routing`.
 .. [#] Writes from different event-sourced actors that have ``stateSync`` set to ``true`` are still batched, but not the writes from a single event-sourced actor.
 .. [#] Event replay can optionally start from :ref:`snapshots` of actor state.
@@ -471,6 +480,7 @@ Event-sourced actors that extend ``ConfirmedDelivery`` for :ref:`reliable-delive
 .. _watch: http://doc.akka.io/docs/akka/2.4.1/scala/actors.html#deathwatch-scala
 .. _serialization extension: http://doc.akka.io/docs/akka/2.4.1/scala/serialization.html
 .. _Serializer: http://doc.akka.io/api/akka/2.4.1/#akka.serialization.Serializer
+.. _manifest: http://doc.akka.io/docs/akka/2.4.1/scala/serialization.html#Serializer_with_String_Manifest
 .. _Protocol Buffers: https://developers.google.com/protocol-buffers/
 .. _plausible clocks: https://github.com/RBMHTechnology/eventuate/issues/68
 .. _Cassandra: http://cassandra.apache.org/
