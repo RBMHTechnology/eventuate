@@ -110,7 +110,7 @@ trait PersistOnEvent extends EventsourcedActor {
   override private[eventuate] def snapshotLoaded(snapshot: Snapshot): Unit = {
     super.snapshotLoaded(snapshot)
     snapshot.persistOnEventRequests.foreach { pr =>
-      requests = requests + (pr.persistOnEventSequenceNr -> pr)
+      requests = requests + (pr.persistOnEventSequenceNr -> pr.copy(instanceId = instanceId))
     }
   }
 

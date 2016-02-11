@@ -293,6 +293,51 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
 
       save.snapshot.persistOnEventRequests(0) should be(expected)
     }
+    "recover from a snapshot with persistOnEvent requests whose execution failed" in {
+      val actor = recoveredTestActor(stateSync = false)
+
+      actor ! Written(event("x", 1L))
+
+      val write1 = logProbe.expectMsgClass(classOf[Write])
+
+      actor ! "snap"
+
+      val save = logProbe.expectMsgClass(classOf[SaveSnapshot])
+
+      actor ! "boom"
+
+      logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId + 1))
+      logProbe.sender() ! LoadSnapshotSuccess(Some(save.snapshot), instanceId + 1)
+      logProbe.expectMsg(Replay(2L, Some(actor), instanceId + 1))
+      logProbe.sender() ! ReplaySuccess(Nil, 1L, instanceId + 1)
+
+      val write2 = logProbe.expectMsgClass(classOf[Write])
+      write1.events should be(write2.events)
+    }
+    "recover from a snapshot with persistOnEvent requests whose execution succeeded" in {
+      val actor = recoveredTestActor(stateSync = false)
+
+      actor ! Written(event("x", 1L))
+
+      val write1 = logProbe.expectMsgClass(classOf[Write])
+      val written = List(
+        event(write1.events(0).payload, 2L, Some(1L)),
+        event(write1.events(1).payload, 3L, Some(1L)))
+
+      actor ! "snap"
+
+      val save = logProbe.expectMsgClass(classOf[SaveSnapshot])
+
+      actor ! "boom"
+
+      logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId + 1))
+      logProbe.sender() ! LoadSnapshotSuccess(Some(save.snapshot), instanceId + 1)
+      logProbe.expectMsg(Replay(2L, Some(actor), instanceId + 1))
+      logProbe.sender() ! ReplaySuccess(written, 3L, instanceId + 1)
+      logProbe.expectMsg(Replay(4L, None, instanceId + 1))
+      logProbe.sender() ! ReplaySuccess(Nil, 3L, instanceId + 1)
+      logProbe.expectNoMsg(timeout)
+    }
     "be tolerant to changing actor paths across incarnations" in {
       val actor = unrecoveredTestActor(stateSync = false)
       val path = ActorPath.fromString("akka://test/user/invalid")
