@@ -141,10 +141,10 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
         messageStash.unstash()
       }
     }
-    case PersistOnEventRequest(persistOnEventSequenceNr: Long, parameters, iid) => if (iid == instanceId) {
+    case PersistOnEventRequest(persistOnEventSequenceNr: Long, invocations, iid) => if (iid == instanceId) {
       writeOrDelay {
-        writeHandlers = Vector.fill(parameters.length)(PersistOnEvent.DefaultHandler)
-        writeRequests = parameters.map {
+        writeHandlers = Vector.fill(invocations.length)(PersistOnEvent.DefaultHandler)
+        writeRequests = invocations.map {
           case PersistOnEventInvocation(event, customDestinationAggregateIds) =>
             durableEvent(event, customDestinationAggregateIds, Some(persistOnEventSequenceNr))
         }
