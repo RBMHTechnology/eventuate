@@ -206,12 +206,16 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
    */
   private[eventuate] def receiveEvent(event: DurableEvent): Unit = {
     val behavior = _eventContext.current
-    if (behavior.isDefinedAt(event.payload)) try {
+    val previous = lastHandledEvent
+
+    _lastHandledEvent = event
+    if (behavior.isDefinedAt(event.payload)) {
       _eventHandling = true
       receiveEventInternal(event)
       behavior(event.payload)
       if (!recovering) conditionChanged(currentVectorTime)
-    } finally _eventHandling = false
+      _eventHandling = false
+    } else _lastHandledEvent = previous
   }
 
   /**

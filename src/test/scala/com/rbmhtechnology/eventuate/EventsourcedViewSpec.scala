@@ -140,6 +140,25 @@ object EventsourcedViewSpec {
       add orElse change(eventContext)
   }
 
+  class TestGuardingView(
+    val logProbe: ActorRef,
+    val msgProbe: ActorRef) extends EventsourcedView {
+
+    val id = emitterIdA
+    val eventLog = logProbe
+
+    override def onCommand = {
+      case "last" => msgProbe ! lastHandledEvent
+    }
+
+    override def onEvent = {
+      case "e1" if lastEmitterId == "x" =>
+        msgProbe ! "handled"
+      case "e2" if lastEmitterId == "y" =>
+        msgProbe ! "handled"
+    }
+  }
+
   val event1a = event("a", 1L)
   val event1b = event("b", 2L)
   val event1c = event("c", 3L)
@@ -194,6 +213,9 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
 
   def recoveredBehaviorView(): ActorRef =
     processRecover(system.actorOf(Props(new TestBehaviorView(logProbe.ref, msgProbe.ref))))
+
+  def recoveredGuardingView(): ActorRef =
+    processRecover(system.actorOf(Props(new TestGuardingView(logProbe.ref, msgProbe.ref))))
 
   def processRecover(actor: ActorRef, instanceId: Int = instanceId): ActorRef = {
     logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
@@ -472,6 +494,28 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
       val actor = watch(processRecover(unrecoveredEventsourcedView()))
       system.stop(logProbe.ref)
       expectTerminated(actor)
+    }
+    "support usage of last* methods in pattern guards when guard evaluates to true" in {
+      val actor = recoveredGuardingView()
+      val event1 = event("e1", 1L).copy(emitterId = "x")
+
+      actor ! Written(event1)
+      msgProbe.expectMsg("handled")
+
+      actor ! "last"
+      msgProbe.expectMsgType[DurableEvent].payload should be("e1")
+    }
+    "support usage of last* methods in pattern guards when guard evaluates to false" in {
+      val actor = recoveredGuardingView()
+      val event1 = event("e1", 1L).copy(emitterId = "x")
+      val event2 = event("e2", 1L).copy(emitterId = "x")
+
+      actor ! Written(event1)
+      actor ! Written(event2)
+      msgProbe.expectMsg("handled")
+
+      actor ! "last"
+      msgProbe.expectMsgType[DurableEvent].payload should be("e1")
     }
   }
 }
