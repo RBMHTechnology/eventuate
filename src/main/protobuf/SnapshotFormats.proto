@@ -58,9 +58,10 @@ message ConcurrentVersionsTreeNodeFormat {
 }
 
 message VersionedFormat {
-  optional VectorTimeFormat updateTimestamp = 1;
-  optional string creator = 2;
-  optional PayloadFormat payload = 3;
+  optional PayloadFormat payload = 1;
+  optional VectorTimeFormat vectorTimestamp = 2;
+  optional int64 systemTimestamp = 3;
+  optional string creator = 4;
 }
 
 message EventLogClockFormat {

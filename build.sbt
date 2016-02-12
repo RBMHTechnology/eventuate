@@ -41,6 +41,21 @@ libraryDependencies ++= Seq(
 )
 
 // ----------------------------------------------------------------------
+//  Database replication POC (example)
+// ----------------------------------------------------------------------
+
+val springVersion = "4.2.4.RELEASE"
+
+libraryDependencies ++= Seq(
+  "org.aspectj" % "aspectjrt" % "1.8.8",
+  "org.aspectj" % "aspectjweaver" % "1.8.8",
+  "org.springframework" % "spring-context" % springVersion,
+  "org.springframework" % "spring-jdbc" % springVersion,
+  "org.springframework" % "spring-tx" % springVersion,
+  "org.hsqldb" % "hsqldb" % "2.3.3"
+)
+
+// ----------------------------------------------------------------------
 //  Documentation
 // ----------------------------------------------------------------------
 
@@ -149,7 +164,7 @@ exampleClasspath := {
         |export EXAMPLE_CLASSPATH="$cpaths"
         |""".stripMargin
 
-  val fileName = ".example-classpath"
+  val fileName = "example/.example-classpath"
   val file = Paths.get(fileName)
 
   Files.write(file, output.getBytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)

@@ -81,7 +81,7 @@ object ReplicationProtocol {
   /**
    * Update notification sent to a [[Replicator]] indicating that new events are available for replication.
    */
-  private[eventuate] case object ReplicationDue extends Format
+  case object ReplicationDue extends Format
 
   /**
    * Requests the clock from an event log.

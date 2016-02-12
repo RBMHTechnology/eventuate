@@ -3,4 +3,4 @@
 *.iml
 *.env
 target/
-.example-classpath
+example/.example-classpath

@@ -274,7 +274,7 @@ abstract class EventLog(id: String) extends Actor with EventLogSPI with Stash wi
    * Cached version vectors of event log replicas. They are used to exclude redundantly read events from
    * being transferred to a replication target. This is an optimization to save network bandwidth. Even
    * without this optimization, redundantly transferred events are reliably excluded at the target site,
-   * using its local version version vector. The version vector cache is continuously updated during event
+   * using its local version vector. The version vector cache is continuously updated during event
    * replication.
    */
   private var replicaVersionVectors: Map[String, VectorTime] =

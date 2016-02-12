@@ -219,10 +219,11 @@ object EventsourcedActorsUpdated {
 
       override def onEvent = {
         case Appended(entry) =>
-          versionedState = versionedState.update(entry, lastVectorTimestamp, creator = lastEmitterId)
+          versionedState = versionedState
+            .update(entry, lastVectorTimestamp, lastSystemTimestamp, lastEmitterId)
           if (versionedState.conflict) {
             val conflictingVersions = versionedState.all.sortBy(_.creator)
-            val winnerTimestamp: VectorTime = conflictingVersions.head.updateTimestamp
+            val winnerTimestamp: VectorTime = conflictingVersions.head.vectorTimestamp
             versionedState = versionedState.resolve(winnerTimestamp)
           }
       }
@@ -261,7 +262,8 @@ object EventsourcedActorsUpdated {
 
       override def onEvent = {
         case Appended(entry) =>
-          versionedState = versionedState.update(entry, lastVectorTimestamp, lastEmitterId)
+          versionedState = versionedState
+            .update(entry, lastVectorTimestamp, lastSystemTimestamp, lastEmitterId)
         case Resolved(selectedTimestamp) =>
           versionedState = versionedState.resolve(selectedTimestamp, lastVectorTimestamp)
       }

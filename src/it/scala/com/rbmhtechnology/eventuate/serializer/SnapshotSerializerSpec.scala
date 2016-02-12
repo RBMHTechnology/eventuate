@@ -93,9 +93,9 @@ class SnapshotSerializerSpec extends WordSpec with Matchers with BeforeAndAfterA
     }
     "support ConcurrentVersionsTree serialization with default node payload serialization" in {
       val initial = ConcurrentVersionsTree[ExamplePayload, String](ExamplePayload("a", "x"))((s, a) => s.copy(foo = a))
-        .update("b", vectorTime(1, 0), "cb")
-        .update("c", vectorTime(2, 0), "cc")
-        .update("d", vectorTime(1, 1), "cd")
+        .update("b", vectorTime(1, 0), 17L, "cb")
+        .update("c", vectorTime(2, 0), 18L, "cc")
+        .update("d", vectorTime(1, 1), 18L, "cd")
         .resolve(vectorTime(2, 0), vectorTime(3, 1))
       val expected = initial
       val actual = serializations(0).deserialize(serializations(0).serialize(initial).get, classOf[ConcurrentVersionsTree[ExamplePayload, String]]).get
@@ -104,14 +104,14 @@ class SnapshotSerializerSpec extends WordSpec with Matchers with BeforeAndAfterA
     }
     "support ConcurrentVersionsTree serialization with custom node payload serialization" in serializations.tail.foreach { serialization =>
       val initial = ConcurrentVersionsTree[ExamplePayload, String](ExamplePayload("a", "x"))((s, a) => s.copy(foo = a))
-        .update("b", vectorTime(1, 0), "cb")
-        .update("c", vectorTime(2, 0), "cc")
-        .update("d", vectorTime(1, 1), "cd")
+        .update("b", vectorTime(1, 0), 17L, "cb")
+        .update("c", vectorTime(2, 0), 18L, "cc")
+        .update("d", vectorTime(1, 1), 19L, "cd")
         .resolve(vectorTime(2, 0), vectorTime(3, 1))
       val expected = ConcurrentVersionsTree[ExamplePayload, String](ExamplePayload("x", "a"))((s, a) => s.copy(bar = a))
-        .update("b", vectorTime(1, 0), "cb")
-        .update("c", vectorTime(2, 0), "cc")
-        .update("d", vectorTime(1, 1), "cd")
+        .update("b", vectorTime(1, 0), 17L, "cb")
+        .update("c", vectorTime(2, 0), 18L, "cc")
+        .update("d", vectorTime(1, 1), 19L, "cd")
         .resolve(vectorTime(2, 0), vectorTime(3, 1))
       val actual = serialization.deserialize(serialization.serialize(initial).get, classOf[ConcurrentVersionsTree[ExamplePayload, String]]).get
 

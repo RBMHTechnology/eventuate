@@ -108,7 +108,7 @@ case class VersionedAggregate[S, C: DomainCmd, E: DomainEvt](
     case Some(versions) if versions.owner != origin =>
       Failure(new ConflictResolutionRejectedException(id, versions.owner, origin))
     case Some(versions) =>
-      Success(Resolved(id, versions.all(selected).updateTimestamp, origin))
+      Success(Resolved(id, versions.all(selected).vectorTimestamp, origin))
   }
 
   def handleCreated(evt: E, timestamp: VectorTime, sequenceNr: Long): VersionedAggregate[S, C, E] = {
