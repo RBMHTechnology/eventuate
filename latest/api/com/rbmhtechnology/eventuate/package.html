@@ -747,7 +747,7 @@ clock by setting <code>sharedClockEntry</code> to <code>false</code>, otherwise,
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="Versioned.html"><span class="name">Versioned</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="value">value: <span class="extype" name="com.rbmhtechnology.eventuate.Versioned.A">A</span></span>, <span name="updateTimestamp">updateTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="creator">creator: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="Versioned.html"><span class="name">Versioned</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="value">value: <span class="extype" name="com.rbmhtechnology.eventuate.Versioned.A">A</span></span>, <span name="vectorTimestamp">vectorTimestamp: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>, <span name="creator">creator: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.package@Versioned[A]extendsProductwithSerializable" title="Permalink" target="_top">
@@ -755,7 +755,7 @@ clock by setting <code>sharedClockEntry</code> to <code>false</code>, otherwise,
       </a>
     </span>
       <p class="shortcomment cmt">A versioned value.</p><div class="fullcomment"><div class="comment cmt"><p>A versioned value.
-</p></div><dl class="paramcmts block"><dt class="param">value</dt><dd class="cmt"><p>The value.</p></dd><dt class="param">updateTimestamp</dt><dd class="cmt"><p>Timestamp of the event that caused this version.</p></dd><dt class="param">creator</dt><dd class="cmt"><p>Creator of the event that caused this version.
+</p></div><dl class="paramcmts block"><dt class="param">value</dt><dd class="cmt"><p>The value.</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>Update vector timestamp of the event that caused this version.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>Update system timestamp of the event that caused this version.</p></dd><dt class="param">creator</dt><dd class="cmt"><p>Creator of the event that caused this version.
 </p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="VersionedAggregate[S,C,E]extendsProductwithSerializable"></a>

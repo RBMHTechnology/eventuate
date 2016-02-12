@@ -185,7 +185,7 @@
             
   <div class="section" id="example-application">
 <span id="id1"></span><h1>Example application<a class="headerlink" href="#example-application" title="Permalink to this headline">¶</a></h1>
-<p>The example application is an over-simplified order management application that allows users to add and remove items from orders via a command-line interface. Order instances are replicated across locations and can be updated at any location. Orders remain writeable during partitions and conflicting updates can be resolved interactively when the partition heals. The example application source code is available as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example/ordermgnt">Scala version</a> and as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/ordermgnt/japi">Java 8 version</a>.</p>
+<p>The example application is an over-simplified order management application that allows users to add and remove items from orders via a command-line interface. Order instances are replicated across locations and can be updated at any location. Orders remain writeable during partitions and conflicting updates can be resolved interactively when the partition heals. The example application source code is available as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example/ordermgnt">Scala version</a> and as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/japi/ordermgnt">Java 8 version</a>.</p>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">There is a tutorial-style <a class="reference external" href="https://www.typesafe.com/community/core-tools/activator-and-sbt">activator</a> template for the scala-version that guides you through the code: <a class="reference external" href="https://www.typesafe.com/activator/template/akka-eventuate-scala">akka-eventuate-scala</a>.</p>
@@ -252,19 +252,19 @@
 </pre></div>
 </div>
 <p>from the project&#8217;s root directory (needs to be done only once). Then, run:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">/</span><span class="n">ordermgnt</span>
 </pre></div>
 </div>
 <p>This should open six terminal windows, representing locations A - F. For running the Java version of the example application use the <code class="docutils literal"><span class="pre">-j</span></code> or <code class="docutils literal"><span class="pre">--java</span></code> option:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span> <span class="o">--</span><span class="n">java</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">/</span><span class="n">ordermgnt</span> <span class="o">--</span><span class="n">java</span>
 </pre></div>
 </div>
 <p>Create and update some orders and see how changes are propagated to other locations. To make concurrent updates to an order, for example, enter <code class="docutils literal"><span class="pre">exit</span></code> at location <code class="docutils literal"><span class="pre">C</span></code>, and add different items to that order at locations <code class="docutils literal"><span class="pre">B</span></code> and <code class="docutils literal"><span class="pre">F</span></code>. When starting location <code class="docutils literal"><span class="pre">C</span></code> again with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">-</span><span class="n">location</span> <span class="n">A</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="n">A</span>
 </pre></div>
 </div>
 <p>or the Java version with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">java</span> <span class="n">A</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">java</span> <span class="n">A</span>
 </pre></div>
 </div>
 <p>both updates propagate to all other locations which are then displayed as conflict. Resolve the conflict with the <code class="docutils literal"><span class="pre">resolve</span></code> command. Conflict resolution writes a conflict resolution event to the replicated event log so that the conflict is automatically resolved at all locations.</p>
@@ -280,11 +280,11 @@
 </pre></div>
 </div>
 <p>To start location <code class="docutils literal"><span class="pre">C</span></code> again with disaster recovery enabled, use the <code class="docutils literal"><span class="pre">-r</span></code> or <code class="docutils literal"><span class="pre">--recover</span></code> option:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">recover</span> <span class="n">C</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">recover</span> <span class="n">C</span>
 </pre></div>
 </div>
 <p>or the Java version with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">recover</span> <span class="o">--</span><span class="n">java</span> <span class="n">C</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">recover</span> <span class="o">--</span><span class="n">java</span> <span class="n">C</span>
 </pre></div>
 </div>
 <p>Recovery may take up to 20 seconds when using the default <a class="reference internal" href="reference/configuration.html#configuration"><span>Configuration</span></a> settings for event replication and disaster recovery. To speed up the process you may want to the use following configuration settings:</p>

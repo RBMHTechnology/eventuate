@@ -146,7 +146,7 @@ Internally, ``ConcurrentVersions`` maintains versions of actor state in a tree s
 
 An event’s vector timestamp is passed as ``lastVectorTimestamp`` argument to ``update``. The ``update`` method internally creates a new version by applying the update function ``(s, a) => s :+ a`` to the closest predecessor version and the actual update value (``entry``). The ``lastVectorTimestamp`` is attached as update timestamp to the newly created version.
 
-Concurrent versions of actor state and their update timestamp can be obtained with ``all`` which is a sequence of type ``Seq[Versioned[Vector[String]]]`` in our example. The Versioned_ data type represents a particular version of actor state and its update timestamp. 
+Concurrent versions of actor state and their update timestamp can be obtained with ``all`` which is a sequence of type ``Seq[Versioned[Vector[String]]]`` in our example. The Versioned_ data type represents a particular version of actor state and its update timestamp (= ``vectorTimestamp`` field).  
 
 If ``all`` contains only a single element, there is no conflict and the element represents the current, conflict-free actor state. If the sequence contains two or more elements, there is a conflict where the elements represent conflicting versions of actor states. They can be resolved either automatically or interactively.
 
@@ -170,7 +170,7 @@ The following is a very simple example of automated conflict resolution: if a co
 
 Here, conflicting versions are sorted by ascending emitter id (tracked internally as ``creator`` of the version) and the first version is selected as the winner. Its update timestamp is passed as argument to ``resolve`` which selects this version and discards all other versions.
 
-Alternatively, we could also have used POSIX timestamps to let the *last* writer win. In case of equal timestamps, the lower emitter id wins. This requires synchronized system clocks to give reasonable result, however, convergence does not depend on proper synchronization. If system clock synchronization is not an option, `Lamport timestamps`_ can also be used to consistently resolve the conflict.
+Alternatively, we could also have used POSIX timestamps (obtained with ``lastSystemTimestamp`` and tracked internally as ``systemTimestamp`` of the version) to let the *last* writer win. In case of equal timestamps, we could use the emitter id to break the tie. 
 
 More advanced conflict resolution could select a winner depending on the actual value of concurrent versions. After selection, an application could even update the winner with the *merged* value of all conflicting versions\ [#]_.
 
