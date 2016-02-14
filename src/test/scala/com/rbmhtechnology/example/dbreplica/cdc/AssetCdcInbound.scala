@@ -16,12 +16,13 @@
 
 package com.rbmhtechnology.example.dbreplica.cdc
 
+import com.rbmhtechnology.eventuate._
+import com.rbmhtechnology.eventuate.ConcurrentVersions
+import com.rbmhtechnology.eventuate.log.EventLogClock
 import com.rbmhtechnology.example.dbreplica.domain._
 import com.rbmhtechnology.example.dbreplica.event._
 import com.rbmhtechnology.example.dbreplica.repository._
 import com.rbmhtechnology.example.dbreplica.service._
-import com.rbmhtechnology.eventuate.ConcurrentVersions
-import com.rbmhtechnology.eventuate._
 
 import org.springframework.beans.factory.annotation._
 import org.springframework.stereotype.Service
@@ -38,32 +39,28 @@ class AssetCdcInbound @Autowired() (
   import assetCdcSettings._
 
   @Transactional(readOnly = true)
-  def readVersion: VectorTime =
-    assetEventRepository.readVersion
+  def readClock(clock: EventLogClock): EventLogClock =
+    assetEventRepository.readClock(clock)
 
   @Transactional(readOnly = true)
-  def readReplicationProgressAndVersion(logId: String): (Long, VectorTime) =
-    (progressRepository.readReplicationProgress(logId), assetEventRepository.readVersion)
+  def readReplicationProgressAndVersion(logId: String, clock: EventLogClock): (Long, VectorTime) =
+    (progressRepository.readReplicationProgress(logId), assetEventRepository.readClock(clock).versionVector)
 
   @Transactional
   def writeReplicationProgress(logId: String, progress: Long): Unit =
     progressRepository.writeReplicationProgress(logId, progress)
 
   @Transactional
-  def handle(durableEvent: DurableEvent): Int = {
+  def handle(durableEvent: DurableEvent): Unit = {
     // ------------------------------------------
     //  TODO: implement batch replication writes
     // ------------------------------------------
-    assetEventRepository.updateVersionConditional(currentVersion => !(durableEvent.vectorTimestamp <= currentVersion)) {
-      val sequenceNr = assetEventRepository.updateSequenceNr()
-      val updatedEvent = durableEvent.copy(localLogId = logId, localSequenceNr = sequenceNr)
+    val sequenceNr = assetEventRepository.updateSequenceNr()
+    val updatedEvent = durableEvent.copy(localLogId = logId, localSequenceNr = sequenceNr)
 
-      updatedEvent.payload match {
-        case e: AssetCreated => handleCreated(updatedEvent, e)
-        case e: AssetEvent   => handleUpdated(updatedEvent, e)
-      }
-
-      updatedEvent.vectorTimestamp
+    updatedEvent.payload match {
+      case e: AssetCreated => handleCreated(updatedEvent, e)
+      case e: AssetEvent   => handleUpdated(updatedEvent, e)
     }
   }
 
