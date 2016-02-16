@@ -124,10 +124,7 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog(id) with With
   }
 
   override def recoverClock: Future[EventLogClock] = completed {
-    val snap = leveldb.get(clockKeyBytes) match {
-      case null => EventLogClock()
-      case cval => clockFromBytes(cval)
-    }
+    val snap = readEventLogClockSnapshot
 
     withEventIterator(snap.sequenceNr + 1L, EventKey.DefaultClassifier) { iter =>
       iter.foldLeft(snap) {
@@ -142,14 +139,22 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog(id) with With
   override def writeDeletionMetadata(deleteMetadata: DeletionMetadata) =
     deletionMetadataStore.writeDeletionMetadata(deleteMetadata)
 
-  override def delete(toSequenceNr: Long): Future[Unit] = {
+  override def delete(toSequenceNr: Long): Future[Long] = {
+    val adjusted = readEventLogClockSnapshot.sequenceNr min toSequenceNr
     val promise = Promise[Unit]()
-    spawnDeletionActor(toSequenceNr, promise)
-    promise.future
+    spawnDeletionActor(adjusted, promise)
+    promise.future.map(_ => adjusted)(context.dispatcher)
   }
 
   private def spawnDeletionActor(toSequenceNr: Long, promise: Promise[Unit]): ActorRef =
     context.actorOf(LeveldbDeletionActor.props(leveldb, leveldbReadOptions, leveldbWriteOptions, settings.deletionBatchSize, toSequenceNr, promise))
+
+  private def readEventLogClockSnapshot: EventLogClock = {
+    leveldb.get(clockKeyBytes) match {
+      case null => EventLogClock()
+      case cval => clockFromBytes(cval)
+    }
+  }
 
   private def readSync(fromSequenceNr: Long, toSequenceNr: Long, classifier: Int, max: Int, filter: DurableEvent => Boolean): BatchReadResult = {
     val first = 1L max fromSequenceNr
