@@ -17,7 +17,7 @@
 option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
-import "PayloadFormats.proto";
+import "CommonFormats.proto";
 
 message ReplicationFilterTreeFormat {
   enum NodeType {

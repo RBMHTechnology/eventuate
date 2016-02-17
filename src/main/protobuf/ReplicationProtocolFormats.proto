@@ -17,6 +17,7 @@
 option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
+import "CommonFormats.proto";
 import "DurableEventFormats.proto";
 import "ReplicationFilterFormats.proto";
 

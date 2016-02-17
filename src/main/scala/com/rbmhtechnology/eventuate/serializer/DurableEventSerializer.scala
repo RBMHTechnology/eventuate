@@ -30,7 +30,9 @@ import scala.language.existentials
  * Serialization of `DurableEvent`'s `payload` is delegated to a serializer that is configured with Akka's
  * [[http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html serialization extension]] mechanism.
  */
-class DurableEventSerializer(protected val system: ExtendedActorSystem) extends Serializer with PayloadSerializer {
+class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
+  val commonSerializer = new CommonSerializer(system)
+
   val DurableEventClass = classOf[DurableEvent]
 
   override def identifier: Int = 22563
@@ -60,10 +62,10 @@ class DurableEventSerializer(protected val system: ExtendedActorSystem) extends 
 
   def durableEventFormatBuilder(durableEvent: DurableEvent): DurableEventFormat.Builder = {
     val builder = DurableEventFormat.newBuilder
-    builder.setPayload(payloadFormatBuilder(durableEvent.payload.asInstanceOf[AnyRef]))
+    builder.setPayload(commonSerializer.payloadFormatBuilder(durableEvent.payload.asInstanceOf[AnyRef]))
     builder.setEmitterId(durableEvent.emitterId)
     builder.setSystemTimestamp(durableEvent.systemTimestamp)
-    builder.setVectorTimestamp(vectorTimeFormatBuilder(durableEvent.vectorTimestamp))
+    builder.setVectorTimestamp(commonSerializer.vectorTimeFormatBuilder(durableEvent.vectorTimestamp))
     builder.setProcessId(durableEvent.processId)
     builder.setLocalLogId(durableEvent.localLogId)
     builder.setLocalSequenceNr(durableEvent.localSequenceNr)
@@ -83,16 +85,6 @@ class DurableEventSerializer(protected val system: ExtendedActorSystem) extends 
     builder
   }
 
-  def vectorTimeFormatBuilder(vectorTime: VectorTime): VectorTimeFormat.Builder = {
-    val builder = VectorTimeFormat.newBuilder
-    vectorTime.value.foreach { entry =>
-      builder.addEntries(VectorTimeEntryFormat.newBuilder
-        .setProcessId(entry._1)
-        .setLogicalTime(entry._2))
-    }
-    builder
-  }
-
   // --------------------------------------------------------------------------------
   //  fromBinary helpers
   // --------------------------------------------------------------------------------
@@ -108,21 +100,15 @@ class DurableEventSerializer(protected val system: ExtendedActorSystem) extends 
     val persistOnEventSequenceNr = if (durableEventFormat.hasPersistOnEventSequenceNr) Some(durableEventFormat.getPersistOnEventSequenceNr) else None
 
     DurableEvent(
-      payload = payload(durableEventFormat.getPayload),
+      payload = commonSerializer.payload(durableEventFormat.getPayload),
       emitterId = durableEventFormat.getEmitterId,
       emitterAggregateId = emitterAggregateId,
       customDestinationAggregateIds = customDestinationAggregateIds,
       systemTimestamp = durableEventFormat.getSystemTimestamp,
-      vectorTimestamp = vectorTime(durableEventFormat.getVectorTimestamp),
+      vectorTimestamp = commonSerializer.vectorTime(durableEventFormat.getVectorTimestamp),
       processId = durableEventFormat.getProcessId,
       localLogId = durableEventFormat.getLocalLogId,
       localSequenceNr = durableEventFormat.getLocalSequenceNr,
       persistOnEventSequenceNr = persistOnEventSequenceNr)
-  }
-
-  def vectorTime(vectorTimeFormat: VectorTimeFormat): VectorTime = {
-    VectorTime(vectorTimeFormat.getEntriesList.iterator.asScala.foldLeft(Map.empty[String, Long]) {
-      case (result, entry) => result.updated(entry.getProcessId, entry.getLogicalTime)
-    })
   }
 }

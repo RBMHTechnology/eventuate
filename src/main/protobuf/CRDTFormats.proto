@@ -17,9 +17,7 @@
 option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
-import "DurableEventFormats.proto";
-import "SnapshotFormats.proto";
-import "PayloadFormats.proto";
+import "CommonFormats.proto";
 
 message ORSetFormat {
   repeated VersionedFormat versionedEntries = 1;

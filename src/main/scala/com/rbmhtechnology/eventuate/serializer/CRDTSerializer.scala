@@ -27,8 +27,7 @@ import scala.collection.JavaConverters._
 import scala.collection.immutable.VectorBuilder
 
 class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
-  val eventSerializer = new DurableEventSerializer(system)
-  val snapshotSerializer = new SnapshotSerializer(system)
+  val commonSerializer = new CommonSerializer(system)
 
   val MVRegisterClass = classOf[MVRegister[_]]
   val LWWRegisterClass = classOf[LWWRegister[_]]
@@ -85,7 +84,7 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     val builder = ORSetFormat.newBuilder
 
     orSet.versionedEntries.foreach { ve =>
-      builder.addVersionedEntries(snapshotSerializer.versionedFormatBuilder(ve))
+      builder.addVersionedEntries(commonSerializer.versionedFormatBuilder(ve))
     }
 
     builder
@@ -93,8 +92,8 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
 
   private def registeredFormatBuilder(registered: Registered[_]): RegisteredFormat.Builder = {
     val builder = RegisteredFormat.newBuilder
-    builder.setPayload(eventSerializer.payloadFormatBuilder(registered.value.asInstanceOf[AnyRef]))
-    builder.setUpdateTimestamp(eventSerializer.vectorTimeFormatBuilder(registered.updateTimestamp))
+    builder.setPayload(commonSerializer.payloadFormatBuilder(registered.value.asInstanceOf[AnyRef]))
+    builder.setUpdateTimestamp(commonSerializer.vectorTimeFormatBuilder(registered.updateTimestamp))
     builder.setSystemTimestamp(registered.systemTimestamp)
     builder.setEmitterId(registered.emitterId)
     builder
@@ -122,7 +121,7 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     val builder = new VectorBuilder[Versioned[Any]]
 
     val ves = orSetFormat.getVersionedEntriesList.iterator.asScala.foldLeft(Set.empty[Versioned[Any]]) {
-      case (acc, ve) => acc + snapshotSerializer.versioned(ve)
+      case (acc, ve) => acc + commonSerializer.versioned(ve)
     }
 
     ORSet(ves)
@@ -130,8 +129,8 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
 
   def registered(registeredFormat: RegisteredFormat): Registered[Any] = {
     Registered(
-      eventSerializer.payload(registeredFormat.getPayload),
-      eventSerializer.vectorTime(registeredFormat.getUpdateTimestamp),
+      commonSerializer.payload(registeredFormat.getPayload),
+      commonSerializer.vectorTime(registeredFormat.getUpdateTimestamp),
       registeredFormat.getSystemTimestamp,
       registeredFormat.getEmitterId)
   }
