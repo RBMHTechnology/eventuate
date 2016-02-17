@@ -339,24 +339,25 @@ the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span 
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#delete" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="delete(toSequenceNr:Long):scala.concurrent.Future[Unit]"></a>
-      <a id="delete(Long):Future[Unit]"></a>
+      <a id="delete(toSequenceNr:Long):scala.concurrent.Future[Long]"></a>
+      <a id="delete(Long):Future[Long]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">delete</span><span class="params">(<span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+        <span class="name">delete</span><span class="params">(<span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Long">Long</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@delete(toSequenceNr:Long):scala.concurrent.Future[Unit]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@delete(toSequenceNr:Long):scala.concurrent.Future[Long]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously and physically deletes events up to <code>toSequenceNr</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously and physically deletes events up to <code>toSequenceNr</code>. This operation completes when
-physical deletion completed. A backend that does not support physical deletion should not override
-this method.
+      <p class="shortcomment cmt">Instructs the log to asynchronously and physically delete events up to <code>toSequenceNr</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Instructs the log to asynchronously and physically delete events up to <code>toSequenceNr</code>. This operation completes when
+physical deletion completed and returns the sequence nr up to which events have been deleted. This can be
+smaller then the requested <code>toSequenceNr</code> if a backend has to keep events for internal reasons.
+A backend that does not support physical deletion should not override this method.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>

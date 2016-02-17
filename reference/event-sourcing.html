@@ -192,7 +192,7 @@
 <div class="section" id="command-handler">
 <span id="id1"></span><h2>Command handler<a class="headerlink" href="#command-handler" title="Permalink to this headline">¶</a></h2>
 <p>A command handler is partial function of type <code class="docutils literal"><span class="pre">PartialFunction[Any,</span> <span class="pre">Unit]</span></code> for which a type alias <code class="docutils literal"><span class="pre">Receive</span></code> exists. It can be defined by implementing <code class="docutils literal"><span class="pre">onCommand</span></code>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.util._</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
 
@@ -230,7 +230,7 @@
 </pre></div>
 </div>
 <p>Messages sent by an application to an event-sourced actor are received by its command handler. Usually, a command handler first validates a command, then derives one or more events from it, persists these events with <code class="docutils literal"><span class="pre">persist</span></code> and replies with the persistence result. The <code class="docutils literal"><span class="pre">persist</span></code> method has the following signature<a class="footnote-reference" href="#id16" id="id2">[1]</a>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">def</span> <span class="n">persist</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">event</span><span class="k">:</span> <span class="kt">A</span><span class="o">,</span> <span class="n">customDestinationAggregateIds</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">())(</span><span class="n">handler</span><span class="k">:</span> <span class="kt">Try</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="n">persist</span><span class="o">[</span><span class="kt">A</span><span class="o">](</span><span class="n">event</span><span class="k">:</span> <span class="kt">A</span><span class="o">,</span> <span class="n">customDestinationAggregateIds</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">())(</span><span class="n">handler</span><span class="k">:</span> <span class="kt">Try</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal"><span class="pre">persist</span></code> method can be called one ore more times per received command. Calling <code class="docutils literal"><span class="pre">persist</span></code> does not immediately write events to the event log. Instead, events from <code class="docutils literal"><span class="pre">persist</span></code> calls are collected in memory and written to the event log when <code class="docutils literal"><span class="pre">onCommand</span></code> returns.</p>
@@ -248,7 +248,7 @@
 <div class="section" id="state-synchronization">
 <h2>State synchronization<a class="headerlink" href="#state-synchronization" title="Permalink to this headline">¶</a></h2>
 <p>As explained in section <a class="reference internal" href="#command-handler"><span>Command handler</span></a>, events are persisted asynchronously. What happens if another command is sent to an event-sourced actor while persistence is in progress? This depends on the value of <code class="docutils literal"><span class="pre">stateSync</span></code>, a member of <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> that can be overridden.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">def</span> <span class="n">stateSync</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">true</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="n">stateSync</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">true</span>
 </pre></div>
 </div>
 <p>If <code class="docutils literal"><span class="pre">stateSync</span></code> is <code class="docutils literal"><span class="pre">true</span></code> (default), new commands are <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.1/scala/actors.html#stash">stashed</a> while persistence is in progress. Consequently, new commands see actor state that is <em>in sync</em> with the events in the event log. A consequence is limited write throughput, because <a class="reference internal" href="../architecture.html#batching"><span>Batching</span></a> of write requests is not possible in this case<a class="footnote-reference" href="#id17" id="id3">[2]</a>. This setting is recommended for event-sourced actors that must validate commands against current state.</p>
@@ -262,7 +262,7 @@
 <div class="section" id="event-handler">
 <span id="id4"></span><h2>Event handler<a class="headerlink" href="#event-handler" title="Permalink to this headline">¶</a></h2>
 <p>An event handler is partial function of type <code class="docutils literal"><span class="pre">PartialFunction[Any,</span> <span class="pre">Unit]</span></code> for which a type alias <code class="docutils literal"><span class="pre">Receive</span></code> exists. It can be defined by implementing <code class="docutils literal"><span class="pre">onEvent</span></code>. An event handler handles persisted events by updating actor state from event details.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="cm">/** Event handler */</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="cm">/** Event handler */</span>
 <span class="k">override</span> <span class="k">def</span> <span class="n">onEvent</span> <span class="k">=</span> <span class="o">{</span>
   <span class="k">case</span> <span class="nc">ExampleEvent</span><span class="o">(</span><span class="n">details</span><span class="o">)</span> <span class="k">=&gt;</span>
     <span class="k">val</span> <span class="n">eventSequenceNr</span> <span class="k">=</span> <span class="n">lastSequenceNr</span>
@@ -283,7 +283,7 @@
 <div class="section" id="causality-tracking">
 <h2>Causality tracking<a class="headerlink" href="#causality-tracking" title="Permalink to this headline">¶</a></h2>
 <p>As described in section <a class="reference internal" href="../architecture.html#vector-clocks"><span>Vector clocks</span></a>, Eventuate’s causality tracking default can be formalized in <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/68">plausible clocks</a>. To achieve more fine-grained causality tracking, event-sourced actors can reserve their own entry in a vector clock. To reserve its own entry, a concrete <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> must override the <code class="docutils literal"><span class="pre">sharedClockEntry</span></code> method to return <code class="docutils literal"><span class="pre">false</span></code>.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
                    <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
 
   <span class="k">override</span> <span class="k">def</span> <span class="n">sharedClockEntry</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span>
@@ -293,7 +293,7 @@
 </pre></div>
 </div>
 <p>The value of <code class="docutils literal"><span class="pre">sharedClockEntry</span></code> may also be instance-specific, if required.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
                    <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">,</span>
                    <span class="k">override</span> <span class="k">val</span> <span class="n">sharedClockEntry</span><span class="k">:</span> <span class="kt">Boolean</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
 
@@ -313,12 +313,12 @@
 <p>An introduction to event-sourced writers is already given in section <a class="reference internal" href="../architecture.html#architecture"><span>Architecture</span></a>. Applications use event-sourced writers for maintaining persistent read models on the query side (Q) of a <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> application.</p>
 <p>Like event-sourced views, event-sourced writers can only consume events from an event log but can make incremental batch updates to external, application-defined query databases. A query database can be a relational database, a graph database or whatever is needed by an application. Concrete writers must implement the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> trait.</p>
 <p>This section outlines how to update a persistent read model in <a class="reference external" href="http://cassandra.apache.org/">Cassandra</a> from events consumed by an event-sourced writer. The relevant events are:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">case</span> <span class="k">class</span> <span class="nc">CustomerCreated</span><span class="o">(</span><span class="n">cid</span><span class="k">:</span> <span class="kt">Long</span><span class="o">,</span> <span class="n">first</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">last</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">address</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="k">class</span> <span class="nc">CustomerCreated</span><span class="o">(</span><span class="n">cid</span><span class="k">:</span> <span class="kt">Long</span><span class="o">,</span> <span class="n">first</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">last</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">address</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
 <span class="k">case</span> <span class="k">class</span> <span class="nc">AddressUpdated</span><span class="o">(</span><span class="n">cid</span><span class="k">:</span> <span class="kt">Long</span><span class="o">,</span> <span class="n">address</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
 </pre></div>
 </div>
 <p>The persistent read model is a <code class="docutils literal"><span class="pre">CUSTOMER</span></code> table with the following structure:</p>
-<div class="highlight-scala"><div class="highlight"><pre> <span class="n">id</span> <span class="o">|</span> <span class="n">first</span>  <span class="o">|</span> <span class="n">last</span>    <span class="o">|</span> <span class="n">address</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span> <span class="n">id</span> <span class="o">|</span> <span class="n">first</span>  <span class="o">|</span> <span class="n">last</span>    <span class="o">|</span> <span class="n">address</span>
 <span class="o">----+--------+---------+-------------</span>
   <span class="mi">1</span> <span class="o">|</span> <span class="nc">Martin</span> <span class="o">|</span> <span class="nc">Krasser</span> <span class="o">|</span> <span class="nc">Somewhere</span> <span class="mi">1</span>
   <span class="mi">2</span> <span class="o">|</span> <span class="nc">Volker</span> <span class="o">|</span> <span class="nc">Stampa</span>  <span class="o">|</span> <span class="nc">Somewhere</span> <span class="mi">3</span>
@@ -326,14 +326,14 @@
 </pre></div>
 </div>
 <p>The read model update progress is written to a separate <code class="docutils literal"><span class="pre">PROGRESS</span></code> table with a single <code class="docutils literal"><span class="pre">sequence_nr</span></code> column:</p>
-<div class="highlight-scala"><div class="highlight"><pre> <span class="n">id</span> <span class="o">|</span> <span class="n">sequence_nr</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span> <span class="n">id</span> <span class="o">|</span> <span class="n">sequence_nr</span>
 <span class="o">----+-------------</span>
   <span class="mi">0</span> <span class="o">|</span>           <span class="mi">3</span>
 </pre></div>
 </div>
 <p>The stored sequence number is that of the last successfully processed event. An event is considered as successfully processed if its data have been written to the <code class="docutils literal"><span class="pre">CUSTOMER</span></code> table. Only a single row is needed in the <code class="docutils literal"><span class="pre">PROGRESS</span></code> table to track the update progress for the whole <code class="docutils literal"><span class="pre">CUSTOMER</span></code> table.</p>
 <p>The event-sourced <code class="docutils literal"><span class="pre">Writer</span></code> in the following example implements <code class="docutils literal"><span class="pre">EventsourcedWriter[Long,</span> <span class="pre">Unit]</span></code> (where <code class="docutils literal"><span class="pre">Long</span></code> is the type of the initial read result and <code class="docutils literal"><span class="pre">Unit</span></code> the type of write results). It is initialized with an <code class="docutils literal"><span class="pre">eventLog</span></code> from which it consumes events and a Cassandra <code class="docutils literal"><span class="pre">Session</span></code> for writing event processing results.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">java.lang.</span><span class="o">{</span> <span class="nc">Long</span> <span class="k">=&gt;</span> <span class="nc">JLong</span> <span class="o">}</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">java.lang.</span><span class="o">{</span> <span class="nc">Long</span> <span class="k">=&gt;</span> <span class="nc">JLong</span> <span class="o">}</span>
 
 <span class="k">import</span> <span class="nn">akka.actor.ActorRef</span>
 
@@ -451,7 +451,7 @@
 <p>An introduction to event-sourced processors is already given in section <a class="reference internal" href="../architecture.html#architecture"><span>Architecture</span></a>. Applications use event-sourced processors to consume events form a source event log, process these events and write the processed events to a target event log. With processors, event logs can be connected to event stream processing pipelines and graphs.</p>
 <p>Event-sourced processors are a specialization of <a class="reference internal" href="../architecture.html#event-sourced-writers"><span>Event-sourced writers</span></a> where the <em>external database</em> is a target event log. Concrete stateless processors must implement the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> trait, stateful processors the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a> trait (see also <a class="reference internal" href="#stateful-writers"><span>Stateful writers</span></a>).</p>
 <p>The following example <code class="docutils literal"><span class="pre">Processor</span></code> is an implementation of <code class="docutils literal"><span class="pre">EventsourcedProcessor</span></code>. In addition to providing a source <code class="docutils literal"><span class="pre">eventLog</span></code>, a concrete processor must also provide a <code class="docutils literal"><span class="pre">targetEventLog</span></code>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Processor</span><span class="o">(</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Processor</span><span class="o">(</span>
     <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
     <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">,</span>
     <span class="k">val</span> <span class="n">targetEventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span>
@@ -470,7 +470,7 @@
 </pre></div>
 </div>
 <p>The event handler implemented by a processor is <code class="docutils literal"><span class="pre">processEvent</span></code>. The type of the handler is defined as:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">type</span> <span class="kt">Process</span> <span class="o">=</span> <span class="nc">PartialFunction</span><span class="o">[</span><span class="kt">Any</span>, <span class="kt">Seq</span><span class="o">[</span><span class="kt">Any</span><span class="o">]]</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">type</span> <span class="kt">Process</span> <span class="o">=</span> <span class="nc">PartialFunction</span><span class="o">[</span><span class="kt">Any</span>, <span class="kt">Seq</span><span class="o">[</span><span class="kt">Any</span><span class="o">]]</span>
 </pre></div>
 </div>
 <p>Processed events, to be written to the target event log, are returned by the handler as <code class="docutils literal"><span class="pre">Seq[Any]</span></code>. With this handler signature, events from the source log can be</p>
@@ -487,7 +487,7 @@
 <div class="section" id="state-recovery">
 <span id="id6"></span><h1>State recovery<a class="headerlink" href="#state-recovery" title="Permalink to this headline">¶</a></h1>
 <p>When an event-sourced actor or view is started or re-started, events are replayed to its <code class="docutils literal"><span class="pre">onEvent</span></code> handler so that internal state can be recovered<a class="footnote-reference" href="#id18" id="id7">[3]</a>. This is also the case for stateful event-sourced writers and processors. During event replay the <code class="docutils literal"><span class="pre">recovering</span></code> method returns <code class="docutils literal"><span class="pre">true</span></code>. Applications can also define a recovery completion handler by overriding <code class="docutils literal"><span class="pre">onRecovery</span></code>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
                    <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
 <span class="c1">// ...</span>
 
@@ -503,11 +503,11 @@
 <div class="section" id="backpressure">
 <h2>Backpressure<a class="headerlink" href="#backpressure" title="Permalink to this headline">¶</a></h2>
 <p>Events are replayed in batches. A given batch must have been handled by an event handler before the next batch is replayed. This allows slow event handlers to put backpressure on event replay. The default replay batch size can be configured with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replay</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">4096</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replay</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">4096</span>
 </pre></div>
 </div>
 <p>Concrete event-sourced actors, views, writers and processors can override the configured default value by overriding <code class="docutils literal"><span class="pre">replayBatchSize</span></code>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
                    <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
 
   <span class="k">override</span> <span class="k">def</span> <span class="n">replayBatchSize</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">64</span>
@@ -521,7 +521,7 @@
 <div class="section" id="snapshots">
 <span id="id8"></span><h1>Snapshots<a class="headerlink" href="#snapshots" title="Permalink to this headline">¶</a></h1>
 <p>Recovery times increase with the number of events that are replayed to event-sourced actors, views, stateful writers or stateful processors. They can be decreased by starting event replay from a previously saved snapshot of internal state rather than replaying events from scratch. Event-sourced actors, views, stateful writers and stateful processors can save snapshots by calling <code class="docutils literal"><span class="pre">save</span></code> within their command handler:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.util._</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.SnapshotMetadata</span>
@@ -559,7 +559,7 @@
 <p>Snapshots are saved asynchronously. On completion, a user-defined handler of type <code class="docutils literal"><span class="pre">Try[SnapshotMetadata]</span> <span class="pre">=&gt;</span> <span class="pre">Unit</span></code> is called. Like a <code class="docutils literal"><span class="pre">persist</span></code> handler, a <code class="docutils literal"><span class="pre">save</span></code> handler may also close over actor state and can reply to the command sender using the <code class="docutils literal"><span class="pre">sender()</span></code> reference.</p>
 <p>An event-sourced actor that is <a class="reference internal" href="../user-guide.html#tracking-conflicting-versions"><span>Tracking conflicting versions</span></a> of application state can also save <code class="docutils literal"><span class="pre">ConcurrentVersions[A,</span> <span class="pre">B]</span></code> instances directly. One can even configure custom serializers for type parameter <code class="docutils literal"><span class="pre">A</span></code> as explained in section <a class="reference internal" href="#snapshot-serialization"><span>Custom snapshot serialization</span></a>.</p>
 <p>During recovery, the latest snapshot saved by an event-sourced actor, view, stateful writer or stateful processor is loaded and can be handled with the <code class="docutils literal"><span class="pre">onSnapshot</span></code> handler. This handler should initialize internal actor state from the loaded snapshot:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
                    <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
 
   <span class="k">var</span> <span class="n">state</span><span class="k">:</span> <span class="kt">ExampleState</span> <span class="o">=</span> <span class="nc">ExampleState</span><span class="o">()</span>
@@ -591,11 +591,11 @@
 <div class="section" id="storage-locations">
 <h2>Storage locations<a class="headerlink" href="#storage-locations" title="Permalink to this headline">¶</a></h2>
 <p>Snapshots are currently stored in a directory that can be configured with</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">filesystem</span><span class="o">.</span><span class="n">dir</span> <span class="k">=</span> <span class="o">/</span><span class="n">my</span><span class="o">/</span><span class="n">storage</span><span class="o">/</span><span class="n">location</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">filesystem</span><span class="o">.</span><span class="n">dir</span> <span class="k">=</span> <span class="o">/</span><span class="n">my</span><span class="o">/</span><span class="n">storage</span><span class="o">/</span><span class="n">location</span>
 </pre></div>
 </div>
 <p>in <code class="docutils literal"><span class="pre">application.conf</span></code>. The maximum number of stored snapshots per event-sourced actor, view, writer or processor can be configured with</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">filesystem</span><span class="o">.</span><span class="n">snapshots</span><span class="o">-</span><span class="n">per</span><span class="o">-</span><span class="n">emitter</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">3</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">snapshot</span><span class="o">.</span><span class="n">filesystem</span><span class="o">.</span><span class="n">snapshots</span><span class="o">-</span><span class="n">per</span><span class="o">-</span><span class="n">emitter</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">3</span>
 </pre></div>
 </div>
 <p>If this number is exceeded, older snapshots are automatically deleted.</p>
@@ -609,7 +609,7 @@
 <li>If an event-sourced actor, view, writer or processor has a defined <code class="docutils literal"><span class="pre">aggregateId</span></code>, only events emitted by event-sourced actors or processors with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> are routed to it.</li>
 </ul>
 <p>Routing destinations are defined during emission of an event and are persisted together with the event<a class="footnote-reference" href="#id20" id="id11">[5]</a>. This makes routing decisions repeatable during event replay and allows for routing rule changes without affecting past routing decisions. Applications can define additional routing destinations with the <code class="docutils literal"><span class="pre">customDestinationAggregateIds</span></code> parameter of <code class="docutils literal"><span class="pre">persist</span></code>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.util._</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
 
@@ -638,7 +638,7 @@
 <div class="section" id="reliable-delivery">
 <span id="id12"></span><h1>Reliable delivery<a class="headerlink" href="#reliable-delivery" title="Permalink to this headline">¶</a></h1>
 <p>Reliable, event-based remote communication between event-sourced actors should be done via a <a class="reference internal" href="event-log.html#replicated-event-log"><span>Replicated event log</span></a>. For reliable communication with other services that cannot connect to a replicated event log, event-sourced actors should use the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a> trait:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
 <span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
@@ -707,7 +707,7 @@
 <div class="section" id="command-stashing">
 <span id="id13"></span><h1>Command stashing<a class="headerlink" href="#command-stashing" title="Permalink to this headline">¶</a></h1>
 <p><code class="docutils literal"><span class="pre">EventsourcedView</span></code> and <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> override <code class="docutils literal"><span class="pre">stash()</span></code> and <code class="docutils literal"><span class="pre">unstashAll()</span></code> of <code class="docutils literal"><span class="pre">akka.actor.Stash</span></code> so that application-specific subclasses can safely stash and unstash commands. Stashing of events is not allowed. Hence, <code class="docutils literal"><span class="pre">stash()</span></code> must only be used in a command handler, using it in an event handler will throw <code class="docutils literal"><span class="pre">StashError</span></code>. On the other hand, <code class="docutils literal"><span class="pre">unsatshAll()</span></code> can be used anywhere i.e. in a command handler, persist handler or event handler. The following is a trivial usage example which calls <code class="docutils literal"><span class="pre">stash()</span></code> in the command handler and <code class="docutils literal"><span class="pre">unstashAll()</span></code> in the persist handler:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">case</span> <span class="k">class</span> <span class="nc">CreateUser</span><span class="o">(</span><span class="n">userId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="k">class</span> <span class="nc">CreateUser</span><span class="o">(</span><span class="n">userId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
 <span class="k">case</span> <span class="k">class</span> <span class="nc">UpdateUser</span><span class="o">(</span><span class="n">userId</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
 
 <span class="k">sealed</span> <span class="k">trait</span> <span class="nc">UserEvent</span>
@@ -758,7 +758,7 @@
 <div class="section" id="behavior-changes">
 <h1>Behavior changes<a class="headerlink" href="#behavior-changes" title="Permalink to this headline">¶</a></h1>
 <p>Event-sourced actors, views writers and processors distinguish command processing from event processing. Consequently, applications should be able to change the behavior of command handlers and event handlers independent of each other, at runtime. Command handling behavior can be changed with <code class="docutils literal"><span class="pre">commandContext.become()</span></code> and <code class="docutils literal"><span class="pre">commandContext.unbecome()</span></code>, event handling behavior with <code class="docutils literal"><span class="pre">eventContext.become()</span></code> and <code class="docutils literal"><span class="pre">eventContext.unbecome()</span></code> (for details, see the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a> API docs):</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="k">trait</span> <span class="nc">ExampleActor</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">trait</span> <span class="nc">ExampleActor</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
   <span class="c1">// default command handler</span>
   <span class="k">override</span> <span class="k">def</span> <span class="n">onCommand</span><span class="k">:</span> <span class="kt">Receive</span> <span class="o">=</span> <span class="o">{</span>
     <span class="k">case</span> <span class="s">&quot;a&quot;</span> <span class="k">=&gt;</span> <span class="n">commandContext</span><span class="o">.</span><span class="n">become</span><span class="o">(</span><span class="n">newCommandHandler</span><span class="o">)</span>
@@ -821,7 +821,7 @@
 <div class="section" id="batch-write-failure-handling">
 <h2>Batch write failure handling<a class="headerlink" href="#batch-write-failure-handling" title="Permalink to this headline">¶</a></h2>
 <p>Events are written in batches. When using the <a class="reference internal" href="event-log.html#cassandra-storage-backend"><span>Cassandra storage backend</span></a>, there’s a <em>warn threshold</em> and <em>fail threshold</em> for batch sizes. The default settings in <code class="docutils literal"><span class="pre">cassandra.yaml</span></code> are:</p>
-<div class="highlight-scala"><div class="highlight"><pre># Caution should be taken on increasing the size of this threshold as it can
+<div class="highlight-scala"><div class="highlight"><pre><span></span># Caution should be taken on increasing the size of this threshold as it can
 # lead to node instability.
 batch_size_warn_threshold_in_kb: 5
 
@@ -830,19 +830,19 @@ batch_size_fail_threshold_in_kb: 50
 </pre></div>
 </div>
 <p>When the size of an event batch exceeds the <em>fail threshold</em>, the batch write fails with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">com</span><span class="o">.</span><span class="n">datastax</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="nc">InvalidQueryException</span><span class="k">:</span> <span class="kt">Batch</span> <span class="kt">too</span> <span class="kt">large</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">com</span><span class="o">.</span><span class="n">datastax</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="nc">InvalidQueryException</span><span class="k">:</span> <span class="kt">Batch</span> <span class="kt">too</span> <span class="kt">large</span>
 </pre></div>
 </div>
 <p>The corresponding entry in the Cassandra system log is:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="nc">ERROR</span> <span class="o">&lt;</span><span class="n">timestamp</span><span class="o">&gt;</span> <span class="nc">Batch</span> <span class="n">of</span> <span class="n">prepared</span> <span class="n">statements</span> <span class="k">for</span> <span class="o">[</span><span class="kt">eventuate.log_&lt;id&gt;</span><span class="o">]</span> <span class="n">is</span> <span class="n">of</span> <span class="n">size</span> <span class="mi">103800</span><span class="o">,</span> <span class="n">exceeding</span> <span class="n">specified</span> <span class="n">threshold</span> <span class="n">of</span> <span class="mi">51200</span> <span class="n">by</span> <span class="mf">52600.</span> <span class="o">(</span><span class="n">see</span> <span class="n">batch_size_fail_threshold_in_kb</span><span class="o">)</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">ERROR</span> <span class="o">&lt;</span><span class="n">timestamp</span><span class="o">&gt;</span> <span class="nc">Batch</span> <span class="n">of</span> <span class="n">prepared</span> <span class="n">statements</span> <span class="k">for</span> <span class="o">[</span><span class="kt">eventuate.log_&lt;id&gt;</span><span class="o">]</span> <span class="n">is</span> <span class="n">of</span> <span class="n">size</span> <span class="mi">103800</span><span class="o">,</span> <span class="n">exceeding</span> <span class="n">specified</span> <span class="n">threshold</span> <span class="n">of</span> <span class="mi">51200</span> <span class="n">by</span> <span class="mf">52600.</span> <span class="o">(</span><span class="n">see</span> <span class="n">batch_size_fail_threshold_in_kb</span><span class="o">)</span>
 </pre></div>
 </div>
 <p>In this case, applications should reduce</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">64</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">64</span>
 </pre></div>
 </div>
 <p>and</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">cassandra</span><span class="o">.</span><span class="n">index</span><span class="o">-</span><span class="n">update</span><span class="o">-</span><span class="n">limit</span> <span class="k">=</span> <span class="mi">64</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">cassandra</span><span class="o">.</span><span class="n">index</span><span class="o">-</span><span class="n">update</span><span class="o">-</span><span class="n">limit</span> <span class="k">=</span> <span class="mi">64</span>
 </pre></div>
 </div>
 <p>to a smaller value like <code class="docutils literal"><span class="pre">32</span></code>, for example, or even smaller. Failed replication writes or index writes are re-tried automatically by Eventuate. Failed <code class="docutils literal"><span class="pre">persist</span></code> operations must be re-tried by the application.</p>
@@ -854,11 +854,11 @@ batch_size_fail_threshold_in_kb: 50
 <div class="section" id="batch-replication-failure-handling">
 <h2>Batch replication failure handling<a class="headerlink" href="#batch-replication-failure-handling" title="Permalink to this headline">¶</a></h2>
 <p>During replication, events are batch-transferred over the network. The maximum number of events per batch can be configured with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">64</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">64</span>
 </pre></div>
 </div>
 <p>The maximum batch size in bytes the transport will accept is limited. If this limit is exceeded, batch transfer will fail. In this case, applications should either increase</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">netty</span><span class="o">.</span><span class="n">tcp</span><span class="o">.</span><span class="n">maximum</span><span class="o">-</span><span class="n">frame</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">128000</span><span class="n">b</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">akka</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">netty</span><span class="o">.</span><span class="n">tcp</span><span class="o">.</span><span class="n">maximum</span><span class="o">-</span><span class="n">frame</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">128000</span><span class="n">b</span>
 </pre></div>
 </div>
 <p>or decrease the event batch size.</p>
@@ -873,7 +873,7 @@ batch_size_fail_threshold_in_kb: 50
 <div class="section" id="custom-event-serialization">
 <span id="event-serialization"></span><h2>Custom event serialization<a class="headerlink" href="#custom-event-serialization" title="Permalink to this headline">¶</a></h2>
 <p>Custom serializers for application-defined events can be configured with Akka&#8217;s <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.1/scala/serialization.html">serialization extension</a>. For example, an application that wants to use a custom <code class="docutils literal"><span class="pre">MyDomainEventSerializer</span></code> for events of type <code class="docutils literal"><span class="pre">MyDomainEvent</span></code> (both defined in package <code class="docutils literal"><span class="pre">com.example</span></code>) should add the following configuration to <code class="docutils literal"><span class="pre">application.conf</span></code>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span><span class="o">.</span><span class="n">actor</span> <span class="o">{</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">akka</span><span class="o">.</span><span class="n">actor</span> <span class="o">{</span>
   <span class="n">serializers</span> <span class="o">{</span>
     <span class="n">domain</span><span class="o">-</span><span class="n">event</span><span class="o">-</span><span class="n">serializer</span> <span class="k">=</span> <span class="s">&quot;com.example.MyDomainEventSerializer&quot;</span>
   <span class="o">}</span>
@@ -890,7 +890,7 @@ batch_size_fail_threshold_in_kb: 50
 <div class="section" id="custom-replication-filter-serialization">
 <span id="replication-filter-serialization"></span><h2>Custom replication filter serialization<a class="headerlink" href="#custom-replication-filter-serialization" title="Permalink to this headline">¶</a></h2>
 <p>In the same way as for application-defined events, custom serializers for <a class="reference internal" href="event-log.html#replication-filters"><span>Replication filters</span></a> can also be configured via Akka&#8217;s <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.1/scala/serialization.html">serialization extension</a>. For example, an application that wants to use a custom <code class="docutils literal"><span class="pre">MyReplicationFilterSerializer</span></code> for replication filters of type <code class="docutils literal"><span class="pre">MyReplicationFilter</span></code> (both defined in package <code class="docutils literal"><span class="pre">com.example</span></code>) should add the following configuration to <code class="docutils literal"><span class="pre">application.conf</span></code>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span><span class="o">.</span><span class="n">actor</span> <span class="o">{</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">akka</span><span class="o">.</span><span class="n">actor</span> <span class="o">{</span>
   <span class="n">serializers</span> <span class="o">{</span>
     <span class="n">custom</span><span class="o">-</span><span class="n">filter</span><span class="o">-</span><span class="n">serializer</span> <span class="k">=</span> <span class="s">&quot;com.example.MyReplicationFilterSerializer&quot;</span>
   <span class="o">}</span>

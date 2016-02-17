@@ -197,25 +197,25 @@
 <div class="section" id="binaries">
 <h3>Binaries<a class="headerlink" href="#binaries" title="Permalink to this headline">¶</a></h3>
 <p>After having cloned the repository, change to the <code class="docutils literal"><span class="pre">eventuate</span></code> directory:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">cd</span> <span class="n">eventuate</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">eventuate</span>
 </pre></div>
 </div>
 <p>and run the tests with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">test</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">test</span>
 </pre></div>
 </div>
 <p>which runs unit, integration and multi-jvm tests. You can run them separately with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">test</span><span class="k">:</span><span class="kt">testOnly</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">test</span><span class="k">:</span><span class="kt">testOnly</span>
 <span class="n">sbt</span> <span class="n">it</span><span class="k">:</span><span class="kt">testOnly</span>
 <span class="n">sbt</span> <span class="n">multi</span><span class="o">-</span><span class="n">jvm</span><span class="k">:</span><span class="kt">test</span>
 </pre></div>
 </div>
 <p>To publish the binaries to the local Ivy repository, run:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">publishLocal</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">publishLocal</span>
 </pre></div>
 </div>
 <p>To publish the binaries to the local Maven repository, run:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">publishM2</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">publishM2</span>
 </pre></div>
 </div>
 </div>
@@ -223,23 +223,23 @@
 <h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
 <p>Our documentation is written in <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> and located in <code class="docutils literal"><span class="pre">src/sphinx</span></code>. Building the documentation requires an installation of <a class="reference external" href="https://www.python.org/">Python</a> and <a class="reference external" href="http://sphinx-doc.org/">Sphinx</a>.</p>
 <p>The following installation instructions are for Mac OS X. If Python isn’t already installed, install <a class="reference external" href="http://brew.sh/">Homebrew</a> first and then Python with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">brew</span> <span class="n">install</span> <span class="n">python</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">brew</span> <span class="n">install</span> <span class="n">python</span>
 </pre></div>
 </div>
 <p>Next, install pip:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">sudo</span> <span class="n">easy_install</span> <span class="n">pip</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">easy_install</span> <span class="n">pip</span>
 </pre></div>
 </div>
 <p>and then Sphinx with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx</span>
 </pre></div>
 </div>
 <p>Additionally, the Sphinx <a class="reference external" href="https://readthedocs.org/">Read the Docs</a> scheme is required:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx_rtd_scheme</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx_rtd_scheme</span>
 </pre></div>
 </div>
 <p>Now build the documentation with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">makeSite</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">makeSite</span>
 </pre></div>
 </div>
 <p>and open <code class="docutils literal"><span class="pre">target/site/index.html</span></code> in your browser.</p>

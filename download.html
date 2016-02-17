@@ -191,7 +191,7 @@
 <div class="section" id="maven">
 <h3>Maven<a class="headerlink" href="#maven" title="Permalink to this headline">¶</a></h3>
 <p>To include the latest release into a Maven project, add the following to your <code class="docutils literal"><span class="pre">pom.xml</span></code>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="o">&lt;</span><span class="n">repository</span><span class="o">&gt;</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">repository</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">id</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">releases</span><span class="o">&lt;/</span><span class="n">id</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="nc">Eventuate</span> <span class="nc">Releases</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">url</span><span class="o">&gt;</span><span class="n">https</span><span class="o">://</span><span class="n">dl</span><span class="o">.</span><span class="n">bintray</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">rbmhtechnology</span><span class="o">/</span><span class="n">maven</span><span class="o">&lt;/</span><span class="n">url</span><span class="o">&gt;</span>
@@ -205,7 +205,7 @@
 </pre></div>
 </div>
 <p>To include the latest development snapshot:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="o">&lt;</span><span class="n">repository</span><span class="o">&gt;</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">repository</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">id</span><span class="o">&gt;</span><span class="n">ojo</span><span class="o">-</span><span class="n">snapshots</span><span class="o">&lt;/</span><span class="n">id</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="nc">OJO</span> <span class="nc">Snapshots</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">url</span><span class="o">&gt;</span><span class="n">https</span><span class="o">://</span><span class="n">oss</span><span class="o">.</span><span class="n">jfrog</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">oss</span><span class="o">-</span><span class="n">snapshot</span><span class="o">-</span><span class="n">local</span><span class="o">&lt;/</span><span class="n">url</span><span class="o">&gt;</span>
@@ -222,13 +222,13 @@
 <div class="section" id="sbt">
 <h3>SBT<a class="headerlink" href="#sbt" title="Permalink to this headline">¶</a></h3>
 <p>To include the latest release into an <a class="reference external" href="http://www.scala-sbt.org/">sbt</a> project, add the following to your <code class="docutils literal"><span class="pre">build.sbt</span></code>:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;Eventuate Releases&quot;</span> <span class="n">at</span> <span class="s">&quot;https://dl.bintray.com/rbmhtechnology/maven&quot;</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;Eventuate Releases&quot;</span> <span class="n">at</span> <span class="s">&quot;https://dl.bintray.com/rbmhtechnology/maven&quot;</span>
 
 <span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate&quot;</span> <span class="o">%</span> <span class="s">&quot;0.5&quot;</span>
 </pre></div>
 </div>
 <p>To include the latest development snapshot:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;OJO Snapshots&quot;</span> <span class="n">at</span> <span class="s">&quot;https://oss.jfrog.org/oss-snapshot-local&quot;</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;OJO Snapshots&quot;</span> <span class="n">at</span> <span class="s">&quot;https://oss.jfrog.org/oss-snapshot-local&quot;</span>
 
 <span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate&quot;</span> <span class="o">%</span> <span class="s">&quot;0.6-SNAPSHOT&quot;</span>
 </pre></div>
