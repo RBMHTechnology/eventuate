@@ -28,6 +28,7 @@ import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 import com.rbmhtechnology.eventuate.log.EventLogLifecycle._
 import com.rbmhtechnology.eventuate.log.EventLogLifecycleCassandra.TestFailureSpec
+import com.rbmhtechnology.eventuate.log.EventLogSpecLeveldb.immediateEventLogClockSnapshotConfig
 import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.utilities.RestarterActor.restartActor
 import com.rbmhtechnology.eventuate.utilities._
@@ -177,13 +178,11 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfter
   }
 }
 
-abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.config)) with EventLogSpecSupport with Eventually {
+abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.config)) with EventLogSpecSupport {
   import EventLogSpec._
 
   val dl = system.deadLetters
   implicit val implicitTimeout = Timeout(timeoutDuration)
-
-  override implicit def patienceConfig = PatienceConfig(Span(10, Seconds), Span(100, Millis))
 
   "An event log" must {
     "write local events" in {
@@ -601,8 +600,35 @@ abstract class EventLogSpec extends TestKit(ActorSystem("test", EventLogSpec.con
 }
 
 
+object EventLogSpecLeveldb {
+  val immediateEventLogClockSnapshotConfig =
+    ConfigFactory.parseString("eventuate.log.leveldb.state-snapshot-limit = 1")
+}
+
 class EventLogSpecLeveldb extends EventLogSpec with EventLogLifecycleLeveldb {
+
+  "A LeveldbEventLog" must {
+    "not delete events required for restoring the EventLogClock" in {
+      generateEmittedEvents()
+      val currentEventLogClock = (log ? GetEventLogClock).mapTo[GetEventLogClockSuccess].await
+      (log ? Delete(generatedEmittedEvents.last.localSequenceNr)).await
+      val restartedLog = restartActor(log)
+      val restoredEventLogClock = (restartedLog ? GetEventLogClock).mapTo[GetEventLogClockSuccess].await
+      restoredEventLogClock should be(currentEventLogClock)
+    }
+  }
+}
+
+class EventLogWithImmediateEventLogClockSnapshotSpecLeveldb
+  extends TestKit(ActorSystem("test", immediateEventLogClockSnapshotConfig.withFallback(EventLogSpec.config)))
+  with EventLogSpecSupport with EventLogLifecycleLeveldb with Eventually {
+
   import EventLogSpec._
+
+  override implicit def patienceConfig = PatienceConfig(Span(10, Seconds), Span(100, Millis))
+
+  val dl = system.deadLetters
+  implicit val implicitTimeout = Timeout(timeoutDuration)
 
   "A LeveldbEventLog" must {
     "actually delete events from the log and an index" in {

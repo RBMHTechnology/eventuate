@@ -205,11 +205,12 @@ trait EventLogSPI { this: Actor =>
   def writeDeletionMetadata(data: DeletionMetadata): Unit
 
   /**
-   * Asynchronously and physically deletes events up to `toSequenceNr`. This operation completes when
-   * physical deletion completed. A backend that does not support physical deletion should not override
-   * this method.
+   * Instructs the log to asynchronously and physically delete events up to `toSequenceNr`. This operation completes when
+   * physical deletion completed and returns the sequence nr up to which events have been deleted. This can be
+   * smaller then the requested `toSequenceNr` if a backend has to keep events for internal reasons.
+   * A backend that does not support physical deletion should not override this method.
    */
-  def delete(toSequenceNr: Long): Future[Unit] = Future.failed(new PhysicalDeletionNotSupportedException)
+  def delete(toSequenceNr: Long): Future[Long] = Future.failed(new PhysicalDeletionNotSupportedException)
 }
 
 /**
@@ -422,8 +423,8 @@ abstract class EventLog(id: String) extends Actor with EventLogSPI with Stash wi
         val deleteTo = deletionMetadata.toSequenceNr min replicatedSeqNr
         physicalDeletionRunning = true
         delete(deleteTo).onComplete {
-          case Success(_)  => self ! PhysicalDeleteSuccess(deleteTo)
-          case Failure(ex) => self ! PhysicalDeleteFailure(ex)
+          case Success(actuallyDeletedTo) => self ! PhysicalDeleteSuccess(actuallyDeletedTo)
+          case Failure(ex)                => self ! PhysicalDeleteFailure(ex)
         }
       }
     case PhysicalDeleteSuccess(deletedTo) =>
