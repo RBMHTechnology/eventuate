@@ -28,13 +28,5 @@ message LWWRegisterFormat {
 }
 
 message MVRegisterFormat {
-  repeated RegisteredFormat registered = 1;
+  repeated VersionedFormat versioned = 1;
 }
-
-message RegisteredFormat {
-  optional VectorTimeFormat updateTimestamp = 1;
-  optional int64 systemTimestamp = 2;
-  optional string emitterId = 3;
-  optional PayloadFormat payload = 4;
-}
-

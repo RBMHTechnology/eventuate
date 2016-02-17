@@ -73,8 +73,8 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private def mvRegisterFormatBuilder(mVRegister: MVRegister[_]): MVRegisterFormat.Builder = {
     val builder = MVRegisterFormat.newBuilder
 
-    mVRegister.registered.foreach { r =>
-      builder.addRegistered(registeredFormatBuilder(r))
+    mVRegister.versioned.foreach { r =>
+      builder.addVersioned(commonSerializer.versionedFormatBuilder(r))
     }
 
     builder
@@ -90,15 +90,6 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     builder
   }
 
-  private def registeredFormatBuilder(registered: Registered[_]): RegisteredFormat.Builder = {
-    val builder = RegisteredFormat.newBuilder
-    builder.setPayload(commonSerializer.payloadFormatBuilder(registered.value.asInstanceOf[AnyRef]))
-    builder.setUpdateTimestamp(commonSerializer.vectorTimeFormatBuilder(registered.updateTimestamp))
-    builder.setSystemTimestamp(registered.systemTimestamp)
-    builder.setEmitterId(registered.emitterId)
-    builder
-  }
-
   // --------------------------------------------------------------------------------
   //  fromBinary helpers
   // --------------------------------------------------------------------------------
@@ -108,10 +99,10 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   }
 
   private def mvRegister(mvRegisterFormat: MVRegisterFormat): MVRegister[Any] = {
-    val builder = new VectorBuilder[Registered[Any]]
+    val builder = new VectorBuilder[Versioned[Any]]
 
-    val rs = mvRegisterFormat.getRegisteredList.iterator.asScala.foldLeft(Set.empty[Registered[Any]]) {
-      case (acc, r) => acc + registered(r)
+    val rs = mvRegisterFormat.getVersionedList.iterator.asScala.foldLeft(Set.empty[Versioned[Any]]) {
+      case (acc, r) => acc + commonSerializer.versioned(r)
     }
 
     MVRegister(rs)
@@ -125,13 +116,5 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     }
 
     ORSet(ves)
-  }
-
-  def registered(registeredFormat: RegisteredFormat): Registered[Any] = {
-    Registered(
-      commonSerializer.payload(registeredFormat.getPayload),
-      commonSerializer.vectorTime(registeredFormat.getUpdateTimestamp),
-      registeredFormat.getSystemTimestamp,
-      registeredFormat.getEmitterId)
   }
 }

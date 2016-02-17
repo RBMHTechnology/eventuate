@@ -23,27 +23,22 @@ import com.rbmhtechnology.eventuate._
 import scala.concurrent.Future
 
 /**
- * Internal representation of an [[MVRegister]] value.
- */
-case class Registered[A](value: A, updateTimestamp: VectorTime, systemTimestamp: Long, emitterId: String)
-
-/**
- * Replicated MV-Register. Has several [[Registered]] values assigned in case of concurrent assignments,
- * otherwise, a single [[Registered]] value. Concurrent assignments can be reduced to a single assignment
- * by assigning a [[Registered]] value with a vector timestamp that is greater than those of the currently
- * assigned [[Registered]] values.
+ * Replicated MV-Register. Has several [[Versioned]] values assigned in case of concurrent assignments,
+ * otherwise, a single [[Versioned]] value. Concurrent assignments can be reduced to a single assignment
+ * by assigning a [[Versioned]] value with a vector timestamp that is greater than those of the currently
+ * assigned [[Versioned]] values.
  *
- * @param registered Registered values. Initially empty.
+ * @param versioned Registered values. Initially empty.
  * @tparam A MV-Register value type.
  *
  * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]]
  */
-case class MVRegister[A](registered: Set[Registered[A]] = Set.empty[Registered[A]]) extends CRDTFormat {
+case class MVRegister[A](versioned: Set[Versioned[A]] = Set.empty[Versioned[A]]) extends CRDTFormat {
   def value: Set[A] =
-    registered.map(_.value)
+    versioned.map(_.value)
 
   /**
-   * Assigns a [[Registered]] value from `v` and `vectorTimestamp` and returns an updated MV-Register.
+   * Assigns a [[Versioned]] value from `v` and `vectorTimestamp` and returns an updated MV-Register.
    *
    * @param v assigned value.
    * @param vectorTimestamp vector timestamp of the assigned value.
@@ -51,13 +46,13 @@ case class MVRegister[A](registered: Set[Registered[A]] = Set.empty[Registered[A
    * @param emitterId id of the value emitter.
    */
   def set(v: A, vectorTimestamp: VectorTime, systemTimestamp: Long = 0L, emitterId: String = ""): MVRegister[A] = {
-    val (vvs, updated) = registered.foldLeft((Set.empty[Registered[A]], false)) {
-      case ((acc, updated), vv) if vectorTimestamp > vv.updateTimestamp =>
+    val (vvs, updated) = versioned.foldLeft((Set.empty[Versioned[A]], false)) {
+      case ((acc, updated), vv) if vectorTimestamp > vv.vectorTimestamp =>
         ((acc + vv.copy(v, vectorTimestamp)), true)
       case ((acc, updated), vv) =>
         ((acc + vv), updated)
     }
-    if (!updated) copy(registered + Registered(v, vectorTimestamp, systemTimestamp, emitterId)) else copy(vvs)
+    if (!updated) copy(versioned + Versioned(v, vectorTimestamp, systemTimestamp, emitterId)) else copy(vvs)
   }
 }
 
