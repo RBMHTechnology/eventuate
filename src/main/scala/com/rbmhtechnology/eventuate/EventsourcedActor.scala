@@ -17,10 +17,8 @@
 package com.rbmhtechnology.eventuate
 
 import java.util.concurrent.TimeUnit
-import java.util.function.BiConsumer
 
 import akka.actor._
-
 import com.rbmhtechnology.eventuate.PersistOnEvent._
 import com.typesafe.config.Config
 
@@ -204,23 +202,4 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
       commandStash.clear()
       messageStash.unstashAll()
     }
-}
-
-/**
- * Java API.
- *
- * @see [[EventsourcedActor]]
- */
-abstract class AbstractEventsourcedActor(id: String, eventLog: ActorRef) extends AbstractEventsourcedView(id, eventLog) with EventsourcedActor with ConfirmedDelivery {
-  /**
-   * Asynchronously persists the given `event` and calls `handler` with the persist result. If
-   * persistence was successful, `onEvent` is called with the persisted event before `handler`
-   * is called. Both, `onReceiveEvent` and `handler`, are called on a dispatcher thread of this
-   * actor, hence, it is safe to modify internal state within them. The `handler` can also obtain
-   * a reference to the initial command sender via `sender()`.
-   */
-  def persist[A](event: A, handler: BiConsumer[A, Throwable]): Unit = persist[A](event) {
-    case Success(a) => handler.accept(a, null)
-    case Failure(e) => handler.accept(null.asInstanceOf[A], e)
-  }
 }

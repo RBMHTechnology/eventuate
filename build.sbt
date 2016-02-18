@@ -28,16 +28,17 @@ libraryDependencies ++= Seq(
   "com.datastax.cassandra"           % "cassandra-driver-core"         % "2.1.5",
   "com.google.guava"                 % "guava"                         % "16.0",
   "com.google.protobuf"              % "protobuf-java"                 % protobufVersion,
+  "com.javaslang"                    % "javaslang"                     % "2.0.0-RC3"  % "test,it",
+  "com.novocode"                     % "junit-interface"               % "0.11"       % "test->default",
   "com.typesafe.akka"               %% "akka-remote"                   % akkaVersion,
   "com.typesafe.akka"               %% "akka-testkit"                  % akkaVersion  % "test,it",
   "com.typesafe.akka"               %% "akka-multi-node-testkit"       % akkaVersion  % "test",
   "commons-io"                       % "commons-io"                    % "2.4",
   "org.cassandraunit"                % "cassandra-unit"                % "2.0.2.2"    % "test,it" excludeAll ExclusionRule(organization = "ch.qos.logback"),
-  "org.functionaljava"               % "functionaljava"                % "4.2-beta-1" % "test",
-  "org.functionaljava"               % "functionaljava-java8"          % "4.2-beta-1" % "test,it",
   "org.fusesource.leveldbjni"        % "leveldbjni-all"                % "1.8",
   "org.scalatest"                   %% "scalatest"                     % "2.1.4"      % "test,it",
-  "org.scalaz"                      %% "scalaz-core"                   % "7.1.0"
+  "org.scalaz"                      %% "scalaz-core"                   % "7.1.0",
+  "org.scala-lang.modules"           % "scala-java8-compat_2.11"       % "0.7.0"
 )
 
 // ----------------------------------------------------------------------

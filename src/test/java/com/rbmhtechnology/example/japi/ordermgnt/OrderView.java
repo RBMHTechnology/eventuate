@@ -16,43 +16,38 @@
 
 package com.rbmhtechnology.example.japi.ordermgnt;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import akka.actor.ActorRef;
 import akka.japi.pf.ReceiveBuilder;
-
 import com.rbmhtechnology.eventuate.AbstractEventsourcedView;
-import com.rbmhtechnology.example.japi.ordermgnt.OrderActor.*;
+import com.rbmhtechnology.example.japi.ordermgnt.OrderActor.OrderEvent;
+import javaslang.collection.HashMap;
+import javaslang.collection.Map;
 
 public class OrderView extends AbstractEventsourcedView {
     private Map<String, Integer> updateCounts;
 
     public OrderView(String replicaId, ActorRef eventLog) {
         super(String.format("j-ov-%s", replicaId), eventLog);
-        this.updateCounts = new HashMap<>();
+        this.updateCounts = HashMap.empty();
 
-        onReceiveCommand(ReceiveBuilder.match(GetUpdateCount.class, this::handleGetUpdateCount).build());
-        onReceiveEvent(ReceiveBuilder.match(OrderEvent.class, this::handleOrderEvent).build());
+        setOnCommand(ReceiveBuilder
+                .match(GetUpdateCount.class, this::handleGetUpdateCount)
+                .build());
+
+        setOnEvent(ReceiveBuilder
+                .match(OrderEvent.class, this::handleOrderEvent)
+                .build());
     }
 
-    public void handleGetUpdateCount(GetUpdateCount cmd) {
-        String id = cmd.getOrderId();
-        int count = updateCounts.getOrDefault(id, 0);
-        sender().tell(new GetUpdateCountSuccess(id, count), self());
+    public void handleGetUpdateCount(final GetUpdateCount cmd) {
+        final String orderId = cmd.orderId;
+        sender().tell(new GetUpdateCountSuccess(orderId, updateCounts.get(orderId).getOrElse(0)), self());
     }
 
-    public void handleOrderEvent(OrderEvent evt) {
-        String id = evt.getOrderId();
-        Integer count = updateCounts.get(id);
-
-        if (count == null) {
-            updateCounts.put(id, 1);
-        } else {
-            updateCounts.put(id, count + 1);
-        }
+    public void handleOrderEvent(final OrderEvent evt) {
+        final String id = evt.orderId;
+        updateCounts = updateCounts.put(id, updateCounts.get(id).map(cnt -> cnt + 1).getOrElse(1));
     }
-
 
     // ------------------------------------------------------------------------------
     //  Domain commands
@@ -65,15 +60,11 @@ public class OrderView extends AbstractEventsourcedView {
     }
 
     public static class GetUpdateCountSuccess extends OrderId {
-        private int count;
+        public final int count;
 
         public GetUpdateCountSuccess(String orderId, int count) {
             super(orderId);
             this.count = count;
-        }
-
-        public int getCount() {
-            return count;
         }
     }
 }

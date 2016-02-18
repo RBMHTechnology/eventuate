@@ -16,43 +16,53 @@
 
 package com.rbmhtechnology.example.japi.ordermgnt;
 
+import akka.actor.ActorRef;
+import akka.japi.pf.ReceiveBuilder;
+import com.rbmhtechnology.eventuate.AbstractEventsourcedActor;
+import com.rbmhtechnology.eventuate.ConcurrentVersions;
+import com.rbmhtechnology.eventuate.ConcurrentVersionsTree;
+import com.rbmhtechnology.eventuate.ResultHandler;
+import com.rbmhtechnology.eventuate.SnapshotMetadata;
+import com.rbmhtechnology.eventuate.Versioned;
+import com.rbmhtechnology.eventuate.VersionedAggregate;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
-import akka.actor.ActorRef;
-import akka.japi.pf.ReceiveBuilder;
-
-import com.rbmhtechnology.eventuate.*;
-
-import static com.rbmhtechnology.eventuate.VersionedAggregate.*;
+import static com.rbmhtechnology.eventuate.VersionedAggregate.AggregateDoesNotExistException;
+import static com.rbmhtechnology.eventuate.VersionedAggregate.DomainCmd;
+import static com.rbmhtechnology.eventuate.VersionedAggregate.DomainEvt;
+import static com.rbmhtechnology.eventuate.VersionedAggregate.Resolve;
+import static com.rbmhtechnology.eventuate.VersionedAggregate.Resolved;
 
 public class OrderActor extends AbstractEventsourcedActor {
-    private String orderId;
+    private final String orderId;
     private String replicaId;
 
     private VersionedAggregate<Order, OrderCommand, OrderEvent> order;
 
     private BiFunction<Order, OrderCommand, OrderEvent> commandValidation = (o, c) -> {
         if (c instanceof CreateOrder)
-            return ((CreateOrder)c).createEvent().withCreator(replicaId);
+            return ((CreateOrder) c).event.withCreator(replicaId);
         else
-            return c.createEvent();
+            return c.event;
     };
 
     private BiFunction<Order, OrderEvent, Order> eventProjection = (o, e) -> {
         if (e instanceof OrderCreated)
-            return new Order(e.getOrderId());
+            return new Order(((OrderCreated) e).orderId);
         else if (e instanceof OrderCancelled)
             return o.cancel();
         else if (e instanceof OrderItemAdded)
-            return o.addItem(((OrderItemAdded) e).getItem());
+            return o.addItem(((OrderItemAdded) e).item);
         else if (e instanceof OrderItemRemoved)
-            return o.removeItem(((OrderItemRemoved) e).getItem());
+            return o.removeItem(((OrderItemRemoved) e).item);
         else throw new IllegalArgumentException("event not supported: " + e);
     };
 
@@ -60,21 +70,17 @@ public class OrderActor extends AbstractEventsourcedActor {
         super(String.format("j-%s-%s", orderId, replicaId), eventLog);
         this.orderId = orderId;
         this.replicaId = replicaId;
-        this.order = VersionedAggregate.create(
-                orderId,
-                commandValidation,
-                eventProjection,
-                OrderDomainCmd.instance,
-                OrderDomainEvt.instance);
+        this.order = VersionedAggregate.create(orderId, commandValidation, eventProjection, OrderDomainCmd.instance, OrderDomainEvt.instance);
 
-        onReceiveCommand(ReceiveBuilder
-                .match(CreateOrder.class, c -> processCommand(() -> order.doValidateCreate(c)))
-                .match(OrderCommand.class, c -> processCommand(() -> order.doValidateUpdate(c)))
-                .match(Resolve.class, c -> processCommand(() -> order.doValidateResolve(c.selected(), replicaId)))
-                .match(GetState.class, c -> sender().tell(new GetStateSuccess(ordersVersions()), self()))
-                .match(SaveSnapshot.class, c -> saveState()).build());
+        setOnCommand(ReceiveBuilder
+                .match(CreateOrder.class, c -> order.validateCreate(c, processCommand(orderId, sender(), self())))
+                .match(OrderCommand.class, c -> order.validateUpdate(c, processCommand(orderId, sender(), self())))
+                .match(Resolve.class, c -> order.validateResolve(c.selected(), replicaId, processCommand(orderId, sender(), self())))
+                .match(GetState.class, c -> sender().tell(createStateFromAggregate(orderId, order), self()))
+                .match(SaveSnapshot.class, c -> saveState(sender(), self()))
+                .build());
 
-        onReceiveEvent(ReceiveBuilder
+        setOnEvent(ReceiveBuilder
                 .match(OrderCreated.class, e -> {
                     order = order.handleCreated(e, lastVectorTimestamp(), lastSequenceNr());
                     if (!recovering()) printOrder(order.getVersions());
@@ -89,12 +95,19 @@ public class OrderActor extends AbstractEventsourcedActor {
                 })
                 .build());
 
-        onReceiveSnapshot(ReceiveBuilder
+        setOnSnapshot(ReceiveBuilder
                 .match(ConcurrentVersionsTree.class, s -> {
-                    order = order.withAggregate(((ConcurrentVersionsTree<Order, OrderEvent>)s).withProjection(eventProjection));
+                    order = order.withAggregate(((ConcurrentVersionsTree<Order, OrderEvent>) s).withProjection(eventProjection));
                     System.out.println(String.format("[%s] Snapshot loaded:", orderId));
                     printOrder(order.getVersions());
-                }).build());
+                })
+                .build());
+
+        setOnRecover(ResultHandler
+                .onSuccess(v -> {
+                    System.out.println(String.format("[%s] Recovery complete:", orderId));
+                    printOrder(order.getVersions());
+                }));
     }
 
     @Override
@@ -102,52 +115,41 @@ public class OrderActor extends AbstractEventsourcedActor {
         return Optional.of(orderId);
     }
 
-    @Override
-    public void onRecoverySuccess() {
-        System.out.println(String.format("[%s] Recovery complete:", orderId));
-        printOrder(order.getVersions());
+    private <E> ResultHandler<E> processCommand(final String orderId, final ActorRef sender, final ActorRef self) {
+        return ResultHandler.on(
+                evt -> processEvent(evt, sender, self),
+                err -> sender.tell(new CommandFailure(orderId, err), self)
+        );
     }
 
-    private <E> void processCommand(Supplier<E> cmdValidation) {
-        try {
-            processEvent(cmdValidation.get());
-        } catch (Throwable err) {
-            sender().tell(new CommandFailure(orderId, err), self());
-        }
+    private <E> void processEvent(final E event, final ActorRef sender, final ActorRef self) {
+        persist(event, ResultHandler.on(
+                evt -> sender.tell(new CommandSuccess(orderId), self),
+                err -> sender.tell(new CommandFailure(orderId, err), self)
+        ));
     }
 
-    private <E> void processEvent(E event) {
-        persist(event, (evt, err) -> {
-            if (err == null) {
-                sender().tell(new CommandSuccess(orderId), self());
-            } else {
-                sender().tell(new CommandFailure(orderId, err), self());
-            }
-        });
-    }
-
-    private void saveState() {
+    private void saveState(final ActorRef sender, final ActorRef self) {
         if (order.getAggregate().isPresent()) {
-            save(order.getAggregate().get(), (metadata, err) -> {
-               if (err == null) {
-                   sender().tell(new SaveSnapshotSuccess(orderId, metadata), self());
-               } else {
-                   sender().tell(new SaveSnapshotFailure(orderId, err), self());
-               }
-            });
+            save(order.getAggregate().get(), ResultHandler.on(
+                    metadata -> sender.tell(new SaveSnapshotSuccess(orderId, metadata), self),
+                    err -> sender.tell(new SaveSnapshotFailure(orderId, err), self)
+            ));
         } else {
-            sender().tell(new SaveSnapshotFailure(orderId, new AggregateDoesNotExistException(orderId)), self());
+            sender.tell(new SaveSnapshotFailure(orderId, new AggregateDoesNotExistException(orderId)), self);
         }
     }
 
-    private Map<String, List<Versioned<Order>>> ordersVersions() {
-        return order.getAggregate().map(ConcurrentVersions::getAll).map(this::orderVersions).orElse(new HashMap<>());
+    private GetStateSuccess createStateFromAggregate(final String id, final VersionedAggregate<Order, OrderCommand, OrderEvent> agg) {
+        return new GetStateSuccess(agg.getAggregate().map(ConcurrentVersions::getAll).map(getVersionMap(id)).orElseGet(Collections::emptyMap));
     }
 
-    private Map <String, List<Versioned<Order>>> orderVersions(List<Versioned<Order>> versions) {
-        HashMap<String, List<Versioned<Order>>> map = new HashMap<>();
-        map.put(orderId, versions);
-        return map;
+    private Function<List<Versioned<Order>>, Map<String, List<Versioned<Order>>>> getVersionMap(final String id) {
+        return versions -> {
+            HashMap<String, List<Versioned<Order>>> map = new HashMap<>();
+            map.put(id, versions);
+            return map;
+        };
     }
 
     static void printOrder(List<Versioned<Order>> versions) {
@@ -176,7 +178,7 @@ public class OrderActor extends AbstractEventsourcedActor {
 
         public String origin(OrderEvent evt) {
             if (evt instanceof OrderCreated) {
-                return ((OrderCreated) evt).getCreator();
+                return ((OrderCreated) evt).creator;
             } else {
                 return "";
             }
@@ -184,72 +186,53 @@ public class OrderActor extends AbstractEventsourcedActor {
     }
 
     // ------------------------------------------------------------------------------
-    //  Domain commands
+    //  Order commands
     // ------------------------------------------------------------------------------
 
-    public static abstract class OrderCommand extends OrderId {
-        protected OrderCommand(String orderId) {
-            super(orderId);
-        }
+    public static abstract class OrderCommand<T extends OrderEvent> extends OrderId {
+        public final T event;
 
-        abstract OrderEvent createEvent();
+        protected OrderCommand(final String orderId, final T event) {
+            super(orderId);
+            this.event = event;
+        }
     }
 
-    public static class CreateOrder extends OrderCommand {
+    public static class CreateOrder extends OrderCommand<OrderCreated> {
         public CreateOrder(String orderId) {
-            super(orderId);
-        }
-
-        public OrderCreated createEvent() {
-            return new OrderCreated(getOrderId());
+            super(orderId, new OrderCreated(orderId));
         }
     }
 
-    public static class CancelOrder extends OrderCommand {
+    public static class CancelOrder extends OrderCommand<OrderCancelled> {
         public CancelOrder(String orderId) {
-            super(orderId);
-        }
-
-        public OrderEvent createEvent() {
-            return new OrderCancelled(getOrderId());
+            super(orderId, new OrderCancelled(orderId));
         }
     }
 
-    public abstract static class ModifyOrderItems extends OrderCommand {
-        private String item;
+    public abstract static class ModifyOrderItems<T extends OrderEvent> extends OrderCommand<T> {
+        public final String item;
 
-        protected ModifyOrderItems(String orderId, String item) {
-            super(orderId);
+        protected ModifyOrderItems(final String orderId, final T event, final String item) {
+            super(orderId, event);
             this.item = item;
         }
+    }
 
-        public String getItem() {
-            return item;
+    public static class AddOrderItem extends ModifyOrderItems<OrderItemAdded> {
+        public AddOrderItem(final String orderId, final String item) {
+            super(orderId, new OrderItemAdded(orderId, item), item);
         }
     }
 
-    public static class AddOrderItem extends ModifyOrderItems {
-        public AddOrderItem(String orderId, String item) {
-            super(orderId, item);
-        }
-
-        public OrderEvent createEvent() {
-            return new OrderItemAdded(getOrderId(), getItem());
-        }
-    }
-
-    public static class RemoveOrderItem extends ModifyOrderItems {
-        public RemoveOrderItem(String orderId, String item) {
-            super(orderId, item);
-        }
-
-        public OrderEvent createEvent() {
-            return new OrderItemRemoved(getOrderId(), getItem());
+    public static class RemoveOrderItem extends ModifyOrderItems<OrderItemRemoved> {
+        public RemoveOrderItem(final String orderId, final String item) {
+            super(orderId, new OrderItemRemoved(orderId, item), item);
         }
     }
 
     // ------------------------------------------------------------------------------
-    //  Domain events
+    //  Order events
     // ------------------------------------------------------------------------------
 
     public static abstract class OrderEvent extends OrderId {
@@ -259,23 +242,19 @@ public class OrderActor extends AbstractEventsourcedActor {
     }
 
     public static class OrderCreated extends OrderEvent {
-        private String creator;
+        public final String creator;
 
-        public OrderCreated(String orderId) {
+        public OrderCreated(final String orderId) {
             this(orderId, "");
         }
 
-        public OrderCreated(String orderId, String creator) {
+        public OrderCreated(final String orderId, final String creator) {
             super(orderId);
             this.creator = creator;
         }
 
-        public String getCreator() {
-            return creator;
-        }
-
-        public OrderCreated withCreator(String creator) {
-            return new OrderCreated(getOrderId(), creator);
+        public OrderCreated withCreator(final String creator) {
+            return new OrderCreated(this.orderId, creator);
         }
     }
 
@@ -286,32 +265,66 @@ public class OrderActor extends AbstractEventsourcedActor {
     }
 
     public abstract static class OrderItemModified extends OrderEvent {
-        private String item;
+        public final String item;
 
-        protected OrderItemModified(String orderId, String item) {
+        protected OrderItemModified(final String orderId, final String item) {
             super(orderId);
             this.item = item;
-        }
-
-        public String getItem() {
-            return item;
         }
     }
 
     public static class OrderItemAdded extends OrderItemModified {
-        public OrderItemAdded(String orderId, String item) {
+        public OrderItemAdded(final String orderId, final String item) {
             super(orderId, item);
         }
     }
 
     public static class OrderItemRemoved extends OrderItemModified {
-        public OrderItemRemoved(String orderId, String item) {
+        public OrderItemRemoved(final String orderId, final String item) {
             super(orderId, item);
         }
     }
 
     // ------------------------------------------------------------------------------
-    //  Command replies
+    // Order queries + replies
+    // ------------------------------------------------------------------------------
+
+    public static class GetState {
+        public static final GetState instance = new GetState();
+
+        private GetState() {
+        }
+    }
+
+    public static class GetStateSuccess {
+        public final Map<String, List<Versioned<Order>>> state;
+
+        private GetStateSuccess(final Map<String, List<Versioned<Order>>> state) {
+            this.state = Collections.unmodifiableMap(state);
+        }
+
+        public static GetStateSuccess empty() {
+            return new GetStateSuccess(Collections.emptyMap());
+        }
+
+        public GetStateSuccess merge(final GetStateSuccess that) {
+            final Map<String, List<Versioned<Order>>> result = new HashMap<>();
+            result.putAll(this.state);
+            result.putAll(that.state);
+            return new GetStateSuccess(result);
+        }
+    }
+
+    public static class GetStateFailure {
+        public final Throwable cause;
+
+        public GetStateFailure(Throwable cause) {
+            this.cause = cause;
+        }
+    }
+
+    // ------------------------------------------------------------------------------
+    // General replies
     // ------------------------------------------------------------------------------
 
     public static class CommandSuccess extends OrderId {
@@ -321,58 +334,17 @@ public class OrderActor extends AbstractEventsourcedActor {
     }
 
     public static class CommandFailure extends OrderId {
-        private Throwable cause;
+        public final Throwable cause;
 
-        public CommandFailure(String orderId, Throwable cause) {
+        public CommandFailure(final String orderId, final Throwable cause) {
             super(orderId);
             this.cause = cause;
         }
-
-        public Throwable getCause() {
-            return cause;
-        }
     }
 
     // ------------------------------------------------------------------------------
-    //  Other commands
+    // Snapshot command and replies
     // ------------------------------------------------------------------------------
-
-    public static class GetState {
-        private GetState() {}
-
-        public static GetState instance = new GetState();
-    }
-
-    public static class GetStateSuccess {
-        private Map<String, List<Versioned<Order>>> state;
-
-        public GetStateSuccess(Map<String, List<Versioned<Order>>> state) {
-            this.state = state;
-        }
-
-        public Map<String, List<Versioned<Order>>> getState() {
-            return state;
-        }
-
-        public GetStateSuccess merge(GetStateSuccess that) {
-            Map<String, List<Versioned<Order>>> result = new HashMap();
-            result.putAll(this.state);
-            result.putAll(that.state);
-            return new GetStateSuccess(result);
-        }
-    }
-
-    public static class GetStateFailure {
-        private Throwable cause;
-
-        public GetStateFailure(Throwable cause) {
-            this.cause = cause;
-        }
-
-        public Throwable getCause() {
-            return cause;
-        }
-    }
 
     public static class SaveSnapshot extends OrderId {
         public SaveSnapshot(String orderId) {
@@ -381,28 +353,20 @@ public class OrderActor extends AbstractEventsourcedActor {
     }
 
     public static class SaveSnapshotSuccess extends OrderId {
-        private SnapshotMetadata metadata;
+        public final SnapshotMetadata metadata;
 
-        public SaveSnapshotSuccess(String orderId, SnapshotMetadata metadata) {
+        public SaveSnapshotSuccess(final String orderId, final SnapshotMetadata metadata) {
             super(orderId);
             this.metadata = metadata;
-        }
-
-        public SnapshotMetadata getMetadata() {
-            return metadata;
         }
     }
 
     public static class SaveSnapshotFailure extends OrderId {
-        private Throwable cause;
+        public final Throwable cause;
 
-        public SaveSnapshotFailure(String orderId, Throwable cause) {
+        public SaveSnapshotFailure(final String orderId, final Throwable cause) {
             super(orderId);
             this.cause = cause;
-        }
-
-        public Throwable getCause() {
-            return cause;
         }
     }
 }

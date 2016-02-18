@@ -20,6 +20,7 @@ import java.util.{ List => JList, Optional => JOption }
 import java.util.function.BiFunction
 
 import scala.collection.JavaConverters._
+import scala.compat.java8.OptionConverters._
 import scala.util._
 
 import VersionedAggregate._
@@ -45,34 +46,46 @@ case class VersionedAggregate[S, C: DomainCmd, E: DomainEvt](
   val E = implicitly[DomainEvt[E]]
 
   /**
-   * Java API.
+   * Java API that returns the [[aggregate]].
    */
   def getAggregate: JOption[ConcurrentVersions[S, E]] =
-    JOption.ofNullable(aggregate.orNull)
+    aggregate.asJava
 
   /**
-   * Java API.
+   * Java API that returns the [[versions]].
    */
   def getVersions: JList[Versioned[S]] =
     versions.asJava
 
   /**
-   * Java API.
+   * Java API of [[validateCreate]].
+   *
+   * Calls the given `handler` with the result of the validation.
+   *
+   * @param handler handler with callbacks for validation result.
    */
-  def doValidateCreate(cmd: C): E =
-    validateCreate(cmd).get
+  def validateCreate(cmd: C, handler: ResultHandler[E]): Unit =
+    handler.accept(validateCreate(cmd))
 
   /**
-   * Java API.
+   * Java API of [[validateUpdate]].
+   *
+   * Calls the given `handler` with the result of the validation.
+   *
+   * @param handler handler with callbacks for validation result.
    */
-  def doValidateUpdate(cmd: C): E =
-    validateUpdate(cmd).get
+  def validateUpdate(cmd: C, handler: ResultHandler[E]): Unit =
+    handler.accept(validateUpdate(cmd))
 
   /**
-   * Java API.
+   * Java API of [[validateResolve]].
+   *
+   * Calls the given `handler` with the result of the validation.
+   *
+   * @param handler handler with callbacks for validation result.
    */
-  def doValidateResolve(selected: Int, origin: String): Resolved =
-    validateResolve(selected, origin).get // FIXME
+  def validateResolve(selected: Int, origin: String, handler: ResultHandler[Resolved]): Unit =
+    handler.accept(validateResolve(selected, origin))
 
   def withAggregate(aggregate: ConcurrentVersions[S, E]): VersionedAggregate[S, C, E] =
     copy(aggregate = Some(aggregate))
@@ -141,7 +154,11 @@ object VersionedAggregate {
 
   case class Resolved(id: String, selected: VectorTime, origin: String = "")
   case class Resolve(id: String, selected: Int, origin: String = "") {
-    /** Java API */
+    /**
+     * Java API that sets the origin.
+     *
+     * @see [[VersionedAggregate]]
+     */
     def withOrigin(origin: String) = copy(origin = origin)
   }
 
@@ -164,7 +181,7 @@ object VersionedAggregate {
     extends Exception(s"conflict for aggregate ${id} detected") {
 
     /**
-     * Java API.
+     * Java API that returns the [[versions]].
      */
     def getVersions: JList[Versioned[S]] =
       versions.asJava
