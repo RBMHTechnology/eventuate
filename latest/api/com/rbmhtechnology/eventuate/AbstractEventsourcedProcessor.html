@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>AbstractEventsourcedView - com.rbmhtechnology.eventuate.AbstractEventsourcedView</title>
-          <meta name="description" content="AbstractEventsourcedView - com.rbmhtechnology.eventuate.AbstractEventsourcedView" />
-          <meta name="keywords" content="AbstractEventsourcedView com.rbmhtechnology.eventuate.AbstractEventsourcedView" />
+          <title>AbstractEventsourcedProcessor - com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor</title>
+          <meta name="description" content="AbstractEventsourcedProcessor - com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor" />
+          <meta name="keywords" content="AbstractEventsourcedProcessor com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.AbstractEventsourcedView';
+            var hash = 'com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -30,8 +30,8 @@
       <div id="definition">
         <img src="../../../lib/class_big.png" />
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a></p>
-        <h1>AbstractEventsourcedView</h1> <span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView" title="Permalink" target="_top">
+        <h1>AbstractEventsourcedProcessor</h1> <span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -39,39 +39,20 @@
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier">abstract </span>
+        <span class="modifier"></span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">AbstractEventsourcedView</span><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> with <a href="ConditionalRequests.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalRequests">ConditionalRequests</a></span>
+        <span class="name">AbstractEventsourcedProcessor</span><span class="result"> extends <a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> with <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> with <span class="extype" name="com.rbmhtechnology.eventuate.EventSourcedProcessorAdapter">EventSourcedProcessorAdapter</span> with <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessorWriteSuccessHandlerAdapter">EventsourcedProcessorWriteSuccessHandlerAdapter</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Java API for actors that implement <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>.</p><p>Actor handlers may be initialized once in the constructor with various set-methods (e.g. setOnCommand, setOnEvent)
-or by overriding the respective handler (e.g. onCommand(...), onEvent(...)).
-If a handler is overridden, the behaviour of it's respective set-method will be ignored.</p><p>Example:</p><pre>public <span class="kw">class</span> HelloActor <span class="kw">extends</span> AbstractEventsourcedView {
-   public HelloActor(<span class="kw">final</span> <span class="std">String</span> id, <span class="kw">final</span> ActorRef eventLog) {
-     <span class="kw">super</span>(id, eventLog);
-
-     onCommand(ReceiveBuilder
-       .<span class="kw">match</span>(<span class="std">String</span>.<span class="kw">class</span>, str -&gt; str.equals(<span class="lit">"Hello"</span>), value -&gt; sender().tell(<span class="lit">"World"</span>, self())
-       .matchAny(ev -&gt; value -&gt; sender().tell(<span class="lit">"Please try again"</span>, self())
-       .build());
-   }
-
-   public PartialFunction&lt;<span class="std">Object</span>, BoxedUnit&gt; onEvent() {
-     <span class="kw">return</span> ReceiveBuilder
-       .matchAny(HelloEvent.<span class="kw">class</span>, ev -&gt; handleEvent(ev))
-       .build();
-   }
-}</pre></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
-</p></span></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Java API for actors that implement <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>
+</p></span><span class="cmt"><p><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> for a detailed usage of the Java API</p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="ConditionalRequests.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalRequests">ConditionalRequests</a>, <a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
-        </div><div class="toggleContainer block">
-            <span class="toggle">Known Subclasses</span>
-            <div class="subClasses hiddenContent"><a href="AbstractEventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor">AbstractEventsourcedActor</a>, <a href="AbstractEventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor">AbstractEventsourcedProcessor</a>, <a href="AbstractEventsourcedStatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedStatefulProcessor">AbstractEventsourcedStatefulProcessor</a>, <a href="AbstractEventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedWriter">AbstractEventsourcedWriter</a></div>
-          </div></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessorWriteSuccessHandlerAdapter">EventsourcedProcessorWriteSuccessHandlerAdapter</span>, <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriterSuccessHandlers">EventsourcedWriterSuccessHandlers</span>[<span class="extype" name="scala.Long">Long</span>, <span class="extype" name="scala.Long">Long</span>], <span class="extype" name="com.rbmhtechnology.eventuate.EventSourcedProcessorAdapter">EventSourcedProcessorAdapter</span>, <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlerAdapter">EventsourcedWriterFailureHandlerAdapter</span>, <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlers">EventsourcedWriterFailureHandlers</span>, <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessorHandlers">EventsourcedProcessorHandlers</span>, <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>, <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>[<span class="extype" name="scala.Long">Long</span>, <span class="extype" name="scala.Long">Long</span>], <a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a>, <a href="ConditionalRequests.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalRequests">ConditionalRequests</a>, <a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
         
 
       <div id="mbrsel">
@@ -88,7 +69,7 @@ If a handler is overridden, the behaviour of it's respective set-method will be 
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView"><span>AbstractEventsourcedView</span></li><li class="in" name="com.rbmhtechnology.eventuate.ConditionalRequests"><span>ConditionalRequests</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedClock"><span>EventsourcedClock</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.ActorLogging"><span>ActorLogging</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor"><span>AbstractEventsourcedProcessor</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedProcessorWriteSuccessHandlerAdapter"><span>EventsourcedProcessorWriteSuccessHandlerAdapter</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedWriterSuccessHandlers"><span>EventsourcedWriterSuccessHandlers</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventSourcedProcessorAdapter"><span>EventSourcedProcessorAdapter</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlerAdapter"><span>EventsourcedWriterFailureHandlerAdapter</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlers"><span>EventsourcedWriterFailureHandlers</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedProcessorHandlers"><span>EventsourcedProcessorHandlers</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedProcessor"><span>EventsourcedProcessor</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedWriter"><span>EventsourcedWriter</span></li><li class="in" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView"><span>AbstractEventsourcedView</span></li><li class="in" name="com.rbmhtechnology.eventuate.ConditionalRequests"><span>ConditionalRequests</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedClock"><span>EventsourcedClock</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.ActorLogging"><span>ActorLogging</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -108,19 +89,19 @@ If a handler is overridden, the behaviour of it's respective set-method will be 
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(id:String,eventLog:akka.actor.ActorRef):com.rbmhtechnology.eventuate.AbstractEventsourcedView"></a>
-      <a id="&lt;init&gt;:AbstractEventsourcedView"></a>
+              <ol><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(id:String,eventLog:akka.actor.ActorRef,targetEventLog:akka.actor.ActorRef):com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor"></a>
+      <a id="&lt;init&gt;:AbstractEventsourcedProcessor"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">AbstractEventsourcedView</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="eventLog">eventLog: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span>
+        <span class="name">AbstractEventsourcedProcessor</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="eventLog">eventLog: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="targetEventLog">targetEventLog: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@&lt;init&gt;(id:String,eventLog:akka.actor.ActorRef):com.rbmhtechnology.eventuate.AbstractEventsourcedView" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@&lt;init&gt;(id:String,eventLog:akka.actor.ActorRef,targetEventLog:akka.actor.ActorRef):com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -142,11 +123,46 @@ If a handler is overridden, the behaviour of it's respective set-method will be 
         <span class="name">Handler</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> = (<span class="extype" name="scala.util.Try">Try</span>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView.Handler.A">A</span>]) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventSourcedProcessorAdapter.JProcess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="JProcess=PartialFunction[Any,Iterable[Any]]"></a>
+      <a id="JProcess:JProcess"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">JProcess</span><span class="result"> = <span class="extype" name="scala.PartialFunction">PartialFunction</span>[<span class="extype" name="scala.Any">Any</span>, <span class="extype" name="java.lang.Iterable">Iterable</span>[<span class="extype" name="scala.Any">Any</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@JProcess=PartialFunction[Any,Iterable[Any]]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>EventSourcedProcessorAdapter</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor.Process" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Process=com.rbmhtechnology.eventuate.EventsourcedProcessor.Process"></a>
+      <a id="Process:Process"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Process</span><span class="result"> = <span class="extype" name="scala.PartialFunction">PartialFunction</span>[<span class="extype" name="scala.Any">Any</span>, <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<span class="extype" name="scala.Any">Any</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@Process=com.rbmhtechnology.eventuate.EventsourcedProcessor.Process" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Type of this processor's event handler.</p><div class="fullcomment"><div class="comment cmt"><p>Type of this processor's event handler.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a></dd></dl></div>
     </li><li name="akka.actor.Actor.Receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Receive=akka.actor.Actor.Receive"></a>
       <a id="Receive:Receive"></a>
@@ -159,7 +175,7 @@ If a handler is overridden, the behaviour of it's respective set-method will be 
         <span class="name">Receive</span><span class="result"> = <span class="extype" name="scala.PartialFunction">PartialFunction</span>[<span class="extype" name="scala.Any">Any</span>, <span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@Receive=akka.actor.Actor.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@Receive=akka.actor.Actor.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -183,7 +199,7 @@ If a handler is overridden, the behaviour of it's respective set-method will be 
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -200,7 +216,7 @@ If a handler is overridden, the behaviour of it's respective set-method will be 
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@##():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@##():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -217,11 +233,28 @@ If a handler is overridden, the behaviour of it's respective set-method will be 
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventSourcedProcessorAdapter.JProcess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="JProcess"></a>
+      <a id="JProcess:EventSourcedProcessorAdapter.JProcess"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <span class="name">JProcess</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@JProcess" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>EventSourcedProcessorAdapter</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#aggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="aggregateId:Option[String]"></a>
       <a id="aggregateId:Option[String]"></a>
@@ -234,7 +267,7 @@ If a handler is overridden, the behaviour of it's respective set-method will be 
         <span class="name">aggregateId</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@aggregateId:Option[String]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@aggregateId:Option[String]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -243,7 +276,7 @@ which can be <a href="EventsourcedView.html" class="extype" name="com.rbmhtechno
 to an event-sourced destination with an undefined <code>aggregateId</code>. If a destination's <code>aggregateId</code>
 is defined it will only receive events with a matching aggregate id in
 <a href="DurableEvent.html#destinationAggregateIds:Set[String]" class="extmbr" name="com.rbmhtechnology.eventuate.DurableEvent#destinationAggregateIds">DurableEvent#destinationAggregateIds</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="akka.actor.Actor#aroundPostRestart" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="aroundPostRestart(reason:Throwable):Unit"></a>
       <a id="aroundPostRestart(Throwable):Unit"></a>
@@ -256,7 +289,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundPostRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@aroundPostRestart(reason:Throwable):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@aroundPostRestart(reason:Throwable):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -273,7 +306,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundPostStop</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@aroundPostStop():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@aroundPostStop():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -290,7 +323,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundPreRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="message">message: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Any">Any</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@aroundPreRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@aroundPreRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -307,7 +340,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundPreStart</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@aroundPreStart():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@aroundPreStart():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -324,7 +357,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundReceive</span><span class="params">(<span name="receive">receive: <span class="extype" name="akka.actor.Actor.Receive">akka.actor.Actor.Receive</span></span>, <span name="msg">msg: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@aroundReceive(receive:akka.actor.Actor.Receive,msg:Any):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@aroundReceive(receive:akka.actor.Actor.Receive,msg:Any):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -341,7 +374,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -358,7 +391,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@clone():Object" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@clone():Object" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -381,7 +414,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">commandContext</span><span class="result">: <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@commandContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@commandContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -399,7 +432,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">context</span><span class="result">: <span class="extype" name="akka.actor.ActorContext">ActorContext</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@context:akka.actor.ActorContext" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@context:akka.actor.ActorContext" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -416,7 +449,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -433,29 +466,31 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@equals(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#eventContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#eventContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eventContext:com.rbmhtechnology.eventuate.BehaviorContext"></a>
       <a id="eventContext:BehaviorContext"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="modifier">final </span>
+        <span class="kind">lazy val</span>
       </span>
       <span class="symbol">
         <span class="name">eventContext</span><span class="result">: <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@eventContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@eventContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Returns the event <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the event <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+      <p class="shortcomment cmt">Returns an command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a> that doesn't allow event handler behavior changes.</p><div class="fullcomment"><div class="comment cmt"><p>Returns an command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a> that doesn't allow event handler behavior changes. An
+attempt to change the event handler behavior with <code>eventContext.become()</code> will throw an
+<span class="extype" name="UnsupportedOperationException">UnsupportedOperationException</span>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#eventLog" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eventLog:akka.actor.ActorRef"></a>
       <a id="eventLog:ActorRef"></a>
@@ -468,12 +503,12 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">eventLog</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@eventLog:akka.actor.ActorRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@eventLog:akka.actor.ActorRef" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Event log actor.</p><div class="fullcomment"><div class="comment cmt"><p>Event log actor.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -486,7 +521,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -509,12 +544,12 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">getAggregateId</span><span class="result">: <span class="extype" name="java.util.Optional">Optional</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@getAggregateId:java.util.Optional[String]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@getAggregateId:java.util.Optional[String]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#aggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#aggregateId">aggregateId</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#aggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#aggregateId">aggregateId</a>.
-</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
 </p></span></dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
@@ -528,7 +563,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -545,12 +580,12 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">getLastEmitterAggregateId</span><span class="result">: <span class="extype" name="java.util.Optional">Optional</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@getLastEmitterAggregateId:java.util.Optional[String]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@getLastEmitterAggregateId:java.util.Optional[String]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#lastEmitterAggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastEmitterAggregateId">lastEmitterAggregateId</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#lastEmitterAggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastEmitterAggregateId">lastEmitterAggregateId</a>.
-</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
 </p></span></dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
@@ -564,7 +599,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@hashCode():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@hashCode():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -581,12 +616,12 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">id</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@id:String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@id:String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Global unique actor id.</p><div class="fullcomment"><div class="comment cmt"><p>Global unique actor id.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#instanceId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="instanceId:Int"></a>
       <a id="instanceId:Int"></a>
@@ -599,7 +634,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">instanceId</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@instanceId:Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@instanceId:Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -616,7 +651,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -633,7 +668,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">lastEmitterAggregateId</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@lastEmitterAggregateId:Option[String]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@lastEmitterAggregateId:Option[String]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -651,7 +686,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">lastEmitterId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@lastEmitterId:String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@lastEmitterId:String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -669,7 +704,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">lastSequenceNr</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@lastSequenceNr:Long" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@lastSequenceNr:Long" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -687,7 +722,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">lastSystemTimestamp</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@lastSystemTimestamp:Long" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@lastSystemTimestamp:Long" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -705,7 +740,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">lastVectorTimestamp</span><span class="result">: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -723,7 +758,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">log</span><span class="result">: <span class="extype" name="akka.event.LoggingAdapter">LoggingAdapter</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@log:akka.event.LoggingAdapter" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@log:akka.event.LoggingAdapter" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -740,7 +775,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -757,7 +792,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@notify():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -774,7 +809,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -788,36 +823,92 @@ is defined it will only receive events with a matching aggregate id in
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onCommand</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Receive">Receive</a></span>
+        <span class="name">onCommand</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor.Receive">Receive</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onCommand:AbstractEventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@onCommand:AbstractEventsourcedView.this.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Java API of the <a href="EventsourcedView.html#onCommand:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onCommand">command</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of the <a href="EventsourcedView.html#onCommand:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onCommand">command</a> handler.</p><p>Returns a partial function that defines the actor's command handling behaviour.
-Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>Takes precedence over <a href="#setOnCommand(handler:AbstractEventsourcedView.this.Receive):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnCommand">setOnCommand</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>Takes precedence over <a href="AbstractEventsourcedView.html#setOnCommand(handler:AbstractEventsourcedView.this.Receive):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnCommand">setOnCommand</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
 </p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onEvent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onEvent:AbstractEventsourcedView.this.Receive"></a>
-      <a id="onEvent:Receive"></a>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#onEvent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onEvent:PartialFunction[Any,Unit]"></a>
+      <a id="onEvent:PartialFunction[Any,Unit]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">onEvent</span><span class="result">: <span class="extype" name="scala.PartialFunction">PartialFunction</span>[<span class="extype" name="scala.Any">Any</span>, <span class="extype" name="scala.Unit">Unit</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@onEvent:PartialFunction[Any,Unit]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Collects processed events generated by <code>processEvent</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Collects processed events generated by <code>processEvent</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventSourcedProcessorAdapter#onProcessEvent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onProcessEvent:EventSourcedProcessorAdapter.this.JProcess"></a>
+      <a id="onProcessEvent:JProcess"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onEvent</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Receive">Receive</a></span>
+        <span class="name">onProcessEvent</span><span class="result">: <a href="#JProcess=PartialFunction[Any,Iterable[Any]]" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor.JProcess">JProcess</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onEvent:AbstractEventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@onProcessEvent:EventSourcedProcessorAdapter.this.JProcess" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Java API of the <a href="EventsourcedView.html#onEvent:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onEvent">event</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of the <a href="EventsourcedView.html#onEvent:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onEvent">event</a> handler.</p><p>Returns a partial function that defines the actor's event handling behaviour.
-Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>Takes precedence over <a href="#setOnEvent(handler:AbstractEventsourcedView.this.Receive):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnEvent">setOnEvent</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+      <p class="shortcomment cmt">Java API of <a href="EventsourcedProcessor.html#processEvent:EventsourcedProcessor.this.Process" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor#processEvent">event-processing</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedProcessor.html#processEvent:EventsourcedProcessor.this.Process" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor#processEvent">event-processing</a> handler.</p><p>Returns a partial function that defines the actor's event processing behaviour.
+Use <a href="ProcessBuilder.html" class="extype" name="com.rbmhtechnology.eventuate.ProcessBuilder">ProcessBuilder</a> to define the behaviour.</p><p>Takes precedence over <a href="#setOnProcessEvent(handler:EventSourcedProcessorAdapter.this.JProcess):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor#setOnProcessEvent">setOnProcessEvent</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>EventSourcedProcessorAdapter</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>
+</p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlerAdapter#onReadFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onReadFailure(cause:Throwable):Unit"></a>
+      <a id="onReadFailure(Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">onReadFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@onReadFailure(cause:Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API of <a href="EventsourcedWriter.html#readFailure(cause:Throwable):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedWriter#readFailure">readFailure</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedWriter.html#readFailure(cause:Throwable):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedWriter#readFailure">readFailure</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>EventsourcedWriterFailureHandlerAdapter</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>
+</p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor#onReadSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onReadSuccess(result:Long):java.util.Optional[Long]"></a>
+      <a id="onReadSuccess(Long):Optional[Long]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">onReadSuccess</span><span class="params">(<span name="result">result: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="java.util.Optional">Optional</span>[<span class="extype" name="java.lang.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@onReadSuccess(result:Long):java.util.Optional[Long]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API of <a href="EventsourcedProcessor.html#readSuccess(progress:Long):Option[Long]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor#readSuccess">readSuccess</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedProcessor.html#readSuccess(progress:Long):Option[Long]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor#readSuccess">readSuccess</a>.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onRecover" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="onRecover:com.rbmhtechnology.eventuate.ResultHandler[Unit]"></a>
@@ -831,13 +922,13 @@ Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html
         <span class="name">onRecover</span><span class="result">: <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a>[<span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onRecover:com.rbmhtechnology.eventuate.ResultHandler[Unit]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@onRecover:com.rbmhtechnology.eventuate.ResultHandler[Unit]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Java API of the <a href="EventsourcedView.html#onRecovery:EventsourcedView.this.Handler[Unit]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onRecovery">recovery</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of the <a href="EventsourcedView.html#onRecovery:EventsourcedView.this.Handler[Unit]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onRecovery">recovery</a> handler.</p><p>Returns a result handler that defines the actor's recover handling behaviour.
-Use <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a> to define the behaviour.</p><p>Takes precedence over <a href="#setOnRecover(handler:com.rbmhtechnology.eventuate.ResultHandler[Unit]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnRecover">setOnRecover</a>.
-</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+Use <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a> to define the behaviour.</p><p>Takes precedence over <a href="AbstractEventsourcedView.html#setOnRecover(handler:com.rbmhtechnology.eventuate.ResultHandler[Unit]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnRecover">setOnRecover</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onRecovery" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="onRecovery:AbstractEventsourcedView.this.Handler[Unit]"></a>
@@ -848,17 +939,17 @@ Use <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventua
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onRecovery</span><span class="result">: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Handler">Handler</a>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+        <span class="name">onRecovery</span><span class="result">: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor.Handler">Handler</a>[<span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onRecovery:AbstractEventsourcedView.this.Handler[Unit]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@onRecovery:AbstractEventsourcedView.this.Handler[Unit]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Recovery completion handler.</p><div class="fullcomment"><div class="comment cmt"><p>Recovery completion handler. If called with a <code>Failure</code>, the actor will be stopped in
 any case, regardless of the action taken by the returned handler. The default handler
 implementation does nothing and can be overridden by implementations.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onSnapshot" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="onSnapshot:AbstractEventsourcedView.this.Receive"></a>
       <a id="onSnapshot:Receive"></a>
@@ -868,16 +959,54 @@ implementation does nothing and can be overridden by implementations.
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onSnapshot</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Receive">Receive</a></span>
+        <span class="name">onSnapshot</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor.Receive">Receive</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onSnapshot:AbstractEventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@onSnapshot:AbstractEventsourcedView.this.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Java API of the <a href="EventsourcedView.html#onSnapshot:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onSnapshot">snapshot</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of the <a href="EventsourcedView.html#onSnapshot:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onSnapshot">snapshot</a> handler.</p><p>Returns a partial function that defines the actor's snapshot handling behaviour.
-Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>Takes precedence over <a href="#setOnSnapshot(handler:AbstractEventsourcedView.this.Receive):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnSnapshot">setOnSnapshot</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>Takes precedence over <a href="AbstractEventsourcedView.html#setOnSnapshot(handler:AbstractEventsourcedView.this.Receive):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnSnapshot">setOnSnapshot</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+</p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlerAdapter#onWriteFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onWriteFailure(cause:Throwable):Unit"></a>
+      <a id="onWriteFailure(Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">onWriteFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@onWriteFailure(cause:Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API of <a href="EventsourcedWriter.html#writeFailure(cause:Throwable):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedWriter#writeFailure">writeFailure</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedWriter.html#writeFailure(cause:Throwable):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedWriter#writeFailure">writeFailure</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>EventsourcedWriterFailureHandlerAdapter</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>
+</p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessorWriteSuccessHandlerAdapter#onWriteSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onWriteSuccess(result:Long):Unit"></a>
+      <a id="onWriteSuccess(Long):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">onWriteSuccess</span><span class="params">(<span name="result">result: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@onWriteSuccess(result:Long):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API of <a href="EventsourcedProcessor.html#writeSuccess(progress:Long):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor#writeSuccess">writeSuccess</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedProcessor.html#writeSuccess(progress:Long):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor#writeSuccess">writeSuccess</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>EventsourcedProcessorWriteSuccessHandlerAdapter</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>
 </p></span></dd></dl></div>
     </li><li name="akka.actor.Actor#postRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="postRestart(reason:Throwable):Unit"></a>
@@ -891,7 +1020,7 @@ Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html
         <span class="name">postRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@postRestart(reason:Throwable):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@postRestart(reason:Throwable):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -914,7 +1043,7 @@ Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html
         <span class="name">postStop</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@postStop():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@postStop():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -932,7 +1061,7 @@ Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html
         <span class="name">preRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="message">message: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Any">Any</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@preRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@preRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -950,12 +1079,101 @@ Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html
         <span class="name">preStart</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@preStart():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@preStart():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Initializes the vector clock and sets the clock's <code>processId</code> to the log <code>id</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Initializes the vector clock and sets the clock's <code>processId</code> to the log <code>id</code>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventSourcedProcessorAdapter#processEvent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="processEvent:EventSourcedProcessorAdapter.this.Process"></a>
+      <a id="processEvent:Process"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">processEvent</span><span class="result">: <a href="#Process=com.rbmhtechnology.eventuate.EventsourcedProcessor.Process" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor.Process">Process</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@processEvent:EventSourcedProcessorAdapter.this.Process" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>EventSourcedProcessorAdapter → EventsourcedProcessorHandlers</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#read" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="read():scala.concurrent.Future[Long]"></a>
+      <a id="read():Future[Long]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">read</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@read():scala.concurrent.Future[Long]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Asynchronously reads the processing progress from the target event log.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads the processing progress from the target event log.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlerAdapter#readFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="readFailure(cause:Throwable):Unit"></a>
+      <a id="readFailure(Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@readFailure(cause:Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>EventsourcedWriterFailureHandlerAdapter → EventsourcedWriterFailureHandlers</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor#readSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="readSuccess(result:Long):Option[Long]"></a>
+      <a id="readSuccess(Long):Option[Long]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readSuccess</span><span class="params">(<span name="result">result: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@readSuccess(result:Long):Option[Long]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Sets the read processing progress for this processor and returns it incremented by 1.</p><div class="fullcomment"><div class="comment cmt"><p>Sets the read processing progress for this processor and returns it incremented by 1.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor">AbstractEventsourcedProcessor</a> → EventsourcedWriterSuccessHandlers → <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#readTimeout" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="readTimeout:scala.concurrent.duration.FiniteDuration"></a>
+      <a id="readTimeout:FiniteDuration"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readTimeout</span><span class="result">: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@readTimeout:scala.concurrent.duration.FiniteDuration" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The default read timeout configured with the <code>eventuate.log.read-timeout</code> parameter.</p><div class="fullcomment"><div class="comment cmt"><p>The default read timeout configured with the <code>eventuate.log.read-timeout</code> parameter.
+Can be overridden.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="receive:EventsourcedView.this.Receive"></a>
       <a id="receive:Receive"></a>
@@ -965,10 +1183,10 @@ Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">receive</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Receive">Receive</a></span>
+        <span class="name">receive</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor.Receive">Receive</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@receive:EventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@receive:EventsourcedView.this.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -986,7 +1204,7 @@ Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html
         <span class="name">recovering</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@recovering:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@recovering:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -995,7 +1213,7 @@ replayed events from the event log.</p><div class="fullcomment"><div class="comm
 replayed events from the event log. Returns <code>false</code> after recovery completed and
 the actor switches to consuming live events.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#replayBatchSize" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#replayBatchSize" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="replayBatchSize:Int"></a>
       <a id="replayBatchSize:Int"></a>
       <h4 class="signature">
@@ -1007,15 +1225,12 @@ the actor switches to consuming live events.
         <span class="name">replayBatchSize</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@replayBatchSize:Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@replayBatchSize:Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Maximum number of events to be replayed to this actor before replaying is suspended.</p><div class="fullcomment"><div class="comment cmt"><p>Maximum number of events to be replayed to this actor before replaying is suspended. A suspended replay
-is resumed automatically after all replayed events haven been handled by this actor's event handler
-(= backpressure). The default value for the maximum replay batch size is given by configuration item
-<code>eventuate.log.replay-batch-size</code>. Configured values can be overridden by overriding this method.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+      <p class="shortcomment cmt">Limits the replay batch size to <code>eventuate.log.write-batch-size</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Limits the replay batch size to <code>eventuate.log.write-batch-size</code>. Can be overridden.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#save" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="save(snapshot:Any,handler:com.rbmhtechnology.eventuate.ResultHandler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit"></a>
       <a id="save(Any,ResultHandler[SnapshotMetadata]):Unit"></a>
@@ -1028,12 +1243,12 @@ is resumed automatically after all replayed events haven been handled by this ac
         <span class="name">save</span><span class="params">(<span name="snapshot">snapshot: <span class="extype" name="scala.Any">Any</span></span>, <span name="handler">handler: <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a>[<a href="SnapshotMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.SnapshotMetadata">SnapshotMetadata</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@save(snapshot:Any,handler:com.rbmhtechnology.eventuate.ResultHandler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@save(snapshot:Any,handler:com.rbmhtechnology.eventuate.ResultHandler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#save">save</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#save">save</a>.</p><p>Must be supplied with a <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a> to process successful or failed results.
-</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#save" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit"></a>
@@ -1044,10 +1259,10 @@ is resumed automatically after all replayed events haven been handled by this ac
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">save</span><span class="params">(<span name="snapshot">snapshot: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Handler">Handler</a>[<a href="SnapshotMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.SnapshotMetadata">SnapshotMetadata</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">save</span><span class="params">(<span name="snapshot">snapshot: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor.Handler">Handler</a>[<a href="SnapshotMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.SnapshotMetadata">SnapshotMetadata</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1068,7 +1283,7 @@ sender with <code>sender()</code>.
         <span class="name">self</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@self:akka.actor.ActorRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@self:akka.actor.ActorRef" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1085,7 +1300,7 @@ sender with <code>sender()</code>.
         <span class="name">sender</span><span class="params">()</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@sender():akka.actor.ActorRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@sender():akka.actor.ActorRef" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1099,16 +1314,16 @@ sender with <code>sender()</code>.
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">setOnCommand</span><span class="params">(<span name="handler">handler: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Receive">Receive</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">setOnCommand</span><span class="params">(<span name="handler">handler: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor.Receive">Receive</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@setOnCommand(handler:AbstractEventsourcedView.this.Receive):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@setOnCommand(handler:AbstractEventsourcedView.this.Receive):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Java API that sets this actor's <a href="EventsourcedView.html#onCommand:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onCommand">command</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API that sets this actor's <a href="EventsourcedView.html#onCommand:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onCommand">command</a> handler.</p><p>Supplied with a partial function that defines the actor's command handling behaviour.
-Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>If <a href="#onCommand:AbstractEventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onCommand">onCommand</a> is implemented, the supplied behaviour is ignored.
-</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>a function that defines this actor's command handling behaviour.</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>If <a href="AbstractEventsourcedView.html#onCommand:AbstractEventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onCommand">onCommand</a> is implemented, the supplied behaviour is ignored.
+</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>a function that defines this actor's command handling behaviour.</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnEvent" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="setOnEvent(handler:AbstractEventsourcedView.this.Receive):Unit"></a>
@@ -1119,16 +1334,36 @@ Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">setOnEvent</span><span class="params">(<span name="handler">handler: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Receive">Receive</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">setOnEvent</span><span class="params">(<span name="handler">handler: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor.Receive">Receive</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@setOnEvent(handler:AbstractEventsourcedView.this.Receive):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@setOnEvent(handler:AbstractEventsourcedView.this.Receive):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Java API that sets this actor's <a href="EventsourcedView.html#onEvent:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onEvent">event</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API that sets this actor's <a href="EventsourcedView.html#onEvent:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onEvent">event</a> handler.</p><p>Supplied with a partial function that defines the actor's event handling behaviour.
-Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>If <a href="#onEvent:AbstractEventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onEvent">onEvent</a> is implemented, the supplied behaviour is ignored.
-</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>a function that defines this actor's event handling behaviour.</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>If <a href="AbstractEventsourcedView.html#onEvent:AbstractEventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onEvent">onEvent</a> is implemented, the supplied behaviour is ignored.
+</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>a function that defines this actor's event handling behaviour.</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+</p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventSourcedProcessorAdapter#setOnProcessEvent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="setOnProcessEvent(handler:EventSourcedProcessorAdapter.this.JProcess):Unit"></a>
+      <a id="setOnProcessEvent(JProcess):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setOnProcessEvent</span><span class="params">(<span name="handler">handler: <a href="#JProcess=PartialFunction[Any,Iterable[Any]]" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor.JProcess">JProcess</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@setOnProcessEvent(handler:EventSourcedProcessorAdapter.this.JProcess):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API that sets this actor's <a href="EventsourcedProcessor.html#processEvent:EventsourcedProcessor.this.Process" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor#processEvent">event-processing</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API that sets this actor's <a href="EventsourcedProcessor.html#processEvent:EventsourcedProcessor.this.Process" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedProcessor#processEvent">event-processing</a> handler.</p><p>Supplied with a partial function that defines the actor's event processing behaviour.
+Use <a href="ProcessBuilder.html" class="extype" name="com.rbmhtechnology.eventuate.ProcessBuilder">ProcessBuilder</a> to define the behaviour.</p><p>If <a href="#onProcessEvent:EventSourcedProcessorAdapter.this.JProcess" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor#onProcessEvent">onProcessEvent</a> is implemented, the supplied behaviour is ignored.
+</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>This actor's event processing handler.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd>EventSourcedProcessorAdapter</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnRecover" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="setOnRecover(handler:com.rbmhtechnology.eventuate.ResultHandler[Unit]):Unit"></a>
@@ -1142,13 +1377,13 @@ Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html
         <span class="name">setOnRecover</span><span class="params">(<span name="handler">handler: <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a>[<span class="extype" name="scala.Unit">Unit</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@setOnRecover(handler:com.rbmhtechnology.eventuate.ResultHandler[Unit]):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@setOnRecover(handler:com.rbmhtechnology.eventuate.ResultHandler[Unit]):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Java API that sets this actor's <a href="EventsourcedView.html#onRecovery:EventsourcedView.this.Handler[Unit]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onRecovery">recovery</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API that sets this actor's <a href="EventsourcedView.html#onRecovery:EventsourcedView.this.Handler[Unit]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onRecovery">recovery</a> handler.</p><p>Supplied with a result handler that defines the actor's recover handling behaviour.
-Use <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a> to define the behaviour.</p><p>If <a href="#onRecover:com.rbmhtechnology.eventuate.ResultHandler[Unit]" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onRecover">onRecover</a> is implemented, the supplied behaviour is ignored.
-</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>a <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a> that defines this actor's recover handling behaviour.</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+Use <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a> to define the behaviour.</p><p>If <a href="AbstractEventsourcedView.html#onRecover:com.rbmhtechnology.eventuate.ResultHandler[Unit]" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onRecover">onRecover</a> is implemented, the supplied behaviour is ignored.
+</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>a <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a> that defines this actor's recover handling behaviour.</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnSnapshot" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="setOnSnapshot(handler:AbstractEventsourcedView.this.Receive):Unit"></a>
@@ -1159,16 +1394,16 @@ Use <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventua
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">setOnSnapshot</span><span class="params">(<span name="handler">handler: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Receive">Receive</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">setOnSnapshot</span><span class="params">(<span name="handler">handler: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor.Receive">Receive</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@setOnSnapshot(handler:AbstractEventsourcedView.this.Receive):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@setOnSnapshot(handler:AbstractEventsourcedView.this.Receive):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">Java API that sets this actor's <a href="EventsourcedView.html#onSnapshot:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onSnapshot">snapshot</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API that sets this actor's <a href="EventsourcedView.html#onSnapshot:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onSnapshot">snapshot</a> handler.</p><p>Supplied with a partial function that defines the actor's snapshot handling behaviour.
-Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>If <a href="#onSnapshot:AbstractEventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onSnapshot">onSnapshot</a> is implemented, the supplied behaviour is ignored.
-</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>a function that defines this actor's snapshot handling behaviour.</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
+Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>If <a href="AbstractEventsourcedView.html#onSnapshot:AbstractEventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onSnapshot">onSnapshot</a> is implemented, the supplied behaviour is ignored.
+</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>a function that defines this actor's snapshot handling behaviour.</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedClock#sharedClockEntry" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="sharedClockEntry:Boolean"></a>
@@ -1182,7 +1417,7 @@ Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html
         <span class="name">sharedClockEntry</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@sharedClockEntry:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@sharedClockEntry:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1203,7 +1438,7 @@ the vector clock.
         <span class="name">snapshotContext</span><span class="result">: <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1221,7 +1456,7 @@ the vector clock.
         <span class="name">stash</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@stash():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@stash():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1239,7 +1474,7 @@ the vector clock.
         <span class="name">supervisorStrategy</span><span class="result">: <span class="extype" name="akka.actor.SupervisorStrategy">SupervisorStrategy</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@supervisorStrategy:akka.actor.SupervisorStrategy" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@supervisorStrategy:akka.actor.SupervisorStrategy" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1256,11 +1491,29 @@ the vector clock.
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor#targetEventLog" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="targetEventLog:akka.actor.ActorRef"></a>
+      <a id="targetEventLog:ActorRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">targetEventLog</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@targetEventLog:akka.actor.ActorRef" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">This processor's target event log.</p><div class="fullcomment"><div class="comment cmt"><p>This processor's target event log.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor">AbstractEventsourcedProcessor</a> → <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a></dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -1273,7 +1526,7 @@ the vector clock.
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@toString():String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@toString():String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1290,7 +1543,7 @@ the vector clock.
         <span class="name">unhandled</span><span class="params">(<span name="message">message: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@unhandled(message:Any):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@unhandled(message:Any):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1307,7 +1560,7 @@ the vector clock.
         <span class="name">unstashAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@unstashAll():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@unstashAll():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1326,7 +1579,7 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@wait():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1349,7 +1602,7 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1372,7 +1625,7 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -1383,6 +1636,79 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#write" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="write():scala.concurrent.Future[Long]"></a>
+      <a id="write():Future[Long]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">write</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@write():scala.concurrent.Future[Long]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Asynchronously writes processed events that have been collected since the last write together
+with the current processing progress.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously writes processed events that have been collected since the last write together
+with the current processing progress.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlerAdapter#writeFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="writeFailure(cause:Throwable):Unit"></a>
+      <a id="writeFailure(Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writeFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@writeFailure(cause:Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>EventsourcedWriterFailureHandlerAdapter → EventsourcedWriterFailureHandlers</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessorWriteSuccessHandlerAdapter#writeSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="writeSuccess(result:Long):Unit"></a>
+      <a id="writeSuccess(Long):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writeSuccess</span><span class="params">(<span name="result">result: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@writeSuccess(result:Long):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>EventsourcedProcessorWriteSuccessHandlerAdapter → EventsourcedWriterSuccessHandlers</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#writeTimeout" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="writeTimeout:scala.concurrent.duration.FiniteDuration"></a>
+      <a id="writeTimeout:FiniteDuration"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writeTimeout</span><span class="result">: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor@writeTimeout:scala.concurrent.duration.FiniteDuration" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The default write timeout configured with the <code>eventuate.log.write-timeout</code> parameter.</p><div class="fullcomment"><div class="comment cmt"><p>The default write timeout configured with the <code>eventuate.log.write-timeout</code> parameter.
+Can be overridden.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a></dd></dl></div>
     </li></ol>
             </div>
 
@@ -1392,7 +1718,25 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="com.rbmhtechnology.eventuate.ConditionalRequests">
+        <div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedProcessorWriteSuccessHandlerAdapter">
+              <h3>Inherited from <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessorWriteSuccessHandlerAdapter">EventsourcedProcessorWriteSuccessHandlerAdapter</span></h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedWriterSuccessHandlers">
+              <h3>Inherited from <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriterSuccessHandlers">EventsourcedWriterSuccessHandlers</span>[<span class="extype" name="scala.Long">Long</span>, <span class="extype" name="scala.Long">Long</span>]</h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.EventSourcedProcessorAdapter">
+              <h3>Inherited from <span class="extype" name="com.rbmhtechnology.eventuate.EventSourcedProcessorAdapter">EventSourcedProcessorAdapter</span></h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlerAdapter">
+              <h3>Inherited from <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlerAdapter">EventsourcedWriterFailureHandlerAdapter</span></h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlers">
+              <h3>Inherited from <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlers">EventsourcedWriterFailureHandlers</span></h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedProcessorHandlers">
+              <h3>Inherited from <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessorHandlers">EventsourcedProcessorHandlers</span></h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">
+              <h3>Inherited from <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a></h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedWriter">
+              <h3>Inherited from <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>[<span class="extype" name="scala.Long">Long</span>, <span class="extype" name="scala.Long">Long</span>]</h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">
+              <h3>Inherited from <a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a></h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.ConditionalRequests">
               <h3>Inherited from <a href="ConditionalRequests.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalRequests">ConditionalRequests</a></h3>
             </div><div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedClock">
               <h3>Inherited from <a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a></h3>

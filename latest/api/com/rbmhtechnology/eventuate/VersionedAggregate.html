@@ -274,57 +274,6 @@
       </a>
     </span>
       <p class="shortcomment cmt">Command handler</p>
-    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate#doValidateCreate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="doValidateCreate(cmd:C):E"></a>
-      <a id="doValidateCreate(C):E"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">doValidateCreate</span><span class="params">(<span name="cmd">cmd: <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.C">C</span></span>)</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.E">E</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate@doValidateCreate(cmd:C):E" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API.</p>
-    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate#doValidateResolve" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="doValidateResolve(selected:Int,origin:String):com.rbmhtechnology.eventuate.VersionedAggregate.Resolved"></a>
-      <a id="doValidateResolve(Int,String):Resolved"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">doValidateResolve</span><span class="params">(<span name="selected">selected: <span class="extype" name="scala.Int">Int</span></span>, <span name="origin">origin: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="VersionedAggregate$$Resolved.html" class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.Resolved">Resolved</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate@doValidateResolve(selected:Int,origin:String):com.rbmhtechnology.eventuate.VersionedAggregate.Resolved" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API.</p>
-    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate#doValidateUpdate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="doValidateUpdate(cmd:C):E"></a>
-      <a id="doValidateUpdate(C):E"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">doValidateUpdate</span><span class="params">(<span name="cmd">cmd: <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.C">C</span></span>)</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.E">E</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate@doValidateUpdate(cmd:C):E" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API.</p>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -398,7 +347,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Java API.</p>
+      <p class="shortcomment cmt">Java API that returns the <a href="#aggregate:Option[com.rbmhtechnology.eventuate.ConcurrentVersions[S,E]]" class="extmbr" name="com.rbmhtechnology.eventuate.VersionedAggregate#aggregate">aggregate</a>.</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -432,7 +381,7 @@
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Java API.</p>
+      <p class="shortcomment cmt">Java API that returns the <a href="#versions:Seq[com.rbmhtechnology.eventuate.Versioned[S]]" class="extmbr" name="com.rbmhtechnology.eventuate.VersionedAggregate#versions">versions</a>.</p>
     </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate#handleCreated" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="handleCreated(evt:E,timestamp:com.rbmhtechnology.eventuate.VectorTime,sequenceNr:Long):com.rbmhtechnology.eventuate.VersionedAggregate[S,C,E]"></a>
       <a id="handleCreated(E,VectorTime,Long):VersionedAggregate[S,C,E]"></a>
@@ -603,6 +552,25 @@
       </a>
     </span>
       
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate#validateCreate" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="validateCreate(cmd:C,handler:com.rbmhtechnology.eventuate.ResultHandler[E]):Unit"></a>
+      <a id="validateCreate(C,ResultHandler[E]):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">validateCreate</span><span class="params">(<span name="cmd">cmd: <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.C">C</span></span>, <span name="handler">handler: <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.E">E</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate@validateCreate(cmd:C,handler:com.rbmhtechnology.eventuate.ResultHandler[E]):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API of <a href="#validateCreate(cmd:C):scala.util.Try[E]" class="extmbr" name="com.rbmhtechnology.eventuate.VersionedAggregate#validateCreate">validateCreate</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="#validateCreate(cmd:C):scala.util.Try[E]" class="extmbr" name="com.rbmhtechnology.eventuate.VersionedAggregate#validateCreate">validateCreate</a>.</p><p>Calls the given <code>handler</code> with the result of the validation.
+</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>handler with callbacks for validation result.
+</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate#validateResolve" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="validateResolve(selected:Int,origin:String):scala.util.Try[com.rbmhtechnology.eventuate.VersionedAggregate.Resolved]"></a>
       <a id="validateResolve(Int,String):Try[Resolved]"></a>
@@ -620,6 +588,25 @@
       </a>
     </span>
       
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate#validateResolve" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="validateResolve(selected:Int,origin:String,handler:com.rbmhtechnology.eventuate.ResultHandler[com.rbmhtechnology.eventuate.VersionedAggregate.Resolved]):Unit"></a>
+      <a id="validateResolve(Int,String,ResultHandler[Resolved]):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">validateResolve</span><span class="params">(<span name="selected">selected: <span class="extype" name="scala.Int">Int</span></span>, <span name="origin">origin: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="handler">handler: <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a>[<a href="VersionedAggregate$$Resolved.html" class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.Resolved">Resolved</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate@validateResolve(selected:Int,origin:String,handler:com.rbmhtechnology.eventuate.ResultHandler[com.rbmhtechnology.eventuate.VersionedAggregate.Resolved]):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API of <a href="#validateResolve(selected:Int,origin:String):scala.util.Try[com.rbmhtechnology.eventuate.VersionedAggregate.Resolved]" class="extmbr" name="com.rbmhtechnology.eventuate.VersionedAggregate#validateResolve">validateResolve</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="#validateResolve(selected:Int,origin:String):scala.util.Try[com.rbmhtechnology.eventuate.VersionedAggregate.Resolved]" class="extmbr" name="com.rbmhtechnology.eventuate.VersionedAggregate#validateResolve">validateResolve</a>.</p><p>Calls the given <code>handler</code> with the result of the validation.
+</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>handler with callbacks for validation result.
+</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate#validateUpdate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="validateUpdate(cmd:C):scala.util.Try[E]"></a>
       <a id="validateUpdate(C):Try[E]"></a>
@@ -637,6 +624,25 @@
       </a>
     </span>
       
+    </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate#validateUpdate" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="validateUpdate(cmd:C,handler:com.rbmhtechnology.eventuate.ResultHandler[E]):Unit"></a>
+      <a id="validateUpdate(C,ResultHandler[E]):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">validateUpdate</span><span class="params">(<span name="cmd">cmd: <span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.C">C</span></span>, <span name="handler">handler: <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.VersionedAggregate.E">E</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.VersionedAggregate@validateUpdate(cmd:C,handler:com.rbmhtechnology.eventuate.ResultHandler[E]):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API of <a href="#validateUpdate(cmd:C):scala.util.Try[E]" class="extmbr" name="com.rbmhtechnology.eventuate.VersionedAggregate#validateUpdate">validateUpdate</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="#validateUpdate(cmd:C):scala.util.Try[E]" class="extmbr" name="com.rbmhtechnology.eventuate.VersionedAggregate#validateUpdate">validateUpdate</a>.</p><p>Calls the given <code>handler</code> with the result of the validation.
+</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>handler with callbacks for validation result.
+</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.VersionedAggregate#versions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="versions:Seq[com.rbmhtechnology.eventuate.Versioned[S]]"></a>
       <a id="versions:Seq[Versioned[S]]"></a>
