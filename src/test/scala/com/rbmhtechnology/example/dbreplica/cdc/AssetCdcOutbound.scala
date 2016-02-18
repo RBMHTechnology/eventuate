@@ -18,12 +18,13 @@ package com.rbmhtechnology.example.dbreplica.cdc
 
 import akka.actor.ActorRef
 
+import com.rbmhtechnology.eventuate._
+import com.rbmhtechnology.eventuate.log.EventLogClock
+import com.rbmhtechnology.eventuate.log.NotificationChannel.Updated
 import com.rbmhtechnology.example.dbreplica.domain._
 import com.rbmhtechnology.example.dbreplica.event._
 import com.rbmhtechnology.example.dbreplica.repository._
 import com.rbmhtechnology.example.dbreplica.service.AssetService
-import com.rbmhtechnology.eventuate._
-import com.rbmhtechnology.eventuate.log.NotificationChannel.Updated
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -47,11 +48,11 @@ class AssetCdcOutbound @Autowired() (
     updateNotificationTarget = Some(target)
 
   @Transactional(readOnly = true)
-  def readEventsAndVersion(fromSequenceNr: Long): (Seq[DurableEvent], VectorTime) =
-    (assetEventRepository.findFrom(fromSequenceNr), assetEventRepository.readVersion)
+  def readEventsAndVersion(fromSequenceNr: Long, clock: EventLogClock): (Seq[DurableEvent], VectorTime) =
+    (assetEventRepository.findFrom(fromSequenceNr), assetEventRepository.readClock(clock).versionVector)
 
   @Transactional
-  def handle(assetEvent: AssetEvent): Int = assetEventRepository.updateVersion {
+  def handle(assetEvent: AssetEvent): Unit = {
     val sequenceNr = assetEventRepository.updateSequenceNr()
     val durableEvent = createDurableEvent(assetEvent, sequenceNr, VectorTime(logId -> sequenceNr), System.currentTimeMillis)
 
@@ -61,7 +62,6 @@ class AssetCdcOutbound @Autowired() (
     }
 
     updateNotificationTarget.foreach(_ ! Updated(Seq(updatedEvent)))
-    updatedEvent.vectorTimestamp
   }
 
   private def handleCreated(durableEvent: DurableEvent, assetEvent: AssetCreated): DurableEvent = {

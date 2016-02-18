@@ -30,7 +30,7 @@ class StorageBackend(config: Config) {
     config.getString("eventuate.endpoint.id")
 
   val dataSource: DataSource =
-    new EmbeddedDatabaseBuilder().setDataSourceFactory(dataSourceFactory(s"jdbc:hsqldb:file:target/DB/EP-$endpointId")).addScript("sql/create.sql").build()
+    new EmbeddedDatabaseBuilder().setDataSourceFactory(dataSourceFactory(s"jdbc:hsqldb:file:target/DB/EP-$endpointId")).addScript("dbreplica/create.sql").build()
 
   def dataSourceFactory(url: String): DataSourceFactory = new DataSourceFactory {
     private val dataSource: SimpleDriverDataSource = new SimpleDriverDataSource

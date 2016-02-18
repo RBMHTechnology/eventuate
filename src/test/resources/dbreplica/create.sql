@@ -14,11 +14,6 @@ CREATE TABLE IF NOT EXISTS AssetClock (
   vectorClock BLOB
 );
 
-CREATE TABLE IF NOT EXISTS AssetEventLogVersion (
-  id INT PRIMARY KEY,
-  versionVector BLOB
-);
-
 CREATE TABLE IF NOT EXISTS AssetEventLog (
   id BIGINT PRIMARY KEY,
   assetId VARCHAR(64),

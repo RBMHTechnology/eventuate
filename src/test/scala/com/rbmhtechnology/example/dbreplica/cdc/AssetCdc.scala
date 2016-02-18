@@ -48,7 +48,6 @@ class AssetCdc @Autowired() (
     assetCdcOutbound.setUpdateNotificationTarget(log)
     endpoint.activate()
   }
-
 }
 
 private class AssetCdcActor(
@@ -61,17 +60,30 @@ private class AssetCdcActor(
   val channel: ActorRef =
     context.actorOf(Props(new NotificationChannel(id)))
 
+  var clock: EventLogClock =
+    EventLogClock()
+
   def receive = {
     case GetReplicationProgress(sourceLogId) =>
       val sdr = sender()
-      Future(assetCdcInbound.readReplicationProgressAndVersion(sourceLogId)) onComplete {
+      val clk = clock
+      Future(assetCdcInbound.readReplicationProgressAndVersion(sourceLogId, clk)) onComplete {
+        // -------------------------------------------
+        //  TODO: send a clock update to self
+        //  (makes future clock reads less expensive)
+        // -------------------------------------------
         case Success((progress, version)) => sdr ! GetReplicationProgressSuccess(sourceLogId, progress, version)
         case Failure(e)                   => sdr ! GetReplicationProgressFailure(e)
       }
     case r @ ReplicationRead(from, _, filter, targetLogId, _, currentTargetVersionVector) =>
       val sdr = sender()
+      val clk = clock
       channel ! r
-      Future(assetCdcOutbound.readEventsAndVersion(from)) onComplete {
+      Future(assetCdcOutbound.readEventsAndVersion(from, clk)) onComplete {
+        // -------------------------------------------
+        //  TODO: send a clock update to self
+        //  (makes future clock reads less expensive)
+        // -------------------------------------------
         case Success((events, version)) =>
           val filteredEvents = events.filter(_.replicable(currentTargetVersionVector, filter))
           val readProgress = events.lastOption.map(_.localSequenceNr).getOrElse(version.localTime(id))
@@ -83,18 +95,25 @@ private class AssetCdcActor(
       // ------------------------------------------
       //  TODO: implement batch replication writes
       // ------------------------------------------
-      Try {
-        events.foldLeft(Vector.empty[DurableEvent]) {
-          case (acc, evt) => if (assetCdcInbound.handle(evt) == 0) acc else acc :+ evt
-        }
-      } match {
-        case Success(written) =>
+      // read the latest clock value to filter duplicates
+      clock = assetCdcInbound.readClock(clock)
+
+      val (updatedClock, updatedEvents) = events.foldLeft((clock, Vector.empty[DurableEvent])) {
+        case ((uc, ue), evt) if evt.before(uc.versionVector) =>
+          (uc, ue)
+        case ((uc, ue), evt) =>
+          (uc.update(evt), ue :+ evt)
+      }
+
+      Try(updatedEvents.foreach(assetCdcInbound.handle)) match {
+        case Success(_) =>
+          clock = updatedClock
           Try(assetCdcInbound.writeReplicationProgress(sourceLogId, progress)) match {
-            case Success(_) => sender() ! ReplicationWriteSuccess(written.length, sourceLogId, progress, VectorTime.Zero)
+            case Success(_) => sender() ! ReplicationWriteSuccess(updatedEvents.length, sourceLogId, progress, VectorTime.Zero)
             case Failure(e) => sender() ! ReplicationWriteFailure(e)
           }
           channel ! w
-          channel ! Updated(written)
+          channel ! Updated(updatedEvents)
         case Failure(e) =>
           sender() ! ReplicationWriteFailure(e)
       }
@@ -102,5 +121,12 @@ private class AssetCdcActor(
       channel ! Updated(written)
     case GetEventLogClock =>
       sender() ! GetEventLogClockSuccess(EventLogClock())
+  }
+
+  override def preStart(): Unit = {
+    // ----------------------------------------------
+    //  TODO: start from a persistent clock snapshot
+    // ----------------------------------------------
+    clock = assetCdcInbound.readClock(clock)
   }
 }

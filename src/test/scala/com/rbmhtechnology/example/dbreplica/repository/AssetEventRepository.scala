@@ -18,12 +18,12 @@ package com.rbmhtechnology.example.dbreplica.repository
 
 import java.lang.{ Long => JLong }
 import java.sql.ResultSet
-import javax.annotation.PostConstruct
 
 import akka.actor.ActorSystem
 import akka.serialization.SerializationExtension
 
 import com.rbmhtechnology.eventuate._
+import com.rbmhtechnology.eventuate.log.EventLogClock
 
 import org.apache.commons.io.IOUtils
 import org.hsqldb.jdbc.JDBCBlob
@@ -42,12 +42,8 @@ class AssetEventRepository @Autowired() (template: JdbcTemplate, system: ActorSy
 
   private val serialization = SerializationExtension(system)
 
-  @PostConstruct @Transactional
-  def initVersion(): Unit =
-    if (findVersion.isEmpty) createVersion()
-
-  def readVersion: VectorTime =
-    findVersion.get
+  def readClock(clock: EventLogClock): EventLogClock =
+    findFrom(clock.sequenceNr + 1L).foldLeft(clock)(_ update _)
 
   def findFrom(sequenceNr: Long): Seq[DurableEvent] =
     template.query("SELECT event FROM AssetEventLog WHERE id >= ? ORDER BY id ASC", Array[AnyRef](sequenceNr: JLong), eventMapper).asScala.toVector
@@ -60,18 +56,6 @@ class AssetEventRepository @Autowired() (template: JdbcTemplate, system: ActorSy
 
   def updateSequenceNr(): Long =
     template.query("CALL NEXT VALUE FOR AssetEventLogSequence", sequenceNrMapper).asScala.head
-
-  def updateVersionConditional(p: VectorTime => Boolean)(block: => VectorTime): Int =
-    template.query("SELECT versionVector FROM AssetEventLogVersion WHERE id = 1 FOR UPDATE", versionUpdateMapper(p, block)).asScala.headOption.getOrElse(0)
-
-  def updateVersion(block: => VectorTime): Int =
-    updateVersionConditional(_ => true)(block)
-
-  private def createVersion(): Int =
-    template.update("INSERT INTO AssetEventLogVersion (id, versionVector) VALUES (1, ?)", new JDBCBlob(serializeVectorTime(VectorTime.Zero)))
-
-  private def findVersion: Option[VectorTime] =
-    template.query("SELECT versionVector FROM AssetEventLogVersion WHERE id = 1", versionMapper).asScala.headOption
 
   private def serializeVectorTime(vectorTime: VectorTime): Array[Byte] =
     serialization.serialize(vectorTime).get
@@ -98,18 +82,6 @@ class AssetEventRepository @Autowired() (template: JdbcTemplate, system: ActorSy
   private val versionMapper = new RowMapper[VectorTime] {
     override def mapRow(rs: ResultSet, rowNum: Int): VectorTime =
       deserializeVectorTime(toByteArray(rs.getBlob(1).getBinaryStream))
-  }
-
-  private def versionUpdateMapper(p: VectorTime => Boolean, block: => VectorTime) = new RowMapper[Int] {
-    override def mapRow(rs: ResultSet, rowNum: Int): Int = {
-      val blob = rs.getBlob(1)
-      val version = deserializeVectorTime(toByteArray(blob.getBinaryStream))
-      if (p(version)) {
-        val vectorTimestamp = block
-        blob.setBytes(1L, serializeVectorTime(version.merge(vectorTimestamp)))
-        rs.updateRow(); 1
-      } else 0
-    }
   }
 }
 
