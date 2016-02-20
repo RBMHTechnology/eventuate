@@ -45,13 +45,13 @@ abstract class CRDTChaosSpec extends WordSpec with Matchers with ReplicationNode
   import ReplicationIntegrationSpec.replicationConnection
   import CRDTChaosSpec._
 
-  implicit def logFactory: String => Props
+  def logFactory: String => Props
 
   def config =
     ReplicationConfig.create()
 
   def node(nodeName: String, port: Int, connections: Set[ReplicationConnection]): ReplicationNode =
-    register(new ReplicationNode(nodeName, Set(ReplicationEndpoint.DefaultLogName), port, connections,
+    register(new ReplicationNode(nodeName, Set(ReplicationEndpoint.DefaultLogName), logFactory, connections, port = port, customConfig =
       """
         |eventuate.log.write-batch-size = 3
         |eventuate.log.replication.retry-delay = 100ms

@@ -28,7 +28,7 @@ object NotificationChannel {
 }
 
 /**
- * Notifies registered [[Replicator]]s about source log updates.
+ * Notifies registered replicators about source log updates.
  */
 class NotificationChannel(logId: String) extends Actor {
   import NotificationChannel._

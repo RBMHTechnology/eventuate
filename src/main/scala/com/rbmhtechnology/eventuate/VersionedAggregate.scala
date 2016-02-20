@@ -58,7 +58,7 @@ case class VersionedAggregate[S, C: DomainCmd, E: DomainEvt](
     versions.asJava
 
   /**
-   * Java API of [[validateCreate]].
+   * Java API.
    *
    * Calls the given `handler` with the result of the validation.
    *
@@ -68,7 +68,7 @@ case class VersionedAggregate[S, C: DomainCmd, E: DomainEvt](
     handler.accept(validateCreate(cmd))
 
   /**
-   * Java API of [[validateUpdate]].
+   * Java API.
    *
    * Calls the given `handler` with the result of the validation.
    *
@@ -78,7 +78,7 @@ case class VersionedAggregate[S, C: DomainCmd, E: DomainEvt](
     handler.accept(validateUpdate(cmd))
 
   /**
-   * Java API of [[validateResolve]].
+   * Java API.
    *
    * Calls the given `handler` with the result of the validation.
    *

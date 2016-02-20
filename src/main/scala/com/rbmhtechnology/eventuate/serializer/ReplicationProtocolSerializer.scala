@@ -19,7 +19,7 @@ package com.rbmhtechnology.eventuate.serializer
 import akka.actor.ExtendedActorSystem
 import akka.serialization._
 
-import com.rbmhtechnology.eventuate.DurableEvent
+import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 import com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats._
 
@@ -36,6 +36,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   val GetReplicationEndpointInfoClass = GetReplicationEndpointInfo.getClass
   val GetReplicationEndpointInfoSuccessClass = classOf[GetReplicationEndpointInfoSuccess]
   val ReplicationReadEnvelopeClass = classOf[ReplicationReadEnvelope]
+  val ReplicationReadEnvelopeIncompatibleClass = classOf[ReplicationReadEnvelopeIncompatible]
   val ReplicationReadClass = classOf[ReplicationRead]
   val ReplicationReadSuccessClass = classOf[ReplicationReadSuccess]
   val ReplicationReadFailureClass = classOf[ReplicationReadFailure]
@@ -52,6 +53,8 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         getReplicationEndpointInfoSuccessFormatBuilder(m).build().toByteArray
       case m: ReplicationReadEnvelope =>
         replicationReadEnvelopeFormatBuilder(m).build().toByteArray
+      case m: ReplicationReadEnvelopeIncompatible =>
+        replicationReadEnvelopeIncompatibleFormatBuilder(m).build().toByteArray
       case m: ReplicationRead =>
         replicationReadFormatBuilder(m).build().toByteArray
       case m: ReplicationReadSuccess =>
@@ -74,6 +77,8 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         getReplicationEndpointInfoSuccess(GetReplicationEndpointInfoSuccessFormat.parseFrom(bytes))
       case ReplicationReadEnvelopeClass =>
         replicationReadEnvelope(ReplicationReadEnvelopeFormat.parseFrom(bytes))
+      case ReplicationReadEnvelopeIncompatibleClass =>
+        replicationReadEnvelopeIncompatible(ReplicationReadEnvelopeIncompatibleFormat.parseFrom(bytes))
       case ReplicationReadClass =>
         replicationRead(ReplicationReadFormat.parseFrom(bytes))
       case ReplicationReadSuccessClass =>
@@ -122,6 +127,14 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     val builder = ReplicationReadEnvelopeFormat.newBuilder()
     builder.setPayload(replicationReadFormatBuilder(message.payload))
     builder.setLogName(message.logName)
+    builder.setTargetApplicationName(message.targetApplicationName)
+    builder.setTargetApplicationVersion(applicationVertsionFormatBuilder(message.targetApplicationVersion))
+    builder
+  }
+
+  private def replicationReadEnvelopeIncompatibleFormatBuilder(message: ReplicationReadEnvelopeIncompatible): ReplicationReadEnvelopeIncompatibleFormat.Builder = {
+    val builder = ReplicationReadEnvelopeIncompatibleFormat.newBuilder()
+    builder.setSourceApplicationVersion(applicationVertsionFormatBuilder(message.sourceApplicationVersion))
     builder
   }
 
@@ -139,6 +152,13 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     val builder = LogInfoFormat.newBuilder()
     builder.setLogName(info.logName)
     builder.setSequenceNr(info.sequenceNr)
+    builder
+  }
+
+  private def applicationVertsionFormatBuilder(applicationVersion: ApplicationVersion): ApplicationVersionFormat.Builder = {
+    val builder = ApplicationVersionFormat.newBuilder()
+    builder.setMajor(applicationVersion.major)
+    builder.setMinor(applicationVersion.minor)
     builder
   }
 
@@ -177,7 +197,12 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   private def replicationReadEnvelope(messageFormat: ReplicationReadEnvelopeFormat): ReplicationReadEnvelope =
     ReplicationReadEnvelope(
       replicationRead(messageFormat.getPayload),
-      messageFormat.getLogName)
+      messageFormat.getLogName,
+      messageFormat.getTargetApplicationName,
+      applicationVersion(messageFormat.getTargetApplicationVersion))
+
+  private def replicationReadEnvelopeIncompatible(messageFormat: ReplicationReadEnvelopeIncompatibleFormat): ReplicationReadEnvelopeIncompatible =
+    ReplicationReadEnvelopeIncompatible(applicationVersion(messageFormat.getSourceApplicationVersion))
 
   private def getReplicationEndpointInfoSuccess(messageFormat: GetReplicationEndpointInfoSuccessFormat) =
     GetReplicationEndpointInfoSuccess(replicationEndpointInfo(messageFormat.getInfo))
@@ -190,4 +215,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
 
   private def logInfo(infoFormat: LogInfoFormat): LogInfo =
     LogInfo(infoFormat.getLogName, infoFormat.getSequenceNr)
+
+  private def applicationVersion(applicationVersionFormat: ApplicationVersionFormat): ApplicationVersion =
+    ApplicationVersion(applicationVersionFormat.getMajor, applicationVersionFormat.getMinor)
 }
