@@ -69,9 +69,9 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with ReplicationNodeReg
   import ReplicationIntegrationSpec.replicationConnection
   import RecoverySpecLeveldb._
 
-  implicit val logFactory: String => Props = id => EventLogLifecycleLeveldb.TestEventLog.props(id, batching = true)
+  val logFactory: String => Props = id => EventLogLifecycleLeveldb.TestEventLog.props(id, batching = true)
 
-  private var ctr: Int = 0
+  var ctr: Int = 0
 
   override def beforeEach(): Unit =
     ctr += 1
@@ -83,7 +83,7 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with ReplicationNodeReg
     s"${node}_${ctr}"
 
   def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection], customConfig: String = "", activate: Boolean = false): ReplicationNode =
-    register(new ReplicationNode(nodeId(nodeName), logNames, port, connections, customConfig = RecoverySpecLeveldb.config + customConfig, activate = activate))
+    register(new ReplicationNode(nodeId(nodeName), logNames, logFactory, connections, port = port, customConfig = RecoverySpecLeveldb.config + customConfig, activate = activate))
 
   def assertConvergence(expected: Set[String], nodes: ReplicationNode *): Unit = {
     val probes = nodes.map { node =>

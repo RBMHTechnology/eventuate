@@ -48,7 +48,7 @@ abstract class EventsourcedActorCausalitySpec extends WordSpec with Matchers wit
   import ReplicationIntegrationSpec.replicationConnection
   import EventsourcedActorCausalitySpec._
 
-  implicit def logFactory: String => Props
+  def logFactory: String => Props
 
   var ctr: Int = 0
 
@@ -62,7 +62,7 @@ abstract class EventsourcedActorCausalitySpec extends WordSpec with Matchers wit
     s"${node}_${ctr}"
 
   def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection]): ReplicationNode =
-    register(new ReplicationNode(nodeId(nodeName), logNames, port, connections))
+    register(new ReplicationNode(nodeId(nodeName), logNames, logFactory, connections, port = port))
 
   def assertPartialOrder[A](events: Seq[A], sample: A*): Unit = {
     val indices = sample.map(events.indexOf)

@@ -73,6 +73,14 @@ trait ReplicationEndpointDoc {
   endpoint2.activate()
   //#
 
+  //#replication-endpoint-3
+  val endpoint3 = new ReplicationEndpoint(id = "3", logNames = Set("L", "M"),
+    logFactory = logId => LeveldbEventLog.props(logId),
+    connections = Set(ReplicationConnection("127.0.0.1", 2552)),
+    applicationName = "example-application",
+    applicationVersion = ApplicationVersion("1.2"))
+  //#
+
   import scala.concurrent.ExecutionContext.Implicits.global
   //#disaster-recovery-1
   import com.rbmhtechnology.eventuate.ReplicationEndpoint

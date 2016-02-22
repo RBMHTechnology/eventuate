@@ -18,6 +18,8 @@ package com.rbmhtechnology.eventuate
 
 import akka.actor._
 import akka.testkit.TestProbe
+
+import com.rbmhtechnology.eventuate.ReplicationEndpoint._
 import com.rbmhtechnology.eventuate.ReplicationNode.EventListener
 
 import org.scalatest._
@@ -44,12 +46,19 @@ object ReplicationNode {
   }
 }
 
-class ReplicationNode(val id: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection], customConfig: String = "", activate: Boolean = true)(implicit logFactory: String => Props) {
+class ReplicationNode(val id: String,
+  logNames: Set[String],
+  logFactory: String => Props,
+  connections: Set[ReplicationConnection],
+  applicationName: String = DefaultApplicationName,
+  applicationVersion: ApplicationVersion = DefaultApplicationVersion,
+  port: Int = 2552, customConfig: String = "", activate: Boolean = true) {
+
   val system: ActorSystem =
     ActorSystem(ReplicationConnection.DefaultRemoteSystemName, ReplicationConfig.create(port, customConfig))
 
   val endpoint: ReplicationEndpoint = {
-    val endpoint = new ReplicationEndpoint(id, logNames, logFactory, connections)(system)
+    val endpoint = new ReplicationEndpoint(id, logNames, logFactory, connections, applicationName, applicationVersion)(system)
     if (activate) endpoint.activate()
     endpoint
   }

@@ -27,8 +27,7 @@ import scala.collection.JavaConverters._
 import scala.collection.immutable.VectorBuilder
 
 class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
-  val eventSerializer = new DurableEventSerializer(system)
-  val snapshotSerializer = new SnapshotSerializer(system)
+  val commonSerializer = new CommonSerializer(system)
 
   val MVRegisterClass = classOf[MVRegister[_]]
   val LWWRegisterClass = classOf[LWWRegister[_]]
@@ -74,8 +73,8 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private def mvRegisterFormatBuilder(mVRegister: MVRegister[_]): MVRegisterFormat.Builder = {
     val builder = MVRegisterFormat.newBuilder
 
-    mVRegister.registered.foreach { r =>
-      builder.addRegistered(registeredFormatBuilder(r))
+    mVRegister.versioned.foreach { r =>
+      builder.addVersioned(commonSerializer.versionedFormatBuilder(r))
     }
 
     builder
@@ -85,18 +84,9 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     val builder = ORSetFormat.newBuilder
 
     orSet.versionedEntries.foreach { ve =>
-      builder.addVersionedEntries(snapshotSerializer.versionedFormatBuilder(ve))
+      builder.addVersionedEntries(commonSerializer.versionedFormatBuilder(ve))
     }
 
-    builder
-  }
-
-  private def registeredFormatBuilder(registered: Registered[_]): RegisteredFormat.Builder = {
-    val builder = RegisteredFormat.newBuilder
-    builder.setPayload(eventSerializer.payloadFormatBuilder(registered.value.asInstanceOf[AnyRef]))
-    builder.setUpdateTimestamp(eventSerializer.vectorTimeFormatBuilder(registered.updateTimestamp))
-    builder.setSystemTimestamp(registered.systemTimestamp)
-    builder.setEmitterId(registered.emitterId)
     builder
   }
 
@@ -109,10 +99,10 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   }
 
   private def mvRegister(mvRegisterFormat: MVRegisterFormat): MVRegister[Any] = {
-    val builder = new VectorBuilder[Registered[Any]]
+    val builder = new VectorBuilder[Versioned[Any]]
 
-    val rs = mvRegisterFormat.getRegisteredList.iterator.asScala.foldLeft(Set.empty[Registered[Any]]) {
-      case (acc, r) => acc + registered(r)
+    val rs = mvRegisterFormat.getVersionedList.iterator.asScala.foldLeft(Set.empty[Versioned[Any]]) {
+      case (acc, r) => acc + commonSerializer.versioned(r)
     }
 
     MVRegister(rs)
@@ -122,17 +112,9 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     val builder = new VectorBuilder[Versioned[Any]]
 
     val ves = orSetFormat.getVersionedEntriesList.iterator.asScala.foldLeft(Set.empty[Versioned[Any]]) {
-      case (acc, ve) => acc + snapshotSerializer.versioned(ve)
+      case (acc, ve) => acc + commonSerializer.versioned(ve)
     }
 
     ORSet(ves)
-  }
-
-  def registered(registeredFormat: RegisteredFormat): Registered[Any] = {
-    Registered(
-      eventSerializer.payload(registeredFormat.getPayload),
-      eventSerializer.vectorTime(registeredFormat.getUpdateTimestamp),
-      registeredFormat.getSystemTimestamp,
-      registeredFormat.getEmitterId)
   }
 }

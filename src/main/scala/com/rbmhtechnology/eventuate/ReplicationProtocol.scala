@@ -79,7 +79,7 @@ object ReplicationProtocol {
   private[eventuate] case class GetReplicationEndpointInfoSuccess(info: ReplicationEndpointInfo) extends Format
 
   /**
-   * Update notification sent to a [[Replicator]] indicating that new events are available for replication.
+   * Update notification sent to a replicator indicating that new events are available for replication.
    */
   case object ReplicationDue extends Format
 
@@ -145,7 +145,18 @@ object ReplicationProtocol {
    * [[ReplicationRead]] requests are sent within this envelope to allow a remote acceptor to
    * dispatch the request to the appropriate log.
    */
-  case class ReplicationReadEnvelope(payload: ReplicationRead, logName: String) extends Format
+  case class ReplicationReadEnvelope(payload: ReplicationRead, logName: String, targetApplicationName: String, targetApplicationVersion: ApplicationVersion) extends Format {
+    import Ordered.orderingToOrdered
+
+    def incompatibleWith(sourceApplicationName: String, sourceApplicationVersion: ApplicationVersion): Boolean =
+      targetApplicationName == sourceApplicationName && targetApplicationVersion < sourceApplicationVersion
+  }
+
+  /**
+   * Failure reply after a [[ReplicationReadEnvelope]] if the source application version is
+   * incompatible with the target application version.
+   */
+  case class ReplicationReadEnvelopeIncompatible(sourceApplicationVersion: ApplicationVersion) extends Format
 
   /**
    * Instructs a source log to read up to `max` events starting at `fromSequenceNr` and applying

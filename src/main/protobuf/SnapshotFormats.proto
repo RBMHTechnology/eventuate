@@ -17,8 +17,8 @@
 option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
+import "CommonFormats.proto";
 import "DurableEventFormats.proto";
-import "PayloadFormats.proto";
 
 message SnapshotFormat {
   optional PayloadFormat payload = 1;
@@ -55,13 +55,6 @@ message ConcurrentVersionsTreeNodeFormat {
   optional VersionedFormat versioned = 1;
   optional bool rejected = 2;
   repeated ConcurrentVersionsTreeNodeFormat children = 3;
-}
-
-message VersionedFormat {
-  optional PayloadFormat payload = 1;
-  optional VectorTimeFormat vectorTimestamp = 2;
-  optional int64 systemTimestamp = 3;
-  optional string creator = 4;
 }
 
 message EventLogClockFormat {

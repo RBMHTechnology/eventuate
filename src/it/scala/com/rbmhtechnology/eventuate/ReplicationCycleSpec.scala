@@ -31,7 +31,7 @@ import scala.concurrent.Future
 abstract class ReplicationCycleSpec extends WordSpec with Matchers with ReplicationNodeRegistry {
   import ReplicationIntegrationSpec._
 
-  implicit def logFactory: String => Props
+  def logFactory: String => Props
 
   var ctr: Int = 0
 
@@ -45,7 +45,7 @@ abstract class ReplicationCycleSpec extends WordSpec with Matchers with Replicat
     s"${node}_${ctr}"
 
   def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection]): ReplicationNode =
-    register(new ReplicationNode(nodeId(nodeName), logNames, port, connections, "eventuate.log.write-batch-size = 50"))
+    register(new ReplicationNode(nodeId(nodeName), logNames, logFactory, connections, port = port, customConfig = "eventuate.log.write-batch-size = 50"))
 
   def testReplication(nodeA: ReplicationNode, nodeB: ReplicationNode, nodeC: ReplicationNode): Unit = {
     val probeA = new TestProbe(nodeA.system)

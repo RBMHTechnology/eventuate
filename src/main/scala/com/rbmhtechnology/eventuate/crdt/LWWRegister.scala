@@ -18,14 +18,15 @@ package com.rbmhtechnology.eventuate.crdt
 
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
-import com.rbmhtechnology.eventuate.{ DurableEvent, VectorTime }
+
+import com.rbmhtechnology.eventuate._
 
 import scala.concurrent.Future
 
 /**
  * Replicated LWW-Register with an [[MVRegister]]-based implementation. Instead of returning multiple values
  * in case of concurrent assignments, the last written value is returned. The last written value is determined
- * by comparing the following [[Registered]] fields in given order:
+ * by comparing the following [[Versioned]] fields in given order:
  *
  *  - `vectorTimestamp`: if causally related, return the value with the higher timestamp, otherwise compare
  *  - `systemTimestamp`: if not equal, return the value with the higher timestamp, otherwise compare
@@ -40,12 +41,12 @@ import scala.concurrent.Future
  */
 case class LWWRegister[A](mvRegister: MVRegister[A] = MVRegister.apply[A]) extends CRDTFormat {
   def value: Option[A] = {
-    mvRegister.registered.toVector.sorted(LWWRegister.LWWOrdering[A]).lastOption.map(_.value)
+    mvRegister.versioned.toVector.sorted(LWWRegister.LWWOrdering[A]).lastOption.map(_.value)
 
   }
 
   /**
-   * Assigns a [[Registered]] value from `v` and `vectorTimestamp` and returns an updated MV-Register.
+   * Assigns a [[Versioned]] value from `v` and `vectorTimestamp` and returns an updated MV-Register.
    *
    * @param v assigned value.
    * @param vectorTimestamp vector timestamp of the assigned value.
@@ -76,10 +77,10 @@ object LWWRegister {
     }
   }
 
-  implicit def LWWOrdering[A] = new Ordering[Registered[A]] {
-    override def compare(x: Registered[A], y: Registered[A]): Int =
+  implicit def LWWOrdering[A] = new Ordering[Versioned[A]] {
+    override def compare(x: Versioned[A], y: Versioned[A]): Int =
       if (x.systemTimestamp == y.systemTimestamp)
-        x.emitterId.compareTo(y.emitterId)
+        x.creator.compareTo(y.creator)
       else
         x.systemTimestamp.compareTo(y.systemTimestamp)
   }

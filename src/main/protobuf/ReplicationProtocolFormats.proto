@@ -17,8 +17,14 @@
 option java_package = "com.rbmhtechnology.eventuate.serializer";
 option optimize_for = SPEED;
 
+import "CommonFormats.proto";
 import "DurableEventFormats.proto";
 import "ReplicationFilterFormats.proto";
+
+message ApplicationVersionFormat {
+  required int32 major = 1;
+  required int32 minor = 2;
+}
 
 message LogInfoFormat {
   required string logName = 1;
@@ -41,6 +47,12 @@ message GetReplicationEndpointInfoSuccessFormat {
 message ReplicationReadEnvelopeFormat {
   optional ReplicationReadFormat payload = 1;
   optional string logName = 2;
+  optional string targetApplicationName = 3;
+  optional ApplicationVersionFormat targetApplicationVersion = 4;
+}
+
+message ReplicationReadEnvelopeIncompatibleFormat {
+  optional ApplicationVersionFormat sourceApplicationVersion = 1;
 }
 
 message ReplicationReadFormat {

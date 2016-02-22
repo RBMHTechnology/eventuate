@@ -31,6 +31,8 @@ import scala.collection.immutable.VectorBuilder
 class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
   val eventSerializer = new DurableEventSerializer(system)
 
+  import eventSerializer.commonSerializer
+
   val SnapshotClass = classOf[Snapshot]
   val ConcurrentVersionsTreeClass = classOf[ConcurrentVersionsTree[_, _]]
   val ClockClass = classOf[EventLogClock]
@@ -69,10 +71,10 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
 
   private def snapshotFormatBuilder(snapshot: Snapshot): SnapshotFormat.Builder = {
     val builder = SnapshotFormat.newBuilder
-    builder.setPayload(eventSerializer.payloadFormatBuilder(snapshot.payload.asInstanceOf[AnyRef]))
+    builder.setPayload(commonSerializer.payloadFormatBuilder(snapshot.payload.asInstanceOf[AnyRef]))
     builder.setEmitterId(snapshot.emitterId)
     builder.setLastEvent(eventSerializer.durableEventFormatBuilder(snapshot.lastEvent))
-    builder.setCurrentTime(eventSerializer.vectorTimeFormatBuilder(snapshot.currentTime))
+    builder.setCurrentTime(commonSerializer.vectorTimeFormatBuilder(snapshot.currentTime))
 
     snapshot.deliveryAttempts.foreach { da =>
       builder.addDeliveryAttempts(deliveryAttemptFormatBuilder(da))
@@ -88,7 +90,7 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
   private def deliveryAttemptFormatBuilder(deliveryAttempt: DeliveryAttempt): DeliveryAttemptFormat.Builder = {
     val builder = DeliveryAttemptFormat.newBuilder
     builder.setDeliveryId(deliveryAttempt.deliveryId)
-    builder.setMessage(eventSerializer.payloadFormatBuilder(deliveryAttempt.message.asInstanceOf[AnyRef]))
+    builder.setMessage(commonSerializer.payloadFormatBuilder(deliveryAttempt.message.asInstanceOf[AnyRef]))
     builder.setDestination(deliveryAttempt.destination.toSerializationFormat)
     builder
   }
@@ -107,7 +109,7 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
 
   private def persistOnEventInvocationFormatBuilder(persistOnEventInvocation: PersistOnEventInvocation): PersistOnEventInvocationFormat.Builder = {
     val builder = PersistOnEventInvocationFormat.newBuilder
-    builder.setEvent(eventSerializer.payloadFormatBuilder(persistOnEventInvocation.event.asInstanceOf[AnyRef]))
+    builder.setEvent(commonSerializer.payloadFormatBuilder(persistOnEventInvocation.event.asInstanceOf[AnyRef]))
 
     persistOnEventInvocation.customDestinationAggregateIds.foreach { dest =>
       builder.addCustomDestinationAggregateIds(dest)
@@ -126,7 +128,7 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
   // TODO: make tail recursive or create a trampolined version
   private def concurrentVersionsTreeNodeFormat(node: ConcurrentVersionsTree.Node[_]): ConcurrentVersionsTreeNodeFormat.Builder = {
     val builder = ConcurrentVersionsTreeNodeFormat.newBuilder()
-    builder.setVersioned(versionedFormatBuilder(node.versioned))
+    builder.setVersioned(commonSerializer.versionedFormatBuilder(node.versioned))
     builder.setRejected(node.rejected)
 
     node.children.foreach { child =>
@@ -136,18 +138,10 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
     builder
   }
 
-  def versionedFormatBuilder(versioned: Versioned[_]): VersionedFormat.Builder = {
-    val builder = VersionedFormat.newBuilder
-    builder.setPayload(eventSerializer.payloadFormatBuilder(versioned.value.asInstanceOf[AnyRef]))
-    builder.setVectorTimestamp(eventSerializer.vectorTimeFormatBuilder(versioned.vectorTimestamp))
-    builder.setSystemTimestamp(versioned.systemTimestamp)
-    builder.setCreator(versioned.creator)
-  }
-
   private def eventLogClockFormatBuilder(clock: EventLogClock): EventLogClockFormat.Builder = {
     val builder = EventLogClockFormat.newBuilder
     builder.setSequenceNr(clock.sequenceNr)
-    builder.setVersionVector(eventSerializer.vectorTimeFormatBuilder(clock.versionVector))
+    builder.setVersionVector(commonSerializer.vectorTimeFormatBuilder(clock.versionVector))
     builder
   }
 
@@ -168,10 +162,10 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
     }
 
     Snapshot(
-      eventSerializer.payload(snapshotFormat.getPayload),
+      commonSerializer.payload(snapshotFormat.getPayload),
       snapshotFormat.getEmitterId,
       eventSerializer.durableEvent(snapshotFormat.getLastEvent),
-      eventSerializer.vectorTime(snapshotFormat.getCurrentTime),
+      commonSerializer.vectorTime(snapshotFormat.getCurrentTime),
       deliveryAttemptsBuilder.result(),
       persistOnEventRequestsBuilder.result())
   }
@@ -179,7 +173,7 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
   private def deliveryAttempt(deliveryAttemptFormat: DeliveryAttemptFormat): DeliveryAttempt = {
     DeliveryAttempt(
       deliveryAttemptFormat.getDeliveryId,
-      eventSerializer.payload(deliveryAttemptFormat.getMessage),
+      commonSerializer.payload(deliveryAttemptFormat.getMessage),
       ActorPath.fromString(deliveryAttemptFormat.getDestination))
   }
 
@@ -202,7 +196,7 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
     }
 
     PersistOnEventInvocation(
-      eventSerializer.payload(persistOnEventInvocationFormat.getEvent),
+      commonSerializer.payload(persistOnEventInvocationFormat.getEvent),
       customDestinationAggregateIds)
   }
 
@@ -212,7 +206,7 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
 
   // TODO: make tail recursive or create a trampolined version
   private def concurrentVersionsTreeNode(nodeFormat: ConcurrentVersionsTreeNodeFormat): ConcurrentVersionsTree.Node[Any] = {
-    val node = new ConcurrentVersionsTree.Node(versioned(nodeFormat.getVersioned))
+    val node = new ConcurrentVersionsTree.Node(commonSerializer.versioned(nodeFormat.getVersioned))
     node.rejected = nodeFormat.getRejected
 
     nodeFormat.getChildrenList.iterator.asScala.foreach { childFormat =>
@@ -222,17 +216,9 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
     node
   }
 
-  def versioned(versionedFormat: VersionedFormat): Versioned[Any] = {
-    Versioned[Any](
-      eventSerializer.payload(versionedFormat.getPayload),
-      eventSerializer.vectorTime(versionedFormat.getVectorTimestamp),
-      versionedFormat.getSystemTimestamp,
-      versionedFormat.getCreator)
-  }
-
   private def eventLogClock(clockFormat: EventLogClockFormat): EventLogClock = {
     EventLogClock(
       sequenceNr = clockFormat.getSequenceNr,
-      versionVector = eventSerializer.vectorTime(clockFormat.getVersionVector))
+      versionVector = commonSerializer.vectorTime(clockFormat.getVersionVector))
   }
 }

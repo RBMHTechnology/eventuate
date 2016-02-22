@@ -19,6 +19,9 @@ package com.rbmhtechnology.eventuate
 import akka.actor._
 import akka.testkit.TestProbe
 
+import com.rbmhtechnology.eventuate.ReplicationEndpoint._
+import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
+import com.rbmhtechnology.eventuate.ReplicationProtocol._
 import com.rbmhtechnology.eventuate.log._
 import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.log.leveldb._
@@ -60,7 +63,7 @@ object ReplicationIntegrationSpec {
 abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with ReplicationNodeRegistry {
   import ReplicationIntegrationSpec._
 
-  implicit def logFactory: String => Props
+  def logFactory: String => Props
 
   var ctr: Int = 0
 
@@ -73,8 +76,12 @@ abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with Re
   def nodeId(node: String): String =
     s"${node}_${ctr}"
 
-  def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection]): ReplicationNode =
-    register(new ReplicationNode(nodeId(nodeName), logNames, port, connections))
+  def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection],
+    applicationName: String = DefaultApplicationName,
+    applicationVersion: ApplicationVersion = DefaultApplicationVersion): ReplicationNode = {
+
+    register(new ReplicationNode(nodeId(nodeName), logNames, logFactory, connections, applicationName, applicationVersion, port))
+  }
 
   def assertPartialOrder[A](events: Seq[A], sample: A*): Unit = {
     val indices = sample.map(events.indexOf)
@@ -254,6 +261,43 @@ abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with Re
       probeBL3.expectMsgAllOf("d")
     }
   }
+
+  "A replication endpoint" must {
+    "accept replication reads from endpoints with same application name and same version" in {
+      testVersionedReads("test", ApplicationVersion("1.0"), "test", ApplicationVersion("1.0")).expectMsgType[ReplicationReadSuccess]
+    }
+    "accept replication reads from endpoints with same application name and higher version" in {
+      testVersionedReads("test", ApplicationVersion("1.0"), "test", ApplicationVersion("1.1")).expectMsgType[ReplicationReadSuccess]
+    }
+    "reject replication reads from endpoints with same application name and lower version" in {
+      testVersionedReads("test", ApplicationVersion("1.0"), "test", ApplicationVersion("0.9")).expectMsg(ReplicationReadEnvelopeIncompatible(ApplicationVersion("1.0")))
+    }
+    "accept replication reads from endpoints with different application name and same version" in {
+      testVersionedReads("test", ApplicationVersion("1.0"), "other", ApplicationVersion("1.0")).expectMsgType[ReplicationReadSuccess]
+    }
+    "accept replication reads from endpoints with different application name and higher version" in {
+      testVersionedReads("test", ApplicationVersion("1.0"), "other", ApplicationVersion("1.1")).expectMsgType[ReplicationReadSuccess]
+    }
+    "accept replication reads from endpoints with different application name and lower version" in {
+      testVersionedReads("test", ApplicationVersion("1.0"), "other", ApplicationVersion("0.9")).expectMsgType[ReplicationReadSuccess]
+    }
+  }
+
+  def testVersionedReads(
+    sourceApplicationName: String,
+    sourceApplicationVersion: ApplicationVersion,
+    targetApplicationName: String,
+    targetApplicationVersion: ApplicationVersion): TestProbe = {
+
+    val endpoint = node("A", Set("L1"), 2552, Set(), sourceApplicationName, sourceApplicationVersion).endpoint
+    val probe = new TestProbe(endpoint.system)
+
+    val message = ReplicationRead(1, Int.MaxValue, NoFilter, DurableEvent.UndefinedLogId, endpoint.system.deadLetters, VectorTime())
+    val envelope = ReplicationReadEnvelope(message, "L1", targetApplicationName, targetApplicationVersion)
+
+    endpoint.acceptor.tell(envelope, probe.ref)
+    probe
+  }
 }
 
 class ReplicationIntegrationSpecLeveldb extends ReplicationIntegrationSpec with EventLogCleanupLeveldb {
@@ -268,8 +312,11 @@ class ReplicationIntegrationSpecCassandra extends ReplicationIntegrationSpec wit
     EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
   }
 
-  override def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection]): ReplicationNode = {
-    val node = super.node(nodeName, logNames, port, connections)
+  override def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection],
+    applicationName: String = DefaultApplicationName,
+    applicationVersion: ApplicationVersion = DefaultApplicationVersion): ReplicationNode = {
+
+    val node = super.node(nodeName, logNames, port, connections, applicationName, applicationVersion)
     Cassandra(node.system) // enforce keyspace/schema setup
     node
   }

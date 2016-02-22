@@ -62,9 +62,9 @@ object DeleteEventsSpecLeveldb {
 class DeleteEventsSpecLeveldb extends WordSpec with Matchers with ReplicationNodeRegistry with EventLogCleanupLeveldb {
   import DeleteEventsSpecLeveldb._
 
-  implicit val logFactory: String => Props = id => TestEventLog.props(id, batching = true)
+  val logFactory: String => Props = id => TestEventLog.props(id, batching = true)
 
-  private var ctr: Int = 0
+  var ctr: Int = 0
 
   override def beforeEach(): Unit =
     ctr += 1
@@ -76,7 +76,7 @@ class DeleteEventsSpecLeveldb extends WordSpec with Matchers with ReplicationNod
     s"${node}_${ctr}"
 
   def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection], customConfig: String = "", activate: Boolean = false): ReplicationNode =
-    register(new ReplicationNode(nodeId(nodeName), logNames, port, connections, customConfig = RecoverySpecLeveldb.config + customConfig, activate = activate))
+    register(new ReplicationNode(nodeId(nodeName), logNames, logFactory, connections, port = port, customConfig = RecoverySpecLeveldb.config + customConfig, activate = activate))
 
   "Deleting events" must {
     "not replay deleted events on restart" in {

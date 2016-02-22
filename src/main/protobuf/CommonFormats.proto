@@ -27,3 +27,19 @@ message PayloadFormat {
   optional string payloadManifest = 3;
   optional bool isStringManifest = 4;
 }
+
+message VersionedFormat {
+  optional PayloadFormat payload = 1;
+  optional VectorTimeFormat vectorTimestamp = 2;
+  optional int64 systemTimestamp = 3;
+  optional string creator = 4;
+}
+
+message VectorTimeEntryFormat {
+  required string processId = 1;
+  required int64 logicalTime = 2;
+}
+
+message VectorTimeFormat {
+  repeated VectorTimeEntryFormat entries = 1;
+}

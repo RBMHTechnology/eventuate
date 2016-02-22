@@ -48,7 +48,10 @@ object ReplicationProtocolSerializerSpec {
     ReplicationRead(18L, 11, filter3, "B", r, VectorTime("Y" -> 13L))
 
   def replicationReadEnvelope(r: ReplicationRead): ReplicationReadEnvelope =
-    ReplicationReadEnvelope(r, "X")
+    ReplicationReadEnvelope(r, "X", "myapp", ApplicationVersion(2, 1))
+
+  val replicationReadEnvelopeIncompatible: ReplicationReadEnvelopeIncompatible =
+    ReplicationReadEnvelopeIncompatible(ApplicationVersion(2, 1))
 }
 
 class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
@@ -81,6 +84,9 @@ class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with Befo
       serializations(0).deserialize(serializations(0).serialize(replicationReadEnvelope(replicationRead1(dl1))).get, classOf[ReplicationReadEnvelope]).get should be(replicationReadEnvelope(replicationRead1(dl1)))
       serializations(0).deserialize(serializations(0).serialize(replicationReadEnvelope(replicationRead2(dl2))).get, classOf[ReplicationReadEnvelope]).get should be(replicationReadEnvelope(replicationRead2(dl2)))
     }
+    "serialize ReplicationReadEnvelopeIncompatible messages" in {
+      serializations(0).deserialize(serializations(0).serialize(replicationReadEnvelopeIncompatible).get, classOf[ReplicationReadEnvelopeIncompatible]).get should be(replicationReadEnvelopeIncompatible)
+    }
     "serialize ReplicationRead messages" in {
       serializations(0).deserialize(serializations(0).serialize(replicationRead1(dl1)).get, classOf[ReplicationRead]).get should be(replicationRead1(dl1))
       serializations(0).deserialize(serializations(0).serialize(replicationRead2(dl2)).get, classOf[ReplicationRead]).get should be(replicationRead2(dl2))
@@ -112,6 +118,10 @@ class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with Befo
     "support remoting of ReplicationReadFailure messages" in {
       senderActor ! replicationReadFailure
       receiverProbe.expectMsg(replicationReadFailure)
+    }
+    "support remoting of ReplicationReadEnvelopeIncompatible messages" in {
+      senderActor ! replicationReadEnvelopeIncompatible
+      receiverProbe.expectMsg(replicationReadEnvelopeIncompatible)
     }
   }
 }

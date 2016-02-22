@@ -153,6 +153,8 @@ private class Acceptor(endpoint: ReplicationEndpoint) extends Actor {
   }
 
   def recoveringMetadata(recoveryManager: ActorRef, promise: Promise[Unit]): Receive = {
+    case re: ReplicationReadEnvelope if re.incompatibleWith(endpoint.applicationName, endpoint.applicationVersion) =>
+      sender ! ReplicationReadEnvelopeIncompatible(endpoint.applicationVersion)
     case re: ReplicationReadEnvelope =>
       recoveryManager forward re
     case MetadataRecoveryCompleted =>
@@ -169,7 +171,9 @@ private class Acceptor(endpoint: ReplicationEndpoint) extends Actor {
   }
 
   def processing: Receive = {
-    case ReplicationReadEnvelope(r, logName) =>
+    case re: ReplicationReadEnvelope if re.incompatibleWith(endpoint.applicationName, endpoint.applicationVersion) =>
+      sender ! ReplicationReadEnvelopeIncompatible(endpoint.applicationVersion)
+    case ReplicationReadEnvelope(r, logName, _, _) =>
       endpoint.logs(logName) forward r
     case _: ReplicationWriteSuccess =>
   }
@@ -219,7 +223,7 @@ private class RecoveryManager(endpointId: String, links: Set[RecoveryLink]) exte
   def receive = recoveringMetadata(links)
 
   def recoveringMetadata(active: Set[RecoveryLink]): Receive = {
-    case ReplicationReadEnvelope(r, _) =>
+    case ReplicationReadEnvelope(r, _, _, _) =>
       compensators(r.targetLogId) forward r
     case RecoveryStepCompleted(link) if active.contains(link) =>
       val updatedActive = active - link

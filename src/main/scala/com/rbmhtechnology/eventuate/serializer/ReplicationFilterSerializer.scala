@@ -18,7 +18,7 @@ package com.rbmhtechnology.eventuate.serializer
 
 import akka.actor.ExtendedActorSystem
 import akka.serialization._
-import com.google.protobuf.ByteString
+
 import com.rbmhtechnology.eventuate.ReplicationFilter.AndFilter
 import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
 import com.rbmhtechnology.eventuate.ReplicationFilter.OrFilter
@@ -29,8 +29,10 @@ import com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats._
 import scala.collection.JavaConverters._
 import scala.language.existentials
 
-class ReplicationFilterSerializer(protected val system: ExtendedActorSystem) extends Serializer with PayloadSerializer {
+class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serializer {
   import ReplicationFilterTreeFormat.NodeType._
+
+  val commonSerializer = new CommonSerializer(system)
 
   val AndFilterClass = classOf[AndFilter]
   val OrFilterClass = classOf[OrFilter]
@@ -75,7 +77,7 @@ class ReplicationFilterSerializer(protected val system: ExtendedActorSystem) ext
         filters.foreach(filter => builder.addChildren(filterTreeFormatBuilder(filter)))
       case filter =>
         builder.setNodeType(LEAF)
-        builder.setFilter(payloadFormatBuilder(filter))
+        builder.setFilter(commonSerializer.payloadFormatBuilder(filter))
     }
     builder
   }
@@ -88,7 +90,7 @@ class ReplicationFilterSerializer(protected val system: ExtendedActorSystem) ext
     filterTreeFormat.getNodeType match {
       case AND  => AndFilter(filterTreeFormat.getChildrenList.asScala.map(filterTree).toList)
       case OR   => OrFilter(filterTreeFormat.getChildrenList.asScala.map(filterTree).toList)
-      case LEAF => payload(filterTreeFormat.getFilter).asInstanceOf[ReplicationFilter]
+      case LEAF => commonSerializer.payload(filterTreeFormat.getFilter).asInstanceOf[ReplicationFilter]
     }
   }
 }

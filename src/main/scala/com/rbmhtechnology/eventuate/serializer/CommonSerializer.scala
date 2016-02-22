@@ -19,12 +19,17 @@ package com.rbmhtechnology.eventuate.serializer
 import akka.actor.ExtendedActorSystem
 import akka.serialization.SerializationExtension
 import akka.serialization.SerializerWithStringManifest
+
 import com.google.protobuf.ByteString
-import com.rbmhtechnology.eventuate.serializer.PayloadFormats.PayloadFormat
+import com.rbmhtechnology.eventuate._
+import com.rbmhtechnology.eventuate.serializer.CommonFormats._
 
-trait PayloadSerializer {
+import scala.collection.JavaConverters._
 
-  protected def system: ExtendedActorSystem
+class CommonSerializer(system: ExtendedActorSystem) {
+  // --------------------------------------------------------------------------------
+  //  toBinary helpers
+  // --------------------------------------------------------------------------------
 
   def payloadFormatBuilder(payload: AnyRef) = {
     val serializer = SerializationExtension(system).findSerializerFor(payload)
@@ -46,6 +51,28 @@ trait PayloadSerializer {
     builder
   }
 
+  def vectorTimeFormatBuilder(vectorTime: VectorTime): VectorTimeFormat.Builder = {
+    val builder = VectorTimeFormat.newBuilder
+    vectorTime.value.foreach { entry =>
+      builder.addEntries(VectorTimeEntryFormat.newBuilder
+        .setProcessId(entry._1)
+        .setLogicalTime(entry._2))
+    }
+    builder
+  }
+
+  def versionedFormatBuilder(versioned: Versioned[_]): VersionedFormat.Builder = {
+    val builder = VersionedFormat.newBuilder
+    builder.setPayload(payloadFormatBuilder(versioned.value.asInstanceOf[AnyRef]))
+    builder.setVectorTimestamp(vectorTimeFormatBuilder(versioned.vectorTimestamp))
+    builder.setSystemTimestamp(versioned.systemTimestamp)
+    builder.setCreator(versioned.creator)
+  }
+
+  // --------------------------------------------------------------------------------
+  //  fromBinary helpers
+  // --------------------------------------------------------------------------------
+
   def payload(payloadFormat: PayloadFormat): Any = {
     val deserialized = if (payloadFormat.getIsStringManifest) {
       SerializationExtension(system).deserialize(
@@ -64,5 +91,19 @@ trait PayloadSerializer {
         None)
     }
     deserialized.get
+  }
+
+  def vectorTime(vectorTimeFormat: VectorTimeFormat): VectorTime = {
+    VectorTime(vectorTimeFormat.getEntriesList.iterator.asScala.foldLeft(Map.empty[String, Long]) {
+      case (result, entry) => result.updated(entry.getProcessId, entry.getLogicalTime)
+    })
+  }
+
+  def versioned(versionedFormat: VersionedFormat): Versioned[Any] = {
+    Versioned[Any](
+      payload(versionedFormat.getPayload),
+      vectorTime(versionedFormat.getVectorTimestamp),
+      versionedFormat.getSystemTimestamp,
+      versionedFormat.getCreator)
   }
 }
