@@ -181,7 +181,7 @@ of events.
     </span>
       <p class="shortcomment cmt">Replicated LWW-Register with an <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>-based implementation.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated LWW-Register with an <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>-based implementation. Instead of returning multiple values
 in case of concurrent assignments, the last written value is returned. The last written value is determined
-by comparing the following <a href="Registered.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Registered">Registered</a> fields in given order:</p><ul><li><code>vectorTimestamp</code>: if causally related, return the value with the higher timestamp, otherwise compare</li><li><code>systemTimestamp</code>: if not equal, return the value with the higher timestamp, otherwise compare</li><li><code>emitterId</code></li></ul><p>Note that this relies on synchronized system clocks. <a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a> should only be used when the choice of
+by comparing the following <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> fields in given order:</p><ul><li><code>vectorTimestamp</code>: if causally related, return the value with the higher timestamp, otherwise compare</li><li><code>systemTimestamp</code>: if not equal, return the value with the higher timestamp, otherwise compare</li><li><code>emitterId</code></li></ul><p>Note that this relies on synchronized system clocks. <a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a> should only be used when the choice of
 value is not important for concurrent updates occurring within the clock skew.
 </p></div><dl class="paramcmts block"><dt class="param">mvRegister</dt><dd class="cmt"><p>Initially empty <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>.
 </p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
@@ -214,19 +214,19 @@ value is not important for concurrent updates occurring within the clock skew.
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="MVRegister.html"><span class="name">MVRegister</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="registered">registered: <span class="extype" name="scala.Predef.Set">Set</span>[<a href="Registered.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Registered">Registered</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister.A">A</span>]] = <span class="symbol">Set.empty[Registered[A]]</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="MVRegister.html"><span class="name">MVRegister</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="versioned">versioned: <span class="extype" name="scala.Predef.Set">Set</span>[<a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister.A">A</span>]] = <span class="symbol">Set.empty[Versioned[A]]</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@MVRegister[A]extendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Replicated MV-Register.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated MV-Register. Has several <a href="Registered.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Registered">Registered</a> values assigned in case of concurrent assignments,
-otherwise, a single <a href="Registered.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Registered">Registered</a> value. Concurrent assignments can be reduced to a single assignment
-by assigning a <a href="Registered.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Registered">Registered</a> value with a vector timestamp that is greater than those of the currently
-assigned <a href="Registered.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Registered">Registered</a> values.
+      <p class="shortcomment cmt">Replicated MV-Register.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated MV-Register. Has several <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values assigned in case of concurrent assignments,
+otherwise, a single <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value. Concurrent assignments can be reduced to a single assignment
+by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with a vector timestamp that is greater than those of the currently
+assigned <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values.
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>MV-Register value type.
-</p></dd><dt class="param">registered</dt><dd class="cmt"><p>Registered values. Initially empty.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
+</p></dd><dt class="param">versioned</dt><dd class="cmt"><p>Registered values. Initially empty.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
 </p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegisterService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MVRegisterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.MVRegister[A],Set[A]]"></a>
@@ -286,23 +286,6 @@ assigned <a href="Registered.html" class="extype" name="com.rbmhtechnology.event
       <p class="shortcomment cmt">Replicated <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> CRDT service.
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> entry type
 </p></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.Registered" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Registered[A]extendsProductwithSerializable"></a>
-      <a id="Registered[A]:Registered[A]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="Registered.html"><span class="name">Registered</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="value">value: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.Registered.A">A</span></span>, <span name="updateTimestamp">updateTimestamp: <a href="../VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span></span>, <span name="emitterId">emitterId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@Registered[A]extendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Internal representation of an <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> value.</p>
     </li></ol>
             </div>
 

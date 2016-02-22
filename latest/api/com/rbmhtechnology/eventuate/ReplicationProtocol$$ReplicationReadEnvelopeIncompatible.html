@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>ReplicationReadEnvelope - com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope</title>
-          <meta name="description" content="ReplicationReadEnvelope - com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope" />
-          <meta name="keywords" content="ReplicationReadEnvelope com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope" />
+          <title>ReplicationReadEnvelopeIncompatible - com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelopeIncompatible</title>
+          <meta name="description" content="ReplicationReadEnvelopeIncompatible - com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelopeIncompatible" />
+          <meta name="keywords" content="ReplicationReadEnvelopeIncompatible com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelopeIncompatible" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope';
+            var hash = 'com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -30,8 +30,8 @@
       <div id="definition">
         <img src="../../../lib/class_big.png" />
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="ReplicationProtocol$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol">ReplicationProtocol</a></p>
-        <h1>ReplicationReadEnvelope</h1> <span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope" title="Permalink" target="_top">
+        <h1>ReplicationReadEnvelopeIncompatible</h1> <span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -43,12 +43,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationReadEnvelope</span><span class="params">(<span name="payload">payload: <a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a></span>, <span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="targetApplicationName">targetApplicationName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="targetApplicationVersion">targetApplicationVersion: <a href="ApplicationVersion.html" class="extype" name="com.rbmhtechnology.eventuate.ApplicationVersion">ApplicationVersion</a></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">ReplicationReadEnvelopeIncompatible</span><span class="params">(<span name="sourceApplicationVersion">sourceApplicationVersion: <a href="ApplicationVersion.html" class="extype" name="com.rbmhtechnology.eventuate.ApplicationVersion">ApplicationVersion</a></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p><a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a> requests are sent within this envelope to allow a remote acceptor to
-dispatch the request to the appropriate log.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Failure reply after a <a href="ReplicationProtocol$$ReplicationReadEnvelope.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope">ReplicationReadEnvelope</a> if the source application version is
+incompatible with the target application version.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a>, <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -69,7 +69,7 @@ dispatch the request to the appropriate log.
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope"><span>ReplicationReadEnvelope</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format"><span>Format</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelopeIncompatible"><span>ReplicationReadEnvelopeIncompatible</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format"><span>Format</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -89,19 +89,19 @@ dispatch the request to the appropriate log.
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(payload:com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead,logName:String,targetApplicationName:String,targetApplicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope"></a>
-      <a id="&lt;init&gt;:ReplicationReadEnvelope"></a>
+              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelopeIncompatible#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(sourceApplicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelopeIncompatible"></a>
+      <a id="&lt;init&gt;:ReplicationReadEnvelopeIncompatible"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationReadEnvelope</span><span class="params">(<span name="payload">payload: <a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a></span>, <span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="targetApplicationName">targetApplicationName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="targetApplicationVersion">targetApplicationVersion: <a href="ApplicationVersion.html" class="extype" name="com.rbmhtechnology.eventuate.ApplicationVersion">ApplicationVersion</a></span>)</span>
+        <span class="name">ReplicationReadEnvelopeIncompatible</span><span class="params">(<span name="sourceApplicationVersion">sourceApplicationVersion: <a href="ApplicationVersion.html" class="extype" name="com.rbmhtechnology.eventuate.ApplicationVersion">ApplicationVersion</a></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@&lt;init&gt;(payload:com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead,logName:String,targetApplicationName:String,targetApplicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@&lt;init&gt;(sourceApplicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelopeIncompatible" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -127,7 +127,7 @@ dispatch the request to the appropriate log.
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -144,7 +144,7 @@ dispatch the request to the appropriate log.
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@##():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@##():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -161,7 +161,7 @@ dispatch the request to the appropriate log.
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -178,7 +178,7 @@ dispatch the request to the appropriate log.
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -195,7 +195,7 @@ dispatch the request to the appropriate log.
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@clone():Object" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@clone():Object" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -218,7 +218,7 @@ dispatch the request to the appropriate log.
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -235,7 +235,7 @@ dispatch the request to the appropriate log.
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -258,28 +258,11 @@ dispatch the request to the appropriate log.
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope#incompatibleWith" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="incompatibleWith(sourceApplicationName:String,sourceApplicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion):Boolean"></a>
-      <a id="incompatibleWith(String,ApplicationVersion):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">incompatibleWith</span><span class="params">(<span name="sourceApplicationName">sourceApplicationName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sourceApplicationVersion">sourceApplicationVersion: <a href="ApplicationVersion.html" class="extype" name="com.rbmhtechnology.eventuate.ApplicationVersion">ApplicationVersion</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@incompatibleWith(sourceApplicationName:String,sourceApplicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -292,28 +275,11 @@ dispatch the request to the appropriate log.
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope#logName" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="logName:String"></a>
-      <a id="logName:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">logName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@logName:String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -326,7 +292,7 @@ dispatch the request to the appropriate log.
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -343,7 +309,7 @@ dispatch the request to the appropriate log.
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@notify():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -360,24 +326,24 @@ dispatch the request to the appropriate log.
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope#payload" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="payload:com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead"></a>
-      <a id="payload:ReplicationRead"></a>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelopeIncompatible#sourceApplicationVersion" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="sourceApplicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion"></a>
+      <a id="sourceApplicationVersion:ApplicationVersion"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">payload</span><span class="result">: <a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a></span>
+        <span class="name">sourceApplicationVersion</span><span class="result">: <a href="ApplicationVersion.html" class="extype" name="com.rbmhtechnology.eventuate.ApplicationVersion">ApplicationVersion</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@payload:com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@sourceApplicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -394,45 +360,11 @@ dispatch the request to the appropriate log.
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope#targetApplicationName" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="targetApplicationName:String"></a>
-      <a id="targetApplicationName:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">targetApplicationName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@targetApplicationName:String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope#targetApplicationVersion" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="targetApplicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion"></a>
-      <a id="targetApplicationVersion:ApplicationVersion"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">targetApplicationVersion</span><span class="result">: <a href="ApplicationVersion.html" class="extype" name="com.rbmhtechnology.eventuate.ApplicationVersion">ApplicationVersion</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@targetApplicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -445,7 +377,7 @@ dispatch the request to the appropriate log.
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@wait():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -468,7 +400,7 @@ dispatch the request to the appropriate log.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>
@@ -491,7 +423,7 @@ dispatch the request to the appropriate log.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelope@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadEnvelopeIncompatible@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" />
       </a>
     </span>

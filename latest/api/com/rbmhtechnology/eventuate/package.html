@@ -177,6 +177,23 @@ If a handler is overridden, the behaviour of it's respective set-method will be 
       <p class="shortcomment cmt">Java API for actors that implement <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API for actors that implement <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>
 </p></span><span class="cmt"><p><a href="AbstractEventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> for a detailed usage of the Java API</p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ApplicationVersion" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ApplicationVersionextendsProductwithSerializable"></a>
+      <a id="ApplicationVersion:ApplicationVersion"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ApplicationVersion.html"><span class="name">ApplicationVersion</span></a><span class="params">(<span name="major">major: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">1</span></span>, <span name="minor">minor: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@ApplicationVersionextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Defines an application version in terms of <code>major</code> version and <code>minor</code> version.</p>
     </li><li name="com.rbmhtechnology.eventuate.BehaviorContext" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="BehaviorContextextendsAnyRef"></a>
       <a id="BehaviorContext:BehaviorContext"></a>
@@ -639,7 +656,13 @@ over <code>StatefulProcessor</code>.
 replicated from the connected endpoints to this endpoint. The connected endpoints are <i>replication
 sources</i>, this endpoint is a <i>replication target</i>. To setup bi-directional replication, the other
 replication endpoints must additionally setup replication connections to this endpoint.</p><p>A replication endpoint manages one or more event logs. Event logs are indexed by name. Events are
-replicated only between event logs with matching names.
+replicated only between event logs with matching names.</p><p>If <code>applicationName</code> equals that of a replication source, events are only replicated if <code>applicationVersion</code>
+is greater than or equal to that of the replication source. This is a simple mechanism to support
+incremental version upgrades of replicated applications where each replica can be upgraded individually
+without shutting down other replicas. This avoids permanent state divergence during upgrade which may
+occur if events are replicated from replicas with higher version to those with lower version. If
+<code>applicationName</code> does not equal that of a replication source, events are always replicated, regardless
+of the <code>applicationVersion</code> value.
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationFilter" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="ReplicationFilterextendsSerializable"></a>
@@ -893,7 +916,24 @@ clock by setting <code>sharedClockEntry</code> to <code>false</code>, otherwise,
 
         <div id="values" class="values members">
               <h3>Value Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.ConcurrentVersions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.ApplicationVersion" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ApplicationVersion"></a>
+      <a id="ApplicationVersion:ApplicationVersion"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ApplicationVersion$.html"><span class="name">ApplicationVersion</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@ApplicationVersion" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ConcurrentVersions"></a>
       <a id="ConcurrentVersions:ConcurrentVersions"></a>
       <h4 class="signature">

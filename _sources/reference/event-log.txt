@@ -150,6 +150,20 @@ The event log actors that are created by a ``ReplicationEndpoint`` can be obtain
 .. includecode:: ../code/EventLogDoc.scala
    :snippet: logs-map-1
 
+Optionally, an application may also set an ``applicationName`` and an ``applicationVersion`` for a replication endpoint:
+
+.. includecode:: ../code/EventLogDoc.scala
+   :snippet: replication-endpoint-3
+
+If the ``applicationName``\ s of two replication endpoints are equal, events are only replicated from the source endpoint to the target endpoint if the ``applicationVersion`` of the target endpoint is greater than or equal to that of the source endpoint. This is a simple mechanism to support incremental version upgrades of replicated applications where each replica can be upgraded individually without shutting down other replicas. This avoids permanent state divergence during upgrade which may occur if events are replicated from replicas with higher version to those with lower version. A replication endpoint whose replication attempts have been rejected due to an incompatible application version logs warning such as::
+
+    Event replication rejected by remote endpoint 3. 
+    Target ApplicationVersion(1,2) not compatible with 
+    source ApplicationVersion(1,3).
+
+
+If the ``applicationName``\ s of two replication endpoints are not equal, events are always replicated, regardless of their ``applicationVersion`` value.
+
 .. hint::
    Further ``ReplicationEndpoint`` creation options are described in the API documentation of the ReplicationEndpoint_ and ReplicationConnection_ companion objects. A complete reference of configuration options is given in section :ref:`configuration`.
 
