@@ -3,4 +3,4 @@
 *.iml
 *.env
 target/
-example/.example-classpath
+eventuate-examples/bin/.example-classpath

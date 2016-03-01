@@ -1,0 +1,26 @@
+#!/bin/sh
+
+EXAMPLE_MAIN=com.rbmhtechnology.example.querydb.WriterApp
+
+while [[ $# > 0 ]]; do
+    key="$1"
+    case $key in
+        -j|--java)
+        EXAMPLE_MAIN=com.rbmhtechnology.example.japi.querydb.WriterApp
+        ;;
+        *)
+        # unknown option
+        ;;
+    esac
+    shift # past argument or value
+done
+
+EXAMPLE_CONF=querydb/application.conf
+
+if [[ ! -f ./eventuate-examples/bin/.example-classpath ]]; then
+    sbt generateClasspath || exit 1
+fi
+
+source ./eventuate-examples/bin/.example-classpath
+
+exec java -cp "$EXAMPLE_CLASSPATH" $EXAMPLE_MAIN $EXAMPLE_CONF
