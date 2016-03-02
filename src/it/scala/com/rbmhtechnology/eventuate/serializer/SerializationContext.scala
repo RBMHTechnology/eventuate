@@ -19,14 +19,14 @@ package com.rbmhtechnology.eventuate.serializer
 import akka.actor._
 import akka.serialization.Serialization
 import akka.serialization.SerializationExtension
-import akka.testkit.TestProbe
 
 import com.typesafe.config.Config
 
+import scala.collection.immutable.Seq
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-object SerializerSpecSupport {
+object SerializationContext {
   class SenderActor(receiver: ActorSelection) extends Actor {
     def receive = {
       case msg => receiver ! msg
@@ -40,13 +40,20 @@ object SerializerSpecSupport {
   }
 }
 
-class SerializerSpecSupport(configs: Config*) {
-
-  val systems = configs.zipWithIndex.map { case (config, idx) => ActorSystem(s"test-system-${idx+1}", config) }
-
-  val serializations: Seq[Serialization] = systems.map(SerializationExtension(_))
-
-  def shutdown(): Unit = {
-    systems.foreach(system => Await.result(system.terminate(), 10.seconds))
+class SerializationContext(configs: Config*) {
+  val systems: Seq[ActorSystem] = configs.toList.zipWithIndex.map {
+    case (config, idx) => ActorSystem(s"test-system-${idx + 1}", config)
   }
+
+  val serializations: Seq[Serialization] =
+    systems.map(SerializationExtension(_))
+
+  val ports: Seq[Int] =
+    systems.map(port)
+
+  def port(system: ActorSystem): Int =
+    system.asInstanceOf[ExtendedActorSystem].provider.getDefaultAddress.port.get
+
+  def shutdown(): Unit =
+    systems.foreach(system => Await.result(system.terminate(), 10.seconds))
 }

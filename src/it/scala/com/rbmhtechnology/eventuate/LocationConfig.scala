@@ -18,8 +18,8 @@ package com.rbmhtechnology.eventuate
 
 import com.typesafe.config._
 
-object ReplicationConfig {
-  def create(port: Int = 2552, customConfig: String = ""): Config = {
+object LocationConfig {
+  def create(port: Int = 0, customConfig: Config = ConfigFactory.empty()): Config = {
     val defaultConfig = ConfigFactory.parseString(
       s"""
          |akka.actor.provider = "akka.remote.RemoteActorRefProvider"
@@ -41,6 +41,6 @@ object ReplicationConfig {
          |eventuate.snapshot.filesystem.dir = target/test-snapshot
        """.stripMargin)
 
-    ConfigFactory.parseString(customConfig).withFallback(defaultConfig)
+    customConfig.withFallback(defaultConfig)
   }
 }

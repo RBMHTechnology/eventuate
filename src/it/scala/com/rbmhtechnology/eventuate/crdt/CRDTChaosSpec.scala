@@ -27,8 +27,8 @@ import com.rbmhtechnology.eventuate.crdt.CRDTService.ValueUpdated
 import com.rbmhtechnology.eventuate.log._
 import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.log.leveldb._
+import com.typesafe.config.ConfigFactory
 
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import org.scalatest._
 
 import scala.collection.immutable.Seq
@@ -41,27 +41,21 @@ object CRDTChaosSpec {
     ThreadLocalRandom.current.nextInt(1, 10).toString
 }
 
-abstract class CRDTChaosSpec extends WordSpec with Matchers with ReplicationNodeRegistry {
+abstract class CRDTChaosSpec extends WordSpec with Matchers with MultiLocationSpec {
   import ReplicationIntegrationSpec.replicationConnection
   import CRDTChaosSpec._
 
-  def logFactory: String => Props
+  val customConfig = ConfigFactory.parseString(
+    """
+      |eventuate.log.write-batch-size = 3
+      |eventuate.log.replication.retry-delay = 100ms
+    """.stripMargin)
 
-  def config =
-    ReplicationConfig.create()
-
-  def node(nodeName: String, port: Int, connections: Set[ReplicationConnection]): ReplicationNode =
-    register(new ReplicationNode(nodeName, Set(ReplicationEndpoint.DefaultLogName), logFactory, connections, port = port, customConfig =
-      """
-        |eventuate.log.write-batch-size = 3
-        |eventuate.log.replication.retry-delay = 100ms
-      """.stripMargin))
-
-  def service(node: ReplicationNode): (ORSetService[String], TestProbe) = {
-    implicit val system = node.system
+  def service(endpoint: ReplicationEndpoint): (ORSetService[String], TestProbe) = {
+    implicit val system = endpoint.system
 
     val probe = TestProbe()
-    val service = new ORSetService[String](node.id, node.logs(ReplicationEndpoint.DefaultLogName)) {
+    val service = new ORSetService[String](endpoint.id, endpoint.logs("L1")) {
       val startCounter = new AtomicInteger()
       val stopCounter =  new AtomicInteger()
 
@@ -91,15 +85,20 @@ abstract class CRDTChaosSpec extends WordSpec with Matchers with ReplicationNode
     "converge under concurrent updates and write failures" in {
       val numUpdates = 100
 
-      val nodeA = node("A", 2552, Set(replicationConnection(2553), replicationConnection(2554), replicationConnection(2555)))
-      val nodeB = node("B", 2553, Set(replicationConnection(2552)))
-      val nodeC = node("C", 2554, Set(replicationConnection(2552)))
-      val nodeD = node("D", 2555, Set(replicationConnection(2552)))
+      val locationA = location("A", customConfig = customConfig)
+      val locationB = location("B", customConfig = customConfig)
+      val locationC = location("C", customConfig = customConfig)
+      val locationD = location("D", customConfig = customConfig)
 
-      val (serviceA, probeA) = service(nodeA)
-      val (serviceB, probeB) = service(nodeB)
-      val (serviceC, probeC) = service(nodeC)
-      val (serviceD, probeD) = service(nodeD)
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port), replicationConnection(locationC.port), replicationConnection(locationD.port)))
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port)))
+      val endpointC = locationC.endpoint(Set("L1"), Set(replicationConnection(locationA.port)))
+      val endpointD = locationD.endpoint(Set("L1"), Set(replicationConnection(locationA.port)))
+
+      val (serviceA, probeA) = service(endpointA)
+      val (serviceB, probeB) = service(endpointB)
+      val (serviceC, probeC) = service(endpointC)
+      val (serviceD, probeD) = service(endpointD)
 
       serviceA.add(crdtId, s"start-${serviceA.serviceId}")
       serviceB.add(crdtId, s"start-${serviceB.serviceId}")
@@ -143,7 +142,7 @@ abstract class CRDTChaosSpec extends WordSpec with Matchers with ReplicationNode
   }
 }
 
-class CRDTChaosSpecLeveldb extends CRDTChaosSpec with EventLogCleanupLeveldb {
+class CRDTChaosSpecLeveldb extends CRDTChaosSpec with MultiLocationSpecLeveldb {
   import CRDTChaosSpec._
 
   class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") {
@@ -151,7 +150,7 @@ class CRDTChaosSpecLeveldb extends CRDTChaosSpec with EventLogCleanupLeveldb {
       if (events.map(_.payload).contains(ValueUpdated(crdtId, AddOp(randomNr())))) throw boom else super.write(events, partition, clock)
   }
 
-  val logFactory: String => Props =
+  override val logFactory: String => Props =
     id => logProps(id)
 
   def logProps(logId: String, batching: Boolean = true): Props = {
@@ -160,7 +159,7 @@ class CRDTChaosSpecLeveldb extends CRDTChaosSpec with EventLogCleanupLeveldb {
   }
 }
 
-class CRDTChaosSpecCassandra  extends CRDTChaosSpec with EventLogCleanupCassandra {
+class CRDTChaosSpecCassandra  extends CRDTChaosSpec with MultiLocationSpecCassandra {
   import CRDTChaosSpec._
 
   class TestEventLog(id: String) extends CassandraEventLog(id) {
@@ -170,17 +169,6 @@ class CRDTChaosSpecCassandra  extends CRDTChaosSpec with EventLogCleanupCassandr
 
   override val logFactory: String => Props =
     id => logProps(id)
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-    EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
-  }
-
-  override def node(nodeName: String, port: Int, connections: Set[ReplicationConnection]): ReplicationNode = {
-    val node = super.node(nodeName, port, connections)
-    Cassandra(node.system) // enforce keyspace/schema setup
-    node
-  }
 
   def logProps(logId: String, batching: Boolean = true): Props = {
     val logProps = Props(new TestEventLog(logId)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")

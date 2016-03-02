@@ -20,6 +20,7 @@ import akka.actor.ActorSystem
 import akka.testkit.{TestProbe, TestKit}
 
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
+import com.rbmhtechnology.eventuate.SingleLocationSpecCassandra
 
 import com.typesafe.config._
 
@@ -39,7 +40,7 @@ object EventLogPartitioningSpecCassandra {
     """.stripMargin)
 }
 
-class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", EventLogPartitioningSpecCassandra.config)) with EventLogSpecSupport with EventLogLifecycleCassandra {
+class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", EventLogPartitioningSpecCassandra.config)) with EventLogSpecSupport with SingleLocationSpecCassandra {
   import EventLogSpec._
 
   def replay(fromSequenceNr: Long): Seq[(Any, Long)] = {

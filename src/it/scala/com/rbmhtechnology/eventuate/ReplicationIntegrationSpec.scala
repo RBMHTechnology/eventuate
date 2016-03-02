@@ -19,14 +19,9 @@ package com.rbmhtechnology.eventuate
 import akka.actor._
 import akka.testkit.TestProbe
 
-import com.rbmhtechnology.eventuate.ReplicationEndpoint._
 import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
-import com.rbmhtechnology.eventuate.log._
-import com.rbmhtechnology.eventuate.log.cassandra._
-import com.rbmhtechnology.eventuate.log.leveldb._
 
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import org.scalatest._
 
 import scala.collection.immutable.Seq
@@ -60,28 +55,10 @@ object ReplicationIntegrationSpec {
     ReplicationConnection("127.0.0.1", port, filters)
 }
 
-abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with ReplicationNodeRegistry {
+abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocationSpec {
   import ReplicationIntegrationSpec._
 
-  def logFactory: String => Props
-
-  var ctr: Int = 0
-
-  override def beforeEach(): Unit =
-    ctr += 1
-
-  def config =
-    ReplicationConfig.create()
-
-  def nodeId(node: String): String =
-    s"${node}_${ctr}"
-
-  def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection],
-    applicationName: String = DefaultApplicationName,
-    applicationVersion: ApplicationVersion = DefaultApplicationVersion): ReplicationNode = {
-
-    register(new ReplicationNode(nodeId(nodeName), logNames, logFactory, connections, applicationName, applicationVersion, port))
-  }
+  def customPort: Int
 
   def assertPartialOrder[A](events: Seq[A], sample: A*): Unit = {
     val indices = sample.map(events.indexOf)
@@ -90,17 +67,17 @@ abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with Re
 
   "Event log replication" must {
     "replicate all events by default" in {
-      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
-      val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2552), replicationConnection(2554)))
-      val nodeC = node("C", Set("L1"), 2554, Set(replicationConnection(2553)))
+      val locationA = location("A")
+      val locationB = location("B")
+      val locationC = location("C")
 
-      val probeA = new TestProbe(nodeA.system)
-      val probeB = new TestProbe(nodeB.system)
-      val probeC = new TestProbe(nodeC.system)
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port)))
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port), replicationConnection(locationC.port)))
+      val endpointC = locationC.endpoint(Set("L1"), Set(replicationConnection(locationB.port)))
 
-      val actorA = nodeA.system.actorOf(Props(new ReplicatedActor("pa", nodeA.logs("L1"), probeA.ref)))
-      val actorB = nodeB.system.actorOf(Props(new ReplicatedActor("pb", nodeB.logs("L1"), probeB.ref)))
-      val actorC = nodeC.system.actorOf(Props(new ReplicatedActor("pc", nodeC.logs("L1"), probeC.ref)))
+      val actorA = locationA.system.actorOf(Props(new ReplicatedActor("pa", endpointA.logs("L1"), locationA.probe.ref)))
+      val actorB = locationB.system.actorOf(Props(new ReplicatedActor("pb", endpointB.logs("L1"), locationB.probe.ref)))
+      val actorC = locationC.system.actorOf(Props(new ReplicatedActor("pc", endpointC.logs("L1"), locationC.probe.ref)))
 
       actorA ! "a1"
       actorA ! "a2"
@@ -116,9 +93,9 @@ abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with Re
 
       val expected = List("a1", "a2", "a3", "b1", "b2", "b3", "c1", "c2", "c3")
 
-      val eventsA = probeA.expectMsgAllOf(expected: _*)
-      val eventsB = probeB.expectMsgAllOf(expected: _*)
-      val eventsC = probeC.expectMsgAllOf(expected: _*)
+      val eventsA = locationA.probe.expectMsgAllOf(expected: _*)
+      val eventsB = locationB.probe.expectMsgAllOf(expected: _*)
+      val eventsC = locationC.probe.expectMsgAllOf(expected: _*)
 
       def assertPartialOrderOnAllReplicas(sample: String*): Unit = {
         assertPartialOrder(eventsA, sample)
@@ -131,14 +108,14 @@ abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with Re
       assertPartialOrderOnAllReplicas("c1", "c2", "c3")
     }
     "replicate events based on filter criteria" in {
-      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553, Map("L1" -> new PayloadEqualityFilter("b2")))))
-      val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2552, Map("L1" -> new PayloadEqualityFilter("a2")))))
+      val locationA = location("A")
+      val locationB = location("B")
 
-      val probeA = new TestProbe(nodeA.system)
-      val probeB = new TestProbe(nodeB.system)
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port, Map("L1" -> new PayloadEqualityFilter("b2")))))
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port, Map("L1" -> new PayloadEqualityFilter("a2")))))
 
-      val actorA = nodeA.system.actorOf(Props(new ReplicatedActor("pa", nodeA.logs("L1"), probeA.ref)))
-      val actorB = nodeB.system.actorOf(Props(new ReplicatedActor("pb", nodeB.logs("L1"), probeB.ref)))
+      val actorA = locationA.system.actorOf(Props(new ReplicatedActor("pa", endpointA.logs("L1"), locationA.probe.ref)))
+      val actorB = locationB.system.actorOf(Props(new ReplicatedActor("pb", endpointB.logs("L1"), locationB.probe.ref)))
 
       actorA ! "a1"
       actorA ! "a2"
@@ -148,76 +125,83 @@ abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with Re
       actorB ! "b2"
       actorB ! "b3"
 
-      val eventsA = probeA.expectMsgAllOf("a1", "a2", "a3", "b2")
-      val eventsB = probeB.expectMsgAllOf("b1", "b2", "b3", "a2")
+      val eventsA = locationA.probe.expectMsgAllOf("a1", "a2", "a3", "b2")
+      val eventsB = locationB.probe.expectMsgAllOf("b1", "b2", "b3", "a2")
     }
     "immediately attempt next batch if last replicated batch was not empty" in {
-      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
-      val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2552)))
+      val locationA = location("A")
+      val locationB = location("B")
 
-      val probeB = new TestProbe(nodeB.system)
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port)))
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port)))
 
-      val actorA = nodeA.system.actorOf(Props(new ReplicatedActor("pa", nodeA.logs("L1"), nodeA.system.deadLetters)))
-      val actorB = nodeB.system.actorOf(Props(new ReplicatedActor("pb", nodeB.logs("L1"), probeB.ref)))
+      val actorA = locationA.system.actorOf(Props(new ReplicatedActor("pa", endpointA.logs("L1"), locationA.system.deadLetters)))
+      val actorB = locationB.system.actorOf(Props(new ReplicatedActor("pb", endpointB.logs("L1"), locationB.probe.ref)))
 
       val num = 100
 
       1 to num foreach { i => actorA ! s"a${i}" }
-      1 to num foreach { i => probeB.expectMsg(s"a${i}") }
+      1 to num foreach { i => locationB.probe.expectMsg(s"a${i}") }
     }
     "detect replication server availability" in {
       import ReplicationEndpoint._
 
-      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
-      val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2552)))
+      val locationA = location("A")
+      val locationB = location("B")
 
-      val probeA = new TestProbe(nodeA.system)
-      val probeB = new TestProbe(nodeB.system)
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port)))
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port)))
 
-      nodeA.system.eventStream.subscribe(probeA.ref, classOf[Available])
-      nodeB.system.eventStream.subscribe(probeB.ref, classOf[Available])
+      endpointA.system.eventStream.subscribe(locationA.probe.ref, classOf[Available])
+      endpointB.system.eventStream.subscribe(locationB.probe.ref, classOf[Available])
 
-      probeA.expectMsg(Available(nodeId("B"), "L1"))
-      probeB.expectMsg(Available(nodeId("A"), "L1"))
+      locationA.probe.expectMsg(Available(endpointB.id, "L1"))
+      locationB.probe.expectMsg(Available(endpointA.id, "L1"))
     }
     "detect replication server unavailability" in {
       import ReplicationEndpoint._
 
-      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
-      val nodeB1 = node("B", Set("L1"), 2553, Set(replicationConnection(2552)))
+      val locationA = location("A")
+      val locationB1 = location("B", customPort = customPort)
 
-      val probeAvailable1 = new TestProbe(nodeA.system)
-      val probeAvailable2 = new TestProbe(nodeA.system)
-      val probeUnavailable = new TestProbe(nodeA.system)
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB1.port)))
+      val endpointB1 = locationB1.endpoint(Set("L1"), Set(replicationConnection(locationA.port)))
 
-      nodeA.system.eventStream.subscribe(probeAvailable1.ref, classOf[Available])
-      nodeA.system.eventStream.subscribe(probeUnavailable.ref, classOf[Unavailable])
+      val probeAvailable1 = new TestProbe(locationA.system)
+      val probeAvailable2 = new TestProbe(locationA.system)
+      val probeUnavailable = new TestProbe(locationA.system)
 
-      probeAvailable1.expectMsg(Available(nodeId("B"), "L1"))
-      Await.result(nodeB1.terminate(), 10.seconds)
-      probeUnavailable.expectMsg(Unavailable(nodeId("B"), "L1"))
+      locationA.system.eventStream.subscribe(probeAvailable1.ref, classOf[Available])
+      locationA.system.eventStream.subscribe(probeUnavailable.ref, classOf[Unavailable])
 
-      // start replication node B again
-      node("B", Set("L1"), 2553, Set(replicationConnection(2552)))
+      probeAvailable1.expectMsg(Available(endpointB1.id, "L1"))
+      Await.result(locationB1.terminate(), 10.seconds)
+      probeUnavailable.expectMsg(Unavailable(endpointB1.id, "L1"))
 
-      nodeA.system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
-      probeAvailable2.expectMsg(Available(nodeId("B"), "L1"))
+      val locationB2 = location("B", customPort = customPort)
+      val endpointB2 = locationB2.endpoint(Set("L1"), Set(replicationConnection(locationA.port)))
+
+      locationA.system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
+      probeAvailable2.expectMsg(Available(endpointB2.id, "L1"))
     }
     "support multiple logs per replication endpoint" in {
       val logNames = Set("L1", "L2")
 
-      val nodeA = node("A", logNames, 2552, Set(replicationConnection(2553)))
-      val nodeB = node("B", logNames, 2553, Set(replicationConnection(2552)))
+      val locationA = location("A")
+      val locationB = location("B")
 
-      val probeAL1 = new TestProbe(nodeA.system)
-      val probeAL2 = new TestProbe(nodeA.system)
-      val probeBL1 = new TestProbe(nodeB.system)
-      val probeBL2 = new TestProbe(nodeB.system)
+      val endpointA = locationA.endpoint(logNames, Set(replicationConnection(locationB.port)))
+      val endpointB = locationB.endpoint(logNames, Set(replicationConnection(locationA.port)))
 
-      val actorAL1 = nodeA.system.actorOf(Props(new ReplicatedActor("pa1", nodeA.logs("L1"), probeAL1.ref)))
-      val actorAL2 = nodeA.system.actorOf(Props(new ReplicatedActor("pa2", nodeA.logs("L2"), probeAL2.ref)))
-      val actorBL1 = nodeB.system.actorOf(Props(new ReplicatedActor("pb1", nodeB.logs("L1"), probeBL1.ref)))
-      val actorBL2 = nodeB.system.actorOf(Props(new ReplicatedActor("pb2", nodeB.logs("L2"), probeBL2.ref)))
+      val probeAL1 = new TestProbe(locationA.system)
+      val probeAL2 = new TestProbe(locationA.system)
+      val probeBL1 = new TestProbe(locationB.system)
+      val probeBL2 = new TestProbe(locationB.system)
+
+      val actorAL1 = locationA.system.actorOf(Props(new ReplicatedActor("pa1", endpointA.logs("L1"), probeAL1.ref)))
+      val actorAL2 = locationA.system.actorOf(Props(new ReplicatedActor("pa2", endpointA.logs("L2"), probeAL2.ref)))
+      val actorBL1 = locationB.system.actorOf(Props(new ReplicatedActor("pb1", endpointB.logs("L1"), probeBL1.ref)))
+      val actorBL2 = locationB.system.actorOf(Props(new ReplicatedActor("pb2", endpointB.logs("L2"), probeBL2.ref)))
 
       actorAL1 ! "a"
       actorBL1 ! "b"
@@ -235,18 +219,21 @@ abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with Re
       val logNamesA = Set("L1", "L2")
       val logNamesB = Set("L2", "L3")
 
-      val nodeA = node("A", logNamesA, 2552, Set(replicationConnection(2553)))
-      val nodeB = node("B", logNamesB, 2553, Set(replicationConnection(2552)))
+      val locationA = location("A")
+      val locationB = location("B")
 
-      val probeAL1 = new TestProbe(nodeA.system)
-      val probeAL2 = new TestProbe(nodeA.system)
-      val probeBL2 = new TestProbe(nodeB.system)
-      val probeBL3 = new TestProbe(nodeB.system)
+      val endpointA = locationA.endpoint(logNamesA, Set(replicationConnection(locationB.port)))
+      val endpointB = locationB.endpoint(logNamesB, Set(replicationConnection(locationA.port)))
 
-      val actorAL1 = nodeA.system.actorOf(Props(new ReplicatedActor("pa1", nodeA.logs("L1"), probeAL1.ref)))
-      val actorAL2 = nodeA.system.actorOf(Props(new ReplicatedActor("pa2", nodeA.logs("L2"), probeAL2.ref)))
-      val actorBL2 = nodeB.system.actorOf(Props(new ReplicatedActor("pb2", nodeB.logs("L2"), probeBL2.ref)))
-      val actorBL3 = nodeB.system.actorOf(Props(new ReplicatedActor("pb3", nodeB.logs("L3"), probeBL3.ref)))
+      val probeAL1 = new TestProbe(locationA.system)
+      val probeAL2 = new TestProbe(locationA.system)
+      val probeBL2 = new TestProbe(locationB.system)
+      val probeBL3 = new TestProbe(locationB.system)
+
+      val actorAL1 = locationA.system.actorOf(Props(new ReplicatedActor("pa1", endpointA.logs("L1"), probeAL1.ref)))
+      val actorAL2 = locationA.system.actorOf(Props(new ReplicatedActor("pa2", endpointA.logs("L2"), probeAL2.ref)))
+      val actorBL2 = locationB.system.actorOf(Props(new ReplicatedActor("pb2", endpointB.logs("L2"), probeBL2.ref)))
+      val actorBL3 = locationB.system.actorOf(Props(new ReplicatedActor("pb3", endpointB.logs("L3"), probeBL3.ref)))
 
       actorAL1 ! "a"
       actorAL2 ! "b"
@@ -289,35 +276,21 @@ abstract class ReplicationIntegrationSpec extends WordSpec with Matchers with Re
     targetApplicationName: String,
     targetApplicationVersion: ApplicationVersion): TestProbe = {
 
-    val endpoint = node("A", Set("L1"), 2552, Set(), sourceApplicationName, sourceApplicationVersion).endpoint
-    val probe = new TestProbe(endpoint.system)
+    val locationA = location("A")
+    val endpointA = locationA.endpoint(Set("L1"), Set(), sourceApplicationName, sourceApplicationVersion)
 
-    val message = ReplicationRead(1, Int.MaxValue, NoFilter, DurableEvent.UndefinedLogId, endpoint.system.deadLetters, VectorTime())
+    val message = ReplicationRead(1, Int.MaxValue, NoFilter, DurableEvent.UndefinedLogId, locationA.system.deadLetters, VectorTime())
     val envelope = ReplicationReadEnvelope(message, "L1", targetApplicationName, targetApplicationVersion)
 
-    endpoint.acceptor.tell(envelope, probe.ref)
-    probe
+    endpointA.acceptor.tell(envelope, locationA.probe.ref)
+    locationA.probe
   }
 }
 
-class ReplicationIntegrationSpecLeveldb extends ReplicationIntegrationSpec with EventLogCleanupLeveldb {
-  override val logFactory: String => Props = id => LeveldbEventLog.props(id)
+class ReplicationIntegrationSpecLeveldb extends ReplicationIntegrationSpec with MultiLocationSpecLeveldb {
+  def customPort = 2553
 }
 
-class ReplicationIntegrationSpecCassandra extends ReplicationIntegrationSpec with EventLogCleanupCassandra {
-  override val logFactory: String => Props = id => CassandraEventLog.props(id)
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-    EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
-  }
-
-  override def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection],
-    applicationName: String = DefaultApplicationName,
-    applicationVersion: ApplicationVersion = DefaultApplicationVersion): ReplicationNode = {
-
-    val node = super.node(nodeName, logNames, port, connections, applicationName, applicationVersion)
-    Cassandra(node.system) // enforce keyspace/schema setup
-    node
-  }
+class ReplicationIntegrationSpecCassandra extends ReplicationIntegrationSpec with MultiLocationSpecCassandra {
+  def customPort = 2554
 }

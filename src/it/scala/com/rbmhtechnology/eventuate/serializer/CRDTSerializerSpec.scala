@@ -41,15 +41,15 @@ class CRDTSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   import DurableEventSerializerSpec.ExamplePayload
   import CRDTSerializerSpec._
 
-  val support = new SerializerSpecSupport(
-    ReplicationConfig.create(2552),
-    ReplicationConfig.create(2553, serializerConfig),
-    ReplicationConfig.create(2554, serializerWithStringManifestConfig))
+  val context = new SerializationContext(
+    LocationConfig.create(),
+    LocationConfig.create(customConfig = serializerConfig),
+    LocationConfig.create(customConfig = serializerWithStringManifestConfig))
 
   override def afterAll(): Unit =
-    support.shutdown()
+    context.shutdown()
 
-  import support._
+  import context._
 
   "A CRDTSerializer" must {
     "support ORSet serialization with default payload serialization" in {

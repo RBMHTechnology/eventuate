@@ -23,9 +23,9 @@ import akka.pattern.ask
 import akka.testkit.TestProbe
 import akka.util.Timeout
 
-import com.rbmhtechnology.eventuate.log._
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSettings
 import com.rbmhtechnology.eventuate.utilities._
+import com.typesafe.config.ConfigFactory
 
 import org.apache.commons.io.FileUtils
 import org.scalatest._
@@ -47,14 +47,14 @@ object RecoverySpecLeveldb {
     }
   }
 
-  val config =
+  val config = ConfigFactory.parseString(
     """
       |eventuate.log.replication.retry-delay = 1s
       |eventuate.log.replication.remote-read-timeout = 2s
       |eventuate.disaster-recovery.remote-operation-retry-max = 10
       |eventuate.disaster-recovery.remote-operation-retry-delay = 1s
       |eventuate.disaster-recovery.remote-operation-timeout = 1s
-    """.stripMargin
+    """.stripMargin)
 
   def rootDirectory(target: ReplicationTarget): File =
     new File(new LeveldbEventLogSettings(target.endpoint.system.settings.config).rootDir)
@@ -65,30 +65,20 @@ object RecoverySpecLeveldb {
   }
 }
 
-class RecoverySpecLeveldb extends WordSpec with Matchers with ReplicationNodeRegistry with EventLogCleanupLeveldb {
+class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpec with LocationCleanupLeveldb {
   import ReplicationIntegrationSpec.replicationConnection
   import RecoverySpecLeveldb._
 
-  val logFactory: String => Props = id => EventLogLifecycleLeveldb.TestEventLog.props(id, batching = true)
+  val customPort: Int =
+    2555
 
-  var ctr: Int = 0
+  val logFactory: String => Props =
+    id => SingleLocationSpecLeveldb.TestEventLog.props(id, batching = true)
 
-  override def beforeEach(): Unit =
-    ctr += 1
-
-  def config =
-    ReplicationConfig.create()
-
-  def nodeId(node: String): String =
-    s"${node}_${ctr}"
-
-  def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection], customConfig: String = "", activate: Boolean = false): ReplicationNode =
-    register(new ReplicationNode(nodeId(nodeName), logNames, logFactory, connections, port = port, customConfig = RecoverySpecLeveldb.config + customConfig, activate = activate))
-
-  def assertConvergence(expected: Set[String], nodes: ReplicationNode *): Unit = {
-    val probes = nodes.map { node =>
-      val probe = new TestProbe(node.system)
-      node.system.actorOf(Props(new ConvergenceView(s"p-${node.id}", node.logs("L1"), expected.size, probe.ref)))
+  def assertConvergence(expected: Set[String], endpoints: ReplicationEndpoint *): Unit = {
+    val probes = endpoints.map { endpoint =>
+      val probe = new TestProbe(endpoint.system)
+      endpoint.system.actorOf(Props(new ConvergenceView(s"p-${endpoint.id}", endpoint.logs("L1"), expected.size, probe.ref)))
       probe
     }
     probes.foreach(_.expectMsg(expected))
@@ -96,55 +86,68 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with ReplicationNodeReg
 
   "Replication endpoint recovery" must {
     "disallow activation of endpoint during and after recovery" in {
-      node("B", Set("L1"), 2553, Set(replicationConnection(2552))).endpoint.activate()
-      val endpoint = node("A", Set("L1"), 2552, Set(replicationConnection(2553))).endpoint
+      val locationA = location("A", customConfig = RecoverySpecLeveldb.config)
+      val locationB = location("B", customConfig = RecoverySpecLeveldb.config)
 
-      val recovery = endpoint.recover()
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port)), activate = false)
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port)))
 
-      an [IllegalStateException] shouldBe thrownBy(endpoint.activate())
+      val recovery = endpointA.recover()
+
+      an [IllegalStateException] shouldBe thrownBy(endpointA.activate())
       recovery.await
-      an [IllegalStateException] shouldBe thrownBy(endpoint.activate())
+      an [IllegalStateException] shouldBe thrownBy(endpointA.activate())
     }
     "fail when connected endpoint is unavailable" in {
-      val endpoint = node("A", Set("L1"), 2552, Set(replicationConnection(2553)),
-        customConfig = "eventuate.disaster-recovery.remote-operation-retry-max = 0")
-        .endpoint
+      val locationA = location("A", customConfig = ConfigFactory.parseString("eventuate.disaster-recovery.remote-operation-retry-max = 0").withFallback(RecoverySpecLeveldb.config))
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(customPort)))
 
-      an [Exception] shouldBe thrownBy(endpoint.recover().await)
+      an [Exception] shouldBe thrownBy(endpointA.recover().await)
     }
     "succeed normally if the endpoint was healthy (but not convergent yet)" in {
-      def newNodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
-      val nodeA = newNodeA
-      val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2552)))
+      val locationB = location("B", customConfig = RecoverySpecLeveldb.config)
+      def newLocationA = location("A", customConfig = RecoverySpecLeveldb.config, customPort = customPort)
+      val locationA1 = newLocationA
 
-      val targetA = nodeA.endpoint.target("L1")
-      val targetB = nodeB.endpoint.target("L1")
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA1.port)), activate = false)
+      def newEndpointA(l: Location) = l.endpoint(Set("L1"), Set(replicationConnection(locationB.port)), activate = false)
+      val endpointA1 = newEndpointA(locationA1)
+
+      val targetA = endpointA1.target("L1")
+      val targetB = endpointB.target("L1")
 
       write(targetA, List("a1", "a2"))
       write(targetB, List("b1", "b2"))
       replicate(targetA, targetB, 1)
       replicate(targetB, targetA, 1)
 
-      nodeA.terminate().await
-      val restartedA = newNodeA
+      locationA1.terminate().await
 
-      nodeB.endpoint.activate()
-      restartedA.endpoint.recover().await
+      val locationA2 = newLocationA
+      val endpointA2 = newEndpointA(locationA2)
 
-      assertConvergence(Set("a1", "a2", "b1", "b2"), restartedA, nodeB)
+      endpointB.activate()
+      endpointA2.recover().await
+
+      assertConvergence(Set("a1", "a2", "b1", "b2"), endpointA2, endpointB)
     }
     "repair inconsistencies of an endpoint that has lost all events" in {
-      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2555)))
-      val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2555)))
-      val nodeC = node("C", Set("L1"), 2554, Set(replicationConnection(2555)))
-      def nodeD = node("D", Set("L1"), 2555, Set(replicationConnection(2552), replicationConnection(2553), replicationConnection(2554)))
+      val locationA = location("A", customConfig = RecoverySpecLeveldb.config)
+      val locationB = location("B", customConfig = RecoverySpecLeveldb.config)
+      val locationC = location("C", customConfig = RecoverySpecLeveldb.config)
+      def newLocationD = location("D", customConfig = RecoverySpecLeveldb.config, customPort = customPort)
+      val locationD1 = newLocationD
 
-      val nodeD1 = nodeD
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationD1.port)), activate = false)
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationD1.port)), activate = false)
+      val endpointC = locationC.endpoint(Set("L1"), Set(replicationConnection(locationD1.port)), activate = false)
+      def newEndpointD(l: Location) = l.endpoint(Set("L1"), Set(replicationConnection(locationA.port), replicationConnection(locationB.port), replicationConnection(locationC.port)), activate = false)
+      val endpointD1 = newEndpointD(locationD1)
 
-      val targetA = nodeA.endpoint.target("L1")
-      val targetB = nodeB.endpoint.target("L1")
-      val targetC = nodeC.endpoint.target("L1")
-      val targetD1 = nodeD1.endpoint.target("L1")
+      val targetA = endpointA.target("L1")
+      val targetB = endpointB.target("L1")
+      val targetC = endpointC.target("L1")
+      val targetD1 = endpointD1.target("L1")
 
       val logDirD = logDirectory(targetD1)
 
@@ -163,66 +166,40 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with ReplicationNodeReg
       replicate(targetD1, targetC)
 
       // what a disaster ...
-      nodeD1.terminate().await
+      locationD1.terminate().await
       FileUtils.deleteDirectory(logDirD)
 
-      nodeA.endpoint.activate()
-      nodeB.endpoint.activate()
-      nodeC.endpoint.activate()
+      endpointA.activate()
+      endpointB.activate()
+      endpointC.activate()
 
       // start node D again (no backup available)
-      val nodeD2 = nodeD
+      val locationD2 = newLocationD
+      val endpointD2 = newEndpointD(locationD2)
 
-      nodeD2.endpoint.recover().await
+      endpointD2.recover().await
       // disclose bug #152 (writing new events is allowed after successful recovery)
-      write(nodeD2.endpoint.target("L1"), List("d1"))
+      write(endpointD2.target("L1"), List("d1"))
 
-      assertConvergence(Set("a", "b", "c", "d", "d1"), nodeA, nodeB, nodeC, nodeD2)
-    }
-    "repair inconsistencies if recovery was stopped during event recovery and restarted" in {
-      def newNodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)), customConfig = "eventuate.log.write-batch-size = 1")
-      val nodeA = newNodeA
-      val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2552)))
-
-      nodeA.endpoint.activate()
-      nodeB.endpoint.activate()
-      val targetA = nodeA.endpoint.target("L1")
-      val logDirA = logDirectory(targetA)
-      val targetB = nodeB.endpoint.target("L1")
-
-      val as = (0 to 5).map("A" + _)
-      val bs = (0 to 5).map("B" + _)
-      val all = as.toSet ++ bs.toSet
-      write(targetA, as)
-      write(targetB, bs)
-      assertConvergence(all, nodeA, nodeB)
-
-      nodeA.terminate().await
-      FileUtils.deleteDirectory(logDirA)
-
-      val restartedA = newNodeA
-      restartedA.endpoint.recover()
-      restartedA.eventListener("L1").waitForMessage("A1")
-
-      restartedA.terminate().await
-
-      val restartedA2 = newNodeA
-      restartedA2.endpoint.recover().await
-
-      assertConvergence(all, restartedA2, nodeB)
+      assertConvergence(Set("a", "b", "c", "d", "d1"), endpointA, endpointB, endpointC, endpointD2)
     }
     "repair inconsistencies of an endpoint that has lost all events but has been partially recovered from a storage backup" in {
-      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2555)))
-      val nodeB = node("B", Set("L1"), 2553, Set(replicationConnection(2555)))
-      val nodeC = node("C", Set("L1"), 2554, Set(replicationConnection(2555)))
-      def nodeD = node("D", Set("L1"), 2555, Set(replicationConnection(2552), replicationConnection(2553), replicationConnection(2554)))
+      val locationA = location("A", customConfig = RecoverySpecLeveldb.config)
+      val locationB = location("B", customConfig = RecoverySpecLeveldb.config)
+      val locationC = location("C", customConfig = RecoverySpecLeveldb.config)
+      def newLocationD = location("D", customConfig = RecoverySpecLeveldb.config, customPort = customPort)
+      val locationD1 = newLocationD
 
-      val nodeD1 = nodeD
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationD1.port)), activate = false)
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationD1.port)), activate = false)
+      val endpointC = locationC.endpoint(Set("L1"), Set(replicationConnection(locationD1.port)), activate = false)
+      def newEndpointD(l: Location) = l.endpoint(Set("L1"), Set(replicationConnection(locationA.port), replicationConnection(locationB.port), replicationConnection(locationC.port)), activate = false)
+      val endpointD1 = newEndpointD(locationD1)
 
-      val targetA = nodeA.endpoint.target("L1")
-      val targetB = nodeB.endpoint.target("L1")
-      val targetC = nodeC.endpoint.target("L1")
-      val targetD1 = nodeD1.endpoint.target("L1")
+      val targetA = endpointA.target("L1")
+      val targetB = endpointB.target("L1")
+      val targetC = endpointC.target("L1")
+      val targetD1 = endpointD1.target("L1")
 
       val rootDirD = rootDirectory(targetD1)
       val logDirD = logDirectory(targetD1)
@@ -236,11 +213,12 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with ReplicationNodeReg
       write(targetC, List("c"))
       replicate(targetB, targetD1)
 
-      nodeD1.terminate().await
+      locationD1.terminate().await
       FileUtils.copyDirectory(logDirD, bckDirD)
 
-      val nodeD2 = nodeD
-      val targetD2 = nodeD2.endpoint.target("L1")
+      val locationD2 = newLocationD
+      val endpointD2 = newEndpointD(locationD2)
+      val targetD2 = endpointD2.target("L1")
 
       replicate(targetC, targetD2)
       replicate(targetD2, targetB)
@@ -250,56 +228,102 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with ReplicationNodeReg
       replicate(targetD2, targetC)
 
       // what a disaster ...
-      nodeD2.terminate().await
+      locationD2.terminate().await
       FileUtils.deleteDirectory(logDirD)
 
       // install a backup
       FileUtils.copyDirectory(bckDirD, logDirD)
 
-      nodeA.endpoint.activate()
-      nodeB.endpoint.activate()
-      nodeC.endpoint.activate()
+      endpointA.activate()
+      endpointB.activate()
+      endpointC.activate()
 
       // start node D again (with backup available)
-      val nodeD3 = nodeD
+      val locationD3 = newLocationD
+      val endpointD3 = newEndpointD(locationD3)
 
-      nodeD3.endpoint.recover().await
+      endpointD3.recover().await
 
-      assertConvergence(Set("a", "b", "c", "d"), nodeA, nodeB, nodeC, nodeD3)
+      assertConvergence(Set("a", "b", "c", "d"), endpointA, endpointB, endpointC, endpointD3)
+    }
+    "repair inconsistencies if recovery was stopped during event recovery and restarted" in {
+      val config = ConfigFactory.parseString("eventuate.log.write-batch-size = 1").withFallback(RecoverySpecLeveldb.config)
+
+      val locationB = location("B", customConfig = config)
+      def newLocationA = location("A", customConfig = config, customPort = customPort)
+      val locationA1 = newLocationA
+
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA1.port)), activate = true)
+      def newEndpointA(l: Location) = l.endpoint(Set("L1"), Set(replicationConnection(locationB.port)), activate = false)
+      val endpointA1 = newEndpointA(locationA1)
+
+      val targetA = endpointA1.target("L1")
+      val logDirA = logDirectory(targetA)
+      val targetB = endpointB.target("L1")
+
+      val as = (0 to 5).map("A" + _)
+      val bs = (0 to 5).map("B" + _)
+      val all = as.toSet ++ bs.toSet
+
+      endpointA1.activate()
+
+      write(targetA, as)
+      write(targetB, bs)
+      assertConvergence(all, endpointA1, endpointB)
+
+      locationA1.terminate().await
+      FileUtils.deleteDirectory(logDirA)
+
+      val locationA2 = newLocationA
+      val endpointA2 = newEndpointA(locationA2)
+
+      endpointA2.recover()
+      locationA2.listener(endpointA2.logs("L1")).waitForMessage("A1")
+      locationA2.terminate().await
+
+      val locationA3 = newLocationA
+      val endpointA3 = newEndpointA(locationA3)
+
+      endpointA3.recover().await
+
+      assertConvergence(all, endpointA3, endpointB)
     }
   }
 
   "A replication endpoint" must {
-    "not allow concurrent recoveries" in {
-      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
+    def createEndpoint: ReplicationEndpoint =
+      location("A", customConfig = RecoverySpecLeveldb.config).endpoint(Set("L1"), Set(replicationConnection(customPort)), activate = false)
 
-      nodeA.endpoint.recover()
+    "not allow concurrent recoveries" in {
+      val endpoint = createEndpoint
+
+      endpoint.recover()
       intercept[IllegalStateException] {
-        nodeA.endpoint.recover().await
+        endpoint.recover().await
       }
     }
     "not allow concurrent recovery and activation" in {
-      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
+      val endpoint = createEndpoint
 
-      nodeA.endpoint.recover()
+      endpoint.recover()
       intercept[IllegalStateException] {
-        nodeA.endpoint.activate()
+        endpoint.activate()
       }
     }
     "not allow activated endpoints to be recovered" in {
-      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
+      val endpoint = createEndpoint
 
-      nodeA.endpoint.activate()
+      endpoint.activate()
       intercept[IllegalStateException] {
-        nodeA.endpoint.recover().await
+        endpoint.recover().await
       }
     }
     "not allow multiple activations" in {
-      val nodeA = node("A", Set("L1"), 2552, Set(replicationConnection(2553)))
+      val endpoint = createEndpoint
 
-      nodeA.endpoint.activate()
+      endpoint.activate()
       intercept[IllegalStateException] {
-        nodeA.endpoint.activate()
+        endpoint.activate()
       }
     }
   }

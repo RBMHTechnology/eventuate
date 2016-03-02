@@ -17,44 +17,29 @@
 package com.rbmhtechnology.eventuate
 
 import akka.actor._
-import akka.testkit.TestProbe
 
-import com.rbmhtechnology.eventuate.log._
-import com.rbmhtechnology.eventuate.log.cassandra._
-import com.rbmhtechnology.eventuate.log.leveldb._
-
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import org.scalatest._
 
 import scala.concurrent.Future
 
-abstract class ReplicationCycleSpec extends WordSpec with Matchers with ReplicationNodeRegistry {
+abstract class ReplicationCycleSpec extends WordSpec with Matchers with MultiLocationSpec {
   import ReplicationIntegrationSpec._
 
-  def logFactory: String => Props
+  var locationA: Location = _
+  var locationB: Location = _
+  var locationC: Location = _
 
-  var ctr: Int = 0
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    locationA = location("A")
+    locationB = location("B")
+    locationC = location("C")
+  }
 
-  override def beforeEach(): Unit =
-    ctr += 1
-
-  def config =
-    ReplicationConfig.create()
-
-  def nodeId(node: String): String =
-    s"${node}_${ctr}"
-
-  def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection]): ReplicationNode =
-    register(new ReplicationNode(nodeId(nodeName), logNames, logFactory, connections, port = port, customConfig = "eventuate.log.write-batch-size = 50"))
-
-  def testReplication(nodeA: ReplicationNode, nodeB: ReplicationNode, nodeC: ReplicationNode): Unit = {
-    val probeA = new TestProbe(nodeA.system)
-    val probeB = new TestProbe(nodeB.system)
-    val probeC = new TestProbe(nodeC.system)
-
-    val actorA = nodeA.system.actorOf(Props(new ReplicatedActor("pa", nodeA.logs("L1"), probeA.ref)))
-    val actorB = nodeB.system.actorOf(Props(new ReplicatedActor("pb", nodeB.logs("L1"), probeB.ref)))
-    val actorC = nodeB.system.actorOf(Props(new ReplicatedActor("pc", nodeC.logs("L1"), probeC.ref)))
+  def testReplication(endpointA: ReplicationEndpoint, endpointB: ReplicationEndpoint, endpointC: ReplicationEndpoint): Unit = {
+    val actorA = locationA.system.actorOf(Props(new ReplicatedActor("pa", endpointA.logs("L1"), locationA.probe.ref)))
+    val actorB = locationB.system.actorOf(Props(new ReplicatedActor("pb", endpointB.logs("L1"), locationB.probe.ref)))
+    val actorC = locationC.system.actorOf(Props(new ReplicatedActor("pc", endpointC.logs("L1"), locationC.probe.ref)))
 
     actorA ! "a1"
     actorB ! "b1"
@@ -62,9 +47,9 @@ abstract class ReplicationCycleSpec extends WordSpec with Matchers with Replicat
 
     val expected = List("a1", "b1", "c1")
 
-    val eventsA = probeA.expectMsgAllOf(expected: _*)
-    val eventsB = probeB.expectMsgAllOf(expected: _*)
-    val eventsC = probeC.expectMsgAllOf(expected: _*)
+    val eventsA = locationA.probe.expectMsgAllOf(expected: _*)
+    val eventsB = locationB.probe.expectMsgAllOf(expected: _*)
+    val eventsC = locationC.probe.expectMsgAllOf(expected: _*)
 
     val num = 100
     val expectedA = 2 to num map { i => s"a$i"}
@@ -72,49 +57,33 @@ abstract class ReplicationCycleSpec extends WordSpec with Matchers with Replicat
     val expectedC = 2 to num map { i => s"c$i"}
     val all = expectedA ++ expectedB ++ expectedC
 
-    import nodeA.system.dispatcher
+    import endpointA.system.dispatcher
 
     Future(expectedA.foreach(s => actorA ! s))
     Future(expectedB.foreach(s => actorB ! s))
     Future(expectedC.foreach(s => actorC ! s))
 
-    probeA.expectMsgAllOf(all: _*)
-    probeB.expectMsgAllOf(all: _*)
-    probeC.expectMsgAllOf(all: _*)
+    locationA.probe.expectMsgAllOf(all: _*)
+    locationB.probe.expectMsgAllOf(all: _*)
+    locationC.probe.expectMsgAllOf(all: _*)
   }
 
   "Event log replication" must {
     "support bi-directional cyclic replication networks" in {
       testReplication(
-        node("A", Set("L1"), 2552, Set(replicationConnection(2553), replicationConnection(2554))),
-        node("B", Set("L1"), 2553, Set(replicationConnection(2552), replicationConnection(2554))),
-        node("C", Set("L1"), 2554, Set(replicationConnection(2552), replicationConnection(2553))))
+        locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port), replicationConnection(locationC.port))),
+        locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port), replicationConnection(locationC.port))),
+        locationC.endpoint(Set("L1"), Set(replicationConnection(locationA.port), replicationConnection(locationB.port))))
 
     }
     "support uni-directional cyclic replication networks" in {
       testReplication(
-        node("A", Set("L1"), 2552, Set(replicationConnection(2553))),
-        node("B", Set("L1"), 2553, Set(replicationConnection(2554))),
-        node("C", Set("L1"), 2554, Set(replicationConnection(2552))))
+        locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port))),
+        locationB.endpoint(Set("L1"), Set(replicationConnection(locationC.port))),
+        locationC.endpoint(Set("L1"), Set(replicationConnection(locationA.port))))
     }
   }
 }
 
-class ReplicationCycleSpecLeveldb extends ReplicationCycleSpec with EventLogCleanupLeveldb {
-  override val logFactory: String => Props = id => LeveldbEventLog.props(id)
-}
-
-class ReplicationCycleSpecCassandra extends ReplicationCycleSpec with EventLogCleanupCassandra {
-  override val logFactory: String => Props = id => CassandraEventLog.props(id)
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-    EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
-  }
-
-  override def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection]): ReplicationNode = {
-    val node = super.node(nodeName, logNames, port, connections)
-    Cassandra(node.system) // enforce keyspace/schema setup
-    node
-  }
-}
+class ReplicationCycleSpecLeveldb extends ReplicationCycleSpec with MultiLocationSpecLeveldb
+class ReplicationCycleSpecCassandra extends ReplicationCycleSpec with MultiLocationSpecCassandra

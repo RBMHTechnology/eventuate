@@ -19,12 +19,12 @@ package com.rbmhtechnology.eventuate.crdt
 import akka.actor._
 import akka.testkit._
 
-import com.rbmhtechnology.eventuate.log.EventLogLifecycleLeveldb
+import com.rbmhtechnology.eventuate.SingleLocationSpecLeveldb
 import com.rbmhtechnology.eventuate.utilities._
 
 import org.scalatest._
 
-class CRDTServiceSpecLeveldb extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with EventLogLifecycleLeveldb {
+class CRDTServiceSpecLeveldb extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with SingleLocationSpecLeveldb {
   "A CRDTService" must {
     "manage multiple CRDTs identified by name" in {
       val service = new CounterService[Int]("a", log)

@@ -22,8 +22,8 @@ import akka.testkit.TestProbe
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
-import com.rbmhtechnology.eventuate.serializer.SerializerSpecSupport.ReceiverActor
-import com.rbmhtechnology.eventuate.serializer.SerializerSpecSupport.SenderActor
+import com.rbmhtechnology.eventuate.serializer.SerializationContext.ReceiverActor
+import com.rbmhtechnology.eventuate.serializer.SerializationContext.SenderActor
 
 import org.scalatest._
 
@@ -57,18 +57,18 @@ object ReplicationProtocolSerializerSpec {
 class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   import ReplicationProtocolSerializerSpec._
 
-  val support = new SerializerSpecSupport(
-    ReplicationConfig.create(2552),
-    ReplicationConfig.create(2553))
+  val context = new SerializationContext(
+    LocationConfig.create(),
+    LocationConfig.create())
 
   override def afterAll(): Unit =
-    support.shutdown()
+    context.shutdown()
 
-  import support._
+  import context._
 
   val receiverProbe = new TestProbe(systems(1))
   val receiverActor = systems(1).actorOf(Props(new ReceiverActor(receiverProbe.ref)), "receiver")
-  val senderActor = systems(0).actorOf(Props(new SenderActor(systems(0).actorSelection("akka.tcp://test-system-2@127.0.0.1:2553/user/receiver"))))
+  val senderActor = systems(0).actorOf(Props(new SenderActor(systems(0).actorSelection(s"akka.tcp://test-system-2@127.0.0.1:${ports(1)}/user/receiver"))))
 
   val dl1 = systems(0).deadLetters
   val dl2 = systems(1).deadLetters
