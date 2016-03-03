@@ -7,11 +7,11 @@ for location in A B C
 do
     if command -v osascript >/dev/null 2>&1; then
         osascript -e "tell app \"Terminal\"
-            do script \"cd `pwd`; ./example/dbreplica-location $location\"
+            do script \"cd `pwd`; ./example/dbreplica-location $* $location\"
         end tell"
     else
         if command -v xterm >/dev/null 2>&1; then
-            xterm -title "location $location" -e "./example/dbreplica-location $location" &
+            xterm -title "location $location" -e "./example/dbreplica-location $* $location" &
         else
             echo "Neither osascript nor xterm were found";
         fi
