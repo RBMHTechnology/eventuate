@@ -20,8 +20,6 @@ import akka.actor._
 import akka.testkit._
 
 import com.rbmhtechnology.eventuate.EventsourcedView.Handler
-import com.rbmhtechnology.eventuate.log.EventLogLifecycleCassandra
-import com.rbmhtechnology.eventuate.log.EventLogLifecycleLeveldb
 
 import org.scalatest._
 
@@ -49,11 +47,8 @@ object PersistOnEventIntegrationSpec {
   }
 }
 
-abstract class PersistOnEventIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach {
+abstract class PersistOnEventIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with SingleLocationSpec {
   import PersistOnEventIntegrationSpec._
-
-  def log: ActorRef
-  def logId: String
 
   var probe: TestProbe = _
 
@@ -74,5 +69,5 @@ abstract class PersistOnEventIntegrationSpec extends TestKit(ActorSystem("test")
   }
 }
 
-class PersistOnEventIntegrationSpecLeveldb extends PersistOnEventIntegrationSpec with EventLogLifecycleLeveldb
-class PersistOnEventIntegrationSpecCassandra extends PersistOnEventIntegrationSpec with EventLogLifecycleCassandra
+class PersistOnEventIntegrationSpecLeveldb extends PersistOnEventIntegrationSpec with SingleLocationSpecLeveldb
+class PersistOnEventIntegrationSpecCassandra extends PersistOnEventIntegrationSpec with SingleLocationSpecCassandra

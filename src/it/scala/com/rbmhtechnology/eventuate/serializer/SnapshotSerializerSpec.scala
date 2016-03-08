@@ -62,15 +62,15 @@ class SnapshotSerializerSpec extends WordSpec with Matchers with BeforeAndAfterA
   import DurableEventSerializerSpec.ExamplePayload
   import SnapshotSerializerSpec._
 
-  val support = new SerializerSpecSupport(
-    ReplicationConfig.create(2552),
-    ReplicationConfig.create(2553, serializerConfig),
-    ReplicationConfig.create(2554, serializerWithStringManifestConfig))
+  val context = new SerializationContext(
+    LocationConfig.create(),
+    LocationConfig.create(customConfig = serializerConfig),
+    LocationConfig.create(customConfig = serializerWithStringManifestConfig))
 
   override def afterAll(): Unit =
-    support.shutdown()
+    context.shutdown()
 
-  import support._
+  import context._
 
   "A SnapshotSerializer" must {
     "support snapshot serialization with default payload serialization" in {

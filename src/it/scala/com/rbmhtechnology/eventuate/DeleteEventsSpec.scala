@@ -18,10 +18,8 @@ package com.rbmhtechnology.eventuate
 
 import akka.actor._
 
-import com.rbmhtechnology.eventuate.ReplicationIntegrationSpec.replicationConnection
-import com.rbmhtechnology.eventuate.log.EventLogCleanupLeveldb
-import com.rbmhtechnology.eventuate.log.EventLogLifecycleLeveldb.TestEventLog
 import com.rbmhtechnology.eventuate.utilities.AwaitHelper
+import com.typesafe.config.ConfigFactory
 
 import org.scalatest.Matchers
 import org.scalatest.WordSpec
@@ -30,19 +28,7 @@ import scala.util.Failure
 import scala.util.Success
 
 object DeleteEventsSpecLeveldb {
-  val L1 = "L1"
-
-  val portA = 2552
-  val connectedToA = replicationConnection(portA)
-
-  val portB = 2553
-  val connectedToB = replicationConnection(portB)
-
-  val portC = 2554
-  val connectedToC = replicationConnection(portC)
-
   class Emitter(locationId: String, val eventLog: ActorRef) extends EventsourcedActor with ActorLogging {
-
     override def id = s"${locationId}_Emitter"
 
     override def onEvent = Actor.emptyBehavior
@@ -55,77 +41,76 @@ object DeleteEventsSpecLeveldb {
     }
   }
 
-  def emitter(node: ReplicationNode, logName: String) =
-    node.system.actorOf(Props(new Emitter(node.id, node.logs(logName))))
+  def emitter(endpoint: ReplicationEndpoint, logName: String) =
+    endpoint.system.actorOf(Props(new Emitter(endpoint.id, endpoint.logs(logName))))
+
+  val config = ConfigFactory.parseString(
+    """
+      |eventuate.log.replication.retry-delay = 1s
+      |eventuate.log.replication.remote-read-timeout = 2s
+      |eventuate.disaster-recovery.remote-operation-retry-max = 10
+      |eventuate.disaster-recovery.remote-operation-retry-delay = 1s
+      |eventuate.disaster-recovery.remote-operation-timeout = 1s
+    """.stripMargin)
+
+  val L1 = "L1"
 }
 
-class DeleteEventsSpecLeveldb extends WordSpec with Matchers with ReplicationNodeRegistry with EventLogCleanupLeveldb {
+class DeleteEventsSpecLeveldb extends WordSpec with Matchers with MultiLocationSpecLeveldb {
+  import ReplicationIntegrationSpec.replicationConnection
   import DeleteEventsSpecLeveldb._
-
-  val logFactory: String => Props = id => TestEventLog.props(id, batching = true)
-
-  var ctr: Int = 0
-
-  override def beforeEach(): Unit =
-    ctr += 1
-
-  def config =
-    ReplicationConfig.create()
-
-  def nodeId(node: String): String =
-    s"${node}_${ctr}"
-
-  def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection], customConfig: String = "", activate: Boolean = false): ReplicationNode =
-    register(new ReplicationNode(nodeId(nodeName), logNames, logFactory, connections, port = port, customConfig = RecoverySpecLeveldb.config + customConfig, activate = activate))
 
   "Deleting events" must {
     "not replay deleted events on restart" in {
-      val nodeA = newNodeA(Set(L1))
-      val emitterA = emitter(nodeA, L1)
-      val listenerA = nodeA.eventListener(L1)
+      def newLocationA = location("A", customConfig = DeleteEventsSpecLeveldb.config)
+      def newEndpointA(l: Location) = l.endpoint(Set(L1), Set(), activate = false)
+
+      val locationA1 = newLocationA
+      val endpointA1 = newEndpointA(locationA1)
+
+      val listenerA = locationA1.listener(endpointA1.logs(L1))
+      val emitterA = emitter(endpointA1, L1)
 
       (0 to 5).foreach(emitterA ! _)
       listenerA.waitForMessage(5)
 
-      nodeA.endpoint.delete(L1, 3, Set.empty).await shouldBe 3
+      endpointA1.delete(L1, 3, Set.empty).await shouldBe 3
+      locationA1.terminate().await
 
-      nodeA.terminate().await
+      val locationA2 = newLocationA
+      def endpointA2 = newEndpointA(locationA2)
 
-      val restartedA = newNodeA(Set(L1))
-      restartedA.eventListener(L1).expectMsgAllOf(3 to 5: _*)
+      locationA2.listener(endpointA2.logs(L1)).expectMsgAllOf(3 to 5: _*)
     }
   }
 
   "Conditionally deleting events" must {
     "keep event available for corresponding remote log" in {
-      val nodeA = newNodeA(Set(L1), Set(connectedToB, connectedToC))
-      val nodeB = newNodeB(Set(L1), Set(connectedToA))
-      val nodeC = newNodeC(Set(L1), Set(connectedToA))
-      val emitterA = emitter(nodeA, L1)
-      val listenerA = nodeA.eventListener(L1)
-      val listenerB = nodeB.eventListener(L1)
-      val listenerC = nodeC.eventListener(L1)
+      val locationA = location("A", customConfig = DeleteEventsSpecLeveldb.config)
+      val locationB = location("B", customConfig = DeleteEventsSpecLeveldb.config)
+      val locationC = location("C", customConfig = DeleteEventsSpecLeveldb.config)
+
+      val endpointA = locationA.endpoint(Set(L1), Set(replicationConnection(locationB.port), replicationConnection(locationC.port)), activate = false)
+      val endpointB = locationB.endpoint(Set(L1), Set(replicationConnection(locationA.port)), activate = false)
+      val endpointC = locationC.endpoint(Set(L1), Set(replicationConnection(locationA.port)), activate = false)
+
+      val emitterA = emitter(endpointA, L1)
+
+      val listenerA = locationA.listener(endpointA.logs(L1))
+      val listenerB = locationB.listener(endpointB.logs(L1))
+      val listenerC = locationC.listener(endpointC.logs(L1))
 
       (0 to 5).foreach(emitterA ! _)
       listenerA.waitForMessage(5)
 
-      nodeA.endpoint.delete(L1, 3, Set(nodeB.endpoint.id, nodeC.endpoint.id)).await shouldBe 3
+      endpointA.delete(L1, 3, Set(endpointB.id, endpointC.id)).await shouldBe 3
 
-      nodeA.endpoint.activate()
-      nodeB.endpoint.activate()
+      endpointA.activate()
+      endpointB.activate()
       listenerB.expectMsgAllOf(0 to 5: _*)
 
-      nodeC.endpoint.activate()
+      endpointC.activate()
       listenerC.expectMsgAllOf(0 to 5: _*)
     }
   }
-
-  def newNodeA(logNames: Set[String], connections: Set[ReplicationConnection] = Set.empty) =
-    node("A", logNames, portA, connections)
-
-  def newNodeB(logNames: Set[String], connections: Set[ReplicationConnection] = Set.empty) =
-    node("B", logNames, portB, connections)
-
-  def newNodeC(logNames: Set[String], connections: Set[ReplicationConnection] = Set.empty) =
-    node("C", logNames, portC, connections)
 }

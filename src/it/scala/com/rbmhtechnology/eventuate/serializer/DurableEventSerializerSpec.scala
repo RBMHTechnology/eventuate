@@ -21,13 +21,14 @@ import akka.serialization.SerializerWithStringManifest
 import akka.serialization.Serializer
 
 import com.rbmhtechnology.eventuate._
+import com.typesafe.config.ConfigFactory
 
 import org.scalatest._
 
 object DurableEventSerializerSpec {
   case class ExamplePayload(foo: String, bar: String)
 
-  val serializerConfig =
+  val serializerConfig = ConfigFactory.parseString(
     """
       |akka.actor.serializers {
       |  eventuate-test = "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayloadSerializer"
@@ -35,9 +36,9 @@ object DurableEventSerializerSpec {
       |akka.actor.serialization-bindings {
       |  "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayload" = eventuate-test
       |}
-    """.stripMargin
+    """.stripMargin)
 
-  val serializerWithStringManifestConfig =
+  val serializerWithStringManifestConfig = ConfigFactory.parseString(
     """
       |akka.actor.serializers {
       |  eventuate-test = "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayloadSerializerWithStringManifest"
@@ -45,7 +46,7 @@ object DurableEventSerializerSpec {
       |akka.actor.serialization-bindings {
       |  "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayload" = eventuate-test
       |}
-    """.stripMargin
+    """.stripMargin)
   /**
    * Swaps `foo` and `bar` of `ExamplePayload`.
    */
@@ -99,15 +100,15 @@ object DurableEventSerializerSpec {
 class DurableEventSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   import DurableEventSerializerSpec._
 
-  val support = new SerializerSpecSupport(
-    ReplicationConfig.create(2552),
-    ReplicationConfig.create(2553, serializerConfig),
-    ReplicationConfig.create(2554, serializerWithStringManifestConfig))
+  val context = new SerializationContext(
+    LocationConfig.create(),
+    LocationConfig.create(customConfig = serializerConfig),
+    LocationConfig.create(customConfig = serializerWithStringManifestConfig))
 
   override def afterAll(): Unit =
-    support.shutdown()
+    context.shutdown()
 
-  import support._
+  import context._
 
   "A DurableEventSerializer" must {
     "support default payload serialization" in {

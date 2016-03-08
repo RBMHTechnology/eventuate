@@ -16,19 +16,17 @@
 
 package com.rbmhtechnology.eventuate.serializer
 
-import akka.actor.Props
 import akka.actor._
 import akka.serialization.Serializer
 import akka.serialization.SerializerWithStringManifest
 import akka.testkit.TestProbe
 
-import com.rbmhtechnology.eventuate.ReplicationFilter.AndFilter
-import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
-import com.rbmhtechnology.eventuate.ReplicationFilter.OrFilter
 
 import com.rbmhtechnology.eventuate._
-import com.rbmhtechnology.eventuate.serializer.SerializerSpecSupport.ReceiverActor
-import com.rbmhtechnology.eventuate.serializer.SerializerSpecSupport.SenderActor
+import com.rbmhtechnology.eventuate.ReplicationFilter._
+import com.rbmhtechnology.eventuate.serializer.SerializationContext.ReceiverActor
+import com.rbmhtechnology.eventuate.serializer.SerializationContext.SenderActor
+import com.typesafe.config.ConfigFactory
 
 import org.scalatest._
 
@@ -41,7 +39,7 @@ object ReplicationFilterSerializerSpec {
     def apply(event: DurableEvent): Boolean = num == 1
   }
 
-  val serializerConfig =
+  val serializerConfig = ConfigFactory.parseString(
     """
       |akka.actor.serializers {
       |  eventuate-test = "com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializerSpec$ExampleFilterSerializer"
@@ -49,9 +47,9 @@ object ReplicationFilterSerializerSpec {
       |akka.actor.serialization-bindings {
       |  "com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializerSpec$ExampleFilter" = eventuate-test
       |}
-    """.stripMargin
+    """.stripMargin)
 
-  val serializerWithStringManifestConfig =
+  val serializerWithStringManifestConfig = ConfigFactory.parseString(
     """
       |akka.actor.serializers {
       |  eventuate-test = "com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializerSpec$ExampleFilterSerializerWithStringManifest"
@@ -59,7 +57,7 @@ object ReplicationFilterSerializerSpec {
       |akka.actor.serialization-bindings {
       |  "com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializerSpec$ExampleFilter" = eventuate-test
       |}
-    """.stripMargin
+    """.stripMargin)
 
   /**
    * Increments `ExampleFilter.num` by 1 during deserialization.
@@ -123,19 +121,19 @@ object ReplicationFilterSerializerSpec {
 class ReplicationFilterSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
   import ReplicationFilterSerializerSpec._
 
-  val support = new SerializerSpecSupport(
-    ReplicationConfig.create(2552),
-    ReplicationConfig.create(2553, serializerConfig),
-    ReplicationConfig.create(2554, serializerWithStringManifestConfig))
+  val context = new SerializationContext(
+    LocationConfig.create(),
+    LocationConfig.create(customConfig = serializerConfig),
+    LocationConfig.create(customConfig = serializerWithStringManifestConfig))
 
   override def afterAll(): Unit =
-    support.shutdown()
+    context.shutdown()
 
-  import support._
+  import context._
 
   val receiverProbe = new TestProbe(systems(1))
   val receiverActor = systems(1).actorOf(Props(new ReceiverActor(receiverProbe.ref)), "receiver")
-  val senderActor = systems(0).actorOf(Props(new SenderActor(systems(0).actorSelection("akka.tcp://test-system-2@127.0.0.1:2553/user/receiver"))))
+  val senderActor = systems(0).actorOf(Props(new SenderActor(systems(0).actorSelection(s"akka.tcp://test-system-2@127.0.0.1:${ports(1)}/user/receiver"))))
 
   "A ReplicationFilterSerializer" must {
     "serialize replication filter trees with an and-filter root" in {

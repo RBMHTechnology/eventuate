@@ -99,7 +99,7 @@ object CircuitBreakerIntregrationSpecCassandra {
 }
 
 class CircuitBreakerIntregrationSpecCassandra extends TestKit(ActorSystem("test", CircuitBreakerIntregrationSpecCassandra.config))
-  with WordSpecLike with Matchers with BeforeAndAfterEach with EventLogCleanupCassandra with Eventually {
+  with WordSpecLike with Matchers with BeforeAndAfterEach with LocationCleanupCassandra with Eventually {
 
   import CircuitBreakerIntregrationSpecCassandra._
   import system.dispatcher

@@ -22,9 +22,6 @@ import scala.util._
 import akka.actor._
 import akka.testkit._
 
-import com.rbmhtechnology.eventuate.log.EventLogLifecycleCassandra
-import com.rbmhtechnology.eventuate.log.EventLogLifecycleLeveldb
-
 import org.scalatest._
 
 object EventsourcedActorThroughputSpec {
@@ -88,10 +85,9 @@ object EventsourcedActorThroughputSpec {
   }
 }
 
-abstract class EventsourcedActorThroughputSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach {
+abstract class EventsourcedActorThroughputSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with SingleLocationSpec {
   import EventsourcedActorThroughputSpec._
 
-  def log: ActorRef
   var probe: TestProbe = _
 
   override def beforeEach(): Unit = {
@@ -154,5 +150,5 @@ abstract class EventsourcedActorThroughputSpec extends TestKit(ActorSystem("test
   }
 }
 
-class EventsourcedActorThroughputSpecLeveldb extends EventsourcedActorThroughputSpec with EventLogLifecycleLeveldb
-class EventsourcedActorThroughputSpecCassandra extends EventsourcedActorThroughputSpec with EventLogLifecycleCassandra
+class EventsourcedActorThroughputSpecLeveldb extends EventsourcedActorThroughputSpec with SingleLocationSpecLeveldb
+class EventsourcedActorThroughputSpecCassandra extends EventsourcedActorThroughputSpec with SingleLocationSpecCassandra

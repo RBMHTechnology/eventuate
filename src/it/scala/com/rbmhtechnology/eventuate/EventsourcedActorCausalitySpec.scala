@@ -19,10 +19,6 @@ package com.rbmhtechnology.eventuate
 import akka.actor._
 import akka.testkit.TestProbe
 
-import com.rbmhtechnology.eventuate.log._
-import com.rbmhtechnology.eventuate.log.cassandra.Cassandra
-
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import org.scalatest._
 
 import scala.collection.immutable.Seq
@@ -44,25 +40,9 @@ object EventsourcedActorCausalitySpec {
   }
 }
 
-abstract class EventsourcedActorCausalitySpec extends WordSpec with Matchers with ReplicationNodeRegistry {
+abstract class EventsourcedActorCausalitySpec extends WordSpec with Matchers with MultiLocationSpec {
   import ReplicationIntegrationSpec.replicationConnection
   import EventsourcedActorCausalitySpec._
-
-  def logFactory: String => Props
-
-  var ctr: Int = 0
-
-  override def beforeEach(): Unit =
-    ctr += 1
-
-  def config =
-    ReplicationConfig.create()
-
-  def nodeId(node: String): String =
-    s"${node}_${ctr}"
-
-  def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection]): ReplicationNode =
-    register(new ReplicationNode(nodeId(nodeName), logNames, logFactory, connections, port = port))
 
   def assertPartialOrder[A](events: Seq[A], sample: A*): Unit = {
     val indices = sample.map(events.indexOf)
@@ -74,24 +54,27 @@ abstract class EventsourcedActorCausalitySpec extends WordSpec with Matchers wit
       "track causality by default (sharedClockEntry = true)" in {
         val logName = "L1"
 
-        val nodeA = node("A", Set(logName), 2552, Set(replicationConnection(2553)))
-        val nodeB = node("B", Set(logName), 2553, Set(replicationConnection(2552)))
+        val locationA = location("A")
+        val locationB = location("B")
 
-        val logA = nodeA.logs(logName)
-        val logB = nodeB.logs(logName)
+        val endpointA = locationA.endpoint(Set(logName), Set(replicationConnection(locationB.port)))
+        val endpointB = locationB.endpoint(Set(logName), Set(replicationConnection(locationA.port)))
 
-        val logIdA = nodeA.endpoint.logId(logName)
-        val logIdB = nodeB.endpoint.logId(logName)
+        val logA = endpointA.logs(logName)
+        val logB = endpointB.logs(logName)
 
-        val probeA1 = new TestProbe(nodeA.system)
-        val probeA2 = new TestProbe(nodeA.system)
-        val probeA3 = new TestProbe(nodeA.system)
-        val probeB = new TestProbe(nodeB.system)
+        val logIdA = endpointA.logId(logName)
+        val logIdB = endpointB.logId(logName)
 
-        val actorA1 = nodeA.system.actorOf(Props(new Collaborator("pa1", logA, sharedClockEntry = true, Set("e1", "e2", "e5"), probeA1.ref)))
-        val actorA2 = nodeA.system.actorOf(Props(new Collaborator("pa2", logA, sharedClockEntry = true, Set("e3", "e5", "e6"), probeA2.ref)))
-        val actorA3 = nodeA.system.actorOf(Props(new Collaborator("pa3", logA, sharedClockEntry = true, Set("e4"), probeA3.ref)))
-        val actorB = nodeB.system.actorOf(Props(new Collaborator("pb", logB, sharedClockEntry = true, Set("e1", "e6"), probeB.ref)))
+        val probeA1 = new TestProbe(locationA.system)
+        val probeA2 = new TestProbe(locationA.system)
+        val probeA3 = new TestProbe(locationA.system)
+        val probeB = new TestProbe(locationB.system)
+
+        val actorA1 = locationA.system.actorOf(Props(new Collaborator("pa1", logA, sharedClockEntry = true, Set("e1", "e2", "e5"), probeA1.ref)))
+        val actorA2 = locationA.system.actorOf(Props(new Collaborator("pa2", logA, sharedClockEntry = true, Set("e3", "e5", "e6"), probeA2.ref)))
+        val actorA3 = locationA.system.actorOf(Props(new Collaborator("pa3", logA, sharedClockEntry = true, Set("e4"), probeA3.ref)))
+        val actorB = locationB.system.actorOf(Props(new Collaborator("pb", logB, sharedClockEntry = true, Set("e1", "e6"), probeB.ref)))
 
         def vectorTime(a: Long, b: Long) = (a, b) match {
           case (0L, 0L) => VectorTime()
@@ -131,54 +114,46 @@ abstract class EventsourcedActorCausalitySpec extends WordSpec with Matchers wit
     "located at the same location" can {
       "track causality if enabled (sharedClockEntry = false)" in {
         val logName = "L1"
-        val logNode = this.node("A", Set(logName), 2552, Set())
-        val log = logNode.logs(logName)
-        val logId = logNode.endpoint.logId(logName)
+
+        val locationA = location("A")
+        val endpointA = locationA.endpoint(Set(logName), Set())
+
+        val logA = endpointA.logs(logName)
+        val logIdA = endpointA.logId(logName)
 
         val actorIdA = "PA"
         val actorIdB = "PB"
         val actorIdC = "PC"
 
-        val probeA = new TestProbe(logNode.system)
-        val probeB = new TestProbe(logNode.system)
-        val probeC = new TestProbe(logNode.system)
+        val probeA = new TestProbe(locationA.system)
+        val probeB = new TestProbe(locationA.system)
+        val probeC = new TestProbe(locationA.system)
 
-        val actorA = logNode.system.actorOf(Props(new Collaborator(actorIdA, log, sharedClockEntry = false, Set("e1", "e3"), probeA.ref)))
-        val actorB = logNode.system.actorOf(Props(new Collaborator(actorIdB, log, sharedClockEntry = false, Set("e2", "e3"), probeB.ref)))
-        val actorC = logNode.system.actorOf(Props(new Collaborator(actorIdC, log, sharedClockEntry = true, Set("e1", "e2", "e3"), probeC.ref)))
+        val actorA = locationA.system.actorOf(Props(new Collaborator(actorIdA, logA, sharedClockEntry = false, Set("e1", "e3"), probeA.ref)))
+        val actorB = locationA.system.actorOf(Props(new Collaborator(actorIdB, logA, sharedClockEntry = false, Set("e2", "e3"), probeB.ref)))
+        val actorC = locationA.system.actorOf(Props(new Collaborator(actorIdC, logA, sharedClockEntry = true, Set("e1", "e2", "e3"), probeC.ref)))
 
         actorA ! "e1"
         probeA.expectMsg(("e1", VectorTime(actorIdA -> 1L), VectorTime(actorIdA -> 1L)))
-        probeC.expectMsg(("e1", VectorTime(actorIdA -> 1L), VectorTime(actorIdA -> 1L, logId -> 1L)))
+        probeC.expectMsg(("e1", VectorTime(actorIdA -> 1L), VectorTime(actorIdA -> 1L, logIdA -> 1L)))
 
         actorB ! "e2"
         probeB.expectMsg(("e2", VectorTime(actorIdB -> 1L), VectorTime(actorIdB -> 1L)))
-        probeC.expectMsg(("e2", VectorTime(actorIdB -> 1L), VectorTime(actorIdA -> 1L, actorIdB -> 1L, logId -> 2L)))
+        probeC.expectMsg(("e2", VectorTime(actorIdB -> 1L), VectorTime(actorIdA -> 1L, actorIdB -> 1L, logIdA -> 2L)))
 
         actorC ! "e3"
-        probeA.expectMsg(("e3", VectorTime(actorIdA -> 1L, actorIdB -> 1L, logId -> 3L), VectorTime(actorIdA -> 2L, actorIdB -> 1L, logId -> 3L)))
-        probeB.expectMsg(("e3", VectorTime(actorIdA -> 1L, actorIdB -> 1L, logId -> 3L), VectorTime(actorIdA -> 1L, actorIdB -> 2L, logId -> 3L)))
-        probeC.expectMsg(("e3", VectorTime(actorIdA -> 1L, actorIdB -> 1L, logId -> 3L), VectorTime(actorIdA -> 1L, actorIdB -> 1L, logId -> 3L)))
+        probeA.expectMsg(("e3", VectorTime(actorIdA -> 1L, actorIdB -> 1L, logIdA -> 3L), VectorTime(actorIdA -> 2L, actorIdB -> 1L, logIdA -> 3L)))
+        probeB.expectMsg(("e3", VectorTime(actorIdA -> 1L, actorIdB -> 1L, logIdA -> 3L), VectorTime(actorIdA -> 1L, actorIdB -> 2L, logIdA -> 3L)))
+        probeC.expectMsg(("e3", VectorTime(actorIdA -> 1L, actorIdB -> 1L, logIdA -> 3L), VectorTime(actorIdA -> 1L, actorIdB -> 1L, logIdA -> 3L)))
       }
     }
   }
 }
 
-class EventsourcedActorCausalitySpecLeveldb extends EventsourcedActorCausalitySpec with EventLogCleanupLeveldb {
-  override val logFactory: String => Props = id => EventLogLifecycleLeveldb.TestEventLog.props(id, batching = true)
+class EventsourcedActorCausalitySpecLeveldb extends EventsourcedActorCausalitySpec with MultiLocationSpecLeveldb {
+  override val logFactory: String => Props = id => SingleLocationSpecLeveldb.TestEventLog.props(id, batching = true)
 }
 
-class EventsourcedActorCausalitySpecCassandra extends EventsourcedActorCausalitySpec with EventLogCleanupCassandra {
-  override val logFactory: String => Props = id => EventLogLifecycleCassandra.TestEventLog.props(id, batching = true)
-
-  override def beforeAll(): Unit = {
-    super.beforeAll()
-    EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
-  }
-
-  override def node(nodeName: String, logNames: Set[String], port: Int, connections: Set[ReplicationConnection]): ReplicationNode = {
-    val node = super.node(nodeName, logNames, port, connections)
-    Cassandra(node.system) // enforce keyspace/schema setup
-    node
-  }
+class EventsourcedActorCausalitySpecCassandra extends EventsourcedActorCausalitySpec with MultiLocationSpecCassandra {
+  override val logFactory: String => Props = id => SingleLocationSpecCassandra.TestEventLog.props(id, batching = true)
 }

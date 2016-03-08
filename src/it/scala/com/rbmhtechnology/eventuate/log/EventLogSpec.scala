@@ -18,7 +18,7 @@ package com.rbmhtechnology.eventuate.log
 
 import akka.actor._
 import akka.pattern.ask
-import akka.testkit.{TestProbe, TestKit}
+import akka.testkit._
 import akka.util.Timeout
 
 import com.rbmhtechnology.eventuate._
@@ -26,14 +26,14 @@ import com.rbmhtechnology.eventuate.DurableEvent._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
-import com.rbmhtechnology.eventuate.log.EventLogLifecycle._
-import com.rbmhtechnology.eventuate.log.EventLogLifecycleCassandra.TestFailureSpec
+import com.rbmhtechnology.eventuate.SingleLocationSpec._
+import com.rbmhtechnology.eventuate.SingleLocationSpecCassandra._
 import com.rbmhtechnology.eventuate.log.EventLogSpecLeveldb.immediateEventLogClockSnapshotConfig
 import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.utilities.RestarterActor.restartActor
 import com.rbmhtechnology.eventuate.utilities._
 
-import com.typesafe.config.{ConfigFactory, Config}
+import com.typesafe.config._
 
 import org.scalatest._
 import org.scalatest.time._
@@ -83,7 +83,7 @@ object EventLogSpec {
   }
 }
 
-trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfterEach {
+trait EventLogSpecSupport extends WordSpecLike with Matchers with SingleLocationSpec {
   import EventLogSpec._
 
   implicit val system: ActorSystem
@@ -102,10 +102,8 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfter
   def generatedEmittedEvents: Vector[DurableEvent] = _generatedEmittedEvents
   def generatedReplicatedEvents: Vector[DurableEvent] = _generatedReplicatedEvents
 
-  def log: ActorRef
-  def logId: String
-
   override def beforeEach(): Unit = {
+    super.beforeEach()
     _replyToProbe = TestProbe()
     _replicatorProbe = TestProbe()
     _notificationProbe = TestProbe()
@@ -114,6 +112,7 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with BeforeAndAfter
   override def afterEach(): Unit = {
     _generatedEmittedEvents = Vector.empty
     _generatedReplicatedEvents = Vector.empty
+    super.afterEach()
   }
 
   def timestamp(a: Long = 0L, b: Long= 0L) = (a, b) match {
@@ -605,7 +604,7 @@ object EventLogSpecLeveldb {
     ConfigFactory.parseString("eventuate.log.leveldb.state-snapshot-limit = 1")
 }
 
-class EventLogSpecLeveldb extends EventLogSpec with EventLogLifecycleLeveldb {
+class EventLogSpecLeveldb extends EventLogSpec with SingleLocationSpecLeveldb {
 
   "A LeveldbEventLog" must {
     "not delete events required for restoring the EventLogClock" in {
@@ -621,7 +620,7 @@ class EventLogSpecLeveldb extends EventLogSpec with EventLogLifecycleLeveldb {
 
 class EventLogWithImmediateEventLogClockSnapshotSpecLeveldb
   extends TestKit(ActorSystem("test", immediateEventLogClockSnapshotConfig.withFallback(EventLogSpec.config)))
-  with EventLogSpecSupport with EventLogLifecycleLeveldb with Eventually {
+  with EventLogSpecSupport with SingleLocationSpecLeveldb with Eventually {
 
   import EventLogSpec._
 
@@ -703,7 +702,7 @@ class EventLogWithImmediateEventLogClockSnapshotSpecLeveldb
   }
 }
 
-class EventLogSpecCassandra extends EventLogSpec with EventLogLifecycleCassandra {
+class EventLogSpecCassandra extends EventLogSpec with SingleLocationSpecCassandra {
   import EventLogSpec._
   import CassandraIndex._
 

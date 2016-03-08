@@ -19,9 +19,6 @@ package com.rbmhtechnology.eventuate
 import akka.actor._
 import akka.testkit._
 
-import com.rbmhtechnology.eventuate.log.EventLogLifecycleCassandra
-import com.rbmhtechnology.eventuate.log.EventLogLifecycleLeveldb
-
 import org.scalatest._
 
 import scala.util._
@@ -69,11 +66,9 @@ object EventsourcedProcessorIntegrationSpec {
     extends StatelessSampleProcessor(id, eventLog, targetEventLog, eventProbe, progressProbe) with StatefulProcessor
 }
 
-abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach {
+abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with SingleLocationSpec {
   import EventsourcedProcessorIntegrationSpec._
 
-  def log: ActorRef
-  def logId: String
   def logProps(logId: String): Props
 
   def sourceLog = log
@@ -260,14 +255,14 @@ abstract class EventsourcedProcessorIntegrationSpec extends TestKit(ActorSystem(
   }
 }
 
-class EventsourcedProcessorIntegrationSpecLeveldb extends EventsourcedProcessorIntegrationSpec with EventLogLifecycleLeveldb {
+class EventsourcedProcessorIntegrationSpecLeveldb extends EventsourcedProcessorIntegrationSpec with SingleLocationSpecLeveldb {
   override def beforeEach(): Unit = {
     super.beforeEach()
     init()
   }
 }
 
-class EventsourcedProcessorIntegrationSpecCassandra extends EventsourcedProcessorIntegrationSpec with EventLogLifecycleCassandra {
+class EventsourcedProcessorIntegrationSpecCassandra extends EventsourcedProcessorIntegrationSpec with SingleLocationSpecCassandra {
   override def beforeEach(): Unit = {
     super.beforeEach()
     init()

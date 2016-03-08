@@ -19,22 +19,22 @@ package com.rbmhtechnology.eventuate.crdt
 import akka.actor._
 import akka.testkit._
 
-import com.rbmhtechnology.eventuate.log._
+import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.utilities._
 
 import org.scalatest._
 
-abstract class CRDTRecoverySpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach {
+abstract class CRDTRecoverySpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with SingleLocationSpec {
   var probe: TestProbe = _
-
-  def log: ActorRef
 
   def service(serviceId: String) = new ORSetService[Int](serviceId, log) {
     override def onChange(crdt: ORSet[Int], operation: Any): Unit = probe.ref ! crdt.value
   }
 
-  override protected def beforeEach(): Unit =
+  override def beforeEach(): Unit = {
+    super.beforeEach()
     probe = TestProbe()
+  }
 
   "A CRDTService" must {
     "recover CRDT instances" in {
@@ -80,5 +80,5 @@ abstract class CRDTRecoverySpec extends TestKit(ActorSystem("test")) with WordSp
   }
 }
 
-class CRDTRecoverySpecLeveldb extends CRDTRecoverySpec with EventLogLifecycleLeveldb
-class CRDTRecoverySpecCassandra extends CRDTRecoverySpec with EventLogLifecycleCassandra
+class CRDTRecoverySpecLeveldb extends CRDTRecoverySpec with SingleLocationSpecLeveldb
+class CRDTRecoverySpecCassandra extends CRDTRecoverySpec with SingleLocationSpecCassandra

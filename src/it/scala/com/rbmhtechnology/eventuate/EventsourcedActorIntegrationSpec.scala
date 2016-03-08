@@ -21,9 +21,6 @@ import scala.util._
 import akka.actor._
 import akka.testkit._
 
-import com.rbmhtechnology.eventuate.log.EventLogLifecycleCassandra
-import com.rbmhtechnology.eventuate.log.EventLogLifecycleLeveldb
-
 import org.scalatest._
 
 object EventsourcedActorIntegrationSpec {
@@ -234,11 +231,8 @@ object EventsourcedActorIntegrationSpec {
   }
 }
 
-abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach {
+abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with SingleLocationSpec {
   import EventsourcedActorIntegrationSpec._
-
-  def log: ActorRef
-  def logId: String
 
   var probe: TestProbe = _
 
@@ -430,10 +424,10 @@ abstract class EventsourcedActorIntegrationSpec extends TestKit(ActorSystem("tes
   }
 }
 
-class EventsourcedActorIntegrationSpecLeveldb extends EventsourcedActorIntegrationSpec with EventLogLifecycleLeveldb {
+class EventsourcedActorIntegrationSpecLeveldb extends EventsourcedActorIntegrationSpec with SingleLocationSpecLeveldb {
   override def batching = false
 }
 
-class EventsourcedActorIntegrationSpecCassandra extends EventsourcedActorIntegrationSpec with EventLogLifecycleCassandra {
+class EventsourcedActorIntegrationSpecCassandra extends EventsourcedActorIntegrationSpec with SingleLocationSpecCassandra {
   override def batching = false
 }
