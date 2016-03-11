@@ -13,5 +13,5 @@ If you have any questions or comments, please `let us know`_.
 
 .. _Java 8: http://www.oracle.com/technetwork/java/javase/downloads/index.html
 .. _Eventuate Github repository: https://github.com/RBMHTechnology/eventuate
-.. _let us know: https://groups.google.com/forum/#!forum/eventuate
+.. _let us know: https://gitter.im/RBMHTechnology/eventuate
 

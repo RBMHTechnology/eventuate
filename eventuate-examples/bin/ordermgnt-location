@@ -1,0 +1,30 @@
+#!/bin/sh
+
+EXAMPLE_MODE=normal
+EXAMPLE_MAIN=com.rbmhtechnology.example.ordermgnt.OrderExample
+
+while [[ $# > 1 ]]; do
+    key="$1"
+    case $key in
+        -r|--recover)
+        EXAMPLE_MODE=recover
+        ;;
+        -j|--java)
+        EXAMPLE_MAIN=com.rbmhtechnology.example.japi.ordermgnt.OrderExample
+        ;;
+        *)
+        # unknown option
+        ;;
+    esac
+    shift # past argument or value
+done
+
+EXAMPLE_CONF=ordermgnt/location-$1.conf
+
+if [[ ! -f ./eventuate-examples/bin/.example-classpath ]]; then
+    sbt generateClasspath || exit 1
+fi
+
+source ./eventuate-examples/bin/.example-classpath
+
+exec java -cp "$EXAMPLE_CLASSPATH" $EXAMPLE_MAIN $EXAMPLE_CONF $EXAMPLE_MODE

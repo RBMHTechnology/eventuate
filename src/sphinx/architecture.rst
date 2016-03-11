@@ -234,6 +234,6 @@ We haven’t started yet working on this. Should you have any preferences or pro
 
 .. _ticket 68: https://github.com/RBMHTechnology/eventuate/issues/68
 .. _ticket 103: https://github.com/RBMHTechnology/eventuate/issues/103
-.. _let us know: https://groups.google.com/forum/#!forum/eventuate
+.. _let us know: https://gitter.im/RBMHTechnology/eventuate
 
 .. [#] :ref:`event-sourced-processors` can be used to connect otherwise partitioned event logs.  
