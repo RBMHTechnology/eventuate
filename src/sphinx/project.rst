@@ -8,8 +8,8 @@ Project
 Community
 ---------
 
-- `User mailing list`_
 - `Gitter chat room`_
+- `User mailing list`_
 
 License
 -------

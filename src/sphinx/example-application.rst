@@ -14,7 +14,7 @@ Domain
 
 The ``Order`` domain object is defined as follows:
 
-.. includecode:: ../test/scala/com/rbmhtechnology/example/ordermgnt/Order.scala
+.. includecode:: ../../eventuate-examples/src/main/scala/com/rbmhtechnology/example/ordermgnt/Order.scala
    :snippet: order-definition
 
 Order creation and updates are tracked as events in a replicated event log. At each location, there is one event-sourced ``OrderActor`` instance per created ``Order`` instance and one event-sourced ``OrderView`` instance that counts the updates made to all orders.
@@ -64,23 +64,23 @@ Running
 
 Before you can run the example application, install sbt_ and run::
 
-    sbt test:compile
+    sbt compile
 
 from the project's root directory (needs to be done only once). Then, run::
 
-    ./example/ordermgnt
+    ./eventuate-example/bin/ordermgnt
 
 This should open six terminal windows, representing locations A - F. For running the Java version of the example application use the ``-j`` or ``--java`` option::
 
-    ./example/ordermgnt --java
+    ./eventuate-example/bin/ordermgnt --java
 
 Create and update some orders and see how changes are propagated to other locations. To make concurrent updates to an order, for example, enter ``exit`` at location ``C``, and add different items to that order at locations ``B`` and ``F``. When starting location ``C`` again with:: 
 
-    ./example/ordermgnt-location A
+    ./eventuate-example/bin/ordermgnt-location A
 
 or the Java version with::
 
-    ./example/ordermgnt-location --java A
+    ./eventuate-example/bin/ordermgnt-location --java A
 
 both updates propagate to all other locations which are then displayed as conflict. Resolve the conflict with the ``resolve`` command. Conflict resolution writes a conflict resolution event to the replicated event log so that the conflict is automatically resolved at all locations.
 
@@ -91,11 +91,11 @@ Disaster recovery
 
 :ref:`disaster-recovery` in the example application can be tested by removing the event log of a location and starting the location again with disaster recovery enabled. For example, to remove the event log at location ``C``, stop the location with ``exit`` and delete its LevelDB directory::
 
-    rm -r target/example-logs/s-C_default/
+    rm -r eventuate-example/target/example-logs/s-C_default/
 
 To delete the event log written by the Java version of the example application run::
 
-    rm -r target/example-logs/j-C_default/
+    rm -r eventuate-example/target/example-logs/j-C_default/
 
 To start location ``C`` again with disaster recovery enabled, use the ``-r`` or ``--recover`` option::
 
@@ -103,7 +103,7 @@ To start location ``C`` again with disaster recovery enabled, use the ``-r`` or 
 
 or the Java version with::
 
-    ./example/ordermgnt-location --recover --java C
+    ./eventuate-example/bin/ordermgnt-location --recover --java C
 
 Recovery may take up to 20 seconds when using the default :ref:`configuration` settings for event replication and disaster recovery. To speed up the process you may want to the use following configuration settings::
 
