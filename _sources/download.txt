@@ -2,6 +2,29 @@
 Download
 --------
 
+Eventuate is a multi-module project with the following modules:
+
+.. list-table:: Table 1: Eventuate modules
+   :header-rows: 1
+
+   * - Module
+     - Description
+   * - ``eventuate-core``
+     - Core module, required for all applications.
+   * - ``eventuate-log-cassandra``
+     - Provides the :ref:`cassandra-storage-backend`.
+   * - ``eventuate-log-leveldb``
+     - Provides the :ref:`leveldb-storage-backend`.
+   * - ``eventuate-crdt``
+     - Provides :ref:`commutative-replicated-data-types`.
+   * - ``eventuate-examples``
+     - Provides :ref:`example-application` among others.
+
+|
+
+.. note::
+   An Eventuate application requires at least ``eventuate-core`` and one storage backend module as dependency.
+
 Binaries
 --------
 
@@ -10,7 +33,7 @@ Release binaries are published to Bintray_, snapshot binaries to OJO_ (oss.jfrog
 Maven
 ~~~~~
 
-To include the latest release into a Maven project, add the following to your ``pom.xml``::
+To include the latest release into a Maven project, add the following dependencies to your ``pom.xml``::
 
     <repository>
         <id>eventuate-releases</id>
@@ -20,8 +43,26 @@ To include the latest release into a Maven project, add the following to your ``
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
-        <artifactId>eventuate_2.11</artifactId>
-        <version>0.5</version>
+        <artifactId>eventuate-core_2.11</artifactId>
+        <version>0.6</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-log-leveldb_2.11</artifactId>
+        <version>0.6</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-log-cassandra_2.11</artifactId>
+        <version>0.6</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-crdt_2.11</artifactId>
+        <version>0.6</version>
     </dependency>
 
 To include the latest development snapshot::
@@ -34,24 +75,54 @@ To include the latest development snapshot::
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
-        <artifactId>eventuate_2.11</artifactId>
-        <version>0.6-SNAPSHOT</version>
+        <artifactId>eventuate-core_2.11</artifactId>
+        <version>0.7-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-log-leveldb_2.11</artifactId>
+        <version>0.7-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-log-cassandra_2.11</artifactId>
+        <version>0.7-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-crdt_2.11</artifactId>
+        <version>0.7-SNAPSHOT</version>
     </dependency>
 
 SBT
 ~~~
 
-To include the latest release into an sbt_ project, add the following to your ``build.sbt``::
+To include the latest release into an sbt_ project, add the following dependencies to your ``build.sbt``::
 
     resolvers += "Eventuate Releases" at "https://dl.bintray.com/rbmhtechnology/maven"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate" % "0.5"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-core" % "0.6"
+
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-leveldb" % "0.6"
+
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-cassandra" % "0.6"
+
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.6"
 
 To include the latest development snapshot::
 
     resolvers += "OJO Snapshots" at "https://oss.jfrog.org/oss-snapshot-local"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate" % "0.6-SNAPSHOT"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-core" % "0.7-SNAPSHOT"
+
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-leveldb" % "0.7-SNAPSHOT"
+
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-cassandra" % "0.7-SNAPSHOT"
+
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.7-SNAPSHOT"
 
 Sources
 -------

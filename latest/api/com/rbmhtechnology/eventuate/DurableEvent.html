@@ -28,11 +28,15 @@
         </head>
         <body class="type">
       <div id="definition">
-        <a href="DurableEvent$.html" title="Go to companion"><img src="../../../lib/class_to_object_big.png" /></a>
+        <a href="DurableEvent$.html" title="See companion object"><img alt="Class/Object" src="../../../lib/class_to_object_big.png" /></a>
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a></p>
-        <h1><a href="DurableEvent$.html" title="Go to companion">DurableEvent</a></h1> <span class="permalink">
+        <h1><a href="DurableEvent$.html" title="See companion object">DurableEvent</a></h1><h3><span class="morelinks"><div>
+            Related Docs:
+            <a href="DurableEvent$.html" title="See companion object">object DurableEvent</a>
+            | <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">package eventuate</a>
+          </div></span></h3><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       </div>
@@ -59,8 +63,7 @@ during event replication.
                  that initially wrote the event. If the emitting <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> has
                  set <code>sharedClockEntry</code> to <code>false</code> then this is the id of that actor or processor (which is the <code>emitterId</code>).</p></dd><dt class="param">localLogId</dt><dd class="cmt"><p>Id of the local event log.</p></dd><dt class="param">localSequenceNr</dt><dd class="cmt"><p>Sequence number in the local event log.</p></dd><dt class="param">persistOnEventSequenceNr</dt><dd class="cmt"><p>Sequence number of the event that caused the emission of this event in an event handler.
                                 Defined if an <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> with a <a href="PersistOnEvent.html" class="extype" name="com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a> mixin emitted this event
-                                with <code>persistOnEvent</code>.
-</p></dd></dl><div class="toggleContainer block">
+                                with <code>persistOnEvent</code>.</p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -88,7 +91,6 @@ during event replication.
               <li class="hideall out"><span>Hide All</span></li>
               <li class="showall in"><span>Show all</span></li>
             </ol>
-            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
           </div>
         <div id="visbl">
             <span class="filtertype">Visibility</span>
@@ -113,7 +115,7 @@ during event replication.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@&lt;init&gt;(payload:Any,emitterId:String,emitterAggregateId:Option[String],customDestinationAggregateIds:Set[String],systemTimestamp:Long,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime,processId:String,localLogId:String,localSequenceNr:Long,persistOnEventSequenceNr:Option[Long]):com.rbmhtechnology.eventuate.DurableEvent" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">payload</dt><dd class="cmt"><p>Application-defined event.</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>Id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>).</p></dd><dt class="param">emitterAggregateId</dt><dd class="cmt"><p>Aggregate id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>). This is also
@@ -126,8 +128,7 @@ during event replication.
                  that initially wrote the event. If the emitting <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> has
                  set <code>sharedClockEntry</code> to <code>false</code> then this is the id of that actor or processor (which is the <code>emitterId</code>).</p></dd><dt class="param">localLogId</dt><dd class="cmt"><p>Id of the local event log.</p></dd><dt class="param">localSequenceNr</dt><dd class="cmt"><p>Sequence number in the local event log.</p></dd><dt class="param">persistOnEventSequenceNr</dt><dd class="cmt"><p>Sequence number of the event that caused the emission of this event in an event handler.
                                 Defined if an <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> with a <a href="PersistOnEvent.html" class="extype" name="com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a> mixin emitted this event
-                                with <code>persistOnEvent</code>.
-</p></dd></dl></div>
+                                with <code>persistOnEvent</code>.</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -150,7 +151,7 @@ during event replication.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@!=(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -167,7 +168,7 @@ during event replication.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@##():Int" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -184,7 +185,7 @@ during event replication.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@==(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -201,7 +202,7 @@ during event replication.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@asInstanceOf[T0]:T0" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
@@ -218,7 +219,7 @@ during event replication.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@before(vectorTime:com.rbmhtechnology.eventuate.VectorTime):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Returns <code>true</code> if this event happened before or at the given <code>vectorTime</code>.</p>
@@ -235,7 +236,7 @@ during event replication.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@clone():Object" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -258,7 +259,7 @@ during event replication.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@customDestinationAggregateIds:Set[String]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Aggregate ids of additional, custom routing destinations.</p><div class="fullcomment"><div class="comment cmt"><p>Aggregate ids of additional, custom routing destinations. If non-empty, the event is
@@ -277,7 +278,7 @@ during event replication.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@defaultDestinationAggregateId:Option[String]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">The default routing destination of this event is its <code>emitterAggregateId</code>.</p><div class="fullcomment"><div class="comment cmt"><p>The default routing destination of this event is its <code>emitterAggregateId</code>. If defined, the event is
@@ -297,7 +298,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@destinationAggregateIds:Set[String]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">The union of <a href="#defaultDestinationAggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.DurableEvent#defaultDestinationAggregateId">defaultDestinationAggregateId</a> and <a href="#customDestinationAggregateIds:Set[String]" class="extmbr" name="com.rbmhtechnology.eventuate.DurableEvent#customDestinationAggregateIds">customDestinationAggregateIds</a>.</p>
@@ -314,7 +315,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@emitterAggregateId:Option[String]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Aggregate id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>).</p><div class="fullcomment"><div class="comment cmt"><p>Aggregate id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>). This is also
@@ -335,7 +336,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@emitterId:String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Id of emitter (<a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> or <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>).</p>
@@ -352,7 +353,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -369,7 +370,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@finalize():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -392,7 +393,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@getClass():Class[_]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -409,7 +410,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@id:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Unique event identifier.</p>
@@ -426,7 +427,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
@@ -443,7 +444,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@localLogId:String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Id of the local event log.</p>
@@ -460,7 +461,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@localSequenceNr:Long" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Sequence number in the local event log.</p>
@@ -477,7 +478,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -494,7 +495,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@notify():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -511,7 +512,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@notifyAll():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -528,7 +529,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@payload:Any" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Application-defined event.</p>
@@ -545,13 +546,12 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@persistOnEventSequenceNr:Option[Long]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Sequence number of the event that caused the emission of this event in an event handler.</p><div class="fullcomment"><div class="comment cmt"><p>Sequence number of the event that caused the emission of this event in an event handler.
                                 Defined if an <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> with a <a href="PersistOnEvent.html" class="extype" name="com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a> mixin emitted this event
-                                with <code>persistOnEvent</code>.
-</p></div></div>
+                                with <code>persistOnEvent</code>.</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.DurableEvent#processId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="processId:String"></a>
       <a id="processId:String"></a>
@@ -565,7 +565,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@processId:String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Id of the causality-tracking source of concurrent activity.</p><div class="fullcomment"><div class="comment cmt"><p>Id of the causality-tracking source of concurrent activity. By default, this is the id of the event log
@@ -584,7 +584,7 @@ routed to event-sourced actors, views, writers and processors with an undefined 
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@replicable(vectorTime:com.rbmhtechnology.eventuate.VectorTime,filter:com.rbmhtechnology.eventuate.ReplicationFilter):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Returns <code>true</code> if this event did not happen before or at the given <code>vectorTime</code>
@@ -602,7 +602,7 @@ and passes the given replication <code>filter</code>.</p>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -619,7 +619,7 @@ and passes the given replication <code>filter</code>.</p>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@systemTimestamp:Long" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Wall-clock timestamp, generated by the source of concurrent activity that is identified by <code>processId</code>.</p>
@@ -636,7 +636,7 @@ and passes the given replication <code>filter</code>.</p>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Vector timestamp, generated by the source of concurrent activity that is identified by <code>processId</code>.</p>
@@ -653,7 +653,7 @@ and passes the given replication <code>filter</code>.</p>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@wait():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -676,7 +676,7 @@ and passes the given replication <code>filter</code>.</p>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -699,7 +699,7 @@ and passes the given replication <code>filter</code>.</p>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.DurableEvent@wait(x$1:Long):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>

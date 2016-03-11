@@ -28,11 +28,15 @@
         </head>
         <body class="type">
       <div id="definition">
-        <a href="EventsourcedWriter$.html" title="Go to companion"><img src="../../../lib/trait_to_object_big.png" /></a>
+        <a href="EventsourcedWriter$.html" title="See companion object"><img alt="Trait/Object" src="../../../lib/trait_to_object_big.png" /></a>
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a></p>
-        <h1><a href="EventsourcedWriter$.html" title="Go to companion">EventsourcedWriter</a></h1> <span class="permalink">
+        <h1><a href="EventsourcedWriter$.html" title="See companion object">EventsourcedWriter</a></h1><h3><span class="morelinks"><div>
+            Related Docs:
+            <a href="EventsourcedWriter$.html" title="See companion object">object EventsourcedWriter</a>
+            | <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">package eventuate</a>
+          </div></span></h3><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       </div>
@@ -66,9 +70,7 @@ recovery, it may define a custom starting position in the event log by returning
    to backpressure. After a configurable number of events (see <code>eventuate.log.replay-batch-size</code> configuration
    parameter), replay is suspended until these events have been written to the target database and then resumed
    again. There's no backpressure mechanism for live event processing yet (but will come in future releases).
-</li></ul></div><dl class="paramcmts block"><dt class="tparam">R</dt><dd class="cmt"><p>Result type of the asynchronous read operation.</p></dd><dt class="tparam">W</dt><dd class="cmt"><p>Result type of the asynchronous write operations.
-</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a>
-</p></span><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a></p></span></dd></dl><div class="toggleContainer block">
+</li></ul></div><dl class="paramcmts block"><dt class="tparam">R</dt><dd class="cmt"><p>Result type of the asynchronous read operation.</p></dd><dt class="tparam">W</dt><dd class="cmt"><p>Result type of the asynchronous write operations.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a></p></span><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a></p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
@@ -99,7 +101,6 @@ recovery, it may define a custom starting position in the event log by returning
               <li class="hideall out"><span>Hide All</span></li>
               <li class="showall in"><span>Show all</span></li>
             </ol>
-            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
           </div>
         <div id="visbl">
             <span class="filtertype">Visibility</span>
@@ -126,7 +127,7 @@ recovery, it may define a custom starting position in the event log by returning
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
@@ -143,7 +144,7 @@ recovery, it may define a custom starting position in the event log by returning
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@Receive=akka.actor.Actor.Receive" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
@@ -165,7 +166,7 @@ recovery, it may define a custom starting position in the event log by returning
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@eventLog:akka.actor.ActorRef" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Event log actor.</p><div class="fullcomment"><div class="comment cmt"><p>Event log actor.
@@ -183,7 +184,7 @@ recovery, it may define a custom starting position in the event log by returning
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@id:String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Global unique actor id.</p><div class="fullcomment"><div class="comment cmt"><p>Global unique actor id.
@@ -201,7 +202,7 @@ recovery, it may define a custom starting position in the event log by returning
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@onCommand:EventsourcedView.this.Receive" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Command handler.</p><div class="fullcomment"><div class="comment cmt"><p>Command handler.
@@ -219,7 +220,7 @@ recovery, it may define a custom starting position in the event log by returning
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@onEvent:EventsourcedView.this.Receive" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Event handler.</p><div class="fullcomment"><div class="comment cmt"><p>Event handler.
@@ -237,7 +238,7 @@ recovery, it may define a custom starting position in the event log by returning
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@read():scala.concurrent.Future[R]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Asynchronously reads an initial value from the target database, usually to obtain information about
@@ -257,7 +258,7 @@ event processing progress. This method is called during initialization.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@write():scala.concurrent.Future[W]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Asynchronously writes an incremental update to the target database.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously writes an incremental update to the target database. Incremental updates are prepared
@@ -286,7 +287,7 @@ completes.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@!=(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -303,7 +304,7 @@ completes.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@##():Int" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -320,7 +321,7 @@ completes.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@==(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -337,7 +338,7 @@ completes.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@aggregateId:Option[String]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Optional aggregate id.</p><div class="fullcomment"><div class="comment cmt"><p>Optional aggregate id. It is used for routing <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s to event-sourced destinations
@@ -359,7 +360,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@aroundPostRestart(reason:Throwable):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
@@ -376,7 +377,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@aroundPostStop():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
@@ -393,7 +394,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@aroundPreRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
@@ -410,7 +411,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@aroundPreStart():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
@@ -427,7 +428,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@aroundReceive(receive:akka.actor.Actor.Receive,msg:Any):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
@@ -444,7 +445,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@asInstanceOf[T0]:T0" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
@@ -461,7 +462,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@clone():Object" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -484,7 +485,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@commandContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Returns the command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
@@ -502,7 +503,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@context:akka.actor.ActorContext" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
@@ -519,7 +520,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -536,7 +537,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@equals(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -553,7 +554,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@eventContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Returns the event <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the event <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
@@ -571,7 +572,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@finalize():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -594,7 +595,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@getClass():Class[_]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -611,7 +612,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@hashCode():Int" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -628,7 +629,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@instanceId:Int" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
@@ -645,7 +646,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
@@ -662,7 +663,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@lastEmitterAggregateId:Option[String]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Emitter aggregate id of the last handled event.</p><div class="fullcomment"><div class="comment cmt"><p>Emitter aggregate id of the last handled event.
@@ -680,7 +681,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@lastEmitterId:String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Emitter id of the last handled event.</p><div class="fullcomment"><div class="comment cmt"><p>Emitter id of the last handled event.
@@ -698,7 +699,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@lastSequenceNr:Long" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Sequence number of the last handled event.</p><div class="fullcomment"><div class="comment cmt"><p>Sequence number of the last handled event.
@@ -716,7 +717,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@lastSystemTimestamp:Long" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Wall-clock timestamp of the last handled event.</p><div class="fullcomment"><div class="comment cmt"><p>Wall-clock timestamp of the last handled event.
@@ -734,7 +735,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Vector timestamp of the last handled event.</p><div class="fullcomment"><div class="comment cmt"><p>Vector timestamp of the last handled event.
@@ -752,7 +753,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@log:akka.event.LoggingAdapter" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ActorLogging</dd></dl></div>
@@ -769,7 +770,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -786,7 +787,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@notify():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -803,7 +804,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@notifyAll():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -820,7 +821,7 @@ is defined it will only receive events with a matching aggregate id in
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@onRecovery:EventsourcedView.this.Handler[Unit]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Recovery completion handler.</p><div class="fullcomment"><div class="comment cmt"><p>Recovery completion handler. If called with a <code>Failure</code>, the actor will be stopped in
@@ -840,7 +841,7 @@ implementation does nothing and can be overridden by implementations.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@onSnapshot:EventsourcedView.this.Receive" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Snapshot handler.</p><div class="fullcomment"><div class="comment cmt"><p>Snapshot handler.
@@ -858,7 +859,7 @@ implementation does nothing and can be overridden by implementations.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@postRestart(reason:Throwable):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd><dt>Annotations</dt><dd>
@@ -881,7 +882,7 @@ implementation does nothing and can be overridden by implementations.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@postStop():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Sets <code>recovering</code> to <code>false</code> before calling <code>super.postStop</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Sets <code>recovering</code> to <code>false</code> before calling <code>super.postStop</code>.
@@ -899,7 +900,7 @@ implementation does nothing and can be overridden by implementations.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@preRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Sets <code>recovering</code> to <code>false</code> before calling <code>super.preRestart</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Sets <code>recovering</code> to <code>false</code> before calling <code>super.preRestart</code>.
@@ -917,7 +918,7 @@ implementation does nothing and can be overridden by implementations.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@preStart():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Initiates recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Initiates recovery.
@@ -935,7 +936,7 @@ implementation does nothing and can be overridden by implementations.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@readFailure(cause:Throwable):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Called with failure details after a <code>write</code> operation failed.</p><div class="fullcomment"><div class="comment cmt"><p>Called with failure details after a <code>write</code> operation failed. Throws <a href="EventsourcedWriter$$ReadException.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter.ReadException">EventsourcedWriter#ReadException</a>
@@ -954,7 +955,7 @@ by default (causing the writer to restart) and can be overridden.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@readSuccess(result:R):Option[Long]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Called with a read result after a <code>read</code> operation successfully completes.</p><div class="fullcomment"><div class="comment cmt"><p>Called with a read result after a <code>read</code> operation successfully completes. This method may update
@@ -976,7 +977,7 @@ and can be overridden.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@receive:EventsourcedView.this.Receive" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Initialization behavior.</p><div class="fullcomment"><div class="comment cmt"><p>Initialization behavior.
@@ -994,7 +995,7 @@ and can be overridden.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@recovering:Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Returns <code>true</code> if this actor is currently recovering internal state by consuming
@@ -1015,7 +1016,7 @@ the actor switches to consuming live events.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@replayBatchSize:Int" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Maximum number of events to be replayed to this actor before replaying is suspended.</p><div class="fullcomment"><div class="comment cmt"><p>Maximum number of events to be replayed to this actor before replaying is suspended. A suspended replay
@@ -1036,7 +1037,7 @@ is resumed automatically after all replayed events haven been handled by this ac
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Asynchronously saves the given <code>snapshot</code> and calls <code>handler</code> with the generated
@@ -1057,7 +1058,7 @@ sender with <code>sender()</code>.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@self:akka.actor.ActorRef" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
@@ -1074,7 +1075,7 @@ sender with <code>sender()</code>.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@sender():akka.actor.ActorRef" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
@@ -1091,7 +1092,7 @@ sender with <code>sender()</code>.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Returns the snapshot <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the snapshot <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
@@ -1109,7 +1110,7 @@ sender with <code>sender()</code>.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@stash():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Adds the current command to the user's command stash.</p><div class="fullcomment"><div class="comment cmt"><p>Adds the current command to the user's command stash. Must not be used in the event handler.
@@ -1127,7 +1128,7 @@ sender with <code>sender()</code>.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@supervisorStrategy:akka.actor.SupervisorStrategy" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
@@ -1144,7 +1145,7 @@ sender with <code>sender()</code>.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -1161,7 +1162,7 @@ sender with <code>sender()</code>.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@toString():String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -1178,7 +1179,7 @@ sender with <code>sender()</code>.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@unhandled(message:Any):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
@@ -1195,7 +1196,7 @@ sender with <code>sender()</code>.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@unstashAll():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Prepends all stashed commands to the actor's mailbox and then clears the command stash.</p><div class="fullcomment"><div class="comment cmt"><p>Prepends all stashed commands to the actor's mailbox and then clears the command stash.
@@ -1214,7 +1215,7 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@wait():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -1237,7 +1238,7 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -1260,7 +1261,7 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@wait(x$1:Long):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -1283,7 +1284,7 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@writeFailure(cause:Throwable):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Called with failure details after a <code>write</code> operation failed.</p><div class="fullcomment"><div class="comment cmt"><p>Called with failure details after a <code>write</code> operation failed. Throws <a href="EventsourcedWriter$$WriteException.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter.WriteException">EventsourcedWriter#WriteException</a>
@@ -1302,7 +1303,7 @@ by default (causing the writer to restart) and can be overridden.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@writeSuccess(result:W):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Called with a write result after a <code>write</code> operation successfully completes.</p><div class="fullcomment"><div class="comment cmt"><p>Called with a write result after a <code>write</code> operation successfully completes. This method may update

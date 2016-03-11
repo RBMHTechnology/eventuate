@@ -189,118 +189,171 @@
   <div class="section" id="configuration">
 <span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <p>This is the reference configuration of Eventuate. It is processed by Typesafe&#8217;s <a class="reference external" href="https://github.com/typesafehub/config">config</a> library and can be overridden by applications:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span>akka {
-  actor {
-    serializers {
-      eventuate-durable-event = &quot;com.rbmhtechnology.eventuate.serializer.DurableEventSerializer&quot;
-      eventuate-replication-filter = &quot;com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer&quot;
-      eventuate-replication-protocol = &quot;com.rbmhtechnology.eventuate.serializer.ReplicationProtocolSerializer&quot;
-      eventuate-snapshot = &quot;com.rbmhtechnology.eventuate.serializer.SnapshotSerializer&quot;
-      eventuate-crdt = &quot;com.rbmhtechnology.eventuate.serializer.CRDTSerializer&quot;
-    }
+<div class="section" id="eventuate-core">
+<h2>eventuate-core<a class="headerlink" href="#eventuate-core" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">akka</span> <span class="o">{</span>
+  <span class="n">actor</span> <span class="o">{</span>
+    <span class="n">serializers</span> <span class="o">{</span>
+      <span class="n">eventuate</span><span class="o">-</span><span class="n">durable</span><span class="o">-</span><span class="n">event</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.DurableEventSerializer&quot;</span>
+      <span class="n">eventuate</span><span class="o">-</span><span class="n">replication</span><span class="o">-</span><span class="n">filter</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer&quot;</span>
+      <span class="n">eventuate</span><span class="o">-</span><span class="n">replication</span><span class="o">-</span><span class="n">protocol</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.ReplicationProtocolSerializer&quot;</span>
+      <span class="n">eventuate</span><span class="o">-</span><span class="n">snapshot</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.SnapshotSerializer&quot;</span>
+    <span class="o">}</span>
 
-    serialization-bindings {
-      &quot;com.rbmhtechnology.eventuate.DurableEvent&quot; = eventuate-durable-event
-      &quot;com.rbmhtechnology.eventuate.ReplicationFilter$Format&quot; = eventuate-replication-filter
-      &quot;com.rbmhtechnology.eventuate.ReplicationProtocol$Format&quot; = eventuate-replication-protocol
-      &quot;com.rbmhtechnology.eventuate.ConcurrentVersionsTree&quot; = eventuate-snapshot
-      &quot;com.rbmhtechnology.eventuate.Snapshot&quot; = eventuate-snapshot
-      &quot;com.rbmhtechnology.eventuate.log.EventLogClock&quot; = eventuate-snapshot
-      &quot;com.rbmhtechnology.eventuate.crdt.CRDTFormat&quot; = eventuate-crdt
-    }
-  }
-}
+    <span class="n">serialization</span><span class="o">-</span><span class="n">bindings</span> <span class="o">{</span>
+      <span class="s">&quot;com.rbmhtechnology.eventuate.DurableEvent&quot;</span> <span class="k">=</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">durable</span><span class="o">-</span><span class="n">event</span>
+      <span class="s">&quot;com.rbmhtechnology.eventuate.ReplicationFilter$Format&quot;</span> <span class="k">=</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">replication</span><span class="o">-</span><span class="n">filter</span>
+      <span class="s">&quot;com.rbmhtechnology.eventuate.ReplicationProtocol$Format&quot;</span> <span class="k">=</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">replication</span><span class="o">-</span><span class="n">protocol</span>
+      <span class="s">&quot;com.rbmhtechnology.eventuate.ConcurrentVersionsTree&quot;</span> <span class="k">=</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">snapshot</span>
+      <span class="s">&quot;com.rbmhtechnology.eventuate.Snapshot&quot;</span> <span class="k">=</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">snapshot</span>
+      <span class="s">&quot;com.rbmhtechnology.eventuate.log.EventLogClock&quot;</span> <span class="k">=</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">snapshot</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
 
-eventuate {
-  log {
-    # Timeout for read operations from a local event log. These are batch
-    # event reads during event replay made by event-sourced views, actors,
-    # writers and processors and target log reads made by processors.
-    read-timeout = 10s
+<span class="n">eventuate</span> <span class="o">{</span>
+  <span class="n">log</span> <span class="o">{</span>
+    <span class="k">#</span> <span class="nc">Timeout</span> <span class="k">for</span> <span class="n">read</span> <span class="n">operations</span> <span class="n">from</span> <span class="n">a</span> <span class="n">local</span> <span class="n">event</span> <span class="n">log</span><span class="o">.</span> <span class="nc">These</span> <span class="n">are</span> <span class="n">batch</span>
+    <span class="k">#</span> <span class="n">event</span> <span class="n">reads</span> <span class="n">during</span> <span class="n">event</span> <span class="n">replay</span> <span class="n">made</span> <span class="n">by</span> <span class="n">event</span><span class="o">-</span><span class="n">sourced</span> <span class="n">views</span><span class="o">,</span> <span class="n">actors</span><span class="o">,</span>
+    <span class="k">#</span> <span class="n">writers</span> <span class="n">and</span> <span class="n">processors</span> <span class="n">and</span> <span class="n">target</span> <span class="n">log</span> <span class="n">reads</span> <span class="n">made</span> <span class="n">by</span> <span class="n">processors</span><span class="o">.</span>
+    <span class="n">read</span><span class="o">-</span><span class="n">timeout</span> <span class="k">=</span> <span class="mi">10</span><span class="n">s</span>
 
-    # Timeout for write operations to a local event log. These are batch
-    # event writes made by event-sourced processors and replicators. This
-    # timeout does not apply to event-sourced actor writes.
-    write-timeout = 10s
+    <span class="k">#</span> <span class="nc">Timeout</span> <span class="k">for</span> <span class="n">write</span> <span class="n">operations</span> <span class="n">to</span> <span class="n">a</span> <span class="n">local</span> <span class="n">event</span> <span class="n">log</span><span class="o">.</span> <span class="nc">These</span> <span class="n">are</span> <span class="n">batch</span>
+    <span class="k">#</span> <span class="n">event</span> <span class="n">writes</span> <span class="n">made</span> <span class="n">by</span> <span class="n">event</span><span class="o">-</span><span class="n">sourced</span> <span class="n">processors</span> <span class="n">and</span> <span class="n">replicators</span><span class="o">.</span> <span class="nc">This</span>
+    <span class="k">#</span> <span class="n">timeout</span> <span class="n">does</span> <span class="n">not</span> <span class="n">apply</span> <span class="n">to</span> <span class="n">event</span><span class="o">-</span><span class="n">sourced</span> <span class="n">actor</span> <span class="n">writes</span><span class="o">.</span>
+    <span class="n">write</span><span class="o">-</span><span class="n">timeout</span> <span class="k">=</span> <span class="mi">10</span><span class="n">s</span>
 
-    # Target batch size for writing events. It is used by the batching layer
-    # to limit the size of event batches to be written atomically to an event
-    # log. It also limits the size of event batches replicated from remote
-    # source logs and to a local target log. Please note that this is not
-    # a strict batch size limit. Event-sourced actors can still emit batches
-    # of larger size (although it is very uncommon to emit that many events
-    # per command).
-    write-batch-size = 64
+    <span class="k">#</span> <span class="nc">Target</span> <span class="n">batch</span> <span class="n">size</span> <span class="k">for</span> <span class="n">writing</span> <span class="n">events</span><span class="o">.</span> <span class="nc">It</span> <span class="n">is</span> <span class="n">used</span> <span class="n">by</span> <span class="n">the</span> <span class="n">batching</span> <span class="n">layer</span>
+    <span class="k">#</span> <span class="n">to</span> <span class="n">limit</span> <span class="n">the</span> <span class="n">size</span> <span class="n">of</span> <span class="n">event</span> <span class="n">batches</span> <span class="n">to</span> <span class="n">be</span> <span class="n">written</span> <span class="n">atomically</span> <span class="n">to</span> <span class="n">an</span> <span class="n">event</span>
+    <span class="k">#</span> <span class="n">log</span><span class="o">.</span> <span class="nc">It</span> <span class="n">also</span> <span class="n">limits</span> <span class="n">the</span> <span class="n">size</span> <span class="n">of</span> <span class="n">event</span> <span class="n">batches</span> <span class="n">replicated</span> <span class="n">from</span> <span class="n">remote</span>
+    <span class="k">#</span> <span class="n">source</span> <span class="n">logs</span> <span class="n">and</span> <span class="n">to</span> <span class="n">a</span> <span class="n">local</span> <span class="n">target</span> <span class="n">log</span><span class="o">.</span> <span class="nc">Please</span> <span class="n">note</span> <span class="n">that</span> <span class="k">this</span> <span class="n">is</span> <span class="n">not</span>
+    <span class="k">#</span> <span class="n">a</span> <span class="n">strict</span> <span class="n">batch</span> <span class="n">size</span> <span class="n">limit</span><span class="o">.</span> <span class="nc">Event</span><span class="o">-</span><span class="n">sourced</span> <span class="n">actors</span> <span class="n">can</span> <span class="n">still</span> <span class="n">emit</span> <span class="n">batches</span>
+    <span class="k">#</span> <span class="n">of</span> <span class="n">larger</span> <span class="n">size</span> <span class="o">(</span><span class="n">although</span> <span class="n">it</span> <span class="n">is</span> <span class="n">very</span> <span class="n">uncommon</span> <span class="n">to</span> <span class="n">emit</span> <span class="n">that</span> <span class="n">many</span> <span class="n">events</span>
+    <span class="k">#</span> <span class="n">per</span> <span class="n">command</span><span class="o">).</span>
+    <span class="n">write</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">64</span>
 
-    # Maximum number of events to be replayed to an event-sourced view, actor,
-    # writer or processor before replay is suspended. A suspended replay is
-    # resumed automatically after the replayed event batch has been handled
-    # (= replay backpressure).
-    replay-batch-size = 4096
-  }
+    <span class="k">#</span> <span class="nc">Maximum</span> <span class="n">number</span> <span class="n">of</span> <span class="n">events</span> <span class="n">to</span> <span class="n">be</span> <span class="n">replayed</span> <span class="n">to</span> <span class="n">an</span> <span class="n">event</span><span class="o">-</span><span class="n">sourced</span> <span class="n">view</span><span class="o">,</span> <span class="n">actor</span><span class="o">,</span>
+    <span class="k">#</span> <span class="n">writer</span> <span class="n">or</span> <span class="n">processor</span> <span class="n">before</span> <span class="n">replay</span> <span class="n">is</span> <span class="n">suspended</span><span class="o">.</span> <span class="n">A</span> <span class="n">suspended</span> <span class="n">replay</span> <span class="n">is</span>
+    <span class="k">#</span> <span class="n">resumed</span> <span class="n">automatically</span> <span class="n">after</span> <span class="n">the</span> <span class="n">replayed</span> <span class="n">event</span> <span class="n">batch</span> <span class="n">has</span> <span class="n">been</span> <span class="n">handled</span>
+    <span class="k">#</span> <span class="o">(</span><span class="k">=</span> <span class="n">replay</span> <span class="n">backpressure</span><span class="o">).</span>
+    <span class="n">replay</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">4096</span>
+  <span class="o">}</span>
 
-  log.circuit-breaker {
-    # Number of write retries after which the circuit breaker should be opened.
-    open-after-retries = 2
-  }
+  <span class="n">log</span><span class="o">.</span><span class="n">circuit</span><span class="o">-</span><span class="n">breaker</span> <span class="o">{</span>
+    <span class="k">#</span> <span class="nc">Number</span> <span class="n">of</span> <span class="n">write</span> <span class="n">retries</span> <span class="n">after</span> <span class="n">which</span> <span class="n">the</span> <span class="n">circuit</span> <span class="n">breaker</span> <span class="n">should</span> <span class="n">be</span> <span class="n">opened</span><span class="o">.</span>
+    <span class="n">open</span><span class="o">-</span><span class="n">after</span><span class="o">-</span><span class="n">retries</span> <span class="k">=</span> <span class="mi">2</span>
+  <span class="o">}</span>
 
-  log.replication {
-    # Event replication retry delay. Event replication is delayed for the
-    # given duration if a previous transfer batch was empty or failed.
-    retry-delay = 5s
+  <span class="n">log</span><span class="o">.</span><span class="n">replication</span> <span class="o">{</span>
+    <span class="k">#</span> <span class="nc">Event</span> <span class="n">replication</span> <span class="n">retry</span> <span class="n">delay</span><span class="o">.</span> <span class="nc">Event</span> <span class="n">replication</span> <span class="n">is</span> <span class="n">delayed</span> <span class="k">for</span> <span class="n">the</span>
+    <span class="k">#</span> <span class="n">given</span> <span class="n">duration</span> <span class="k">if</span> <span class="n">a</span> <span class="n">previous</span> <span class="n">transfer</span> <span class="n">batch</span> <span class="n">was</span> <span class="n">empty</span> <span class="n">or</span> <span class="n">failed</span><span class="o">.</span>
+    <span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">5</span><span class="n">s</span>
 
-    # Timeout for reading events from the remote source log.
-    remote-read-timeout = 10s
+    <span class="k">#</span> <span class="nc">Timeout</span> <span class="k">for</span> <span class="n">reading</span> <span class="n">events</span> <span class="n">from</span> <span class="n">the</span> <span class="n">remote</span> <span class="n">source</span> <span class="n">log</span><span class="o">.</span>
+    <span class="n">remote</span><span class="o">-</span><span class="n">read</span><span class="o">-</span><span class="n">timeout</span> <span class="k">=</span> <span class="mi">10</span><span class="n">s</span>
 
-    # Maximum duration of missing heartbeats from a remote replication
-    # endpoint until that endpoint is considered unavailable.
-    failure-detection-limit = 60s
+    <span class="k">#</span> <span class="nc">Maximum</span> <span class="n">duration</span> <span class="n">of</span> <span class="n">missing</span> <span class="n">heartbeats</span> <span class="n">from</span> <span class="n">a</span> <span class="n">remote</span> <span class="n">replication</span>
+    <span class="k">#</span> <span class="n">endpoint</span> <span class="n">until</span> <span class="n">that</span> <span class="n">endpoint</span> <span class="n">is</span> <span class="n">considered</span> <span class="n">unavailable</span><span class="o">.</span>
+    <span class="n">failure</span><span class="o">-</span><span class="n">detection</span><span class="o">-</span><span class="n">limit</span> <span class="k">=</span> <span class="mi">60</span><span class="n">s</span>
 
-    # If turned on, notifications about updates in a source event log are sent
-    # to remote replication endpoints which reduces event replication latency.
-    # The impact of sending update notifications on average replication latency
-    # decreases with increasing event write load. Applications with high event
-    # write load may even experience increased event replication throughput if
-    # update notifications are turned off.
-    update-notifications = on
-  }
+    <span class="k">#</span> <span class="nc">If</span> <span class="n">turned</span> <span class="n">on</span><span class="o">,</span> <span class="n">notifications</span> <span class="n">about</span> <span class="n">updates</span> <span class="n">in</span> <span class="n">a</span> <span class="n">source</span> <span class="n">event</span> <span class="n">log</span> <span class="n">are</span> <span class="n">sent</span>
+    <span class="k">#</span> <span class="n">to</span> <span class="n">remote</span> <span class="n">replication</span> <span class="n">endpoints</span> <span class="n">which</span> <span class="n">reduces</span> <span class="n">event</span> <span class="n">replication</span> <span class="n">latency</span><span class="o">.</span>
+    <span class="k">#</span> <span class="nc">The</span> <span class="n">impact</span> <span class="n">of</span> <span class="n">sending</span> <span class="n">update</span> <span class="n">notifications</span> <span class="n">on</span> <span class="n">average</span> <span class="n">replication</span> <span class="n">latency</span>
+    <span class="k">#</span> <span class="n">decreases</span> <span class="k">with</span> <span class="n">increasing</span> <span class="n">event</span> <span class="n">write</span> <span class="n">load</span><span class="o">.</span> <span class="nc">Applications</span> <span class="k">with</span> <span class="n">high</span> <span class="n">event</span>
+    <span class="k">#</span> <span class="n">write</span> <span class="n">load</span> <span class="n">may</span> <span class="n">even</span> <span class="n">experience</span> <span class="n">increased</span> <span class="n">event</span> <span class="n">replication</span> <span class="n">throughput</span> <span class="k">if</span>
+    <span class="k">#</span> <span class="n">update</span> <span class="n">notifications</span> <span class="n">are</span> <span class="n">turned</span> <span class="n">off</span><span class="o">.</span>
+    <span class="n">update</span><span class="o">-</span><span class="n">notifications</span> <span class="k">=</span> <span class="n">on</span>
+  <span class="o">}</span>
 
-  log.recovery {
-    # Maximum number of retries of remote operations. These are operations
-    # that read from remote replication endpoints.
-    remote-operation-retry-max = 3
+  <span class="n">log</span><span class="o">.</span><span class="n">recovery</span> <span class="o">{</span>
+    <span class="k">#</span> <span class="nc">Maximum</span> <span class="n">number</span> <span class="n">of</span> <span class="n">retries</span> <span class="n">of</span> <span class="n">remote</span> <span class="n">operations</span><span class="o">.</span> <span class="nc">These</span> <span class="n">are</span> <span class="n">operations</span>
+    <span class="k">#</span> <span class="n">that</span> <span class="n">read</span> <span class="n">from</span> <span class="n">remote</span> <span class="n">replication</span> <span class="n">endpoints</span><span class="o">.</span>
+    <span class="n">remote</span><span class="o">-</span><span class="n">operation</span><span class="o">-</span><span class="n">retry</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">3</span>
 
-    # Delay before re-trying a remote operation after a previous failure.
-    remote-operation-retry-delay = 10s
+    <span class="k">#</span> <span class="nc">Delay</span> <span class="n">before</span> <span class="n">re</span><span class="o">-</span><span class="n">trying</span> <span class="n">a</span> <span class="n">remote</span> <span class="n">operation</span> <span class="n">after</span> <span class="n">a</span> <span class="n">previous</span> <span class="n">failure</span><span class="o">.</span>
+    <span class="n">remote</span><span class="o">-</span><span class="n">operation</span><span class="o">-</span><span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">10</span><span class="n">s</span>
 
-    # Timeout of remote operations.
-    remote-operation-timeout = 10s
+    <span class="k">#</span> <span class="nc">Timeout</span> <span class="n">of</span> <span class="n">remote</span> <span class="n">operations</span><span class="o">.</span>
+    <span class="n">remote</span><span class="o">-</span><span class="n">operation</span><span class="o">-</span><span class="n">timeout</span> <span class="k">=</span> <span class="mi">10</span><span class="n">s</span>
 
-    # Timeout for deleting invalidated snapshots.
-    snapshot-deletion-timeout = 30s
-  }
+    <span class="k">#</span> <span class="nc">Timeout</span> <span class="k">for</span> <span class="n">deleting</span> <span class="n">invalidated</span> <span class="n">snapshots</span><span class="o">.</span>
+    <span class="n">snapshot</span><span class="o">-</span><span class="n">deletion</span><span class="o">-</span><span class="n">timeout</span> <span class="k">=</span> <span class="mi">30</span><span class="n">s</span>
+  <span class="o">}</span>
 
-  log.leveldb {
-    # Root directory for storing the log directories of individual event logs.
-    dir = target
+  <span class="n">log</span><span class="o">.</span><span class="n">dispatchers</span> <span class="o">{</span>
+    <span class="n">write</span><span class="o">-</span><span class="n">dispatcher</span> <span class="o">{</span>
+      <span class="n">executor</span> <span class="k">=</span> <span class="s">&quot;thread-pool-executor&quot;</span>
+      <span class="k">type</span> <span class="o">=</span> <span class="nc">PinnedDispatcher</span>
+    <span class="o">}</span>
 
-    # Use fsync on write.
-    fsync = on
+    <span class="n">read</span><span class="o">-</span><span class="n">dispatcher</span> <span class="o">{</span>
+      <span class="k">type</span> <span class="o">=</span> <span class="nc">Dispatcher</span>
+      <span class="n">executor</span> <span class="k">=</span> <span class="s">&quot;fork-join-executor&quot;</span>
+      <span class="n">fork</span><span class="o">-</span><span class="n">join</span><span class="o">-</span><span class="n">executor</span> <span class="o">{</span>
+        <span class="n">parallelism</span><span class="o">-</span><span class="n">min</span> <span class="k">=</span> <span class="mi">2</span>
+        <span class="n">parallelism</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">16</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
 
-    # Minimum number of new events that must have been written before another
-    # snapshot of the log&#39;s internal state (sequence number and merged vector
-    # time) is written.
-    state-snapshot-limit = 128
+  <span class="n">snapshot</span> <span class="o">{</span>
+    <span class="k">#</span> <span class="nc">Timeout</span> <span class="k">for</span> <span class="n">loading</span> <span class="n">a</span> <span class="n">snapshot</span><span class="o">.</span>
+    <span class="n">load</span><span class="o">-</span><span class="n">timeout</span> <span class="k">=</span> <span class="mi">10</span><span class="n">m</span>
 
-    # Maximum number of events that are physically deleted in a single batch
-    # operation.
-    deletion-batch-size = 100
+    <span class="k">#</span> <span class="nc">Timeout</span> <span class="k">for</span> <span class="n">saving</span> <span class="n">a</span> <span class="n">snapshot</span><span class="o">.</span>
+    <span class="n">save</span><span class="o">-</span><span class="n">timeout</span> <span class="k">=</span> <span class="mi">10</span><span class="n">m</span>
+  <span class="o">}</span>
 
-    # Delay between two tries to physically delete all requested events while
-    # keeping those that are not yet replicated.
-    deletion-retry-delay = 1m
-  }
+  <span class="n">snapshot</span><span class="o">.</span><span class="n">filesystem</span> <span class="o">{</span>
+    <span class="k">#</span> <span class="nc">Root</span> <span class="n">directory</span> <span class="k">for</span> <span class="n">storing</span> <span class="n">the</span> <span class="n">snapshot</span> <span class="n">files</span> <span class="n">of</span> <span class="n">individual</span> <span class="n">emitters</span><span class="o">.</span>
+    <span class="n">dir</span> <span class="k">=</span> <span class="n">target</span>
 
+    <span class="k">#</span> <span class="nc">Maximum</span> <span class="n">number</span> <span class="n">of</span> <span class="n">stored</span> <span class="n">snapshots</span> <span class="n">per</span> <span class="n">emitter</span><span class="o">.</span> <span class="nc">If</span> <span class="k">this</span> <span class="n">number</span> <span class="n">is</span>
+    <span class="k">#</span> <span class="n">exceeded</span> <span class="n">during</span> <span class="n">a</span> <span class="n">snapshot</span> <span class="n">write</span><span class="o">,</span> <span class="n">older</span> <span class="n">snapshots</span> <span class="n">are</span> <span class="n">automatically</span>
+    <span class="k">#</span> <span class="n">deleted</span><span class="o">.</span>
+    <span class="n">snapshots</span><span class="o">-</span><span class="n">per</span><span class="o">-</span><span class="n">emitter</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">3</span>
+
+    <span class="n">write</span><span class="o">-</span><span class="n">dispatcher</span> <span class="o">{</span>
+      <span class="k">type</span> <span class="o">=</span> <span class="nc">Dispatcher</span>
+      <span class="n">executor</span> <span class="k">=</span> <span class="s">&quot;fork-join-executor&quot;</span>
+      <span class="n">fork</span><span class="o">-</span><span class="n">join</span><span class="o">-</span><span class="n">executor</span> <span class="o">{</span>
+        <span class="n">parallelism</span><span class="o">-</span><span class="n">min</span> <span class="k">=</span> <span class="mi">2</span>
+        <span class="n">parallelism</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">8</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="n">read</span><span class="o">-</span><span class="n">dispatcher</span> <span class="o">{</span>
+      <span class="k">type</span> <span class="o">=</span> <span class="nc">Dispatcher</span>
+      <span class="n">executor</span> <span class="k">=</span> <span class="s">&quot;fork-join-executor&quot;</span>
+      <span class="n">fork</span><span class="o">-</span><span class="n">join</span><span class="o">-</span><span class="n">executor</span> <span class="o">{</span>
+        <span class="n">parallelism</span><span class="o">-</span><span class="n">min</span> <span class="k">=</span> <span class="mi">2</span>
+        <span class="n">parallelism</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">32</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="eventuate-crdt">
+<h2>eventuate-crdt<a class="headerlink" href="#eventuate-crdt" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">akka</span> <span class="o">{</span>
+  <span class="n">actor</span> <span class="o">{</span>
+    <span class="n">serializers</span> <span class="o">{</span>
+      <span class="n">eventuate</span><span class="o">-</span><span class="n">crdt</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.crdt.CRDTSerializer&quot;</span>
+    <span class="o">}</span>
+
+    <span class="n">serialization</span><span class="o">-</span><span class="n">bindings</span> <span class="o">{</span>
+      <span class="s">&quot;com.rbmhtechnology.eventuate.crdt.CRDTFormat&quot;</span> <span class="k">=</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">crdt</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="eventuate-log-cassandra">
+<h2>eventuate-log-cassandra<a class="headerlink" href="#eventuate-log-cassandra" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-scala"><div class="highlight"><pre><span></span>eventuate {
   log.cassandra {
     # Comma-separated list of contact points in the cluster (comma-separated
     # hostname or hostname:port list).
@@ -379,44 +432,36 @@ eventuate {
       }
     }
   }
-
-  snapshot {
-    # Timeout for loading a snapshot.
-    load-timeout = 10m
-
-    # Timeout for saving a snapshot.
-    save-timeout = 10m
-  }
-
-  snapshot.filesystem {
-    # Root directory for storing the snapshot files of individual emitters.
-    dir = target
-
-    # Maximum number of stored snapshots per emitter. If this number is
-    # exceeded during a snapshot write, older snapshots are automatically
-    # deleted.
-    snapshots-per-emitter-max = 3
-
-    write-dispatcher {
-      type = Dispatcher
-      executor = &quot;fork-join-executor&quot;
-      fork-join-executor {
-        parallelism-min = 2
-        parallelism-max = 8
-      }
-    }
-
-    read-dispatcher {
-      type = Dispatcher
-      executor = &quot;fork-join-executor&quot;
-      fork-join-executor {
-        parallelism-min = 2
-        parallelism-max = 32
-      }
-    }
-  }
 }
 </pre></div>
+</div>
+</div>
+<div class="section" id="eventuate-log-leveldb">
+<h2>eventuate-log-leveldb<a class="headerlink" href="#eventuate-log-leveldb" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span> <span class="o">{</span>
+  <span class="n">log</span><span class="o">.</span><span class="n">leveldb</span> <span class="o">{</span>
+    <span class="k">#</span> <span class="nc">Root</span> <span class="n">directory</span> <span class="k">for</span> <span class="n">storing</span> <span class="n">the</span> <span class="n">log</span> <span class="n">directories</span> <span class="n">of</span> <span class="n">individual</span> <span class="n">event</span> <span class="n">logs</span><span class="o">.</span>
+    <span class="n">dir</span> <span class="k">=</span> <span class="n">target</span>
+
+    <span class="k">#</span> <span class="nc">Use</span> <span class="n">fsync</span> <span class="n">on</span> <span class="n">write</span><span class="o">.</span>
+    <span class="n">fsync</span> <span class="k">=</span> <span class="n">on</span>
+
+    <span class="k">#</span> <span class="nc">Minimum</span> <span class="n">number</span> <span class="n">of</span> <span class="k">new</span> <span class="n">events</span> <span class="n">that</span> <span class="n">must</span> <span class="n">have</span> <span class="n">been</span> <span class="n">written</span> <span class="n">before</span> <span class="n">another</span>
+    <span class="k">#</span> <span class="n">snapshot</span> <span class="n">of</span> <span class="n">the</span> <span class="n">log</span><span class=" -Symbol">&#39;s</span> <span class="n">internal</span> <span class="n">state</span> <span class="o">(</span><span class="n">sequence</span> <span class="n">number</span> <span class="n">and</span> <span class="n">merged</span> <span class="n">vector</span>
+    <span class="k">#</span> <span class="n">time</span><span class="o">)</span> <span class="n">is</span> <span class="n">written</span><span class="o">.</span>
+    <span class="n">state</span><span class="o">-</span><span class="n">snapshot</span><span class="o">-</span><span class="n">limit</span> <span class="k">=</span> <span class="mi">128</span>
+
+    <span class="k">#</span> <span class="nc">Maximum</span> <span class="n">number</span> <span class="n">of</span> <span class="n">events</span> <span class="n">that</span> <span class="n">are</span> <span class="n">physically</span> <span class="n">deleted</span> <span class="n">in</span> <span class="n">a</span> <span class="n">single</span> <span class="n">batch</span>
+    <span class="k">#</span> <span class="n">operation</span><span class="o">.</span>
+    <span class="n">deletion</span><span class="o">-</span><span class="n">batch</span><span class="o">-</span><span class="n">size</span> <span class="k">=</span> <span class="mi">100</span>
+
+    <span class="k">#</span> <span class="nc">Delay</span> <span class="n">between</span> <span class="n">two</span> <span class="n">tries</span> <span class="n">to</span> <span class="n">physically</span> <span class="n">delete</span> <span class="n">all</span> <span class="n">requested</span> <span class="n">events</span> <span class="k">while</span>
+    <span class="k">#</span> <span class="n">keeping</span> <span class="n">those</span> <span class="n">that</span> <span class="n">are</span> <span class="n">not</span> <span class="n">yet</span> <span class="n">replicated</span><span class="o">.</span>
+    <span class="n">deletion</span><span class="o">-</span><span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">1</span><span class="n">m</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -456,7 +501,7 @@ eventuate {
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0.6-SNAPSHOT',
+            VERSION:'0.7-SNAPSHOT',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -28,11 +28,11 @@
         </head>
         <body class="value">
       <div id="definition">
-        <img src="../../../../lib/package_big.png" />
+        <img alt="Package" src="../../../../lib/package_big.png" />
         <p id="owner"><a href="../../../package.html" class="extype" name="com">com</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a></p>
-        <h1>log</h1> <span class="permalink">
+        <h1>log</h1><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       </div>
@@ -79,12 +79,11 @@
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@BatchReadResultextendsDurableEventBatchwithProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Result of an event batch-read operation.</p><div class="fullcomment"><div class="comment cmt"><p>Result of an event batch-read operation.
-</p></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>Read event batch.</p></dd><dt class="param">to</dt><dd class="cmt"><p>Last read position in the event log.
-</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>Read event batch.</p></dd><dt class="param">to</dt><dd class="cmt"><p>Last read position in the event log.</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.BatchingLayer" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="BatchingLayerextendsActor"></a>
       <a id="BatchingLayer:BatchingLayer"></a>
@@ -98,7 +97,7 @@
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@BatchingLayerextendsActor" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">An event log wrapper that batches write commands.</p><div class="fullcomment"><div class="comment cmt"><p>An event log wrapper that batches write commands. Batched <a href="../EventsourcingProtocol$$Write.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">EventsourcingProtocol.Write</a> commands are sent as
@@ -121,7 +120,7 @@ configured with <code>eventuate.log.write-batch-size</code>. If there is no curr
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@CircuitBreakerextendsActor" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">A wrapper that can protect <a href="EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> implementations from being overloaded while they are retrying to
@@ -132,8 +131,7 @@ by sending it <code>ServiceFailure</code> messages with a <code>retry</code> val
 parameter <code>eventuate.log.circuit-breaker.open-after-retries</code>. It can be closed again by sending it a
 <code>ServiceNormal</code> or <code>ServiceInitialized</code> message. These messages are usually sent by <a href="EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>
 implementations and not by applications.
-</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventLogSPI.html#write(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],partition:Long,clock:com.rbmhtechnology.eventuate.log.EventLogClock):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.log.EventLogSPI#write">EventLogSPI.write</a>
-</p></span></dd></dl></div>
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventLogSPI.html#write(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],partition:Long,clock:com.rbmhtechnology.eventuate.log.EventLogClock):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.log.EventLogSPI#write">EventLogSPI.write</a></p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.DeletionMetadata" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="DeletionMetadataextendsProductwithSerializable"></a>
       <a id="DeletionMetadata:DeletionMetadata"></a>
@@ -147,13 +145,12 @@ implementations and not by applications.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@DeletionMetadataextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">View of a <a href="../EventsourcingProtocol$$Delete.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete">Delete</a> request.</p><div class="fullcomment"><div class="comment cmt"><p>View of a <a href="../EventsourcingProtocol$$Delete.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete">Delete</a> request.
 </p></div><dl class="paramcmts block"><dt class="param">toSequenceNr</dt><dd class="cmt"><p>A marker that indicates that all event with a smaller sequence nr are not replayed any more.</p></dd><dt class="param">remoteLogIds</dt><dd class="cmt"><p>A set of remote log ids that must have replicated events before they these events are allowed
-                    to be physically deleted locally.
-</p></dd></dl></div>
+                    to be physically deleted locally.</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.EventLog" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EventLogextendsActorwithEventLogSPIwithStashwithActorLogging"></a>
       <a id="EventLog:EventLog"></a>
@@ -167,7 +164,7 @@ implementations and not by applications.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLogextendsActorwithEventLogSPIwithStashwithActorLogging" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">An abstract event log that handles <a href="../EventsourcingProtocol$.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol">EventsourcingProtocol</a> and <a href="../ReplicationProtocol$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol">ReplicationProtocol</a> messages and
@@ -188,7 +185,7 @@ implement an event log by implementing the <a href="EventLogSPI.html" class="ext
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLogClockextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">A clock that tracks the current sequence number and the version vector of an event log.</p><div class="fullcomment"><div class="comment cmt"><p>A clock that tracks the current sequence number and the version vector of an event log.
@@ -208,7 +205,7 @@ written to that event log.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLogSPIextendsAnyRef" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Event log storage provider interface (SPI).</p>
@@ -225,7 +222,7 @@ written to that event log.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLogSettingsextendsAnyRef" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Event log settings to be implemented by storage providers.</p>
@@ -242,7 +239,7 @@ written to that event log.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@NotificationChannelextendsActor" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Notifies registered replicators about source log updates.</p>
@@ -266,7 +263,7 @@ written to that event log.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLog" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       
@@ -283,7 +280,7 @@ written to that event log.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@NotificationChannel" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       
@@ -300,7 +297,7 @@ written to that event log.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@cassandra" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       
@@ -317,7 +314,7 @@ written to that event log.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@leveldb" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       

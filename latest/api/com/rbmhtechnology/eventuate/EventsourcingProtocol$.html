@@ -28,11 +28,13 @@
         </head>
         <body class="value">
       <div id="definition">
-        <img src="../../../lib/object_big.png" />
+        <img alt="Object" src="../../../lib/object_big.png" />
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a></p>
-        <h1>EventsourcingProtocol</h1> <span class="permalink">
+        <h1>EventsourcingProtocol</h1><h3><span class="morelinks"><div>Related Doc:
+            <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">package eventuate</a>
+          </div></span></h3><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       </div>
@@ -75,7 +77,6 @@
               <li class="hideall out"><span>Hide All</span></li>
               <li class="showall in"><span>Show all</span></li>
             </ol>
-            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
           </div>
         <div id="visbl">
             <span class="filtertype">Visibility</span>
@@ -102,15 +103,14 @@
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DeleteextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Instructs an event log to delete events with a sequence nr less or equal a given one.</p><div class="fullcomment"><div class="comment cmt"><p>Instructs an event log to delete events with a sequence nr less or equal a given one.
 Deleted events are not replayed any more, however depending on the log implementation
 and <code>remoteLogIds</code> they might still be replicated.
 </p></div><dl class="paramcmts block"><dt class="param">toSequenceNr</dt><dd class="cmt"><p>All events with a less or equal sequence nr are not replayed any more.</p></dd><dt class="param">remoteLogIds</dt><dd class="cmt"><p>A set of remote log ids that must have replicated events before they
-                    are allowed to be physically deleted.
-</p></dd></dl></div>
+                    are allowed to be physically deleted.</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="DeleteFailureextendsProductwithSerializable"></a>
       <a id="DeleteFailure:DeleteFailure"></a>
@@ -124,7 +124,7 @@ and <code>remoteLogIds</code> they might still be replicated.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DeleteFailureextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Failure reply after a <a href="EventsourcingProtocol$$Delete.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete">Delete</a>
@@ -142,7 +142,7 @@ and <code>remoteLogIds</code> they might still be replicated.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DeleteSnapshotsextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Instructs an event log to delete all snapshots with a sequence number greater than or equal to <code>lowerSequenceNr</code>.</p>
@@ -159,7 +159,7 @@ and <code>remoteLogIds</code> they might still be replicated.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DeleteSnapshotsFailureextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Failure reply after a <a href="EventsourcingProtocol$$DeleteSnapshots.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteSnapshots">DeleteSnapshots</a>.</p>
@@ -176,14 +176,13 @@ and <code>remoteLogIds</code> they might still be replicated.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DeleteSuccessextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="EventsourcingProtocol$$Delete.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete">Delete</a>
 </p><div class="fullcomment"><div class="comment cmt"><p>Success reply after a <a href="EventsourcingProtocol$$Delete.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete">Delete</a>
 </p></div><dl class="paramcmts block"><dt class="param">deletedTo</dt><dd class="cmt"><p>The actually written deleted to marker. Minimum of <a href="EventsourcingProtocol$$Delete.html#toSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Delete#toSequenceNr">Delete.toSequenceNr</a> and
-                 the current sequence nr
-</p></dd></dl></div>
+                 the current sequence nr</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcingProtocol.LoadSnapshot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="LoadSnapshotextendsProductwithSerializable"></a>
       <a id="LoadSnapshot:LoadSnapshot"></a>
@@ -197,7 +196,7 @@ and <code>remoteLogIds</code> they might still be replicated.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@LoadSnapshotextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Instructs an event log to load the most recent snapshot for <code>emitterId</code>.</p>
@@ -214,7 +213,7 @@ and <code>remoteLogIds</code> they might still be replicated.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@LoadSnapshotFailureextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Failure reply after a <a href="EventsourcingProtocol$$LoadSnapshot.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.LoadSnapshot">LoadSnapshot</a>.</p>
@@ -231,7 +230,7 @@ and <code>remoteLogIds</code> they might still be replicated.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@LoadSnapshotSuccessextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="EventsourcingProtocol$$LoadSnapshot.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.LoadSnapshot">LoadSnapshot</a>.</p>
@@ -248,7 +247,7 @@ and <code>remoteLogIds</code> they might still be replicated.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ReplayextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Instructs an event log to read up to <code>max</code> events starting at <code>fromSequenceNr</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Instructs an event log to read up to <code>max</code> events starting at <code>fromSequenceNr</code>. If <code>aggregateId</code>
@@ -268,7 +267,7 @@ returned.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ReplayFailureextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Failure reply after a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">Replay</a>.</p>
@@ -285,7 +284,7 @@ returned.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ReplaySuccessextendsDurableEventBatchwithProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="EventsourcingProtocol$$Replay.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Replay">Replay</a>.</p>
@@ -302,7 +301,7 @@ returned.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@SaveSnapshotextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Instructs an event log to save the given <code>snapshot</code>.</p>
@@ -319,7 +318,7 @@ returned.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@SaveSnapshotFailureextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Failure reply after a <a href="EventsourcingProtocol$$SaveSnapshot.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.SaveSnapshot">SaveSnapshot</a>.</p>
@@ -336,7 +335,7 @@ returned.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@SaveSnapshotSuccessextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="EventsourcingProtocol$$SaveSnapshot.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.SaveSnapshot">SaveSnapshot</a>.</p>
@@ -353,7 +352,7 @@ returned.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@WriteextendsUpdateableEventBatch[com.rbmhtechnology.eventuate.EventsourcingProtocol.Write]withProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Instructs an event log to write the given <code>events</code>.</p>
@@ -370,7 +369,7 @@ returned.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@WriteFailureextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Failure reply after a <a href="EventsourcingProtocol$$Write.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">Write</a>.</p>
@@ -387,7 +386,7 @@ returned.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@WriteNextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Instructs an event log to batch-execute the given <code>writes</code>.</p>
@@ -404,7 +403,7 @@ returned.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@WriteSuccessextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="EventsourcingProtocol$$Write.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.Write">Write</a>.</p>
@@ -421,7 +420,7 @@ returned.
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@WrittenextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Sent by an event log to all registered participants, if <code>event</code> has been successfully written.</p><div class="fullcomment"><div class="comment cmt"><p>Sent by an event log to all registered participants, if <code>event</code> has been successfully written.
@@ -447,7 +446,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@!=(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -464,7 +463,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@##():Int" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -481,7 +480,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@==(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -498,7 +497,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@DeleteSnapshotsSuccess" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="EventsourcingProtocol$$DeleteSnapshots.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.DeleteSnapshots">DeleteSnapshots</a>.</p>
@@ -515,7 +514,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@Replay" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       
@@ -532,7 +531,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@WriteNComplete" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Completion reply after a <a href="EventsourcingProtocol$$WriteN.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol.WriteN">WriteN</a>.</p>
@@ -549,7 +548,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@asInstanceOf[T0]:T0" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
@@ -566,7 +565,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@clone():Object" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -589,7 +588,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -606,7 +605,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@equals(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -623,7 +622,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@finalize():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -646,7 +645,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@getClass():Class[_]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -663,7 +662,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@hashCode():Int" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -680,7 +679,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
@@ -697,7 +696,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -714,7 +713,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@notify():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -731,7 +730,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@notifyAll():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -748,7 +747,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -765,7 +764,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@toString():String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -782,7 +781,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@wait():Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -805,7 +804,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -828,7 +827,7 @@ This message is not sent to a participant if that participant has sent a corresp
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$@wait(x$1:Long):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" />
+        <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>

@@ -28,11 +28,15 @@
         </head>
         <body class="type">
       <div id="definition">
-        <a href="LWWRegister$.html" title="Go to companion"><img src="../../../../lib/class_to_object_big.png" /></a>
+        <a href="LWWRegister$.html" title="See companion object"><img alt="Class/Object" src="../../../../lib/class_to_object_big.png" /></a>
         <p id="owner"><a href="../../../package.html" class="extype" name="com">com</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt">crdt</a></p>
-        <h1><a href="LWWRegister$.html" title="Go to companion">LWWRegister</a></h1> <span class="permalink">
+        <h1><a href="LWWRegister$.html" title="See companion object">LWWRegister</a></h1><h3><span class="morelinks"><div>
+            Related Docs:
+            <a href="LWWRegister$.html" title="See companion object">object LWWRegister</a>
+            | <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt">package crdt</a>
+          </div></span></h3><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       </div>
@@ -51,9 +55,7 @@
 in case of concurrent assignments, the last written value is returned. The last written value is determined
 by comparing the following <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> fields in given order:</p><ul><li><code>vectorTimestamp</code>: if causally related, return the value with the higher timestamp, otherwise compare</li><li><code>systemTimestamp</code>: if not equal, return the value with the higher timestamp, otherwise compare</li><li><code>emitterId</code></li></ul><p>Note that this relies on synchronized system clocks. <a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a> should only be used when the choice of
 value is not important for concurrent updates occurring within the clock skew.
-</p></div><dl class="paramcmts block"><dt class="param">mvRegister</dt><dd class="cmt"><p>Initially empty <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>.
-</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>
-</p></span></dd></dl><div class="toggleContainer block">
+</p></div><dl class="paramcmts block"><dt class="param">mvRegister</dt><dd class="cmt"><p>Initially empty <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a></p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a>, <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -81,7 +83,6 @@ value is not important for concurrent updates occurring within the clock skew.
               <li class="hideall out"><span>Hide All</span></li>
               <li class="showall in"><span>Show all</span></li>
             </ol>
-            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
           </div>
         <div id="visbl">
             <span class="filtertype">Visibility</span>
@@ -106,11 +107,10 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@&lt;init&gt;(mvRegister:com.rbmhtechnology.eventuate.crdt.MVRegister[A]):com.rbmhtechnology.eventuate.crdt.LWWRegister[A]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">mvRegister</dt><dd class="cmt"><p>Initially empty <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>.
-</p></dd></dl></div>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">mvRegister</dt><dd class="cmt"><p>Initially empty <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>.</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -133,7 +133,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@!=(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -150,7 +150,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@##():Int" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -167,7 +167,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@==(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -184,7 +184,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@asInstanceOf[T0]:T0" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
@@ -201,7 +201,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@clone():Object" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -224,7 +224,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -241,7 +241,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@finalize():Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -264,7 +264,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@getClass():Class[_]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -281,7 +281,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
@@ -298,7 +298,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@mvRegister:com.rbmhtechnology.eventuate.crdt.MVRegister[A]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Initially empty <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>.</p>
@@ -315,7 +315,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -332,7 +332,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@notify():Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -349,7 +349,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@notifyAll():Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -366,12 +366,11 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@set(v:A,vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime,systemTimestamp:Long,emitterId:String):com.rbmhtechnology.eventuate.crdt.LWWRegister[A]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Assigns a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value from <code>v</code> and <code>vectorTimestamp</code> and returns an updated MV-Register.</p><div class="fullcomment"><div class="comment cmt"><p>Assigns a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value from <code>v</code> and <code>vectorTimestamp</code> and returns an updated MV-Register.
-</p></div><dl class="paramcmts block"><dt class="param">v</dt><dd class="cmt"><p>assigned value.</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>vector timestamp of the assigned value.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>system timestamp of the assigned value.</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>id of the value emitter.
-</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="param">v</dt><dd class="cmt"><p>assigned value.</p></dd><dt class="param">vectorTimestamp</dt><dd class="cmt"><p>vector timestamp of the assigned value.</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>system timestamp of the assigned value.</p></dd><dt class="param">emitterId</dt><dd class="cmt"><p>id of the value emitter.</p></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -385,7 +384,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -402,7 +401,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@value:Option[A]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       
@@ -419,7 +418,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@wait():Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -442,7 +441,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -465,7 +464,7 @@ value is not important for concurrent updates occurring within the clock skew.
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.LWWRegister@wait(x$1:Long):Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>

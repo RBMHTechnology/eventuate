@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>CRDTFormats - com.rbmhtechnology.eventuate.serializer.CRDTFormats</title>
-          <meta name="description" content="CRDTFormats - com.rbmhtechnology.eventuate.serializer.CRDTFormats" />
-          <meta name="keywords" content="CRDTFormats com.rbmhtechnology.eventuate.serializer.CRDTFormats" />
+          <title>CRDTSerializer - com.rbmhtechnology.eventuate.crdt.CRDTSerializer</title>
+          <meta name="description" content="CRDTSerializer - com.rbmhtechnology.eventuate.crdt.CRDTSerializer" />
+          <meta name="keywords" content="CRDTSerializer com.rbmhtechnology.eventuate.crdt.CRDTSerializer" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.serializer.CRDTFormats';
+            var hash = 'com.rbmhtechnology.eventuate.crdt.CRDTSerializer';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -28,28 +28,30 @@
         </head>
         <body class="type">
       <div id="definition">
-        <img src="../../../../lib/class_big.png" />
-        <p id="owner"><a href="../../../package.html" class="extype" name="com">com</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.serializer">serializer</a></p>
-        <h1>CRDTFormats</h1> <span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+        <img alt="Class" src="../../../../lib/class_big.png" />
+        <p id="owner"><a href="../../../package.html" class="extype" name="com">com</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt">crdt</a></p>
+        <h1>CRDTSerializer</h1><h3><span class="morelinks"><div>Related Doc:
+            <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt">package crdt</a>
+          </div></span></h3><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       </div>
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
+        <span class="modifier"></span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">CRDTFormats</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">CRDTSerializer</span><span class="result"> extends <span class="extype" name="akka.serialization.Serializer">Serializer</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="akka.serialization.Serializer">Serializer</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -67,7 +69,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.serializer.CRDTFormats"><span>CRDTFormats</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer"><span>CRDTSerializer</span></li><li class="in" name="akka.serialization.Serializer"><span>Serializer</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -75,7 +77,6 @@
               <li class="hideall out"><span>Hide All</span></li>
               <li class="showall in"><span>Show all</span></li>
             </ol>
-            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
           </div>
         <div id="visbl">
             <span class="filtertype">Visibility</span>
@@ -85,7 +86,27 @@
 
       <div id="template">
         <div id="allMembers">
-        
+        <div id="constructors" class="members">
+              <h3>Instance Constructors</h3>
+              <ol><li name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(system:akka.actor.ExtendedActorSystem):com.rbmhtechnology.eventuate.crdt.CRDTSerializer"></a>
+      <a id="&lt;init&gt;:CRDTSerializer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">new</span>
+      </span>
+      <span class="symbol">
+        <span class="name">CRDTSerializer</span><span class="params">(<span name="system">system: <span class="extype" name="akka.actor.ExtendedActorSystem">ExtendedActorSystem</span></span>)</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@&lt;init&gt;(system:akka.actor.ExtendedActorSystem):com.rbmhtechnology.eventuate.crdt.CRDTSerializer" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
 
         
 
@@ -105,8 +126,8 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@!=(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -122,8 +143,8 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@##():Int" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@##():Int" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -139,11 +160,62 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@==(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer#LWWRegisterClass" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LWWRegisterClass:Class[com.rbmhtechnology.eventuate.crdt.LWWRegister[_]]"></a>
+      <a id="LWWRegisterClass:Class[LWWRegister[_]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">LWWRegisterClass</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[<a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>[_]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@LWWRegisterClass:Class[com.rbmhtechnology.eventuate.crdt.LWWRegister[_]]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer#MVRegisterClass" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MVRegisterClass:Class[com.rbmhtechnology.eventuate.crdt.MVRegister[_]]"></a>
+      <a id="MVRegisterClass:Class[MVRegister[_]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">MVRegisterClass</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[<a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>[_]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@MVRegisterClass:Class[com.rbmhtechnology.eventuate.crdt.MVRegister[_]]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer#ORSetClass" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ORSetClass:Class[com.rbmhtechnology.eventuate.crdt.ORSet[_]]"></a>
+      <a id="ORSetClass:Class[ORSet[_]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ORSetClass</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[<a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[_]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@ORSetClass:Class[com.rbmhtechnology.eventuate.crdt.ORSet[_]]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -156,8 +228,8 @@
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@asInstanceOf[T0]:T0" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
@@ -173,8 +245,8 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@clone():Object" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@clone():Object" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -184,6 +256,23 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer#commonSerializer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="commonSerializer:com.rbmhtechnology.eventuate.serializer.CommonSerializer"></a>
+      <a id="commonSerializer:CommonSerializer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">commonSerializer</span><span class="result">: <a href="../serializer/CommonSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.CommonSerializer">CommonSerializer</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@commonSerializer:com.rbmhtechnology.eventuate.serializer.CommonSerializer" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -196,8 +285,8 @@
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -213,8 +302,8 @@
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@equals(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -230,8 +319,8 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@finalize():Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@finalize():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -241,6 +330,57 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer#fromBinary" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="fromBinary(bytes:Array[Byte],manifest:Option[Class[_]]):AnyRef"></a>
+      <a id="fromBinary(Array[Byte],Option[Class[_]]):AnyRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">fromBinary</span><span class="params">(<span name="bytes">bytes: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>, <span name="manifest">manifest: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.Class">Class</span>[_]]</span>)</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@fromBinary(bytes:Array[Byte],manifest:Option[Class[_]]):AnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer">CRDTSerializer</a> → Serializer</dd></dl></div>
+    </li><li name="akka.serialization.Serializer#fromBinary" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="fromBinary(bytes:Array[Byte],clazz:Class[_]):AnyRef"></a>
+      <a id="fromBinary(Array[Byte],Class[_]):AnyRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">fromBinary</span><span class="params">(<span name="bytes">bytes: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>, <span name="clazz">clazz: <span class="extype" name="scala.Predef.Class">Class</span>[_]</span>)</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@fromBinary(bytes:Array[Byte],clazz:Class[_]):AnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Serializer</dd></dl></div>
+    </li><li name="akka.serialization.Serializer#fromBinary" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="fromBinary(bytes:Array[Byte]):AnyRef"></a>
+      <a id="fromBinary(Array[Byte]):AnyRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">fromBinary</span><span class="params">(<span name="bytes">bytes: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>)</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@fromBinary(bytes:Array[Byte]):AnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Serializer</dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -253,8 +393,8 @@
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@getClass():Class[_]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -270,11 +410,45 @@
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@hashCode():Int" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@hashCode():Int" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer#identifier" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="identifier:Int"></a>
+      <a id="identifier:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">identifier</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@identifier:Int" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer">CRDTSerializer</a> → Serializer</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer#includeManifest" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="includeManifest:Boolean"></a>
+      <a id="includeManifest:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">includeManifest</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@includeManifest:Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer">CRDTSerializer</a> → Serializer</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -287,8 +461,8 @@
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
@@ -304,8 +478,8 @@
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -321,8 +495,8 @@
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@notify():Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@notify():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -338,8 +512,8 @@
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@notifyAll():Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
@@ -355,11 +529,28 @@
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer#toBinary" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="toBinary(o:AnyRef):Array[Byte]"></a>
+      <a id="toBinary(AnyRef):Array[Byte]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">toBinary</span><span class="params">(<span name="o">o: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@toBinary(o:AnyRef):Array[Byte]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTSerializer">CRDTSerializer</a> → Serializer</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -372,8 +563,8 @@
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@toString():String" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@toString():String" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
@@ -389,8 +580,8 @@
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@wait():Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@wait():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -412,8 +603,8 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -435,8 +626,8 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.CRDTFormats@wait(x$1:Long):Unit" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" />
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTSerializer@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
@@ -455,7 +646,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
+        <div class="parent" name="akka.serialization.Serializer">
+              <h3>Inherited from <span class="extype" name="akka.serialization.Serializer">Serializer</span></h3>
+            </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>

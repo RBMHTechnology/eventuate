@@ -37,7 +37,7 @@ State synchronization
 
 As explained in section :ref:`command-handler`, events are persisted asynchronously. What happens if another command is sent to an event-sourced actor while persistence is in progress? This depends on the value of ``stateSync``, a member of ``EventsourcedActor`` that can be overridden.
 
-.. includecode:: ../../main/scala/com/rbmhtechnology/eventuate/EventsourcedActor.scala
+.. includecode:: ../../../eventuate-core/src/main/scala/com/rbmhtechnology/eventuate/EventsourcedActor.scala
    :snippet: state-sync
 
 If ``stateSync`` is ``true`` (default), new commands are stashed_ while persistence is in progress. Consequently, new commands see actor state that is *in sync* with the events in the event log. A consequence is limited write throughput, because :ref:`batching` of write requests is not possible in this case\ [#]_. This setting is recommended for event-sourced actors that must validate commands against current state.
@@ -97,7 +97,7 @@ Like event-sourced views, event-sourced writers can only consume events from an 
 
 This section outlines how to update a persistent read model in Cassandra_ from events consumed by an event-sourced writer. The relevant events are:
 
-.. includecode:: ../../test/scala/com/rbmhtechnology/example/querydb/Emitter.scala
+.. includecode:: ../../../eventuate-examples/src/main/scala/com/rbmhtechnology/example/querydb/Emitter.scala
    :snippet: events
 
 The persistent read model is a ``CUSTOMER`` table with the following structure::
@@ -118,11 +118,11 @@ The stored sequence number is that of the last successfully processed event. An 
 
 The event-sourced ``Writer`` in the following example implements ``EventsourcedWriter[Long, Unit]`` (where ``Long`` is the type of the initial read result and ``Unit`` the type of write results). It is initialized with an ``eventLog`` from which it consumes events and a Cassandra ``Session`` for writing event processing results.
 
-.. includecode:: ../../test/scala/com/rbmhtechnology/example/querydb/Writer.scala
+.. includecode:: ../../../eventuate-examples/src/main/scala/com/rbmhtechnology/example/querydb/Writer.scala
    :snippet: writer
 
 .. hint::
-   The full example source code is available `here <https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example/querydb>`_.
+   The full example source code is available `here <https://github.com/RBMHTechnology/eventuate/tree/master/eventuate-examples/src/main/scala/com/rbmhtechnology/example/querydb>`_.
 
 On a high level, the example ``Writer`` implements the following behavior:
 
@@ -159,7 +159,7 @@ The following example ``Processor`` is an implementation of ``EventsourcedProces
 
 The event handler implemented by a processor is ``processEvent``. The type of the handler is defined as:
 
-.. includecode:: ../../main/scala/com/rbmhtechnology/eventuate/EventsourcedProcessor.scala
+.. includecode:: ../../../eventuate-core/src/main/scala/com/rbmhtechnology/eventuate/EventsourcedProcessor.scala
    :snippet: process
 
 Processed events, to be written to the target event log, are returned by the handler as ``Seq[Any]``. With this handler signature, events from the source log can be 

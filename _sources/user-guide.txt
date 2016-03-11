@@ -207,7 +207,7 @@ A formal to approach to commutative replicated data types (CmRDTs) or operation-
 
 Eventuate currently implements 4 out of 12 operation-based CRDTs specified in the paper. These are *Counter*, *MV-Register*, *LWW-Register* and *OR-Set*. They can be instantiated and used via their corresponding *CRDT services*. CRDT operations are asynchronous methods on the service interfaces. CRDT services free applications from dealing with low-level details like event-sourced actors or command messages directly. The following is the definition of ORSetService_:
 
-.. includecode:: ../main/scala/com/rbmhtechnology/eventuate/crdt/ORSet.scala
+.. includecode:: ../../eventuate-crdt/src/main/scala/com/rbmhtechnology/eventuate/crdt/ORSet.scala
    :snippet: or-set-service
 
 The ORSetService_ is a CRDT service that manages ORSet_ instances. It implements the asynchronous ``add`` and ``remove`` methods and inherits the ``value(id: String): Future[Set[A]]`` method from ``CRDTService[ORSet[A], Set[A]]`` for reading the current value. Their ``id`` parameter identifies an ``ORSet`` instance. Instances are automatically created by the service on demand. A usage example is the ReplicatedOrSetSpec_ that is based on Akka’s `multi node testkit`_.
