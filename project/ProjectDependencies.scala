@@ -17,7 +17,7 @@
 import sbt._
 
 object ProjectDependencyVersions {
-  val AkkaVersion = "2.4.1"
+  val AkkaVersion = "2.4.2"
   val ProtobufVersion = "2.5.0"
 }
 
