@@ -28,20 +28,13 @@ import scala.concurrent.duration._
 import scala.util._
 
 object WriterApp extends App {
-  val config =
-    s"""
-       |eventuate.log.leveldb.dir         = target/example-querydb
-       |eventuate.snapshot.filesystem.dir = target/example-querydb
-       |
-       |akka.log-dead-letters = 0
-     """.stripMargin
 
   // ---------------------------------------------------------------
   //  Assumption: Cassandra 2.1 or higher running on localhost:9042
   // ---------------------------------------------------------------
 
   withQueryDB(drop = false) { session =>
-    val system = ActorSystem("example-querydb", ConfigFactory.parseString(config))
+    val system = ActorSystem("example-querydb", ConfigFactory.load(args(0)))
     val log = system.actorOf(LeveldbEventLog.props("example"))
 
     val emitter = system.actorOf(Props(new Emitter("emitter", log)))
