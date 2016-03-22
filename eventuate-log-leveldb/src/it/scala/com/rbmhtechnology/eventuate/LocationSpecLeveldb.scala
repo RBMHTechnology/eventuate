@@ -21,7 +21,7 @@ import java.io.File
 import akka.actor._
 
 import com.rbmhtechnology.eventuate.log._
-import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
+import com.rbmhtechnology.eventuate.log.leveldb._
 import com.rbmhtechnology.eventuate.utilities.RestarterActor
 import com.typesafe.config.ConfigFactory
 
@@ -38,7 +38,7 @@ object SingleLocationSpecLeveldb {
     }
   }
 
-  class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") with SingleLocationSpec.TestEventLog {
+  class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") with SingleLocationSpec.TestEventLog[LeveldbEventLogState] {
     override def unhandled(message: Any): Unit = message match {
       case "boom" => throw IntegrationTestException
       case "dir"  => sender() ! logDir

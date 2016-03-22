@@ -33,15 +33,18 @@ private[eventuate] class CassandraIndexStore(cassandra: Cassandra, logId: String
   private val preparedReadAggregateEventStatement: PreparedStatement = cassandra.prepareReadAggregateEvents(logId)
   private val preparedWriteAggregateEventStatement: PreparedStatement = cassandra.prepareWriteAggregateEvent(logId)
 
-  def readEventLogClockAsync(implicit executor: ExecutionContext): Future[EventLogClock] =
+  def readEventLogClockSnapshotAsync(implicit executor: ExecutionContext): Future[EventLogClock] =
     cassandra.session.executeAsync(cassandra.preparedReadEventLogClockStatement.bind(logId)).map { resultSet =>
       if (resultSet.isExhausted) EventLogClock() else cassandra.clockFromByteBuffer(resultSet.one().getBytes("clock"))
     }
 
+  def writeEventLogClockSnapshotAsync(clock: EventLogClock)(implicit executor: ExecutionContext): Future[EventLogClock] =
+    cassandra.session.executeAsync(cassandra.preparedWriteEventLogClockStatement.bind(logId, cassandra.clockToByteBuffer(clock))).map(_ => clock)
+
   def writeAsync(aggregateEvents: AggregateEvents, clock: EventLogClock)(implicit executor: ExecutionContext): Future[EventLogClock] = {
     for {
       _ <- writeAggregateEventsAsync(aggregateEvents)
-      t <- writeEventLogClockAsync(clock) // must be after other writes
+      t <- writeEventLogClockSnapshotAsync(clock) // must be after other writes
     } yield t
   }
 
@@ -53,9 +56,6 @@ private[eventuate] class CassandraIndexStore(cassandra: Cassandra, logId: String
   def writeAggregateEventsAsync(aggregateId: String, events: Seq[DurableEvent])(implicit executor: ExecutionContext): Future[Unit] = cassandra.executeBatchAsync { batch =>
     events.foreach(event => batch.add(preparedWriteAggregateEventStatement.bind(aggregateId, event.localSequenceNr: JLong, cassandra.eventToByteBuffer(event))))
   }
-
-  def writeEventLogClockAsync(clock: EventLogClock)(implicit executor: ExecutionContext): Future[EventLogClock] =
-    cassandra.session.executeAsync(cassandra.preparedWriteEventLogClockStatement.bind(logId, cassandra.clockToByteBuffer(clock))).map(_ => clock)
 
   def aggregateEventIterator(aggregateId: String, fromSequenceNr: Long, toSequenceNr: Long, fetchSize: Int): Iterator[DurableEvent] =
     new AggregateEventIterator(aggregateId, fromSequenceNr, toSequenceNr, fetchSize)

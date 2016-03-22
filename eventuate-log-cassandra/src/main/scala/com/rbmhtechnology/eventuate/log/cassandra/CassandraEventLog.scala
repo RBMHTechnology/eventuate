@@ -17,11 +17,8 @@
 package com.rbmhtechnology.eventuate.log.cassandra
 
 import java.io.Closeable
-import java.util.concurrent.TimeUnit
 
-import akka.actor.Props
-import akka.pattern.ask
-import akka.util.Timeout
+import akka.actor._
 
 import com.datastax.driver.core.QueryOptions
 import com.datastax.driver.core.exceptions._
@@ -34,6 +31,11 @@ import scala.collection.immutable.Seq
 import scala.concurrent._
 import scala.language.postfixOps
 import scala.util._
+
+/**
+ * Internal state of [[CassandraEventLog]].
+ */
+case class CassandraEventLogState(eventLogClock: EventLogClock, eventLogClockSnapshot: EventLogClock, deletionMetadata: DeletionMetadata) extends EventLogState
 
 /**
  * An event log actor with [[http://cassandra.apache.org/ Apache Cassandra]] as storage backend. It uses
@@ -67,7 +69,7 @@ import scala.util._
  * @see [[Cassandra]]
  * @see [[DurableEvent]]
  */
-class CassandraEventLog(id: String) extends EventLog(id) {
+class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id) {
   import CassandraEventLog._
   import CassandraIndex._
 
@@ -84,10 +86,26 @@ class CassandraEventLog(id: String) extends EventLog(id) {
   private val deletedToStore = createDeletedToStore(cassandra, id)
   private val eventLogStore = createEventLogStore(cassandra, id)
   private val indexStore = createIndexStore(cassandra, id)
-  private val index = createIndex(cassandra, indexStore, eventLogStore, id)
 
+  private var index: ActorRef = null
   private var indexSequenceNr: Long = 0L
   private var updateCount: Long = 0L
+
+  override def recoverState: Future[CassandraEventLogState] = {
+    import services.readDispatcher
+    for {
+      dm <- deletedToStore.readDeletedToAsync.map(DeletionMetadata(_, Set.empty))
+      sc <- indexStore.readEventLogClockSnapshotAsync
+      rc <- recoverEventLogClockAsync(sc)
+    } yield CassandraEventLogState(rc, sc, dm)
+  }
+
+  override def recoverStateSuccess(state: CassandraEventLogState): Unit = {
+    index = createIndex(cassandra, state.eventLogClockSnapshot, indexStore, eventLogStore, id)
+    indexSequenceNr = state.eventLogClockSnapshot.sequenceNr
+    updateCount = state.eventLogClock.sequenceNr - indexSequenceNr
+    context.parent ! ServiceInitialized
+  }
 
   override def readReplicationProgresses: Future[Map[String, Long]] =
     progressStore.readReplicationProgressesAsync(services.readDispatcher)
@@ -107,32 +125,15 @@ class CassandraEventLog(id: String) extends EventLog(id) {
   override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, aggregateId: String): Future[BatchReadResult] =
     compositeReadAsync(fromSequenceNr, indexSequenceNr, toSequenceNr, max, max + 1, aggregateId)(services.readDispatcher)
 
-  override def readDeletionMetadata = {
-    import services.readDispatcher
-    deletedToStore.readDeletedToAsync.map(DeletionMetadata(_, Set.empty))
-  }
-
-  override def recoverClockSuccess(clock: EventLogClock): Unit = {
-    indexSequenceNr = clock.sequenceNr
-    context.parent ! ServiceInitialized
-  }
-
-  override def recoverClock: Future[EventLogClock] = {
-    implicit val timeout = Timeout(Int.MaxValue /* FIXME */ , TimeUnit.MILLISECONDS)
-    import services.readDispatcher
-
-    index ? InitIndex flatMap {
-      case InitIndexSuccess(c) => Future.successful(c)
-      case InitIndexFailure(e) => Future.failed(e)
-    }
-  }
-
   override def writeDeletionMetadata(deleteMetadata: DeletionMetadata) =
     deletedToStore.writeDeletedTo(deleteMetadata.toSequenceNr)
 
   override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
     writeRetry(events, partition, clock)
 
+  /**
+   * @see [[http://rbmhtechnology.github.io/eventuate/reference/event-sourcing.html#failure-handling Failure handling]]
+   */
   @annotation.tailrec
   private def writeRetry(events: Seq[DurableEvent], partition: Long, clock: EventLogClock, num: Int = 0): Unit = {
     Try(writeBatch(events, partition, clock)) match {
@@ -182,14 +183,12 @@ class CassandraEventLog(id: String) extends EventLog(id) {
       onIndexEvent(u)
     case u @ UpdateIndexFailure(_) =>
       onIndexEvent(u)
-    case r @ ReadClockFailure(_) =>
-      onIndexEvent(r)
     case other =>
       super.unhandled(other)
   }
 
-  private[eventuate] def createIndex(cassandra: Cassandra, indexStore: CassandraIndexStore, eventLogStore: CassandraEventLogStore, logId: String) =
-    context.actorOf(CassandraIndex.props(cassandra, eventLogStore, indexStore, logId))
+  private[eventuate] def createIndex(cassandra: Cassandra, eventLogClock: EventLogClock, indexStore: CassandraIndexStore, eventLogStore: CassandraEventLogStore, logId: String) =
+    context.actorOf(CassandraIndex.props(cassandra, eventLogClock, eventLogStore, indexStore, logId))
 
   private[eventuate] def createIndexStore(cassandra: Cassandra, logId: String) =
     new CassandraIndexStore(cassandra, logId)
@@ -202,6 +201,9 @@ class CassandraEventLog(id: String) extends EventLog(id) {
 
   private[eventuate] def createDeletedToStore(cassandra: Cassandra, logId: String) =
     new CassandraDeletedToStore(cassandra, logId)
+
+  private def recoverEventLogClockAsync(snapshot: EventLogClock)(implicit executor: ExecutionContext): Future[EventLogClock] =
+    Future(eventLogStore.eventIterator(snapshot.sequenceNr + 1L, Long.MaxValue, cassandra.settings.indexUpdateLimit).foldLeft(snapshot)(_ update _))
 
   private def compositeReadAsync(fromSequenceNr: Long, indexSequenceNr: Long, toSequenceNr: Long, max: Int, fetchSize: Int, aggregateId: String)(implicit executor: ExecutionContext): Future[BatchReadResult] =
     Future(compositeRead(fromSequenceNr, toSequenceNr, max, fetchSize, aggregateId))
