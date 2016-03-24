@@ -116,7 +116,7 @@ must be done only once. Alternatively, different actor systems can be configured
 concurrent initialization is not an issue.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="CassandraEventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a></p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="CassandraEventLogextendsEventLog"></a>
+      <a id="CassandraEventLogextendsEventLog[com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState]"></a>
       <a id="CassandraEventLog:CassandraEventLog"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -124,10 +124,10 @@ concurrent initialization is not an issue.
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="CassandraEventLog.html"><span class="name">CassandraEventLog</span></a><span class="result"> extends <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a></span>
+        <a href="CassandraEventLog.html"><span class="name">CassandraEventLog</span></a><span class="result"> extends <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="CassandraEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState">CassandraEventLogState</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.package@CassandraEventLogextendsEventLog" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.package@CassandraEventLogextendsEventLog[com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -159,6 +159,23 @@ the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span 
       </a>
     </span>
       
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CassandraEventLogStateextendsEventLogStatewithProductwithSerializable"></a>
+      <a id="CassandraEventLogState:CassandraEventLogState"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="CassandraEventLogState.html"><span class="name">CassandraEventLogState</span></a><span class="params">(<span name="eventLogClock">eventLogClock: <a href="../EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a></span>, <span name="eventLogClockSnapshot">eventLogClockSnapshot: <a href="../EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a></span>, <span name="deletionMetadata">deletionMetadata: <a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a></span>)</span><span class="result"> extends <a href="../EventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogState">EventLogState</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.package@CassandraEventLogStateextendsEventLogStatewithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Internal state of <a href="CassandraEventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a>.</p>
     </li></ol>
             </div>
 

@@ -152,18 +152,18 @@ implementations and not by applications.
 </p></div><dl class="paramcmts block"><dt class="param">toSequenceNr</dt><dd class="cmt"><p>A marker that indicates that all event with a smaller sequence nr are not replayed any more.</p></dd><dt class="param">remoteLogIds</dt><dd class="cmt"><p>A set of remote log ids that must have replicated events before they these events are allowed
                     to be physically deleted locally.</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.EventLog" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
-      <a id="EventLogextendsActorwithEventLogSPIwithStashwithActorLogging"></a>
-      <a id="EventLog:EventLog"></a>
+      <a id="EventLog[A&lt;:com.rbmhtechnology.eventuate.log.EventLogState]extendsActorwithEventLogSPI[A]withStashwithActorLogging"></a>
+      <a id="EventLog[A&lt;:EventLogState]:EventLog[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="EventLog.html"><span class="name">EventLog</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a> with <span class="extype" name="akka.actor.Stash">Stash</span> with <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></span>
+        <a href="EventLog.html"><span class="name">EventLog</span></a><span class="tparams">[<span name="A">A &lt;: <a href="EventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogState">EventLogState</a></span>]</span><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<span class="extype" name="com.rbmhtechnology.eventuate.log.EventLog.A">A</span>] with <span class="extype" name="akka.actor.Stash">Stash</span> with <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLogextendsActorwithEventLogSPIwithStashwithActorLogging" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLog[A&lt;:com.rbmhtechnology.eventuate.log.EventLogState]extendsActorwithEventLogSPI[A]withStashwithActorLogging" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -171,7 +171,7 @@ implementations and not by applications.
 translates them to read and write operations declared on the <a href="EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a> trait.</p><div class="fullcomment"><div class="comment cmt"><p>An abstract event log that handles <a href="../EventsourcingProtocol$.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcingProtocol">EventsourcingProtocol</a> and <a href="../ReplicationProtocol$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol">ReplicationProtocol</a> messages and
 translates them to read and write operations declared on the <a href="EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a> trait. Storage providers
 implement an event log by implementing the <a href="EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>.
-</p></div></div>
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Event log state type (a subtype of <a href="EventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogState">EventLogState</a>).</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.EventLogClock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="EventLogClockextendsProductwithSerializable"></a>
       <a id="EventLogClock:EventLogClock"></a>
@@ -192,23 +192,24 @@ implement an event log by implementing the <a href="EventLogSPI.html" class="ext
 The version vector is the merge result of vector timestamps of all events that have been
 written to that event log.
 </p></div></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="EventLogSPIextendsAnyRef"></a>
-      <a id="EventLogSPI:EventLogSPI"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="EventLogSPI[A]extendsAnyRef"></a>
+      <a id="EventLogSPI[A]:EventLogSPI[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <a href="EventLogSPI.html"><span class="name">EventLogSPI</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <a href="EventLogSPI.html"><span class="name">EventLogSPI</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLogSPIextendsAnyRef" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLogSPI[A]extendsAnyRef" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Event log storage provider interface (SPI).</p>
+      <p class="shortcomment cmt">Event log storage provider interface (SPI).</p><div class="fullcomment"><div class="comment cmt"><p>Event log storage provider interface (SPI).
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Event log state type.</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.EventLogSettings" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="EventLogSettingsextendsAnyRef"></a>
       <a id="EventLogSettings:EventLogSettings"></a>
@@ -226,6 +227,25 @@ written to that event log.
       </a>
     </span>
       <p class="shortcomment cmt">Event log settings to be implemented by storage providers.</p>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogState" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="EventLogStateextendsAnyRef"></a>
+      <a id="EventLogState:EventLogState"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="EventLogState.html"><span class="name">EventLogState</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.package@EventLogStateextendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"><a href="EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> actor state that must be recovered on log actor initialization.</p><div class="fullcomment"><div class="comment cmt"><p><a href="EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> actor state that must be recovered on log actor initialization. Implementations
+are storage provider-specific.
+</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.log.NotificationChannel" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="NotificationChannelextendsActor"></a>
       <a id="NotificationChannel:NotificationChannel"></a>

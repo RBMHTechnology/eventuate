@@ -47,7 +47,7 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">CassandraEventLog</span><span class="result"> extends <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a></span>
+        <span class="name">CassandraEventLog</span><span class="result"> extends <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="CassandraEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState">CassandraEventLogState</a>]</span>
       </span>
       </h4>
       
@@ -63,7 +63,7 @@ the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span 
    <a href="../../EventsourcedView.html#aggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#aggregateId">aggregateId</a> defined.
 </li></ul></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></p></span><span class="cmt"><p><a href="Cassandra.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.Cassandra">Cassandra</a></p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>, <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="CassandraEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState">CassandraEventLogState</a>], <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<a href="CassandraEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState">CassandraEventLogState</a>], <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -650,25 +650,6 @@ A backend that does not support physical deletion should not override this metho
 within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequenceNr</code>.
 </p></div><dl class="paramcmts block"><dt class="param">fromSequenceNr</dt><dd class="cmt"><p>sequence number to start reading (inclusive).</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>sequence number to stop reading (inclusive)
                     or earlier if <code>max</code> events have already been read.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#readDeletionMetadata" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="readDeletionMetadata:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.DeletionMetadata]"></a>
-      <a id="readDeletionMetadata:Future[DeletionMetadata]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">readDeletionMetadata</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@readDeletionMetadata:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.DeletionMetadata]" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Return the current <a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a>
-</p><div class="fullcomment"><div class="comment cmt"><p>Return the current <a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a>
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#readReplicationProgress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="readReplicationProgress(logId:String):scala.concurrent.Future[Long]"></a>
       <a id="readReplicationProgress(String):Future[Long]"></a>
@@ -722,59 +703,59 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> → Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#recoverClock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="recoverClock:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.EventLogClock]"></a>
-      <a id="recoverClock:Future[EventLogClock]"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#recoverState" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recoverState:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState]"></a>
+      <a id="recoverState:Future[CassandraEventLogState]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">recoverClock</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a>]</span>
+        <span class="name">recoverState</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="CassandraEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState">CassandraEventLogState</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@recoverClock:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.EventLogClock]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@recoverState:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously recovers the event log clock during initialization.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously recovers the event log clock during initialization.
+      <p class="shortcomment cmt">Asynchronously recovers event log state from the storage backend.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously recovers event log state from the storage backend.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverClockFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="recoverClockFailure(cause:Throwable):Unit"></a>
-      <a id="recoverClockFailure(Throwable):Unit"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverStateFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recoverStateFailure(cause:Throwable):Unit"></a>
+      <a id="recoverStateFailure(Throwable):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">recoverClockFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">recoverStateFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@recoverClockFailure(cause:Throwable):Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@recoverStateFailure(cause:Throwable):Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Called after failed event log clock recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after failed event log clock recovery.
+      <p class="shortcomment cmt">Called after failed event log state recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after failed event log state recovery.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#recoverClockSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="recoverClockSuccess(clock:com.rbmhtechnology.eventuate.log.EventLogClock):Unit"></a>
-      <a id="recoverClockSuccess(EventLogClock):Unit"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#recoverStateSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recoverStateSuccess(state:com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState):Unit"></a>
+      <a id="recoverStateSuccess(CassandraEventLogState):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">recoverClockSuccess</span><span class="params">(<span name="clock">clock: <a href="../EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">recoverStateSuccess</span><span class="params">(<span name="state">state: <a href="CassandraEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState">CassandraEventLogState</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@recoverClockSuccess(clock:com.rbmhtechnology.eventuate.log.EventLogClock):Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@recoverStateSuccess(state:com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState):Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Called after successful event log clock recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after successful event log clock recovery.
+      <p class="shortcomment cmt">Called after successful event log state recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after successful event log state recovery.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#replicationRead" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="replicationRead(fromSequenceNr:Long,toSequenceNr:Long,max:Int,filter:com.rbmhtechnology.eventuate.DurableEvent=&gt;Boolean):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]"></a>
@@ -1109,7 +1090,7 @@ must have replicated these events before they are allowed to be physically delet
 
         <div id="inheritedMembers">
         <div class="parent" name="com.rbmhtechnology.eventuate.log.EventLog">
-              <h3>Inherited from <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a></h3>
+              <h3>Inherited from <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="CassandraEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState">CassandraEventLogState</a>]</h3>
             </div><div class="parent" name="akka.actor.ActorLogging">
               <h3>Inherited from <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></h3>
             </div><div class="parent" name="akka.actor.Stash">
@@ -1121,7 +1102,7 @@ must have replicated these events before they are allowed to be physically delet
             </div><div class="parent" name="akka.actor.StashSupport">
               <h3>Inherited from <span class="extype" name="akka.actor.StashSupport">StashSupport</span></h3>
             </div><div class="parent" name="com.rbmhtechnology.eventuate.log.EventLogSPI">
-              <h3>Inherited from <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></h3>
+              <h3>Inherited from <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<a href="CassandraEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState">CassandraEventLogState</a>]</h3>
             </div><div class="parent" name="akka.actor.Actor">
               <h3>Inherited from <span class="extype" name="akka.actor.Actor">Actor</span></h3>
             </div><div class="parent" name="scala.AnyRef">

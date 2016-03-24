@@ -45,12 +45,12 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">EventLogSPI</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">EventLogSPI</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Event log storage provider interface (SPI).
-</p></div><dl class="attributes block"> <dt>Self Type</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a> with <span class="extype" name="akka.actor.Actor">Actor</span></dd></dl><div class="toggleContainer block">
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Event log state type.</p></dd></dl><dl class="attributes block"> <dt>Self Type</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<span class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI.A">A</span>] with <span class="extype" name="akka.actor.Actor">Actor</span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
@@ -136,24 +136,6 @@
 within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequenceNr</code>.
 </p></div><dl class="paramcmts block"><dt class="param">fromSequenceNr</dt><dd class="cmt"><p>sequence number to start reading (inclusive).</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>sequence number to stop reading (inclusive)
                     or earlier if <code>max</code> events have already been read.</p></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#readDeletionMetadata" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="readDeletionMetadata:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.DeletionMetadata]"></a>
-      <a id="readDeletionMetadata:Future[DeletionMetadata]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">readDeletionMetadata</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSPI@readDeletionMetadata:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.DeletionMetadata]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Return the current <a href="DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a>
-</p>
     </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#readReplicationProgress" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="readReplicationProgress(logId:String):scala.concurrent.Future[Long]"></a>
       <a id="readReplicationProgress(String):Future[Long]"></a>
@@ -190,23 +172,23 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
     </span>
       <p class="shortcomment cmt">Asynchronously reads all stored local replication progresses.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously reads all stored local replication progresses.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="../ReplicationProtocol$$GetReplicationProgresses$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgresses">ReplicationProtocol.GetReplicationProgresses</a></p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverClock" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="recoverClock:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.EventLogClock]"></a>
-      <a id="recoverClock:Future[EventLogClock]"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverState" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="recoverState:scala.concurrent.Future[A]"></a>
+      <a id="recoverState:Future[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">recoverClock</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a>]</span>
+        <span class="name">recoverState</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI.A">A</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSPI@recoverClock:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.EventLogClock]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSPI@recoverState:scala.concurrent.Future[A]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously recovers the event log clock during initialization.</p>
+      <p class="shortcomment cmt">Asynchronously recovers event log state from the storage backend.</p>
     </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#replicationRead" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="replicationRead(fromSequenceNr:Long,toSequenceNr:Long,max:Int,filter:com.rbmhtechnology.eventuate.DurableEvent=&gt;Boolean):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]"></a>
       <a id="replicationRead(Long,Long,Int,(DurableEvent)⇒Boolean):Future[BatchReadResult]"></a>
@@ -581,40 +563,40 @@ A backend that does not support physical deletion should not override this metho
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverClockFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="recoverClockFailure(cause:Throwable):Unit"></a>
-      <a id="recoverClockFailure(Throwable):Unit"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverStateFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="recoverStateFailure(cause:Throwable):Unit"></a>
+      <a id="recoverStateFailure(Throwable):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">recoverClockFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">recoverStateFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSPI@recoverClockFailure(cause:Throwable):Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSPI@recoverStateFailure(cause:Throwable):Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Called after failed event log clock recovery.</p>
-    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverClockSuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="recoverClockSuccess(clock:com.rbmhtechnology.eventuate.log.EventLogClock):Unit"></a>
-      <a id="recoverClockSuccess(EventLogClock):Unit"></a>
+      <p class="shortcomment cmt">Called after failed event log state recovery.</p>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverStateSuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="recoverStateSuccess(state:A):Unit"></a>
+      <a id="recoverStateSuccess(A):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">recoverClockSuccess</span><span class="params">(<span name="clock">clock: <a href="EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">recoverStateSuccess</span><span class="params">(<span name="state">state: <span class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI.A">A</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSPI@recoverClockSuccess(clock:com.rbmhtechnology.eventuate.log.EventLogClock):Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSPI@recoverStateSuccess(state:A):Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Called after successful event log clock recovery.</p>
+      <p class="shortcomment cmt">Called after successful event log state recovery.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

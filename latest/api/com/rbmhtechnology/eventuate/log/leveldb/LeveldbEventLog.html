@@ -47,7 +47,7 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">LeveldbEventLog</span><span class="result"> extends <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> with <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">WithBatch</span></span>
+        <span class="name">LeveldbEventLog</span><span class="result"> extends <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="LeveldbEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState">LeveldbEventLogState</a>] with <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">WithBatch</span></span>
       </span>
       </h4>
       
@@ -56,7 +56,7 @@ for this event log is named after the constructor parameters using the template 
 and stored in a root directory defined by the <code>log.leveldb.dir</code> configuration.</p><p><b>Please note:</b> <code>prefix</code> and <code>id</code> are currently not escaped when creating the directory name.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">WithBatch</span>, <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>, <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">WithBatch</span>, <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="LeveldbEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState">LeveldbEventLogState</a>], <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<a href="LeveldbEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState">LeveldbEventLogState</a>], <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -694,25 +694,6 @@ A backend that does not support physical deletion should not override this metho
 within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequenceNr</code>.
 </p></div><dl class="paramcmts block"><dt class="param">fromSequenceNr</dt><dd class="cmt"><p>sequence number to start reading (inclusive).</p></dd><dt class="param">toSequenceNr</dt><dd class="cmt"><p>sequence number to stop reading (inclusive)
                     or earlier if <code>max</code> events have already been read.</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#readDeletionMetadata" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="readDeletionMetadata:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.DeletionMetadata]"></a>
-      <a id="readDeletionMetadata:Future[DeletionMetadata]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">readDeletionMetadata</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@readDeletionMetadata:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.DeletionMetadata]" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Return the current <a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a>
-</p><div class="fullcomment"><div class="comment cmt"><p>Return the current <a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a>
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#readReplicationProgress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="readReplicationProgress(logId:String):scala.concurrent.Future[Long]"></a>
       <a id="readReplicationProgress(String):Future[Long]"></a>
@@ -766,59 +747,59 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> → Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#recoverClock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="recoverClock:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.EventLogClock]"></a>
-      <a id="recoverClock:Future[EventLogClock]"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#recoverState" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recoverState:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState]"></a>
+      <a id="recoverState:Future[LeveldbEventLogState]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">recoverClock</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a>]</span>
+        <span class="name">recoverState</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="LeveldbEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState">LeveldbEventLogState</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@recoverClock:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.EventLogClock]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@recoverState:scala.concurrent.Future[com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously recovers the event log clock during initialization.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously recovers the event log clock during initialization.
+      <p class="shortcomment cmt">Asynchronously recovers event log state from the storage backend.</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously recovers event log state from the storage backend.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverClockFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="recoverClockFailure(cause:Throwable):Unit"></a>
-      <a id="recoverClockFailure(Throwable):Unit"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverStateFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recoverStateFailure(cause:Throwable):Unit"></a>
+      <a id="recoverStateFailure(Throwable):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">recoverClockFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">recoverStateFailure</span><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@recoverClockFailure(cause:Throwable):Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@recoverStateFailure(cause:Throwable):Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Called after failed event log clock recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after failed event log clock recovery.
+      <p class="shortcomment cmt">Called after failed event log state recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after failed event log state recovery.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverClockSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="recoverClockSuccess(clock:com.rbmhtechnology.eventuate.log.EventLogClock):Unit"></a>
-      <a id="recoverClockSuccess(EventLogClock):Unit"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#recoverStateSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="recoverStateSuccess(state:A):Unit"></a>
+      <a id="recoverStateSuccess(LeveldbEventLogState):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">recoverClockSuccess</span><span class="params">(<span name="clock">clock: <a href="../EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">recoverStateSuccess</span><span class="params">(<span name="state">state: <a href="LeveldbEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState">LeveldbEventLogState</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@recoverClockSuccess(clock:com.rbmhtechnology.eventuate.log.EventLogClock):Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@recoverStateSuccess(state:A):Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Called after successful event log clock recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after successful event log clock recovery.
+      <p class="shortcomment cmt">Called after successful event log state recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after successful event log state recovery.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#replicationRead" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="replicationRead(fromSequenceNr:Long,toSequenceNr:Long,max:Int,filter:com.rbmhtechnology.eventuate.DurableEvent=&gt;Boolean):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]"></a>
@@ -1172,7 +1153,7 @@ must have replicated these events before they are allowed to be physically delet
         <div class="parent" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">
               <h3>Inherited from <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">WithBatch</span></h3>
             </div><div class="parent" name="com.rbmhtechnology.eventuate.log.EventLog">
-              <h3>Inherited from <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a></h3>
+              <h3>Inherited from <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="LeveldbEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState">LeveldbEventLogState</a>]</h3>
             </div><div class="parent" name="akka.actor.ActorLogging">
               <h3>Inherited from <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></h3>
             </div><div class="parent" name="akka.actor.Stash">
@@ -1184,7 +1165,7 @@ must have replicated these events before they are allowed to be physically delet
             </div><div class="parent" name="akka.actor.StashSupport">
               <h3>Inherited from <span class="extype" name="akka.actor.StashSupport">StashSupport</span></h3>
             </div><div class="parent" name="com.rbmhtechnology.eventuate.log.EventLogSPI">
-              <h3>Inherited from <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></h3>
+              <h3>Inherited from <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<a href="LeveldbEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState">LeveldbEventLogState</a>]</h3>
             </div><div class="parent" name="akka.actor.Actor">
               <h3>Inherited from <span class="extype" name="akka.actor.Actor">Actor</span></h3>
             </div><div class="parent" name="scala.AnyRef">

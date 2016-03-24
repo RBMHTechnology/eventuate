@@ -67,7 +67,7 @@
         <div id="types" class="types members">
               <h3>Type Members</h3>
               <ol><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="LeveldbEventLogextendsEventLogwithLeveldbEventLog.WithBatch"></a>
+      <a id="LeveldbEventLogextendsEventLog[com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState]withLeveldbEventLog.WithBatch"></a>
       <a id="LeveldbEventLog:LeveldbEventLog"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -75,10 +75,10 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="LeveldbEventLog.html"><span class="name">LeveldbEventLog</span></a><span class="result"> extends <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a> with <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">WithBatch</span></span>
+        <a href="LeveldbEventLog.html"><span class="name">LeveldbEventLog</span></a><span class="result"> extends <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="LeveldbEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState">LeveldbEventLogState</a>] with <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">WithBatch</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package@LeveldbEventLogextendsEventLogwithLeveldbEventLog.WithBatch" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package@LeveldbEventLogextendsEventLog[com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState]withLeveldbEventLog.WithBatch" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -103,6 +103,23 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
       </a>
     </span>
       
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LeveldbEventLogStateextendsEventLogStatewithProductwithSerializable"></a>
+      <a id="LeveldbEventLogState:LeveldbEventLogState"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="LeveldbEventLogState.html"><span class="name">LeveldbEventLogState</span></a><span class="params">(<span name="eventLogClock">eventLogClock: <a href="../EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a></span>, <span name="deletionMetadata">deletionMetadata: <a href="../DeletionMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.log.DeletionMetadata">DeletionMetadata</a></span>)</span><span class="result"> extends <a href="../EventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogState">EventLogState</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.package@LeveldbEventLogStateextendsEventLogStatewithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"><a href="LeveldbEventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> actor state.</p>
     </li></ol>
             </div>
 
