@@ -61,6 +61,22 @@ trait EventLogSettings {
 }
 
 /**
+ * [[EventLog]] actor state that must be recovered on log actor initialization. Implementations
+ * are storage provider-specific.
+ */
+trait EventLogState {
+  /**
+   * Recovered event log clock.
+   */
+  def eventLogClock: EventLogClock
+
+  /**
+   * Recovered deletion metadata.
+   */
+  def deletionMetadata: DeletionMetadata
+}
+
+/**
  * A clock that tracks the current sequence number and the version vector of an event log.
  * The version vector is the merge result of vector timestamps of all events that have been
  * written to that event log.
@@ -81,14 +97,6 @@ case class EventLogClock(sequenceNr: Long = 0L, versionVector: VectorTime = Vect
 }
 
 /**
- * Result of an event batch-read operation.
- *
- * @param events Read event batch.
- * @param to Last read position in the event log.
- */
-case class BatchReadResult(events: Seq[DurableEvent], to: Long) extends DurableEventBatch
-
-/**
  * View of a [[EventsourcingProtocol.Delete Delete]] request.
  *
  * @param toSequenceNr A marker that indicates that all event with a smaller sequence nr are not replayed any more.
@@ -98,33 +106,43 @@ case class BatchReadResult(events: Seq[DurableEvent], to: Long) extends DurableE
 case class DeletionMetadata(toSequenceNr: Long, remoteLogIds: Set[String])
 
 /**
+ * Result of an event batch-read operation.
+ *
+ * @param events Read event batch.
+ * @param to Last read position in the event log.
+ */
+case class BatchReadResult(events: Seq[DurableEvent], to: Long) extends DurableEventBatch
+
+/**
  * Indicates that a storage backend doesn't support physical deletion of events.
  */
 private class PhysicalDeletionNotSupportedException extends UnsupportedOperationException
 
 /**
  * Event log storage provider interface (SPI).
+ *
+ * @tparam A Event log state type.
  */
-trait EventLogSPI { this: Actor =>
+trait EventLogSPI[A] { this: Actor =>
   /**
    * Event log settings.
    */
   def settings: EventLogSettings
 
   /**
-   * Asynchronously recovers the event log clock during initialization.
+   * Asynchronously recovers event log state from the storage backend.
    */
-  def recoverClock: Future[EventLogClock]
+  def recoverState: Future[A]
 
   /**
-   * Called after successful event log clock recovery.
+   * Called after successful event log state recovery.
    */
-  def recoverClockSuccess(clock: EventLogClock): Unit = ()
+  def recoverStateSuccess(state: A): Unit = ()
 
   /**
-   * Called after failed event log clock recovery.
+   * Called after failed event log state recovery.
    */
-  def recoverClockFailure(cause: Throwable): Unit = ()
+  def recoverStateFailure(cause: Throwable): Unit = ()
 
   /**
    * Asynchronously reads all stored local replication progresses.
@@ -193,11 +211,6 @@ trait EventLogSPI { this: Actor =>
   def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit
 
   /**
-   * Return the current [[DeletionMetadata]]
-   */
-  def readDeletionMetadata: Future[DeletionMetadata]
-
-  /**
    * Synchronously writes metadata for a [[EventsourcingProtocol.Delete Delete]] request. This marks events up to
    * [[DeletionMetadata.toSequenceNr]] as deleted, i.e. they are not read on replay and indicates which remote logs
    * must have replicated these events before they are allowed to be physically deleted locally.
@@ -217,10 +230,15 @@ trait EventLogSPI { this: Actor =>
  * An abstract event log that handles [[EventsourcingProtocol]] and [[ReplicationProtocol]] messages and
  * translates them to read and write operations declared on the [[EventLogSPI]] trait. Storage providers
  * implement an event log by implementing the [[EventLogSPI]].
+ *
+ * @tparam A Event log state type (a subtype of [[EventLogState]]).
  */
-abstract class EventLog(id: String) extends Actor with EventLogSPI with Stash with ActorLogging {
+abstract class EventLog[A <: EventLogState](id: String) extends Actor with EventLogSPI[A] with Stash with ActorLogging {
   import NotificationChannel._
   import EventLog._
+
+  private case class RecoverStateSuccess(state: A)
+  private case class RecoverStateFailure(cause: Throwable)
 
   // ---------------------------------------------------------------------------
   //  TODO: only transfer version vector deltas to update replicaVersionVectors
@@ -310,15 +328,16 @@ abstract class EventLog(id: String) extends Actor with EventLogSPI with Stash wi
     log
 
   private def initializing: Receive = {
-    case RecoverySuccess(state) =>
-      clock = state.clock
-      deletionMetadata = state.deleteMetadata
+    case RecoverStateSuccess(state) =>
+      clock = state.eventLogClock
+      deletionMetadata = state.deletionMetadata
       if (deletionMetadata.toSequenceNr > 0) self ! PhysicalDelete
-      recoverClockSuccess(clock)
+      recoverStateSuccess(state)
       unstashAll()
       context.become(initialized)
-    case RecoveryFailure(e) =>
-      logger.error(e, "Cannot recover log state")
+    case RecoverStateFailure(e) =>
+      logger.error(e, "Cannot recover event log state")
+      recoverStateFailure(e)
       context.stop(self)
     case other =>
       stash()
@@ -576,39 +595,16 @@ abstract class EventLog(id: String) extends Actor with EventLogSPI with Stash wi
     }
   }
 
-  private def recoverState: Future[RecoveredState] = {
-    import context.dispatcher
-    for {
-      clock <- recoverClock
-      deleteMetadata <- readDeletionMetadata
-    } yield RecoveredState(clock, deleteMetadata)
-  }
-
   override def preStart(): Unit = {
     import services._
     Retry(recoverState, settings.initRetryDelay, settings.initRetryMax) onComplete {
-      case Success(s) => self ! RecoverySuccess(s)
-      case Failure(e) => self ! RecoveryFailure(e)
+      case Success(s) => self ! RecoverStateSuccess(s)
+      case Failure(e) => self ! RecoverStateFailure(e)
     }
   }
 }
 
 object EventLog {
-  /**
-   * State that is recovered from storage at startup
-   */
-  private case class RecoveredState(clock: EventLogClock, deleteMetadata: DeletionMetadata)
-
-  /**
-   * Internally sent to an [[EventLog]] after successful recovery of [[RecoveredState]].
-   */
-  private case class RecoverySuccess(state: RecoveredState)
-
-  /**
-   * Internally sent to an [[EventLog]] after failed recovery of [[RecoveredState]].
-   */
-  private case class RecoveryFailure(cause: Throwable)
-
   /**
    * Periodically sent to an [[EventLog]] after reception of a [[Delete]]-command to
    * instruct the log to physically delete logically deleted events that are alreday replicated.

@@ -47,9 +47,7 @@ class EventLogSpecCassandra extends TestKit(ActorSystem("test", EventLogSpecCass
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-
     probe = TestProbe()
-    indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 0L), 0))
   }
 
   def expectReplay(aggregateId: Option[String], payloads: String *): Unit =
@@ -80,24 +78,22 @@ class EventLogSpecCassandra extends TestKit(ActorSystem("test", EventLogSpecCass
   }
 
   "A Cassandra event log and its index" must {
-    "run an index update on initialization" in {
+    "recover the update counter and run an index update after reaching exactly the update limit" in {
       writeEmittedEvents(List(event("a"), event("b")))
       log ! "boom"
-      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 2L, versionVector = timestamp(2L)), 1))
+      writeEmittedEvents(List(event("d")))
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 3L, versionVector = timestamp(3L)), 1))
     }
-    "retry an index update on initialization if sequence number read fails" in {
+    "recover the update counter and run an index update after exceeding the update limit" in {
+      writeEmittedEvents(List(event("a"), event("b")))
+      log ! "boom"
+      writeEmittedEvents(List(event("d"), event("e"), event("f")))
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 5L, versionVector = timestamp(5L)), 2))
+    }
+    "retry state recovery if clock read fails" in {
       val failureLog = createLog(TestFailureSpec(failOnClockRead = true), indexProbe.ref)
-      indexProbe.expectMsg(ReadClockFailure(IntegrationTestException))
-      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 0L, versionVector = VectorTime()), 0))
-    }
-    "retry an index update on initialization if index update fails" in {
-      val failureLog = createLog(TestFailureSpec(failBeforeIndexIncrementWrite = true), indexProbe.ref)
-      indexProbe.expectMsg(UpdateIndexFailure(IntegrationTestException))
-      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 0L, versionVector = VectorTime()), 0))
-      writeEmittedEvents(List(event("a"), event("b")), failureLog)
-      failureLog ! "boom"
-      indexProbe.expectMsg(UpdateIndexFailure(IntegrationTestException))
-      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 2L, versionVector = timestamp(2L)), 1))
+      writeEmittedEvents(List(event("a"), event("b"), event("c")), failureLog)
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 3L, versionVector = timestamp(3L)), 1))
     }
     "run an index update after reaching the update limit with a single event batch" in {
       writeEmittedEvents(List(event("a"), event("b"), event("c"), event("d")))
@@ -107,13 +103,6 @@ class EventLogSpecCassandra extends TestKit(ActorSystem("test", EventLogSpecCass
       writeEmittedEvents(List(event("a"), event("b")))
       writeEmittedEvents(List(event("c"), event("d")))
       indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 4L, versionVector = timestamp(4L)), 2))
-    }
-    "run an index update on initialization and after reaching the update limit" in {
-      writeEmittedEvents(List(event("a"), event("b")))
-      log ! "boom"
-      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 2L, versionVector = timestamp(2L)), 1))
-      writeEmittedEvents(List(event("d"), event("e"), event("f")))
-      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 5L, versionVector = timestamp(5L)), 1))
     }
     "return the initial value for a replication progress" in {
       log.tell(GetReplicationProgress(remoteLogId), probe.ref)

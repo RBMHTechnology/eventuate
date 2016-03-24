@@ -51,7 +51,7 @@ object SingleLocationSpec {
   val ErrorSequenceNr = -1L
   val IgnoreDeletedSequenceNr = -2L
 
-  trait TestEventLog extends EventLog {
+  trait TestEventLog[A <: EventLogState] extends EventLog[A] {
     override def currentSystemTime: Long = 0L
 
     abstract override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int): Future[BatchReadResult] =
@@ -81,7 +81,7 @@ trait SingleLocationSpec extends LocationCleanup with BeforeAndAfterEach {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    _logCtr += 1
+    generateLogId()
   }
 
   override def afterEach(): Unit = {
@@ -99,6 +99,9 @@ trait SingleLocationSpec extends LocationCleanup with BeforeAndAfterEach {
 
   def batching: Boolean =
     true
+
+  def generateLogId(): Unit =
+    _logCtr += 1
 
   def logId: String =
     _logCtr.toString

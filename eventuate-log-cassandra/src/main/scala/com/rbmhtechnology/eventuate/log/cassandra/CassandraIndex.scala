@@ -25,9 +25,8 @@ import scala.collection.immutable.Seq
 import scala.concurrent._
 import scala.util._
 
-private[eventuate] class CassandraIndex(cassandra: Cassandra, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore, logId: String) extends Actor with Stash with ActorLogging {
+private[eventuate] class CassandraIndex(cassandra: Cassandra, eventLogClock: EventLogClock, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore, logId: String) extends Actor with Stash with ActorLogging {
   import CassandraIndex._
-  import context.dispatcher
 
   private val scheduler = context.system.scheduler
   private val eventLog = context.parent
@@ -38,38 +37,9 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventLogStore: Cas
    * Contains the sequence number of the last event in event log that
    * has been successfully processed and written to the index.
    */
-  private var clock: EventLogClock = EventLogClock()
+  private var clock: EventLogClock = eventLogClock
 
-  def instantiated: Receive = {
-    case InitIndex =>
-      indexStore.readEventLogClockAsync onComplete {
-        case Success(t) => self ! ReadClockSuccess(t)
-        case Failure(e) => self ! ReadClockFailure(e)
-      }
-      context.become(initializing(sender()))
-  }
-
-  def initializing(sdr: ActorRef): Receive = {
-    case ReadClockSuccess(t) =>
-      indexUpdater ! UpdateIndex(t, Long.MaxValue)
-    case u @ UpdateIndexSuccess(t, _) =>
-      clock = t
-      eventLog ! u
-      sdr ! InitIndexSuccess(t)
-      context.become(initialized)
-    case u @ UpdateIndexFailure(cause) =>
-      log.error(cause, "UpdateIndex failure")
-      eventLog ! u
-      sdr ! InitIndexFailure(cause)
-      context.become(instantiated)
-    case r @ ReadClockFailure(cause) =>
-      log.error(cause, "ReadClock failure")
-      eventLog ! r
-      sdr ! InitIndexFailure(cause)
-      context.become(instantiated)
-  }
-
-  def initialized: Receive = {
+  def receive = {
     case UpdateIndex(_, toSequenceNr) =>
       indexUpdater ! UpdateIndex(clock, toSequenceNr)
     case u @ UpdateIndexSuccess(t, _) =>
@@ -79,20 +49,9 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventLogStore: Cas
       log.error(cause, "UpdateIndex failure")
       eventLog ! u
   }
-
-  def receive =
-    instantiated
 }
 
 private[eventuate] object CassandraIndex {
-  case object InitIndex
-  case class InitIndexSuccess(clock: EventLogClock)
-  case class InitIndexFailure(cause: Throwable)
-
-  case object ReadClock
-  case class ReadClockSuccess(clock: EventLogClock)
-  case class ReadClockFailure(cause: Throwable)
-
   case class UpdateIndex(clock: EventLogClock, toSequenceNr: Long)
   case class UpdateIndexProgress(increment: IndexIncrement)
   case class UpdateIndexSuccess(clock: EventLogClock, steps: Int = 0)
@@ -120,8 +79,8 @@ private[eventuate] object CassandraIndex {
     }
   }
 
-  def props(cassandra: Cassandra, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore, logId: String): Props =
-    Props(new CassandraIndex(cassandra, eventLogStore, indexStore, logId))
+  def props(cassandra: Cassandra, eventLogClock: EventLogClock, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore, logId: String): Props =
+    Props(new CassandraIndex(cassandra, eventLogClock, eventLogStore, indexStore, logId))
 }
 
 private class CassandraIndexUpdater(cassandra: Cassandra, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore) extends Actor {

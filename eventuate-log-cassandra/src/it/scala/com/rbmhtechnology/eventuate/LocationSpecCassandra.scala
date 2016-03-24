@@ -60,7 +60,7 @@ object SingleLocationSpecCassandra {
   }
 
   class TestEventLog(id: String, failureSpec: TestFailureSpec, indexProbe: Option[ActorRef])
-    extends CassandraEventLog(id) with SingleLocationSpec.TestEventLog {
+    extends CassandraEventLog(id) with SingleLocationSpec.TestEventLog[CassandraEventLogState] {
 
     override def currentSystemTime: Long = 0L
 
@@ -92,11 +92,11 @@ object SingleLocationSpecCassandra {
         } yield r
       } else super.writeAsync(aggregateEvents, clock)
 
-    override def readEventLogClockAsync(implicit executor: ExecutionContext): Future[EventLogClock] =
+    override def readEventLogClockSnapshotAsync(implicit executor: ExecutionContext): Future[EventLogClock] =
       if (failureSpec.failOnClockRead && !readClockFailed) {
         readClockFailed = true
         Future.failed(IntegrationTestException)
-      } else super.readEventLogClockAsync
+      } else super.readEventLogClockSnapshotAsync
   }
 }
 
@@ -109,7 +109,7 @@ trait SingleLocationSpecCassandra extends SingleLocationSpec with LocationCleanu
   override def beforeEach(): Unit = {
     super.beforeEach()
     _indexProbe = new TestProbe(system)
-    _log = createLog(TestFailureSpec(), indexProbe.ref)
+    _log = _createLog(TestFailureSpec(), indexProbe.ref)
   }
 
   override def beforeAll(): Unit = {
@@ -117,8 +117,13 @@ trait SingleLocationSpecCassandra extends SingleLocationSpec with LocationCleanu
     EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
   }
 
-  def createLog(failureSpec: TestFailureSpec, indexProbe: ActorRef): ActorRef =
+  private def _createLog(failureSpec: TestFailureSpec, indexProbe: ActorRef): ActorRef =
     system.actorOf(logProps(logId, failureSpec, indexProbe))
+
+  def createLog(failureSpec: TestFailureSpec, indexProbe: ActorRef): ActorRef = {
+    generateLogId()
+    _createLog(failureSpec, indexProbe)
+  }
 
   def indexProbe: TestProbe =
     _indexProbe

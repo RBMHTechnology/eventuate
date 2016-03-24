@@ -70,6 +70,11 @@ class LeveldbEventLogSettings(config: Config) extends EventLogSettings {
 }
 
 /**
+ * [[LeveldbEventLog]] actor state.
+ */
+case class LeveldbEventLogState(eventLogClock: EventLogClock, deletionMetadata: DeletionMetadata) extends EventLogState
+
+/**
  * An event log actor with LevelDB as storage backend. The directory containing the LevelDB files
  * for this event log is named after the constructor parameters using the template "`prefix`-`id`"
  * and stored in a root directory defined by the `log.leveldb.dir` configuration.
@@ -79,7 +84,7 @@ class LeveldbEventLogSettings(config: Config) extends EventLogSettings {
  * @param id unique log id.
  * @param prefix prefix of the directory that contains the LevelDB files
  */
-class LeveldbEventLog(id: String, prefix: String) extends EventLog(id) with WithBatch {
+class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventLogState](id) with WithBatch {
   import LeveldbEventLog._
 
   override val settings = new LeveldbEventLogSettings(context.system.settings.config)
@@ -129,18 +134,15 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog(id) with With
   override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, aggregateId: String): Future[BatchReadResult] =
     eventReader().ask(EventReader.ReadSync(fromSequenceNr, toSequenceNr, aggregateIdMap.numericId(aggregateId), max, _ => true))(settings.readTimeout, self).mapTo[BatchReadResult]
 
-  override def recoverClock: Future[EventLogClock] = completed {
-    val snap = readEventLogClockSnapshot
-
-    withEventIterator(snap.sequenceNr + 1L, EventKey.DefaultClassifier) { iter =>
-      iter.foldLeft(snap) {
+  override def recoverState: Future[LeveldbEventLogState] = completed {
+    val clockSnapshot = readEventLogClockSnapshot
+    val clockRecovered = withEventIterator(clockSnapshot.sequenceNr + 1L, EventKey.DefaultClassifier) { iter =>
+      iter.foldLeft(clockSnapshot) {
         case (clock, event) => clock.update(event)
       }
     }
+    LeveldbEventLogState(clockRecovered, deletionMetadataStore.readDeletionMetadata())
   }
-
-  override def readDeletionMetadata: Future[DeletionMetadata] =
-    completed(deletionMetadataStore.readDeletionMetadata())
 
   override def writeDeletionMetadata(deleteMetadata: DeletionMetadata) =
     deletionMetadataStore.writeDeletionMetadata(deleteMetadata)
