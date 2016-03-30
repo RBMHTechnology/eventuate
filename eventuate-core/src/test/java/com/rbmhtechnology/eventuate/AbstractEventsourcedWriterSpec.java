@@ -20,8 +20,10 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Status;
 import akka.japi.Creator;
+import akka.japi.pf.ReceiveBuilder;
 import akka.pattern.Patterns;
 import akka.testkit.TestProbe;
+import javaslang.Tuple;
 import javaslang.control.Try;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +48,8 @@ public class AbstractEventsourcedWriterSpec extends BaseSpec {
             super(id, logProbe);
             this.appProbe = appProbe;
             this.rwProbe = rwProbe;
+
+            setOnEvent(ReceiveBuilder.match(String.class, ev -> {}).build());
         }
 
         @Override

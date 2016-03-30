@@ -177,8 +177,10 @@ trait EventsourcedWriter[R, W] extends EventsourcedView {
     }
     case ReplaySuccess(events, progress, iid) => if (iid == instanceId) {
       events.foreach(receiveEvent)
-      context.become(initiatingWrite(progress) orElse initiating)
-      write(instanceId)
+      if (numPending > 0) {
+        context.become(initiatingWrite(progress) orElse initiating)
+        write(instanceId)
+      } else replay(progress + 1L)
     }
     case other =>
       super.initiating(other)
@@ -189,9 +191,11 @@ trait EventsourcedWriter[R, W] extends EventsourcedView {
    */
   override private[eventuate] def initiated: Receive = {
     case Written(event) => if (event.localSequenceNr > lastSequenceNr) {
-      context.become(initiatedWrite orElse initiated)
       receiveEvent(event)
-      write(instanceId)
+      if (numPending > 0) {
+        context.become(initiatedWrite orElse initiated)
+        write(instanceId)
+      }
     }
     case other =>
       super.initiated(other)
