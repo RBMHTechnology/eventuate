@@ -76,7 +76,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Architecture</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Architecture</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#event-logs">Event logs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#event-sourcing">Event sourcing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#operation-based-crdts">Operation-based CRDTs</a></li>
@@ -185,7 +185,7 @@
             
   <div class="section" id="architecture">
 <span id="id1"></span><h1>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h1>
-<p>The following sections give an overview of the main functional building blocks of Eventuate. Further details are given in the <a class="reference internal" href="user-guide.html#user-guide"><span>User guide</span></a> and in the <a class="reference internal" href="reference.html#reference"><span>Reference</span></a>.</p>
+<p>The following sections give an overview of the main functional building blocks of Eventuate. Further details are given in the <a class="reference internal" href="user-guide.html#user-guide"><span class="std std-ref">User guide</span></a> and in the <a class="reference internal" href="reference.html#reference"><span class="std std-ref">Reference</span></a>.</p>
 <div class="section" id="event-logs">
 <span id="id2"></span><h2>Event logs<a class="headerlink" href="#event-logs" title="Permalink to this headline">¶</a></h2>
 <p>Eventuate applications store events in one or more event logs. An event log can be replicated across <em>locations</em> where each location has its own copy of events in a <em>local event log</em>. Events are asynchronously replicated via <em>replication connections</em> between <em>replication endpoints</em>.</p>
@@ -195,8 +195,8 @@
 <div class="legend">
 An event log, replicated across locations 1, 2 and 3 via an acyclic replication network.</div>
 </div>
-<p>Writes to a local event log are not coordinated with other locations. Without coordination, the strongest global ordering guarantee for a <em>replicated event log</em> is causal ordering which is tracked with <a class="reference internal" href="#vector-clocks"><span>Vector clocks</span></a>. Events in a local event log have a total order that is location-specific but consistent with causal order at all locations. Relaxing the global ordering guarantee to causal ordering allows local event logs to remain available for writes during inter-location network partitions.</p>
-<p><a class="reference internal" href="#arch-fig1"><span>Fig. 1</span></a> shows a replicated event log with an acyclic replication network. Should location 1 become unavailable, locations 2 and 3 are partitioned and cannot continue to exchange events. To prevent that situation, a replicated event log may also have a cyclic replication network as shown in <a class="reference internal" href="#arch-fig2"><span>Fig. 2</span></a>.</p>
+<p>Writes to a local event log are not coordinated with other locations. Without coordination, the strongest global ordering guarantee for a <em>replicated event log</em> is causal ordering which is tracked with <a class="reference internal" href="#vector-clocks"><span class="std std-ref">Vector clocks</span></a>. Events in a local event log have a total order that is location-specific but consistent with causal order at all locations. Relaxing the global ordering guarantee to causal ordering allows local event logs to remain available for writes during inter-location network partitions.</p>
+<p><a class="reference internal" href="#arch-fig1"><span class="std std-ref">Fig. 1</span></a> shows a replicated event log with an acyclic replication network. Should location 1 become unavailable, locations 2 and 3 are partitioned and cannot continue to exchange events. To prevent that situation, a replicated event log may also have a cyclic replication network as shown in <a class="reference internal" href="#arch-fig2"><span class="std std-ref">Fig. 2</span></a>.</p>
 <div class="figure" id="id19" style="width: 70%">
 <span id="arch-fig2"></span><img alt="_images/architecture-1a.png" src="_images/architecture-1a.png" />
 <p class="caption"><span class="caption-text">Fig. 2</span></p>
@@ -210,13 +210,13 @@ An event log, replicated across locations 1, 2 and 3 via a cyclic replication ne
 <div class="legend">
 Three replicated event logs. Log X (blue) is replicated across locations 1, 2 and 3. Log Y (red) is replicated across locations 1 and 2 and log Z (green) is replicated across locations 1 and 3.</div>
 </div>
-<p>Event storage backends at individual locations are pluggable. A location that requires stronger durability guarantees should use a storage backend that synchronously replicates events within that location (like the <a class="reference internal" href="reference/event-log.html#cassandra-storage-backend"><span>Cassandra storage backend</span></a>), others may want to use a more lightweight, non-replicated storage backend in case of weaker durability requirements (like the <a class="reference internal" href="reference/event-log.html#leveldb-storage-backend"><span>LevelDB storage backend</span></a>). Applications can also integrate <a class="reference internal" href="reference/event-log.html#custom-storage-backends"><span>Custom storage backends</span></a> into Eventuate by implementing a storage provider interface.</p>
+<p>Event storage backends at individual locations are pluggable. A location that requires stronger durability guarantees should use a storage backend that synchronously replicates events within that location (like the <a class="reference internal" href="reference/event-log.html#cassandra-storage-backend"><span class="std std-ref">Cassandra storage backend</span></a>), others may want to use a more lightweight, non-replicated storage backend in case of weaker durability requirements (like the <a class="reference internal" href="reference/event-log.html#leveldb-storage-backend"><span class="std std-ref">LevelDB storage backend</span></a>). Applications can also integrate <a class="reference internal" href="reference/event-log.html#custom-storage-backends"><span class="std std-ref">Custom storage backends</span></a> into Eventuate by implementing a storage provider interface.</p>
 <p>Event replication across locations is reliable. Should there be a network partition or a location crash, replication automatically resumes when the partition heals or the crashed location recovers. Built-in failure detectors inform applications about (un)availability of peer locations.</p>
 <p>Replication connections can also be configured with replication filters, so that only events matching one or more filter criteria are replicated. This is especially useful for smaller locations (for example, mobile devices) that only need to exchange a subset of events with other locations.</p>
 </div>
 <div class="section" id="event-sourcing">
 <h2>Event sourcing<a class="headerlink" href="#event-sourcing" title="Permalink to this headline">¶</a></h2>
-<p>Eventuate provides several abstractions for building event-sourced application components. They all derive application state from events stored in <a class="reference internal" href="#event-logs"><span>Event logs</span></a> but follow different strategies for managing derived state. A summary is given in <a class="reference internal" href="#arch-tab1"><span>Table 1: Event sourcing abstractions</span></a>, more information in the following subsections. For further details, follow the links in the <em>Details</em> column.</p>
+<p>Eventuate provides several abstractions for building event-sourced application components. They all derive application state from events stored in <a class="reference internal" href="#event-logs"><span class="std std-ref">Event logs</span></a> but follow different strategies for managing derived state. A summary is given in <a class="reference internal" href="#arch-tab1"><span class="std std-ref">Table 1: Event sourcing abstractions</span></a>, more information in the following subsections. For further details, follow the links in the <em>Details</em> column.</p>
 <table border="1" class="docutils" id="id21">
 <span id="arch-tab1"></span><caption><span class="caption-text">Table 1: Event sourcing abstractions</span><a class="headerlink" href="#id21" title="Permalink to this table">¶</a></caption>
 <colgroup>
@@ -231,7 +231,7 @@ Three replicated event logs. Log X (blue) is replicated across locations 1, 2 an
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><a class="reference internal" href="#event-sourced-actors"><span>Event-sourced actor</span></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#event-sourced-actors"><span class="std std-ref">Event-sourced actor</span></a></td>
 <td><div class="first last line-block">
 <div class="line">Consumes events from its event log and</div>
 <div class="line">emits new events to the same event log</div>
@@ -241,18 +241,18 @@ Three replicated event logs. Log X (blue) is replicated across locations 1, 2 an
 <div class="line"><br /></div>
 <div class="line">An event-sourced actor may also emit new</div>
 <div class="line">events during event processing which is</div>
-<div class="line">most relevant for <a class="reference internal" href="user-guide.html#guide-event-collaboration"><span>Event collaboration</span></a> use</div>
+<div class="line">most relevant for <a class="reference internal" href="user-guide.html#guide-event-collaboration"><span class="std std-ref">Event collaboration</span></a> use</div>
 <div class="line">cases.</div>
 </div>
 </td>
 <td><ul class="first last simple">
-<li><a class="reference internal" href="user-guide.html#guide-event-sourced-actors"><span>User guide</span></a></li>
-<li><a class="reference internal" href="reference/event-sourcing.html#ref-event-sourced-actors"><span>Reference</span></a></li>
+<li><a class="reference internal" href="user-guide.html#guide-event-sourced-actors"><span class="std std-ref">User guide</span></a></li>
+<li><a class="reference internal" href="reference/event-sourcing.html#ref-event-sourced-actors"><span class="std std-ref">Reference</span></a></li>
 <li><a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedActor">API docs</a></li>
 </ul>
 </td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#event-sourced-views"><span>Event-sourced view</span></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#event-sourced-views"><span class="std std-ref">Event-sourced view</span></a></td>
 <td><div class="first last line-block">
 <div class="line">Consumes events from its event log but</div>
 <div class="line">cannot emit new events. Derived state</div>
@@ -261,13 +261,13 @@ Three replicated event logs. Log X (blue) is replicated across locations 1, 2 an
 </div>
 </td>
 <td><ul class="first last simple">
-<li><a class="reference internal" href="user-guide.html#guide-event-sourced-views"><span>User guide</span></a></li>
-<li><a class="reference internal" href="reference/event-sourcing.html#ref-event-sourced-views"><span>Reference</span></a></li>
+<li><a class="reference internal" href="user-guide.html#guide-event-sourced-views"><span class="std std-ref">User guide</span></a></li>
+<li><a class="reference internal" href="reference/event-sourcing.html#ref-event-sourced-views"><span class="std std-ref">Reference</span></a></li>
 <li><a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedView">API docs</a></li>
 </ul>
 </td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#event-sourced-writers"><span>Event-sourced writer</span></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#event-sourced-writers"><span class="std std-ref">Event-sourced writer</span></a></td>
 <td><div class="first last line-block">
 <div class="line">Consumes events from its event log and</div>
 <div class="line">batch-updates an external query database</div>
@@ -277,12 +277,12 @@ Three replicated event logs. Log X (blue) is replicated across locations 1, 2 an
 </div>
 </td>
 <td><ul class="first last simple">
-<li><a class="reference internal" href="reference/event-sourcing.html#ref-event-sourced-writers"><span>Reference</span></a></li>
+<li><a class="reference internal" href="reference/event-sourcing.html#ref-event-sourced-writers"><span class="std std-ref">Reference</span></a></li>
 <li><a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedWriter">API docs</a></li>
 </ul>
 </td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#event-sourced-processors"><span>Event-sourced processor</span></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#event-sourced-processors"><span class="std std-ref">Event-sourced processor</span></a></td>
 <td><div class="first last line-block">
 <div class="line">Consumes events from its event log and</div>
 <div class="line">emits new events to a target event log</div>
@@ -292,7 +292,7 @@ Three replicated event logs. Log X (blue) is replicated across locations 1, 2 an
 </div>
 </td>
 <td><ul class="first last simple">
-<li><a class="reference internal" href="reference/event-sourcing.html#ref-event-sourced-processors"><span>Reference</span></a></li>
+<li><a class="reference internal" href="reference/event-sourcing.html#ref-event-sourced-processors"><span class="std std-ref">Reference</span></a></li>
 <li><a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcedProcessor">API docs</a></li>
 </ul>
 </td>
@@ -309,15 +309,15 @@ Three replicated event logs. Log X (blue) is replicated across locations 1, 2 an
 An event-sourced actor, producing events to and consuming events from an event log.</div>
 </div>
 <p>When an event-sourced actor is re-started, internal state is recovered by replaying events from its local event log. Events are replayed in local storage order which is consistent with causal order. Consequently, event replay at a given location is deterministic i.e. doesn’t change when replay is repeated. Event replay can also be started from a snapshot of internal state which is an optimization to reduce recovery times.</p>
-<p>In addition to consuming their own events, event-sourced actors can also consume events produced by other event-sourced actors to the same event log. This enables <a class="reference external" href="http://martinfowler.com/eaaDev/EventCollaboration.html">event collaboration</a> between actors (<a class="reference internal" href="#arch-fig5"><span>Fig. 5</span></a>) with or without custom <a class="reference internal" href="reference/event-sourcing.html#event-routing"><span>Event routing</span></a> rules.</p>
-<p>A special form of event collaboration is state replication where actors of the same type consume each other’s events to re-construct actor state at different locations. A more general form of event collaboration, for example, is a distributed business process where actors of different type collaborate by exchanging events to achieve a common goal. In this context, event-sourced actor often emit new events on receiving events from collaborators. This is covered in section <a class="reference internal" href="user-guide.html#guide-event-collaboration"><span>Event collaboration</span></a> of the user guide.</p>
+<p>In addition to consuming their own events, event-sourced actors can also consume events produced by other event-sourced actors to the same event log. This enables <a class="reference external" href="http://martinfowler.com/eaaDev/EventCollaboration.html">event collaboration</a> between actors (<a class="reference internal" href="#arch-fig5"><span class="std std-ref">Fig. 5</span></a>) with or without custom <a class="reference internal" href="reference/event-sourcing.html#event-routing"><span class="std std-ref">Event routing</span></a> rules.</p>
+<p>A special form of event collaboration is state replication where actors of the same type consume each other’s events to re-construct actor state at different locations. A more general form of event collaboration, for example, is a distributed business process where actors of different type collaborate by exchanging events to achieve a common goal. In this context, event-sourced actor often emit new events on receiving events from collaborators. This is covered in section <a class="reference internal" href="user-guide.html#guide-event-collaboration"><span class="std std-ref">Event collaboration</span></a> of the user guide.</p>
 <div class="figure" id="id23" style="width: 70%">
 <span id="arch-fig5"></span><img alt="_images/architecture-4.png" src="_images/architecture-4.png" />
 <p class="caption"><span class="caption-text">Fig. 5</span></p>
 <div class="legend">
 Two event-sourced actors exchanging events over a replicated event log.</div>
 </div>
-<p>Event-sourced actors may also interact with external services by sending commands and processing replies. Commands can be sent with <em>at-most-once</em> or <em>at-least-once</em> delivery semantics, depending on the reliability requirements of an application. Replies from external services are usually processed like external commands which may result in further events to be written. This way, external services can be included into reliable, event-driven business processes controlled by event-sourced actors (see also <a class="reference internal" href="reference/event-sourcing.html#reliable-delivery"><span>Reliable delivery</span></a>).</p>
+<p>Event-sourced actors may also interact with external services by sending commands and processing replies. Commands can be sent with <em>at-most-once</em> or <em>at-least-once</em> delivery semantics, depending on the reliability requirements of an application. Replies from external services are usually processed like external commands which may result in further events to be written. This way, external services can be included into reliable, event-driven business processes controlled by event-sourced actors (see also <a class="reference internal" href="reference/event-sourcing.html#reliable-delivery"><span class="std std-ref">Reliable delivery</span></a>).</p>
 <div class="figure" id="id24" style="width: 70%">
 <img alt="_images/architecture-5.png" src="_images/architecture-5.png" />
 <p class="caption"><span class="caption-text">Fig. 6</span></p>
@@ -328,7 +328,7 @@ External service integration.</div>
 <div class="section" id="event-sourced-views">
 <span id="id8"></span><h3>Event-sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h3>
 <p>Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. When used in context of a <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a> architecture, views implement the query-side (Q).</p>
-<p>Applications use event-sourced views to create in-memory read models from consumed events. Applications that want to create persistent read models should use <a class="reference internal" href="#event-sourced-writers"><span>Event-sourced writers</span></a> instead.</p>
+<p>Applications use event-sourced views to create in-memory read models from consumed events. Applications that want to create persistent read models should use <a class="reference internal" href="#event-sourced-writers"><span class="std std-ref">Event-sourced writers</span></a> instead.</p>
 </div>
 <div class="section" id="event-sourced-writers">
 <span id="id9"></span><h3>Event-sourced writers<a class="headerlink" href="#event-sourced-writers" title="Permalink to this headline">¶</a></h3>
@@ -336,19 +336,19 @@ External service integration.</div>
 </div>
 <div class="section" id="event-sourced-processors">
 <span id="id10"></span><h3>Event-sourced processors<a class="headerlink" href="#event-sourced-processors" title="Permalink to this headline">¶</a></h3>
-<p>An event-sourced processor consumes events from one event log, processes them (stateless or stateful) and produces the processed events to another event log. Event-sourced processors are idempotent producers and a specialization of event-sourced writers. Applications use processors to connect event logs to event stream processing pipelines and graphs. Connectivity to other stream processing solutions is given by <a class="reference internal" href="#adapters"><span>Adapters</span></a>.</p>
+<p>An event-sourced processor consumes events from one event log, processes them (stateless or stateful) and produces the processed events to another event log. Event-sourced processors are idempotent producers and a specialization of event-sourced writers. Applications use processors to connect event logs to event stream processing pipelines and graphs. Connectivity to other stream processing solutions is given by <a class="reference internal" href="#adapters"><span class="std std-ref">Adapters</span></a>.</p>
 </div>
 </div>
 <div class="section" id="operation-based-crdts">
 <span id="id11"></span><h2>Operation-based CRDTs<a class="headerlink" href="#operation-based-crdts" title="Permalink to this headline">¶</a></h2>
-<p>Eventuate provides implementations of <a class="reference internal" href="user-guide.html#commutative-replicated-data-types"><span>Operation-based CRDTs</span></a> (commutative replicated data types or CmRDTs) that rely on a replicated event log to reliably broadcast update operations to replicas. CmRDTs are managed by <em>CRDT services</em> that provide applications convenient access to their instances. New CmRDT types can developed with Eventuate’s CRDT development framework.</p>
+<p>Eventuate provides implementations of <a class="reference internal" href="user-guide.html#commutative-replicated-data-types"><span class="std std-ref">Operation-based CRDTs</span></a> (commutative replicated data types or CmRDTs) that rely on a replicated event log to reliably broadcast update operations to replicas. CmRDTs are managed by <em>CRDT services</em> that provide applications convenient access to their instances. New CmRDT types can developed with Eventuate’s CRDT development framework.</p>
 </div>
 <div class="section" id="vector-clocks">
 <span id="id12"></span><h2>Vector clocks<a class="headerlink" href="#vector-clocks" title="Permalink to this headline">¶</a></h2>
 <p>Eventuates uses <a class="reference external" href="http://en.wikipedia.org/wiki/Vector_clock">vector clocks</a> to track <em>happened-before</em> relationships (= potential causality) of events and provides means to limit the size of these clocks.</p>
 <p>By default, event-sourced actors that share an event log at a given location also share an entry in a vector clock. Event-sourced actors from different locations contribute to different entries in a vector clock. Consequently, concurrency of events can only be reliably detected if they have been emitted at different locations. This is formalized in <a class="reference external" href="http://link.springer.com/article/10.1007%2Fs004460050065">plausible clocks</a> and further described in <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/68">ticket 68</a>. The main advantage of this approach are clock sizes that scale with the usually small number of locations in the worst case, still covering many use cases.</p>
 <p>Although plausible clocks are a reasonable default for many Eventuate applications, others need more fine-grained tracking of potential causality. To achieve that goal, event-sourced actors can opt-in to have their own entry in a vector clock instead of sharing it with others. This is especially useful for applications that additionally need to detect concurrent events within a location which is further described in <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/103">ticket 103</a>.</p>
-<p>A consequence of more-fine grained causality tracking can be larger vector clocks. On the other hand, only events that are actually handled by an event-sourced actor contribute to that actor’s vector clock. Therefore, selective event handling in combination with <a class="reference internal" href="reference/event-sourcing.html#event-routing"><span>Event routing</span></a> rules (as applied in a one-<a class="reference external" href="http://martinfowler.com/bliki/DDD_Aggregate.html">aggregate</a>-per-actor design, for example) can additionally help to keep vector clock sizes small.</p>
+<p>A consequence of more-fine grained causality tracking can be larger vector clocks. On the other hand, only events that are actually handled by an event-sourced actor contribute to that actor’s vector clock. Therefore, selective event handling in combination with <a class="reference internal" href="reference/event-sourcing.html#event-routing"><span class="std std-ref">Event routing</span></a> rules (as applied in a one-<a class="reference external" href="http://martinfowler.com/bliki/DDD_Aggregate.html">aggregate</a>-per-actor design, for example) can additionally help to keep vector clock sizes small.</p>
 </div>
 <div class="section" id="batching">
 <span id="id13"></span><h2>Batching<a class="headerlink" href="#batching" title="Permalink to this headline">¶</a></h2>
@@ -357,7 +357,7 @@ External service integration.</div>
 <li>producing new events to the event log: Whenever a write operation to an event log is in progress, new write requests are batched and served when the previous write operation completed. This strategy leads to dynamically increasing write-batch sizes (up to a configurable maximum) under increasing write loads. If there is no current write operation in progress, a new write request is served immediately, keeping latency at a minimum.</li>
 <li>consuming events from the event log: Events can be read from the event log in batches which allows for efficient integration of external consumers.</li>
 <li>replicating events: Events are replicated in batches of configurable size. They are batch-read from a source log, batch-transferred over a replication connection and batch-written to a target log.</li>
-<li>writing to external databases: <a class="reference internal" href="#event-sourced-writers"><span>Event-sourced writers</span></a> update persistent read models in incremental batches. When a write to an external query database is in progress, new event processing results are batched in-memory and written with the next scheduled write.</li>
+<li>writing to external databases: <a class="reference internal" href="#event-sourced-writers"><span class="std std-ref">Event-sourced writers</span></a> update persistent read models in incremental batches. When a write to an external query database is in progress, new event processing results are batched in-memory and written with the next scheduled write.</li>
 </ul>
 </div>
 <div class="section" id="adapters">
@@ -374,7 +374,7 @@ External service integration.</div>
 <table class="docutils footnote" frame="void" id="id17" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[1]</a></td><td><a class="reference internal" href="#event-sourced-processors"><span>Event-sourced processors</span></a> can be used to connect otherwise partitioned event logs.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id3">[1]</a></td><td><a class="reference internal" href="#event-sourced-processors"><span class="std std-ref">Event-sourced processors</span></a> can be used to connect otherwise partitioned event logs.</td></tr>
 </tbody>
 </table>
 </div>

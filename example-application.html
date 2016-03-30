@@ -140,7 +140,7 @@
 <li class="toctree-l2"><a class="reference internal" href="faq.html#how-does-eventuate-compare-to-akka-persistence">How does Eventuate compare to Akka Persistence?</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Example application</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example application</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#domain">Domain</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#replication">Replication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#interface">Interface</a></li>
@@ -212,7 +212,7 @@
 </div>
 <div class="section" id="replication">
 <h2>Replication<a class="headerlink" href="#replication" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">OrderActor</span></code>s are replicated across locations A - F, each running as separate process on <code class="docutils literal"><span class="pre">localhost</span></code> (see section <a class="reference internal" href="#running"><span>Running</span></a>):</p>
+<p><code class="docutils literal"><span class="pre">OrderActor</span></code>s are replicated across locations A - F, each running as separate process on <code class="docutils literal"><span class="pre">localhost</span></code> (see section <a class="reference internal" href="#running"><span class="std std-ref">Running</span></a>):</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">------</span> <span class="n">E</span>
  <span class="o">\</span>      <span class="o">/</span>
   <span class="n">C</span> <span class="o">--</span> <span class="n">D</span>
@@ -271,7 +271,7 @@
 </div>
 <div class="section" id="disaster-recovery">
 <span id="example-disaster-recovery"></span><h2>Disaster recovery<a class="headerlink" href="#disaster-recovery" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="reference/event-log.html#disaster-recovery"><span>Disaster recovery</span></a> in the example application can be tested by removing the event log of a location and starting the location again with disaster recovery enabled. For example, to remove the event log at location <code class="docutils literal"><span class="pre">C</span></code>, stop the location with <code class="docutils literal"><span class="pre">exit</span></code> and delete its LevelDB directory:</p>
+<p><a class="reference internal" href="reference/event-log.html#disaster-recovery"><span class="std std-ref">Disaster recovery</span></a> in the example application can be tested by removing the event log of a location and starting the location again with disaster recovery enabled. For example, to remove the event log at location <code class="docutils literal"><span class="pre">C</span></code>, stop the location with <code class="docutils literal"><span class="pre">exit</span></code> and delete its LevelDB directory:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">rm</span> <span class="o">-</span><span class="n">r</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">example</span><span class="o">-</span><span class="n">logs</span><span class="o">/</span><span class="n">s</span><span class="o">-</span><span class="nc">C_default</span><span class="o">/</span>
 </pre></div>
 </div>
@@ -287,7 +287,7 @@
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">recover</span> <span class="o">--</span><span class="n">java</span> <span class="n">C</span>
 </pre></div>
 </div>
-<p>Recovery may take up to 20 seconds when using the default <a class="reference internal" href="reference/configuration.html#configuration"><span>Configuration</span></a> settings for event replication and disaster recovery. To speed up the process you may want to the use following configuration settings:</p>
+<p>Recovery may take up to 20 seconds when using the default <a class="reference internal" href="reference/configuration.html#configuration"><span class="std std-ref">Configuration</span></a> settings for event replication and disaster recovery. To speed up the process you may want to the use following configuration settings:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">1</span><span class="n">s</span>
 <span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">remote</span><span class="o">-</span><span class="n">read</span><span class="o">-</span><span class="n">timeout</span> <span class="k">=</span> <span class="mi">2</span><span class="n">s</span>
 <span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">recovery</span><span class="o">.</span><span class="n">remote</span><span class="o">-</span><span class="n">operation</span><span class="o">-</span><span class="n">retry</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">10</span>
