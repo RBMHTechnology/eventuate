@@ -226,13 +226,17 @@ trait CRDTService[A, B] {
         crdtActor(cmd.id) forward cmd
       case n @ OnChange(crdt, operation) =>
         onChange(crdt, operation)
+      case Terminated(crdt) =>
+        crdts.find(pair => pair._2 == crdt).map(_._1).foreach { id =>
+          crdts = crdts - id
+        }
     }
 
     def crdtActor(id: String): ActorRef = crdts.get(id) match {
       case Some(crdt) =>
         crdt
       case None =>
-        val crdt = context.actorOf(Props(new CRDTActor(id, log)))
+        val crdt = context.watch(context.actorOf(Props(new CRDTActor(id, log))))
         crdts = crdts.updated(id, crdt)
         crdt
     }
