@@ -83,7 +83,7 @@ object PersistOnEventSpec {
   }
 
   def event(payload: Any, sequenceNr: Long, persistOnEventSequenceNr: Option[Long] = None): DurableEvent =
-    DurableEvent(payload, emitterIdA, None, Set(), 0L, timestamp(sequenceNr), logIdA, logIdA, sequenceNr, persistOnEventSequenceNr)
+    DurableEvent(payload, emitterIdA, None, Set(), 0L, timestamp(sequenceNr), logIdA, logIdA, sequenceNr, None, persistOnEventSequenceNr)
 }
 
 class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {

@@ -86,12 +86,11 @@ object EventsourcedActorIntegrationSpec {
       case "end" => probe ! "end"
       case "cmd-1" => persist("evt-1")(_ => probe ! "out-1")
       case "cmd-2" => persist("evt-2")(r => ())
-      case "cmd-2-confirm" => persist("evt-2-confirm")(r => ())
+      case "cmd-2-confirm" => persistConfirmation("evt-2-confirm", "2")(r => ())
     }
 
     override def onEvent = {
       case "evt-2" => deliver("2", "out-2", probe.path)
-      case "evt-2-confirm" => confirm("2")
     }
   }
 

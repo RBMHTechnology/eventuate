@@ -104,6 +104,22 @@ abstract class AbstractEventsourcedActor(id: String, eventLog: ActorRef) extends
     persistN(events.asScala.toSeq, onLast.asScala, customDestinationAggregateIds.asScala.toSet)(handler.asScala)
 
   /**
+   * Java API of [[ConfirmedDelivery.persistConfirmation persistConfirmation]].
+   *
+   * @see [[ConfirmedDelivery]]
+   */
+  final def persistConfirmation[A](event: A, deliveryId: String, handler: ResultHandler[A]): Unit =
+    persistConfirmation(event, deliveryId, Set[String]())(handler.asScala)
+
+  /**
+   * Java API of [[ConfirmedDelivery.persistConfirmation persistConfirmation]].
+   *
+   * @see [[ConfirmedDelivery]]
+   */
+  final def persistConfirmation[A](event: A, deliveryId: String, customDestinationAggregateIds: JSet[String], handler: ResultHandler[A]): Unit =
+    persistConfirmation(event, deliveryId, customDestinationAggregateIds.asScala.toSet)(handler.asScala)
+
+  /**
    * Java API of [[PersistOnEvent.persistOnEvent persistOnEvent]].
    *
    * @see [[PersistOnEvent]]

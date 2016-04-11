@@ -108,9 +108,15 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
    * `aggregateId`. Further routing destinations can be defined with the `customDestinationAggregateIds`
    * parameter.
    */
-  final def persist[A](event: A, customDestinationAggregateIds: Set[String] = Set())(handler: Handler[A]): Unit = {
-    writeRequests = writeRequests :+ durableEvent(event, customDestinationAggregateIds)
-    writeHandlers = writeHandlers :+ handler.asInstanceOf[Handler[Any]]
+  final def persist[A](event: A, customDestinationAggregateIds: Set[String] = Set())(handler: Handler[A]): Unit =
+    persistDurableEvent(durableEvent(event, customDestinationAggregateIds), handler.asInstanceOf[Handler[Any]])
+
+  /**
+   * Internal API.
+   */
+  private[eventuate] def persistDurableEvent(event: DurableEvent, handler: Handler[Any]): Unit = {
+    writeRequests = writeRequests :+ event
+    writeHandlers = writeHandlers :+ handler
   }
 
   /**
@@ -144,7 +150,7 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
         writeHandlers = Vector.fill(invocations.length)(PersistOnEvent.DefaultHandler)
         writeRequests = invocations.map {
           case PersistOnEventInvocation(event, customDestinationAggregateIds) =>
-            durableEvent(event, customDestinationAggregateIds, Some(persistOnEventSequenceNr))
+            durableEvent(event, customDestinationAggregateIds, None, Some(persistOnEventSequenceNr))
         }
       }
     }

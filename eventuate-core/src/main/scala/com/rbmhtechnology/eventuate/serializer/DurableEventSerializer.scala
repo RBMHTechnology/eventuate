@@ -70,6 +70,10 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
     builder.setLocalLogId(durableEvent.localLogId)
     builder.setLocalSequenceNr(durableEvent.localSequenceNr)
 
+    durableEvent.deliveryId.foreach { deliveryId =>
+      builder.setDeliveryId(deliveryId)
+    }
+
     durableEvent.persistOnEventSequenceNr.foreach { persistOnEventSequenceNr =>
       builder.setPersistOnEventSequenceNr(persistOnEventSequenceNr)
     }
@@ -97,6 +101,7 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
       case (result, dest) => result + dest
     }
 
+    val deliveryId = if (durableEventFormat.hasDeliveryId) Some(durableEventFormat.getDeliveryId) else None
     val persistOnEventSequenceNr = if (durableEventFormat.hasPersistOnEventSequenceNr) Some(durableEventFormat.getPersistOnEventSequenceNr) else None
 
     DurableEvent(
@@ -109,6 +114,7 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
       processId = durableEventFormat.getProcessId,
       localLogId = durableEventFormat.getLocalLogId,
       localSequenceNr = durableEventFormat.getLocalSequenceNr,
+      deliveryId = deliveryId,
       persistOnEventSequenceNr = persistOnEventSequenceNr)
   }
 }
