@@ -71,7 +71,7 @@ class EventLogSpecCassandra extends TestKit(ActorSystem("test", EventLogSpecCass
       writeEmittedEvents(events)
 
       1 to num foreach { i =>
-        log.tell(ReplicationRead(i, 1, NoFilter, "test-target-log-id", dl, VectorTime()), probe.ref)
+        log.tell(ReplicationRead(i, 1, 100, NoFilter, "test-target-log-id", dl, VectorTime()), probe.ref)
         probe.expectMsgClass(classOf[ReplicationReadSuccess])
       }
     }
@@ -205,8 +205,8 @@ class EventLogSpecCassandra extends TestKit(ActorSystem("test", EventLogSpecCass
       generateEmittedEvents()
       generateReplicatedEvents()
       (log ? Delete(generatedReplicatedEvents(1).localSequenceNr)).await
-      log.tell(ReplicationRead(1, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents ++ generatedReplicatedEvents, 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L)))
+      log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents ++ generatedReplicatedEvents, 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L), hasMore = false))
     }
   }
 }

@@ -279,7 +279,7 @@ trait ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocati
     val locationA = location("A")
     val endpointA = locationA.endpoint(Set("L1"), Set(), sourceApplicationName, sourceApplicationVersion)
 
-    val message = ReplicationRead(1, Int.MaxValue, NoFilter, DurableEvent.UndefinedLogId, locationA.system.deadLetters, VectorTime())
+    val message = ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, DurableEvent.UndefinedLogId, locationA.system.deadLetters, VectorTime())
     val envelope = ReplicationReadEnvelope(message, "L1", targetApplicationName, targetApplicationVersion)
 
     endpointA.acceptor.tell(envelope, locationA.probe.ref)

@@ -27,7 +27,7 @@ import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.log._
 import com.rbmhtechnology.eventuate.log.CircuitBreaker._
 
-import scala.collection.immutable.Seq
+import scala.collection.immutable.{ VectorBuilder, Seq }
 import scala.concurrent._
 import scala.language.postfixOps
 import scala.util._
@@ -116,11 +116,11 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
   override def writeReplicationProgress(logId: String, progress: Long): Future[Unit] =
     progressStore.writeReplicationProgressAsync(logId, progress)(context.system.dispatchers.defaultGlobalDispatcher)
 
-  override def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: DurableEvent => Boolean): Future[BatchReadResult] =
-    eventLogStore.readAsync(fromSequenceNr, toSequenceNr, max, QueryOptions.DEFAULT_FETCH_SIZE, filter)(services.readDispatcher)
+  override def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, scanSize: Int, filter: DurableEvent => Boolean): Future[BatchReadResult] =
+    eventLogStore.readAsync(fromSequenceNr, toSequenceNr, max, scanSize, QueryOptions.DEFAULT_FETCH_SIZE, filter)(services.readDispatcher)
 
   override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int): Future[BatchReadResult] =
-    eventLogStore.readAsync(fromSequenceNr, toSequenceNr, max, max + 1, _ => true)(services.readDispatcher)
+    eventLogStore.readAsync(fromSequenceNr, toSequenceNr, max, Int.MaxValue, max + 1, _ => true)(services.readDispatcher)
 
   override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, aggregateId: String): Future[BatchReadResult] =
     compositeReadAsync(fromSequenceNr, indexSequenceNr, toSequenceNr, max, max + 1, aggregateId)(services.readDispatcher)
@@ -209,12 +209,19 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
     Future(compositeRead(fromSequenceNr, toSequenceNr, max, fetchSize, aggregateId))
 
   private def compositeRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, fetchSize: Int, aggregateId: String): BatchReadResult = {
+    val iter = compositeEventIterator(aggregateId, fromSequenceNr, indexSequenceNr, toSequenceNr, fetchSize)
+    val builder = new VectorBuilder[DurableEvent]
+
     var lastSequenceNr = fromSequenceNr - 1L
-    val events = compositeEventIterator(aggregateId, fromSequenceNr, indexSequenceNr, toSequenceNr, fetchSize).map { evt =>
-      lastSequenceNr = evt.localSequenceNr
-      evt
-    }.take(max).toVector
-    BatchReadResult(events, lastSequenceNr)
+    var scanned = 0
+
+    while (iter.hasNext && scanned < max) {
+      val event = iter.next()
+      builder += event
+      scanned += 1
+      lastSequenceNr = event.localSequenceNr
+    }
+    BatchReadResult(builder.result(), lastSequenceNr, iter.hasNext)
   }
 
   private def compositeEventIterator(aggregateId: String, fromSequenceNr: Long, indexSequenceNr: Long, toSequenceNr: Long, fetchSize: Int): Iterator[DurableEvent] with Closeable =

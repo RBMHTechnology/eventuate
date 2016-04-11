@@ -47,7 +47,7 @@ package object utilities {
     implicit val timeout = Timeout(3.seconds)
 
     def readEvents: Future[ReplicationReadSuccess] =
-      target.log.ask(ReplicationRead(1L, Int.MaxValue, NoFilter, DurableEvent.UndefinedLogId, target.endpoint.system.deadLetters, VectorTime())).mapTo[ReplicationReadSuccess]
+      target.log.ask(ReplicationRead(1L, Int.MaxValue, Int.MaxValue, NoFilter, DurableEvent.UndefinedLogId, target.endpoint.system.deadLetters, VectorTime())).mapTo[ReplicationReadSuccess]
 
     val reading = for {
       res <- readEvents
@@ -64,10 +64,10 @@ package object utilities {
       to.log.ask(GetReplicationProgress(from.logId)).mapTo[GetReplicationProgressSuccess]
 
     def readEvents(reply: GetReplicationProgressSuccess): Future[ReplicationReadSuccess] =
-      from.log.ask(ReplicationRead(reply.storedReplicationProgress + 1, num, NoFilter, to.logId, to.endpoint.system.deadLetters, reply.currentTargetVersionVector)).mapTo[ReplicationReadSuccess]
+      from.log.ask(ReplicationRead(reply.storedReplicationProgress + 1, num, Int.MaxValue, NoFilter, to.logId, to.endpoint.system.deadLetters, reply.currentTargetVersionVector)).mapTo[ReplicationReadSuccess]
 
     def writeEvents(reply: ReplicationReadSuccess): Future[ReplicationWriteSuccess] =
-      to.log.ask(ReplicationWrite(reply.events, from.logId, reply.replicationProgress, VectorTime())).mapTo[ReplicationWriteSuccess]
+      to.log.ask(ReplicationWrite(reply.events, from.logId, reply.replicationProgress, VectorTime(), hasMore = false)).mapTo[ReplicationWriteSuccess]
 
     val replication = for {
       rps <- readProgress

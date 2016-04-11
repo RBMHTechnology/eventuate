@@ -162,7 +162,7 @@ object ReplicationProtocol {
    * Instructs a source log to read up to `max` events starting at `fromSequenceNr` and applying
    * the given replication `filter`.
    */
-  case class ReplicationRead(fromSequenceNr: Long, max: Int, filter: ReplicationFilter, targetLogId: String, replicator: ActorRef, currentTargetVersionVector: VectorTime) extends Format
+  case class ReplicationRead(fromSequenceNr: Long, max: Int, scanSize: Int, filter: ReplicationFilter, targetLogId: String, replicator: ActorRef, currentTargetVersionVector: VectorTime) extends Format
 
   /**
    * Success reply after a [[ReplicationRead]].
@@ -172,7 +172,7 @@ object ReplicationProtocol {
    *                            or equal to the sequence number of the last read
    *                            event (if any).
    */
-  case class ReplicationReadSuccess(events: Seq[DurableEvent], replicationProgress: Long, targetLogId: String, currentSourceVersionVector: VectorTime) extends DurableEventBatch with Format
+  case class ReplicationReadSuccess(events: Seq[DurableEvent], replicationProgress: Long, targetLogId: String, currentSourceVersionVector: VectorTime, hasMore: Boolean) extends DurableEventBatch with Format
 
   /**
    * Failure reply after a [[ReplicationRead]].
@@ -193,7 +193,7 @@ object ReplicationProtocol {
    * Instructs a target log to write replicated `events` from the source log identified by
    * `sourceLogId` along with the last read position in the source log (`replicationProgress`).
    */
-  case class ReplicationWrite(events: Seq[DurableEvent], sourceLogId: String, replicationProgress: Long, currentSourceVersionVector: VectorTime, replyTo: ActorRef = null) extends UpdateableEventBatch[ReplicationWrite] {
+  case class ReplicationWrite(events: Seq[DurableEvent], sourceLogId: String, replicationProgress: Long, currentSourceVersionVector: VectorTime, hasMore: Boolean, replyTo: ActorRef = null) extends UpdateableEventBatch[ReplicationWrite] {
     override def update(events: Seq[DurableEvent]): ReplicationWrite = copy(events = events)
   }
 
@@ -205,7 +205,7 @@ object ReplicationProtocol {
    * @param storedReplicationProgress Last source log read position stored in the target log.
    * @param currentTargetVersionVector [[log.EventLogClock.versionVector Version vector]] of the target log after the events were written
    */
-  case class ReplicationWriteSuccess(num: Int, sourceLogId: String, storedReplicationProgress: Long, currentTargetVersionVector: VectorTime)
+  case class ReplicationWriteSuccess(num: Int, sourceLogId: String, storedReplicationProgress: Long, currentTargetVersionVector: VectorTime, hasMore: Boolean)
 
   /**
    * Failure reply after a [[ReplicationWrite]].

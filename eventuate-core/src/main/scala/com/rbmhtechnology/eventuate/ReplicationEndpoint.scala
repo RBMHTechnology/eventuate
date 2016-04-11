@@ -53,6 +53,9 @@ class ReplicationSettings(config: Config) {
   val remoteReadTimeout: FiniteDuration =
     config.getDuration("eventuate.log.replication.remote-read-timeout", TimeUnit.MILLISECONDS).millis
 
+  val remoteScanSize: Int =
+    config.getInt("eventuate.log.replication.remote-scan-size")
+
   val retryDelay: FiniteDuration =
     config.getDuration("eventuate.log.replication.retry-delay", TimeUnit.MILLISECONDS).millis
 
@@ -471,10 +474,10 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
   }
 
   val reading: Receive = {
-    case ReplicationReadSuccess(events, replicationProgress, _, currentSourceVersionVector) =>
+    case ReplicationReadSuccess(events, replicationProgress, _, currentSourceVersionVector, hasMore) =>
       detector ! Tick
       context.become(writing)
-      write(events, replicationProgress, currentSourceVersionVector)
+      write(events, replicationProgress, currentSourceVersionVector, hasMore)
     case ReplicationReadFailure(cause, _) =>
       log.error(s"replication read failed: $cause")
       context.become(idle)
@@ -486,11 +489,11 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
   }
 
   val writing: Receive = {
-    case writeSuccess @ ReplicationWriteSuccess(num, _, _, _) if num == 0 =>
+    case writeSuccess @ ReplicationWriteSuccess(num, _, _, _, false) =>
       notifyLocalAcceptor(writeSuccess)
       context.become(idle)
       scheduleRead()
-    case writeSuccess @ ReplicationWriteSuccess(_, _, storedReplicationProgress, currentTargetVersionVector) =>
+    case writeSuccess @ ReplicationWriteSuccess(_, _, storedReplicationProgress, currentTargetVersionVector, true) =>
       notifyLocalAcceptor(writeSuccess)
       context.become(reading)
       read(storedReplicationProgress, currentTargetVersionVector)
@@ -526,17 +529,17 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
 
   private def read(storedReplicationProgress: Long, currentTargetVersionVector: VectorTime): Unit = {
     implicit val timeout = Timeout(settings.remoteReadTimeout)
-    val replicationRead = ReplicationRead(storedReplicationProgress + 1, settings.writeBatchSize, filter, target.logId, self, currentTargetVersionVector)
+    val replicationRead = ReplicationRead(storedReplicationProgress + 1, settings.writeBatchSize, settings.remoteScanSize, filter, target.logId, self, currentTargetVersionVector)
 
     (source.acceptor ? ReplicationReadEnvelope(replicationRead, source.logName, target.endpoint.applicationName, target.endpoint.applicationVersion)) recover {
       case t => ReplicationReadFailure(t.getMessage, target.logId)
     } pipeTo self
   }
 
-  private def write(events: Seq[DurableEvent], replicationProgress: Long, currentSourceVersionVector: VectorTime): Unit = {
+  private def write(events: Seq[DurableEvent], replicationProgress: Long, currentSourceVersionVector: VectorTime, hasMore: Boolean): Unit = {
     implicit val timeout = Timeout(settings.writeTimeout)
 
-    target.log ? ReplicationWrite(events, source.logId, replicationProgress, currentSourceVersionVector) recover {
+    target.log ? ReplicationWrite(events, source.logId, replicationProgress, currentSourceVersionVector, hasMore) recover {
       case t => ReplicationWriteFailure(t)
     } pipeTo self
   }

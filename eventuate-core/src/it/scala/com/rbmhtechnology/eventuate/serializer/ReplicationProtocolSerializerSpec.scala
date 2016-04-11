@@ -36,16 +36,16 @@ object ReplicationProtocolSerializerSpec {
   val replicationReadSuccess =
     ReplicationReadSuccess(List(
       DurableEvent("a", "r1"),
-      DurableEvent("b", "r2")), 27L, "B", VectorTime("X" -> 4L))
+      DurableEvent("b", "r2")), 27L, "B", VectorTime("X" -> 4L), true)
 
   val replicationReadFailure =
     ReplicationReadFailure("test", "B")
 
   def replicationRead1(r: ActorRef) =
-    ReplicationRead(17L, 10, filter1(), "A", r, VectorTime("X" -> 12L))
+    ReplicationRead(17L, 10, 100, filter1(), "A", r, VectorTime("X" -> 12L))
 
   def replicationRead2(r: ActorRef) =
-    ReplicationRead(18L, 11, filter3, "B", r, VectorTime("Y" -> 13L))
+    ReplicationRead(18L, 11, 100, filter3, "B", r, VectorTime("Y" -> 13L))
 
   def replicationReadEnvelope(r: ReplicationRead): ReplicationReadEnvelope =
     ReplicationReadEnvelope(r, "X", "myapp", ApplicationVersion(2, 1))
