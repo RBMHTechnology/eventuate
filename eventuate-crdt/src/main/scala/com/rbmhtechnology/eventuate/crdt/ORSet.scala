@@ -115,8 +115,8 @@ class ORSetService[A](val serviceId: String, val log: ActorRef)(implicit system:
 }
 
 /** Persistent add operation */
-private[eventuate] case class AddOp(entry: Any)
+private[eventuate] case class AddOp(entry: Any) extends CRDTFormat
 
 /** Persistent remove operation */
-private[eventuate] case class RemoveOp(entry: Any, timestamps: Set[VectorTime] = Set.empty)
+private[eventuate] case class RemoveOp(entry: Any, timestamps: Set[VectorTime] = Set.empty) extends CRDTFormat
 //#

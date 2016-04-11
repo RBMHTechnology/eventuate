@@ -30,3 +30,24 @@ message LWWRegisterFormat {
 message MVRegisterFormat {
   repeated VersionedFormat versioned = 1;
 }
+
+message ValueUpdatedFormat {
+  optional PayloadFormat operation = 1;
+}
+
+message UpdateOpFormat {
+  optional PayloadFormat delta = 1;
+}
+
+message SetOpFormat {
+  optional PayloadFormat value = 1;
+}
+
+message AddOpFormat {
+  optional PayloadFormat entry = 1;
+}
+
+message RemoveOpFormat {
+  optional PayloadFormat entry = 1;
+  repeated VectorTimeFormat timestamps = 2;
+}

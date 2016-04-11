@@ -95,4 +95,4 @@ class MVRegisterService[A](val serviceId: String, val log: ActorRef)(implicit sy
   start()
 }
 
-private case class SetOp(value: Any)
+private case class SetOp(value: Any) extends CRDTFormat

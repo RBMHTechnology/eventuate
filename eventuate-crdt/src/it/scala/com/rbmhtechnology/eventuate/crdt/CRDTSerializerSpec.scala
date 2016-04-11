@@ -31,6 +31,9 @@ object CRDTSerializerSpec {
 
   def lwwRegister(payload: ExamplePayload) =
     LWWRegister[ExamplePayload].set(payload, VectorTime("s" -> 19L), 19, "e2")
+
+  def removeOp(payload: ExamplePayload): RemoveOp =
+    RemoveOp(payload, Set(VectorTime("s" -> 19L), VectorTime("t" -> 20L)))
 }
 
 class CRDTSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
@@ -84,6 +87,56 @@ class CRDTSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
       val expected = lwwRegister(ExamplePayload("bar", "foo"))
 
       serialization.deserialize(serialization.serialize(initial).get, classOf[LWWRegister[_]]).get should be(expected)
+    }
+    "support UpdateOp serialization with default payload serialization" in {
+      val serialization = SerializationExtension(systems(0))
+
+      val initial = UpdateOp(17)
+      val expected = initial
+
+      serialization.deserialize(serialization.serialize(initial).get, classOf[UpdateOp]).get should be(expected)
+    }
+    "support SetOp serialization with default payload serialization" in {
+      val serialization = SerializationExtension(systems(0))
+
+      val initial = SetOp(ExamplePayload("foo", "bar"))
+      val expected = initial
+
+      serialization.deserialize(serialization.serialize(initial).get, classOf[SetOp]).get should be(expected)
+    }
+    "support SetOp serialization with custom payload serialization" in serializations.tail.foreach { serialization =>
+      val initial = SetOp(ExamplePayload("foo", "bar"))
+      val expected = SetOp(ExamplePayload("bar", "foo"))
+
+      serialization.deserialize(serialization.serialize(initial).get, classOf[SetOp]).get should be(expected)
+    }
+    "support AddOp serialization with default payload serialization" in {
+      val serialization = SerializationExtension(systems(0))
+
+      val initial = AddOp(ExamplePayload("foo", "bar"))
+      val expected = initial
+
+      serialization.deserialize(serialization.serialize(initial).get, classOf[AddOp]).get should be(expected)
+    }
+    "support AddOp serialization with custom payload serialization" in serializations.tail.foreach { serialization =>
+      val initial = AddOp(ExamplePayload("foo", "bar"))
+      val expected = AddOp(ExamplePayload("bar", "foo"))
+
+      serialization.deserialize(serialization.serialize(initial).get, classOf[AddOp]).get should be(expected)
+    }
+    "support RemoveOp serialization with default payload serialization" in {
+      val serialization = SerializationExtension(systems(0))
+
+      val initial = removeOp(ExamplePayload("foo", "bar"))
+      val expected = initial
+
+      serialization.deserialize(serialization.serialize(initial).get, classOf[RemoveOp]).get should be(expected)
+    }
+    "support RemoveOp serialization with custom payload serialization" in serializations.tail.foreach { serialization =>
+      val initial = removeOp(ExamplePayload("foo", "bar"))
+      val expected = removeOp(ExamplePayload("bar", "foo"))
+
+      serialization.deserialize(serialization.serialize(initial).get, classOf[RemoveOp]).get should be(expected)
     }
   }
 }

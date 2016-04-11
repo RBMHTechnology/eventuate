@@ -17,6 +17,6 @@
 package com.rbmhtechnology.eventuate.crdt
 
 /**
- * Marker trait for protobuf-serializable CRDTs.
+ * Marker trait for protobuf-serializable CRDTs and operations.
  */
 trait CRDTFormat extends Serializable

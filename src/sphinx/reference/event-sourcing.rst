@@ -456,9 +456,12 @@ Applications can also configure custom serializers for snapshots in the same way
 
 Custom snapshot serialization also works for state managed with ``ConcurrentVersions[A, B]``. A custom serializer configured for type parameter ``A`` is used whenever a snapshot of type ``ConcurrentVersions[A, B]`` is saved (see also :ref:`tracking-conflicting-versions`).
 
-Custom serializers can also be configured for the type parameter ``A`` of ``MVRegister[A]``, ``LWWRegister[A]`` and ``ORSet[A]``, :ref:`commutative-replicated-data-types` for which the corresponding CRDT service interfaces provide a ``save`` method for saving snapshots.
-
 Event-sourced actors that extend ``ConfirmedDelivery`` for :ref:`reliable-delivery` of messages to destinations will also include unconfirmed messages as ``deliveryAttempts`` in a Snapshot_. The ``message`` field of a DeliveryAttempt_ can also be custom-serialized by configuring a serializer.
+
+Custom CRDT serialization
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Custom serializers can also be configured for the type parameter ``A`` of ``MVRegister[A]``, ``LWWRegister[A]`` and ``ORSet[A]`` :ref:`commutative-replicated-data-types`. These serializers are used for both persistent CRDT operations and CRDT snapshots.
 
 Resolution of serializers when deserializing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

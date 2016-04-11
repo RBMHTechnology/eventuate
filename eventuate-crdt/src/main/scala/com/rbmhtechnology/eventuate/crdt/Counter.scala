@@ -78,4 +78,4 @@ class CounterService[A](val serviceId: String, val log: ActorRef)(implicit syste
   start()
 }
 
-private case class UpdateOp(delta: Any)
+private case class UpdateOp(delta: Any) extends CRDTFormat

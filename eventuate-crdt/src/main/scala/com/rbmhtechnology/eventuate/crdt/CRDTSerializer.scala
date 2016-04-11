@@ -21,17 +21,22 @@ import akka.serialization.Serializer
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.crdt.CRDTFormats._
+import com.rbmhtechnology.eventuate.crdt.CRDTService._
 import com.rbmhtechnology.eventuate.serializer.CommonSerializer
 
-import scala.collection.immutable.VectorBuilder
 import scala.collection.JavaConverters._
 
 class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   val commonSerializer = new CommonSerializer(system)
 
-  val MVRegisterClass = classOf[MVRegister[_]]
-  val LWWRegisterClass = classOf[LWWRegister[_]]
-  val ORSetClass = classOf[ORSet[_]]
+  private val MVRegisterClass = classOf[MVRegister[_]]
+  private val LWWRegisterClass = classOf[LWWRegister[_]]
+  private val ORSetClass = classOf[ORSet[_]]
+  private val ValueUpdatedClass = classOf[ValueUpdated]
+  private val UpdatedOpClass = classOf[UpdateOp]
+  private val SetOpClass = classOf[SetOp]
+  private val AddOpClass = classOf[AddOp]
+  private val RemoveOpClass = classOf[RemoveOp]
 
   override def identifier: Int = 22567
   override def includeManifest: Boolean = true
@@ -43,6 +48,16 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
       lwwRegisterFormatBuilder(r).build().toByteArray
     case s: ORSet[_] =>
       orSetFormatBuilder(s).build().toByteArray
+    case v: ValueUpdated =>
+      valueUpdatedFormat(v).build().toByteArray
+    case o: UpdateOp =>
+      updateOpFormatBuilder(o).build().toByteArray
+    case o: SetOp =>
+      setOpFormatBuilder(o).build().toByteArray
+    case o: AddOp =>
+      addOpFormatBuilder(o).build().toByteArray
+    case o: RemoveOp =>
+      removeOpFormatBuilder(o).build().toByteArray
     case _ =>
       throw new IllegalArgumentException(s"can't serialize object of type ${o.getClass}")
   }
@@ -56,6 +71,16 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
         lwwRegister(LWWRegisterFormat.parseFrom(bytes))
       case ORSetClass =>
         orSet(ORSetFormat.parseFrom(bytes))
+      case ValueUpdatedClass =>
+        valueUpdated(ValueUpdatedFormat.parseFrom(bytes))
+      case UpdatedOpClass =>
+        updateOp(UpdateOpFormat.parseFrom(bytes))
+      case SetOpClass =>
+        setOp(SetOpFormat.parseFrom(bytes))
+      case AddOpClass =>
+        addOp(AddOpFormat.parseFrom(bytes))
+      case RemoveOpClass =>
+        removeOp(RemoveOpFormat.parseFrom(bytes))
       case _ =>
         throw new IllegalArgumentException(s"can't deserialize object of type ${clazz}")
     }
@@ -90,6 +115,30 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     builder
   }
 
+  private def valueUpdatedFormat(valueUpdated: ValueUpdated): ValueUpdatedFormat.Builder =
+    ValueUpdatedFormat.newBuilder.setOperation(commonSerializer.payloadFormatBuilder(valueUpdated.operation.asInstanceOf[AnyRef]))
+
+  private def updateOpFormatBuilder(op: UpdateOp): UpdateOpFormat.Builder =
+    UpdateOpFormat.newBuilder.setDelta(commonSerializer.payloadFormatBuilder(op.delta.asInstanceOf[AnyRef]))
+
+  private def setOpFormatBuilder(op: SetOp): SetOpFormat.Builder =
+    SetOpFormat.newBuilder.setValue(commonSerializer.payloadFormatBuilder(op.value.asInstanceOf[AnyRef]))
+
+  private def addOpFormatBuilder(op: AddOp): AddOpFormat.Builder =
+    AddOpFormat.newBuilder.setEntry(commonSerializer.payloadFormatBuilder(op.entry.asInstanceOf[AnyRef]))
+
+  private def removeOpFormatBuilder(op: RemoveOp): RemoveOpFormat.Builder = {
+    val builder = RemoveOpFormat.newBuilder
+
+    builder.setEntry(commonSerializer.payloadFormatBuilder(op.entry.asInstanceOf[AnyRef]))
+
+    op.timestamps.foreach { timestamp =>
+      builder.addTimestamps(commonSerializer.vectorTimeFormatBuilder(timestamp))
+    }
+
+    builder
+  }
+
   // --------------------------------------------------------------------------------
   //  fromBinary helpers
   // --------------------------------------------------------------------------------
@@ -99,8 +148,6 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   }
 
   private def mvRegister(mvRegisterFormat: MVRegisterFormat): MVRegister[Any] = {
-    val builder = new VectorBuilder[Versioned[Any]]
-
     val rs = mvRegisterFormat.getVersionedList.iterator.asScala.foldLeft(Set.empty[Versioned[Any]]) {
       case (acc, r) => acc + commonSerializer.versioned(r)
     }
@@ -109,12 +156,30 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   }
 
   private def orSet(orSetFormat: ORSetFormat): ORSet[Any] = {
-    val builder = new VectorBuilder[Versioned[Any]]
-
     val ves = orSetFormat.getVersionedEntriesList.iterator.asScala.foldLeft(Set.empty[Versioned[Any]]) {
       case (acc, ve) => acc + commonSerializer.versioned(ve)
     }
 
     ORSet(ves)
+  }
+
+  private def valueUpdated(valueUpdatedFormat: ValueUpdatedFormat): ValueUpdated =
+    ValueUpdated(commonSerializer.payload(valueUpdatedFormat.getOperation))
+
+  private def updateOp(opFormat: UpdateOpFormat): UpdateOp =
+    UpdateOp(commonSerializer.payload(opFormat.getDelta))
+
+  private def setOp(opFormat: SetOpFormat): SetOp =
+    SetOp(commonSerializer.payload(opFormat.getValue))
+
+  private def addOp(opFormat: AddOpFormat): AddOp =
+    AddOp(commonSerializer.payload(opFormat.getEntry))
+
+  private def removeOp(opFormat: RemoveOpFormat): RemoveOp = {
+    val timestamps = opFormat.getTimestampsList.iterator().asScala.foldLeft(Set.empty[VectorTime]) {
+      case (result, timestampFormat) => result + commonSerializer.vectorTime(timestampFormat)
+    }
+
+    RemoveOp(commonSerializer.payload(opFormat.getEntry), timestamps)
   }
 }

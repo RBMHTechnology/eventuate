@@ -67,10 +67,9 @@ object CRDTService {
   /**
    * Persistent event with update operation.
    *
-   * @param id id of CRDT instance.
    * @param operation update operation.
    */
-  case class ValueUpdated(id: String, operation: Any)
+  case class ValueUpdated(operation: Any) extends CRDTFormat
 }
 
 /**
@@ -190,7 +189,7 @@ trait CRDTService[A, B] {
           case None =>
             sender() ! UpdateReply(crdtId, ops.value(crdt))
           case Some(op) =>
-            persist(ValueUpdated(crdtId, op)) {
+            persist(ValueUpdated(op)) {
               case Success(evt) =>
                 sender() ! UpdateReply(crdtId, ops.value(crdt))
               case Failure(err) =>
@@ -207,7 +206,7 @@ trait CRDTService[A, B] {
     }
 
     override def onEvent = {
-      case evt @ ValueUpdated(id, operation) =>
+      case evt @ ValueUpdated(operation) =>
         crdt = ops.update(crdt, operation, lastHandledEvent)
         context.parent ! OnChange(crdt, operation)
     }
