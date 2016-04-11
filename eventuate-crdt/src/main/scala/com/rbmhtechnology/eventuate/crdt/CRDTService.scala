@@ -16,11 +16,14 @@
 
 package com.rbmhtechnology.eventuate.crdt
 
+import java.util.concurrent.TimeUnit
+
 import akka.actor._
 import akka.pattern.ask
 import akka.util.Timeout
 
 import com.rbmhtechnology.eventuate._
+import com.typesafe.config.Config
 
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
@@ -72,6 +75,11 @@ object CRDTService {
   case class ValueUpdated(operation: Any) extends CRDTFormat
 }
 
+private class CRDTServiceSettings(config: Config) {
+  val operationTimeout: FiniteDuration =
+    config.getDuration("eventuate.crdt.operation-timeout", TimeUnit.MILLISECONDS).millis
+}
+
 /**
  * A generic, replicated CRDT service that manages a map of CRDTs identified by name.
  * Replication is based on the replicated event `log` that preserves causal ordering
@@ -83,10 +91,18 @@ object CRDTService {
 trait CRDTService[A, B] {
   import CRDTService._
 
-  private implicit val timeout = Timeout(10.seconds)
-
-  private var system: Option[ActorSystem] = None
   private var manager: Option[ActorRef] = None
+
+  private lazy val settings: CRDTServiceSettings =
+    new CRDTServiceSettings(system.settings.config)
+
+  private implicit lazy val timeout: Timeout =
+    Timeout(settings.operationTimeout)
+
+  /**
+   * This service's actor system.
+   */
+  def system: ActorSystem
 
   /**
    * CRDT service id.
@@ -106,24 +122,16 @@ trait CRDTService[A, B] {
   /**
    * Starts the CRDT service.
    */
-  def start()(implicit system: ActorSystem): Unit = if (manager.isEmpty) {
-    // all CRDTs of same type managed within a single CRDTManager
-    val aggregateId: String = ops.zero.getClass.getSimpleName
-
-    this.system = Some(system)
-    this.manager = Some(system.actorOf(Props(new CRDTManager)))
+  def start(): Unit = if (manager.isEmpty) {
+    manager = Some(system.actorOf(Props(new CRDTManager)))
   }
 
   /**
    * Stops the CRDT service.
    */
-  def stop(): Unit = for {
-    s <- system
-    m <- manager
-  } {
-    s.stop(m)
-    system = None
+  def stop(): Unit = manager.foreach { m =>
     manager = None
+    system.stop(m)
   }
 
   /**
@@ -150,7 +158,7 @@ trait CRDTService[A, B] {
 
   private def withManagerAndDispatcher[R](async: (ActorRef, ExecutionContext) => Future[R]): Future[R] = manager match {
     case None    => Future.failed(new Exception("Service not started"))
-    case Some(m) => async(m, system.get.dispatcher)
+    case Some(m) => async(m, system.dispatcher)
   }
 
   private trait Identified {

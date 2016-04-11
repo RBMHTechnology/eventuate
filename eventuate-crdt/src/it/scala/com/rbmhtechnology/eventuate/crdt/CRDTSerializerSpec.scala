@@ -18,6 +18,7 @@ package com.rbmhtechnology.eventuate.crdt
 
 import akka.serialization.SerializationExtension
 import com.rbmhtechnology.eventuate._
+import com.rbmhtechnology.eventuate.crdt.CRDTService.ValueUpdated
 import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec._
 import com.rbmhtechnology.eventuate.serializer.SerializationContext
 import org.scalatest._
@@ -95,6 +96,20 @@ class CRDTSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
       val expected = initial
 
       serialization.deserialize(serialization.serialize(initial).get, classOf[UpdateOp]).get should be(expected)
+    }
+    "support ValueUpdated serialization with default payload serialization" in {
+      val serialization = SerializationExtension(systems(0))
+
+      val initial = ValueUpdated(SetOp(ExamplePayload("foo", "bar")))
+      val expected = initial
+
+      serialization.deserialize(serialization.serialize(initial).get, classOf[ValueUpdated]).get should be(expected)
+    }
+    "support ValueUpdated serialization with custom payload serialization" in serializations.tail.foreach { serialization =>
+      val initial = ValueUpdated(SetOp(ExamplePayload("foo", "bar")))
+      val expected = ValueUpdated(SetOp(ExamplePayload("bar", "foo")))
+
+      serialization.deserialize(serialization.serialize(initial).get, classOf[ValueUpdated]).get should be(expected)
     }
     "support SetOp serialization with default payload serialization" in {
       val serialization = SerializationExtension(systems(0))

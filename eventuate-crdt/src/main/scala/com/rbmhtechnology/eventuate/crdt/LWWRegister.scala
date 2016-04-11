@@ -93,7 +93,7 @@ object LWWRegister {
  * @param log Event log.
  * @tparam A [[LWWRegister]] value type.
  */
-class LWWRegisterService[A](val serviceId: String, val log: ActorRef)(implicit system: ActorSystem, val ops: CRDTServiceOps[LWWRegister[A], Option[A]])
+class LWWRegisterService[A](val serviceId: String, val log: ActorRef)(implicit val system: ActorSystem, val ops: CRDTServiceOps[LWWRegister[A], Option[A]])
   extends CRDTService[LWWRegister[A], Option[A]] {
 
   /**

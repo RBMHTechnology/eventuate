@@ -83,7 +83,7 @@ object MVRegister {
  * @param log Event log.
  * @tparam A [[MVRegister]] value type.
  */
-class MVRegisterService[A](val serviceId: String, val log: ActorRef)(implicit system: ActorSystem, val ops: CRDTServiceOps[MVRegister[A], Set[A]])
+class MVRegisterService[A](val serviceId: String, val log: ActorRef)(implicit val system: ActorSystem, val ops: CRDTServiceOps[MVRegister[A], Set[A]])
   extends CRDTService[MVRegister[A], Set[A]] {
 
   /**

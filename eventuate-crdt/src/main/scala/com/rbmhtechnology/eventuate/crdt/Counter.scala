@@ -66,7 +66,7 @@ object Counter {
  * @param log Event log.
  * @tparam A Counter value type.
  */
-class CounterService[A](val serviceId: String, val log: ActorRef)(implicit system: ActorSystem, integral: Integral[A], val ops: CRDTServiceOps[Counter[A], A])
+class CounterService[A](val serviceId: String, val log: ActorRef)(implicit val system: ActorSystem, integral: Integral[A], val ops: CRDTServiceOps[Counter[A], A])
   extends CRDTService[Counter[A], A] {
 
   /**

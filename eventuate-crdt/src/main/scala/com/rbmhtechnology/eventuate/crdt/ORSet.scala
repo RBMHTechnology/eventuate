@@ -96,7 +96,7 @@ object ORSet {
  * @param log Event log
  * @tparam A [[ORSet]] entry type
  */
-class ORSetService[A](val serviceId: String, val log: ActorRef)(implicit system: ActorSystem, val ops: CRDTServiceOps[ORSet[A], Set[A]])
+class ORSetService[A](val serviceId: String, val log: ActorRef)(implicit val system: ActorSystem, val ops: CRDTServiceOps[ORSet[A], Set[A]])
   extends CRDTService[ORSet[A], Set[A]] {
 
   /**
