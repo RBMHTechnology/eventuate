@@ -94,6 +94,7 @@ object DurableEventSerializerSpec {
     processId = "p4",
     localLogId = "p3",
     localSequenceNr = 17L,
+    deliveryId = Some("x"),
     persistOnEventSequenceNr = Some(12L))
 }
 

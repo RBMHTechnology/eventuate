@@ -28,7 +28,7 @@ object ReliableDelivery extends App {
   case class DeliverEvent(message: String)
 
   case class Confirmation(deliveryId: String)
-  case class ConfirmationEvent(deliveryId: String)
+  case class ConfirmationEvent()
 
   case class ReliableMessage(deliveryId: String, message: String)
   case object Redeliver
@@ -53,7 +53,7 @@ object ReliableDelivery extends App {
           case Failure(err) => // ...
         }
       case Confirmation(deliveryId) =>
-        persist(ConfirmationEvent(deliveryId)) {
+        persistConfirmation(ConfirmationEvent(), deliveryId) {
           case Success(evt) => // ...
           case Failure(err) => // ...
         }
@@ -65,8 +65,8 @@ object ReliableDelivery extends App {
         case DeliverEvent(message) =>
           val deliveryId = lastSequenceNr.toString
           deliver(deliveryId, ReliableMessage(deliveryId, message), destination)
-        case ConfirmationEvent(deliveryId) =>
-          confirm(deliveryId)
+        case ConfirmationEvent() =>
+          // handling of confirmation event is optional
     }
   }
   //#

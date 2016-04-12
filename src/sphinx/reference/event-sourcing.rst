@@ -269,11 +269,11 @@ Reliable, event-based remote communication between event-sourced actors should b
 
 ``ConfirmedDelivery`` supports the reliable delivery of messages to destinations by enabling applications to re-deliver messages until delivery is confirmed by destinations. In the example above, the reliable delivery of a message is initiated by sending a ``DeliverCommand`` to ``ExampleActor``. 
 
-The generated ``DeliverEvent`` calls ``deliver`` to deliver a ``ReliableMessage`` to ``destination``. The ``deliveryId`` is the correlation identifier for the delivery ``Confirmation``. The ``deliveryId`` can be any application-defined id. Here, the event’s sequence number is used which can be obtained with ``lastSequenceNumber``. 
+The handler of the generated ``DeliverEvent`` calls ``deliver`` to deliver a ``ReliableMessage`` to ``destination``. The ``deliveryId`` is an identifier to correlate ``ReliableMessage`` with a ``Confirmation`` message. The ``deliveryId`` can be any application-defined id. Here, the event’s sequence number is used which can be obtained with ``lastSequenceNumber``. 
 
-The destination confirms the delivery of the message by sending a ``Confirmation`` reply to the event-sourced actor from which the actor generates a ``ConfirmationEvent``. When handling the event, message delivery can be confirmed by calling ``confirm`` with the ``deliveryId`` as argument.
+The ``destination`` confirms the delivery of the message by sending a ``Confirmation`` reply to the event-sourced actor from which it generates a ``ConfirmationEvent``. The actor uses the ``persistConfirmation`` method to persist the confirmation event together with the delivery id. After successful persistence of the confirmation event, the corresponding reliable message is removed from the internal buffer of unconfirmed messages.
 
-When the actor is re-started, unconfirmed ``ReliableMessage``\ s are automatically re-delivered to their ``destination``\ s. The example actor additionally schedules ``redeliverUnconfirmed`` calls to periodically re-deliver unconfirmed messages. This is done within the actor’s command handler.
+When the actor is re-started, unconfirmed reliable messages are automatically re-delivered to their ``destination``\ s. The example actor additionally schedules ``redeliverUnconfirmed`` calls to periodically re-deliver unconfirmed messages. This is done within the actor’s command handler.
 
 .. _ref-event-collaboration:
 

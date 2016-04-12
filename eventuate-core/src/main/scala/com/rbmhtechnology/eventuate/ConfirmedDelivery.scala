@@ -27,16 +27,18 @@ object ConfirmedDelivery {
 }
 
 /**
- * Supports the reliable delivery of messages to destinations by enabling applications
- * to redeliver messages until they are confirmed by their destinations. Both, message
- * delivery and confirmation processing must be done within an [[EventsourcedActor]]'s
- * event handler. New messages are delivered by calling `deliver`. When the destination
- * replies with a confirmation message, the [[EventsourcedActor]] must generate an event
- * for which the handler calls `confirm`. Until confirmation, delivered messages are
- * tracked as ''unconfirmed'' messages. Unconfirmed messages can be redelivered by calling
- * `redeliverUnconfirmed`. This is usually done within a command handler by processing
- * scheduler messages. Redelivery occurs automatically when the [[EventsourcedActor]]
- * successfully recovered after initial start or a re-start.
+ * Supports the reliable delivery of messages to destinations by enabling applications to
+ * redeliver messages until they are confirmed by their destinations. The correlation
+ * identifier between a reliable message and its confirmation message is an
+ * application-defined `deliveryId`. Reliable messages are delivered by calling `deliver` in
+ * an [[EventsourcedActor]]'s event handler. When the destination replies with a confirmation
+ * message, the event-sourced actor must persist an application-defined confirmation event
+ * together with the `deliveryId` using the [[persistConfirmation]] method. Until successful
+ * persistence of the confirmation event, delivered messages are tracked as ''unconfirmed''
+ * messages. Unconfirmed messages can be redelivered by calling `redeliverUnconfirmed`. This
+ * is usually done within a command handler by processing scheduler messages. Redelivery
+ * occurs automatically when the event-sourced actor successfully recovered after initial
+ * start or a re-start.
  */
 trait ConfirmedDelivery extends EventsourcedActor {
   import ConfirmedDelivery._
@@ -44,10 +46,17 @@ trait ConfirmedDelivery extends EventsourcedActor {
   private var _unconfirmed: SortedMap[String, DeliveryAttempt] = SortedMap.empty
 
   /**
+   * Same semantics as [[EventsourcedActor.persist]] plus additional storage of a `deliveryId`
+   * together with the persistent `event`.
+   */
+  final def persistConfirmation[A](event: A, deliveryId: String, customDestinationAggregateIds: Set[String] = Set())(handler: Handler[A]): Unit =
+    persistDurableEvent(durableEvent(event, customDestinationAggregateIds, Some(deliveryId)), handler.asInstanceOf[Handler[Any]])
+
+  /**
    * Delivers the given `message` to a `destination`. The delivery of `message` is identified by
    * the given `deliveryId` which must be unique in context of the sending actor. The message is
-   * tracked as unconfirmed message until delivery is confirmed with `confirm`, using the same
-   * `deliveryId`.
+   * tracked as unconfirmed message until delivery is confirmed by persisting a confirmation event
+   * with `persistConfirmation`, using the same `deliveryId`.
    */
   def deliver(deliveryId: String, message: Any, destination: ActorPath): Unit = {
     _unconfirmed = _unconfirmed + (deliveryId -> DeliveryAttempt(deliveryId, message, destination))
@@ -62,16 +71,21 @@ trait ConfirmedDelivery extends EventsourcedActor {
   }
 
   /**
-   * Confirms the message delivery identified by `deliveryId`.
-   */
-  def confirm(deliveryId: String): Unit =
-    _unconfirmed = _unconfirmed - deliveryId
-
-  /**
    * Delivery ids of unconfirmed messages.
    */
   def unconfirmed: Set[String] =
     _unconfirmed.keySet
+
+  /**
+   * Internal API.
+   */
+  override private[eventuate] def receiveEvent(event: DurableEvent): Unit = {
+    super.receiveEvent(event)
+
+    event.deliveryId.foreach { deliveryId =>
+      if (event.emitterId == id) confirm(deliveryId)
+    }
+  }
 
   /**
    * Internal API.
@@ -99,6 +113,9 @@ trait ConfirmedDelivery extends EventsourcedActor {
     super.recovered()
     redeliverUnconfirmed()
   }
+
+  private def confirm(deliveryId: String): Unit =
+    _unconfirmed = _unconfirmed - deliveryId
 
   private def send(message: Any, destination: ActorPath): Unit =
     context.actorSelection(destination) ! message
