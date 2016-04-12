@@ -118,7 +118,7 @@ class EventLogWithImmediateEventLogClockSnapshotSpecLeveldb
       eventually {
         val probe = TestProbe()
         log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), probe.ref)
-        probe.expectMsg(ReplicationReadSuccess(List(generatedReplicatedEvents.last), 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L), hasMore = false))
+        probe.expectMsg(ReplicationReadSuccess(List(generatedReplicatedEvents.last), 1, 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L)))
       }
     }
     "continue with unfinished conditional deletion of replicated events after restart" in {
@@ -136,14 +136,14 @@ class EventLogWithImmediateEventLogClockSnapshotSpecLeveldb
       generateEmittedEvents()
       (log ? Delete(generatedEmittedEvents(1).localSequenceNr, Set(remoteLogId))).await
       log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, remoteLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents, 3, remoteLogId, VectorTime(logId -> 3L), hasMore = false))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents, 1, 3, remoteLogId, VectorTime(logId -> 3L)))
       // indicate that remoteLogId has successfully replicated all events
       log.tell(ReplicationRead(generatedEmittedEvents.last.localSequenceNr + 1, Int.MaxValue, Int.MaxValue, NoFilter, remoteLogId, dl, VectorTime()), ActorRef.noSender)
 
       eventually {
         val probe = TestProbe()
         log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, "otherLog", dl, VectorTime()), probe.ref)
-        probe.expectMsg(ReplicationReadSuccess(List(generatedEmittedEvents.last), 3, "otherLog", VectorTime(logId -> 3L), hasMore = false))
+        probe.expectMsg(ReplicationReadSuccess(List(generatedEmittedEvents.last), 1, 3, "otherLog", VectorTime(logId -> 3L)))
       }
     }
   }

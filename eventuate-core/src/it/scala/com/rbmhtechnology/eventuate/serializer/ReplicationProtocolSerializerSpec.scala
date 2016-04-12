@@ -36,7 +36,7 @@ object ReplicationProtocolSerializerSpec {
   val replicationReadSuccess =
     ReplicationReadSuccess(List(
       DurableEvent("a", "r1"),
-      DurableEvent("b", "r2")), 27L, "B", VectorTime("X" -> 4L), true)
+      DurableEvent("b", "r2")), 22L, 27L, "B", VectorTime("X" -> 4L))
 
   val replicationReadFailure =
     ReplicationReadFailure("test", "B")

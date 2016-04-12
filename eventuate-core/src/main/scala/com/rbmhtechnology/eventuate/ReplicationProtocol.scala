@@ -162,17 +162,12 @@ object ReplicationProtocol {
    * Instructs a source log to read up to `max` events starting at `fromSequenceNr` and applying
    * the given replication `filter`.
    */
-  case class ReplicationRead(fromSequenceNr: Long, max: Int, scanSize: Int, filter: ReplicationFilter, targetLogId: String, replicator: ActorRef, currentTargetVersionVector: VectorTime) extends Format
+  case class ReplicationRead(fromSequenceNr: Long, max: Int, scanLimit: Int, filter: ReplicationFilter, targetLogId: String, replicator: ActorRef, currentTargetVersionVector: VectorTime) extends Format
 
   /**
    * Success reply after a [[ReplicationRead]].
-   *
-   * @param events Read events.
-   * @param replicationProgress Last read sequence number. This is greater than
-   *                            or equal to the sequence number of the last read
-   *                            event (if any).
    */
-  case class ReplicationReadSuccess(events: Seq[DurableEvent], replicationProgress: Long, targetLogId: String, currentSourceVersionVector: VectorTime, hasMore: Boolean) extends DurableEventBatch with Format
+  case class ReplicationReadSuccess(events: Seq[DurableEvent], fromSequenceNr: Long, replicationProgress: Long, targetLogId: String, currentSourceVersionVector: VectorTime) extends DurableEventBatch with Format
 
   /**
    * Failure reply after a [[ReplicationRead]].
@@ -193,19 +188,14 @@ object ReplicationProtocol {
    * Instructs a target log to write replicated `events` from the source log identified by
    * `sourceLogId` along with the last read position in the source log (`replicationProgress`).
    */
-  case class ReplicationWrite(events: Seq[DurableEvent], sourceLogId: String, replicationProgress: Long, currentSourceVersionVector: VectorTime, hasMore: Boolean, replyTo: ActorRef = null) extends UpdateableEventBatch[ReplicationWrite] {
+  case class ReplicationWrite(events: Seq[DurableEvent], replicationProgress: Long, sourceLogId: String, currentSourceVersionVector: VectorTime, continueReplication: Boolean = false, replyTo: ActorRef = null) extends UpdateableEventBatch[ReplicationWrite] {
     override def update(events: Seq[DurableEvent]): ReplicationWrite = copy(events = events)
   }
 
   /**
    * Success reply after a [[ReplicationWrite]].
-   *
-   * @param num Number of events actually replicated.
-   * @param sourceLogId Id of the log the written events were replicated from.
-   * @param storedReplicationProgress Last source log read position stored in the target log.
-   * @param currentTargetVersionVector [[log.EventLogClock.versionVector Version vector]] of the target log after the events were written
    */
-  case class ReplicationWriteSuccess(num: Int, sourceLogId: String, storedReplicationProgress: Long, currentTargetVersionVector: VectorTime, hasMore: Boolean)
+  case class ReplicationWriteSuccess(num: Int, storedReplicationProgress: Long, sourceLogId: String, currentTargetVersionVector: VectorTime, continueReplication: Boolean = false)
 
   /**
    * Failure reply after a [[ReplicationWrite]].

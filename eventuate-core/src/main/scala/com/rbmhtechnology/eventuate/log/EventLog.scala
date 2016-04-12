@@ -110,9 +110,8 @@ case class DeletionMetadata(toSequenceNr: Long, remoteLogIds: Set[String])
  *
  * @param events Read event batch.
  * @param to Last read position in the event log.
- * @param hasMore `true` if further events can be read from the event log.
  */
-case class BatchReadResult(events: Seq[DurableEvent], to: Long, hasMore: Boolean) extends DurableEventBatch
+case class BatchReadResult(events: Seq[DurableEvent], to: Long) extends DurableEventBatch
 
 /**
  * Indicates that a storage backend doesn't support physical deletion of events.
@@ -192,7 +191,7 @@ trait EventLogSPI[A] { this: Actor =>
    * @param toSequenceNr sequence number to stop reading (inclusive)
    *                     or earlier if `max` events have already been read.
    */
-  def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, scanSize: Int, filter: DurableEvent => Boolean): Future[BatchReadResult]
+  def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, scanLimit: Int, filter: DurableEvent => Boolean): Future[BatchReadResult]
 
   /**
    * Synchronously writes `events` to the given `partition`. The partition is calculated from the configured
@@ -389,16 +388,16 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
         case Success(r) => sdr ! ReplaySuccess(r.events, r.to, iid)
         case Failure(e) => sdr ! ReplayFailure(e, iid)
       }
-    case r @ ReplicationRead(from, max, scanSize, filter, targetLogId, _, currentTargetVersionVector) =>
+    case r @ ReplicationRead(from, max, scanLimit, filter, targetLogId, _, currentTargetVersionVector) =>
       import services.readDispatcher
       val sdr = sender()
       channel.foreach(_ ! r)
       remoteReplicationProgress += targetLogId -> (0L max from - 1)
-      replicationRead(from, clock.sequenceNr, max, scanSize, evt => evt.replicable(currentTargetVersionVector, filter)) onComplete {
-        case Success(r) => self.tell(ReplicationReadSuccess(r.events, r.to, targetLogId, null, r.hasMore), sdr)
+      replicationRead(from, clock.sequenceNr, max, scanLimit, evt => evt.replicable(currentTargetVersionVector, filter)) onComplete {
+        case Success(r) => self.tell(ReplicationReadSuccess(r.events, from, r.to, targetLogId, null), sdr)
         case Failure(e) => self.tell(ReplicationReadFailure(e.getMessage, targetLogId), sdr)
       }
-    case r @ ReplicationReadSuccess(events, _, targetLogId, _, _) =>
+    case r @ ReplicationReadSuccess(events, _, _, targetLogId, _) =>
       // Post-exclude events using a possibly updated version vector received from the
       // target. This is an optimization to save network bandwidth. If omitted, events
       // are still excluded at target based on the current local version vector at the
@@ -511,7 +510,7 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
       case Success((updatedWrites, updatedEvents, clock2)) =>
         clock = clock2
         updatedWrites.foreach { w =>
-          val ws = ReplicationWriteSuccess(w.size, w.sourceLogId, w.replicationProgress, clock2.versionVector, w.hasMore)
+          val ws = ReplicationWriteSuccess(w.size, w.replicationProgress, w.sourceLogId, clock2.versionVector, w.continueReplication)
           registry.notifySubscribers(w.events)
           channel.foreach(_ ! w)
           implicit val dispatcher = context.system.dispatchers.defaultGlobalDispatcher
