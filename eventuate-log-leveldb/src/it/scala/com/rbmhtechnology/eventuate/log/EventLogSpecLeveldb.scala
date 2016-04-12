@@ -97,9 +97,9 @@ class EventLogWithImmediateEventLogClockSnapshotSpecLeveldb
       generateEmittedEvents(num = 50)
       generatedEmittedEvents.foreach { event =>
         (log ? Delete(event.localSequenceNr, Set(remoteLogId))).await
-        log ! ReplicationRead((event.localSequenceNr - 10) max 0, Int.MaxValue, NoFilter, remoteLogId, dl, VectorTime())
+        log ! ReplicationRead((event.localSequenceNr - 10) max 0, Int.MaxValue, Int.MaxValue, NoFilter, remoteLogId, dl, VectorTime())
       }
-      log ! ReplicationRead(generatedEmittedEvents.last.localSequenceNr + 1, Int.MaxValue, NoFilter, remoteLogId, dl, VectorTime())
+      log ! ReplicationRead(generatedEmittedEvents.last.localSequenceNr + 1, Int.MaxValue, Int.MaxValue, NoFilter, remoteLogId, dl, VectorTime())
       eventually {
         val probe = TestProbe()
         log.tell(Replay(IgnoreDeletedSequenceNr, None, 0), probe.ref)
@@ -117,15 +117,15 @@ class EventLogWithImmediateEventLogClockSnapshotSpecLeveldb
       (log ? Delete(generatedReplicatedEvents(1).localSequenceNr)).await
       eventually {
         val probe = TestProbe()
-        log.tell(ReplicationRead(1, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), probe.ref)
-        probe.expectMsg(ReplicationReadSuccess(List(generatedReplicatedEvents.last), 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L)))
+        log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), probe.ref)
+        probe.expectMsg(ReplicationReadSuccess(List(generatedReplicatedEvents.last), 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L), hasMore = false))
       }
     }
     "continue with unfinished conditional deletion of replicated events after restart" in {
       generateEmittedEvents()
       (log ? Delete(generatedEmittedEvents.last.localSequenceNr, Set(remoteLogId))).await
       val restartedLog = restartActor(log)
-      restartedLog ! ReplicationRead(generatedEmittedEvents.last.localSequenceNr + 1, Int.MaxValue, NoFilter, remoteLogId, dl, VectorTime())
+      restartedLog ! ReplicationRead(generatedEmittedEvents.last.localSequenceNr + 1, Int.MaxValue, Int.MaxValue, NoFilter, remoteLogId, dl, VectorTime())
       eventually {
         val probe = TestProbe()
         restartedLog.tell(Replay(IgnoreDeletedSequenceNr, None, 0), probe.ref)
@@ -135,15 +135,15 @@ class EventLogWithImmediateEventLogClockSnapshotSpecLeveldb
     "delete events after successful replication if conditionally deleted" in {
       generateEmittedEvents()
       (log ? Delete(generatedEmittedEvents(1).localSequenceNr, Set(remoteLogId))).await
-      log.tell(ReplicationRead(1, Int.MaxValue, NoFilter, remoteLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents, 3, remoteLogId, VectorTime(logId -> 3L)))
+      log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, remoteLogId, dl, VectorTime()), replyToProbe.ref)
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents, 3, remoteLogId, VectorTime(logId -> 3L), hasMore = false))
       // indicate that remoteLogId has successfully replicated all events
-      log.tell(ReplicationRead(generatedEmittedEvents.last.localSequenceNr + 1, Int.MaxValue, NoFilter, remoteLogId, dl, VectorTime()), ActorRef.noSender)
+      log.tell(ReplicationRead(generatedEmittedEvents.last.localSequenceNr + 1, Int.MaxValue, Int.MaxValue, NoFilter, remoteLogId, dl, VectorTime()), ActorRef.noSender)
 
       eventually {
         val probe = TestProbe()
-        log.tell(ReplicationRead(1, Int.MaxValue, NoFilter, "otherLog", dl, VectorTime()), probe.ref)
-        probe.expectMsg(ReplicationReadSuccess(List(generatedEmittedEvents.last), 3, "otherLog", VectorTime(logId -> 3L)))
+        log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, "otherLog", dl, VectorTime()), probe.ref)
+        probe.expectMsg(ReplicationReadSuccess(List(generatedEmittedEvents.last), 3, "otherLog", VectorTime(logId -> 3L), hasMore = false))
       }
     }
   }

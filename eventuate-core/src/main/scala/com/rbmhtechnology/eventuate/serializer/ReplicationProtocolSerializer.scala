@@ -109,6 +109,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     builder.setReplicationProgress(message.replicationProgress)
     builder.setTargetLogId(message.targetLogId)
     builder.setCurrentSourceVersionVector(commonSerializer.vectorTimeFormatBuilder(message.currentSourceVersionVector))
+    builder.setHasMore(message.hasMore)
     builder
   }
 
@@ -116,6 +117,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     val builder = ReplicationReadFormat.newBuilder()
     builder.setFromSequenceNr(message.fromSequenceNr)
     builder.setMax(message.max)
+    builder.setScanSize(message.scanSize)
     builder.setFilter(filterSerializer.filterTreeFormatBuilder(message.filter))
     builder.setTargetLogId(message.targetLogId)
     builder.setReplicator(Serialization.serializedActorPath(message.replicator))
@@ -182,13 +184,15 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
       builder.result(),
       messageFormat.getReplicationProgress,
       messageFormat.getTargetLogId,
-      commonSerializer.vectorTime(messageFormat.getCurrentSourceVersionVector))
+      commonSerializer.vectorTime(messageFormat.getCurrentSourceVersionVector),
+      messageFormat.getHasMore)
   }
 
   private def replicationRead(messageFormat: ReplicationReadFormat): ReplicationRead =
     ReplicationRead(
       messageFormat.getFromSequenceNr,
       messageFormat.getMax,
+      messageFormat.getScanSize,
       filterSerializer.filterTree(messageFormat.getFilter),
       messageFormat.getTargetLogId,
       system.provider.resolveActorRef(messageFormat.getReplicator),

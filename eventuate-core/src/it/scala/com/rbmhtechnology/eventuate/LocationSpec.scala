@@ -60,8 +60,8 @@ object SingleLocationSpec {
     abstract override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, aggregateId: String): Future[BatchReadResult] =
       if (fromSequenceNr == ErrorSequenceNr) Future.failed(IntegrationTestException) else super.read(fromSequenceNr, toSequenceNr, max, aggregateId)
 
-    abstract override def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, filter: (DurableEvent) => Boolean): Future[BatchReadResult] =
-      if (fromSequenceNr == ErrorSequenceNr) Future.failed(IntegrationTestException) else super.replicationRead(fromSequenceNr, toSequenceNr, max, filter)
+    abstract override def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, scanSize: Int, filter: (DurableEvent) => Boolean): Future[BatchReadResult] =
+      if (fromSequenceNr == ErrorSequenceNr) Future.failed(IntegrationTestException) else super.replicationRead(fromSequenceNr, toSequenceNr, max, scanSize, filter)
 
     abstract override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
       if (events.map(_.payload).contains("boom")) throw IntegrationTestException else super.write(events, partition, clock)
