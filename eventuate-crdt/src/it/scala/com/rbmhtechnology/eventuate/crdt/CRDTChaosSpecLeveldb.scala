@@ -46,7 +46,7 @@ class CRDTChaosSpecLeveldb extends WordSpec with Matchers with MultiLocationSpec
 
   class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") {
     override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
-      if (events.map(_.payload).contains(ValueUpdated(crdtId, AddOp(randomNr())))) throw IntegrationTestException else super.write(events, partition, clock)
+      if (events.map(_.payload).contains(ValueUpdated(AddOp(randomNr())))) throw IntegrationTestException else super.write(events, partition, clock)
   }
 
   val customConfig = ConfigFactory.parseString(

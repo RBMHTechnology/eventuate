@@ -96,7 +96,7 @@ object ORSet {
  * @param log Event log
  * @tparam A [[ORSet]] entry type
  */
-class ORSetService[A](val serviceId: String, val log: ActorRef)(implicit system: ActorSystem, val ops: CRDTServiceOps[ORSet[A], Set[A]])
+class ORSetService[A](val serviceId: String, val log: ActorRef)(implicit val system: ActorSystem, val ops: CRDTServiceOps[ORSet[A], Set[A]])
   extends CRDTService[ORSet[A], Set[A]] {
 
   /**
@@ -115,8 +115,8 @@ class ORSetService[A](val serviceId: String, val log: ActorRef)(implicit system:
 }
 
 /** Persistent add operation */
-private[eventuate] case class AddOp(entry: Any)
+private[eventuate] case class AddOp(entry: Any) extends CRDTFormat
 
 /** Persistent remove operation */
-private[eventuate] case class RemoveOp(entry: Any, timestamps: Set[VectorTime] = Set.empty)
+private[eventuate] case class RemoveOp(entry: Any, timestamps: Set[VectorTime] = Set.empty) extends CRDTFormat
 //#
