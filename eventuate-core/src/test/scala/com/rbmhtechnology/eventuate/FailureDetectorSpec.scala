@@ -21,6 +21,7 @@ import akka.testkit._
 
 import org.scalatest._
 
+import scala.collection.immutable.Seq
 import scala.concurrent.duration._
 
 class FailureDetectorSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterEach with BeforeAndAfterAll {
@@ -30,7 +31,7 @@ class FailureDetectorSpec extends TestKit(ActorSystem("test")) with WordSpecLike
   var failureDetector: ActorRef = _
 
   override def beforeEach(): Unit = {
-    failureDetector = system.actorOf(Props(new FailureDetector("A", "L1", 1.second)))
+    failureDetector = system.actorOf(Props(new FailureDetector("A", "L1", 500.millis)))
   }
 
   override def afterEach(): Unit = {
@@ -45,18 +46,25 @@ class FailureDetectorSpec extends TestKit(ActorSystem("test")) with WordSpecLike
     "publish availability events to the actor system's event stream" in {
       val probe = TestProbe()
 
+      val cause1 = new Exception("1")
+      val cause2 = new Exception("2")
+
       system.eventStream.subscribe(probe.ref, classOf[Available])
       system.eventStream.subscribe(probe.ref, classOf[Unavailable])
 
-      failureDetector ! Tick
+      failureDetector ! AvailabilityDetected
       probe.expectMsg(Available("A", "L1"))
+      failureDetector ! FailureDetected(cause1)
       // time passes ...
-      probe.expectMsg(Unavailable("A", "L1"))
-      failureDetector ! Tick
-      failureDetector ! Tick // second Tick within limit doesn't publish another Available
+      probe.expectMsg(Unavailable("A", "L1", Seq(cause1)))
+      failureDetector ! AvailabilityDetected
+      failureDetector ! AvailabilityDetected // second AvailabilityDetected within limit doesn't publish another Available
       probe.expectMsg(Available("A", "L1"))
+      failureDetector ! FailureDetected(cause2)
       // time passes ...
-      probe.expectMsg(Unavailable("A", "L1"))
+      probe.expectMsg(Unavailable("A", "L1", Seq(cause2)))
+      // time passes ...
+      probe.expectMsg(Unavailable("A", "L1", Nil))
     }
   }
 }

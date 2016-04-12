@@ -395,7 +395,7 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
       remoteReplicationProgress += targetLogId -> (0L max from - 1)
       replicationRead(from, clock.sequenceNr, max, scanLimit, evt => evt.replicable(currentTargetVersionVector, filter)) onComplete {
         case Success(r) => self.tell(ReplicationReadSuccess(r.events, from, r.to, targetLogId, null), sdr)
-        case Failure(e) => self.tell(ReplicationReadFailure(e.getMessage, targetLogId), sdr)
+        case Failure(e) => self.tell(ReplicationReadFailure(ReplicationReadSourceException(e.getMessage), targetLogId), sdr)
       }
     case r @ ReplicationReadSuccess(events, _, _, targetLogId, _) =>
       // Post-exclude events using a possibly updated version vector received from the
@@ -663,3 +663,8 @@ object EventLog {
     }
   }
 }
+
+/**
+ * Indicates that an event log is currently unavailable for serving requests.
+ */
+class EventLogUnavailableException extends RuntimeException

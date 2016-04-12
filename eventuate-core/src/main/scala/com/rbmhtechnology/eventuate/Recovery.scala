@@ -154,7 +154,7 @@ private class Acceptor(endpoint: ReplicationEndpoint) extends Actor {
 
   def recoveringMetadata(recoveryManager: ActorRef, promise: Promise[Unit]): Receive = {
     case re: ReplicationReadEnvelope if re.incompatibleWith(endpoint.applicationName, endpoint.applicationVersion) =>
-      sender ! ReplicationReadEnvelopeIncompatible(endpoint.applicationVersion)
+      sender ! ReplicationReadFailure(IncompatibleApplicationVersionException(endpoint.id, endpoint.applicationVersion, re.targetApplicationVersion), re.payload.targetLogId)
     case re: ReplicationReadEnvelope =>
       recoveryManager forward re
     case MetadataRecoveryCompleted =>
@@ -172,7 +172,7 @@ private class Acceptor(endpoint: ReplicationEndpoint) extends Actor {
 
   def processing: Receive = {
     case re: ReplicationReadEnvelope if re.incompatibleWith(endpoint.applicationName, endpoint.applicationVersion) =>
-      sender ! ReplicationReadEnvelopeIncompatible(endpoint.applicationVersion)
+      sender ! ReplicationReadFailure(IncompatibleApplicationVersionException(endpoint.id, endpoint.applicationVersion, re.targetApplicationVersion), re.payload.targetLogId)
     case ReplicationReadEnvelope(r, logName, _, _) =>
       endpoint.logs(logName) forward r
     case _: ReplicationWriteSuccess =>

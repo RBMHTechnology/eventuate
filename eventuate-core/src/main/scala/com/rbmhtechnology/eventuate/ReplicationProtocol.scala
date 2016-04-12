@@ -21,6 +21,7 @@ import akka.actor._
 import com.rbmhtechnology.eventuate.log.EventLogClock
 
 import scala.collection.immutable.Seq
+import scala.concurrent.duration.FiniteDuration
 
 object ReplicationProtocol {
   /**
@@ -153,12 +154,6 @@ object ReplicationProtocol {
   }
 
   /**
-   * Failure reply after a [[ReplicationReadEnvelope]] if the source application version is
-   * incompatible with the target application version.
-   */
-  case class ReplicationReadEnvelopeIncompatible(sourceApplicationVersion: ApplicationVersion) extends Format
-
-  /**
    * Instructs a source log to read up to `max` events starting at `fromSequenceNr` and applying
    * the given replication `filter`.
    */
@@ -172,7 +167,7 @@ object ReplicationProtocol {
   /**
    * Failure reply after a [[ReplicationRead]].
    */
-  case class ReplicationReadFailure(cause: String, targetLogId: String) extends Format
+  case class ReplicationReadFailure(cause: ReplicationReadException, targetLogId: String) extends Format
 
   /**
    * Instructs an event log to batch-execute the given `writes`.
@@ -201,4 +196,29 @@ object ReplicationProtocol {
    * Failure reply after a [[ReplicationWrite]].
    */
   case class ReplicationWriteFailure(cause: Throwable)
+
+  /**
+   * Base class for all [[ReplicationReadFailure]] `cause`s.
+   */
+  abstract class ReplicationReadException(message: String) extends RuntimeException(message)
+
+  /**
+   * Indicates a problem reading events from the backend store at the source endpoint.
+   */
+  case class ReplicationReadSourceException(message: String) extends ReplicationReadException(message) with Format
+
+  /**
+   * Indicates that a [[ReplicationRead]] request timed out.
+   */
+  case class ReplicationReadTimeoutException(timeout: FiniteDuration) extends ReplicationReadException(s"Replication read timed out after $timeout")
+
+  /**
+   * Indicates that events cannot be replication from a source [[ReplicationEndpoint]] to a target [[ReplicationEndpoint]]
+   * because their application versions are incompatible.
+   */
+  case class IncompatibleApplicationVersionException(
+    sourceEndpointId: String,
+    sourceApplicationVersion: ApplicationVersion,
+    targetApplicationVersion: ApplicationVersion)
+    extends ReplicationReadException(s"Event replication rejected by remote endpoint $sourceEndpointId. Target $targetApplicationVersion not compatible with source $sourceApplicationVersion") with Format
 }

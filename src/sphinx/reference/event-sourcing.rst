@@ -340,7 +340,7 @@ Consequently, a write failure reported by an event log actor means that the writ
 Circuit breaker
 ~~~~~~~~~~~~~~~
 
-The strategy described above can be implemented by wrapping a CassandraEventLog_ in a CircuitBreaker_ actor. This is the default when creating the log actor for a :ref:`cassandra-storage-backend`. Should the event log actor need to retry a write ``eventuate.log.circuit-breaker.open-after-retries`` times or more, the circuit breaker opens. If open, it rejects all requests by replying with a failure message that contains an ``UnavailableException``. If retrying the write finally succeeds, the circuit breaker closes again. The maximum number of write retries can be configured with ``eventuate.log.cassandra.write-retry-max`` and the delay between write retries with ``eventuate.log.write-timeout``. If the maximum number of retries is reached, the event log actor gives up and stops itself which also stops all registered actors.
+The strategy described above can be implemented by wrapping a CassandraEventLog_ in a CircuitBreaker_ actor. This is the default when creating the log actor for a :ref:`cassandra-storage-backend`. Should the event log actor need to retry a write ``eventuate.log.circuit-breaker.open-after-retries`` times or more, the circuit breaker opens. If open, it rejects all requests by replying with a failure message that contains an EventLogUnavailableException_. If retrying the write finally succeeds, the circuit breaker closes again. The maximum number of write retries can be configured with ``eventuate.log.cassandra.write-retry-max`` and the delay between write retries with ``eventuate.log.write-timeout``. If the maximum number of retries is reached, the event log actor gives up and stops itself which also stops all registered actors.
 
 .. _persist-failure-handling:
 
@@ -351,7 +351,7 @@ Asynchronous ``persist`` operations send write requests to an EventLog_ actor. T
 
 For an ``EventsourcedActor`` with ``stateSync`` set to ``true``, this means that further commands sent to that actor will be stashed until the current write completes. In this case, it is the responsibility of the application not to overload that actor with further commands. For example, an application could use timeouts for command replies and prevent sending further commands to that actor if a timeout occurred. After an application-defined delay, command sending can be resumed. This is comparable to using an application-level circuit breaker. Alternatively, an application could restart an event-sourced actor on command timeout and continue sending new commands to that actor after recovery succeeded. This however may take a while depending on the unavailability duration of the storage backend. 
 
-``EventsourcedActor``\ s with ``stateSync`` set to ``false`` do not stash commands but rather send write requests immediately to the event log actor. If the log actor is busy retrying a write and the :ref:`circuit-breaker` opens, later persist operations will be completed immediately with an ``UnavailableException`` failure, regardless whether the event-sourced actor has persist operations in progress or not. A persist operation of an ``EventsourcedActor`` with ``stateSync`` set to ``true`` will only be completed with an ``UnavailableException`` failure if that actor had no persist operation in progress at the time the circuit breaker opened.
+``EventsourcedActor``\ s with ``stateSync`` set to ``false`` do not stash commands but rather send write requests immediately to the event log actor. If the log actor is busy retrying a write and the :ref:`circuit-breaker` opens, later persist operations will be completed immediately with an ``EventLogUnavailableException`` failure, regardless whether the event-sourced actor has persist operations in progress or not. A persist operation of an ``EventsourcedActor`` with ``stateSync`` set to ``true`` will only be completed with an ``EventLogUnavailableException`` failure if that actor had no persist operation in progress at the time the circuit breaker opened.
 
 .. _persist-on-event-failure-handling:
 
@@ -504,7 +504,7 @@ When eventuate serializes application-defined events, :ref:`replication-filters`
 .. _DeliveryAttempt: ../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery$$DeliveryAttempt
 .. _PersistOnEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.PersistOnEvent
 .. _BehaviorContext: ../latest/api/index.html#com.rbmhtechnology.eventuate.BehaviorContext
-.. _UnavailableException: ../latest/api/index.html#com.rbmhtechnology.eventuate.UnavailableException
+.. _EventLogUnavailableException: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.EventLogUnavailableException
 .. _CircuitBreaker: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.CircuitBreaker
 .. _EventLog: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.EventLog
 .. _CassandraEventLog: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog

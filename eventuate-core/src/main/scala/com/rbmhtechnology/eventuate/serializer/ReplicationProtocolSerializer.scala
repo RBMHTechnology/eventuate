@@ -36,11 +36,12 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   val GetReplicationEndpointInfoClass = GetReplicationEndpointInfo.getClass
   val GetReplicationEndpointInfoSuccessClass = classOf[GetReplicationEndpointInfoSuccess]
   val ReplicationReadEnvelopeClass = classOf[ReplicationReadEnvelope]
-  val ReplicationReadEnvelopeIncompatibleClass = classOf[ReplicationReadEnvelopeIncompatible]
   val ReplicationReadClass = classOf[ReplicationRead]
   val ReplicationReadSuccessClass = classOf[ReplicationReadSuccess]
   val ReplicationReadFailureClass = classOf[ReplicationReadFailure]
   val ReplicationDueClass = ReplicationDue.getClass
+  val ReplicationReadSourceExceptionClass = classOf[ReplicationReadSourceException]
+  val IncompatibleApplicationVersionExceptionClass = classOf[IncompatibleApplicationVersionException]
 
   override def identifier: Int = 22565
   override def includeManifest: Boolean = true
@@ -53,8 +54,6 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         getReplicationEndpointInfoSuccessFormatBuilder(m).build().toByteArray
       case m: ReplicationReadEnvelope =>
         replicationReadEnvelopeFormatBuilder(m).build().toByteArray
-      case m: ReplicationReadEnvelopeIncompatible =>
-        replicationReadEnvelopeIncompatibleFormatBuilder(m).build().toByteArray
       case m: ReplicationRead =>
         replicationReadFormatBuilder(m).build().toByteArray
       case m: ReplicationReadSuccess =>
@@ -63,6 +62,10 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         replicationReadFailureFormatBuilder(m).build().toByteArray
       case ReplicationDue =>
         ReplicationDueFormat.newBuilder().build().toByteArray
+      case m: ReplicationReadSourceException =>
+        replicationReadSourceExceptionFormatBuilder(m).build().toByteArray
+      case m: IncompatibleApplicationVersionException =>
+        incompatibleApplicationVersionExceptionFormatBuilder(m).build().toByteArray
       case _ =>
         throw new IllegalArgumentException(s"can't serialize object of type ${o.getClass}")
     }
@@ -77,8 +80,6 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         getReplicationEndpointInfoSuccess(GetReplicationEndpointInfoSuccessFormat.parseFrom(bytes))
       case ReplicationReadEnvelopeClass =>
         replicationReadEnvelope(ReplicationReadEnvelopeFormat.parseFrom(bytes))
-      case ReplicationReadEnvelopeIncompatibleClass =>
-        replicationReadEnvelopeIncompatible(ReplicationReadEnvelopeIncompatibleFormat.parseFrom(bytes))
       case ReplicationReadClass =>
         replicationRead(ReplicationReadFormat.parseFrom(bytes))
       case ReplicationReadSuccessClass =>
@@ -87,6 +88,10 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         replicationReadFailure(ReplicationReadFailureFormat.parseFrom(bytes))
       case ReplicationDueClass =>
         ReplicationDue
+      case ReplicationReadSourceExceptionClass =>
+        replicationReadSourceException(ReplicationReadSourceExceptionFormat.parseFrom(bytes))
+      case IncompatibleApplicationVersionExceptionClass =>
+        incompatibleApplicationVersionException(IncompatibleApplicationVersionExceptionFormat.parseFrom(bytes))
       case _ =>
         throw new IllegalArgumentException(s"can't deserialize object of type ${clazz}")
     }
@@ -98,7 +103,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
 
   private def replicationReadFailureFormatBuilder(message: ReplicationReadFailure): ReplicationReadFailureFormat.Builder = {
     val builder = ReplicationReadFailureFormat.newBuilder()
-    builder.setCause(message.cause)
+    builder.setCause(commonSerializer.payloadFormatBuilder(message.cause))
     builder.setTargetLogId(message.targetLogId)
     builder
   }
@@ -130,13 +135,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     builder.setPayload(replicationReadFormatBuilder(message.payload))
     builder.setLogName(message.logName)
     builder.setTargetApplicationName(message.targetApplicationName)
-    builder.setTargetApplicationVersion(applicationVertsionFormatBuilder(message.targetApplicationVersion))
-    builder
-  }
-
-  private def replicationReadEnvelopeIncompatibleFormatBuilder(message: ReplicationReadEnvelopeIncompatible): ReplicationReadEnvelopeIncompatibleFormat.Builder = {
-    val builder = ReplicationReadEnvelopeIncompatibleFormat.newBuilder()
-    builder.setSourceApplicationVersion(applicationVertsionFormatBuilder(message.sourceApplicationVersion))
+    builder.setTargetApplicationVersion(applicationVersionFormatBuilder(message.targetApplicationVersion))
     builder
   }
 
@@ -157,10 +156,24 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     builder
   }
 
-  private def applicationVertsionFormatBuilder(applicationVersion: ApplicationVersion): ApplicationVersionFormat.Builder = {
+  private def applicationVersionFormatBuilder(applicationVersion: ApplicationVersion): ApplicationVersionFormat.Builder = {
     val builder = ApplicationVersionFormat.newBuilder()
     builder.setMajor(applicationVersion.major)
     builder.setMinor(applicationVersion.minor)
+    builder
+  }
+
+  private def incompatibleApplicationVersionExceptionFormatBuilder(exception: IncompatibleApplicationVersionException): IncompatibleApplicationVersionExceptionFormat.Builder = {
+    val builder = IncompatibleApplicationVersionExceptionFormat.newBuilder()
+    builder.setSourceEndpointId(exception.sourceEndpointId)
+    builder.setSourceApplicationVersion(applicationVersionFormatBuilder(exception.sourceApplicationVersion))
+    builder.setTargetApplicationVersion(applicationVersionFormatBuilder(exception.targetApplicationVersion))
+    builder
+  }
+
+  private def replicationReadSourceExceptionFormatBuilder(exception: ReplicationReadSourceException): ReplicationReadSourceExceptionFormat.Builder = {
+    val builder = ReplicationReadSourceExceptionFormat.newBuilder()
+    builder.setMessage(exception.getMessage)
     builder
   }
 
@@ -170,7 +183,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
 
   private def replicationReadFailure(messageFormat: ReplicationReadFailureFormat): ReplicationReadFailure =
     ReplicationReadFailure(
-      messageFormat.getCause,
+      commonSerializer.payload(messageFormat.getCause).asInstanceOf[ReplicationReadException],
       messageFormat.getTargetLogId)
 
   private def replicationReadSuccess(messageFormat: ReplicationReadSuccessFormat): ReplicationReadSuccess = {
@@ -205,9 +218,6 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
       messageFormat.getTargetApplicationName,
       applicationVersion(messageFormat.getTargetApplicationVersion))
 
-  private def replicationReadEnvelopeIncompatible(messageFormat: ReplicationReadEnvelopeIncompatibleFormat): ReplicationReadEnvelopeIncompatible =
-    ReplicationReadEnvelopeIncompatible(applicationVersion(messageFormat.getSourceApplicationVersion))
-
   private def getReplicationEndpointInfoSuccess(messageFormat: GetReplicationEndpointInfoSuccessFormat) =
     GetReplicationEndpointInfoSuccess(replicationEndpointInfo(messageFormat.getInfo))
 
@@ -222,4 +232,13 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
 
   private def applicationVersion(applicationVersionFormat: ApplicationVersionFormat): ApplicationVersion =
     ApplicationVersion(applicationVersionFormat.getMajor, applicationVersionFormat.getMinor)
+
+  private def incompatibleApplicationVersionException(exceptionFormat: IncompatibleApplicationVersionExceptionFormat): IncompatibleApplicationVersionException =
+    IncompatibleApplicationVersionException(
+      exceptionFormat.getSourceEndpointId,
+      applicationVersion(exceptionFormat.getSourceApplicationVersion),
+      applicationVersion(exceptionFormat.getTargetApplicationVersion))
+
+  private def replicationReadSourceException(exceptionFormat: ReplicationReadSourceExceptionFormat): ReplicationReadSourceException =
+    ReplicationReadSourceException(exceptionFormat.getMessage)
 }
