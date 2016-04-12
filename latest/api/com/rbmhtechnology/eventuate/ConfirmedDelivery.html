@@ -51,16 +51,18 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Supports the reliable delivery of messages to destinations by enabling applications
-to redeliver messages until they are confirmed by their destinations. Both, message
-delivery and confirmation processing must be done within an <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>'s
-event handler. New messages are delivered by calling <code>deliver</code>. When the destination
-replies with a confirmation message, the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a> must generate an event
-for which the handler calls <code>confirm</code>. Until confirmation, delivered messages are
-tracked as <i>unconfirmed</i> messages. Unconfirmed messages can be redelivered by calling
-<code>redeliverUnconfirmed</code>. This is usually done within a command handler by processing
-scheduler messages. Redelivery occurs automatically when the <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>
-successfully recovered after initial start or a re-start.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Supports the reliable delivery of messages to destinations by enabling applications to
+redeliver messages until they are confirmed by their destinations. The correlation
+identifier between a reliable message and its confirmation message is an
+application-defined <code>deliveryId</code>. Reliable messages are delivered by calling <code>deliver</code> in
+an <a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>'s event handler. When the destination replies with a confirmation
+message, the event-sourced actor must persist an application-defined confirmation event
+together with the <code>deliveryId</code> using the <a href="#persistConfirmation[A](event:A,deliveryId:String,customDestinationAggregateIds:Set[String])(handler:ConfirmedDelivery.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery#persistConfirmation">persistConfirmation</a> method. Until successful
+persistence of the confirmation event, delivered messages are tracked as <i>unconfirmed</i>
+messages. Unconfirmed messages can be redelivered by calling <code>redeliverUnconfirmed</code>. This
+is usually done within a command handler by processing scheduler messages. Redelivery
+occurs automatically when the event-sourced actor successfully recovered after initial
+start or a re-start.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a>, <a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -437,23 +439,6 @@ is defined it will only receive events with a matching aggregate id in
     </span>
       <p class="shortcomment cmt">Returns the command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ConfirmedDelivery#confirm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="confirm(deliveryId:String):Unit"></a>
-      <a id="confirm(String):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">confirm</span><span class="params">(<span name="deliveryId">deliveryId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@confirm(deliveryId:String):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Confirms the message delivery identified by <code>deliveryId</code>.</p>
     </li><li name="akka.actor.Actor#context" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="context:akka.actor.ActorContext"></a>
       <a id="context:ActorContext"></a>
@@ -489,8 +474,8 @@ is defined it will only receive events with a matching aggregate id in
     </span>
       <p class="shortcomment cmt">Delivers the given <code>message</code> to a <code>destination</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Delivers the given <code>message</code> to a <code>destination</code>. The delivery of <code>message</code> is identified by
 the given <code>deliveryId</code> which must be unique in context of the sending actor. The message is
-tracked as unconfirmed message until delivery is confirmed with <code>confirm</code>, using the same
-<code>deliveryId</code>.
+tracked as unconfirmed message until delivery is confirmed by persisting a confirmation event
+with <code>persistConfirmation</code>, using the same <code>deliveryId</code>.
 </p></div></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
@@ -856,6 +841,24 @@ If this actor's <code>aggregateId</code> is defined it is additionally routed to
 <code>aggregateId</code>. Further routing destinations can be defined with the <code>customDestinationAggregateIds</code>
 parameter.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ConfirmedDelivery#persistConfirmation" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="persistConfirmation[A](event:A,deliveryId:String,customDestinationAggregateIds:Set[String])(handler:ConfirmedDelivery.this.Handler[A]):Unit"></a>
+      <a id="persistConfirmation[A](A,String,Set[String])(Handler[A]):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">persistConfirmation</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="event">event: <span class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery.persistConfirmation.A">A</span></span>, <span name="deliveryId">deliveryId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="customDestinationAggregateIds">customDestinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery.persistConfirmation.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery@persistConfirmation[A](event:A,deliveryId:String,customDestinationAggregateIds:Set[String])(handler:ConfirmedDelivery.this.Handler[A]):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Same semantics as <a href="EventsourcedActor.html#persist[A](event:A,customDestinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor#persist">EventsourcedActor.persist</a> plus additional storage of a <code>deliveryId</code>
+together with the persistent <code>event</code>.</p>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedActor#persistN" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="persistN[A](events:Seq[A],onLast:EventsourcedActor.this.Handler[A],customDestinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit"></a>
       <a id="persistN[A](Seq[A],Handler[A],Set[String])(Handler[A]):Unit"></a>

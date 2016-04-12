@@ -368,24 +368,6 @@ is defined it will only receive events with a matching aggregate id in
     </span>
       <p class="shortcomment cmt">Returns the command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ConfirmedDelivery#confirm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="confirm(deliveryId:String):Unit"></a>
-      <a id="confirm(String):Unit"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">confirm</span><span class="params">(<span name="deliveryId">deliveryId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@confirm(deliveryId:String):Unit" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Confirms the message delivery identified by <code>deliveryId</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Confirms the message delivery identified by <code>deliveryId</code>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a></dd></dl></div>
     </li><li name="akka.actor.Actor#context" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="context:akka.actor.ActorContext"></a>
       <a id="context:ActorContext"></a>
@@ -421,8 +403,8 @@ is defined it will only receive events with a matching aggregate id in
     </span>
       <p class="shortcomment cmt">Delivers the given <code>message</code> to a <code>destination</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Delivers the given <code>message</code> to a <code>destination</code>. The delivery of <code>message</code> is identified by
 the given <code>deliveryId</code> which must be unique in context of the sending actor. The message is
-tracked as unconfirmed message until delivery is confirmed with <code>confirm</code>, using the same
-<code>deliveryId</code>.
+tracked as unconfirmed message until delivery is confirmed by persisting a confirmation event
+with <code>persistConfirmation</code>, using the same <code>deliveryId</code>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
@@ -972,6 +954,62 @@ If this actor's <code>aggregateId</code> is defined it is additionally routed to
 <code>aggregateId</code>. Further routing destinations can be defined with the <code>customDestinationAggregateIds</code>
 parameter.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedActor">EventsourcedActor</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor#persistConfirmation" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="persistConfirmation[A](event:A,deliveryId:String,customDestinationAggregateIds:java.util.Set[String],handler:com.rbmhtechnology.eventuate.ResultHandler[A]):Unit"></a>
+      <a id="persistConfirmation[A](A,String,Set[String],ResultHandler[A]):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">persistConfirmation</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="event">event: <span class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor.persistConfirmation.A">A</span></span>, <span name="deliveryId">deliveryId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="customDestinationAggregateIds">customDestinationAggregateIds: <span class="extype" name="java.util.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="handler">handler: <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor.persistConfirmation.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@persistConfirmation[A](event:A,deliveryId:String,customDestinationAggregateIds:java.util.Set[String],handler:com.rbmhtechnology.eventuate.ResultHandler[A]):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API of <a href="ConfirmedDelivery.html#persistConfirmation[A](event:A,deliveryId:String,customDestinationAggregateIds:Set[String])(handler:ConfirmedDelivery.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery#persistConfirmation">persistConfirmation</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="ConfirmedDelivery.html#persistConfirmation[A](event:A,deliveryId:String,customDestinationAggregateIds:Set[String])(handler:ConfirmedDelivery.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery#persistConfirmation">persistConfirmation</a>.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a></p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor#persistConfirmation" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="persistConfirmation[A](event:A,deliveryId:String,handler:com.rbmhtechnology.eventuate.ResultHandler[A]):Unit"></a>
+      <a id="persistConfirmation[A](A,String,ResultHandler[A]):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">persistConfirmation</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="event">event: <span class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor.persistConfirmation.A">A</span></span>, <span name="deliveryId">deliveryId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="handler">handler: <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor.persistConfirmation.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@persistConfirmation[A](event:A,deliveryId:String,handler:com.rbmhtechnology.eventuate.ResultHandler[A]):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API of <a href="ConfirmedDelivery.html#persistConfirmation[A](event:A,deliveryId:String,customDestinationAggregateIds:Set[String])(handler:ConfirmedDelivery.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery#persistConfirmation">persistConfirmation</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="ConfirmedDelivery.html#persistConfirmation[A](event:A,deliveryId:String,customDestinationAggregateIds:Set[String])(handler:ConfirmedDelivery.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.ConfirmedDelivery#persistConfirmation">persistConfirmation</a>.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a></p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ConfirmedDelivery#persistConfirmation" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="persistConfirmation[A](event:A,deliveryId:String,customDestinationAggregateIds:Set[String])(handler:ConfirmedDelivery.this.Handler[A]):Unit"></a>
+      <a id="persistConfirmation[A](A,String,Set[String])(Handler[A]):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">persistConfirmation</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="event">event: <span class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery.persistConfirmation.A">A</span></span>, <span name="deliveryId">deliveryId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="customDestinationAggregateIds">customDestinationAggregateIds: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Set()</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor.Handler">Handler</a>[<span class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery.persistConfirmation.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedActor@persistConfirmation[A](event:A,deliveryId:String,customDestinationAggregateIds:Set[String])(handler:ConfirmedDelivery.this.Handler[A]):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Same semantics as <a href="EventsourcedActor.html#persist[A](event:A,customDestinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor#persist">EventsourcedActor.persist</a> plus additional storage of a <code>deliveryId</code>
+together with the persistent <code>event</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Same semantics as <a href="EventsourcedActor.html#persist[A](event:A,customDestinationAggregateIds:Set[String])(handler:EventsourcedActor.this.Handler[A]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedActor#persist">EventsourcedActor.persist</a> plus additional storage of a <code>deliveryId</code>
+together with the persistent <code>event</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor#persistN" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="persistN[A](events:Iterable[A],onLast:com.rbmhtechnology.eventuate.ResultHandler[A],customDestinationAggregateIds:java.util.Set[String],handler:com.rbmhtechnology.eventuate.ResultHandler[A]):Unit"></a>
       <a id="persistN[A](Iterable[A],ResultHandler[A],Set[String],ResultHandler[A]):Unit"></a>
