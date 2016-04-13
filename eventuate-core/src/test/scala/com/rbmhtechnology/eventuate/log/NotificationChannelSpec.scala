@@ -71,13 +71,13 @@ class NotificationChannelSpec extends TestKit(ActorSystem("test")) with WordSpec
     ReplicationRead(1L, 10, 100, filter, targetLogId, probe.ref, targetVersionVector)
 
   def sourceReadSuccessMessage(targetLogId: String): ReplicationReadSuccess =
-    ReplicationReadSuccess(Nil, 10L, targetLogId, VectorTime.Zero, hasMore = true)
+    ReplicationReadSuccess(Nil, 10L, 9L, targetLogId, VectorTime.Zero)
 
   def sourceUpdate(events: Seq[DurableEvent]): Unit =
     channel ! Updated(events)
 
   def replicaVersionUpdate(targetLogId: String, targetVersionVector: VectorTime): Unit =
-    channel ! ReplicationWrite(Nil, targetLogId, 10L, targetVersionVector, hasMore = true)
+    channel ! ReplicationWrite(Nil, 10L, targetLogId, targetVersionVector)
 
   "A notification channel" must {
     "send a notification if an update is not the causal past of the target" in {

@@ -132,9 +132,9 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
   }
 
   def processWrite(progress: Long, events: Seq[DurableEvent], success: Boolean = true): Unit = {
-    trgProbe.expectMsg(ReplicationWrite(events, emitterIdB, progress, VectorTime(), hasMore = false))
+    trgProbe.expectMsg(ReplicationWrite(events, progress, emitterIdB, VectorTime()))
     if (success) {
-      processResult(ReplicationWriteSuccess(events.size, emitterIdB, progress, VectorTime(), hasMore = false))
+      processResult(ReplicationWriteSuccess(events.size, progress, emitterIdB, VectorTime()))
       appProbe.expectMsg(progress)
     } else {
       processResult(ReplicationWriteFailure(TestException))

@@ -106,10 +106,10 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   private def replicationReadSuccessFormatBuilder(message: ReplicationReadSuccess): ReplicationReadSuccessFormat.Builder = {
     val builder = ReplicationReadSuccessFormat.newBuilder()
     message.events.foreach(event => builder.addEvents(eventSerializer.durableEventFormatBuilder(event)))
+    builder.setFromSequenceNr(message.fromSequenceNr)
     builder.setReplicationProgress(message.replicationProgress)
     builder.setTargetLogId(message.targetLogId)
     builder.setCurrentSourceVersionVector(commonSerializer.vectorTimeFormatBuilder(message.currentSourceVersionVector))
-    builder.setHasMore(message.hasMore)
     builder
   }
 
@@ -117,7 +117,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     val builder = ReplicationReadFormat.newBuilder()
     builder.setFromSequenceNr(message.fromSequenceNr)
     builder.setMax(message.max)
-    builder.setScanSize(message.scanSize)
+    builder.setScanLimit(message.scanLimit)
     builder.setFilter(filterSerializer.filterTreeFormatBuilder(message.filter))
     builder.setTargetLogId(message.targetLogId)
     builder.setReplicator(Serialization.serializedActorPath(message.replicator))
@@ -182,17 +182,17 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
 
     ReplicationReadSuccess(
       builder.result(),
+      messageFormat.getFromSequenceNr,
       messageFormat.getReplicationProgress,
       messageFormat.getTargetLogId,
-      commonSerializer.vectorTime(messageFormat.getCurrentSourceVersionVector),
-      messageFormat.getHasMore)
+      commonSerializer.vectorTime(messageFormat.getCurrentSourceVersionVector))
   }
 
   private def replicationRead(messageFormat: ReplicationReadFormat): ReplicationRead =
     ReplicationRead(
       messageFormat.getFromSequenceNr,
       messageFormat.getMax,
-      messageFormat.getScanSize,
+      messageFormat.getScanLimit,
       filterSerializer.filterTree(messageFormat.getFilter),
       messageFormat.getTargetLogId,
       system.provider.resolveActorRef(messageFormat.getReplicator),

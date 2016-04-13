@@ -136,14 +136,14 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with SingleLocation
   def writeReplicatedEvents(events: Seq[DurableEvent], replicationProgress: Long, remoteLogId: String = remoteLogId): Seq[DurableEvent] = {
     val offset = currentSequenceNr + 1L
     val expected = expectedReplicatedEvents(events, offset)
-    log.tell(ReplicationWrite(events, remoteLogId, replicationProgress, VectorTime(), hasMore = true), replicatorProbe.ref)
-    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(_, _, `replicationProgress`, _, true) => }
+    log.tell(ReplicationWrite(events, replicationProgress, remoteLogId, VectorTime()), replicatorProbe.ref)
+    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(_, `replicationProgress`, _, _, _) => }
     expected
   }
 
   def writeReplicationProgress(replicationProgress: Long, expectedStoredReplicationProgress: Long, remoteLogId: String = remoteLogId): Unit = {
-    log.tell(ReplicationWrite(Seq(), remoteLogId, replicationProgress, VectorTime(), hasMore = true), replicatorProbe.ref)
-    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(0, _, `expectedStoredReplicationProgress`, _, true) => }
+    log.tell(ReplicationWrite(Seq(), replicationProgress, remoteLogId, VectorTime()), replicatorProbe.ref)
+    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(0, `expectedStoredReplicationProgress`, _, _, _) => }
   }
 
   def registerCollaborator(aggregateId: Option[String] = None, collaborator: TestProbe = TestProbe()): TestProbe = {
@@ -353,7 +353,7 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
         DurableEvent("boom", emitterIdB, None, Set(), 0L, timestamp(0, 7), remoteLogId, remoteLogId, 7),
         DurableEvent("okay", emitterIdB, None, Set(), 0L, timestamp(0, 8), remoteLogId, remoteLogId, 8))
 
-      log.tell(ReplicationWrite(events, remoteLogId, 8, VectorTime(), hasMore = true), replicatorProbe.ref)
+      log.tell(ReplicationWrite(events, 8, remoteLogId, VectorTime()), replicatorProbe.ref)
       replicatorProbe.expectMsg(ReplicationWriteFailure(IntegrationTestException))
     }
     "reply with a failure message if replication fails and not update the replication progress map" in {
@@ -363,7 +363,7 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
         DurableEvent("boom", emitterIdB, None, Set(), 0L, timestamp(0, 7), remoteLogId, remoteLogId, 7),
         DurableEvent("okay", emitterIdB, None, Set(), 0L, timestamp(0, 8), remoteLogId, remoteLogId, 8))
 
-      log.tell(ReplicationWrite(events, remoteLogId, 8, VectorTime(), hasMore = true), replicatorProbe.ref)
+      log.tell(ReplicationWrite(events, 8, remoteLogId, VectorTime()), replicatorProbe.ref)
       replicatorProbe.expectMsg(ReplicationWriteFailure(IntegrationTestException))
       log.tell(GetReplicationProgresses, replyToProbe.ref)
       replyToProbe.expectMsg(GetReplicationProgressesSuccess(Map()))
@@ -431,61 +431,61 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
     "replication-read local events" in {
       generateEmittedEvents()
       log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents, 3, UndefinedLogId, VectorTime(logId -> 3L), hasMore = false))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents, 1, 3, UndefinedLogId, VectorTime(logId -> 3L)))
     }
     "replication-read local and replicated events" in {
       generateEmittedEvents()
       generateReplicatedEvents()
       log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents ++ generatedReplicatedEvents, 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L), hasMore = false))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents ++ generatedReplicatedEvents, 1, 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L)))
     }
     "replication-read events with a batch size limit" in {
       generateEmittedEvents()
       log.tell(ReplicationRead(1, 2, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents.take(2), 2, UndefinedLogId, VectorTime(logId -> 3L), hasMore = true))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents.take(2), 1, 2, UndefinedLogId, VectorTime(logId -> 3L)))
       log.tell(ReplicationRead(1, 0, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(Nil, 0, UndefinedLogId, VectorTime(logId -> 3L), hasMore = true))
+      replyToProbe.expectMsg(ReplicationReadSuccess(Nil, 1, 0, UndefinedLogId, VectorTime(logId -> 3L)))
     }
-    "replication-read events with a scan size limit" in {
+    "replication-read events with a scan limit" in {
       generateEmittedEvents()
       log.tell(ReplicationRead(1, Int.MaxValue, 2, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents.take(2), 2, UndefinedLogId, VectorTime(logId -> 3L), hasMore = true))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents.take(2), 1, 2, UndefinedLogId, VectorTime(logId -> 3L)))
       log.tell(ReplicationRead(1, Int.MaxValue, 0, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(Nil, 0, UndefinedLogId, VectorTime(logId -> 3L), hasMore = true))
+      replyToProbe.expectMsg(ReplicationReadSuccess(Nil, 1, 0, UndefinedLogId, VectorTime(logId -> 3L)))
     }
     "replication-read events from a custom position" in {
       generateEmittedEvents()
       log.tell(ReplicationRead(2, Int.MaxValue, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents.drop(1), 3, UndefinedLogId, VectorTime(logId -> 3L), hasMore = false))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents.drop(1), 2, 3, UndefinedLogId, VectorTime(logId -> 3L)))
     }
     "replication-read events from a custom position with a batch size limit" in {
       generateEmittedEvents()
       log.tell(ReplicationRead(2, 1, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents.slice(1, 2), 2, UndefinedLogId, VectorTime(logId -> 3L), hasMore = true))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents.slice(1, 2), 2, 2, UndefinedLogId, VectorTime(logId -> 3L)))
     }
-    "replication-read events from a custom position with a scan size limit" in {
+    "replication-read events from a custom position with a scan limit" in {
       generateEmittedEvents()
       log.tell(ReplicationRead(2, Int.MaxValue, 1, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents.slice(1, 2), 2, UndefinedLogId, VectorTime(logId -> 3L), hasMore = true))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents.slice(1, 2), 2, 2, UndefinedLogId, VectorTime(logId -> 3L)))
     }
     "replication-read events with with a custom filter" in {
       generateEmittedEvents()
       generateReplicatedEvents()
       log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, new ProcessIdFilter(remoteLogId), UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedReplicatedEvents, 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L), hasMore = false))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedReplicatedEvents, 1, 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L)))
       log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, new ProcessIdFilter(logId), UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents, 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L), hasMore = false))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents, 1, 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L)))
     }
-    "limit replication read progress to given scan size" in {
+    "limit replication read progress to given scan limit" in {
       generateEmittedEvents()
       log.tell(ReplicationRead(1, Int.MaxValue, 1, new ProcessIdFilter(remoteLogId), UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedReplicatedEvents, 1, UndefinedLogId, VectorTime(logId -> 3L), hasMore = true))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedReplicatedEvents, 1, 1, UndefinedLogId, VectorTime(logId -> 3L)))
     }
     "not replication-read events from index" in {
       generateEmittedEvents(customDestinationAggregateIds = Set("a1"))
       generateEmittedEvents(customDestinationAggregateIds = Set())
       log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents, 6, UndefinedLogId, VectorTime(logId -> 6L), hasMore = false))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents, 1, 6, UndefinedLogId, VectorTime(logId -> 6L)))
     }
     "reply with a failure message if replication-read fails" in {
       log.tell(ReplicationRead(ErrorSequenceNr, Int.MaxValue, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
@@ -537,14 +537,14 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
       val evt = DurableEvent("a", emitterIdA, processId = UndefinedLogId, vectorTimestamp = VectorTime(remoteLogId -> 1L))
       val exp = DurableEvent("a", emitterIdA, processId = logId, vectorTimestamp = VectorTime(remoteLogId -> 1L, logId -> 1L), localLogId = logId, localSequenceNr = 1)
       registerCollaborator(aggregateId = None, collaborator = replyToProbe)
-      log ! ReplicationWrite(List(evt), remoteLogId, 5, VectorTime(), hasMore = true)
+      log ! ReplicationWrite(List(evt), 5, remoteLogId, VectorTime())
       replyToProbe.expectMsgType[Written].event should be(exp)
     }
     "not update a replicated event's process id and vector timestamp during if the process id is defined" in {
       val evt = DurableEvent("a", emitterIdA, processId = emitterIdA, vectorTimestamp = VectorTime(emitterIdA -> 1L))
       val exp = DurableEvent("a", emitterIdA, processId = emitterIdA, vectorTimestamp = VectorTime(emitterIdA -> 1L), localLogId = logId, localSequenceNr = 1)
       registerCollaborator(aggregateId = None, collaborator = replyToProbe)
-      log ! ReplicationWrite(List(evt), remoteLogId, 5, VectorTime(), hasMore = true)
+      log ! ReplicationWrite(List(evt), 5, remoteLogId, VectorTime())
       replyToProbe.expectMsgType[Written].event should be(exp)
     }
     "not write events to the target log that are in causal past of the target log" in {
@@ -552,8 +552,8 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
       val evt2 = DurableEvent("j", emitterIdB, vectorTimestamp = timestamp(0, 8), processId = remoteLogId)
       val evt3 = DurableEvent("k", emitterIdB, vectorTimestamp = timestamp(0, 9), processId = remoteLogId)
       registerCollaborator(aggregateId = None, collaborator = replyToProbe)
-      log ! ReplicationWrite(List(evt1, evt2), remoteLogId, 5, VectorTime(), hasMore = true)
-      log ! ReplicationWrite(List(evt2, evt3), remoteLogId, 6, VectorTime(), hasMore = true)
+      log ! ReplicationWrite(List(evt1, evt2), 5, remoteLogId, VectorTime())
+      log ! ReplicationWrite(List(evt2, evt3), 6, remoteLogId, VectorTime())
       replyToProbe.expectMsgType[Written].event.payload should be("i")
       replyToProbe.expectMsgType[Written].event.payload should be("j")
       replyToProbe.expectMsgType[Written].event.payload should be("k")
@@ -565,7 +565,7 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
     }
     "not read events from the source log that are in causal past of the target log (using the target time from the cache)" in {
       generateEmittedEvents()
-      log ! ReplicationWrite(Nil, remoteLogId, 5, timestamp(2), hasMore = true) // update time cache
+      log ! ReplicationWrite(Nil, 5, remoteLogId, timestamp(2)) // update time cache
       log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, remoteLogId, dl, timestamp(1)), replyToProbe.ref)
       replyToProbe.expectMsgType[ReplicationReadSuccess].events.map(_.payload) should be(Seq("a-3"))
     }

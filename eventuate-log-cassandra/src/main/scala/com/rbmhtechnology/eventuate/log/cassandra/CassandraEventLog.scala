@@ -116,8 +116,8 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
   override def writeReplicationProgress(logId: String, progress: Long): Future[Unit] =
     progressStore.writeReplicationProgressAsync(logId, progress)(context.system.dispatchers.defaultGlobalDispatcher)
 
-  override def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, scanSize: Int, filter: DurableEvent => Boolean): Future[BatchReadResult] =
-    eventLogStore.readAsync(fromSequenceNr, toSequenceNr, max, scanSize, QueryOptions.DEFAULT_FETCH_SIZE, filter)(services.readDispatcher)
+  override def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, scanLimit: Int, filter: DurableEvent => Boolean): Future[BatchReadResult] =
+    eventLogStore.readAsync(fromSequenceNr, toSequenceNr, max, scanLimit, QueryOptions.DEFAULT_FETCH_SIZE, filter)(services.readDispatcher)
 
   override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int): Future[BatchReadResult] =
     eventLogStore.readAsync(fromSequenceNr, toSequenceNr, max, Int.MaxValue, max + 1, _ => true)(services.readDispatcher)
@@ -221,7 +221,7 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
       scanned += 1
       lastSequenceNr = event.localSequenceNr
     }
-    BatchReadResult(builder.result(), lastSequenceNr, iter.hasNext)
+    BatchReadResult(builder.result(), lastSequenceNr)
   }
 
   private def compositeEventIterator(aggregateId: String, fromSequenceNr: Long, indexSequenceNr: Long, toSequenceNr: Long, fetchSize: Int): Iterator[DurableEvent] with Closeable =

@@ -44,10 +44,10 @@ private[eventuate] class CassandraEventLogStore(cassandra: Cassandra, logId: Str
   def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int, fetchSize: Int)(implicit executor: ExecutionContext): Future[BatchReadResult] =
     readAsync(fromSequenceNr, toSequenceNr, max, fetchSize, Int.MaxValue, _ => true)
 
-  def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int, scanSize: Int, fetchSize: Int, filter: DurableEvent => Boolean)(implicit executor: ExecutionContext): Future[BatchReadResult] =
-    Future(read(fromSequenceNr, toSequenceNr, max, scanSize, fetchSize, filter))
+  def readAsync(fromSequenceNr: Long, toSequenceNr: Long, max: Int, scanLimit: Int, fetchSize: Int, filter: DurableEvent => Boolean)(implicit executor: ExecutionContext): Future[BatchReadResult] =
+    Future(read(fromSequenceNr, toSequenceNr, max, scanLimit, fetchSize, filter))
 
-  def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, scanSize: Int, fetchSize: Int, filter: DurableEvent => Boolean): BatchReadResult = {
+  def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int, scanLimit: Int, fetchSize: Int, filter: DurableEvent => Boolean): BatchReadResult = {
     val iter = eventIterator(fromSequenceNr, toSequenceNr, fetchSize)
     val builder = new VectorBuilder[DurableEvent]
 
@@ -55,7 +55,7 @@ private[eventuate] class CassandraEventLogStore(cassandra: Cassandra, logId: Str
     var scanned = 0
     var filtered = 0
 
-    while (iter.hasNext && filtered < max && scanned < scanSize) {
+    while (iter.hasNext && filtered < max && scanned < scanLimit) {
       val event = iter.next()
       if (filter(event)) {
         builder += event
@@ -64,7 +64,7 @@ private[eventuate] class CassandraEventLogStore(cassandra: Cassandra, logId: Str
       scanned += 1
       lastSequenceNr = event.localSequenceNr
     }
-    BatchReadResult(builder.result(), lastSequenceNr, iter.hasNext)
+    BatchReadResult(builder.result(), lastSequenceNr)
   }
 
   def eventIterator(fromSequenceNr: Long, toSequenceNr: Long, fetchSize: Int): Iterator[DurableEvent] with Closeable =

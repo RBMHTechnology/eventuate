@@ -58,7 +58,7 @@ message ReplicationReadEnvelopeIncompatibleFormat {
 message ReplicationReadFormat {
   optional int64 fromSequenceNr = 1;
   optional int32 max = 2;
-  optional int32 scanSize = 3;
+  optional int32 scanLimit = 3;
   optional ReplicationFilterTreeFormat filter = 4;
   optional string targetLogId = 5;
   optional string replicator = 6;
@@ -67,10 +67,10 @@ message ReplicationReadFormat {
 
 message ReplicationReadSuccessFormat {
   repeated DurableEventFormat events = 1;
-  optional int64 replicationProgress = 2;
-  optional string targetLogId = 3;
-  optional VectorTimeFormat currentSourceVersionVector = 4;
-  optional bool hasMore = 5;
+  optional int64 fromSequenceNr = 2;
+  optional int64 replicationProgress = 3;
+  optional string targetLogId = 4;
+  optional VectorTimeFormat currentSourceVersionVector = 5;
 }
 
 message ReplicationReadFailureFormat {

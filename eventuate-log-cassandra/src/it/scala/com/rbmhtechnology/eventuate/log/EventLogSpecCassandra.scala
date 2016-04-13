@@ -206,7 +206,7 @@ class EventLogSpecCassandra extends TestKit(ActorSystem("test", EventLogSpecCass
       generateReplicatedEvents()
       (log ? Delete(generatedReplicatedEvents(1).localSequenceNr)).await
       log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents ++ generatedReplicatedEvents, 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L), hasMore = false))
+      replyToProbe.expectMsg(ReplicationReadSuccess(generatedEmittedEvents ++ generatedReplicatedEvents, 1, 6, UndefinedLogId, VectorTime(logId -> 3L, remoteLogId -> 9L)))
     }
   }
 }

@@ -280,9 +280,9 @@ private class RecoveryActor(endpointId: String, link: RecoveryLink) extends Acto
   def recoveringMetadata: Receive = {
     case r: ReplicationRead if r.fromSequenceNr > link.localClock.sequenceNr + 1L =>
       println(s"[recovery of ${endpointId}] Trigger update of inconsistent replication progress at ${link.remoteLogId} ...")
-      sender() ! ReplicationReadSuccess(Seq(), link.localClock.sequenceNr, link.remoteLogId, link.localClock.versionVector, hasMore = true)
+      sender() ! ReplicationReadSuccess(Seq(), r.fromSequenceNr, link.localClock.sequenceNr, link.remoteLogId, link.localClock.versionVector)
     case r: ReplicationRead =>
-      sender() ! ReplicationReadSuccess(Seq(), r.fromSequenceNr - 1L, link.remoteLogId, link.localClock.versionVector, hasMore = false)
+      sender() ! ReplicationReadSuccess(Seq(), r.fromSequenceNr, r.fromSequenceNr - 1L, link.remoteLogId, link.localClock.versionVector)
       context.parent ! RecoveryStepCompleted(link)
       context.become(recoveringEvents)
   }

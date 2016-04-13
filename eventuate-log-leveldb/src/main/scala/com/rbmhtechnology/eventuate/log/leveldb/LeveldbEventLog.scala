@@ -124,8 +124,8 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventL
   override def readReplicationProgress(logId: String): Future[Long] =
     completed(withIterator(iter => replicationProgressMap.readReplicationProgress(logId)))
 
-  override def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, scanSize: Int, filter: DurableEvent => Boolean): Future[BatchReadResult] =
-    eventReader().ask(EventReader.ReadSync(fromSequenceNr, toSequenceNr, EventKey.DefaultClassifier, max, scanSize, filter))(settings.readTimeout, self).mapTo[BatchReadResult]
+  override def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, scanLimit: Int, filter: DurableEvent => Boolean): Future[BatchReadResult] =
+    eventReader().ask(EventReader.ReadSync(fromSequenceNr, toSequenceNr, EventKey.DefaultClassifier, max, scanLimit, filter))(settings.readTimeout, self).mapTo[BatchReadResult]
 
   override def read(fromSequenceNr: Long, toSequenceNr: Long, max: Int): Future[BatchReadResult] =
     eventReader().ask(EventReader.ReadSync(fromSequenceNr, toSequenceNr, EventKey.DefaultClassifier, max, Int.MaxValue, _ => true))(settings.readTimeout, self).mapTo[BatchReadResult]
@@ -163,7 +163,7 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventL
     }
   }
 
-  private def readSync(fromSequenceNr: Long, toSequenceNr: Long, classifier: Int, max: Int, scanSize: Int, filter: DurableEvent => Boolean): BatchReadResult = {
+  private def readSync(fromSequenceNr: Long, toSequenceNr: Long, classifier: Int, max: Int, scanLimit: Int, filter: DurableEvent => Boolean): BatchReadResult = {
     val builder = new VectorBuilder[DurableEvent]
 
     val first = 1L max fromSequenceNr
@@ -173,7 +173,7 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventL
     var filtered = 0
 
     withEventIterator(first, classifier) { iter =>
-      while (iter.hasNext && filtered < max && scanned < scanSize) {
+      while (iter.hasNext && filtered < max && scanned < scanLimit) {
         val event = iter.next()
         if (filter(event)) {
           builder += event
@@ -182,7 +182,7 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventL
         scanned += 1
         last = event.localSequenceNr
       }
-      BatchReadResult(builder.result(), last, iter.hasNext)
+      BatchReadResult(builder.result(), last)
     }
   }
 
@@ -278,8 +278,8 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventL
     import EventReader._
 
     def receive = {
-      case ReadSync(from, to, classifier, max, scanSize, filter) =>
-        Try(readSync(from, to, classifier, max, scanSize, filter)) match {
+      case ReadSync(from, to, classifier, max, scanLimit, filter) =>
+        Try(readSync(from, to, classifier, max, scanLimit, filter)) match {
           case Success(r) => sender() ! r
           case Failure(e) => sender() ! Status.Failure(e)
         }
@@ -288,7 +288,7 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventL
   }
 
   private object EventReader {
-    case class ReadSync(fromSequenceNr: Long, toSequenceNr: Long, classifier: Int, max: Int, scanSize: Int, filter: DurableEvent => Boolean)
+    case class ReadSync(fromSequenceNr: Long, toSequenceNr: Long, classifier: Int, max: Int, scanLimit: Int, filter: DurableEvent => Boolean)
   }
 }
 
