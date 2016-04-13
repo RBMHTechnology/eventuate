@@ -45,12 +45,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">BatchReadResult</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="to">to: <span class="extype" name="scala.Long">Long</span></span>, <span name="hasMore">hasMore: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result"> extends <a href="../DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">BatchReadResult</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="to">to: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <a href="../DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Result of an event batch-read operation.
-</p></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>Read event batch.</p></dd><dt class="param">to</dt><dd class="cmt"><p>Last read position in the event log.</p></dd><dt class="param">hasMore</dt><dd class="cmt"><p><code>true</code> if further events can be read from the event log.</p></dd></dl><div class="toggleContainer block">
+</p></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>Read event batch.</p></dd><dt class="param">to</dt><dd class="cmt"><p>Last read position in the event log.</p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="../DurableEventBatch.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEventBatch">DurableEventBatch</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -90,7 +90,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.log.BatchReadResult#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],to:Long,hasMore:Boolean):com.rbmhtechnology.eventuate.log.BatchReadResult"></a>
+      <a id="&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],to:Long):com.rbmhtechnology.eventuate.log.BatchReadResult"></a>
       <a id="&lt;init&gt;:BatchReadResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -98,14 +98,14 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">BatchReadResult</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="to">to: <span class="extype" name="scala.Long">Long</span></span>, <span name="hasMore">hasMore: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span>
+        <span class="name">BatchReadResult</span><span class="params">(<span name="events">events: <span class="extype" name="scala.collection.immutable.Seq">Seq</span>[<a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>, <span name="to">to: <span class="extype" name="scala.Long">Long</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchReadResult@&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],to:Long,hasMore:Boolean):com.rbmhtechnology.eventuate.log.BatchReadResult" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchReadResult@&lt;init&gt;(events:scala.collection.immutable.Seq[com.rbmhtechnology.eventuate.DurableEvent],to:Long):com.rbmhtechnology.eventuate.log.BatchReadResult" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>Read event batch.</p></dd><dt class="param">to</dt><dd class="cmt"><p>Last read position in the event log.</p></dd><dt class="param">hasMore</dt><dd class="cmt"><p><code>true</code> if further events can be read from the event log.</p></dd></dl></div>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">events</dt><dd class="cmt"><p>Read event batch.</p></dd><dt class="param">to</dt><dd class="cmt"><p>Last read position in the event log.</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -280,23 +280,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.log.BatchReadResult#hasMore" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="hasMore:Boolean"></a>
-      <a id="hasMore:Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">hasMore</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.BatchReadResult@hasMore:Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt"><code>true</code> if further events can be read from the event log.</p>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>

@@ -758,7 +758,7 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
       <p class="shortcomment cmt">Called after successful event log state recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Called after successful event log state recovery.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#replicationRead" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="replicationRead(fromSequenceNr:Long,toSequenceNr:Long,max:Int,scanSize:Int,filter:com.rbmhtechnology.eventuate.DurableEvent=&gt;Boolean):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]"></a>
+      <a id="replicationRead(fromSequenceNr:Long,toSequenceNr:Long,max:Int,scanLimit:Int,filter:com.rbmhtechnology.eventuate.DurableEvent=&gt;Boolean):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]"></a>
       <a id="replicationRead(Long,Long,Int,Int,(DurableEvent)⇒Boolean):Future[BatchReadResult]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -766,10 +766,10 @@ within the sequence number bounds <code>fromSequenceNr</code> and <code>toSequen
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">replicationRead</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="scanSize">scanSize: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: (<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../BatchReadResult.html" class="extype" name="com.rbmhtechnology.eventuate.log.BatchReadResult">BatchReadResult</a>]</span>
+        <span class="name">replicationRead</span><span class="params">(<span name="fromSequenceNr">fromSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="toSequenceNr">toSequenceNr: <span class="extype" name="scala.Long">Long</span></span>, <span name="max">max: <span class="extype" name="scala.Int">Int</span></span>, <span name="scanLimit">scanLimit: <span class="extype" name="scala.Int">Int</span></span>, <span name="filter">filter: (<a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../BatchReadResult.html" class="extype" name="com.rbmhtechnology.eventuate.log.BatchReadResult">BatchReadResult</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@replicationRead(fromSequenceNr:Long,toSequenceNr:Long,max:Int,scanSize:Int,filter:com.rbmhtechnology.eventuate.DurableEvent=&gt;Boolean):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@replicationRead(fromSequenceNr:Long,toSequenceNr:Long,max:Int,scanLimit:Int,filter:com.rbmhtechnology.eventuate.DurableEvent=&gt;Boolean):scala.concurrent.Future[com.rbmhtechnology.eventuate.log.BatchReadResult]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>

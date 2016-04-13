@@ -45,12 +45,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationWriteSuccess</span><span class="params">(<span name="num">num: <span class="extype" name="scala.Int">Int</span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storedReplicationProgress">storedReplicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentTargetVersionVector">currentTargetVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="hasMore">hasMore: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">ReplicationWriteSuccess</span><span class="params">(<span name="num">num: <span class="extype" name="scala.Int">Int</span></span>, <span name="storedReplicationProgress">storedReplicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="currentTargetVersionVector">currentTargetVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="continueReplication">continueReplication: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Success reply after a <a href="ReplicationProtocol$$ReplicationWrite.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite">ReplicationWrite</a>.
-</p></div><dl class="paramcmts block"><dt class="param">num</dt><dd class="cmt"><p>Number of events actually replicated.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Id of the log the written events were replicated from.</p></dd><dt class="param">storedReplicationProgress</dt><dd class="cmt"><p>Last source log read position stored in the target log.</p></dd><dt class="param">currentTargetVersionVector</dt><dd class="cmt"><p><a href="log/EventLogClock.html#versionVector:com.rbmhtechnology.eventuate.VectorTime" class="extmbr" name="com.rbmhtechnology.eventuate.log.EventLogClock#versionVector">Version vector</a> of the target log after the events were written</p></dd></dl><div class="toggleContainer block">
+</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -89,8 +89,8 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteSuccess#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(num:Int,sourceLogId:String,storedReplicationProgress:Long,currentTargetVersionVector:com.rbmhtechnology.eventuate.VectorTime,hasMore:Boolean):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteSuccess"></a>
+              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteSuccess#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(num:Int,storedReplicationProgress:Long,sourceLogId:String,currentTargetVersionVector:com.rbmhtechnology.eventuate.VectorTime,continueReplication:Boolean):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteSuccess"></a>
       <a id="&lt;init&gt;:ReplicationWriteSuccess"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -98,14 +98,14 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationWriteSuccess</span><span class="params">(<span name="num">num: <span class="extype" name="scala.Int">Int</span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="storedReplicationProgress">storedReplicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="currentTargetVersionVector">currentTargetVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="hasMore">hasMore: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span>
+        <span class="name">ReplicationWriteSuccess</span><span class="params">(<span name="num">num: <span class="extype" name="scala.Int">Int</span></span>, <span name="storedReplicationProgress">storedReplicationProgress: <span class="extype" name="scala.Long">Long</span></span>, <span name="sourceLogId">sourceLogId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="currentTargetVersionVector">currentTargetVersionVector: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="continueReplication">continueReplication: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteSuccess@&lt;init&gt;(num:Int,sourceLogId:String,storedReplicationProgress:Long,currentTargetVersionVector:com.rbmhtechnology.eventuate.VectorTime,hasMore:Boolean):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteSuccess" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteSuccess@&lt;init&gt;(num:Int,storedReplicationProgress:Long,sourceLogId:String,currentTargetVersionVector:com.rbmhtechnology.eventuate.VectorTime,continueReplication:Boolean):com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteSuccess" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">num</dt><dd class="cmt"><p>Number of events actually replicated.</p></dd><dt class="param">sourceLogId</dt><dd class="cmt"><p>Id of the log the written events were replicated from.</p></dd><dt class="param">storedReplicationProgress</dt><dd class="cmt"><p>Last source log read position stored in the target log.</p></dd><dt class="param">currentTargetVersionVector</dt><dd class="cmt"><p><a href="log/EventLogClock.html#versionVector:com.rbmhtechnology.eventuate.VectorTime" class="extmbr" name="com.rbmhtechnology.eventuate.log.EventLogClock#versionVector">Version vector</a> of the target log after the events were written</p></dd></dl></div>
+      
     </li></ol>
             </div>
 
@@ -206,6 +206,23 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteSuccess#continueReplication" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="continueReplication:Boolean"></a>
+      <a id="continueReplication:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">continueReplication</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteSuccess@continueReplication:Boolean" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteSuccess#currentTargetVersionVector" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="currentTargetVersionVector:com.rbmhtechnology.eventuate.VectorTime"></a>
       <a id="currentTargetVersionVector:VectorTime"></a>
@@ -222,7 +239,7 @@
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt"><a href="log/EventLogClock.html#versionVector:com.rbmhtechnology.eventuate.VectorTime" class="extmbr" name="com.rbmhtechnology.eventuate.log.EventLogClock#versionVector">Version vector</a> of the target log after the events were written</p>
+      
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -280,23 +297,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteSuccess#hasMore" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="hasMore:Boolean"></a>
-      <a id="hasMore:Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">hasMore</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationWriteSuccess@hasMore:Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -381,7 +381,7 @@
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Number of events actually replicated.</p>
+      
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteSuccess#sourceLogId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="sourceLogId:String"></a>
       <a id="sourceLogId:String"></a>
@@ -398,7 +398,7 @@
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Id of the log the written events were replicated from.</p>
+      
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWriteSuccess#storedReplicationProgress" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="storedReplicationProgress:Long"></a>
       <a id="storedReplicationProgress:Long"></a>
@@ -415,7 +415,7 @@
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Last source log read position stored in the target log.</p>
+      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
