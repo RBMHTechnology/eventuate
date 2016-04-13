@@ -163,19 +163,17 @@ Resolving conflicting versions
 Automated conflict resolution
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The following is a very simple example of automated conflict resolution: if a conflict has been detected, the version with the lower emitter id is selected to be the winner. The emitter id of an event can be obtained with ``lastEmitterId`` during event handling. It is the ``id`` of the ``EventsourcedActor`` that emitted the event.
+The following is a simple example of automated conflict resolution: if a conflict has been detected, the version with the higher wall clock timestamp is selected to be the winner. In case of equal wall clock timestamps, the version with the lower emitter id is selected. The wall clock timestamp can be obtained with ``lastSystemTimestamp`` during event handling, the emitter id with ``lastEmitterId``. The emitter id is the ``id`` of the ``EventsourcedActor`` that emitted the event.
 
 .. includecode:: code/UserGuideDoc.scala
    :snippet: automated-conflict-resolution
 
-Here, conflicting versions are sorted by ascending emitter id (tracked internally as ``creator`` of the version) and the first version is selected as the winner. Its update timestamp is passed as argument to ``resolve`` which selects this version and discards all other versions.
-
-Alternatively, we could also have used POSIX timestamps (obtained with ``lastSystemTimestamp`` and tracked internally as ``systemTimestamp`` of the version) to let the *last* writer win. In case of equal timestamps, we could use the emitter id to break the tie. 
+Here, conflicting versions are sorted by descending wall clock timestamp and ascending emitter id where the latter is tracked as ``creator`` of the version. The first version is selected to be the winner. Its vector timestamp is passed as argument to ``resolve`` which selects this version and discards all other versions.
 
 More advanced conflict resolution could select a winner depending on the actual value of concurrent versions. After selection, an application could even update the winner with the *merged* value of all conflicting versions\ [#]_.
 
 .. note::
-   For replicas to converge, it is important that winner selection does not depend on the order of conflicting events. In our example, this is the case because emitter id comparison is transitive.
+   For replicas to converge, it is important that winner selection does not depend on the order of conflicting events. In our example, this is the case because wall clock timestamp and emitter id comparison is transitive.
 
 Interactive conflict resolution
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

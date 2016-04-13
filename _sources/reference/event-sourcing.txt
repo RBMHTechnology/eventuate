@@ -385,7 +385,10 @@ The corresponding entry in the Cassandra system log is::
 
     ERROR <timestamp> Batch of prepared statements for [eventuate.log_<id>] is of size 103800, exceeding specified threshold of 51200 by 52600. (see batch_size_fail_threshold_in_kb)
 
-In this case, applications should reduce
+.. note::
+   If Eventuate is the only writer to the Cassandra cluster then it is safe to increase these thresholds to higher values as Eventuate only makes single-partition batch writes (see also `CASSANDRA-8825`_). 
+
+If other applications additionally make multi-partition batch writes to the same Cassandra cluster then is recommended to reduce
 
 .. includecode:: ../conf/common.conf
    :snippet: write-batch-size
@@ -396,9 +399,6 @@ and
    :snippet: index-update-limit
 
 to a smaller value like ``32``, for example, or even smaller. Failed replication writes or index writes are re-tried automatically by Eventuate. Failed ``persist`` operations must be re-tried by the application. 
-  
-.. note::
-   Batch sizes in Eventuate are currently defined in units of events whereas those in Cassandra are defined in kB. This mismatch will be removed in a later release (see also `ticket 166`_).
 
 Batch replication failure handling
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -489,6 +489,7 @@ When eventuate serializes application-defined events, :ref:`replication-filters`
 .. _Cassandra: http://cassandra.apache.org/
 .. _circuit breaker: http://martinfowler.com/bliki/CircuitBreaker.html
 .. _ticket 166: https://github.com/RBMHTechnology/eventuate/issues/166
+.. _CASSANDRA-8825: https://issues.apache.org/jira/browse/CASSANDRA-8825
 
 .. _ConfirmedDelivery: ../latest/api/index.html#com.rbmhtechnology.eventuate.ConfirmedDelivery
 .. _DurableEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent
