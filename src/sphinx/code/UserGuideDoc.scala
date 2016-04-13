@@ -222,7 +222,10 @@ object EventsourcedActorsUpdated {
           versionedState = versionedState
             .update(entry, lastVectorTimestamp, lastSystemTimestamp, lastEmitterId)
           if (versionedState.conflict) {
-            val conflictingVersions = versionedState.all.sortBy(_.creator)
+            val conflictingVersions = versionedState.all.sortWith { (v1, v2) =>
+              if (v1.systemTimestamp == v2.systemTimestamp) v1.creator < v2.creator
+              else v1.systemTimestamp > v2.systemTimestamp
+            }
             val winnerTimestamp: VectorTime = conflictingVersions.head.vectorTimestamp
             versionedState = versionedState.resolve(winnerTimestamp)
           }
