@@ -167,6 +167,9 @@ If the ``applicationName``\ s of two replication endpoints are not equal, events
 .. hint::
    Further ``ReplicationEndpoint`` creation options are described in the API documentation of the ReplicationEndpoint_ and ReplicationConnection_ companion objects. A complete reference of configuration options is given in section :ref:`configuration`.
 
+.. note::
+   :ref:`failure-detection` reports endpoints with incompatible application versions as unavailable.
+
 .. _replication-filters:
 
 Replication filters
@@ -209,20 +212,30 @@ Consequently, event replication latency has an upper bound that is determined by
 
 The impact of sending update notifications on average event replication latency, however, decreases with increasing event write load. Applications under high event write load may even experience increased event replication throughput if update notifications are turned ``off``.
 
+.. _failure-detection:
+
 Failure detection
 ^^^^^^^^^^^^^^^^^
 
-Replication endpoints can notify applications about availability and un-availability of remote event logs. They can become unavailable during a network partition or during a downtime of their hosting application, for example. A local replication endpoint publishes
+Replication endpoints can notify applications about availability and unavailability of remote event logs. They can become unavailable during a network partition, during a downtime of their hosting application or because of incompatible ``applicationVersion``\ s of their replication endpoints, for example. A local replication endpoint publishes
 
 - ``Available(endpointId: String, logName: String)`` messages to the local ``ActorSystem``\ s `event stream`_ if the remote replication endpoint is available, and
-- ``Unavailable(endpointId: String, logName: String)`` messages to the local ``ActorSystem``\ s `event stream`_ if the remote replication endpoint is unavailable
+- ``Unavailable(endpointId: String, logName: String, causes: Seq[Throwable])`` messages to the local ``ActorSystem``\ s `event stream`_ if the remote replication endpoint is unavailable
 
-Both messages are defined in ReplicationEndpoint_. Their ``endpointId`` parameter is the id of the remote replication endpoint, the ``logName`` parameter is the name of an event log that is managed by the remote endpoint. The failure detection limit can be configured with:
+Both messages are defined in ReplicationEndpoint_. Their ``endpointId`` parameter is the id of the remote replication endpoint, the ``logName`` parameter is the name of an event log that is managed by the remote endpoint. 
+
+``Unavailable`` messages also contain all ``causes`` of an unavailability. Only those causes that occurred since last publication of a previous ``Available`` or ``Unavailable`` message with the same ``endpointId`` and ``logName`` are included. Causes are one or more instances of:
+
+- ReplicationReadSourceException_ if reading from the storage backend of a remote endpoint failed,
+- ReplicationReadTimeoutException_ if a remote endpoint doesn’t respond or
+- IncompatibleApplicationVersionException_ if the application version of a remote endpoint is not compatible with that of a local endpoint (see :ref:`replication-endpoints`).
+
+A failure detection limit can be configured with:
 
 .. includecode:: ../conf/common.conf
    :snippet: failure-detection-limit
 
-It instructs the failure detector to publish an ``Unavailable`` message if there is no heartbeat from the remote replication endpoint within 60 seconds. ``Available`` and ``Unavailable`` messages are published periodically at intervals of ``eventuate.log.replication.failure-detection-limit``.
+It instructs the failure detector to publish an ``Unavailable`` message if there is no successful reply from a remote replication endpoint within 60 seconds. ``Available`` and ``Unavailable`` messages are published periodically at intervals of ``eventuate.log.replication.failure-detection-limit``.
 
 .. _disaster-recovery:
 
@@ -291,6 +304,9 @@ Depending on the storage backend, this call also triggers physical deletion of e
 .. _CassandraEventLog: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog
 .. _EventLogSPI: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.EventLogSPI
 .. _EventLog: ../latest/api/index.html#com.rbmhtechnology.eventuate.log.EventLog
+.. _ReplicationReadSourceException: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadSourceException
+.. _ReplicationReadTimeoutException: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$ReplicationReadTimeoutException
+.. _IncompatibleApplicationVersionException: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$$IncompatibleApplicationVersionException
 
 .. _CassandraEventLog.scala: https://github.com/RBMHTechnology/eventuate/tree/master/src/main/scala/com/rbmhtechnology/eventuate/log/cassandra/CassandraEventLog.scala
 .. _LeveldbEventLog.scala: https://github.com/RBMHTechnology/eventuate/tree/master/src/main/scala/com/rbmhtechnology/eventuate/log/leveldb/LeveldbEventLog.scala

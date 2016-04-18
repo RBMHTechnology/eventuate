@@ -786,23 +786,6 @@ other words, a written event has a potential causal relationship to all past sou
 needs to write processed events back to its source event log, it must reserve its own entry in the vector
 clock by setting <code>sharedClockEntry</code> to <code>false</code>, otherwise, writing to the source event log has no effect.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>.</p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.UnavailableException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="UnavailableExceptionextendsRuntimeException"></a>
-      <a id="UnavailableException:UnavailableException"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="UnavailableException.html"><span class="name">UnavailableException</span></a><span class="result"> extends <span class="extype" name="scala.RuntimeException">RuntimeException</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@UnavailableExceptionextendsRuntimeException" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Indicates that an event log or event-sourced actor is currently unavailable for serving requests.</p>
     </li><li name="com.rbmhtechnology.eventuate.UpdateableEventBatch" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="UpdateableEventBatch[A&lt;:com.rbmhtechnology.eventuate.UpdateableEventBatch[A]]extendsDurableEventBatch"></a>
       <a id="UpdateableEventBatch[A&lt;:UpdateableEventBatch[A]]:UpdateableEventBatch[A]"></a>

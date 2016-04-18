@@ -256,8 +256,8 @@
     <span class="k">#</span> <span class="n">read</span> <span class="n">request</span><span class="o">.</span>
     <span class="n">remote</span><span class="o">-</span><span class="n">scan</span><span class="o">-</span><span class="n">limit</span> <span class="k">=</span> <span class="mi">65536</span>
 
-    <span class="k">#</span> <span class="nc">Maximum</span> <span class="n">duration</span> <span class="n">of</span> <span class="n">missing</span> <span class="n">heartbeats</span> <span class="n">from</span> <span class="n">a</span> <span class="n">remote</span> <span class="n">replication</span>
-    <span class="k">#</span> <span class="n">endpoint</span> <span class="n">until</span> <span class="n">that</span> <span class="n">endpoint</span> <span class="n">is</span> <span class="n">considered</span> <span class="n">unavailable</span><span class="o">.</span>
+    <span class="k">#</span> <span class="nc">Minimum</span> <span class="n">duration</span> <span class="n">of</span> <span class="n">failed</span> <span class="n">communication</span> <span class="k">with</span> <span class="n">a</span> <span class="n">remote</span> <span class="n">replication</span>
+    <span class="k">#</span> <span class="n">endpoint</span> <span class="n">required</span> <span class="n">to</span> <span class="n">consider</span> <span class="n">that</span> <span class="n">endpoint</span> <span class="n">as</span> <span class="n">unavailable</span><span class="o">.</span>
     <span class="n">failure</span><span class="o">-</span><span class="n">detection</span><span class="o">-</span><span class="n">limit</span> <span class="k">=</span> <span class="mi">60</span><span class="n">s</span>
 
     <span class="k">#</span> <span class="nc">If</span> <span class="n">turned</span> <span class="n">on</span><span class="o">,</span> <span class="n">notifications</span> <span class="n">about</span> <span class="n">updates</span> <span class="n">in</span> <span class="n">a</span> <span class="n">source</span> <span class="n">event</span> <span class="n">log</span> <span class="n">are</span> <span class="n">sent</span>

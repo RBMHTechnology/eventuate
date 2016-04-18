@@ -210,6 +210,24 @@
       </a>
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="ReplicationProtocol$$GetReplicationProgresses$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgresses">GetReplicationProgresses</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.IncompatibleApplicationVersionException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="IncompatibleApplicationVersionExceptionextendsReplicationProtocol.ReplicationReadExceptionwithReplicationProtocol.FormatwithProductwithSerializable"></a>
+      <a id="IncompatibleApplicationVersionException:IncompatibleApplicationVersionException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReplicationProtocol$$IncompatibleApplicationVersionException.html"><span class="name">IncompatibleApplicationVersionException</span></a><span class="params">(<span name="sourceEndpointId">sourceEndpointId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sourceApplicationVersion">sourceApplicationVersion: <a href="ApplicationVersion.html" class="extype" name="com.rbmhtechnology.eventuate.ApplicationVersion">ApplicationVersion</a></span>, <span name="targetApplicationVersion">targetApplicationVersion: <a href="ApplicationVersion.html" class="extype" name="com.rbmhtechnology.eventuate.ApplicationVersion">ApplicationVersion</a></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$ReplicationReadException.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadException">ReplicationReadException</a> with <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@IncompatibleApplicationVersionExceptionextendsReplicationProtocol.ReplicationReadExceptionwithReplicationProtocol.FormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Indicates that events cannot be replication from a source <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a> to a target <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>
+because their application versions are incompatible.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.LogInfo" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="LogInfoextendsReplicationProtocol.FormatwithProductwithSerializable"></a>
       <a id="LogInfo:LogInfo"></a>
@@ -282,24 +300,23 @@ the given replication <code>filter</code>.</p>
     </span>
       <p class="shortcomment cmt"><a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a> requests are sent within this envelope to allow a remote acceptor to
 dispatch the request to the appropriate log.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelopeIncompatible" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ReplicationReadEnvelopeIncompatibleextendsReplicationProtocol.FormatwithProductwithSerializable"></a>
-      <a id="ReplicationReadEnvelopeIncompatible:ReplicationReadEnvelopeIncompatible"></a>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadException" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ReplicationReadExceptionextendsRuntimeException"></a>
+      <a id="ReplicationReadException:ReplicationReadException"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationReadEnvelopeIncompatible.html"><span class="name">ReplicationReadEnvelopeIncompatible</span></a><span class="params">(<span name="sourceApplicationVersion">sourceApplicationVersion: <a href="ApplicationVersion.html" class="extype" name="com.rbmhtechnology.eventuate.ApplicationVersion">ApplicationVersion</a></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$ReplicationReadException.html"><span class="name">ReplicationReadException</span></a><span class="result"> extends <span class="extype" name="scala.RuntimeException">RuntimeException</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadEnvelopeIncompatibleextendsReplicationProtocol.FormatwithProductwithSerializable" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadExceptionextendsRuntimeException" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Failure reply after a <a href="ReplicationProtocol$$ReplicationReadEnvelope.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadEnvelope">ReplicationReadEnvelope</a> if the source application version is
-incompatible with the target application version.</p>
+      <p class="shortcomment cmt">Base class for all <a href="ReplicationProtocol$$ReplicationReadFailure.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadFailure">ReplicationReadFailure</a> <code>cause</code>s.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicationReadFailureextendsReplicationProtocol.FormatwithProductwithSerializable"></a>
       <a id="ReplicationReadFailure:ReplicationReadFailure"></a>
@@ -309,7 +326,7 @@ incompatible with the target application version.</p>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationReadFailure.html"><span class="name">ReplicationReadFailure</span></a><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$ReplicationReadFailure.html"><span class="name">ReplicationReadFailure</span></a><span class="params">(<span name="cause">cause: <a href="ReplicationProtocol$$ReplicationReadException.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadException">ReplicationReadException</a></span>, <span name="targetLogId">targetLogId: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadFailureextendsReplicationProtocol.FormatwithProductwithSerializable" title="Permalink" target="_top">
@@ -317,6 +334,23 @@ incompatible with the target application version.</p>
       </a>
     </span>
       <p class="shortcomment cmt">Failure reply after a <a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadSourceException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReplicationReadSourceExceptionextendsReplicationProtocol.ReplicationReadExceptionwithReplicationProtocol.FormatwithProductwithSerializable"></a>
+      <a id="ReplicationReadSourceException:ReplicationReadSourceException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReplicationProtocol$$ReplicationReadSourceException.html"><span class="name">ReplicationReadSourceException</span></a><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$ReplicationReadException.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadException">ReplicationReadException</a> with <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadSourceExceptionextendsReplicationProtocol.ReplicationReadExceptionwithReplicationProtocol.FormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Indicates a problem reading events from the backend store at the source endpoint.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadSuccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicationReadSuccessextendsDurableEventBatchwithReplicationProtocol.FormatwithProductwithSerializable"></a>
       <a id="ReplicationReadSuccess:ReplicationReadSuccess"></a>
@@ -334,6 +368,23 @@ incompatible with the target application version.</p>
       </a>
     </span>
       <p class="shortcomment cmt">Success reply after a <a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadTimeoutException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReplicationReadTimeoutExceptionextendsReplicationProtocol.ReplicationReadExceptionwithProductwithSerializable"></a>
+      <a id="ReplicationReadTimeoutException:ReplicationReadTimeoutException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReplicationProtocol$$ReplicationReadTimeoutException.html"><span class="name">ReplicationReadTimeoutException</span></a><span class="params">(<span name="timeout">timeout: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$ReplicationReadException.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadException">ReplicationReadException</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationReadTimeoutExceptionextendsReplicationProtocol.ReplicationReadExceptionwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Indicates that a <a href="ReplicationProtocol$$ReplicationRead.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead">ReplicationRead</a> request timed out.</p>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicationWriteextendsUpdateableEventBatch[com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationWrite]withProductwithSerializable"></a>
       <a id="ReplicationWrite:ReplicationWrite"></a>
