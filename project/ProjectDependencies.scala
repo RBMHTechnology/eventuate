@@ -27,7 +27,7 @@ object ProjectDependencies {
   val AkkaRemote = "com.typesafe.akka" %% "akka-remote" % AkkaVersion
   val AkkaTestkit = "com.typesafe.akka" %% "akka-testkit" % AkkaVersion
   val AkkaTestkitMultiNode = "com.typesafe.akka" %% "akka-multi-node-testkit" % AkkaVersion
-  val CassandraDriver = "com.datastax.cassandra" % "cassandra-driver-core" % "2.1.5"
+  val CassandraDriver = "com.datastax.cassandra" % "cassandra-driver-core" % "2.1.9"
   val CassandraUnit = "org.cassandraunit" % "cassandra-unit" % "2.0.2.2"
   val CommonsIo =  "commons-io" % "commons-io" % "2.4"
   val Leveldb = "org.fusesource.leveldbjni" % "leveldbjni-all" % "1.8"
