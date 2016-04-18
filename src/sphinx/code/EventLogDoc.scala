@@ -115,6 +115,8 @@ trait ReplicationEndpointDoc {
 }
 
 trait ReplicationFilterDoc {
+  implicit val system: akka.actor.ActorSystem = null
+  import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
   //#replication-filter-definition
   import com.rbmhtechnology.eventuate._
 
@@ -124,13 +126,23 @@ trait ReplicationFilterDoc {
   }
   //#
 
-  //#replication-filter-application
-  val filter1 = AggregateIdFilter("order-17")
-  ReplicationConnection("127.0.0.1", 2553, Map("L" -> filter1))
+  //#local-filters
+  val endpoint = new ReplicationEndpoint(id = "2", logNames = Set("L", "M"),
+    logFactory = logId => LeveldbEventLog.props(logId),
+    connections = Set(ReplicationConnection("127.0.0.1", 2553)),
+    filters = Map("L" -> filter1)
+  )
+  //#
+
+  //#remote-filters
+  ReplicationConnection("127.0.0.1", 2552, Map("L" -> filter1))
   //#
 
   //#replication-filter-composition
-  val filter2 = filter1 or AggregateIdFilter("order-19")
-  ReplicationConnection("127.0.0.1", 2553, Map("M" -> filter2))
+  val filter1 = AggregateIdFilter("order-17")
+  val filter2 = AggregateIdFilter("order-19")
+  val composedFilter = filter1 or filter2
   //#
+
+
 }

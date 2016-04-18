@@ -182,11 +182,12 @@ class Location(val id: String, logFactory: String => Props, customPort: Int, cus
   def endpoint(
     logNames: Set[String],
     connections: Set[ReplicationConnection],
+    filters: Map[String, ReplicationFilter] = Map.empty,
     applicationName: String = DefaultApplicationName,
     applicationVersion: ApplicationVersion = DefaultApplicationVersion,
     activate: Boolean = true): ReplicationEndpoint = {
 
-    val endpoint = new ReplicationEndpoint(id, logNames, logFactory, connections, applicationName, applicationVersion)(system)
+    val endpoint = new ReplicationEndpoint(id, logNames, logFactory, connections, filters, applicationName, applicationVersion)(system)
     if (activate) endpoint.activate()
     endpoint
   }
