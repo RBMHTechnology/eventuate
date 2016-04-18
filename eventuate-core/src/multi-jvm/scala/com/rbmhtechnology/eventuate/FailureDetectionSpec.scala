@@ -20,6 +20,8 @@ import akka.remote.testkit.MultiNodeSpec
 import akka.remote.transport.ThrottlerTransportAdapter.Direction
 import akka.testkit.TestProbe
 
+import com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationReadTimeoutException
+
 import com.typesafe.config._
 
 class FailureDetectionConfig(providerConfig: Config) extends MultiNodeReplicationConfig {
@@ -30,7 +32,7 @@ class FailureDetectionConfig(providerConfig: Config) extends MultiNodeReplicatio
 
   val customConfig = ConfigFactory.parseString("""
     |eventuate.log.replication.remote-read-timeout = 1s
-    |eventuate.log.replication.failure-detection-limit = 3s
+    |eventuate.log.replication.failure-detection-limit = 5s
   """.stripMargin)
 
   setConfig(customConfig.withFallback(providerConfig))
@@ -62,7 +64,9 @@ abstract class FailureDetectionSpec(config: FailureDetectionConfig) extends Mult
 
         enterBarrier("connected")
         testConductor.blackhole(nodeA, nodeB, Direction.Both).await
-        probeUnavailable.expectMsg(Unavailable(nodeB.name, logName))
+        probeUnavailable.expectMsgPF() {
+          case Unavailable(nodeB.name, logName, causes) if causes.nonEmpty => causes.head shouldBe a [ReplicationReadTimeoutException]
+        }
         system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
 
         enterBarrier("repair")
@@ -75,7 +79,9 @@ abstract class FailureDetectionSpec(config: FailureDetectionConfig) extends Mult
         probeAvailable1.expectMsg(Available(nodeA.name, logName))
 
         enterBarrier("connected")
-        probeUnavailable.expectMsg(Unavailable(nodeA.name, logName))
+        probeUnavailable.expectMsgPF() {
+          case Unavailable(nodeA.name, logName, causes) if causes.nonEmpty => causes.head shouldBe a [ReplicationReadTimeoutException]
+        }
         system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
 
         enterBarrier("repair")

@@ -62,9 +62,10 @@ class ReplicationSettings(config: Config) {
   val failureDetectionLimit: FiniteDuration =
     config.getDuration("eventuate.log.replication.failure-detection-limit", TimeUnit.MILLISECONDS).millis
 
-  require(failureDetectionLimit >= retryDelay * 2, s"""
-     |eventuate.log.replication.failure-detection-limit ($failureDetectionLimit) must be at least twice the
-     |eventuate.log.replication.retry-delay ($retryDelay)
+  require(failureDetectionLimit >= remoteReadTimeout + retryDelay, s"""
+     |eventuate.log.replication.failure-detection-limit ($failureDetectionLimit) must be at least the sum of
+     |eventuate.log.replication.retry-delay ($retryDelay) and
+     |eventuate.log.replication.remote-read-timeout ($remoteReadTimeout)
    """.stripMargin)
 }
 
@@ -92,7 +93,7 @@ object ReplicationEndpoint {
   /**
    * Published to the actor system's event stream if a remote log is unavailable.
    */
-  case class Unavailable(endpointId: String, logName: String)
+  case class Unavailable(endpointId: String, logName: String, causes: Seq[Throwable])
 
   /**
    * Matches a string of format "<hostname>:<port>".
@@ -462,7 +463,7 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
       context.become(reading)
       read(storedReplicationProgress, currentTargetVersionVector)
     case GetReplicationProgressFailure(cause) =>
-      log.error(cause, s"replication progress read failed")
+      log.error(cause, "replication progress read failed")
       scheduleFetch()
   }
 
@@ -475,15 +476,12 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
 
   val reading: Receive = {
     case ReplicationReadSuccess(events, fromSequenceNr, replicationProgress, _, currentSourceVersionVector) =>
-      detector ! Tick
+      detector ! AvailabilityDetected
       context.become(writing)
       write(events, replicationProgress, currentSourceVersionVector, replicationProgress >= fromSequenceNr)
     case ReplicationReadFailure(cause, _) =>
-      log.error(s"replication read failed: $cause")
-      context.become(idle)
-      scheduleRead()
-    case ReplicationReadEnvelopeIncompatible(sourceApplicationVersion) =>
-      log.warning(s"Event replication rejected by remote endpoint ${source.endpointId}. Target ${target.endpoint.applicationVersion} not compatible with source $sourceApplicationVersion")
+      detector ! FailureDetected(cause)
+      log.error(cause, s"replication read failed")
       context.become(idle)
       scheduleRead()
   }
@@ -532,7 +530,7 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
     val replicationRead = ReplicationRead(storedReplicationProgress + 1, settings.writeBatchSize, settings.remoteScanLimit, filter, target.logId, self, currentTargetVersionVector)
 
     (source.acceptor ? ReplicationReadEnvelope(replicationRead, source.logName, target.endpoint.applicationName, target.endpoint.applicationVersion)) recover {
-      case t => ReplicationReadFailure(t.getMessage, target.logId)
+      case t => ReplicationReadFailure(ReplicationReadTimeoutException(settings.remoteReadTimeout), target.logId)
     } pipeTo self
   }
 
@@ -552,27 +550,44 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
 }
 
 private object FailureDetector {
-  case object Tick
+  case object AvailabilityDetected
+  case class FailureDetected(cause: Throwable)
+  case class FailureDetectionLimitReached(counter: Int)
 }
 
 private class FailureDetector(sourceEndpointId: String, logName: String, failureDetectionLimit: FiniteDuration) extends Actor {
-  import FailureDetector._
   import ReplicationEndpoint._
+  import FailureDetector._
+  import context.dispatcher
 
-  val failureDetectionLimitMillis = failureDetectionLimit.toMillis
-  var lastTick: Long = 0L
+  private var counter: Int = 0
+  private var causes: Vector[Throwable] = Vector.empty
+  private var schedule: Cancellable = scheduleFailureDetectionLimitReached()
 
-  context.setReceiveTimeout(failureDetectionLimit)
+  private val failureDetectionLimitNanos = failureDetectionLimit.toNanos
+  private var lastReportedAvailability: Long = 0L
 
   def receive = {
-    case Tick =>
-      val currentTime = System.currentTimeMillis
-      val lastInterval = currentTime - lastTick
-      if (lastInterval >= failureDetectionLimitMillis) {
+    case AvailabilityDetected =>
+      val currentTime = System.nanoTime()
+      val lastInterval = currentTime - lastReportedAvailability
+      if (lastInterval >= failureDetectionLimitNanos) {
         context.system.eventStream.publish(Available(sourceEndpointId, logName))
-        lastTick = currentTime
+        lastReportedAvailability = currentTime
       }
-    case ReceiveTimeout =>
-      context.system.eventStream.publish(Unavailable(sourceEndpointId, logName))
+      schedule.cancel()
+      schedule = scheduleFailureDetectionLimitReached()
+      causes = Vector.empty
+    case FailureDetected(cause) =>
+      causes = causes :+ cause
+    case FailureDetectionLimitReached(scheduledCount) if scheduledCount == counter =>
+      context.system.eventStream.publish(Unavailable(sourceEndpointId, logName, causes))
+      schedule = scheduleFailureDetectionLimitReached()
+      causes = Vector.empty
+  }
+
+  private def scheduleFailureDetectionLimitReached(): Cancellable = {
+    counter += 1
+    context.system.scheduler.scheduleOnce(failureDetectionLimit, self, FailureDetectionLimitReached(counter))
   }
 }

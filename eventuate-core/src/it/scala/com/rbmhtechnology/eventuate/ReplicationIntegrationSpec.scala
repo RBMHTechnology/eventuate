@@ -176,7 +176,9 @@ trait ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocati
 
       probeAvailable1.expectMsg(Available(endpointB1.id, "L1"))
       Await.result(locationB1.terminate(), 10.seconds)
-      probeUnavailable.expectMsg(Unavailable(endpointB1.id, "L1"))
+      probeUnavailable.expectMsgPF() {
+        case Unavailable(endpointB1.id, "L1", causes) if causes.nonEmpty => causes.head shouldBe a [ReplicationReadTimeoutException]
+      }
 
       val locationB2 = location("B", customPort = customPort)
       val endpointB2 = locationB2.endpoint(Set("L1"), Set(replicationConnection(locationA.port)))
@@ -257,7 +259,7 @@ trait ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocati
       testVersionedReads("test", ApplicationVersion("1.0"), "test", ApplicationVersion("1.1")).expectMsgType[ReplicationReadSuccess]
     }
     "reject replication reads from endpoints with same application name and lower version" in {
-      testVersionedReads("test", ApplicationVersion("1.0"), "test", ApplicationVersion("0.9")).expectMsg(ReplicationReadEnvelopeIncompatible(ApplicationVersion("1.0")))
+      testVersionedReads("test", ApplicationVersion("1.0"), "test", ApplicationVersion("0.9")).expectMsg(ReplicationReadFailure(IncompatibleApplicationVersionException(locationId("A"), ApplicationVersion("1.0"), ApplicationVersion("0.9")), DurableEvent.UndefinedLogId))
     }
     "accept replication reads from endpoints with different application name and same version" in {
       testVersionedReads("test", ApplicationVersion("1.0"), "other", ApplicationVersion("1.0")).expectMsgType[ReplicationReadSuccess]

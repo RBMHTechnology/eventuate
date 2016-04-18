@@ -38,8 +38,11 @@ object ReplicationProtocolSerializerSpec {
       DurableEvent("a", "r1"),
       DurableEvent("b", "r2")), 22L, 27L, "B", VectorTime("X" -> 4L))
 
-  val replicationReadFailure =
-    ReplicationReadFailure("test", "B")
+  val replicationReadFailureWithReplicationReadSourceException =
+    ReplicationReadFailure(ReplicationReadSourceException("oops"), "B")
+
+  val replicationReadFailureWithIncompatibleApplicationVersionException =
+    ReplicationReadFailure(IncompatibleApplicationVersionException("A", ApplicationVersion(2, 1), ApplicationVersion(3, 2)), "B")
 
   def replicationRead1(r: ActorRef) =
     ReplicationRead(17L, 10, 100, filter1(), "A", r, VectorTime("X" -> 12L))
@@ -49,9 +52,6 @@ object ReplicationProtocolSerializerSpec {
 
   def replicationReadEnvelope(r: ReplicationRead): ReplicationReadEnvelope =
     ReplicationReadEnvelope(r, "X", "myapp", ApplicationVersion(2, 1))
-
-  val replicationReadEnvelopeIncompatible: ReplicationReadEnvelopeIncompatible =
-    ReplicationReadEnvelopeIncompatible(ApplicationVersion(2, 1))
 }
 
 class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
@@ -84,9 +84,6 @@ class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with Befo
       serializations(0).deserialize(serializations(0).serialize(replicationReadEnvelope(replicationRead1(dl1))).get, classOf[ReplicationReadEnvelope]).get should be(replicationReadEnvelope(replicationRead1(dl1)))
       serializations(0).deserialize(serializations(0).serialize(replicationReadEnvelope(replicationRead2(dl2))).get, classOf[ReplicationReadEnvelope]).get should be(replicationReadEnvelope(replicationRead2(dl2)))
     }
-    "serialize ReplicationReadEnvelopeIncompatible messages" in {
-      serializations(0).deserialize(serializations(0).serialize(replicationReadEnvelopeIncompatible).get, classOf[ReplicationReadEnvelopeIncompatible]).get should be(replicationReadEnvelopeIncompatible)
-    }
     "serialize ReplicationRead messages" in {
       serializations(0).deserialize(serializations(0).serialize(replicationRead1(dl1)).get, classOf[ReplicationRead]).get should be(replicationRead1(dl1))
       serializations(0).deserialize(serializations(0).serialize(replicationRead2(dl2)).get, classOf[ReplicationRead]).get should be(replicationRead2(dl2))
@@ -94,8 +91,11 @@ class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with Befo
     "serialize ReplicationReadSuccess messages" in {
       serializations(0).deserialize(serializations(0).serialize(replicationReadSuccess).get, classOf[ReplicationReadSuccess]).get should be(replicationReadSuccess)
     }
-    "serialize ReplicationReadFailure messages" in {
-      serializations(0).deserialize(serializations(0).serialize(replicationReadFailure).get, classOf[ReplicationReadFailure]).get should be(replicationReadFailure)
+    "serialize ReplicationReadFailure messages with a ReplicationReadSourceException cause" in {
+      serializations(0).deserialize(serializations(0).serialize(replicationReadFailureWithReplicationReadSourceException).get, classOf[ReplicationReadFailure]).get should be(replicationReadFailureWithReplicationReadSourceException)
+    }
+    "serialize ReplicationReadFailure messages with an ApplicationVersionIncompatibleException cause" in {
+      serializations(0).deserialize(serializations(0).serialize(replicationReadFailureWithIncompatibleApplicationVersionException).get, classOf[ReplicationReadFailure]).get should be(replicationReadFailureWithIncompatibleApplicationVersionException)
     }
     "support remoting of GetReplicationEndpointInfo messages" in {
       senderActor ! GetReplicationEndpointInfo
@@ -116,12 +116,12 @@ class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with Befo
       receiverProbe.expectMsg(replicationReadSuccess)
     }
     "support remoting of ReplicationReadFailure messages" in {
-      senderActor ! replicationReadFailure
-      receiverProbe.expectMsg(replicationReadFailure)
+      senderActor ! replicationReadFailureWithReplicationReadSourceException
+      receiverProbe.expectMsg(replicationReadFailureWithReplicationReadSourceException)
     }
-    "support remoting of ReplicationReadEnvelopeIncompatible messages" in {
-      senderActor ! replicationReadEnvelopeIncompatible
-      receiverProbe.expectMsg(replicationReadEnvelopeIncompatible)
+    "support remoting of ReplicationReadFailure messages with an ApplicationVersionIncompatibleException cause" in {
+      senderActor ! replicationReadFailureWithIncompatibleApplicationVersionException
+      receiverProbe.expectMsg(replicationReadFailureWithIncompatibleApplicationVersionException)
     }
   }
 }

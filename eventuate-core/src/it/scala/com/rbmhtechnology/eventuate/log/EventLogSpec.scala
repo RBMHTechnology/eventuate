@@ -489,7 +489,7 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
     }
     "reply with a failure message if replication-read fails" in {
       log.tell(ReplicationRead(ErrorSequenceNr, Int.MaxValue, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplicationReadFailure(IntegrationTestException.getMessage, UndefinedLogId))
+      replyToProbe.expectMsg(ReplicationReadFailure(ReplicationReadSourceException(IntegrationTestException.getMessage), UndefinedLogId))
     }
     "recover the current sequence number on (re)start" in {
       generateEmittedEvents()

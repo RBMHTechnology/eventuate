@@ -19,7 +19,6 @@ package com.rbmhtechnology.eventuate.log
 import akka.actor._
 
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
-import com.rbmhtechnology.eventuate.UnavailableException
 import com.typesafe.config.Config
 
 private class CircuitBreakerSettings(config: Config) {
@@ -82,9 +81,9 @@ class CircuitBreaker(logProps: Props, batching: Boolean) extends Actor {
 
 private object CircuitBreaker {
   /**
-   * Default [[UnavailableException]] instance.
+   * Default [[EventLogUnavailableException]] instance.
    */
-  val Exception = new UnavailableException
+  val Exception = new EventLogUnavailableException
 
   /**
    * An event that controls [[CircuitBreaker]] state.

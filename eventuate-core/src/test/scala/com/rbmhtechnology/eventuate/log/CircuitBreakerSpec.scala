@@ -72,13 +72,13 @@ class CircuitBreakerSpec extends TestKit(ActorSystem("test", ConfigFactory.parse
     }
     "open after first failed retry" in {
       breaker ! ServiceFailed(1)
-      intercept[UnavailableException] {
+      intercept[EventLogUnavailableException] {
         breaker.ask("a").await
       }
     }
     "close again after service success" in {
       breaker ! ServiceFailed(1)
-      intercept[UnavailableException] {
+      intercept[EventLogUnavailableException] {
         breaker.ask("a").await
       }
       breaker ! ServiceNormal
@@ -86,7 +86,7 @@ class CircuitBreakerSpec extends TestKit(ActorSystem("test", ConfigFactory.parse
     }
     "close again after service initialization" in {
       breaker ! ServiceFailed(1)
-      intercept[UnavailableException] {
+      intercept[EventLogUnavailableException] {
         breaker.ask("a").await
       }
       breaker ! ServiceInitialized

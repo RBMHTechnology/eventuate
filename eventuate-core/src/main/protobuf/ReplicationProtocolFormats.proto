@@ -51,10 +51,6 @@ message ReplicationReadEnvelopeFormat {
   optional ApplicationVersionFormat targetApplicationVersion = 4;
 }
 
-message ReplicationReadEnvelopeIncompatibleFormat {
-  optional ApplicationVersionFormat sourceApplicationVersion = 1;
-}
-
 message ReplicationReadFormat {
   optional int64 fromSequenceNr = 1;
   optional int32 max = 2;
@@ -74,8 +70,18 @@ message ReplicationReadSuccessFormat {
 }
 
 message ReplicationReadFailureFormat {
-  optional string cause = 1;
+  optional PayloadFormat cause = 1;
   optional string targetLogId = 2;
+}
+
+message ReplicationReadSourceExceptionFormat {
+  optional string message = 1;
+}
+
+message IncompatibleApplicationVersionExceptionFormat {
+  optional string sourceEndpointId = 1;
+  optional ApplicationVersionFormat sourceApplicationVersion = 2;
+  optional ApplicationVersionFormat targetApplicationVersion = 3;
 }
 
 message ReplicationDueFormat {

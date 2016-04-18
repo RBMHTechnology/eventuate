@@ -123,6 +123,7 @@ object MultiLocationConfig {
          |
          |eventuate.log.write-batch-size = 3
          |eventuate.log.replication.retry-delay = 1s
+         |eventuate.log.replication.remote-read-timeout = 1s
          |eventuate.log.replication.failure-detection-limit = 3s
          |eventuate.snapshot.filesystem.dir = target/test-snapshot
        """.stripMargin)
@@ -154,13 +155,13 @@ trait MultiLocationSpec extends LocationCleanup with BeforeAndAfterEach {
     location
   }
 
+  def locationId(locationName: String): String =
+    s"${locationName}_${ctr}"
+
   private def registerLocation(location: Location): Location = {
     locations = location :: locations
     location
   }
-
-  private def locationId(locationName: String): String =
-    s"${locationName}_${ctr}"
 }
 
 class Location(val id: String, logFactory: String => Props, customPort: Int, customConfig: Config) {

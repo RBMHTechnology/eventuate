@@ -208,7 +208,7 @@ class CircuitBreakerIntregrationSpecCassandra extends TestKit(ActorSystem("test"
         spec.appLatch.await()
 
         eventually {
-          intercept[UnavailableException] { request(actor1, "a").await }
+          intercept[EventLogUnavailableException] { request(actor1, "a").await }
         }
 
         spec.logLatch.countDown()
@@ -229,13 +229,13 @@ class CircuitBreakerIntregrationSpecCassandra extends TestKit(ActorSystem("test"
         spec.appLatch.await()
 
         eventually {
-          intercept[UnavailableException] { request(actor1, "a").await }
+          intercept[EventLogUnavailableException] { request(actor1, "a").await }
         }
 
         // The circuit breaker opened when actor2 (stateSync = true) was
         // idle. A later request from that actor will therefore receive
         // an UnavailableException failure reply.
-        intercept[UnavailableException] { request(actor2, "a").await }
+        intercept[EventLogUnavailableException] { request(actor2, "a").await }
 
         spec.logLatch.countDown()
 
@@ -250,7 +250,7 @@ class CircuitBreakerIntregrationSpecCassandra extends TestKit(ActorSystem("test"
   def assertUnavailable(): Unit = {
     val w = ReplicationWrite(Seq(), 0L, "source", VectorTime.Zero)
     eventually {
-      intercept[UnavailableException] { log.ask(w).await }
+      intercept[EventLogUnavailableException] { log.ask(w).await }
     }
   }
 
