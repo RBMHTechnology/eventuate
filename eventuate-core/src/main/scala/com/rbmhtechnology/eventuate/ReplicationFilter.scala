@@ -69,6 +69,16 @@ object ReplicationFilter {
      * Evaluates to `true`.
      */
     def apply(event: DurableEvent): Boolean = true
+
+    /**
+     * Returns the given `filter`.
+     */
+    override def and(filter: ReplicationFilter): ReplicationFilter = filter
+
+    /**
+     * Returns this [[NoFilter]].
+     */
+    override def or(filter: ReplicationFilter): ReplicationFilter = this
   }
 }
 

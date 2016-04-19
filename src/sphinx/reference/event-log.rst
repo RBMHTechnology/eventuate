@@ -175,22 +175,36 @@ If the ``applicationName``\ s of two replication endpoints are not equal, events
 Replication filters
 ^^^^^^^^^^^^^^^^^^^
 
-By default, all events are replicated. Applications may provide ``ReplicationFilter``\ s to limit replication to a subset of events. A custom replication filter can be defined, by extending ReplicationFilter_ and implementing a filter predicate (method ``apply``). For example, the following replication filter selects DurableEvent_\ s with a matching ``emitterAggregateId``:
+By default, all events are replicated. Applications may provide ``ReplicationFilter``\ s to limit replication to a subset of events. A custom replication filter can be defined, by extending ReplicationFilter_ and implementing a filter predicate (method ``apply``). For example, the following replication filter accepts DurableEvent_\ s with a matching ``emitterAggregateId``:
 
 .. includecode:: ../code/EventLogDoc.scala
    :snippet: replication-filter-definition
 
-Replication filters can be defined per ``ReplicationConnection`` and event log name. They are transferred to a remote replication endpoint and applied there while reading from a *source event log* during replication. The following example configures a replication filter for log ``L`` so that only events with a defined ``emitterAggregateId`` of value ``order-17`` are replicated from the remote source log:
-
-.. includecode:: ../code/EventLogDoc.scala
-   :snippet: replication-filter-application
-
-Replication filters can also be composed. The following creates a composed filter so that events with a defined ``emitterAggregateId`` of value ``order-17`` or ``order-19`` are replicated:
+Replication filters can also be composed. The following ``composedFilter`` accepts events with a defined ``emitterAggregateId`` of value ``order-17`` or ``order-19``:
 
 .. includecode:: ../code/EventLogDoc.scala
    :snippet: replication-filter-composition
 
 For the definition of filter logic based on application-defined events, replication filters should use the ``payload`` field of ``DurableEvent``.
+
+Local replication filters
+.........................
+
+Local replication filters can be defined per ``ReplicationEndpoint`` and event log name. They are applied locally at the endpoint at which they are defined. The following example configures a local replication filter for log ``L``:
+
+.. includecode:: ../code/EventLogDoc.scala
+   :snippet: local-filters
+
+.. hint::
+   Local replication filters are especially useful to prevent location-specific (or location-private) events from being replicated to other locations.
+
+Remote replication filters
+..........................
+
+Remote replication filters can be defined per ``ReplicationConnection`` and event log name. They are transferred to a remote replication endpoint and applied there while reading from a *source event log* during replication. The following example configures a remote replication filter for log ``L``:
+
+.. includecode:: ../code/EventLogDoc.scala
+   :snippet: remote-filters
 
 .. hint::
    Serialization of replication filters can be customized as described in section :ref:`replication-filter-serialization`.
