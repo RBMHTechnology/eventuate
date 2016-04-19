@@ -102,7 +102,7 @@ of the <code>applicationVersion</code> value.
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(id:String,logNames:Set[String],logFactory:String=&gt;akka.actor.Props,connections:Set[com.rbmhtechnology.eventuate.ReplicationConnection],applicationName:String,applicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion)(implicitsystem:akka.actor.ActorSystem):com.rbmhtechnology.eventuate.ReplicationEndpoint"></a>
+      <a id="&lt;init&gt;(id:String,logNames:Set[String],logFactory:String=&gt;akka.actor.Props,connections:Set[com.rbmhtechnology.eventuate.ReplicationConnection],filters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter],applicationName:String,applicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion)(implicitsystem:akka.actor.ActorSystem):com.rbmhtechnology.eventuate.ReplicationEndpoint"></a>
       <a id="&lt;init&gt;:ReplicationEndpoint"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -110,15 +110,16 @@ of the <code>applicationVersion</code> value.
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationEndpoint</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logNames">logNames: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="logFactory">logFactory: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="akka.actor.Props">Props</span></span>, <span name="connections">connections: <span class="extype" name="scala.Predef.Set">Set</span>[<a href="ReplicationConnection.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationConnection">ReplicationConnection</a>]</span>, <span name="applicationName">applicationName: <span class="extype" name="scala.Predef.String">String</span> = <span class="defval" name='<span class="name"><a href="ReplicationEndpoint$.html">ReplicationEndpoint.DefaultApplicationName</a></span>'>...</span></span>, <span name="applicationVersion">applicationVersion: <a href="ApplicationVersion.html" class="extype" name="com.rbmhtechnology.eventuate.ApplicationVersion">ApplicationVersion</a> = <span class="defval" name='<span class="name"><a href="ReplicationEndpoint$.html">ReplicationEndpoint.DefaultApplicationVersion</a></span>'>...</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>)</span>
+        <span class="name">ReplicationEndpoint</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logNames">logNames: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="logFactory">logFactory: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="akka.actor.Props">Props</span></span>, <span name="connections">connections: <span class="extype" name="scala.Predef.Set">Set</span>[<a href="ReplicationConnection.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationConnection">ReplicationConnection</a>]</span>, <span name="filters">filters: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a>] = <span class="symbol">Map.empty</span></span>, <span name="applicationName">applicationName: <span class="extype" name="scala.Predef.String">String</span> = <span class="defval" name='<span class="name"><a href="ReplicationEndpoint$.html">ReplicationEndpoint.DefaultApplicationName</a></span>'>...</span></span>, <span name="applicationVersion">applicationVersion: <a href="ApplicationVersion.html" class="extype" name="com.rbmhtechnology.eventuate.ApplicationVersion">ApplicationVersion</a> = <span class="defval" name='<span class="name"><a href="ReplicationEndpoint$.html">ReplicationEndpoint.DefaultApplicationVersion</a></span>'>...</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@&lt;init&gt;(id:String,logNames:Set[String],logFactory:String=&gt;akka.actor.Props,connections:Set[com.rbmhtechnology.eventuate.ReplicationConnection],applicationName:String,applicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion)(implicitsystem:akka.actor.ActorSystem):com.rbmhtechnology.eventuate.ReplicationEndpoint" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@&lt;init&gt;(id:String,logNames:Set[String],logFactory:String=&gt;akka.actor.Props,connections:Set[com.rbmhtechnology.eventuate.ReplicationConnection],filters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter],applicationName:String,applicationVersion:com.rbmhtechnology.eventuate.ApplicationVersion)(implicitsystem:akka.actor.ActorSystem):com.rbmhtechnology.eventuate.ReplicationEndpoint" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">id</dt><dd class="cmt"><p>Unique replication endpoint id.</p></dd><dt class="param">logNames</dt><dd class="cmt"><p>Names of the event logs managed by this replication endpoint.</p></dd><dt class="param">logFactory</dt><dd class="cmt"><p>Factory of log actor <code>Props</code>. The <code>String</code> parameter of the factory is a unique
-                  log id generated by this endpoint. The log actor must be assigned this log id.</p></dd><dt class="param">connections</dt><dd class="cmt"><p>Replication connections to other replication endpoints.</p></dd><dt class="param">applicationName</dt><dd class="cmt"><p>Name of the application that creates this replication endpoint.</p></dd><dt class="param">applicationVersion</dt><dd class="cmt"><p>Version of the application that creates this replication endpoint.</p></dd></dl></div>
+                  log id generated by this endpoint. The log actor must be assigned this log id.</p></dd><dt class="param">connections</dt><dd class="cmt"><p>Replication connections to other replication endpoints.</p></dd><dt class="param">filters</dt><dd class="cmt"><p>Replication filters applied locally. Filters are applied to individual
+               event logs where filter keys are the corresponding event log names.</p></dd><dt class="param">applicationName</dt><dd class="cmt"><p>Name of the application that creates this replication endpoint.</p></dd><dt class="param">applicationVersion</dt><dd class="cmt"><p>Version of the application that creates this replication endpoint.</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -354,6 +355,24 @@ may not be suitable any more for disaster recovery of other locations.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#filters" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="filters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]"></a>
+      <a id="filters:Map[String,ReplicationFilter]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">filters</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint@filters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Replication filters applied locally.</p><div class="fullcomment"><div class="comment cmt"><p>Replication filters applied locally. Filters are applied to individual
+               event logs where filter keys are the corresponding event log names.</p></div></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
