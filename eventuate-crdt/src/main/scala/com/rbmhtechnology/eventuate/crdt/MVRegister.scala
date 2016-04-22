@@ -23,10 +23,10 @@ import com.rbmhtechnology.eventuate._
 import scala.concurrent.Future
 
 /**
- * Replicated MV-Register. Has several [[Versioned]] values assigned in case of concurrent assignments,
- * otherwise, a single [[Versioned]] value. Concurrent assignments can be reduced to a single assignment
- * by assigning a [[Versioned]] value with a vector timestamp that is greater than those of the currently
- * assigned [[Versioned]] values.
+ * Operation-based MV-Register CRDT. Has several [[Versioned]] values assigned in case of concurrent assignments,
+ * otherwise, a single [[Versioned]] value. Concurrent assignments can be reduced to a single assignment by
+ * assigning a [[Versioned]] value with a vector timestamp that is greater than those of the currently assigned
+ * [[Versioned]] values.
  *
  * @param versioned Registered values. Initially empty.
  * @tparam A MV-Register value type.

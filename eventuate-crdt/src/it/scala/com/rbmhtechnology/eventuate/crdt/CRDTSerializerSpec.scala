@@ -27,6 +27,12 @@ object CRDTSerializerSpec {
   def orSet(payload: ExamplePayload) =
     ORSet[ExamplePayload].add(payload, VectorTime("s" -> 17L))
 
+  def orCart(key: ExamplePayload) =
+    ORCart[ExamplePayload].add(key, 3, VectorTime("s" -> 17L))
+
+  def orCartEntry(key: ExamplePayload) =
+    ORCartEntry(key, 4)
+
   def mvRegister(payload: ExamplePayload) =
     MVRegister[ExamplePayload].set(payload, VectorTime("s" -> 18L), 18, "e1")
 
@@ -59,11 +65,39 @@ class CRDTSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
 
       serialization.deserialize(serialization.serialize(initial).get, classOf[ORSet[_]]).get should be(expected)
     }
+    "support ORCart serialization with default key serialization" in {
+      val serialization = SerializationExtension(systems(0))
+
+      val initial = orCart(ExamplePayload("foo", "bar"))
+      val expected = initial
+
+      serialization.deserialize(serialization.serialize(initial).get, classOf[ORCart[_]]).get should be(expected)
+    }
+    "support ORCartEntry serialization with default key serialization" in {
+      val serialization = SerializationExtension(systems(0))
+
+      val initial = orCartEntry(ExamplePayload("foo", "bar"))
+      val expected = initial
+
+      serialization.deserialize(serialization.serialize(initial).get, classOf[ORCartEntry[_]]).get should be(expected)
+    }
     "support ORSet serialization with custom payload serialization" in serializations.tail.foreach { serialization =>
       val initial = orSet(ExamplePayload("foo", "bar"))
       val expected = orSet(ExamplePayload("bar", "foo"))
 
       serialization.deserialize(serialization.serialize(initial).get, classOf[ORSet[_]]).get should be(expected)
+    }
+    "support ORCart serialization with custom key serialization" in serializations.tail.foreach { serialization =>
+      val initial = orCart(ExamplePayload("foo", "bar"))
+      val expected = orCart(ExamplePayload("bar", "foo"))
+
+      serialization.deserialize(serialization.serialize(initial).get, classOf[ORCart[_]]).get should be(expected)
+    }
+    "support ORCartEntry serialization with custom key serialization" in serializations.tail.foreach { serialization =>
+      val initial = orCartEntry(ExamplePayload("foo", "bar"))
+      val expected = orCartEntry(ExamplePayload("bar", "foo"))
+
+      serialization.deserialize(serialization.serialize(initial).get, classOf[ORCartEntry[_]]).get should be(expected)
     }
     "support MVRegister serialization with default payload serialization" in {
       val initial = mvRegister(ExamplePayload("foo", "bar"))

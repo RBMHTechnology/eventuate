@@ -116,4 +116,34 @@ class CRDTServiceSpecLeveldb extends TestKit(ActorSystem("test")) with WordSpecL
       service.value("a").await should be(Set())
     }
   }
+
+  "An ORCartService" must {
+    "return the default value of an ORCart" in {
+      val service = new ORCartService[String]("a", log)
+      service.value("a").await should be(Map())
+    }
+    "set initial entry quantities" in {
+      val service = new ORCartService[String]("a", log)
+      service.add("a", "123", 1).await should be(Map("123" -> 1))
+      service.add("a", "124", 1).await should be(Map("123" -> 1, "124" -> 1))
+      service.value("a").await should be(Map("123" -> 1, "124" -> 1))
+    }
+    "increment existing entry quantities" in {
+      val service = new ORCartService[String]("a", log)
+      service.add("a", "123", 1).await should be(Map("123" -> 1))
+      service.add("a", "123", 1).await should be(Map("123" -> 2))
+    }
+    "remove entries" in {
+      val service = new ORCartService[String]("a", log)
+      service.add("a", "123", 1).await should be(Map("123" -> 1))
+      service.add("a", "124", 1).await should be(Map("123" -> 1, "124" -> 1))
+      service.remove("a", "123").await should be(Map("124" -> 1))
+      service.value("a").await should be(Map("124" -> 1))
+    }
+    "reject non-positive quantities" in {
+      val service = new ORCartService[String]("a", log)
+      intercept[IllegalArgumentException](service.add("a", "123", 0).await)
+      intercept[IllegalArgumentException](service.add("a", "123", -1).await)
+    }
+  }
 }

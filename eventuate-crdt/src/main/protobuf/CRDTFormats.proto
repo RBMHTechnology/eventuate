@@ -23,6 +23,15 @@ message ORSetFormat {
   repeated VersionedFormat versionedEntries = 1;
 }
 
+message ORCartFormat {
+  optional ORSetFormat orSet = 1;
+}
+
+message ORCartEntryFormat {
+  optional PayloadFormat key = 1;
+  optional int32 quantity = 2;
+}
+
 message LWWRegisterFormat {
   optional MVRegisterFormat mvRegister = 1;
 }
