@@ -24,12 +24,12 @@ import scala.concurrent.Future
 import scala.collection.immutable.Set
 
 /**
- * Replicated OR-Set. In case of a concurrent `add` and `remove`, `add` has precedence.
+ * Operation-based OR-Set CRDT. [[Versioned]] entries are uniquely identified with vector timestamps.
  *
  * @param versionedEntries [[Versioned]] entries.
  * @tparam A Entry value type.
  *
- * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]]
+ * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]], specification 15
  */
 case class ORSet[A](versionedEntries: Set[Versioned[A]] = Set.empty[Versioned[A]]) extends CRDTFormat {
   /**
@@ -39,7 +39,7 @@ case class ORSet[A](versionedEntries: Set[Versioned[A]] = Set.empty[Versioned[A]
     versionedEntries.map(_.value)
 
   /**
-   * Adds a [[Versioned]] entry from `entry` and `timestamp` and returns an updated OR-Set.
+   * Adds a [[Versioned]] entry from `entry`, identified by `timestamp`, and returns an updated `ORSet`.
    */
   def add(entry: A, timestamp: VectorTime): ORSet[A] =
     copy(versionedEntries = versionedEntries + Versioned(entry, timestamp))
@@ -51,10 +51,10 @@ case class ORSet[A](versionedEntries: Set[Versioned[A]] = Set.empty[Versioned[A]
     versionedEntries.collect { case Versioned(`entry`, timestamp, _, _) => timestamp }
 
   /**
-   * Removes [[Versioned]] entries matching `entry` and `timestamps` and returns an updated OR-Set.
+   * Removes all [[Versioned]] entries identified by given `timestamps` and returns an updated `ORSet`.
    */
-  def remove(entry: A, timestamps: Set[VectorTime]): ORSet[A] =
-    copy(versionedEntries = versionedEntries -- timestamps.map(t => Versioned(entry, t)))
+  def remove(timestamps: Set[VectorTime]): ORSet[A] =
+    copy(versionedEntries.filterNot(versionedEntry => timestamps.contains(versionedEntry.vectorTimestamp)))
 }
 
 object ORSet {
@@ -80,8 +80,8 @@ object ORSet {
     }
 
     override def update(crdt: ORSet[A], operation: Any, event: DurableEvent): ORSet[A] = operation match {
-      case RemoveOp(entry, timestamps) =>
-        crdt.remove(entry.asInstanceOf[A], timestamps)
+      case RemoveOp(_, timestamps) =>
+        crdt.remove(timestamps)
       case AddOp(entry) =>
         crdt.add(entry.asInstanceOf[A], event.vectorTimestamp)
     }
@@ -93,8 +93,8 @@ object ORSet {
  * Replicated [[ORSet]] CRDT service.
  *
  * @param serviceId Unique id of this service.
- * @param log Event log
- * @tparam A [[ORSet]] entry type
+ * @param log Event log.
+ * @tparam A [[ORSet]] entry type.
  */
 class ORSetService[A](val serviceId: String, val log: ActorRef)(implicit val system: ActorSystem, val ops: CRDTServiceOps[ORSet[A], Set[A]])
   extends CRDTService[ORSet[A], Set[A]] {

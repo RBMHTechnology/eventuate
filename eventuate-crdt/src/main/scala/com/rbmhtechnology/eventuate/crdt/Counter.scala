@@ -23,7 +23,7 @@ import com.rbmhtechnology.eventuate.DurableEvent
 import scala.concurrent.Future
 
 /**
- * Replicated counter.
+ * Operation-based Counter CRDT.
  *
  * @param value Current counter value.
  * @tparam A Counter value type.

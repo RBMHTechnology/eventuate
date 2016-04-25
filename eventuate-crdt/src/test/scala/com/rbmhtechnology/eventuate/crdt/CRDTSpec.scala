@@ -24,6 +24,7 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
   val mvReg = MVRegister[Int]()
   val lwwReg = LWWRegister[Int]()
   val orSet = ORSet[Int]()
+  val orShoppingCart = ORCart[String]()
 
   def vectorTime(t1: Long, t2: Long): VectorTime =
     VectorTime("p1" -> t1, "p2" -> t2)
@@ -125,7 +126,7 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
     "remove a pair" in {
       orSet
         .add(1, vectorTime(1, 0))
-        .remove(1, Set(vectorTime(1, 0)))
+        .remove(Set(vectorTime(1, 0)))
         .value should be(Set())
     }
     "remove an entry by removing all pairs" in {
@@ -134,20 +135,20 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
         .add(1, vectorTime(2, 0))
 
       tmp
-        .remove(1, tmp.prepareRemove(1))
+        .remove(tmp.prepareRemove(1))
         .value should be(Set())
     }
     "keep an entry if not all pairs are removed" in {
       orSet
         .add(1, vectorTime(1, 0))
         .add(1, vectorTime(2, 0))
-        .remove(1, Set(vectorTime(1, 0)))
+        .remove(Set(vectorTime(1, 0)))
         .value should be(Set(1))
     }
     "add an entry if concurrent to remove" in {
       orSet
         .add(1, vectorTime(1, 0))
-        .remove(1, Set(vectorTime(1, 0)))
+        .remove(Set(vectorTime(1, 0)))
         .add(1, vectorTime(0, 1))
         .value should be(Set(1))
     }
@@ -158,6 +159,35 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
     }
     "not prepare a remove-set if it doesn't contain the given entry" in {
       orSet.prepareRemove(1) should be('empty)
+    }
+  }
+
+  "An ORCart" must {
+    "be empty by default" in {
+      orShoppingCart.value should be('empty)
+    }
+    "set initial entry quantities" in {
+      orShoppingCart
+        .add("a", 2, vectorTime(1, 0))
+        .add("b", 3, vectorTime(2, 0))
+        .value should be(Map("a" -> 2, "b" -> 3))
+    }
+    "increment existing entry quantities" in {
+      orShoppingCart
+        .add("a", 1, vectorTime(1, 0))
+        .add("b", 3, vectorTime(2, 0))
+        .add("a", 1, vectorTime(3, 0))
+        .add("b", 1, vectorTime(4, 0))
+        .value should be(Map("a" -> 2, "b" -> 4))
+    }
+    "remove observed entries" in {
+      orShoppingCart
+        .add("a", 2, vectorTime(1, 0))
+        .add("b", 3, vectorTime(2, 0))
+        .add("a", 1, vectorTime(3, 0))
+        .add("b", 1, vectorTime(4, 0))
+        .remove(Set(vectorTime(1, 0), vectorTime(2, 0), vectorTime(3, 0)))
+        .value should be(Map("b" -> 1))
     }
   }
 }

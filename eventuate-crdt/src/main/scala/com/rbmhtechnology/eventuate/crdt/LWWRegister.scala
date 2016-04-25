@@ -24,9 +24,9 @@ import com.rbmhtechnology.eventuate._
 import scala.concurrent.Future
 
 /**
- * Replicated LWW-Register with an [[MVRegister]]-based implementation. Instead of returning multiple values
- * in case of concurrent assignments, the last written value is returned. The last written value is determined
- * by comparing the following [[Versioned]] fields in given order:
+ * Operation-based LWW-Register CRDT with an [[MVRegister]]-based implementation. Instead of returning multiple
+ * values in case of concurrent assignments, the last written value is returned. The last written value is
+ * determined by comparing the following [[Versioned]] fields in given order:
  *
  *  - `vectorTimestamp`: if causally related, return the value with the higher timestamp, otherwise compare
  *  - `systemTimestamp`: if not equal, return the value with the higher timestamp, otherwise compare
@@ -37,7 +37,7 @@ import scala.concurrent.Future
  *
  * @param mvRegister Initially empty [[MVRegister]].
  *
- * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]]
+ * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]], specification 9
  */
 case class LWWRegister[A](mvRegister: MVRegister[A] = MVRegister.apply[A]) extends CRDTFormat {
   def value: Option[A] = {

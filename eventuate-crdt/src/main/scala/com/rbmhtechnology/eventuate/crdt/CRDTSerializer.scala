@@ -32,6 +32,8 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private val MVRegisterClass = classOf[MVRegister[_]]
   private val LWWRegisterClass = classOf[LWWRegister[_]]
   private val ORSetClass = classOf[ORSet[_]]
+  private val ORCartClass = classOf[ORCart[_]]
+  private val ORCartEntryClass = classOf[ORCartEntry[_]]
   private val ValueUpdatedClass = classOf[ValueUpdated]
   private val UpdatedOpClass = classOf[UpdateOp]
   private val SetOpClass = classOf[SetOp]
@@ -48,6 +50,10 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
       lwwRegisterFormatBuilder(r).build().toByteArray
     case s: ORSet[_] =>
       orSetFormatBuilder(s).build().toByteArray
+    case s: ORCart[_] =>
+      orCartFormatBuilder(s).build().toByteArray
+    case s: ORCartEntry[_] =>
+      orCartEntryFormatBuilder(s).build().toByteArray
     case v: ValueUpdated =>
       valueUpdatedFormat(v).build().toByteArray
     case o: UpdateOp =>
@@ -71,6 +77,10 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
         lwwRegister(LWWRegisterFormat.parseFrom(bytes))
       case ORSetClass =>
         orSet(ORSetFormat.parseFrom(bytes))
+      case ORCartClass =>
+        orCart(ORCartFormat.parseFrom(bytes))
+      case ORCartEntryClass =>
+        orCartEntry(ORCartEntryFormat.parseFrom(bytes))
       case ValueUpdatedClass =>
         valueUpdated(ValueUpdatedFormat.parseFrom(bytes))
       case UpdatedOpClass =>
@@ -112,6 +122,17 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
       builder.addVersionedEntries(commonSerializer.versionedFormatBuilder(ve))
     }
 
+    builder
+  }
+
+  private def orCartFormatBuilder(orCart: ORCart[_]): ORCartFormat.Builder =
+    ORCartFormat.newBuilder.setOrSet(orSetFormatBuilder(orCart.orSet))
+
+  private def orCartEntryFormatBuilder(orCartEntry: ORCartEntry[_]): ORCartEntryFormat.Builder = {
+    val builder = ORCartEntryFormat.newBuilder
+
+    builder.setKey(commonSerializer.payloadFormatBuilder(orCartEntry.key.asInstanceOf[AnyRef]))
+    builder.setQuantity(orCartEntry.quantity)
     builder
   }
 
@@ -162,6 +183,12 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
 
     ORSet(ves)
   }
+
+  private def orCart(orCartFormat: ORCartFormat): ORCart[Any] =
+    ORCart(orSet(orCartFormat.getOrSet).asInstanceOf[ORSet[ORCartEntry[Any]]])
+
+  private def orCartEntry(orCartEntryFormat: ORCartEntryFormat): ORCartEntry[Any] =
+    ORCartEntry(commonSerializer.payload(orCartEntryFormat.getKey), orCartEntryFormat.getQuantity)
 
   private def valueUpdated(valueUpdatedFormat: ValueUpdatedFormat): ValueUpdated =
     ValueUpdated(commonSerializer.payload(valueUpdatedFormat.getOperation))
