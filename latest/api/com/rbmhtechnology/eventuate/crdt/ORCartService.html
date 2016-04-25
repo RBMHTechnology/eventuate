@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>CRDTService - com.rbmhtechnology.eventuate.crdt.CRDTService</title>
-          <meta name="description" content="CRDTService - com.rbmhtechnology.eventuate.crdt.CRDTService" />
-          <meta name="keywords" content="CRDTService com.rbmhtechnology.eventuate.crdt.CRDTService" />
+          <title>ORCartService - com.rbmhtechnology.eventuate.crdt.ORCartService</title>
+          <meta name="description" content="ORCartService - com.rbmhtechnology.eventuate.crdt.ORCartService" />
+          <meta name="keywords" content="ORCartService com.rbmhtechnology.eventuate.crdt.ORCartService" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.crdt.CRDTService';
+            var hash = 'com.rbmhtechnology.eventuate.crdt.ORCartService';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -28,14 +28,12 @@
         </head>
         <body class="type">
       <div id="definition">
-        <a href="CRDTService$.html" title="See companion object"><img alt="Trait/Object" src="../../../../lib/trait_to_object_big.png" /></a>
+        <img alt="Class" src="../../../../lib/class_big.png" />
         <p id="owner"><a href="../../../package.html" class="extype" name="com">com</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt">crdt</a></p>
-        <h1><a href="CRDTService$.html" title="See companion object">CRDTService</a></h1><h3><span class="morelinks"><div>
-            Related Docs:
-            <a href="CRDTService$.html" title="See companion object">object CRDTService</a>
-            | <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt">package crdt</a>
+        <h1>ORCartService</h1><h3><span class="morelinks"><div>Related Doc:
+            <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt">package crdt</a>
           </div></span></h3><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -44,23 +42,19 @@
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">trait</span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">CRDTService</span><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+        <span class="name">ORCartService</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>], <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>, <span class="extype" name="scala.Int">Int</span>]]</span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A generic, replicated CRDT service that manages a map of CRDTs identified by name.
-Replication is based on the replicated event <code>log</code> that preserves causal ordering
-of events.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>CRDT type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>CRDT value type</p></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Replicated <a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a> CRDT service.</p><ul><li>For adding a new <code>key</code> of given <code>quantity</code> a client should call <code>add</code>.</li><li>For incrementing the <code>quantity</code> of an existing <code>key</code> a client should call <code>add</code>.</li><li>For decrementing the <code>quantity</code> of an existing <code>key</code> a client should call <code>remove</code>, followed by <code>add</code>
+   (after <code>remove</code> successfully completed).</li><li>For removing a <code>key</code> a client should call <code>remove</code>.
+</li></ul></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a> key type.</p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
-        </div><div class="toggleContainer block">
-            <span class="toggle">Known Subclasses</span>
-            <div class="subClasses hiddenContent"><a href="CounterService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CounterService">CounterService</a>, <a href="LWWRegisterService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService">LWWRegisterService</a>, <a href="MVRegisterService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegisterService">MVRegisterService</a>, <a href="ORCartService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService">ORCartService</a>, <a href="ORSetService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSetService">ORSetService</a></div>
-          </div></div>
+          <div class="superTypes hiddenContent"><a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>], <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>, <span class="extype" name="scala.Int">Int</span>]], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
         
 
       <div id="mbrsel">
@@ -77,7 +71,7 @@ of events.
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.crdt.CRDTService"><span>CRDTService</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.crdt.ORCartService"><span>ORCartService</span></li><li class="in" name="com.rbmhtechnology.eventuate.crdt.CRDTService"><span>CRDTService</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -94,85 +88,34 @@ of events.
 
       <div id="template">
         <div id="allMembers">
-        
-
-        
-
-        <div id="values" class="values members">
-              <h3>Abstract Value Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#log" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="log:akka.actor.ActorRef"></a>
-      <a id="log:ActorRef"></a>
+        <div id="constructors" class="members">
+              <h3>Instance Constructors</h3>
+              <ol><li name="com.rbmhtechnology.eventuate.crdt.ORCartService#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(serviceId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORCart[A],Map[A,Int]]):com.rbmhtechnology.eventuate.crdt.ORCartService[A]"></a>
+      <a id="&lt;init&gt;:ORCartService[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
+        <span class="modifier"></span>
+        <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">log</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
+        <span class="name">ORCartService</span><span class="params">(<span name="serviceId">serviceId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="log">log: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>, <span name="ops">ops: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>], <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>, <span class="extype" name="scala.Int">Int</span>]]</span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@log:akka.actor.ActorRef" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@&lt;init&gt;(serviceId:String,log:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem,implicitops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORCart[A],Map[A,Int]]):com.rbmhtechnology.eventuate.crdt.ORCartService[A]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Event log.</p>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#ops" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="ops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[A,B]"></a>
-      <a id="ops:CRDTServiceOps[A,B]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">ops</span><span class="result">: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService.B">B</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@ops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[A,B]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">CRDT service operations.</p>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#serviceId" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="serviceId:String"></a>
-      <a id="serviceId:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">serviceId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@serviceId:String" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">CRDT service id.</p>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#system" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="system:akka.actor.ActorSystem"></a>
-      <a id="system:ActorSystem"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">system</span><span class="result">: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@system:akka.actor.ActorSystem" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">This service's actor system.</p>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">serviceId</dt><dd class="cmt"><p>Unique id of this service.</p></dd><dt class="param">log</dt><dd class="cmt"><p>Event log.</p></dd></dl></div>
     </li></ol>
             </div>
 
+        
+
+        
+
         <div id="values" class="values members">
-              <h3>Concrete Value Members</h3>
+              <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
@@ -185,7 +128,7 @@ of events.
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -202,7 +145,7 @@ of events.
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@##():Int" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@##():Int" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -219,11 +162,28 @@ of events.
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCartService#add" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="add(id:String,key:A,quantity:Int):scala.concurrent.Future[Map[A,Int]]"></a>
+      <a id="add(String,A,Int):Future[Map[A,Int]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">add</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="key">key: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span></span>, <span name="quantity">quantity: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>, <span class="extype" name="scala.Int">Int</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@add(id:String,key:A,quantity:Int):scala.concurrent.Future[Map[A,Int]]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Adds the given <code>quantity</code> of <code>key</code> to the OR-Cart identified by <code>id</code> and returns the updated OR-Cart content.</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -236,7 +196,7 @@ of events.
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -253,7 +213,7 @@ of events.
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@clone():Object" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@clone():Object" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -276,7 +236,7 @@ of events.
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -293,7 +253,7 @@ of events.
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@equals(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -310,7 +270,7 @@ of events.
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -333,7 +293,7 @@ of events.
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -350,7 +310,7 @@ of events.
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@hashCode():Int" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@hashCode():Int" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -367,11 +327,28 @@ of events.
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCartService#log" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="log:akka.actor.ActorRef"></a>
+      <a id="log:ActorRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">log</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@log:akka.actor.ActorRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Event log.</p><div class="fullcomment"><div class="comment cmt"><p>Event log.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService">ORCartService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -384,7 +361,7 @@ of events.
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -401,7 +378,7 @@ of events.
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@notify():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -418,31 +395,66 @@ of events.
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#op" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="op(id:String,operation:Any):scala.concurrent.Future[B]"></a>
-      <a id="op(String,Any):Future[B]"></a>
+      <a id="op(String,Any):Future[Map[A,Int]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">op</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="operation">operation: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService.B">B</span>]</span>
+        <span class="name">op</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="operation">operation: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>, <span class="extype" name="scala.Int">Int</span>]]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@op(id:String,operation:Any):scala.concurrent.Future[B]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@op(id:String,operation:Any):scala.concurrent.Future[B]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Updates the CRDT identified by <code>id</code> with given <code>operation</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Updates the CRDT identified by <code>id</code> with given <code>operation</code>.
 Returns the updated value of the CRDT.
-</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#save" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCartService#ops" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORCart[A],Map[A,Int]]"></a>
+      <a id="ops:CRDTServiceOps[ORCart[A],Map[A,Int]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ops</span><span class="result">: <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a>[<a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>], <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>, <span class="extype" name="scala.Int">Int</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@ops:com.rbmhtechnology.eventuate.crdt.CRDTServiceOps[com.rbmhtechnology.eventuate.crdt.ORCart[A],Map[A,Int]]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">CRDT service operations.</p><div class="fullcomment"><div class="comment cmt"><p>CRDT service operations.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService">ORCartService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCartService#remove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="remove(id:String,key:A):scala.concurrent.Future[Map[A,Int]]"></a>
+      <a id="remove(String,A):Future[Map[A,Int]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">remove</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="key">key: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>, <span class="extype" name="scala.Int">Int</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@remove(id:String,key:A):scala.concurrent.Future[Map[A,Int]]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Removes the given <code>key</code> from the OR-Cart identified by <code>id</code> and returns the updated OR-Cart content.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#save" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="save(id:String):scala.concurrent.Future[com.rbmhtechnology.eventuate.SnapshotMetadata]"></a>
       <a id="save(String):Future[SnapshotMetadata]"></a>
       <h4 class="signature">
@@ -454,12 +466,30 @@ Returns the updated value of the CRDT.
         <span class="name">save</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../SnapshotMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.SnapshotMetadata">SnapshotMetadata</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@save(id:String):scala.concurrent.Future[com.rbmhtechnology.eventuate.SnapshotMetadata]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@save(id:String):scala.concurrent.Future[com.rbmhtechnology.eventuate.SnapshotMetadata]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Saves a snapshot of the CRDT identified by <code>id</code>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#start" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Saves a snapshot of the CRDT identified by <code>id</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Saves a snapshot of the CRDT identified by <code>id</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCartService#serviceId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="serviceId:String"></a>
+      <a id="serviceId:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">serviceId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@serviceId:String" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Unique id of this service.</p><div class="fullcomment"><div class="comment cmt"><p>Unique id of this service.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService">ORCartService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#start" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="start():Unit"></a>
       <a id="start():Unit"></a>
       <h4 class="signature">
@@ -471,12 +501,13 @@ Returns the updated value of the CRDT.
         <span class="name">start</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@start():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@start():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Starts the CRDT service.</p>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#stop" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <p class="shortcomment cmt">Starts the CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Starts the CRDT service.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#stop" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="stop():Unit"></a>
       <a id="stop():Unit"></a>
       <h4 class="signature">
@@ -488,11 +519,12 @@ Returns the updated value of the CRDT.
         <span class="name">stop</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@stop():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@stop():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Stops the CRDT service.</p>
+      <p class="shortcomment cmt">Stops the CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Stops the CRDT service.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -505,11 +537,29 @@ Returns the updated value of the CRDT.
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCartService#system" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="system:akka.actor.ActorSystem"></a>
+      <a id="system:ActorSystem"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">system</span><span class="result">: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@system:akka.actor.ActorSystem" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">This service's actor system.</p><div class="fullcomment"><div class="comment cmt"><p>This service's actor system.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService">ORCartService</a> → <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -522,28 +572,29 @@ Returns the updated value of the CRDT.
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@toString():String" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@toString():String" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#value" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTService#value" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="value(id:String):scala.concurrent.Future[B]"></a>
-      <a id="value(String):Future[B]"></a>
+      <a id="value(String):Future[Map[A,Int]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">value</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService.B">B</span>]</span>
+        <span class="name">value</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>, <span class="extype" name="scala.Int">Int</span>]]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@value(id:String):scala.concurrent.Future[B]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@value(id:String):scala.concurrent.Future[B]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Returns the current value of the CRDT identified by <code>id</code>.</p>
+      <p class="shortcomment cmt">Returns the current value of the CRDT identified by <code>id</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the current value of the CRDT identified by <code>id</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -556,7 +607,7 @@ Returns the updated value of the CRDT.
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@wait():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -579,7 +630,7 @@ Returns the updated value of the CRDT.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -602,7 +653,7 @@ Returns the updated value of the CRDT.
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTService@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCartService@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -622,7 +673,9 @@ Returns the updated value of the CRDT.
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.AnyRef">
+        <div class="parent" name="com.rbmhtechnology.eventuate.crdt.CRDTService">
+              <h3>Inherited from <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>], <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>, <span class="extype" name="scala.Int">Int</span>]]</h3>
+            </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>

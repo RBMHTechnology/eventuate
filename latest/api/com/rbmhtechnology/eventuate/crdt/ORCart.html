@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>CRDTFormat - com.rbmhtechnology.eventuate.crdt.CRDTFormat</title>
-          <meta name="description" content="CRDTFormat - com.rbmhtechnology.eventuate.crdt.CRDTFormat" />
-          <meta name="keywords" content="CRDTFormat com.rbmhtechnology.eventuate.crdt.CRDTFormat" />
+          <title>ORCart - com.rbmhtechnology.eventuate.crdt.ORCart</title>
+          <meta name="description" content="ORCart - com.rbmhtechnology.eventuate.crdt.ORCart" />
+          <meta name="keywords" content="ORCart com.rbmhtechnology.eventuate.crdt.ORCart" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.crdt.CRDTFormat';
+            var hash = 'com.rbmhtechnology.eventuate.crdt.ORCart';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -28,12 +28,14 @@
         </head>
         <body class="type">
       <div id="definition">
-        <img alt="Trait" src="../../../../lib/trait_big.png" />
+        <a href="ORCart$.html" title="See companion object"><img alt="Class/Object" src="../../../../lib/class_to_object_big.png" /></a>
         <p id="owner"><a href="../../../package.html" class="extype" name="com">com</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt">crdt</a></p>
-        <h1>CRDTFormat</h1><h3><span class="morelinks"><div>Related Doc:
-            <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt">package crdt</a>
+        <h1><a href="ORCart$.html" title="See companion object">ORCart</a></h1><h3><span class="morelinks"><div>
+            Related Docs:
+            <a href="ORCart$.html" title="See companion object">object ORCart</a>
+            | <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt">package crdt</a>
           </div></span></h3><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -42,21 +44,19 @@
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">trait</span>
+        <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">CRDTFormat</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">ORCart</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="orSet">orSet: <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<a href="ORCartEntry.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartEntry">ORCartEntry</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart.A">A</span>]] = <span class="symbol"><span class="name"><a href="ORSet$.html">ORSet[ORCartEntry[A]]()</a></span></span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Marker trait for protobuf-serializable CRDTs and operations.
-</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Operation-based OR-Cart CRDT with an <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>-based implementation. <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entry values are of
+type <a href="ORCartEntry.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartEntry">ORCartEntry</a> and are uniquely identified with vector timestamps.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Key type.</p></dd><dt class="param">orSet</dt><dd class="cmt"><p>Backing <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="ORCartEntry.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartEntry">ORCartEntry</a></p></span><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>, specification 21.</p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
-        </div><div class="toggleContainer block">
-            <span class="toggle">Known Subclasses</span>
-            <div class="subClasses hiddenContent"><a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>, <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>, <a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a>, <a href="ORCartEntry.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartEntry">ORCartEntry</a>, <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>, <a href="CRDTService$$ValueUpdated.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService.ValueUpdated">ValueUpdated</a></div>
-          </div></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a>, <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
         
 
       <div id="mbrsel">
@@ -73,7 +73,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat"><span>CRDTFormat</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.crdt.ORCart"><span>ORCart</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat"><span>CRDTFormat</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -90,7 +90,27 @@
 
       <div id="template">
         <div id="allMembers">
-        
+        <div id="constructors" class="members">
+              <h3>Instance Constructors</h3>
+              <ol><li name="com.rbmhtechnology.eventuate.crdt.ORCart#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(orSet:com.rbmhtechnology.eventuate.crdt.ORSet[com.rbmhtechnology.eventuate.crdt.ORCartEntry[A]]):com.rbmhtechnology.eventuate.crdt.ORCart[A]"></a>
+      <a id="&lt;init&gt;:ORCart[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">new</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ORCart</span><span class="params">(<span name="orSet">orSet: <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<a href="ORCartEntry.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartEntry">ORCartEntry</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart.A">A</span>]] = <span class="symbol"><span class="name"><a href="ORSet$.html">ORSet[ORCartEntry[A]]()</a></span></span></span>)</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@&lt;init&gt;(orSet:com.rbmhtechnology.eventuate.crdt.ORSet[com.rbmhtechnology.eventuate.crdt.ORCartEntry[A]]):com.rbmhtechnology.eventuate.crdt.ORCart[A]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">orSet</dt><dd class="cmt"><p>Backing <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>.</p></dd></dl></div>
+    </li></ol>
+            </div>
 
         
 
@@ -110,7 +130,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -127,7 +147,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@##():Int" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@##():Int" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -144,11 +164,28 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCart#add" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="add(key:A,quantity:Int,timestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.crdt.ORCart[A]"></a>
+      <a id="add(A,Int,VectorTime):ORCart[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">add</span><span class="params">(<span name="key">key: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart.A">A</span></span>, <span name="quantity">quantity: <span class="extype" name="scala.Int">Int</span></span>, <span name="timestamp">timestamp: <a href="../VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart.A">A</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@add(key:A,quantity:Int,timestamp:com.rbmhtechnology.eventuate.VectorTime):com.rbmhtechnology.eventuate.crdt.ORCart[A]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Adds the given <code>quantity</code> of <code>key</code>, uniquely identified by <code>timestamp</code>, and returns an updated <code>ORCart</code>.</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -161,7 +198,7 @@
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -178,7 +215,7 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@clone():Object" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@clone():Object" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -201,28 +238,11 @@
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(x$1:Any):Boolean"></a>
-      <a id="equals(Any):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@equals(x$1:Any):Boolean" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -235,7 +255,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -258,24 +278,7 @@
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@getClass():Class[_]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="hashCode():Int"></a>
-      <a id="hashCode():Int"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@hashCode():Int" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -292,7 +295,7 @@
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -309,7 +312,7 @@
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -326,7 +329,7 @@
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@notify():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -343,11 +346,62 @@
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCart#orSet" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="orSet:com.rbmhtechnology.eventuate.crdt.ORSet[com.rbmhtechnology.eventuate.crdt.ORCartEntry[A]]"></a>
+      <a id="orSet:ORSet[ORCartEntry[A]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">orSet</span><span class="result">: <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<a href="ORCartEntry.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartEntry">ORCartEntry</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart.A">A</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@orSet:com.rbmhtechnology.eventuate.crdt.ORSet[com.rbmhtechnology.eventuate.crdt.ORCartEntry[A]]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Backing <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCart#prepareRemove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="prepareRemove(key:A):scala.collection.immutable.Set[com.rbmhtechnology.eventuate.VectorTime]"></a>
+      <a id="prepareRemove(A):Set[VectorTime]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">prepareRemove</span><span class="params">(<span name="key">key: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart.A">A</span></span>)</span><span class="result">: <span class="extype" name="scala.collection.immutable.Set">Set</span>[<a href="../VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@prepareRemove(key:A):scala.collection.immutable.Set[com.rbmhtechnology.eventuate.VectorTime]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Collects all timestamps of given <code>key</code>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCart#remove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="remove(timestamps:scala.collection.immutable.Set[com.rbmhtechnology.eventuate.VectorTime]):com.rbmhtechnology.eventuate.crdt.ORCart[A]"></a>
+      <a id="remove(Set[VectorTime]):ORCart[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">remove</span><span class="params">(<span name="timestamps">timestamps: <span class="extype" name="scala.collection.immutable.Set">Set</span>[<a href="../VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a>]</span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart.A">A</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@remove(timestamps:scala.collection.immutable.Set[com.rbmhtechnology.eventuate.VectorTime]):com.rbmhtechnology.eventuate.crdt.ORCart[A]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Removes all <a href="ORCartEntry.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartEntry">ORCartEntry</a>s identified by given <code>timestamps</code> and returns an updated <code>ORCart</code>.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -360,28 +414,29 @@
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="toString():String"></a>
-      <a id="toString():String"></a>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCart#value" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="value:Map[A,Int]"></a>
+      <a id="value:Map[A,Int]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+        <span class="name">value</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart.A">A</span>, <span class="extype" name="scala.Int">Int</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@toString():String" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@value:Map[A,Int]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+      <p class="shortcomment cmt">Returns the <code>quantity</code>s of the contained <code>key</code>s, reducing multiple <a href="ORCartEntry.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartEntry">ORCartEntry</a>s with the same <code>key</code>
+by adding their <code>quantity</code>s.</p>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -394,7 +449,7 @@
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@wait():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -417,7 +472,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -440,7 +495,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.CRDTFormat@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORCart@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -460,7 +515,13 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.Serializable">
+        <div class="parent" name="scala.Product">
+              <h3>Inherited from <span class="extype" name="scala.Product">Product</span></h3>
+            </div><div class="parent" name="scala.Equals">
+              <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">
+              <h3>Inherited from <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a></h3>
+            </div><div class="parent" name="scala.Serializable">
               <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
             </div><div class="parent" name="java.io.Serializable">
               <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>

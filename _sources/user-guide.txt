@@ -203,7 +203,7 @@ A formal to approach to commutative replicated data types (CmRDTs) or operation-
 - The command and event handler of an event-sourced actor can be used to implement the two update phases mentioned in the paper: *atSource* and *downstream*, respectively.
 - All *downstream* preconditions mentioned in the paper are satisfied in case of causal delivery of update operations which is guaranteed for actors consuming from a replicated event log.
 
-Eventuate currently implements 4 out of 12 operation-based CRDTs specified in the paper. These are *Counter*, *MV-Register*, *LWW-Register* and *OR-Set*. They can be instantiated and used via their corresponding *CRDT services*. CRDT operations are asynchronous methods on the service interfaces. CRDT services free applications from dealing with low-level details like event-sourced actors or command messages directly. The following is the definition of ORSetService_:
+Eventuate currently implements 5 out of 12 operation-based CRDTs specified in the paper. These are *Counter*, *MV-Register*, *LWW-Register*, *OR-Set* and *OR-Cart* (a shopping cart CRDT). They can be instantiated and used via their corresponding *CRDT services*. CRDT operations are asynchronous methods on the service interfaces. CRDT services free applications from dealing with low-level details like event-sourced actors or command messages directly. The following is the definition of ORSetService_:
 
 .. includecode:: ../../eventuate-crdt/src/main/scala/com/rbmhtechnology/eventuate/crdt/ORSet.scala
    :snippet: or-set-service
@@ -291,7 +291,7 @@ In a more real-world example, there would be several actors of different type co
 .. _Lamport timestamps: http://en.wikipedia.org/wiki/Lamport_timestamps
 .. _multi node testkit: http://doc.akka.io/docs/akka/2.4.1/dev/multi-node-testing.html
 .. _ReplicatedOrSetSpec: https://github.com/RBMHTechnology/eventuate/blob/master/src/multi-jvm/scala/com/rbmhtechnology/eventuate/crdt/ReplicatedORSetSpec.scala
-.. _CRDT sources: https://github.com/RBMHTechnology/eventuate/tree/master/src/main/scala/com/rbmhtechnology/eventuate/crdt
+.. _CRDT sources: https://github.com/RBMHTechnology/eventuate/tree/master/eventuate-crdt/src/main/scala/com/rbmhtechnology/eventuate/crdt
 .. _A comprehensive study of Convergent and Commutative Replicated Data Types: http://hal.upmc.fr/file/index/docid/555588/filename/techreport.pdf
 
 .. _Versioned: latest/api/index.html#com.rbmhtechnology.eventuate.Versioned

@@ -172,7 +172,7 @@ of events.
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Replicated counter.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated counter.
+      <p class="shortcomment cmt">Operation-based Counter CRDT.</p><div class="fullcomment"><div class="comment cmt"><p>Operation-based Counter CRDT.
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Counter value type.</p></dd><dt class="param">value</dt><dd class="cmt"><p>Current counter value.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a></p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.CounterService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CounterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.Counter[A],A]"></a>
@@ -208,11 +208,11 @@ of events.
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Replicated LWW-Register with an <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>-based implementation.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated LWW-Register with an <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>-based implementation. Instead of returning multiple values
-in case of concurrent assignments, the last written value is returned. The last written value is determined
-by comparing the following <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> fields in given order:</p><ul><li><code>vectorTimestamp</code>: if causally related, return the value with the higher timestamp, otherwise compare</li><li><code>systemTimestamp</code>: if not equal, return the value with the higher timestamp, otherwise compare</li><li><code>emitterId</code></li></ul><p>Note that this relies on synchronized system clocks. <a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a> should only be used when the choice of
+      <p class="shortcomment cmt">Operation-based LWW-Register CRDT with an <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>-based implementation.</p><div class="fullcomment"><div class="comment cmt"><p>Operation-based LWW-Register CRDT with an <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>-based implementation. Instead of returning multiple
+values in case of concurrent assignments, the last written value is returned. The last written value is
+determined by comparing the following <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> fields in given order:</p><ul><li><code>vectorTimestamp</code>: if causally related, return the value with the higher timestamp, otherwise compare</li><li><code>systemTimestamp</code>: if not equal, return the value with the higher timestamp, otherwise compare</li><li><code>emitterId</code></li></ul><p>Note that this relies on synchronized system clocks. <a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a> should only be used when the choice of
 value is not important for concurrent updates occurring within the clock skew.
-</p></div><dl class="paramcmts block"><dt class="param">mvRegister</dt><dd class="cmt"><p>Initially empty <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a></p></span></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="param">mvRegister</dt><dd class="cmt"><p>Initially empty <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a>.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>, specification 9</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.LWWRegisterService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="LWWRegisterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.LWWRegister[A],Option[A]]"></a>
       <a id="LWWRegisterService[A]:LWWRegisterService[A]"></a>
@@ -247,10 +247,10 @@ value is not important for concurrent updates occurring within the clock skew.
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Replicated MV-Register.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated MV-Register. Has several <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values assigned in case of concurrent assignments,
-otherwise, a single <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value. Concurrent assignments can be reduced to a single assignment
-by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with a vector timestamp that is greater than those of the currently
-assigned <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values.
+      <p class="shortcomment cmt">Operation-based MV-Register CRDT.</p><div class="fullcomment"><div class="comment cmt"><p>Operation-based MV-Register CRDT. Has several <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values assigned in case of concurrent assignments,
+otherwise, a single <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value. Concurrent assignments can be reduced to a single assignment by
+assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with a vector timestamp that is greater than those of the currently assigned
+<a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values.
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>MV-Register value type.</p></dd><dt class="param">versioned</dt><dd class="cmt"><p>Registered values. Initially empty.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a></p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegisterService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MVRegisterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.MVRegister[A],Set[A]]"></a>
@@ -270,6 +270,62 @@ assigned <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eve
     </span>
       <p class="shortcomment cmt">Replicated <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> CRDT service.
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> value type.</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ORCart[A]extendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="ORCart[A]:ORCart[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ORCart.html"><span class="name">ORCart</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="orSet">orSet: <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<a href="ORCartEntry.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartEntry">ORCartEntry</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart.A">A</span>]] = <span class="symbol"><span class="name"><a href="ORSet$.html">ORSet[ORCartEntry[A]]()</a></span></span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@ORCart[A]extendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Operation-based OR-Cart CRDT with an <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>-based implementation.</p><div class="fullcomment"><div class="comment cmt"><p>Operation-based OR-Cart CRDT with an <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>-based implementation. <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entry values are of
+type <a href="ORCartEntry.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartEntry">ORCartEntry</a> and are uniquely identified with vector timestamps.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Key type.</p></dd><dt class="param">orSet</dt><dd class="cmt"><p>Backing <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="ORCartEntry.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartEntry">ORCartEntry</a></p></span><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>, specification 21.</p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCartEntry" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ORCartEntry[A]extendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="ORCartEntry[A]:ORCartEntry[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ORCartEntry.html"><span class="name">ORCartEntry</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="key">key: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartEntry.A">A</span></span>, <span name="quantity">quantity: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@ORCartEntry[A]extendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"><a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a> entry.</p><div class="fullcomment"><div class="comment cmt"><p><a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a> entry.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Key type.</p></dd><dt class="param">key</dt><dd class="cmt"><p>Entry key. Used to identify a product in the shopping cart.</p></dd><dt class="param">quantity</dt><dd class="cmt"><p>Entry quantity.</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCartService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ORCartService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.ORCart[A],Map[A,Int]]"></a>
+      <a id="ORCartService[A]:ORCartService[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ORCartService.html"><span class="name">ORCartService</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a>[<a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>], <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCartService.A">A</span>, <span class="extype" name="scala.Int">Int</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@ORCartService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.ORCart[A],Map[A,Int]]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Replicated <a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a> CRDT service.</p><ul><li>For adding a new <code>key</code> of given <code>quantity</code> a client should call <code>add</code>.</li><li>For incrementing the <code>quantity</code> of an existing <code>key</code> a client should call <code>add</code>.</li><li>For decrementing the <code>quantity</code> of an existing <code>key</code> a client should call <code>remove</code>, followed by <code>add</code>
+   (after <code>remove</code> successfully completed).</li><li>For removing a <code>key</code> a client should call <code>remove</code>.
+</li></ul></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a> key type.</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSet" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ORSet[A]extendsCRDTFormatwithProductwithSerializable"></a>
       <a id="ORSet[A]:ORSet[A]"></a>
@@ -286,8 +342,8 @@ assigned <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eve
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Replicated OR-Set.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated OR-Set. In case of a concurrent <code>add</code> and <code>remove</code>, <code>add</code> has precedence.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Entry value type.</p></dd><dt class="param">versionedEntries</dt><dd class="cmt"><p><a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a></p></span></dd></dl></div>
+      <p class="shortcomment cmt">Operation-based OR-Set CRDT.</p><div class="fullcomment"><div class="comment cmt"><p>Operation-based OR-Set CRDT. <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries are uniquely identified with vector timestamps.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Entry value type.</p></dd><dt class="param">versionedEntries</dt><dd class="cmt"><p><a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>, specification 15</p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSetService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ORSetService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.ORSet[A],scala.collection.immutable.Set[A]]"></a>
       <a id="ORSetService[A]:ORSetService[A]"></a>
@@ -305,7 +361,7 @@ assigned <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eve
       </a>
     </span>
       <p class="shortcomment cmt">Replicated <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> CRDT service.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> entry type</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> entry type.</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -377,6 +433,23 @@ assigned <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eve
       </span>
       </h4><span class="permalink">
       <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@MVRegister" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.ORCart" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ORCart"></a>
+      <a id="ORCart:ORCart"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ORCart$.html"><span class="name">ORCart</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@ORCart" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>

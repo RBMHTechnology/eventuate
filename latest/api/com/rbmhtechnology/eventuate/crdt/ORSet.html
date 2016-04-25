@@ -51,8 +51,8 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Replicated OR-Set. In case of a concurrent <code>add</code> and <code>remove</code>, <code>add</code> has precedence.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Entry value type.</p></dd><dt class="param">versionedEntries</dt><dd class="cmt"><p><a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a></p></span></dd></dl><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Operation-based OR-Set CRDT. <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries are uniquely identified with vector timestamps.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Entry value type.</p></dd><dt class="param">versionedEntries</dt><dd class="cmt"><p><a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a>, specification 15</p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a>, <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -184,7 +184,7 @@
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Adds a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entry from <code>entry</code> and <code>timestamp</code> and returns an updated OR-Set.</p>
+      <p class="shortcomment cmt">Adds a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entry from <code>entry</code>, identified by <code>timestamp</code>, and returns an updated <code>ORSet</code>.</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -368,22 +368,22 @@
     </span>
       <p class="shortcomment cmt">Collects all timestamps of given <code>entry</code>.</p>
     </li><li name="com.rbmhtechnology.eventuate.crdt.ORSet#remove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="remove(entry:A,timestamps:scala.collection.immutable.Set[com.rbmhtechnology.eventuate.VectorTime]):com.rbmhtechnology.eventuate.crdt.ORSet[A]"></a>
-      <a id="remove(A,Set[VectorTime]):ORSet[A]"></a>
+      <a id="remove(timestamps:scala.collection.immutable.Set[com.rbmhtechnology.eventuate.VectorTime]):com.rbmhtechnology.eventuate.crdt.ORSet[A]"></a>
+      <a id="remove(Set[VectorTime]):ORSet[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">remove</span><span class="params">(<span name="entry">entry: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet.A">A</span></span>, <span name="timestamps">timestamps: <span class="extype" name="scala.collection.immutable.Set">Set</span>[<a href="../VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a>]</span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet.A">A</span>]</span>
+        <span class="name">remove</span><span class="params">(<span name="timestamps">timestamps: <span class="extype" name="scala.collection.immutable.Set">Set</span>[<a href="../VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a>]</span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet.A">A</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSet@remove(entry:A,timestamps:scala.collection.immutable.Set[com.rbmhtechnology.eventuate.VectorTime]):com.rbmhtechnology.eventuate.crdt.ORSet[A]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.ORSet@remove(timestamps:scala.collection.immutable.Set[com.rbmhtechnology.eventuate.VectorTime]):com.rbmhtechnology.eventuate.crdt.ORSet[A]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Removes <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries matching <code>entry</code> and <code>timestamps</code> and returns an updated OR-Set.</p>
+      <p class="shortcomment cmt">Removes all <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> entries identified by given <code>timestamps</code> and returns an updated <code>ORSet</code>.</p>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

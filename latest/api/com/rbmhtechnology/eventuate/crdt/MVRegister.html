@@ -51,10 +51,10 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Replicated MV-Register. Has several <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values assigned in case of concurrent assignments,
-otherwise, a single <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value. Concurrent assignments can be reduced to a single assignment
-by assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with a vector timestamp that is greater than those of the currently
-assigned <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Operation-based MV-Register CRDT. Has several <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values assigned in case of concurrent assignments,
+otherwise, a single <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value. Concurrent assignments can be reduced to a single assignment by
+assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with a vector timestamp that is greater than those of the currently assigned
+<a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values.
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>MV-Register value type.</p></dd><dt class="param">versioned</dt><dd class="cmt"><p>Registered values. Initially empty.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a></p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a>, <span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>

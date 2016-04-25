@@ -186,6 +186,10 @@
   <div class="section" id="example-application">
 <span id="id1"></span><h1>Example application<a class="headerlink" href="#example-application" title="Permalink to this headline">¶</a></h1>
 <p>The example application is an over-simplified order management application that allows users to add and remove items from orders via a command-line interface. Order instances are replicated across locations and can be updated at any location. Orders remain writeable during partitions and conflicting updates can be resolved interactively when the partition heals. The example application source code is available as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example/ordermgnt">Scala version</a> and as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/japi/ordermgnt">Java 8 version</a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This example application was created to demonstrate <em>interactive conflict resolution</em>. A more realistic order management application would probably use automated conflict resolution which can be implemented with the <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.ORCartService">shopping cart CRDT</a>, for example.</p>
+</div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
 <p class="last">There is a tutorial-style <a class="reference external" href="https://www.typesafe.com/community/core-tools/activator-and-sbt">activator</a> template for the scala-version that guides you through the code: <a class="reference external" href="https://www.typesafe.com/activator/template/akka-eventuate-scala">akka-eventuate-scala</a>.</p>
