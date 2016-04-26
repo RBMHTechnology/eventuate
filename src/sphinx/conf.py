@@ -3,7 +3,7 @@ import os
 
 sys.path.insert(0, os.path.abspath('_ext'))
 
-extensions = ['includecode']
+extensions = ['includecode', 'tabbedcode']
 source_suffix = '.rst'
 source_encoding = 'utf-8'
 master_doc = 'index'

@@ -3,6 +3,8 @@ import codecs
 import re
 from os import path
 
+from pygments.lexers import get_lexer_by_name
+
 from docutils import nodes
 from docutils.parsers.rst import Directive, directives
 
@@ -16,7 +18,8 @@ class IncludeCode(Directive):
     optional_arguments = 0
     final_argument_whitespace = False
     option_spec = {
-        'snippet': directives.unchanged_required
+        'snippet': directives.unchanged_required,
+        'language': directives.unchanged
     }
 
     def run(self):
@@ -110,7 +113,18 @@ class IncludeCode(Directive):
         if text == "":
             return [document.reporter.warning('Snippet "' + snippet + '" not found!', line=self.lineno)]
 
+        file_extension = os.path.splitext(fn)[1][1:]
+
+        default_language = env.config.highlight_language or 'scala'
+        language = self.options.get('language') or file_extension
+
+        try:
+            get_lexer_by_name(language)
+        except:
+            language = default_language
+
         retnode = nodes.literal_block(text, text, source=fn)
+        retnode['language'] = language
         document.settings.env.note_dependency(rel_fn)
         return [retnode]
 
