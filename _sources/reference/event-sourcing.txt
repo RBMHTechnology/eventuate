@@ -32,6 +32,8 @@ Both, event handler and persist handler are called on a dispatcher thread of the
 .. note::
    A command handler should not modify persistent actor state i.e. state that is derived from events. 
 
+.. _state-sync:
+
 State synchronization
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -274,6 +276,9 @@ The handler of the generated ``DeliverEvent`` calls ``deliver`` to deliver a ``R
 The ``destination`` confirms the delivery of the message by sending a ``Confirmation`` reply to the event-sourced actor from which it generates a ``ConfirmationEvent``. The actor uses the ``persistConfirmation`` method to persist the confirmation event together with the delivery id. After successful persistence of the confirmation event, the corresponding reliable message is removed from the internal buffer of unconfirmed messages.
 
 When the actor is re-started, unconfirmed reliable messages are automatically re-delivered to their ``destination``\ s. The example actor additionally schedules ``redeliverUnconfirmed`` calls to periodically re-deliver unconfirmed messages. This is done within the actor’s command handler.
+
+.. note::
+   In the above example a pattern guard is used for idempotent confirmation processing by ensuring that the ``deliveryId`` of the ``Confirmation`` message is still unconfirmed. This pattern may only be applied if the ``stateSync`` member of the ``EventsourcedActor`` is set to ``true``. For further details on ``stateSync`` see section :ref:`state-sync`.
 
 .. _ref-event-collaboration:
 

@@ -29,6 +29,8 @@
   
 
   
+    <link rel="stylesheet" href="../_static/tabbedcode.css" type="text/css" />
+  
 
   
     <link rel="top" title="Eventuate" href="../index.html"/>
@@ -246,7 +248,7 @@
 </div>
 </div>
 <div class="section" id="state-synchronization">
-<h2>State synchronization<a class="headerlink" href="#state-synchronization" title="Permalink to this headline">¶</a></h2>
+<span id="state-sync"></span><h2>State synchronization<a class="headerlink" href="#state-synchronization" title="Permalink to this headline">¶</a></h2>
 <p>As explained in section <a class="reference internal" href="#command-handler"><span class="std std-ref">Command handler</span></a>, events are persisted asynchronously. What happens if another command is sent to an event-sourced actor while persistence is in progress? This depends on the value of <code class="docutils literal"><span class="pre">stateSync</span></code>, a member of <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> that can be overridden.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="n">stateSync</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">true</span>
 </pre></div>
@@ -693,7 +695,7 @@
         <span class="k">case</span> <span class="nc">Success</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="c1">// ...</span>
         <span class="k">case</span> <span class="nc">Failure</span><span class="o">(</span><span class="n">err</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="c1">// ...</span>
       <span class="o">}</span>
-    <span class="k">case</span> <span class="nc">Confirmation</span><span class="o">(</span><span class="n">deliveryId</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="k">case</span> <span class="nc">Confirmation</span><span class="o">(</span><span class="n">deliveryId</span><span class="o">)</span> <span class="k">if</span> <span class="n">unconfirmed</span><span class="o">.</span><span class="n">contains</span><span class="o">(</span><span class="n">deliveryId</span><span class="o">)</span> <span class="k">=&gt;</span>
       <span class="n">persistConfirmation</span><span class="o">(</span><span class="nc">ConfirmationEvent</span><span class="o">(),</span> <span class="n">deliveryId</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">case</span> <span class="nc">Success</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="c1">// ...</span>
         <span class="k">case</span> <span class="nc">Failure</span><span class="o">(</span><span class="n">err</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="c1">// ...</span>
@@ -716,6 +718,10 @@
 <p>The handler of the generated <code class="docutils literal"><span class="pre">DeliverEvent</span></code> calls <code class="docutils literal"><span class="pre">deliver</span></code> to deliver a <code class="docutils literal"><span class="pre">ReliableMessage</span></code> to <code class="docutils literal"><span class="pre">destination</span></code>. The <code class="docutils literal"><span class="pre">deliveryId</span></code> is an identifier to correlate <code class="docutils literal"><span class="pre">ReliableMessage</span></code> with a <code class="docutils literal"><span class="pre">Confirmation</span></code> message. The <code class="docutils literal"><span class="pre">deliveryId</span></code> can be any application-defined id. Here, the event’s sequence number is used which can be obtained with <code class="docutils literal"><span class="pre">lastSequenceNumber</span></code>.</p>
 <p>The <code class="docutils literal"><span class="pre">destination</span></code> confirms the delivery of the message by sending a <code class="docutils literal"><span class="pre">Confirmation</span></code> reply to the event-sourced actor from which it generates a <code class="docutils literal"><span class="pre">ConfirmationEvent</span></code>. The actor uses the <code class="docutils literal"><span class="pre">persistConfirmation</span></code> method to persist the confirmation event together with the delivery id. After successful persistence of the confirmation event, the corresponding reliable message is removed from the internal buffer of unconfirmed messages.</p>
 <p>When the actor is re-started, unconfirmed reliable messages are automatically re-delivered to their <code class="docutils literal"><span class="pre">destination</span></code>s. The example actor additionally schedules <code class="docutils literal"><span class="pre">redeliverUnconfirmed</span></code> calls to periodically re-deliver unconfirmed messages. This is done within the actor’s command handler.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In the above example a pattern guard is used for idempotent confirmation processing by ensuring that the <code class="docutils literal"><span class="pre">deliveryId</span></code> of the <code class="docutils literal"><span class="pre">Confirmation</span></code> message is still unconfirmed. This pattern may only be applied if the <code class="docutils literal"><span class="pre">stateSync</span></code> member of the <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> is set to <code class="docutils literal"><span class="pre">true</span></code>. For further details on <code class="docutils literal"><span class="pre">stateSync</span></code> see section <a class="reference internal" href="#state-sync"><span class="std std-ref">State synchronization</span></a>.</p>
+</div>
 </div>
 <div class="section" id="event-collaboration">
 <span id="ref-event-collaboration"></span><h1>Event collaboration<a class="headerlink" href="#event-collaboration" title="Permalink to this headline">¶</a></h1>
@@ -1019,6 +1025,7 @@ batch_size_fail_threshold_in_kb: 50
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/tabbedcode.js"></script>
 
   
 

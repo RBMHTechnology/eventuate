@@ -32,8 +32,11 @@ Event-sourced actors distinguish between *commands* and *events*. During command
 
 Concrete event-sourced actors must implement the ``EventsourcedActor`` trait. The following ``ExampleActor`` maintains state of type ``Vector[String]`` to which entries can be appended:
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: event-sourced-actor
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: event-sourced-actor
+   .. includecode:: code/userguide/japi/ActorExample.java
+      :snippet: event-sourced-actor
 
 For modifying ``currentState``, applications send ``Append`` commands which are handled by the ``onCommand`` handler. From an ``Append`` command, the handler derives an ``Appended`` event and ``persist``\ s it to the given ``eventLog``. If persistence succeeds, the command sender is informed about successful processing. If persistence fails, the command sender is informed about the failure so it can retry, if needed. 
 
@@ -47,15 +50,21 @@ The ``onEvent`` handler updates ``currentState`` from persisted events and is au
 Creating a single instance
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In the following, a single instance of ``ExampleActor`` is created and two ``Append`` commands are sent to it: 
+In the following, a single instance of ``ExampleActor`` is created and two ``Append`` commands are sent to it:
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: create-one-instance
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: create-one-instance
+   .. includecode:: code/userguide/japi/ActorExample.java
+      :snippet: create-one-instance
 
 Sending a ``Print`` command 
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: print-one-instance
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: print-one-instance
+   .. includecode:: code/userguide/japi/ActorExample.java
+      :snippet: print-one-instance
 
 should print::
 
@@ -75,13 +84,19 @@ Creating two isolated instances
 
 When creating two instances of ``ExampleActor`` with different ``aggregateId``\ s, they are isolated from each other, by default, and do not consume each other’s events:
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: create-two-instances
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: create-two-instances
+   .. includecode:: code/userguide/japi/ActorExample.java
+      :snippet: create-two-instances
 
 Sending two ``Print`` commands
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: print-two-instances
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: print-two-instances
+   .. includecode:: code/userguide/japi/ActorExample.java
+      :snippet: print-two-instances
 
 should print::
 
@@ -93,8 +108,11 @@ Creating two replica instances
 
 When creating two ``ExampleActor`` instances with the same ``aggregateId``, they consume each other’s events [#]_.
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: create-replica-instances
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: create-replica-instances
+   .. includecode:: code/userguide/japi/ActorExample.java
+      :snippet: create-replica-instances
 
 Here, ``d4`` processes an ``Append`` command and persists an ``Appended`` event. Both, ``d4`` and ``d5``, consume that event and update their internal state. After waiting a bit for convergence, sending a ``Print`` command to both actors should print::
 
@@ -103,8 +121,11 @@ Here, ``d4`` processes an ``Append`` command and persists an ``Appended`` event.
 
 After both replicas have converged, another ``Append`` is sent to ``d5``. 
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: send-another-append
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: send-another-append
+   .. includecode:: code/userguide/japi/ActorExample.java
+      :snippet: send-another-append
 
 Again both actors consume the event and sending another ``Print`` command should print::
 
@@ -127,8 +148,11 @@ How can the actor determine if ``e2`` is a regular i.e. causally related or conc
 
 The vector timestamp of an event can be obtained with ``lastVectorTimestamp`` during event processing. Vector timestamps can be attached as *update timestamp* to current state and compared with the vector timestamp of a new event in order to determine whether the new event is causally related to the previous state update or not\ [#]_:
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: detecting-concurrent-update
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: detecting-concurrent-update
+   .. includecode:: code/userguide/japi/ConcurrentExample.java
+      :snippet: detecting-concurrent-update
 
 Attaching update timestamps to current state and comparing them with vector timestamps of new events can be easily abstracted over so that applications don’t have to deal with these low level details, as shown in the next section. 
 
@@ -139,8 +163,11 @@ Tracking conflicting versions
 
 If state update operations from concurrent events do not commute, conflicting versions of actor state arise that must be tracked and resolved. This can be done with Eventuate’s ``ConcurrentVersions[S, A]`` abstraction and an application-defined *update function* of type ``(S, A) => S`` where ``S`` is the type of actor state and ``A`` the update type. In our example, the ``ConcurrentVersions`` type is ``ConcurrentVersions[Vector[String], String]`` and the update function ``(s, a) => s :+ a``:
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: tracking-conflicting-versions
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: tracking-conflicting-versions
+   .. includecode:: code/userguide/japi/TrackingExample.java
+      :snippet: tracking-conflicting-versions
 
 Internally, ``ConcurrentVersions`` maintains versions of actor state in a tree structure where each concurrent ``update`` creates a new branch. The shape of the tree is determined solely by the vector timestamps of the corresponding update events. 
 
@@ -165,8 +192,11 @@ Automated conflict resolution
 
 The following is a simple example of automated conflict resolution: if a conflict has been detected, the version with the higher wall clock timestamp is selected to be the winner. In case of equal wall clock timestamps, the version with the lower emitter id is selected. The wall clock timestamp can be obtained with ``lastSystemTimestamp`` during event handling, the emitter id with ``lastEmitterId``. The emitter id is the ``id`` of the ``EventsourcedActor`` that emitted the event.
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: automated-conflict-resolution
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: automated-conflict-resolution
+   .. includecode:: code/userguide/japi/ResolveExample.java
+      :snippet: automated-conflict-resolution
 
 Here, conflicting versions are sorted by descending wall clock timestamp and ascending emitter id where the latter is tracked as ``creator`` of the version. The first version is selected to be the winner. Its vector timestamp is passed as argument to ``resolve`` which selects this version and discards all other versions.
 
@@ -180,8 +210,11 @@ Interactive conflict resolution
 
 Interactive conflict resolution does not resolve conflicts immediately but requests the user to inspect and resolve a conflict. The following is a very simple example of interactive conflict resolution: a user selects a winner version if conflicting versions of application state exist.
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: interactive-conflict-resolution
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: interactive-conflict-resolution
+   .. includecode:: code/userguide/japi/ResolveExample.java
+      :snippet: interactive-conflict-resolution
 
 When a user tries to ``Append`` in presence of a conflict, the ``ExampleActor`` rejects the update and requests the user to select a winner version from a sequence of conflicting versions. The user then sends the update timestamp of the winner version as ``selectedTimestamp`` with a ``Resolve`` command from which a ``Resolved`` event is derived and persisted. Handling of ``Resolved`` at all replicas finally resolves the conflict.
 
@@ -205,8 +238,11 @@ A formal to approach to commutative replicated data types (CmRDTs) or operation-
 
 Eventuate currently implements 5 out of 12 operation-based CRDTs specified in the paper. These are *Counter*, *MV-Register*, *LWW-Register*, *OR-Set* and *OR-Cart* (a shopping cart CRDT). They can be instantiated and used via their corresponding *CRDT services*. CRDT operations are asynchronous methods on the service interfaces. CRDT services free applications from dealing with low-level details like event-sourced actors or command messages directly. The following is the definition of ORSetService_:
 
-.. includecode:: ../../eventuate-crdt/src/main/scala/com/rbmhtechnology/eventuate/crdt/ORSet.scala
-   :snippet: or-set-service
+.. tabbed-code::
+    .. includecode:: ../../eventuate-crdt/src/main/scala/com/rbmhtechnology/eventuate/crdt/ORSet.scala
+       :snippet: or-set-service
+    .. includecode:: code/userguide/japi/CrdtExample.java
+       :snippet: or-set-service
 
 The ORSetService_ is a CRDT service that manages ORSet_ instances. It implements the asynchronous ``add`` and ``remove`` methods and inherits the ``value(id: String): Future[Set[A]]`` method from ``CRDTService[ORSet[A], Set[A]]`` for reading the current value. Their ``id`` parameter identifies an ``ORSet`` instance. Instances are automatically created by the service on demand. A usage example is the ReplicatedOrSetSpec_ that is based on Akka’s `multi node testkit`_.
 
@@ -226,8 +262,11 @@ Event-sourced views
 
 Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. Concrete event-sourced views must implement the ``EventsourcedView`` trait. In the following example, the view counts all ``Appended`` and ``Resolved`` events emitted by all event-sourced actors to the same ``eventLog``:
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: event-sourced-view
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: event-sourced-view
+   .. includecode:: code/userguide/japi/ViewExample.java
+      :snippet: event-sourced-view
 
 Event-sourced views handle events in the same way as event-sourced actors by implementing an ``onEvent`` handler. The ``onCommand`` handler in the example processes the queries ``GetAppendCount`` and ``GetResolveCount``.
 
@@ -247,8 +286,11 @@ The situation is different when a client reads from multiple actors. Imagine two
 
 Similar considerations can be made for reading from an event-sourced view after having made an update to an event-sourced actor. For example, an application that successfully appended an entry to ``ExampleActor`` may not immediately see that update in the ``appendCount`` of ``ExampleView``. To achieve causal read consistency, the view should delay command processing until the emitted event has been consumed by the view. This can be achieved with a ``ConditionalRequest``.
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: conditional-requests
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: conditional-requests
+   .. includecode:: code/userguide/japi/ConditionalExample.java
+      :snippet: conditional-requests
 
 Here, the ``ExampleActor`` includes the event’s vector timestamp in its ``AppendSuccess`` reply. Together with the actual ``GetAppendCount`` command, the timestamp is included as condition in a ``ConditionalRequest`` and sent to the view. For ``ConditionalRequest`` processing, an event-sourced view must extend the ``ConditionalRequests`` trait. ``ConditionalRequests`` internally delays the command, if needed, and only dispatches ``GetAppendCount`` to the view’s ``onCommand`` handler if the condition timestamp is in the *causal past* of the view (which is earliest the case when the view consumed the update event). When running the example with an empty event log, it should print::
 
@@ -269,8 +311,11 @@ In more general cases, event-sourced actors of different type exchange events to
 - a ``PingActor`` emits a ``Ping`` event on receiving a ``Pong`` event and
 - a ``PongActor`` emits a ``Pong`` event on receiving a ``Ping`` event
 
-.. includecode:: code/UserGuideDoc.scala
-   :snippet: event-collaboration
+.. tabbed-code::
+   .. includecode:: code/UserGuideDoc.scala
+      :snippet: event-collaboration
+   .. includecode:: code/userguide/japi/CollaborationExample.java
+      :snippet: event-collaboration
 
 The ping-pong game is started by sending the ``PingActor`` a ``”serve”`` command which ``persist``\ s the first ``Ping`` event. This event however is not consumed by the emitter but rather by the ``PongActor``. The ``PongActor`` reacts on the ``Ping`` event by emitting a ``Pong`` event. Other than in previous examples, the event is not emitted in the actor’s ``onCommand`` handler but in the ``onEvent`` handler. For that purpose, the actor has to mixin the ``PersistOnEvent`` trait and use the ``persistOnEvent`` method. The emitted ``Pong`` too isn’t consumed by its emitter but rather by the ``PingActor``, emitting another ``Ping``, and so on. The game ends when the ``PingActor`` received the 10th ``Pong``.
 

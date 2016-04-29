@@ -29,6 +29,8 @@
   
 
   
+    <link rel="stylesheet" href="_static/tabbedcode.css" type="text/css" />
+  
 
   
     <link rel="top" title="Eventuate" href="index.html"/>
@@ -207,6 +209,7 @@
 <p class="last">Event-sourced actors can also write new events during event processing. This is covered in section <a class="reference internal" href="#guide-event-collaboration"><span class="std std-ref">Event collaboration</span></a>.</p>
 </div>
 <p>Concrete event-sourced actors must implement the <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> trait. The following <code class="docutils literal"><span class="pre">ExampleActor</span></code> maintains state of type <code class="docutils literal"><span class="pre">Vector[String]</span></code> to which entries can be appended:</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
@@ -243,6 +246,103 @@
 <span class="o">}</span>
 </pre></div>
 </div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">akka.actor.ActorRef</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.actor.ActorSystem</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.actor.Props</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.japi.pf.ReceiveBuilder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.AbstractEventsourcedActor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.ReplicationConnection</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.ResultHandler</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Collection</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Collections</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Optional</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">static</span> <span class="n">akka</span><span class="o">.</span><span class="na">actor</span><span class="o">.</span><span class="na">ActorRef</span><span class="o">.</span><span class="na">noSender</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">System</span><span class="o">.</span><span class="na">out</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">stream</span><span class="o">.</span><span class="na">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">stream</span><span class="o">.</span><span class="na">Stream</span><span class="o">.</span><span class="na">concat</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">stream</span><span class="o">.</span><span class="na">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">ExampleActor</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedActor</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">aggregateId</span><span class="o">;</span>
+
+  <span class="kd">private</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">currentState</span> <span class="o">=</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+
+  <span class="kd">public</span> <span class="nf">ExampleActor</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">aggregateId</span><span class="o">,</span> <span class="n">ActorRef</span> <span class="n">eventLog</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">aggregateId</span> <span class="o">=</span> <span class="n">aggregateId</span><span class="o">;</span>
+
+    <span class="n">setOnCommand</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Print</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">cmd</span> <span class="o">-&gt;</span> <span class="n">printState</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">currentState</span><span class="o">))</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Append</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">cmd</span> <span class="o">-&gt;</span> <span class="n">persist</span><span class="o">(</span><span class="k">new</span> <span class="n">Appended</span><span class="o">(</span><span class="n">cmd</span><span class="o">.</span><span class="na">entry</span><span class="o">),</span> <span class="n">ResultHandler</span><span class="o">.</span><span class="na">on</span><span class="o">(</span>
+        <span class="n">evt</span> <span class="o">-&gt;</span> <span class="n">sender</span><span class="o">().</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">AppendSuccess</span><span class="o">(</span><span class="n">evt</span><span class="o">.</span><span class="na">entry</span><span class="o">),</span> <span class="n">self</span><span class="o">()),</span>
+        <span class="n">err</span> <span class="o">-&gt;</span> <span class="n">sender</span><span class="o">().</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">AppendFailure</span><span class="o">(</span><span class="n">err</span><span class="o">),</span> <span class="n">self</span><span class="o">())</span>
+      <span class="o">)))</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+
+    <span class="n">setOnEvent</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Appended</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">evt</span> <span class="o">-&gt;</span> <span class="n">currentState</span> <span class="o">=</span> <span class="n">append</span><span class="o">(</span><span class="n">currentState</span><span class="o">,</span> <span class="n">evt</span><span class="o">.</span><span class="na">entry</span><span class="o">))</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+  <span class="o">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getAggregateId</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">aggregateId</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="kt">void</span> <span class="nf">printState</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">currentState</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;[id = %s, aggregate id = %s] %s&quot;</span><span class="o">,</span> <span class="n">id</span><span class="o">,</span> <span class="n">getAggregateId</span><span class="o">().</span><span class="na">orElseGet</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="s">&quot;undefined&quot;</span><span class="o">),</span>
+      <span class="n">String</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="s">&quot;,&quot;</span><span class="o">,</span> <span class="n">currentState</span><span class="o">)));</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">append</span><span class="o">(</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">collection</span><span class="o">,</span> <span class="n">T</span> <span class="n">el</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">concat</span><span class="o">(</span><span class="n">collection</span><span class="o">.</span><span class="na">stream</span><span class="o">(),</span> <span class="n">of</span><span class="o">(</span><span class="n">el</span><span class="o">)).</span><span class="na">collect</span><span class="o">(</span><span class="n">toList</span><span class="o">());</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Commands</span>
+<span class="kd">class</span> <span class="nc">Print</span> <span class="o">{</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Append</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">entry</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">Append</span><span class="o">(</span><span class="n">String</span> <span class="n">entry</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">entry</span> <span class="o">=</span> <span class="n">entry</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Command replies</span>
+<span class="kd">class</span> <span class="nc">AppendSuccess</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">entry</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">AppendSuccess</span><span class="o">(</span><span class="n">String</span> <span class="n">entry</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">entry</span> <span class="o">=</span> <span class="n">entry</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">AppendFailure</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">Throwable</span> <span class="n">cause</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">AppendFailure</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">cause</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">cause</span> <span class="o">=</span> <span class="n">cause</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Events</span>
+<span class="kd">class</span> <span class="nc">Appended</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">entry</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">Appended</span><span class="o">(</span><span class="n">String</span> <span class="n">entry</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">entry</span> <span class="o">=</span> <span class="n">entry</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
 <p>For modifying <code class="docutils literal"><span class="pre">currentState</span></code>, applications send <code class="docutils literal"><span class="pre">Append</span></code> commands which are handled by the <code class="docutils literal"><span class="pre">onCommand</span></code> handler. From an <code class="docutils literal"><span class="pre">Append</span></code> command, the handler derives an <code class="docutils literal"><span class="pre">Appended</span></code> event and <code class="docutils literal"><span class="pre">persist</span></code>s it to the given <code class="docutils literal"><span class="pre">eventLog</span></code>. If persistence succeeds, the command sender is informed about successful processing. If persistence fails, the command sender is informed about the failure so it can retry, if needed.</p>
 <p>The <code class="docutils literal"><span class="pre">onEvent</span></code> handler updates <code class="docutils literal"><span class="pre">currentState</span></code> from persisted events and is automatically called after a successful <code class="docutils literal"><span class="pre">persist</span></code>. If the actor is re-started, either after a crash or during normal application start, persisted events are replayed to <code class="docutils literal"><span class="pre">onEvent</span></code> which recovers internal state before new commands are processed.</p>
 <p><code class="docutils literal"><span class="pre">EventsourcedActor</span></code> implementations must define a global unique <code class="docutils literal"><span class="pre">id</span></code> and require an <code class="docutils literal"><span class="pre">eventLog</span></code> actor reference for writing and replaying events. An event-sourced actor may also define an optional <code class="docutils literal"><span class="pre">aggregateId</span></code> which has an impact how events are routed between event-sourced actors.</p>
@@ -253,6 +353,7 @@
 <div class="section" id="creating-a-single-instance">
 <h3>Creating a single instance<a class="headerlink" href="#creating-a-single-instance" title="Permalink to this headline">¶</a></h3>
 <p>In the following, a single instance of <code class="docutils literal"><span class="pre">ExampleActor</span></code> is created and two <code class="docutils literal"><span class="pre">Append</span></code> commands are sent to it:</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">system</span><span class="k">:</span> <span class="kt">ActorSystem</span> <span class="o">=</span> <span class="c1">// ...</span>
 <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="c1">// ...</span>
 
@@ -262,9 +363,24 @@
 <span class="n">ea1</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;b&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kd">final</span> <span class="n">ActorSystem</span> <span class="n">system</span> <span class="o">=</span> <span class="c1">// ...</span>
+<span class="kd">final</span> <span class="n">ActorRef</span> <span class="n">eventLog</span> <span class="o">=</span> <span class="c1">// ...</span>
+
+<span class="kd">final</span> <span class="n">ActorRef</span> <span class="n">ea1</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="na">actorOf</span><span class="o">(</span><span class="n">Props</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">ExampleActor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="n">ExampleActor</span><span class="o">(</span><span class="s">&quot;1&quot;</span><span class="o">,</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">),</span> <span class="n">eventLog</span><span class="o">)));</span>
+
+<span class="n">ea1</span><span class="o">.</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">Append</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">),</span> <span class="n">noSender</span><span class="o">());</span>
+<span class="n">ea1</span><span class="o">.</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">Append</span><span class="o">(</span><span class="s">&quot;b&quot;</span><span class="o">),</span> <span class="n">noSender</span><span class="o">());</span>
+</pre></div>
+</div>
+</div>
 <p>Sending a <code class="docutils literal"><span class="pre">Print</span></code> command</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">ea1</span> <span class="o">!</span> <span class="nc">Print</span>
 </pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">ea1</span><span class="o">.</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">Print</span><span class="o">(),</span> <span class="n">noSender</span><span class="o">());</span>
+</pre></div>
+</div>
 </div>
 <p>should print:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span>[id = 1, aggregate id = a] a,b
@@ -283,6 +399,7 @@
 <div class="section" id="creating-two-isolated-instances">
 <h3>Creating two isolated instances<a class="headerlink" href="#creating-two-isolated-instances" title="Permalink to this headline">¶</a></h3>
 <p>When creating two instances of <code class="docutils literal"><span class="pre">ExampleActor</span></code> with different <code class="docutils literal"><span class="pre">aggregateId</span></code>s, they are isolated from each other, by default, and do not consume each other’s events:</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">b2</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;2&quot;</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;b&quot;</span><span class="o">),</span> <span class="n">eventLog</span><span class="o">)))</span>
 <span class="k">val</span> <span class="n">c3</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;3&quot;</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;c&quot;</span><span class="o">),</span> <span class="n">eventLog</span><span class="o">)))</span>
 
@@ -293,10 +410,27 @@
 <span class="n">c3</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;y&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kd">final</span> <span class="n">ActorRef</span> <span class="n">b2</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="na">actorOf</span><span class="o">(</span><span class="n">Props</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">ExampleActor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="n">ExampleActor</span><span class="o">(</span><span class="s">&quot;2&quot;</span><span class="o">,</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&quot;b&quot;</span><span class="o">),</span> <span class="n">eventLog</span><span class="o">)));</span>
+<span class="kd">final</span> <span class="n">ActorRef</span> <span class="n">c3</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="na">actorOf</span><span class="o">(</span><span class="n">Props</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">ExampleActor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="n">ExampleActor</span><span class="o">(</span><span class="s">&quot;3&quot;</span><span class="o">,</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&quot;c&quot;</span><span class="o">),</span> <span class="n">eventLog</span><span class="o">)));</span>
+
+<span class="n">b2</span><span class="o">.</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">Append</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">),</span> <span class="n">noSender</span><span class="o">());</span>
+<span class="n">b2</span><span class="o">.</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">Append</span><span class="o">(</span><span class="s">&quot;b&quot;</span><span class="o">),</span> <span class="n">noSender</span><span class="o">());</span>
+
+<span class="n">c3</span><span class="o">.</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">Append</span><span class="o">(</span><span class="s">&quot;x&quot;</span><span class="o">),</span> <span class="n">noSender</span><span class="o">());</span>
+<span class="n">c3</span><span class="o">.</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">Append</span><span class="o">(</span><span class="s">&quot;y&quot;</span><span class="o">),</span> <span class="n">noSender</span><span class="o">());</span>
+</pre></div>
+</div>
+</div>
 <p>Sending two <code class="docutils literal"><span class="pre">Print</span></code> commands</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">b2</span> <span class="o">!</span> <span class="nc">Print</span>
 <span class="n">c3</span> <span class="o">!</span> <span class="nc">Print</span>
 </pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">b2</span><span class="o">.</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">Print</span><span class="o">(),</span> <span class="n">noSender</span><span class="o">());</span>
+<span class="n">c3</span><span class="o">.</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">Print</span><span class="o">(),</span> <span class="n">noSender</span><span class="o">());</span>
+</pre></div>
+</div>
 </div>
 <p>should print:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span>[id = 2, aggregate id = b] a,b
@@ -307,6 +441,7 @@
 <div class="section" id="creating-two-replica-instances">
 <h3>Creating two replica instances<a class="headerlink" href="#creating-two-replica-instances" title="Permalink to this headline">¶</a></h3>
 <p>When creating two <code class="docutils literal"><span class="pre">ExampleActor</span></code> instances with the same <code class="docutils literal"><span class="pre">aggregateId</span></code>, they consume each other’s events <a class="footnote-reference" href="#id9" id="id2">[1]</a>.</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="c1">// created at location 1</span>
 <span class="k">val</span> <span class="n">d4</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;4&quot;</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;d&quot;</span><span class="o">),</span> <span class="n">eventLog</span><span class="o">)))</span>
 
@@ -316,14 +451,29 @@
 <span class="n">d4</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="c1">// created at location 1</span>
+<span class="kd">final</span> <span class="n">ActorRef</span> <span class="n">d4</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="na">actorOf</span><span class="o">(</span><span class="n">Props</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">ExampleActor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="n">ExampleActor</span><span class="o">(</span><span class="s">&quot;4&quot;</span><span class="o">,</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&quot;d&quot;</span><span class="o">),</span> <span class="n">eventLog</span><span class="o">)));</span>
+
+<span class="c1">// created at location 2</span>
+<span class="kd">final</span> <span class="n">ActorRef</span> <span class="n">d5</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="na">actorOf</span><span class="o">(</span><span class="n">Props</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">ExampleActor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="n">ExampleActor</span><span class="o">(</span><span class="s">&quot;5&quot;</span><span class="o">,</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&quot;d&quot;</span><span class="o">),</span> <span class="n">eventLog</span><span class="o">)));</span>
+
+<span class="n">d4</span><span class="o">.</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">Append</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">),</span> <span class="n">noSender</span><span class="o">());</span>
+</pre></div>
+</div>
+</div>
 <p>Here, <code class="docutils literal"><span class="pre">d4</span></code> processes an <code class="docutils literal"><span class="pre">Append</span></code> command and persists an <code class="docutils literal"><span class="pre">Appended</span></code> event. Both, <code class="docutils literal"><span class="pre">d4</span></code> and <code class="docutils literal"><span class="pre">d5</span></code>, consume that event and update their internal state. After waiting a bit for convergence, sending a <code class="docutils literal"><span class="pre">Print</span></code> command to both actors should print:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span>[id = 4, aggregate id = d] a
 [id = 5, aggregate id = d] a
 </pre></div>
 </div>
 <p>After both replicas have converged, another <code class="docutils literal"><span class="pre">Append</span></code> is sent to <code class="docutils literal"><span class="pre">d5</span></code>.</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">d5</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;b&quot;</span><span class="o">)</span>
 </pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">d5</span><span class="o">.</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">Append</span><span class="o">(</span><span class="s">&quot;b&quot;</span><span class="o">),</span> <span class="n">noSender</span><span class="o">());</span>
+</pre></div>
+</div>
 </div>
 <p>Again both actors consume the event and sending another <code class="docutils literal"><span class="pre">Print</span></code> command should print:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span>[id = 4, aggregate id = d] a,b
@@ -343,6 +493,7 @@
 <p>Eventuate tracks <em>happened-before</em> relationships (= potential causality) of events with <a class="reference internal" href="architecture.html#vector-clocks"><span class="std std-ref">Vector clocks</span></a>. Why is that needed at all? Let’s assume that an event-sourced actor emits an event <code class="docutils literal"><span class="pre">e1</span></code> for changing internal state and later receives an event <code class="docutils literal"><span class="pre">e2</span></code> from a replica instance. If the replica instance emits <code class="docutils literal"><span class="pre">e2</span></code> after having processed <code class="docutils literal"><span class="pre">e1</span></code>, the actor can apply <code class="docutils literal"><span class="pre">e2</span></code> as regular update. If the replica instance emits <code class="docutils literal"><span class="pre">e2</span></code> before having received <code class="docutils literal"><span class="pre">e1</span></code>, the actor receives a concurrent, potentially conflicting event.</p>
 <p>How can the actor determine if <code class="docutils literal"><span class="pre">e2</span></code> is a regular i.e. causally related or concurrent update? It can do so by comparing the vector timestamps of <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code>, where <code class="docutils literal"><span class="pre">t1</span></code> is the vector timestamp of <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">t2</span></code> the vector timestamp of <code class="docutils literal"><span class="pre">e2</span></code>. If events <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code> are concurrent then <code class="docutils literal"><span class="pre">t1</span> <span class="pre">conc</span> <span class="pre">t2</span></code> evaluates to <code class="docutils literal"><span class="pre">true</span></code>. Otherwise, they are causally related and <code class="docutils literal"><span class="pre">t1</span> <span class="pre">&lt;</span> <span class="pre">t2</span></code> evaluates to <code class="docutils literal"><span class="pre">true</span></code> (because <code class="docutils literal"><span class="pre">e1</span></code> <em>happened-before</em> <code class="docutils literal"><span class="pre">e2</span></code>).</p>
 <p>The vector timestamp of an event can be obtained with <code class="docutils literal"><span class="pre">lastVectorTimestamp</span></code> during event processing. Vector timestamps can be attached as <em>update timestamp</em> to current state and compared with the vector timestamp of a new event in order to determine whether the new event is causally related to the previous state update or not<a class="footnote-reference" href="#id10" id="id3">[2]</a>:</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.VectorTime</span>
 
@@ -371,11 +522,45 @@
 <span class="o">}</span>
 </pre></div>
 </div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">akka.actor.ActorRef</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.japi.pf.ReceiveBuilder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.AbstractEventsourcedActor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.VectorTime</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Collection</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Collections</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">ExampleActor</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedActor</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">currentState</span> <span class="o">=</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+  <span class="kd">private</span> <span class="n">VectorTime</span> <span class="n">updateTimestamp</span> <span class="o">=</span> <span class="n">VectorTime</span><span class="o">.</span><span class="na">Zero</span><span class="o">();</span>
+
+  <span class="kd">public</span> <span class="nf">ExampleActor</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">ActorRef</span> <span class="n">eventLog</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">);</span>
+
+    <span class="n">setOnEvent</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Appended</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">evt</span> <span class="o">-&gt;</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">updateTimestamp</span><span class="o">.</span><span class="na">lt</span><span class="o">(</span><span class="n">lastVectorTimestamp</span><span class="o">()))</span> <span class="o">{</span>
+          <span class="c1">// regular update</span>
+          <span class="n">currentState</span> <span class="o">=</span> <span class="n">append</span><span class="o">(</span><span class="n">currentState</span><span class="o">,</span> <span class="n">evt</span><span class="o">.</span><span class="na">entry</span><span class="o">);</span>
+          <span class="n">updateTimestamp</span> <span class="o">=</span> <span class="n">lastVectorTimestamp</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">updateTimestamp</span><span class="o">.</span><span class="na">conc</span><span class="o">(</span><span class="n">lastVectorTimestamp</span><span class="o">()))</span> <span class="o">{</span>
+          <span class="c1">// concurrent update</span>
+          <span class="c1">// TODO: track conflicting versions</span>
+        <span class="o">}</span>
+      <span class="o">})</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
 <p>Attaching update timestamps to current state and comparing them with vector timestamps of new events can be easily abstracted over so that applications don’t have to deal with these low level details, as shown in the next section.</p>
 </div>
 <div class="section" id="tracking-conflicting-versions">
 <span id="id4"></span><h2>Tracking conflicting versions<a class="headerlink" href="#tracking-conflicting-versions" title="Permalink to this headline">¶</a></h2>
 <p>If state update operations from concurrent events do not commute, conflicting versions of actor state arise that must be tracked and resolved. This can be done with Eventuate’s <code class="docutils literal"><span class="pre">ConcurrentVersions[S,</span> <span class="pre">A]</span></code> abstraction and an application-defined <em>update function</em> of type <code class="docutils literal"><span class="pre">(S,</span> <span class="pre">A)</span> <span class="pre">=&gt;</span> <span class="pre">S</span></code> where <code class="docutils literal"><span class="pre">S</span></code> is the type of actor state and <code class="docutils literal"><span class="pre">A</span></code> the update type. In our example, the <code class="docutils literal"><span class="pre">ConcurrentVersions</span></code> type is <code class="docutils literal"><span class="pre">ConcurrentVersions[Vector[String],</span> <span class="pre">String]</span></code> and the update function <code class="docutils literal"><span class="pre">(s,</span> <span class="pre">a)</span> <span class="pre">=&gt;</span> <span class="pre">s</span> <span class="pre">:+</span> <span class="pre">a</span></code>:</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">scala.collection.immutable.Seq</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.</span><span class="o">{</span><span class="nc">ConcurrentVersions</span><span class="o">,</span> <span class="nc">Versioned</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
@@ -405,6 +590,39 @@
 <span class="o">}</span>
 </pre></div>
 </div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">akka.actor.ActorRef</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.japi.pf.ReceiveBuilder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.*</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Collection</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Collections</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">ExampleActor</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedActor</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="n">ConcurrentVersions</span><span class="o">&lt;</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">versionedState</span> <span class="o">=</span>
+    <span class="n">ConcurrentVersionsTree</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">(),</span> <span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">a</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">append</span><span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">a</span><span class="o">));</span>
+
+  <span class="kd">public</span> <span class="nf">ExampleActor</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">ActorRef</span> <span class="n">eventLog</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">);</span>
+
+    <span class="n">setOnEvent</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Appended</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">evt</span> <span class="o">-&gt;</span> <span class="o">{</span>
+        <span class="n">versionedState</span> <span class="o">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">evt</span><span class="o">.</span><span class="na">entry</span><span class="o">,</span> <span class="n">lastVectorTimestamp</span><span class="o">(),</span> <span class="n">lastSystemTimestamp</span><span class="o">(),</span> <span class="n">lastEmitterId</span><span class="o">());</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">versionedState</span><span class="o">.</span><span class="na">conflict</span><span class="o">())</span> <span class="o">{</span>
+          <span class="kd">final</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">Versioned</span><span class="o">&lt;</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;&gt;</span> <span class="n">all</span> <span class="o">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="na">getAll</span><span class="o">();</span>
+          <span class="c1">// TODO: resolve conflicting versions</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+          <span class="kd">final</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">currentState</span> <span class="o">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="na">getAll</span><span class="o">().</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">value</span><span class="o">();</span>
+          <span class="c1">// ...</span>
+        <span class="o">}</span>
+      <span class="o">})</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
 <p>Internally, <code class="docutils literal"><span class="pre">ConcurrentVersions</span></code> maintains versions of actor state in a tree structure where each concurrent <code class="docutils literal"><span class="pre">update</span></code> creates a new branch. The shape of the tree is determined solely by the vector timestamps of the corresponding update events.</p>
 <p>An event’s vector timestamp is passed as <code class="docutils literal"><span class="pre">lastVectorTimestamp</span></code> argument to <code class="docutils literal"><span class="pre">update</span></code>. The <code class="docutils literal"><span class="pre">update</span></code> method internally creates a new version by applying the update function <code class="docutils literal"><span class="pre">(s,</span> <span class="pre">a)</span> <span class="pre">=&gt;</span> <span class="pre">s</span> <span class="pre">:+</span> <span class="pre">a</span></code> to the closest predecessor version and the actual update value (<code class="docutils literal"><span class="pre">entry</span></code>). The <code class="docutils literal"><span class="pre">lastVectorTimestamp</span></code> is attached as update timestamp to the newly created version.</p>
 <p>Concurrent versions of actor state and their update timestamp can be obtained with <code class="docutils literal"><span class="pre">all</span></code> which is a sequence of type <code class="docutils literal"><span class="pre">Seq[Versioned[Vector[String]]]</span></code> in our example. The <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.Versioned">Versioned</a> data type represents a particular version of actor state and its update timestamp (= <code class="docutils literal"><span class="pre">vectorTimestamp</span></code> field).</p>
@@ -420,6 +638,7 @@
 <div class="section" id="automated-conflict-resolution">
 <span id="id5"></span><h3>Automated conflict resolution<a class="headerlink" href="#automated-conflict-resolution" title="Permalink to this headline">¶</a></h3>
 <p>The following is a simple example of automated conflict resolution: if a conflict has been detected, the version with the higher wall clock timestamp is selected to be the winner. In case of equal wall clock timestamps, the version with the lower emitter id is selected. The wall clock timestamp can be obtained with <code class="docutils literal"><span class="pre">lastSystemTimestamp</span></code> during event handling, the emitter id with <code class="docutils literal"><span class="pre">lastEmitterId</span></code>. The emitter id is the <code class="docutils literal"><span class="pre">id</span></code> of the <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> that emitted the event.</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
                    <span class="k">override</span> <span class="k">val</span> <span class="n">aggregateId</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">],</span>
                    <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
@@ -447,6 +666,48 @@
 <span class="o">}</span>
 </pre></div>
 </div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">akka.actor.ActorRef</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.japi.pf.ReceiveBuilder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.*</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Collection</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Collections</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.stream.Stream</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">static</span> <span class="n">userguide</span><span class="o">.</span><span class="na">japi</span><span class="o">.</span><span class="na">DocUtils</span><span class="o">.</span><span class="na">append</span><span class="o">;</span>
+
+
+<span class="kd">class</span> <span class="nc">ExampleActor</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedActor</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="n">ConcurrentVersions</span><span class="o">&lt;</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">versionedState</span> <span class="o">=</span>
+    <span class="n">ConcurrentVersionsTree</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">(),</span> <span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">a</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">append</span><span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">a</span><span class="o">));</span>
+
+  <span class="kd">public</span> <span class="nf">ExampleActor</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">ActorRef</span> <span class="n">eventLog</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">);</span>
+
+    <span class="n">setOnEvent</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Appended</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">evt</span> <span class="o">-&gt;</span> <span class="o">{</span>
+        <span class="n">versionedState</span> <span class="o">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">evt</span><span class="o">.</span><span class="na">entry</span><span class="o">,</span> <span class="n">lastVectorTimestamp</span><span class="o">(),</span> <span class="n">lastSystemTimestamp</span><span class="o">(),</span> <span class="n">lastEmitterId</span><span class="o">());</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">versionedState</span><span class="o">.</span><span class="na">conflict</span><span class="o">())</span> <span class="o">{</span>
+          <span class="kd">final</span> <span class="n">Stream</span><span class="o">&lt;</span><span class="n">Versioned</span><span class="o">&lt;</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;&gt;</span> <span class="n">conflictingVersions</span> <span class="o">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="na">getAll</span><span class="o">().</span><span class="na">stream</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">sorted</span><span class="o">((</span><span class="n">v1</span><span class="o">,</span> <span class="n">v2</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+              <span class="k">if</span> <span class="o">(</span><span class="n">v1</span><span class="o">.</span><span class="na">systemTimestamp</span><span class="o">()</span> <span class="o">==</span> <span class="n">v2</span><span class="o">.</span><span class="na">systemTimestamp</span><span class="o">())</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">v1</span><span class="o">.</span><span class="na">creator</span><span class="o">().</span><span class="na">compareTo</span><span class="o">(</span><span class="n">v2</span><span class="o">.</span><span class="na">creator</span><span class="o">());</span>
+              <span class="o">}</span>
+              <span class="k">return</span> <span class="n">v1</span><span class="o">.</span><span class="na">systemTimestamp</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">v2</span><span class="o">.</span><span class="na">systemTimestamp</span><span class="o">()</span> <span class="o">?</span> <span class="o">-</span><span class="mi">1</span> <span class="o">:</span> <span class="mi">1</span><span class="o">;</span>
+            <span class="o">});</span>
+
+          <span class="kd">final</span> <span class="n">VectorTime</span> <span class="n">winnerTimestamp</span> <span class="o">=</span> <span class="n">conflictingVersions</span><span class="o">.</span><span class="na">findFirst</span><span class="o">().</span><span class="na">get</span><span class="o">().</span><span class="na">vectorTimestamp</span><span class="o">();</span>
+          <span class="n">versionedState</span> <span class="o">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="na">resolve</span><span class="o">(</span><span class="n">winnerTimestamp</span><span class="o">);</span>
+        <span class="o">}</span>
+      <span class="o">})</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
 <p>Here, conflicting versions are sorted by descending wall clock timestamp and ascending emitter id where the latter is tracked as <code class="docutils literal"><span class="pre">creator</span></code> of the version. The first version is selected to be the winner. Its vector timestamp is passed as argument to <code class="docutils literal"><span class="pre">resolve</span></code> which selects this version and discards all other versions.</p>
 <p>More advanced conflict resolution could select a winner depending on the actual value of concurrent versions. After selection, an application could even update the winner with the <em>merged</em> value of all conflicting versions<a class="footnote-reference" href="#id11" id="id6">[3]</a>.</p>
 <div class="admonition note">
@@ -457,6 +718,7 @@
 <div class="section" id="interactive-conflict-resolution">
 <h3>Interactive conflict resolution<a class="headerlink" href="#interactive-conflict-resolution" title="Permalink to this headline">¶</a></h3>
 <p>Interactive conflict resolution does not resolve conflicts immediately but requests the user to inspect and resolve a conflict. The following is a very simple example of interactive conflict resolution: a user selects a winner version if conflicting versions of application state exist.</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="k">class</span> <span class="nc">Append</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
 <span class="k">case</span> <span class="k">class</span> <span class="nc">AppendRejected</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">conflictingVersions</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">Versioned</span><span class="o">[</span><span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">]]])</span>
 
@@ -491,6 +753,78 @@
 <span class="o">}</span>
 </pre></div>
 </div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nc">ExampleActor</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedActor</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="n">ConcurrentVersions</span><span class="o">&lt;</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;,</span> <span class="n">String</span><span class="o">&gt;</span> <span class="n">versionedState</span> <span class="o">=</span>
+    <span class="n">ConcurrentVersionsTree</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">(),</span> <span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">a</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">append</span><span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">a</span><span class="o">));</span>
+
+  <span class="kd">public</span> <span class="nf">ExampleActor</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">ActorRef</span> <span class="n">eventLog</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">);</span>
+
+    <span class="n">setOnCommand</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Append</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">cmd</span> <span class="o">-&gt;</span> <span class="n">versionedState</span><span class="o">.</span><span class="na">conflict</span><span class="o">(),</span>
+        <span class="n">cmd</span> <span class="o">-&gt;</span> <span class="n">sender</span><span class="o">().</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">AppendRejected</span><span class="o">(</span><span class="n">cmd</span><span class="o">.</span><span class="na">entry</span><span class="o">,</span> <span class="n">versionedState</span><span class="o">.</span><span class="na">getAll</span><span class="o">()),</span> <span class="n">self</span><span class="o">())</span>
+      <span class="o">)</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Append</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">cmd</span> <span class="o">-&gt;</span> <span class="o">{</span>
+        <span class="c1">// ....</span>
+      <span class="o">})</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Resolve</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">cmd</span> <span class="o">-&gt;</span> <span class="n">persist</span><span class="o">(</span><span class="k">new</span> <span class="n">Resolved</span><span class="o">(</span><span class="n">cmd</span><span class="o">.</span><span class="na">selectedTimestamp</span><span class="o">),</span> <span class="n">ResultHandler</span><span class="o">.</span><span class="na">on</span><span class="o">(</span>
+        <span class="n">evt</span> <span class="o">-&gt;</span> <span class="o">{</span> <span class="cm">/* reply to sender omitted ... */</span> <span class="o">},</span>
+        <span class="n">err</span> <span class="o">-&gt;</span> <span class="o">{</span> <span class="cm">/* reply to sender omitted ... */</span> <span class="o">}</span>
+      <span class="o">)))</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+
+    <span class="n">setOnEvent</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Appended</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">evt</span> <span class="o">-&gt;</span>
+        <span class="n">versionedState</span> <span class="o">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="na">update</span><span class="o">(</span><span class="n">evt</span><span class="o">.</span><span class="na">entry</span><span class="o">,</span> <span class="n">lastVectorTimestamp</span><span class="o">(),</span> <span class="n">lastSystemTimestamp</span><span class="o">(),</span> <span class="n">lastEmitterId</span><span class="o">())</span>
+      <span class="o">)</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Resolved</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">evt</span> <span class="o">-&gt;</span>
+        <span class="n">versionedState</span> <span class="o">=</span> <span class="n">versionedState</span><span class="o">.</span><span class="na">resolve</span><span class="o">(</span><span class="n">evt</span><span class="o">.</span><span class="na">selectedTimestamp</span><span class="o">,</span> <span class="n">lastVectorTimestamp</span><span class="o">(),</span> <span class="n">lastSystemTimestamp</span><span class="o">())</span>
+      <span class="o">)</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Command</span>
+<span class="kd">class</span> <span class="nc">Append</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">entry</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">Append</span><span class="o">(</span><span class="n">String</span> <span class="n">entry</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">entry</span> <span class="o">=</span> <span class="n">entry</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Command reply</span>
+<span class="kd">class</span> <span class="nc">AppendRejected</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">entry</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">Versioned</span><span class="o">&lt;</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;&gt;</span> <span class="n">conflictingVersions</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">AppendRejected</span><span class="o">(</span><span class="n">String</span> <span class="n">entry</span><span class="o">,</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">Versioned</span><span class="o">&lt;</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;&gt;</span> <span class="n">conflictingVersions</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">entry</span> <span class="o">=</span> <span class="n">entry</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">conflictingVersions</span> <span class="o">=</span> <span class="n">conflictingVersions</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Command</span>
+<span class="kd">class</span> <span class="nc">Resolve</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">VectorTime</span> <span class="n">selectedTimestamp</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">Resolve</span><span class="o">(</span><span class="n">VectorTime</span> <span class="n">selectedTimestamp</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">selectedTimestamp</span> <span class="o">=</span> <span class="n">selectedTimestamp</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Command reply</span>
+<span class="kd">class</span> <span class="nc">Resolved</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">VectorTime</span> <span class="n">selectedTimestamp</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">Resolved</span><span class="o">(</span><span class="n">VectorTime</span> <span class="n">selectedTimestamp</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">selectedTimestamp</span> <span class="o">=</span> <span class="n">selectedTimestamp</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
 <p>When a user tries to <code class="docutils literal"><span class="pre">Append</span></code> in presence of a conflict, the <code class="docutils literal"><span class="pre">ExampleActor</span></code> rejects the update and requests the user to select a winner version from a sequence of conflicting versions. The user then sends the update timestamp of the winner version as <code class="docutils literal"><span class="pre">selectedTimestamp</span></code> with a <code class="docutils literal"><span class="pre">Resolve</span></code> command from which a <code class="docutils literal"><span class="pre">Resolved</span></code> event is derived and persisted. Handling of <code class="docutils literal"><span class="pre">Resolved</span></code> at all replicas finally resolves the conflict.</p>
 <p>In addition to just selecting a winner, an application could also update the winner version in a second step, for example, with a value derived from the merge result of conflicting versions. Support for <em>atomic</em>, interactive conflict resolution with an application-defined merge function is planned for later Eventuate releases.</p>
 <div class="admonition note">
@@ -509,6 +843,7 @@
 <li>All <em>downstream</em> preconditions mentioned in the paper are satisfied in case of causal delivery of update operations which is guaranteed for actors consuming from a replicated event log.</li>
 </ul>
 <p>Eventuate currently implements 5 out of 12 operation-based CRDTs specified in the paper. These are <em>Counter</em>, <em>MV-Register</em>, <em>LWW-Register</em>, <em>OR-Set</em> and <em>OR-Cart</em> (a shopping cart CRDT). They can be instantiated and used via their corresponding <em>CRDT services</em>. CRDT operations are asynchronous methods on the service interfaces. CRDT services free applications from dealing with low-level details like event-sourced actors or command messages directly. The following is the definition of <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.ORSetService">ORSetService</a>:</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="cm">/**</span>
 <span class="cm"> * Replicated [[ORSet]] CRDT service.</span>
 <span class="cm"> *</span>
@@ -541,6 +876,33 @@
 <span class="k">private</span><span class="o">[</span><span class="kt">eventuate</span><span class="o">]</span> <span class="k">case</span> <span class="k">class</span> <span class="nc">RemoveOp</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">Any</span><span class="o">,</span> <span class="n">timestamps</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">VectorTime</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">CRDTFormat</span>
 </pre></div>
 </div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * Java API of a replicated [[ORSet]] CRDT service.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param serviceId Unique id of this service.</span>
+<span class="cm"> * @param log Event log.</span>
+<span class="cm"> * @param system Actor system.</span>
+<span class="cm"> * @tparam A [[ORSet]] entry type.</span>
+<span class="cm"> */</span>
+<span class="kd">class</span> <span class="nc">ORSetService</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;</span> <span class="kd">extends</span> <span class="n">CRDTService</span><span class="o">&lt;</span><span class="n">ORSet</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;,</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;&gt;</span> <span class="o">{</span>
+
+  <span class="n">ORSetService</span><span class="o">(</span><span class="n">String</span> <span class="n">serviceId</span><span class="o">,</span> <span class="n">ActorRef</span> <span class="n">log</span><span class="o">,</span> <span class="n">ActorSystem</span> <span class="n">system</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">serviceId</span><span class="o">,</span> <span class="n">log</span><span class="o">,</span> <span class="n">system</span><span class="o">);</span>
+
+    <span class="n">start</span><span class="o">();</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="n">CompletionStage</span><span class="o">&lt;</span><span class="n">Set</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;&gt;</span> <span class="nf">add</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">A</span> <span class="n">entry</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">op</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="k">new</span> <span class="n">AddOp</span><span class="o">(</span><span class="n">entry</span><span class="o">));</span>
+  <span class="o">}</span>
+
+  <span class="kd">public</span> <span class="n">CompletionStage</span><span class="o">&lt;</span><span class="n">Set</span><span class="o">&lt;</span><span class="n">A</span><span class="o">&gt;&gt;</span> <span class="nf">remove</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">A</span> <span class="n">entry</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">op</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="k">new</span> <span class="n">RemoveOp</span><span class="o">(</span><span class="n">entry</span><span class="o">));</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
 <p>The <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.ORSetService">ORSetService</a> is a CRDT service that manages <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> instances. It implements the asynchronous <code class="docutils literal"><span class="pre">add</span></code> and <code class="docutils literal"><span class="pre">remove</span></code> methods and inherits the <code class="docutils literal"><span class="pre">value(id:</span> <span class="pre">String):</span> <span class="pre">Future[Set[A]]</span></code> method from <code class="docutils literal"><span class="pre">CRDTService[ORSet[A],</span> <span class="pre">Set[A]]</span></code> for reading the current value. Their <code class="docutils literal"><span class="pre">id</span></code> parameter identifies an <code class="docutils literal"><span class="pre">ORSet</span></code> instance. Instances are automatically created by the service on demand. A usage example is the <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/blob/master/src/multi-jvm/scala/com/rbmhtechnology/eventuate/crdt/ReplicatedORSetSpec.scala">ReplicatedOrSetSpec</a> that is based on Akka’s <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.1/dev/multi-node-testing.html">multi node testkit</a>.</p>
 <p>A CRDT service also implements a <code class="docutils literal"><span class="pre">save(id:</span> <span class="pre">String):</span> <span class="pre">Future[SnapshotMetadata]</span></code> method for saving CRDT snapshots. <a class="reference internal" href="reference/event-sourcing.html#snapshots"><span class="std std-ref">Snapshots</span></a> may reduce recovery times of CRDTs with a long update history but are not required for CRDT persistence.</p>
 <p>New operation-based CRDTs and their corresponding services can be developed with the CRDT development framework, by defining an instance of the <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.CRDTServiceOps">CRDTServiceOps</a> type class and implementing the <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.CRDTService">CRDTService</a> trait. Take a look at the <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/eventuate-crdt/src/main/scala/com/rbmhtechnology/eventuate/crdt">CRDT sources</a> for examples.</p>
@@ -552,6 +914,7 @@
 <div class="section" id="event-sourced-views">
 <span id="guide-event-sourced-views"></span><h2>Event-sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h2>
 <p>Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. Concrete event-sourced views must implement the <code class="docutils literal"><span class="pre">EventsourcedView</span></code> trait. In the following example, the view counts all <code class="docutils literal"><span class="pre">Appended</span></code> and <code class="docutils literal"><span class="pre">Resolved</span></code> events emitted by all event-sourced actors to the same <code class="docutils literal"><span class="pre">eventLog</span></code>:</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">akka.actor.ActorRef</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedView</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.VectorTime</span>
@@ -581,6 +944,74 @@
 <span class="o">}</span>
 </pre></div>
 </div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">akka.actor.ActorRef</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.japi.pf.ReceiveBuilder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.AbstractEventsourcedView</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.VectorTime</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">ExampleView</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedView</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="n">Long</span> <span class="n">appendCount</span> <span class="o">=</span> <span class="mi">0</span><span class="n">L</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="n">Long</span> <span class="n">resolveCount</span> <span class="o">=</span> <span class="mi">0</span><span class="n">L</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">ExampleView</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">ActorRef</span> <span class="n">eventLog</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">);</span>
+
+    <span class="n">setOnCommand</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">GetAppendCount</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">cmd</span> <span class="o">-&gt;</span> <span class="n">sender</span><span class="o">().</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">GetAppendCountReply</span><span class="o">(</span><span class="n">appendCount</span><span class="o">),</span> <span class="n">self</span><span class="o">()))</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">GetResolveCount</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">cmd</span> <span class="o">-&gt;</span> <span class="n">sender</span><span class="o">().</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">GetResolveCountReply</span><span class="o">(</span><span class="n">resolveCount</span><span class="o">),</span> <span class="n">self</span><span class="o">()))</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+
+    <span class="n">setOnEvent</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Appended</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">evt</span> <span class="o">-&gt;</span> <span class="n">appendCount</span> <span class="o">+=</span> <span class="mi">1</span><span class="o">)</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Resolved</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">evt</span> <span class="o">-&gt;</span> <span class="n">resolveCount</span> <span class="o">+=</span> <span class="mi">1</span><span class="o">)</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Commands</span>
+<span class="kd">class</span> <span class="nc">GetAppendCount</span> <span class="o">{</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">GetResolveCount</span> <span class="o">{</span>
+<span class="o">}</span>
+
+<span class="c1">// Command replies</span>
+<span class="kd">class</span> <span class="nc">GetAppendCountReply</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">Long</span> <span class="n">count</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">GetAppendCountReply</span><span class="o">(</span><span class="n">Long</span> <span class="n">count</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">GetResolveCountReply</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">Long</span> <span class="n">count</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">GetResolveCountReply</span><span class="o">(</span><span class="n">Long</span> <span class="n">count</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Events</span>
+<span class="kd">class</span> <span class="nc">Appended</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">entry</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">Appended</span><span class="o">(</span><span class="n">String</span> <span class="n">entry</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">entry</span> <span class="o">=</span> <span class="n">entry</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Resolved</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">VectorTime</span> <span class="n">selectedTimestamp</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">Resolved</span><span class="o">(</span><span class="n">VectorTime</span> <span class="n">selectedTimestamp</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">selectedTimestamp</span> <span class="o">=</span> <span class="n">selectedTimestamp</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
 <p>Event-sourced views handle events in the same way as event-sourced actors by implementing an <code class="docutils literal"><span class="pre">onEvent</span></code> handler. The <code class="docutils literal"><span class="pre">onCommand</span></code> handler in the example processes the queries <code class="docutils literal"><span class="pre">GetAppendCount</span></code> and <code class="docutils literal"><span class="pre">GetResolveCount</span></code>.</p>
 <p><code class="docutils literal"><span class="pre">ExampleView</span></code> implements the mandatory global unique <code class="docutils literal"><span class="pre">id</span></code> but doesn’t define an <code class="docutils literal"><span class="pre">aggregateId</span></code>. A view that doesn’t define an <code class="docutils literal"><span class="pre">aggregateId</span></code> can consume events from all event-sourced actors on the same event log. If it defines an <code class="docutils literal"><span class="pre">aggregateId</span></code> it can only consume events from event-sourced actors with the same <code class="docutils literal"><span class="pre">aggregateId</span></code> (assuming the default <a class="reference internal" href="reference/event-sourcing.html#event-routing"><span class="std std-ref">Event routing</span></a> rules).</p>
 <div class="admonition hint">
@@ -593,6 +1024,7 @@
 <p>Causal read consistency is the default when reading state from a single event-sourced actor or view. The event stream received by that actor is always causally ordered, hence, it will never see an <em>effect</em> before having seen its <em>cause</em>.</p>
 <p>The situation is different when a client reads from multiple actors. Imagine two event-sourced actor replicas where a client updates one replica and observes the updated state with the reply. A subsequent from the other replica, made by the same client, may return the old state which violates causal consistency.</p>
 <p>Similar considerations can be made for reading from an event-sourced view after having made an update to an event-sourced actor. For example, an application that successfully appended an entry to <code class="docutils literal"><span class="pre">ExampleActor</span></code> may not immediately see that update in the <code class="docutils literal"><span class="pre">appendCount</span></code> of <code class="docutils literal"><span class="pre">ExampleView</span></code>. To achieve causal read consistency, the view should delay command processing until the emitted event has been consumed by the view. This can be achieved with a <code class="docutils literal"><span class="pre">ConditionalRequest</span></code>.</p>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
 <span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
@@ -640,6 +1072,100 @@
 <span class="o">}</span> <span class="n">println</span><span class="o">(</span><span class="s">s&quot;append count = </span><span class="si">$count</span><span class="s">&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">akka.actor.ActorRef</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.actor.ActorSystem</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.actor.Props</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.japi.pf.ReceiveBuilder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.pattern.Patterns</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.util.Timeout</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">scala.concurrent.ExecutionContextExecutor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">scala.concurrent.Future</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">scala.reflect.ClassTag</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">scala.reflect.ClassTag</span><span class="n">$</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Collection</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Collections</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Optional</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.TimeUnit</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">static</span> <span class="n">scala</span><span class="o">.</span><span class="na">compat</span><span class="o">.</span><span class="na">java8</span><span class="o">.</span><span class="na">JFunction</span><span class="o">.</span><span class="na">func</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">static</span> <span class="n">scala</span><span class="o">.</span><span class="na">compat</span><span class="o">.</span><span class="na">java8</span><span class="o">.</span><span class="na">JFunction</span><span class="o">.</span><span class="na">proc</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">ExampleActor</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedActor</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">id</span><span class="o">;</span>
+  <span class="kd">private</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">currentState</span> <span class="o">=</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">();</span>
+
+  <span class="kd">public</span> <span class="nf">ExampleActor</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">ActorRef</span> <span class="n">eventLog</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="n">setOnCommand</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Append</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">cmd</span> <span class="o">-&gt;</span> <span class="n">persist</span><span class="o">(</span><span class="k">new</span> <span class="n">Appended</span><span class="o">(</span><span class="n">cmd</span><span class="o">.</span><span class="na">entry</span><span class="o">),</span> <span class="n">ResultHandler</span><span class="o">.</span><span class="na">onSuccess</span><span class="o">(</span>
+        <span class="n">evt</span> <span class="o">-&gt;</span> <span class="n">sender</span><span class="o">().</span><span class="na">tell</span><span class="o">(</span><span class="k">new</span> <span class="n">AppendSuccess</span><span class="o">(</span><span class="n">evt</span><span class="o">.</span><span class="na">entry</span><span class="o">,</span> <span class="n">lastVectorTimestamp</span><span class="o">()),</span> <span class="n">self</span><span class="o">())</span>
+      <span class="o">)))</span>
+      <span class="c1">// ...</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+
+    <span class="n">setOnEvent</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Appended</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">evt</span> <span class="o">-&gt;</span> <span class="n">currentState</span> <span class="o">=</span> <span class="n">append</span><span class="o">(</span><span class="n">currentState</span><span class="o">,</span> <span class="n">evt</span><span class="o">.</span><span class="na">entry</span><span class="o">))</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+  <span class="o">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getAggregateId</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Command</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Append</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">entry</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">Append</span><span class="o">(</span><span class="n">String</span> <span class="n">entry</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">entry</span> <span class="o">=</span> <span class="n">entry</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Command reply</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AppendSuccess</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">entry</span><span class="o">;</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">VectorTime</span> <span class="n">updateTimestamp</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">AppendSuccess</span><span class="o">(</span><span class="n">String</span> <span class="n">entry</span><span class="o">,</span> <span class="n">VectorTime</span> <span class="n">updateTimestamp</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">entry</span> <span class="o">=</span> <span class="n">entry</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">updateTimestamp</span> <span class="o">=</span> <span class="n">updateTimestamp</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Eventsourced-View</span>
+<span class="kd">class</span> <span class="nc">ExampleView</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedView</span> <span class="o">{</span>
+
+  <span class="c1">// AbstractEventsourcedView has ConditionalRequests mixed-in by default</span>
+
+  <span class="kd">public</span> <span class="nf">ExampleView</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">ActorRef</span> <span class="n">eventLog</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">);</span>
+
+    <span class="c1">// ...</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">final</span> <span class="n">ActorRef</span> <span class="n">ea</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="na">actorOf</span><span class="o">(</span><span class="n">Props</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">ExampleActor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="n">ExampleActor</span><span class="o">(</span><span class="s">&quot;ea&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">)));</span>
+<span class="kd">final</span> <span class="n">ActorRef</span> <span class="n">ev</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="na">actorOf</span><span class="o">(</span><span class="n">Props</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">ExampleView</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="n">ExampleView</span><span class="o">(</span><span class="s">&quot;ev&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">)));</span>
+
+<span class="kd">final</span> <span class="n">Timeout</span> <span class="n">timeout</span> <span class="o">=</span> <span class="n">Timeout</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">);</span>
+
+<span class="n">Patterns</span><span class="o">.</span><span class="na">ask</span><span class="o">(</span><span class="n">ea</span><span class="o">,</span> <span class="k">new</span> <span class="n">Append</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">),</span> <span class="n">timeout</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">flatMap</span><span class="o">(</span><span class="n">func</span><span class="o">(</span><span class="n">m</span> <span class="o">-&gt;</span> <span class="n">Patterns</span><span class="o">.</span><span class="na">ask</span><span class="o">(</span><span class="n">ev</span><span class="o">,</span> <span class="k">new</span> <span class="n">ConditionalRequest</span><span class="o">(((</span><span class="n">AppendSuccess</span><span class="o">)</span> <span class="n">m</span><span class="o">).</span><span class="na">updateTimestamp</span><span class="o">,</span> <span class="k">new</span> <span class="n">GetAppendCount</span><span class="o">()),</span> <span class="n">timeout</span><span class="o">)),</span> <span class="n">dispatcher</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">onComplete</span><span class="o">(</span><span class="n">proc</span><span class="o">(</span><span class="n">result</span> <span class="o">-&gt;</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="na">isSuccess</span><span class="o">())</span> <span class="o">{</span>
+      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;append count = &quot;</span> <span class="o">+</span> <span class="o">((</span><span class="n">GetAppendCountReply</span><span class="o">)</span> <span class="n">result</span><span class="o">.</span><span class="na">get</span><span class="o">()).</span><span class="na">count</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}),</span> <span class="n">dispatcher</span><span class="o">);</span>
+</pre></div>
+</div>
+</div>
 <p>Here, the <code class="docutils literal"><span class="pre">ExampleActor</span></code> includes the event’s vector timestamp in its <code class="docutils literal"><span class="pre">AppendSuccess</span></code> reply. Together with the actual <code class="docutils literal"><span class="pre">GetAppendCount</span></code> command, the timestamp is included as condition in a <code class="docutils literal"><span class="pre">ConditionalRequest</span></code> and sent to the view. For <code class="docutils literal"><span class="pre">ConditionalRequest</span></code> processing, an event-sourced view must extend the <code class="docutils literal"><span class="pre">ConditionalRequests</span></code> trait. <code class="docutils literal"><span class="pre">ConditionalRequests</span></code> internally delays the command, if needed, and only dispatches <code class="docutils literal"><span class="pre">GetAppendCount</span></code> to the view’s <code class="docutils literal"><span class="pre">onCommand</span></code> handler if the condition timestamp is in the <em>causal past</em> of the view (which is earliest the case when the view consumed the update event). When running the example with an empty event log, it should print:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">append</span> <span class="n">count</span> <span class="k">=</span> <span class="mi">1</span>
 </pre></div>
@@ -657,6 +1183,7 @@
 <li>a <code class="docutils literal"><span class="pre">PingActor</span></code> emits a <code class="docutils literal"><span class="pre">Ping</span></code> event on receiving a <code class="docutils literal"><span class="pre">Pong</span></code> event and</li>
 <li>a <code class="docutils literal"><span class="pre">PongActor</span></code> emits a <code class="docutils literal"><span class="pre">Pong</span></code> event on receiving a <code class="docutils literal"><span class="pre">Ping</span></code> event</li>
 </ul>
+<div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="c1">// some imports omitted ...</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedView.Handler</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
@@ -694,6 +1221,64 @@
 
 <span class="n">pingActor</span> <span class="o">!</span> <span class="s">&quot;serve&quot;</span>
 </pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">akka.actor.ActorRef</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.actor.ActorSystem</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.actor.Props</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.japi.pf.ReceiveBuilder</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.AbstractEventsourcedActor</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.ResultHandler</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">static</span> <span class="n">akka</span><span class="o">.</span><span class="na">actor</span><span class="o">.</span><span class="na">ActorRef</span><span class="o">.</span><span class="na">noSender</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">PingActor</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedActor</span> <span class="o">{</span>
+
+  <span class="kd">public</span> <span class="nf">PingActor</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">ActorRef</span> <span class="n">eventLog</span><span class="o">,</span> <span class="n">ActorRef</span> <span class="n">completion</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">);</span>
+
+    <span class="n">setOnCommand</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">matchEquals</span><span class="o">(</span><span class="s">&quot;serve&quot;</span><span class="o">,</span> <span class="n">cmd</span> <span class="o">-&gt;</span> <span class="n">persist</span><span class="o">(</span><span class="k">new</span> <span class="n">Ping</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span> <span class="n">ResultHandler</span><span class="o">.</span><span class="na">none</span><span class="o">()))</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+
+    <span class="n">setOnEvent</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Pong</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">evt</span> <span class="o">-&gt;</span> <span class="n">evt</span><span class="o">.</span><span class="na">num</span> <span class="o">==</span> <span class="mi">10</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">recovering</span><span class="o">(),</span> <span class="n">evt</span> <span class="o">-&gt;</span> <span class="n">completion</span><span class="o">.</span><span class="na">tell</span><span class="o">(</span><span class="s">&quot;done&quot;</span><span class="o">,</span> <span class="n">self</span><span class="o">()))</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Pong</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">evt</span> <span class="o">-&gt;</span> <span class="n">persistOnEvent</span><span class="o">(</span><span class="k">new</span> <span class="n">Ping</span><span class="o">(</span><span class="n">evt</span><span class="o">.</span><span class="na">num</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)))</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">PongActor</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedActor</span> <span class="o">{</span>
+
+  <span class="kd">public</span> <span class="nf">PongActor</span><span class="o">(</span><span class="n">String</span> <span class="n">id</span><span class="o">,</span> <span class="n">ActorRef</span> <span class="n">eventLog</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">);</span>
+
+    <span class="n">setOnEvent</span><span class="o">(</span><span class="n">ReceiveBuilder</span>
+      <span class="o">.</span><span class="na">match</span><span class="o">(</span><span class="n">Ping</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">evt</span> <span class="o">-&gt;</span> <span class="n">persistOnEvent</span><span class="o">(</span><span class="k">new</span> <span class="n">Pong</span><span class="o">(</span><span class="n">evt</span><span class="o">.</span><span class="na">num</span><span class="o">)))</span>
+      <span class="o">.</span><span class="na">build</span><span class="o">());</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Ping</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">num</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">Ping</span><span class="o">(</span><span class="n">Integer</span> <span class="n">num</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">num</span> <span class="o">=</span> <span class="n">num</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Pong</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">final</span> <span class="n">Integer</span> <span class="n">num</span><span class="o">;</span>
+
+  <span class="kd">public</span> <span class="nf">Pong</span><span class="o">(</span><span class="n">Integer</span> <span class="n">num</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">num</span> <span class="o">=</span> <span class="n">num</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">final</span> <span class="n">ActorRef</span> <span class="n">pingActor</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="na">actorOf</span><span class="o">(</span><span class="n">Props</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">PingActor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="n">PingActor</span><span class="o">(</span><span class="s">&quot;ping&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">,</span> <span class="n">system</span><span class="o">.</span><span class="na">deadLetters</span><span class="o">())));</span>
+<span class="kd">final</span> <span class="n">ActorRef</span> <span class="n">pongActor</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="na">actorOf</span><span class="o">(</span><span class="n">Props</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">PongActor</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="k">new</span> <span class="n">PongActor</span><span class="o">(</span><span class="s">&quot;pong&quot;</span><span class="o">,</span> <span class="n">eventLog</span><span class="o">)));</span>
+
+<span class="n">pingActor</span><span class="o">.</span><span class="na">tell</span><span class="o">(</span><span class="s">&quot;serve&quot;</span><span class="o">,</span> <span class="n">noSender</span><span class="o">());</span>
+</pre></div>
+</div>
 </div>
 <p>The ping-pong game is started by sending the <code class="docutils literal"><span class="pre">PingActor</span></code> a <code class="docutils literal"><span class="pre">”serve”</span></code> command which <code class="docutils literal"><span class="pre">persist</span></code>s the first <code class="docutils literal"><span class="pre">Ping</span></code> event. This event however is not consumed by the emitter but rather by the <code class="docutils literal"><span class="pre">PongActor</span></code>. The <code class="docutils literal"><span class="pre">PongActor</span></code> reacts on the <code class="docutils literal"><span class="pre">Ping</span></code> event by emitting a <code class="docutils literal"><span class="pre">Pong</span></code> event. Other than in previous examples, the event is not emitted in the actor’s <code class="docutils literal"><span class="pre">onCommand</span></code> handler but in the <code class="docutils literal"><span class="pre">onEvent</span></code> handler. For that purpose, the actor has to mixin the <code class="docutils literal"><span class="pre">PersistOnEvent</span></code> trait and use the <code class="docutils literal"><span class="pre">persistOnEvent</span></code> method. The emitted <code class="docutils literal"><span class="pre">Pong</span></code> too isn’t consumed by its emitter but rather by the <code class="docutils literal"><span class="pre">PingActor</span></code>, emitting another <code class="docutils literal"><span class="pre">Ping</span></code>, and so on. The game ends when the <code class="docutils literal"><span class="pre">PingActor</span></code> received the 10th <code class="docutils literal"><span class="pre">Pong</span></code>.</p>
 <div class="admonition note">
@@ -778,6 +1363,7 @@
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/tabbedcode.js"></script>
 
   
 
