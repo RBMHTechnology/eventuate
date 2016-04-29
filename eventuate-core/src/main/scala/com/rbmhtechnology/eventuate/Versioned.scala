@@ -152,6 +152,18 @@ case object ConcurrentVersionsList {
    */
   def apply[A](a: A, vectorTimestamp: VectorTime): ConcurrentVersionsList[A] =
     new ConcurrentVersionsList(List(Versioned(a, vectorTimestamp)))
+
+  /**
+   * Java API that creates an empty [[ConcurrentVersionsList]].
+   */
+  def create[A]: ConcurrentVersionsList[A] =
+    apply
+
+  /**
+   * Java API that creates a new [[ConcurrentVersionsList]] with a single [[Versioned]] value from `a` and `vectorTimestamp`.
+   */
+  def create[A](a: A, vectorTimestamp: VectorTime): ConcurrentVersionsList[A] =
+    apply(a, vectorTimestamp)
 }
 
 /**
@@ -265,12 +277,26 @@ object ConcurrentVersionsTree {
    * The [[ConcurrentVersionsTree]] uses projection function `f` to compute
    * new (potentially concurrent) versions from a parent version.
    *
+   * @param initial Value of the initial version.
+   * @param f Projection function for updates.
+   * @tparam A Versioned value type
+   * @tparam B Update type
+   */
+  def create[A, B](initial: A, f: BiFunction[A, B, A]): ConcurrentVersionsTree[A, B] =
+    apply(initial)((a, b) => f.apply(a, b))
+
+  /**
+   * Java API that creates a new [[ConcurrentVersionsTree]].
+   *
+   * The [[ConcurrentVersionsTree]] uses projection function `f` to compute
+   * new (potentially concurrent) versions from a parent version.
+   *
    * @param f Projection function for updates.
    * @tparam A Versioned value type
    * @tparam B Update type
    */
   def create[A, B](f: BiFunction[A, B, A]): ConcurrentVersionsTree[A, B] =
-    apply(null.asInstanceOf[A] /* FIXME: use Monoid[A].zero */ )((a, b) => f.apply(a, b))
+    create(null.asInstanceOf[A] /* FIXME: use Monoid[A].zero */ , f)
 
   private[eventuate] class Node[A](var versioned: Versioned[A]) extends Serializable {
     var rejected: Boolean = false

@@ -17,7 +17,6 @@
 package com.rbmhtechnology.eventuate
 
 import scala.annotation.tailrec
-
 import scalaz._
 import Scalaz._
 
@@ -78,6 +77,8 @@ case class VectorClock(processId: String, currentTime: VectorTime = VectorTime.Z
  * Vector time, represented as ''process id'' -> ''logical time'' map.
  */
 case class VectorTime(value: Map[String, Long] = Map.empty) {
+  import VectorTime._
+
   /**
    * Sets the local time of `processId`.
    */
@@ -116,38 +117,70 @@ case class VectorTime(value: Map[String, Long] = Map.empty) {
   /**
    * Returns `true` if this vector time is equivalent (equal) to `that`.
    */
-  def equiv(that: VectorTime)(implicit ordering: PartialOrdering[VectorTime]): Boolean =
-    ordering.equiv(this, that)
+  def equiv(that: VectorTime): Boolean =
+    Ordering.equiv(this, that)
 
   /**
    * Returns `true` if this vector time is concurrent to `that`.
    */
-  def conc(that: VectorTime)(implicit ordering: PartialOrdering[VectorTime]): Boolean =
-    ordering.tryCompare(this, that).isEmpty
+  def conc(that: VectorTime): Boolean =
+    Ordering.tryCompare(this, that).isEmpty
 
   /**
    * Returns `true` if this vector time is less than or equal to `that`.
    */
-  def <=(that: VectorTime)(implicit ordering: PartialOrdering[VectorTime]): Boolean =
-    ordering.lteq(this, that)
+  def <=(that: VectorTime): Boolean =
+    Ordering.lteq(this, that)
 
   /**
    * Returns `true` if this vector time is greater than or equal to `that`.
    */
-  def >=(that: VectorTime)(implicit ordering: PartialOrdering[VectorTime]): Boolean =
-    ordering.gteq(this, that)
+  def >=(that: VectorTime): Boolean =
+    Ordering.gteq(this, that)
 
   /**
    * Returns `true` if this vector time is less than `that` (= this happened before `that`).
    */
-  def <(that: VectorTime)(implicit ordering: PartialOrdering[VectorTime]): Boolean =
-    ordering.lt(this, that)
+  def <(that: VectorTime): Boolean =
+    Ordering.lt(this, that)
 
   /**
    * Returns `true` if this vector time is greater than `that` (= `that` happened before this).
    */
-  def >(that: VectorTime)(implicit ordering: PartialOrdering[VectorTime]): Boolean =
-    ordering.gt(this, that)
+  def >(that: VectorTime): Boolean =
+    Ordering.gt(this, that)
+
+  /**
+   * Java API
+   *
+   * Returns `true` if this vector time is less than or equal to `that`.
+   */
+  def lte(that: VectorTime): Boolean =
+    <=(that)
+
+  /**
+   * Java API
+   *
+   * Returns `true` if this vector time is greater than or equal to `that`.
+   */
+  def gte(that: VectorTime): Boolean =
+    >=(that)
+
+  /**
+   * Java API
+   *
+   * Returns `true` if this vector time is less than `that` (= this happened before `that`).
+   */
+  def lt(that: VectorTime): Boolean =
+    <(that)
+
+  /**
+   * Java API
+   *
+   * Returns `true` if this vector time is greater than `that` (= `that` happened before this).
+   */
+  def gt(that: VectorTime): Boolean =
+    >(that)
 
   override def toString: String =
     s"VectorTime(${value.mkString(",")})"
@@ -160,7 +193,7 @@ object VectorTime {
   def apply(entries: (String, Long)*): VectorTime =
     VectorTime(Map(entries: _*))
 
-  implicit object VectorTimePartialOrdering extends PartialOrdering[VectorTime] {
+  val Ordering = new PartialOrdering[VectorTime] {
     def lteq(x: VectorTime, y: VectorTime): Boolean = {
       tryCompare(x, y) match {
         case None             => false
