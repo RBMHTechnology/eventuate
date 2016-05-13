@@ -267,10 +267,13 @@ class ReplicationEndpoint(
    * have been lost.
    *
    * This procedure requires that event replication between this and directly connected endpoints is bi-directional
-   * and that these endpoints are available during recovery. Recovery is idempotent and must be repeated in failure
-   * cases by the application. After successful recovery the endpoint is automatically activated.
-   * Activating this endpoint without having successfully recovered from partial or total event
-   * loss may result in inconsistent replica states.
+   * and that these endpoints are available during recovery. After successful recovery the endpoint is automatically
+   * activated. A failed recovery completes with a [[RecoveryException]] and must be retried. Activating this endpoint
+   * without having successfully recovered from partial or total event loss may result in inconsistent replica states.
+   *
+   * Running a recovery on an endpoint that didn't loose events has no effect but may still fail due to unavailable
+   * replication partners, for example. In this case, a recovery retry can be omitted if the `partialUpdate` field
+   * of [[RecoveryException]] is set to `false`.
    */
   def recover(): Future[Unit] = {
     if (connections.isEmpty)
@@ -281,11 +284,15 @@ class ReplicationEndpoint(
       val promise = Promise[Unit]()
       val recovery = new Recovery(this)
 
+      def recoveryFailure[U](partialUpdate: Boolean): PartialFunction[Throwable, Future[U]] = {
+        case t => Future.failed(new RecoveryException(t, partialUpdate))
+      }
+
       val recoveryOperation = for {
-        infos <- recovery.readEndpointInfos
-        clocks <- recovery.readEventLogClocks
+        infos <- recovery.readEndpointInfos.recoverWith(recoveryFailure(partialUpdate = false))
+        clocks <- recovery.readEventLogClocks.recoverWith(recoveryFailure(partialUpdate = false))
         links = recovery.recoveryLinks(infos, clocks)
-        _ <- recovery.deleteSnapshots(links)
+        _ <- recovery.deleteSnapshots(links).recoverWith(recoveryFailure(partialUpdate = true))
       } yield acceptor ! Recover(links, promise)
 
       recoveryOperation.onFailure {

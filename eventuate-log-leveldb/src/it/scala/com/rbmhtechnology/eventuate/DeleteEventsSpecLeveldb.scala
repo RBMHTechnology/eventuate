@@ -46,9 +46,9 @@ object DeleteEventsSpecLeveldb {
     """
       |eventuate.log.replication.retry-delay = 1s
       |eventuate.log.replication.remote-read-timeout = 2s
-      |eventuate.disaster-recovery.remote-operation-retry-max = 10
-      |eventuate.disaster-recovery.remote-operation-retry-delay = 1s
-      |eventuate.disaster-recovery.remote-operation-timeout = 1s
+      |eventuate.log.recovery.remote-operation-retry-max = 10
+      |eventuate.log.recovery.remote-operation-retry-delay = 1s
+      |eventuate.log.recovery.remote-operation-timeout = 1s
     """.stripMargin)
 
   val L1 = "L1"
