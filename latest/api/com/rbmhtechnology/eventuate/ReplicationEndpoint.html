@@ -605,10 +605,11 @@ partial event loss. Partial event loss means event loss from a given sequence nu
 after having installed a storage backup). Recovery copies events from directly connected remote endpoints back
 to this endpoint and automatically removes invalid snapshots. A snapshot is invalid if it covers events that
 have been lost.</p><p>This procedure requires that event replication between this and directly connected endpoints is bi-directional
-and that these endpoints are available during recovery. Recovery is idempotent and must be repeated in failure
-cases by the application. After successful recovery the endpoint is automatically activated.
-Activating this endpoint without having successfully recovered from partial or total event
-loss may result in inconsistent replica states.
+and that these endpoints are available during recovery. After successful recovery the endpoint is automatically
+activated. A failed recovery completes with a <a href="RecoveryException.html" class="extype" name="com.rbmhtechnology.eventuate.RecoveryException">RecoveryException</a> and must be retried. Activating this endpoint
+without having successfully recovered from partial or total event loss may result in inconsistent replica states.</p><p>Running a recovery on an endpoint that didn't loose events has no effect but may still fail due to unavailable
+replication partners, for example. In this case, a recovery retry can be omitted if the <code>partialUpdate</code> field
+of <a href="RecoveryException.html" class="extype" name="com.rbmhtechnology.eventuate.RecoveryException">RecoveryException</a> is set to <code>false</code>.
 </p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationEndpoint#settings" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="settings:com.rbmhtechnology.eventuate.ReplicationSettings"></a>
