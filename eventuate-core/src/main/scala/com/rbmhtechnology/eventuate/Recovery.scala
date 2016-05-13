@@ -32,6 +32,15 @@ import scala.collection.immutable.Seq
 import scala.concurrent._
 import scala.concurrent.duration._
 
+/**
+ * [[ReplicationEndpoint.recover]] completes with this exception if recovery fails.
+ *
+ * @param cause Recovery failure cause.
+ * @param partialUpdate Set to `true` if recovery already made partial updates, `false` if recovery
+ *                      failed without having made partial updates to replication partners.
+ */
+class RecoveryException(cause: Throwable, val partialUpdate: Boolean) extends RuntimeException(cause)
+
 private class RecoverySettings(config: Config) {
   val remoteOperationRetryMax: Int =
     config.getInt("eventuate.log.recovery.remote-operation-retry-max")

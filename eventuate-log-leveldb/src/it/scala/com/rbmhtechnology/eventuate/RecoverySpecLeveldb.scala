@@ -49,9 +49,9 @@ object RecoverySpecLeveldb {
     """
       |eventuate.log.replication.retry-delay = 1s
       |eventuate.log.replication.remote-read-timeout = 2s
-      |eventuate.disaster-recovery.remote-operation-retry-max = 10
-      |eventuate.disaster-recovery.remote-operation-retry-delay = 1s
-      |eventuate.disaster-recovery.remote-operation-timeout = 1s
+      |eventuate.log.recovery.remote-operation-retry-max = 10
+      |eventuate.log.recovery.remote-operation-retry-delay = 1s
+      |eventuate.log.recovery.remote-operation-timeout = 1s
     """.stripMargin)
 
   def rootDirectory(target: ReplicationTarget): File =
@@ -97,10 +97,14 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpecL
       an [IllegalStateException] shouldBe thrownBy(endpointA.activate())
     }
     "fail when connected endpoint is unavailable" in {
-      val locationA = location("A", customConfig = ConfigFactory.parseString("eventuate.disaster-recovery.remote-operation-retry-max = 0").withFallback(RecoverySpecLeveldb.config))
-      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(customPort)))
+      val locationA = location("A", customConfig = ConfigFactory.parseString("eventuate.log.recovery.remote-operation-retry-max = 0").withFallback(RecoverySpecLeveldb.config))
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(customPort)), activate = false)
 
-      an [Exception] shouldBe thrownBy(endpointA.recover().await)
+      val recoveryException = intercept[RecoveryException] {
+        endpointA.recover().await
+      }
+
+      recoveryException.partialUpdate should be(false)
     }
     "succeed normally if the endpoint was healthy (but not convergent yet)" in {
       val locationB = location("B", customConfig = RecoverySpecLeveldb.config)

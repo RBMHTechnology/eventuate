@@ -17,9 +17,9 @@
 package com.rbmhtechnology.eventuate.crdt.japi
 
 import java.util.concurrent.CompletionStage
-import java.util.{Optional => JOption}
+import java.util.{ Optional => JOption }
 
-import akka.actor.{ActorRef, ActorSystem}
+import akka.actor.{ ActorRef, ActorSystem }
 import com.rbmhtechnology.eventuate.crdt.LWWRegister
 
 import scala.compat.java8.OptionConverters._
