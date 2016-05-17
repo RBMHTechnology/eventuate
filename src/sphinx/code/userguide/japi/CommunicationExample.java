@@ -16,7 +16,7 @@
 
 package userguide.japi;
 
-//#event-collaboration
+//#event-driven-communication
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
@@ -26,9 +26,9 @@ import com.rbmhtechnology.eventuate.ResultHandler;
 import static akka.actor.ActorRef.noSender;
 //#
 
-public class CollaborationExample {
+public class CommunicationExample {
 
-  //#event-collaboration
+  //#event-driven-communication
 
   class PingActor extends AbstractEventsourcedActor {
 
@@ -78,7 +78,7 @@ public class CollaborationExample {
     final ActorSystem system = ActorSystem.create("system");
     final ActorRef eventLog = null;
 
-    //#event-collaboration
+    //#event-driven-communication
 
     final ActorRef pingActor = system.actorOf(Props.create(PingActor.class, () -> new PingActor("ping", eventLog, system.deadLetters())));
     final ActorRef pongActor = system.actorOf(Props.create(PongActor.class, () -> new PongActor("pong", eventLog)));
