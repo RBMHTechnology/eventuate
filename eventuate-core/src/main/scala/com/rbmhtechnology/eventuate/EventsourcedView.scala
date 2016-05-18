@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor._
+import akka.event.{ Logging, LoggingAdapter }
 import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
@@ -86,7 +87,7 @@ object EventsourcedView {
  * @see [[EventsourcedWriter]]
  * @see [[EventsourcedProcessor]]
  */
-trait EventsourcedView extends Actor with Stash with ActorLogging {
+trait EventsourcedView extends Actor with Stash {
   import EventsourcedView._
   import context.dispatcher
 
@@ -104,6 +105,12 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
   private lazy val _commandContext: BehaviorContext = new DefaultBehaviorContext(onCommand)
   private lazy val _eventContext: BehaviorContext = new DefaultBehaviorContext(onEvent)
   private lazy val _snapshotContext: BehaviorContext = new DefaultBehaviorContext(onSnapshot)
+
+  /**
+   * This actor's logging adapter.
+   */
+  val logger: LoggingAdapter =
+    Logging(context.system, this)
 
   /**
    * Optional aggregate id. It is used for routing [[DurableEvent]]s to event-sourced destinations
@@ -373,7 +380,7 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
         behavior(snapshot.payload)
         replay(snapshot.metadata.sequenceNr + 1L, subscribe = true)
       } else {
-        log.warning(s"snapshot loaded (metadata = ${snapshot.metadata}) but onSnapshot doesn't handle it, replaying from scratch")
+        logger.warning(s"snapshot loaded (metadata = ${snapshot.metadata}) but onSnapshot doesn't handle it, replaying from scratch")
         replay(subscribe = true)
       }
     }
@@ -394,7 +401,7 @@ trait EventsourcedView extends Actor with Stash with ActorLogging {
       replay(progress + 1L)
     }
     case ReplayFailure(cause, iid) => if (iid == instanceId) {
-      log.error(cause, s"replay failed, stopping self")
+      logger.error(cause, s"replay failed, stopping self")
       Try(onRecovery(Failure(cause)))
       context.stop(self)
     }
