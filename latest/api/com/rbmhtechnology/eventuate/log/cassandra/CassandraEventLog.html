@@ -63,7 +63,7 @@ the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span 
    <a href="../../EventsourcedView.html#aggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#aggregateId">aggregateId</a> defined.
 </li></ul></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></p></span><span class="cmt"><p><a href="Cassandra.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.Cassandra">Cassandra</a></p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="CassandraEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState">CassandraEventLogState</a>], <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<a href="CassandraEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState">CassandraEventLogState</a>], <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="CassandraEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState">CassandraEventLogState</a>], <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<a href="CassandraEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState">CassandraEventLogState</a>], <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -81,7 +81,7 @@ the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span 
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog"><span>CassandraEventLog</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.EventLog"><span>EventLog</span></li><li class="in" name="akka.actor.ActorLogging"><span>ActorLogging</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.EventLogSPI"><span>EventLogSPI</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog"><span>CassandraEventLog</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.EventLog"><span>EventLog</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.EventLogSPI"><span>EventLogSPI</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -468,23 +468,24 @@ A backend that does not support physical deletion should not override this metho
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="akka.actor.ActorLogging#log" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="log:akka.event.LoggingAdapter"></a>
-      <a id="log:LoggingAdapter"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLog#logger" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="logger:akka.event.LoggingAdapter"></a>
+      <a id="logger:LoggingAdapter"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">log</span><span class="result">: <span class="extype" name="akka.event.LoggingAdapter">LoggingAdapter</span></span>
+        <span class="name">logger</span><span class="result">: <span class="extype" name="akka.event.LoggingAdapter">LoggingAdapter</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@log:akka.event.LoggingAdapter" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@logger:akka.event.LoggingAdapter" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ActorLogging</dd></dl></div>
+      <p class="shortcomment cmt">This event log's logging adapter.</p><div class="fullcomment"><div class="comment cmt"><p>This event log's logging adapter.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -1091,8 +1092,6 @@ must have replicated these events before they are allowed to be physically delet
         <div id="inheritedMembers">
         <div class="parent" name="com.rbmhtechnology.eventuate.log.EventLog">
               <h3>Inherited from <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="CassandraEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogState">CassandraEventLogState</a>]</h3>
-            </div><div class="parent" name="akka.actor.ActorLogging">
-              <h3>Inherited from <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></h3>
             </div><div class="parent" name="akka.actor.Stash">
               <h3>Inherited from <span class="extype" name="akka.actor.Stash">Stash</span></h3>
             </div><div class="parent" name="akka.dispatch.RequiresMessageQueue">

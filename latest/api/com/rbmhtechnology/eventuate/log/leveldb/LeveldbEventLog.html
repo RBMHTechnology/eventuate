@@ -56,7 +56,7 @@ for this event log is named after the constructor parameters using the template 
 and stored in a root directory defined by the <code>log.leveldb.dir</code> configuration.</p><p><b>Please note:</b> <code>prefix</code> and <code>id</code> are currently not escaped when creating the directory name.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">WithBatch</span>, <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="LeveldbEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState">LeveldbEventLogState</a>], <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<a href="LeveldbEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState">LeveldbEventLogState</a>], <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">WithBatch</span>, <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="LeveldbEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState">LeveldbEventLogState</a>], <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a>[<a href="LeveldbEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState">LeveldbEventLogState</a>], <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -74,7 +74,7 @@ and stored in a root directory defined by the <code>log.leveldb.dir</code> confi
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog"><span>LeveldbEventLog</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch"><span>WithBatch</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.EventLog"><span>EventLog</span></li><li class="in" name="akka.actor.ActorLogging"><span>ActorLogging</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.EventLogSPI"><span>EventLogSPI</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog"><span>LeveldbEventLog</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch"><span>WithBatch</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.EventLog"><span>EventLog</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="com.rbmhtechnology.eventuate.log.EventLogSPI"><span>EventLogSPI</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -495,23 +495,6 @@ A backend that does not support physical deletion should not override this metho
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → WithBatch</dd></dl></div>
-    </li><li name="akka.actor.ActorLogging#log" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="log:akka.event.LoggingAdapter"></a>
-      <a id="log:LoggingAdapter"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">log</span><span class="result">: <span class="extype" name="akka.event.LoggingAdapter">LoggingAdapter</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@log:akka.event.LoggingAdapter" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ActorLogging</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#logDir" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="logDir:java.io.File"></a>
       <a id="logDir:File"></a>
@@ -529,6 +512,24 @@ A backend that does not support physical deletion should not override this metho
       </a>
     </span>
       
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLog#logger" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="logger:akka.event.LoggingAdapter"></a>
+      <a id="logger:LoggingAdapter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">logger</span><span class="result">: <span class="extype" name="akka.event.LoggingAdapter">LoggingAdapter</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@logger:akka.event.LoggingAdapter" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">This event log's logging adapter.</p><div class="fullcomment"><div class="comment cmt"><p>This event log's logging adapter.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -1154,8 +1155,6 @@ must have replicated these events before they are allowed to be physically delet
               <h3>Inherited from <span class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog.WithBatch">WithBatch</span></h3>
             </div><div class="parent" name="com.rbmhtechnology.eventuate.log.EventLog">
               <h3>Inherited from <a href="../EventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLog">EventLog</a>[<a href="LeveldbEventLogState.html" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogState">LeveldbEventLogState</a>]</h3>
-            </div><div class="parent" name="akka.actor.ActorLogging">
-              <h3>Inherited from <span class="extype" name="akka.actor.ActorLogging">ActorLogging</span></h3>
             </div><div class="parent" name="akka.actor.Stash">
               <h3>Inherited from <span class="extype" name="akka.actor.Stash">Stash</span></h3>
             </div><div class="parent" name="akka.dispatch.RequiresMessageQueue">
