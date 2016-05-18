@@ -140,29 +140,29 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
       case Success(r) =>
         context.parent ! ServiceNormal
       case Failure(e) if num >= cassandra.settings.writeRetryMax =>
-        log.error(e, s"write attempt ${num} failed: reached maximum number of retries - stop self")
+        logger.error(e, s"write attempt ${num} failed: reached maximum number of retries - stop self")
         context.stop(self)
         throw e
       case Failure(e: TimeoutException) =>
         context.parent ! ServiceFailed(num)
-        log.error(e, s"write attempt ${num} failed: timeout after ${cassandra.settings.writeTimeout} ms - retry now")
+        logger.error(e, s"write attempt ${num} failed: timeout after ${cassandra.settings.writeTimeout} ms - retry now")
         writeRetry(events, partition, clock, num + 1)
       case Failure(e: QueryTimeoutException) =>
         context.parent ! ServiceFailed(num)
-        log.error(e, s"write attempt ${num} failed - retry now")
+        logger.error(e, s"write attempt ${num} failed - retry now")
         writeRetry(events, partition, clock, num + 1)
       case Failure(e: QueryExecutionException) =>
         context.parent ! ServiceFailed(num)
-        log.error(e, s"write attempt ${num} failed - retry in ${cassandra.settings.writeTimeout} ms")
+        logger.error(e, s"write attempt ${num} failed - retry in ${cassandra.settings.writeTimeout} ms")
         Thread.sleep(cassandra.settings.writeTimeout)
         writeRetry(events, partition, clock, num + 1)
       case Failure(e: NoHostAvailableException) =>
         context.parent ! ServiceFailed(num)
-        log.error(e, s"write attempt ${num} failed - retry in ${cassandra.settings.writeTimeout} ms")
+        logger.error(e, s"write attempt ${num} failed - retry in ${cassandra.settings.writeTimeout} ms")
         Thread.sleep(cassandra.settings.writeTimeout)
         writeRetry(events, partition, clock, num + 1)
       case Failure(e) =>
-        log.error(e, s"write attempt ${num} failed - stop self")
+        logger.error(e, s"write attempt ${num} failed - stop self")
         context.stop(self)
         throw e
     }

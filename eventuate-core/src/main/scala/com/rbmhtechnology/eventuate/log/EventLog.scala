@@ -18,7 +18,7 @@ package com.rbmhtechnology.eventuate.log
 
 import akka.actor._
 import akka.dispatch.MessageDispatcher
-import akka.event.LoggingAdapter
+import akka.event.{ Logging, LoggingAdapter }
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
@@ -233,7 +233,7 @@ trait EventLogSPI[A] { this: Actor =>
  *
  * @tparam A Event log state type (a subtype of [[EventLogState]]).
  */
-abstract class EventLog[A <: EventLogState](id: String) extends Actor with EventLogSPI[A] with Stash with ActorLogging {
+abstract class EventLog[A <: EventLogState](id: String) extends Actor with EventLogSPI[A] with Stash {
   import NotificationChannel._
   import EventLog._
 
@@ -324,8 +324,8 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
   /**
    * This event log's logging adapter.
    */
-  private val logger: LoggingAdapter =
-    log
+  val logger: LoggingAdapter =
+    Logging(context.system, this)
 
   private def initializing: Receive = {
     case RecoverStateSuccess(state) =>
@@ -454,7 +454,7 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
     case PhysicalDeleteFailure(cause: PhysicalDeletionNotSupportedException) =>
     case PhysicalDeleteFailure(cause) =>
       import services._
-      log.error(cause, "Physical deletion of events failed. Retry in {}", settings.deletionRetryDelay)
+      logger.error(cause, "Physical deletion of events failed. Retry in {}", settings.deletionRetryDelay)
       physicalDeletionRunning = false
       scheduler.scheduleOnce(settings.deletionRetryDelay, self, PhysicalDelete)
     case LoadSnapshot(emitterId, iid) =>
