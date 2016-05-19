@@ -76,14 +76,24 @@
           
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#event-sourcing">Event sourcing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#event-collaboration">Event collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#event-log">Event log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#event-bus">Event bus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#event-ordering-and-consistency">Event ordering and consistency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#operation-based-crdts">Operation-based CRDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#stream-processing-adapters">Stream processing adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#related-projects">Related projects</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-logs">Event logs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourcing">Event sourcing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-collaboration">Event collaboration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#vector-clocks">Vector clocks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#batching">Batching</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#adapters">Adapters</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user-guide.html">User guide</a><ul>
@@ -94,7 +104,7 @@
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-sourced-views">Event-sourced views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#conditional-requests">Conditional requests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-collaboration">Event collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-driven-communication">Event-driven communication</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
@@ -107,8 +117,8 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#state-recovery">State recovery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-routing">Event routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-driven-communication">Event-driven communication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-collaboration">Event collaboration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#conditional-requests">Conditional requests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#command-stashing">Command stashing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
@@ -138,7 +148,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#how-does-eventuate-compare-to-akka-persistence">How does Eventuate compare to Akka Persistence?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-does-akka-persistence-compare-to-eventuate">How does Akka Persistence compare to Eventuate?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-can-apache-kafka-be-integrated-with-eventuate">How can Apache Kafka be integrated with Eventuate?</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="example-application.html">Example application</a><ul>
@@ -188,7 +199,7 @@
 <span id="id1"></span><h1>Current limitations<a class="headerlink" href="#current-limitations" title="Permalink to this headline">¶</a></h1>
 <p>The following is a list of known limitations that are going to be addressed in future versions. If some of these limitations are particularly painful to you, please <a class="reference external" href="https://gitter.im/RBMHTechnology/eventuate">let us know</a> so that we can target them accordingly.</p>
 <ul class="simple">
-<li>Replication network topologies must be statically defined at the moment. Dynamic changes, such as adding new locations or changing the replication network topology at runtime, will be supported in future versions. We also think about an integration with <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.1/scala/cluster-usage.html">Akka Cluster</a>.</li>
+<li>Replication network topologies must be statically defined at the moment. Dynamic changes, such as adding new locations or changing the replication network topology at runtime, will be supported in future versions. We also think about an integration with <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.4/scala/cluster-usage.html">Akka Cluster</a>.</li>
 <li><a class="reference internal" href="reference/event-sourcing.html#snapshots"><span class="std std-ref">Snapshots</span></a> are written to the local filesystem at the moment. Applications that need to share snapshots across nodes should consider storing them on NFS or replicate them with <code class="docutils literal"><span class="pre">rsync</span></code>, for example.</li>
 <li>No performance optimizations have been made yet.</li>
 </ul>
