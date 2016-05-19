@@ -44,25 +44,25 @@ To include the latest release into a Maven project, add the following dependenci
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-core_2.11</artifactId>
-        <version>0.7</version>
+        <version>0.7.1</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-log-leveldb_2.11</artifactId>
-        <version>0.7</version>
+        <version>0.7.1</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-log-cassandra_2.11</artifactId>
-        <version>0.7</version>
+        <version>0.7.1</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-crdt_2.11</artifactId>
-        <version>0.7</version>
+        <version>0.7.1</version>
     </dependency>
 
 To include the latest development snapshot::
@@ -104,13 +104,13 @@ To include the latest release into an sbt_ project, add the following dependenci
 
     resolvers += "Eventuate Releases" at "https://dl.bintray.com/rbmhtechnology/maven"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-core" % "0.7"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-core" % "0.7.1"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-leveldb" % "0.7"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-leveldb" % "0.7.1"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-cassandra" % "0.7"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-cassandra" % "0.7.1"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.7"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.7.1"
 
 To include the latest development snapshot::
 
