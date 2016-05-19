@@ -4,7 +4,7 @@
 User guide
 ----------
 
-This is a brief user guide to Eventuate. It is recommended to read sections :ref:`introduction` and :ref:`architecture` first. Based on simple examples, you’ll see how to
+This is a brief user guide to Eventuate. It is recommended to read sections :ref:`overview` and :ref:`architecture` first. Based on simple examples, you’ll see how to
 
 - implement an event-sourced actor
 - replicate actor state with event sourcing
@@ -14,7 +14,7 @@ This is a brief user guide to Eventuate. It is recommended to read sections :ref
 - make concurrent updates conflict-free with operation-based CRDTs
 - implement an event-sourced view over many event-sourced actors
 - achieve causal read consistency across event-sourced actors and views and
-- implement event collaboration between event-sourced actors.
+- implement event-driven communication between event-sourced actors.
 
 The user guide only scratches the surface of Eventuate. You can find further details in the :ref:`reference`.
 
@@ -28,7 +28,7 @@ An event-sourced actor is an actor that captures changes to its internal state a
 Event-sourced actors distinguish between *commands* and *events*. During command processing they usually validate external commands against internal state and, if validation succeeds, write one or more events to their event log. During event processing they consume events they have written and update internal state by handling these events.
 
 .. hint::
-   Event-sourced actors can also write new events during event processing. This is covered in section :ref:`guide-event-collaboration`. 
+   Event-sourced actors can also write new events during event processing. This is covered in section :ref:`guide-event-driven-communication`.
 
 Concrete event-sourced actors must implement the ``EventsourcedActor`` trait. The following ``ExampleActor`` maintains state of type ``Vector[String]`` to which entries can be appended:
 
@@ -299,23 +299,23 @@ Here, the ``ExampleActor`` includes the event’s vector timestamp in its ``Appe
 .. note::
    Not only event-sourced views but also event-sourced actors, stateful event-sourced writers and processors can extend ``ConditionalRequests``. Delaying conditional requests may re-order them relative to other conditional and non-conditional requests.
 
-.. _guide-event-collaboration:
+.. _guide-event-driven-communication:
 
-Event collaboration
--------------------
+Event-driven communication
+--------------------------
 
-Earlier sections have already shown a special case of event collaboration: state replication. For that purpose, event-sourced actors of the same type exchange their events to re-construct actor state at different locations. 
+Earlier sections have already shown one form of event collaboration: *state replication*. For that purpose, event-sourced actors of the same type exchange their events to re-construct actor state at different locations. 
 
-In more general cases, event-sourced actors of different type exchange events to achieve a common goal. In the following example, two event-actors collaborate in a ping-pong game where 
+In more general cases, event-sourced actors of different type exchange events to achieve a common goal. They react on received events by updating internal state and producing new events. This form of event collaboration is called *event-driven communication*. In the following example, two event-actors collaborate in a ping-pong game where 
 
 - a ``PingActor`` emits a ``Ping`` event on receiving a ``Pong`` event and
 - a ``PongActor`` emits a ``Pong`` event on receiving a ``Ping`` event
 
 .. tabbed-code::
    .. includecode:: code/UserGuideDoc.scala
-      :snippet: event-collaboration
-   .. includecode:: code/userguide/japi/CollaborationExample.java
-      :snippet: event-collaboration
+      :snippet: event-driven-communication
+   .. includecode:: code/userguide/japi/CommunicationExample.java
+      :snippet: event-driven-communication
 
 The ping-pong game is started by sending the ``PingActor`` a ``”serve”`` command which ``persist``\ s the first ``Ping`` event. This event however is not consumed by the emitter but rather by the ``PongActor``. The ``PongActor`` reacts on the ``Ping`` event by emitting a ``Pong`` event. Other than in previous examples, the event is not emitted in the actor’s ``onCommand`` handler but in the ``onEvent`` handler. For that purpose, the actor has to mixin the ``PersistOnEvent`` trait and use the ``persistOnEvent`` method. The emitted ``Pong`` too isn’t consumed by its emitter but rather by the ``PingActor``, emitting another ``Ping``, and so on. The game ends when the ``PingActor`` received the 10th ``Pong``.
 
@@ -334,7 +334,7 @@ In a more real-world example, there would be several actors of different type co
 .. _vector clock update rules: http://en.wikipedia.org/wiki/Vector_clock
 .. _version vector update rules: http://en.wikipedia.org/wiki/Version_vector
 .. _Lamport timestamps: http://en.wikipedia.org/wiki/Lamport_timestamps
-.. _multi node testkit: http://doc.akka.io/docs/akka/2.4.1/dev/multi-node-testing.html
+.. _multi node testkit: http://doc.akka.io/docs/akka/2.4.4/dev/multi-node-testing.html
 .. _ReplicatedOrSetSpec: https://github.com/RBMHTechnology/eventuate/blob/master/src/multi-jvm/scala/com/rbmhtechnology/eventuate/crdt/ReplicatedORSetSpec.scala
 .. _CRDT sources: https://github.com/RBMHTechnology/eventuate/tree/master/eventuate-crdt/src/main/scala/com/rbmhtechnology/eventuate/crdt
 .. _A comprehensive study of Convergent and Commutative Replicated Data Types: http://hal.upmc.fr/file/index/docid/555588/filename/techreport.pdf

@@ -71,9 +71,6 @@ Custom storage backends
 
 A custom storage backend can be integrated into Eventuate by extending the abstract EventLog_ actor and implementing the EventLogSPI_ trait. For implementation examples, please take a look at LeveldbEventLog.scala_ and CassandraEventLog.scala_.
 
-.. note::
-   The event log storage provider interface (``EventLogSPI``) is preliminary and likely to be changed in future versions.
-
 .. _replicated-event-log:
 
 Replicated event log
@@ -106,7 +103,7 @@ The distribution of ``L``, ``M`` and ``N`` across locations may also differ::
             N2 --- N3
 
 .. note::
-   Event replication is reliable and can recover from network failures. It can also recover from crashes of source and target locations i.e. event replication automatically resumes when a crashed location recovers. Replicated events are also guaranteed to be written *exactly-once* to a target log. This is possible because replication progress metadata are stored along with replicated events in the target log. This allows a replication target to reliably detect and ignore duplicates. Event-sourced actors, views, writers and processors can therefore rely on receiving a de-duplicated event stream.
+   Event replication is reliable and can recover from network failures. It can also recover from crashes of source and target locations i.e. event replication automatically resumes when a crashed location recovers. Replicated events are also guaranteed to be written *exactly-once* to a target log. This is possible because replication progress metadata are stored along with replicated events in the target log. This allows a replication target to reliably detect and ignore duplicates. Event-sourced components can therefore rely on receiving a de-duplicated event stream.
 
 .. _replication-endpoints:
 
@@ -187,6 +184,8 @@ Replication filters can also be composed. The following ``composedFilter`` accep
 
 For the definition of filter logic based on application-defined events, replication filters should use the ``payload`` field of ``DurableEvent``.
 
+.. _local-replication-filters:
+
 Local replication filters
 .........................
 
@@ -197,6 +196,8 @@ Local replication filters can be defined per ``ReplicationEndpoint`` and event l
 
 .. hint::
    Local replication filters are especially useful to prevent location-specific (or location-private) events from being replicated to other locations.
+
+.. _remote-replication-filters:
 
 Remote replication filters
 ..........................
@@ -260,7 +261,7 @@ Total or partial event loss at a given location is classified as disaster. Event
 
 If a storage backup exists, events can be partially recovered from that backup so that only events not covered by the backup must be copied from other locations. Recovery of events at a given location is only possible to the extend they have been previously replicated to other locations (or written to the backup). Events that have not been replicated to other locations or for which no storage backup exists cannot be recovered. 
 
-Disaster recovery is executed per ``ReplicationEndpoint`` by calling its asynchronous ``recover()`` method. During recovery the endpoint is activated to replicate lost events. Only if recovery successfully completes and all events are recovered the application can start to write new local events, otherwise recovery must be re-tried.
+Disaster recovery is executed per ``ReplicationEndpoint`` by calling its asynchronous ``recover()`` method. During recovery the endpoint is activated to replicate lost events. Only after recovery successfully completed the application may start their event-sourced components, otherwise recovery must be re-tried.
 
 .. includecode:: ../code/EventLogDoc.scala
    :snippet: disaster-recovery-1
@@ -280,7 +281,7 @@ A complete reference of ``eventuate.log.recovery.*`` configuration options is gi
 Deleting events
 ~~~~~~~~~~~~~~~
 
-As outlined in the :ref:`introduction` an event log is a continuously growing store of immutable facts. Depending on the implementation of the application, not all events are necessarily needed to recover application state after an application or actor restart. For example, if the application saves snapshots, only those events that occurred after the snapshot need to be available. But even without snapshots there can be application-specific boundary conditions that allow an application to recover its state from a certain sequence number on. To keep a store from growing indefinitely in these cases a ``ReplicationEndpoint`` allows the deletion events up to a given sequence number from a local log. Deletion of events actually differentiates between:
+As outlined in the :ref:`overview`, an event log is a continuously growing store of immutable facts. Depending on the implementation of the application, not all events are necessarily needed to recover application state after an application or actor restart. For example, if the application saves snapshots, only those events that occurred after the snapshot need to be available. But even without snapshots there can be application-specific boundary conditions that allow an application to recover its state from a certain sequence number on. To keep a store from growing indefinitely in these cases a ``ReplicationEndpoint`` allows the deletion events up to a given sequence number from a local log. Deletion of events actually differentiates between:
 
 - Logical deletion of events: Events that are logically deleted are not replayed in case of an actor restart. However they are still available for replication to event logs of connected ``ReplicationEndpoint``\ s. All storage backends support logical deletion of events.
 - Physical deletion of events: Depending on the storage backend logically deleted events are eventually physically deleted. Physical deleted events are of course not available any more for local replay or replication. Physical deletion is currently only supported by the LevelDB backend.
@@ -304,8 +305,8 @@ Depending on the storage backend, this call also triggers physical deletion of e
 .. _Getting Started: https://wiki.apache.org/cassandra/GettingStarted
 .. _cassandra-unit: https://github.com/jsevellec/cassandra-unit/wiki
 .. _LevelDB: https://github.com/google/leveldb
-.. _Akka Remoting: http://doc.akka.io/docs/akka/2.4.1/scala/remoting.html
-.. _event stream: http://doc.akka.io/docs/akka/2.4.1/scala/event-bus.html#event-stream
+.. _Akka Remoting: http://doc.akka.io/docs/akka/2.4.4/scala/remoting.html
+.. _event stream: http://doc.akka.io/docs/akka/2.4.4/scala/event-bus.html#event-stream
 .. _Chaos testing with Docker and Cassandra on Mac OS X: http://rbmhtechnology.github.io/chaos-testing-with-docker-and-cassandra/
 
 .. _EventsourcingProtocol: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$

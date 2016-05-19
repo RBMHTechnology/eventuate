@@ -7,7 +7,7 @@ Example application
 The example application is an over-simplified order management application that allows users to add and remove items from orders via a command-line interface. Order instances are replicated across locations and can be updated at any location. Orders remain writeable during partitions and conflicting updates can be resolved interactively when the partition heals. The example application source code is available as `Scala version`_ and as `Java 8 version`_.
 
 .. note::
-   This example application was created to demonstrate *interactive conflict resolution*. A more realistic order management application would probably use automated conflict resolution which can be implemented with the `shopping cart CRDT`_, for example.
+   This example application was created to demonstrate *interactive conflict resolution*. A more realistic order management application would probably use automated conflict resolution using a `shopping cart CRDT`_, for example.
 
 .. hint::
    There is a tutorial-style `activator`_ template for the scala-version that guides you through the code: `akka-eventuate-scala`_.

@@ -379,13 +379,13 @@ object ConditionalRequests extends App {
   //#
 }
 
-object EventCollaboration {
+object EventCommunication {
   import akka.actor._
 
   var system: ActorSystem = _
   var eventLog: ActorRef = _
 
-  //#event-collaboration
+  //#event-driven-communication
   // some imports omitted ...
   import com.rbmhtechnology.eventuate.EventsourcedView.Handler
   import com.rbmhtechnology.eventuate.EventsourcedActor

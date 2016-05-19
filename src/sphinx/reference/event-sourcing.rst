@@ -3,7 +3,7 @@
 Event-sourced actors
 --------------------
 
-An introduction to event-sourced actors is already given in section :ref:`architecture` and the :ref:`user-guide`. Applications use event-sourced actors for writing events to an event log and for maintaining in-memory write models on the command side (C) of a CQRS_ application. Event-sourced actors distinguish command processing from event processing. They must extend the EventsourcedActor_ trait and implement a :ref:`command-handler` and an :ref:`event-handler`.
+An introduction to event-sourced actors is already given in sections :ref:`overview`, :ref:`architecture` and the :ref:`user-guide`. Applications use event-sourced actors for writing events to an event log and for maintaining in-memory write models on the command side (C) of a CQRS_ application. Event-sourced actors distinguish command processing from event processing. They must extend the EventsourcedActor_ trait and implement a :ref:`command-handler` and an :ref:`event-handler`.
 
 .. _command-handler:
 
@@ -64,7 +64,7 @@ An event handler is partial function of type ``PartialFunction[Any, Unit]`` for 
 Event metadata of the last handled event can be obtained with the ``last*`` methods defined by ``EventsourcedActor``. For example, ``lastSequenceNr`` returns the event’s local sequence number, ``lastVectorTimestamp`` returns the event’s vector timestamp. A complete reference is given by the EventsourcedActor_ API documentation.
 
 .. note::
-   An event handler should only update internal actor state without having further side-effects. An exception is :ref:`reliable-delivery` of messages and :ref:`guide-event-collaboration` with PersistOnEvent_.
+   An event handler should only update internal actor state without having further side-effects. An exception is :ref:`reliable-delivery` of messages and :ref:`guide-event-driven-communication` with PersistOnEvent_.
 
 Causality tracking
 ~~~~~~~~~~~~~~~~~~
@@ -84,7 +84,7 @@ The value of ``sharedClockEntry`` may also be instance-specific, if required.
 Event-sourced views
 -------------------
 
-An introduction to event-sourced views is already given in section :ref:`architecture` and the :ref:`user-guide`. Applications use event-sourced views for for maintaining in-memory read models on the query side (Q) of a CQRS_ application.
+An introduction to event-sourced views is already given in sections :ref:`overview`, :ref:`architecture` and the :ref:`user-guide`. Applications use event-sourced views for for maintaining in-memory read models on the query side (Q) of a CQRS_ application.
 
 Like event-sourced actors, event-sourced views distinguish command processing from event processing. They must implement the EventsourcedView_ trait. ``EventsourcedView`` is a functional subset of ``EventsourcedActor`` that cannot ``persist`` events.
 
@@ -93,7 +93,7 @@ Like event-sourced actors, event-sourced views distinguish command processing fr
 Event-sourced writers
 ---------------------
 
-An introduction to event-sourced writers is already given in section :ref:`architecture`. Applications use event-sourced writers for maintaining persistent read models on the query side (Q) of a CQRS_ application.
+An introduction to event-sourced writers is already given in sections :ref:`overview` and :ref:`architecture`. Applications use event-sourced writers for maintaining persistent read models on the query side (Q) of a CQRS_ application.
 
 Like event-sourced views, event-sourced writers can only consume events from an event log but can make incremental batch updates to external, application-defined query databases. A query database can be a relational database, a graph database or whatever is needed by an application. Concrete writers must implement the EventsourcedWriter_ trait.
 
@@ -150,7 +150,7 @@ The above ``Writer`` implements a stateless writer. Although it accumulates batc
 Event-sourced processors
 ------------------------
 
-An introduction to event-sourced processors is already given in section :ref:`architecture`. Applications use event-sourced processors to consume events form a source event log, process these events and write the processed events to a target event log. With processors, event logs can be connected to event stream processing pipelines and graphs.
+An introduction to event-sourced processors is already given in sections :ref:`overview` and :ref:`architecture`. Applications use event-sourced processors to consume events form a source event log, process these events and write the processed events to a target event log. With processors, event logs can be connected to event stream processing pipelines and graphs.
 
 Event-sourced processors are a specialization of :ref:`event-sourced-writers` where the *external database* is a target event log. Concrete stateless processors must implement the EventsourcedProcessor_ trait, stateful processors the StatefulProcessor_ trait (see also :ref:`stateful-writers`).
 
@@ -195,7 +195,7 @@ Events are replayed in batches. A given batch must have been handled by an event
 .. includecode:: ../conf/common.conf
    :snippet: replay-batch-size
 
-Concrete event-sourced actors, views, writers and processors can override the configured default value by overriding ``replayBatchSize``:
+Event-sourced components can override the configured default value by overriding ``replayBatchSize``:
 
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: replay-batch-size
@@ -205,7 +205,7 @@ Concrete event-sourced actors, views, writers and processors can override the co
 Snapshots
 ---------
 
-Recovery times increase with the number of events that are replayed to event-sourced actors, views, stateful writers or stateful processors. They can be decreased by starting event replay from a previously saved snapshot of internal state rather than replaying events from scratch. Event-sourced actors, views, stateful writers and stateful processors can save snapshots by calling ``save`` within their command handler:
+Recovery times increase with the number of events that are replayed to event-sourced components. They can be decreased by starting event replay from a previously saved snapshot of internal state rather than replaying events from scratch. Event-sourced components can save snapshots by calling ``save`` within their command handler:
 
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: snapshot-save
@@ -214,7 +214,7 @@ Snapshots are saved asynchronously. On completion, a user-defined handler of typ
 
 An event-sourced actor that is :ref:`tracking-conflicting-versions` of application state can also save ``ConcurrentVersions[A, B]`` instances directly. One can even configure custom serializers for type parameter ``A`` as explained in section :ref:`snapshot-serialization`.
 
-During recovery, the latest snapshot saved by an event-sourced actor, view, stateful writer or stateful processor is loaded and can be handled with the ``onSnapshot`` handler. This handler should initialize internal actor state from the loaded snapshot: 
+During recovery, the latest snapshot saved by an event-sourced component is loaded and can be handled with the ``onSnapshot`` handler. This handler should initialize internal actor state from the loaded snapshot: 
 
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: snapshot-load
@@ -234,7 +234,7 @@ Snapshots are currently stored in a directory that can be configured with
 .. includecode:: ../conf/snapshot.conf
    :snippet: snapshot-dir
 
-in ``application.conf``. The maximum number of stored snapshots per event-sourced actor, view, writer or processor can be configured with
+in ``application.conf``. The maximum number of stored snapshots per event-sourced component can be configured with
 
 .. includecode:: ../conf/snapshot.conf
    :snippet: snapshot-num
@@ -243,14 +243,13 @@ If this number is exceeded, older snapshots are automatically deleted.
 
 .. _event-routing:
 
-
 Event routing
 -------------
 
-An event that is emitted by an event-sourced actor or processor can be routed to other event-sourced actors, views, writers and processors if they share an :ref:`event-log`\ [#]_ . The default event routing rules are:
+An event that is emitted by an event-sourced actor or processor can be routed to other event-sourced components if they share an :ref:`event-log`\ [#]_ . The default event routing rules are:
 
-- If an event-sourced actor, view, writer or processor has an undefined ``aggregateId``, all events are routed to it. It may choose to handle only a subset of them though.
-- If an event-sourced actor, view, writer or processor has a defined ``aggregateId``, only events emitted by event-sourced actors or processors with the same ``aggregateId`` are routed to it.
+- If an event-sourced component has an undefined ``aggregateId``, all events are routed to it. It may choose to handle only a subset of them though.
+- If an event-sourced component has a defined ``aggregateId``, only events emitted by event-sourced actors or processors with the same ``aggregateId`` are routed to it.
 
 Routing destinations are defined during emission of an event and are persisted together with the event\ [#]_. This makes routing decisions repeatable during event replay and allows for routing rule changes without affecting past routing decisions. Applications can define additional routing destinations with the ``customDestinationAggregateIds`` parameter of ``persist``:
 
@@ -258,6 +257,13 @@ Routing destinations are defined during emission of an event and are persisted t
    :snippet: custom-routing
 
 Here, ``ExampleEvent`` is routed to destinations with ``aggregateId``\ s ``Some(“a2”)`` and ``Some(“a3”)`` in addition to the default routing destinations with ``aggregateId``\s ``Some(“a1”)`` and ``None``.
+
+.. _ref-event-driven-communication:
+
+Event-driven communication
+--------------------------
+
+Event-driven communication is one form of :ref:`overview-event-collaboration` and covered in the :ref:`guide-event-driven-communication` section of the :ref:`user-guide`.
 
 .. _reliable-delivery:
 
@@ -279,13 +285,6 @@ When the actor is re-started, unconfirmed reliable messages are automatically re
 
 .. note::
    In the above example a pattern guard is used for idempotent confirmation processing by ensuring that the ``deliveryId`` of the ``Confirmation`` message is still unconfirmed. This pattern may only be applied if the ``stateSync`` member of the ``EventsourcedActor`` is set to ``true``. For further details on ``stateSync`` see section :ref:`state-sync`.
-
-.. _ref-event-collaboration:
-
-Event collaboration
--------------------
-
-Event collaboration is covered in the :ref:`guide-event-collaboration` section of the :ref:`user-guide`.
 
 .. _ref-conditional-requests:
 
@@ -311,7 +310,7 @@ In the above implementation, an ``UpdateUser`` command might be repeatedly stash
 Behavior changes
 ----------------
 
-Event-sourced actors, views writers and processors distinguish command processing from event processing. Consequently, applications should be able to change the behavior of command handlers and event handlers independent of each other, at runtime. Command handling behavior can be changed with ``commandContext.become()`` and ``commandContext.unbecome()``, event handling behavior with ``eventContext.become()`` and ``eventContext.unbecome()`` (for details, see the BehaviorContext_ API docs):
+Event-sourced components distinguish command processing from event processing. Consequently, applications should be able to change the behavior of command handlers and event handlers independent of each other, at runtime. Command handling behavior can be changed with ``commandContext.become()`` and ``commandContext.unbecome()``, event handling behavior with ``eventContext.become()`` and ``eventContext.unbecome()`` (for details, see the BehaviorContext_ API docs):
 
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: behavior-changes
@@ -324,7 +323,7 @@ This works for all event-sourcing abstractions except for ``EventsourcedProcesso
 Failure handling
 ----------------
 
-Event-sourced actors, views, writers and processors register themselves at an EventLog_ actor in order to be notified about changes in the event log. Directly after registration, during recovery, they read from the event log in order to recover internal state from past events. After recovery has completed, the event log actor **pushes** newly written events to registered actors so that they can update application state with minimal latency. If a registered actor is restarted, it recovers again from the event log and continues to process push-updates after recovery has completed.
+Event-sourced components register themselves at an EventLog_ actor in order to be notified about changes in the event log. Directly after registration, during recovery, they read from the event log in order to recover internal state from past events. After recovery has completed, the event log actor **pushes** newly written events to registered actors so that they can update application state with minimal latency. If a registered actor is restarted, it recovers again from the event log and continues to process push-updates after recovery has completed.
 
 An EventLog_ actor processes write requests from :ref:`ref-event-sourced-actors`, :ref:`ref-event-sourced-processors` and :ref:`replication-endpoints`. If a write succeeds it pushes the written events to registered actors (under consideration of :ref:`event-routing` rules) and handles the next write request. Writing to a storage backend may also fail for several reasons. In the following, it is assumed that writes are made to a remote storage backend such as the :ref:`cassandra-storage-backend`.
 
@@ -368,7 +367,7 @@ For an ``EventsourcedActor`` with ``stateSync`` set to ``true``, this means that
 Recovery failure handling
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As explained in section :ref:`state-recovery`, event-sourced actors, views, writers and processors are stopped if their recovery fails. Applications should either define a custom ``onRecovery`` completion handler to obtain information about recovery failure details or just watch these actors if recovery failure details are not relevant.
+As explained in section :ref:`state-recovery`, event-sourced components are stopped if their recovery fails. Applications should either define a custom ``onRecovery`` completion handler to obtain information about recovery failure details or just watch these actors if recovery failure details are not relevant.
 
 Batch write failure handling
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -484,11 +483,11 @@ When eventuate serializes application-defined events, :ref:`replication-filters`
 .. [#] The routing destinations of a DurableEvent_ can be obtained with its ``destinationAggregateIds`` method.
 
 .. _CQRS: http://martinfowler.com/bliki/CQRS.html
-.. _stashed: http://doc.akka.io/docs/akka/2.4.1/scala/actors.html#stash
-.. _watch: http://doc.akka.io/docs/akka/2.4.1/scala/actors.html#deathwatch-scala
-.. _serialization extension: http://doc.akka.io/docs/akka/2.4.1/scala/serialization.html
-.. _Serializer: http://doc.akka.io/api/akka/2.4.1/#akka.serialization.Serializer
-.. _manifest: http://doc.akka.io/docs/akka/2.4.1/scala/serialization.html#Serializer_with_String_Manifest
+.. _stashed: http://doc.akka.io/docs/akka/2.4.4/scala/actors.html#stash
+.. _watch: http://doc.akka.io/docs/akka/2.4.4/scala/actors.html#deathwatch-scala
+.. _serialization extension: http://doc.akka.io/docs/akka/2.4.4/scala/serialization.html
+.. _Serializer: http://doc.akka.io/api/akka/2.4.4/#akka.serialization.Serializer
+.. _manifest: http://doc.akka.io/docs/akka/2.4.4/scala/serialization.html#Serializer_with_String_Manifest
 .. _Protocol Buffers: https://developers.google.com/protocol-buffers/
 .. _plausible clocks: https://github.com/RBMHTechnology/eventuate/issues/68
 .. _Cassandra: http://cassandra.apache.org/
