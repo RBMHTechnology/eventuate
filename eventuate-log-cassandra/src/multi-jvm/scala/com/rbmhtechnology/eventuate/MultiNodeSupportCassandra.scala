@@ -25,18 +25,20 @@ import akka.remote.testkit.MultiNodeSpec
 import com.rbmhtechnology.eventuate.log.cassandra._
 
 import org.apache.commons.io.FileUtils
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import org.scalatest.BeforeAndAfterAll
 
 trait MultiNodeSupportCassandra extends BeforeAndAfterAll { this: MultiNodeSpec with MultiNodeWordSpec =>
   val coordinator = RoleName("nodeA")
+
+  def cassandraDir: String =
+    EmbeddedCassandra.DefaultCassandraDir
 
   def logProps(logId: String): Props =
     CassandraEventLog.props(logId)
 
   override def atStartup(): Unit = {
     if (isNode(coordinator)) {
-      EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
+      EmbeddedCassandra.start(cassandraDir)
       Cassandra(system)
     }
     enterBarrier("startup")
@@ -52,7 +54,7 @@ trait MultiNodeSupportCassandra extends BeforeAndAfterAll { this: MultiNodeSpec 
     // clean database and delete snapshot files
     if (isNode(coordinator)) {
       FileUtils.deleteDirectory(snapshotRootDir)
-      EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
+      EmbeddedCassandra.clean()
     }
   }
 }
