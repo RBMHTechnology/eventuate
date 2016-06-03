@@ -422,7 +422,7 @@ Remote event collaboration of event-sourced actors EA 1 and EA 2 and event-sourc
 <span id="arch-fig15"></span><img alt="_images/arch-15.png" src="_images/arch-15.png" />
 <p class="caption"><span class="caption-text">Fig. 15</span></p>
 <div class="legend">
-Event-driven communication between event-sourced actors EA 1 - EA 4 over event log M and event-sourced actors EA 5 and EA 6 over event log N. Event-sourced processor EP 1 consumes events from event log N and produces processed events to event log M so that event-sourced actors EA 5 and EA 6 can additionally react on these events.</div>
+Event-driven communication between event-sourced actors EA 1 - EA 4 over event log M and event-sourced actors EA 5 and EA 6 over event log N. Event-sourced processor EP 1 consumes events from event log M and produces processed events to event log N so that event-sourced actors EA 5 and EA 6 can additionally react on these events.</div>
 </div>
 <p>Event-driven communication follows a publish-subscribe pattern which can be made more directed with custom <a class="reference internal" href="reference/event-sourcing.html#event-routing"><span class="std std-ref">Event routing</span></a> rules, <a class="reference internal" href="reference/event-log.html#replication-filters"><span class="std std-ref">Replication filters</span></a> and/or connecting different event logs with event-sourced processors.</p>
 <div class="admonition hint">
