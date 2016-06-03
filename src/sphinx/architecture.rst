@@ -274,7 +274,7 @@ Event-driven communication is a collaboration of event-sourced components of dif
 
    Fig. 15
 
-   Event-driven communication between event-sourced actors EA 1 - EA 4 over event log M and event-sourced actors EA 5 and EA 6 over event log N. Event-sourced processor EP 1 consumes events from event log N and produces processed events to event log M so that event-sourced actors EA 5 and EA 6 can additionally react on these events.
+   Event-driven communication between event-sourced actors EA 1 - EA 4 over event log M and event-sourced actors EA 5 and EA 6 over event log N. Event-sourced processor EP 1 consumes events from event log M and produces processed events to event log N so that event-sourced actors EA 5 and EA 6 can additionally react on these events.
 
 Event-driven communication follows a publish-subscribe pattern which can be made more directed with custom :ref:`event-routing` rules, :ref:`replication-filters` and/or connecting different event logs with event-sourced processors.
 
