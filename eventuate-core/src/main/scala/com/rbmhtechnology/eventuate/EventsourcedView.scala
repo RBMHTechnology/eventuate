@@ -418,8 +418,8 @@ trait EventsourcedView extends Actor with Stash {
     case Written(event) => if (event.localSequenceNr > lastSequenceNr) {
       receiveEvent(event)
     }
-    case ConditionalRequest(condition, cmd) =>
-      conditionalSend(condition, cmd)
+    case cr: ConditionalRequestable =>
+      conditionalSend(cr.condition, cr.req)
     case SaveSnapshotSuccess(metadata, iid) => if (iid == instanceId) {
       saveRequests.get(metadata).foreach(handler => handler(Success(metadata)))
       saveRequests = saveRequests - metadata

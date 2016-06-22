@@ -24,6 +24,7 @@ import org.scalatest._
 import scala.util._
 
 object EventsourcedActorIntegrationSpec {
+
   case class Cmd(payloads: String*)
   case class State(state: Vector[String])
 

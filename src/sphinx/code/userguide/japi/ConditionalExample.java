@@ -16,10 +16,6 @@
 
 package userguide.japi;
 
-import static userguide.japi.DocUtils.append;
-import userguide.japi.ViewExample.GetAppendCountReply;
-
-//#conditional-requests
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
@@ -28,9 +24,7 @@ import akka.pattern.Patterns;
 import akka.util.Timeout;
 import com.rbmhtechnology.eventuate.*;
 import scala.concurrent.ExecutionContextExecutor;
-import scala.concurrent.Future;
-import scala.reflect.ClassTag;
-import scala.reflect.ClassTag$;
+import userguide.japi.ViewExample.GetAppendCountReply;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,6 +33,9 @@ import java.util.concurrent.TimeUnit;
 
 import static scala.compat.java8.JFunction.func;
 import static scala.compat.java8.JFunction.proc;
+import static userguide.japi.DocUtils.append;
+
+//#conditional-requests
 //#
 
 public class ConditionalExample {

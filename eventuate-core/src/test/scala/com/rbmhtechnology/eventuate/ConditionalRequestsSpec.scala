@@ -24,6 +24,7 @@ import com.typesafe.config.ConfigFactory
 import org.scalatest._
 
 object ConditionalRequestsSpec {
+
   class ConditionalRequestReceiver(logProbe: ActorRef) extends EventsourcedView with ConditionalRequests {
     val id = "test"
     val eventLog = logProbe

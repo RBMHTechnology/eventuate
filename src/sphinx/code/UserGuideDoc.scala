@@ -16,6 +16,8 @@
 
 package doc
 
+import com.rbmhtechnology.eventuate.ConditionalRequestable
+
 object EventsourcedActors extends App {
   //#event-sourced-actor
   import scala.util._
