@@ -110,8 +110,9 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
    */
   override final def onEvent = {
     case payload if processEvent.isDefinedAt(payload) =>
+      val currentProcessedEvents = processEvent(payload)
       if (lastSequenceNr > processingProgress)
-        processedEvents = processEvent(payload).map(createEvent(_, lastHandledEvent.customDestinationAggregateIds)).foldLeft(processedEvents)(_ :+ _)
+        processedEvents = currentProcessedEvents.map(createEvent(_, lastHandledEvent.customDestinationAggregateIds)).foldLeft(processedEvents)(_ :+ _)
   }
 
   /**
