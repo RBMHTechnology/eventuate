@@ -27,12 +27,15 @@ import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 import com.rbmhtechnology.eventuate.SingleLocationSpec._
+import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
 import com.rbmhtechnology.eventuate.utilities.RestarterActor.restartActor
 import com.rbmhtechnology.eventuate.utilities._
 import com.typesafe.config._
 
 import org.scalatest.time._
 import org.scalatest.concurrent.Eventually
+
+import scala.collection.immutable.Seq
 
 object EventLogSpecLeveldb {
   val config: Config = ConfigFactory.parseString(
@@ -53,6 +56,32 @@ class EventLogSpecLeveldb extends TestKit(ActorSystem("test", EventLogSpecLeveld
       val restartedLog = restartActor(log)
       val restoredEventLogClock = (restartedLog ? GetEventLogClock).mapTo[GetEventLogClockSuccess].await
       restoredEventLogClock should be(currentEventLogClock)
+    }
+  }
+
+  "A LeveldbEventLog" when {
+    val eventsWithGap = Seq(
+      DurableEvent("a", EventLogSpec.emitterIdA),
+      DurableEvent("gap", EventLogSpec.emitterIdA),
+      DurableEvent("a", EventLogSpec.emitterIdA))
+    "containing a gap in the stored sequence numbers" must {
+      "not serve replays" in {
+        writeEmittedEvents(eventsWithGap, log)
+        log.tell(Replay(1L, None, 0), replyToProbe.ref)
+        replyToProbe.expectMsgPF() {
+          case ReplayFailure(cause: LeveldbEventLog.SequenceGapDetectedException, _) =>
+            cause.expectedSequenceNr should be(2L)
+            cause.actualSequenceNr should be(3L)
+        }
+      }
+      "not serve replication reads" in {
+        writeEmittedEvents(eventsWithGap, log)
+        log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, UndefinedLogId, dl, VectorTime()), replyToProbe.ref)
+        replyToProbe.expectMsgPF() {
+          case ReplicationReadFailure(cause: ReplicationReadException, _) =>
+            cause.getMessage should be(new LeveldbEventLog.SequenceGapDetectedException(2L, 3L).getMessage)
+        }
+      }
     }
   }
 }

@@ -25,6 +25,8 @@ import com.rbmhtechnology.eventuate.log.leveldb._
 import com.rbmhtechnology.eventuate.utilities.RestarterActor
 import com.typesafe.config.ConfigFactory
 
+import scala.collection.immutable.Seq
+
 trait LocationCleanupLeveldb extends LocationCleanup {
   override def storageLocations: List[File] =
     List("eventuate.log.leveldb.dir", "eventuate.snapshot.filesystem.dir").map(s => new File(config.getString(s)))
@@ -44,6 +46,9 @@ object SingleLocationSpecLeveldb {
       case "dir"  => sender() ! logDir
       case _      => super.unhandled(message)
     }
+
+    override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
+      super.write(events.filterNot(_.payload == "gap"), partition, clock)
   }
 }
 
