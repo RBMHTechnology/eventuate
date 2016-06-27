@@ -36,7 +36,7 @@ object SnapshotSerializerSpec {
   }
 
   val clock =
-    EventLogClock(sequenceNr = 17L, versionVector = VectorTime("A" -> 77L))
+    EventLogClock(sequenceNr = 17L, sequenceNrGap = 3L, versionVector = VectorTime("A" -> 77L))
 
   def last(payload: Any) =
     event.copy(payload = payload)

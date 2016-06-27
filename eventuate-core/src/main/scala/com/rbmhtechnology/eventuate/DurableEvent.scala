@@ -97,9 +97,9 @@ case class DurableEvent(
   /**
    * Prepares the event for writing to an event log.
    */
-  private[eventuate] def prepare(logId: String, sequenceNr: Long, timestamp: Long): DurableEvent = {
-    val vt = if (processId == UndefinedLogId) vectorTimestamp.setLocalTime(logId, sequenceNr) else vectorTimestamp
+  private[eventuate] def prepare(logId: String, sequenceNr: Long, timestamp: Long, sequenceNrGap: Long): DurableEvent = {
     val id = if (processId == UndefinedLogId) logId else processId
+    val vt = if (processId == UndefinedLogId) vectorTimestamp.dotted(logId, sequenceNr, sequenceNrGap) else vectorTimestamp
     copy(systemTimestamp = timestamp, vectorTimestamp = vt, processId = id, localLogId = logId, localSequenceNr = sequenceNr)
   }
 }

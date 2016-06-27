@@ -180,7 +180,7 @@ object ClockEntryClass {
   class ExampleActor(override val id: String,
                      override val eventLog: ActorRef) extends EventsourcedActor {
 
-    override def sharedClockEntry: Boolean = false
+    //override def sharedClockEntry: Boolean = false
 
     // ...
   //#
@@ -202,8 +202,8 @@ object ClockEntryInstance {
 
   //#clock-entry-instance
   class ExampleActor(override val id: String,
-                     override val eventLog: ActorRef,
-                     override val sharedClockEntry: Boolean) extends EventsourcedActor {
+                     override val eventLog: ActorRef
+                     /*override val sharedClockEntry: Boolean*/) extends EventsourcedActor {
 
     // ..
   //#

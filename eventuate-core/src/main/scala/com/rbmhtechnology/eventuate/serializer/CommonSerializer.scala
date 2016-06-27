@@ -53,10 +53,18 @@ class CommonSerializer(system: ExtendedActorSystem) {
 
   def vectorTimeFormatBuilder(vectorTime: VectorTime): VectorTimeFormat.Builder = {
     val builder = VectorTimeFormat.newBuilder
-    vectorTime.value.foreach { entry =>
-      builder.addEntries(VectorTimeEntryFormat.newBuilder
+    vectorTime.localTimes.foreach { entry =>
+      builder.addValue(VectorTimeEntryFormat.newBuilder
         .setProcessId(entry._1)
-        .setLogicalTime(entry._2))
+        .setLocalTime(entry._2))
+    }
+    vectorTime match {
+      case DefaultVectorTime(_) =>
+      case DottedVectorTime(_, dot) =>
+        builder.setDot(VectorTimeDotFormat.newBuilder
+          .setProcessId(dot.processId)
+          .setLocalTime(dot.localTime)
+          .setLocalTimeGap(dot.localTimeGap))
     }
     builder
   }
@@ -94,9 +102,15 @@ class CommonSerializer(system: ExtendedActorSystem) {
   }
 
   def vectorTime(vectorTimeFormat: VectorTimeFormat): VectorTime = {
-    VectorTime(vectorTimeFormat.getEntriesList.iterator.asScala.foldLeft(Map.empty[String, Long]) {
-      case (result, entry) => result.updated(entry.getProcessId, entry.getLogicalTime)
-    })
+    val value = vectorTimeFormat.getValueList.iterator.asScala.foldLeft(Map.empty[String, Long]) {
+      case (result, entry) => result.updated(entry.getProcessId, entry.getLocalTime)
+    }
+    if (vectorTimeFormat.hasDot)
+      DottedVectorTime(value, Dot(
+        vectorTimeFormat.getDot.getProcessId,
+        vectorTimeFormat.getDot.getLocalTime,
+        vectorTimeFormat.getDot.getLocalTimeGap))
+    else DefaultVectorTime(value)
   }
 
   def versioned(versionedFormat: VersionedFormat): Versioned[Any] = {

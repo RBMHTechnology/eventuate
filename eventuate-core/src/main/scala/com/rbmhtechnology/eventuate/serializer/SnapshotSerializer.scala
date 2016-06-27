@@ -141,6 +141,7 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
   private def eventLogClockFormatBuilder(clock: EventLogClock): EventLogClockFormat.Builder = {
     val builder = EventLogClockFormat.newBuilder
     builder.setSequenceNr(clock.sequenceNr)
+    builder.setSequenceNrGap(clock.sequenceNrGap)
     builder.setVersionVector(commonSerializer.vectorTimeFormatBuilder(clock.versionVector))
     builder
   }
@@ -218,7 +219,8 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
 
   private def eventLogClock(clockFormat: EventLogClockFormat): EventLogClock = {
     EventLogClock(
-      sequenceNr = clockFormat.getSequenceNr,
-      versionVector = commonSerializer.vectorTime(clockFormat.getVersionVector))
+      clockFormat.getSequenceNr,
+      clockFormat.getSequenceNrGap,
+      commonSerializer.vectorTime(clockFormat.getVersionVector))
   }
 }

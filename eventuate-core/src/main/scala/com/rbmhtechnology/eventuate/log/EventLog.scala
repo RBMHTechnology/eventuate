@@ -81,12 +81,12 @@ trait EventLogState {
  * The version vector is the merge result of vector timestamps of all events that have been
  * written to that event log.
  */
-case class EventLogClock(sequenceNr: Long = 0L, versionVector: VectorTime = VectorTime.Zero) {
+case class EventLogClock(sequenceNr: Long = 0L, sequenceNrGap: Long = 0L, versionVector: VectorTime = VectorTime.Zero) {
   /**
-   * Advances `sequenceNr` by given `delta`.
+   * Shifts `sequenceNr` by given `delta`.
    */
-  def advanceSequenceNr(delta: Long = 1L): EventLogClock =
-    copy(sequenceNr = sequenceNr + delta)
+  def shift(delta: Long = 1L): EventLogClock =
+    copy(sequenceNr = sequenceNr + delta, sequenceNrGap = delta)
 
   /**
    * Sets `sequenceNr` to the event's local sequence number and merges `versionVector` with
@@ -536,7 +536,7 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
 
   private def writeBatches[B <: UpdateableEventBatch[B]](writes: Seq[B], prepare: (Seq[DurableEvent], EventLogClock) => (Seq[DurableEvent], EventLogClock)): Try[(Seq[B], Seq[DurableEvent], EventLogClock)] =
     for {
-      (partition, clock1) <- Try(adjustSequenceNr(writes.map(_.size).sum, settings.partitionSize, clock))
+      (partition, clock1) <- Try(shiftSequenceNr(writes.map(_.size).sum, settings.partitionSize, clock))
       (updatedWrites, clock2) = prepareBatches(writes, clock1, prepare)
       updatedEvents = updatedWrites.flatMap(_.events)
       _ <- Try(write(updatedEvents, partition, clock2))
@@ -551,20 +551,23 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
 
   private def prepareEvents(events: Seq[DurableEvent], clock: EventLogClock, systemTimestamp: Long): (Seq[DurableEvent], EventLogClock) = {
     var snr = clock.sequenceNr
+    var gap = clock.sequenceNrGap
     var lvv = clock.versionVector
 
     val updated = events.map { e =>
       snr += 1L
 
-      val e2 = e.prepare(id, snr, systemTimestamp)
+      val e2 = e.prepare(id, snr, systemTimestamp, gap)
       lvv = lvv.merge(e2.vectorTimestamp)
+      gap = 0L
       e2
     }
-    (updated, clock.copy(sequenceNr = snr, versionVector = lvv))
+    (updated, clock.copy(sequenceNr = snr, sequenceNrGap = gap, versionVector = lvv))
   }
 
   private def prepareReplicatedEvents(events: Seq[DurableEvent], clock: EventLogClock): (Seq[DurableEvent], EventLogClock) = {
     var snr = clock.sequenceNr
+    var gap = clock.sequenceNrGap
     var lvv = clock.versionVector
 
     val updated = events.foldLeft(Vector.empty[DurableEvent]) {
@@ -577,12 +580,13 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
       case (acc, e) =>
         snr += 1L
 
-        val e2 = e.prepare(id, snr, e.systemTimestamp)
+        val e2 = e.prepare(id, snr, e.systemTimestamp, gap)
         lvv = lvv.merge(e2.vectorTimestamp)
+        gap = 0L
         acc :+ e2
     }
     logFilterStatistics("target", events, updated)
-    (updated, clock.copy(sequenceNr = snr, versionVector = lvv))
+    (updated, clock.copy(sequenceNr = snr, sequenceNrGap = gap, versionVector = lvv))
   }
 
   private def logFilterStatistics(location: String, before: Seq[DurableEvent], after: Seq[DurableEvent]): Unit = {
@@ -649,15 +653,15 @@ object EventLog {
     (partition + 1L) * partitionSizeMax
 
   /**
-   * Adjusts `clock.sequenceNumber` if a batch of `batchSize` doesn't fit in the current partition.
+   * Shifts `clock.sequenceNumber` if a batch of `batchSize` doesn't fit in the current partition.
    */
-  private def adjustSequenceNr(batchSize: Long, maxBatchSize: Long, clock: EventLogClock): (Long, EventLogClock) = {
+  private def shiftSequenceNr(batchSize: Long, maxBatchSize: Long, clock: EventLogClock): (Long, EventLogClock) = {
     require(batchSize <= maxBatchSize, s"write batch size (${batchSize}) must not be greater than maximum partition size (${maxBatchSize})")
 
     val currentPartition = partitionOf(clock.sequenceNr, maxBatchSize)
     val remainingSize = remainingPartitionSize(clock.sequenceNr, maxBatchSize)
     if (remainingSize < batchSize) {
-      (currentPartition + 1L, clock.advanceSequenceNr(remainingSize))
+      (currentPartition + 1L, clock.shift(remainingSize))
     } else {
       (currentPartition, clock)
     }

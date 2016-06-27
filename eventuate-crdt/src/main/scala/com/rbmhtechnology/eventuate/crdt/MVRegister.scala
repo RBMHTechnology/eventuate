@@ -67,9 +67,6 @@ object MVRegister {
     override def value(crdt: MVRegister[A]): Set[A] =
       crdt.value
 
-    override def precondition: Boolean =
-      false
-
     override def update(crdt: MVRegister[A], operation: Any, event: DurableEvent): MVRegister[A] = operation match {
       case SetOp(value) => crdt.set(value.asInstanceOf[A], event.vectorTimestamp, event.systemTimestamp, event.emitterId)
     }

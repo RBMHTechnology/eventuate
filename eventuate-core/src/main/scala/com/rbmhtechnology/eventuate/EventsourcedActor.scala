@@ -68,7 +68,7 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
    * consistent with the event log.
    */
   //#state-sync
-  def stateSync: Boolean = true
+  def stateSync: Boolean = true // TODO: non-synced emits are tracked as concurrent !!!
   //#
 
   /**

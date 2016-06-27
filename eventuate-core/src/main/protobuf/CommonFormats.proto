@@ -37,9 +37,16 @@ message VersionedFormat {
 
 message VectorTimeEntryFormat {
   required string processId = 1;
-  required int64 logicalTime = 2;
+  required int64 localTime = 2;
+}
+
+message VectorTimeDotFormat {
+  required string processId = 1;
+  required int64 localTime = 2;
+  optional bool localTimeGap = 3;
 }
 
 message VectorTimeFormat {
-  repeated VectorTimeEntryFormat entries = 1;
+  repeated VectorTimeEntryFormat value = 1;
+  optional VectorTimeDotFormat dot = 2;
 }

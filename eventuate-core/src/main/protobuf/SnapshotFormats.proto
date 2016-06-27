@@ -59,6 +59,6 @@ message ConcurrentVersionsTreeNodeFormat {
 
 message EventLogClockFormat {
   optional int64 sequenceNr = 1;
+  optional int64 sequenceNrGap = 3;
   optional VectorTimeFormat versionVector = 2;
 }
-

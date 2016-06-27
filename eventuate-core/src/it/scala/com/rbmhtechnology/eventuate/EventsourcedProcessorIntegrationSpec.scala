@@ -62,7 +62,7 @@ object EventsourcedProcessorIntegrationSpec {
     }
   }
 
-  class StatefulSampleProcessor(id: String, eventLog: ActorRef, targetEventLog: ActorRef, override val sharedClockEntry: Boolean, eventProbe: ActorRef, progressProbe: ActorRef)
+  class StatefulSampleProcessor(id: String, eventLog: ActorRef, targetEventLog: ActorRef/*, override val sharedClockEntry: Boolean*/, eventProbe: ActorRef, progressProbe: ActorRef)
     extends StatelessSampleProcessor(id, eventLog, targetEventLog, eventProbe, progressProbe) with StatefulProcessor
 }
 
@@ -104,7 +104,7 @@ trait EventsourcedProcessorIntegrationSpec extends TestKitBase with WordSpecLike
     system.actorOf(Props(new StatelessSampleProcessor("p", sourceLog, targetLog, processorEventProbe.ref, processorProgressProbe.ref)))
 
   def statefulProcessor(sourceLog: ActorRef, targetLog: ActorRef, sharedClockEntry: Boolean): ActorRef =
-    system.actorOf(Props(new StatefulSampleProcessor("p", sourceLog, targetLog, sharedClockEntry, processorEventProbe.ref, processorProgressProbe.ref)))
+    system.actorOf(Props(new StatefulSampleProcessor("p", sourceLog, targetLog/*, sharedClockEntry*/, processorEventProbe.ref, processorProgressProbe.ref)))
 
   def waitForProgressWrite(progress: Long): Unit = {
     processorProgressProbe.fishForMessage() {
@@ -216,7 +216,7 @@ trait EventsourcedProcessorIntegrationSpec extends TestKitBase with WordSpecLike
         p ! "boom"
         a1 ! "d"
 
-        sourceProbe.expectMsg(("d", VectorTime(sourceLogId -> 10L, "p" -> 9)))
+        sourceProbe.expectMsg(("d", VectorTime(sourceLogId -> 10L, "p" -> 9L)))
         sourceProbe.expectMsg(("d-processed-1", VectorTime(sourceLogId -> 10L, "p" -> 11L)))
         sourceProbe.expectMsg(("d-processed-2", VectorTime(sourceLogId -> 10L, "p" -> 12L)))
       }

@@ -117,7 +117,7 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with SingleLocation
 
   def expectedEmittedEvents(events: Seq[DurableEvent], offset: Long = 0): Seq[DurableEvent] =
     events.zipWithIndex.map {
-      case (event, idx) => event.copy(vectorTimestamp = timestamp(offset + idx), processId = logId, localLogId = logId, localSequenceNr = offset + idx)
+      case (event, idx) => event.copy(vectorTimestamp = event.vectorTimestamp.dotted(logId, offset + idx), processId = logId, localLogId = logId, localSequenceNr = offset + idx)
     }
 
   def expectedReplicatedEvents(events: Seq[DurableEvent], offset: Long): Seq[DurableEvent] =
@@ -153,14 +153,14 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with SingleLocation
   }
 
   def generateEmittedEvents(emitterAggregateId: Option[String] = None, customDestinationAggregateIds: Set[String] = Set(), num: Int = 3): Unit = {
-    _generatedEmittedEvents ++= writeEmittedEvents((1 to num).map { i =>
-        DurableEvent(s"a-$i", emitterIdA, emitterAggregateId, customDestinationAggregateIds)
+    _generatedEmittedEvents ++= writeEmittedEvents((0 until num).map { i =>
+        DurableEvent(s"a-$i", emitterIdA, emitterAggregateId, customDestinationAggregateIds, vectorTimestamp = timestamp(i))
     })
   }
 
   def generateReplicatedEvents(emitterAggregateId: Option[String] = None, customDestinationAggregateIds: Set[String] = Set(), num: Int = 3): Unit = {
-    _generatedReplicatedEvents ++= writeReplicatedEvents((1 to num).map { i =>
-      DurableEvent(s"b-$i", emitterIdB, emitterAggregateId, customDestinationAggregateIds, 0L, timestamp(0, i + 6), remoteLogId, remoteLogId, i + 6)
+    _generatedReplicatedEvents ++= writeReplicatedEvents((0 until num).map { i =>
+      DurableEvent(s"b-$i", emitterIdB, emitterAggregateId, customDestinationAggregateIds, 0L, timestamp(0, i + 6).dotted(remoteLogId, i + 7), remoteLogId, remoteLogId, i + 7)
     }, 17)
   }
 }
@@ -521,26 +521,26 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
       log ! Write(List(event("a").copy(systemTimestamp = 3L)), system.deadLetters, replyToProbe.ref, 0, 0)
       replyToProbe.expectMsgType[WriteSuccess].events.head.systemTimestamp should be(0L)
     }
-    "update an emitted event's process id and vector timestamp during if the process id is not defined" in {
+    "update an emitted event's process id and vector timestamp if the process id is not defined" in {
       val evt = DurableEvent("a", emitterIdA, processId = UndefinedLogId)
-      val exp = DurableEvent("a", emitterIdA, processId = logId, vectorTimestamp = VectorTime(logId -> 1L), localLogId = logId, localSequenceNr = 1)
+      val exp = DurableEvent("a", emitterIdA, processId = logId, vectorTimestamp = VectorTime.Zero.dotted(logId, 1L), localLogId = logId, localSequenceNr = 1)
       log ! Write(List(evt), system.deadLetters, replyToProbe.ref, 0, 0)
       replyToProbe.expectMsgType[WriteSuccess].events.head should be(exp)
     }
-    "not update an emitted event's process id and vector timestamp during if the process id is defined" in {
+    "not update an emitted event's process id and vector timestamp if the process id is defined" in {
       val evt = DurableEvent("a", emitterIdA, processId = emitterIdA, vectorTimestamp = VectorTime(emitterIdA -> 1L))
       val exp = DurableEvent("a", emitterIdA, processId = emitterIdA, vectorTimestamp = VectorTime(emitterIdA -> 1L), localLogId = logId, localSequenceNr = 1)
       log ! Write(List(evt), system.deadLetters, replyToProbe.ref, 0, 0)
       replyToProbe.expectMsgType[WriteSuccess].events.head should be(exp)
     }
-    "update a replicated event's process id and vector timestamp during if the process id is not defined" in {
+    "update a replicated event's process id and vector timestamp if the process id is not defined" in {
       val evt = DurableEvent("a", emitterIdA, processId = UndefinedLogId, vectorTimestamp = VectorTime(remoteLogId -> 1L))
-      val exp = DurableEvent("a", emitterIdA, processId = logId, vectorTimestamp = VectorTime(remoteLogId -> 1L, logId -> 1L), localLogId = logId, localSequenceNr = 1)
+      val exp = DurableEvent("a", emitterIdA, processId = logId, vectorTimestamp = VectorTime(remoteLogId -> 1L).dotted(logId, 1L), localLogId = logId, localSequenceNr = 1)
       registerCollaborator(aggregateId = None, collaborator = replyToProbe)
       log ! ReplicationWrite(List(evt), 5, remoteLogId, VectorTime())
       replyToProbe.expectMsgType[Written].event should be(exp)
     }
-    "not update a replicated event's process id and vector timestamp during if the process id is defined" in {
+    "not update a replicated event's process id and vector timestamp if the process id is defined" in {
       val evt = DurableEvent("a", emitterIdA, processId = emitterIdA, vectorTimestamp = VectorTime(emitterIdA -> 1L))
       val exp = DurableEvent("a", emitterIdA, processId = emitterIdA, vectorTimestamp = VectorTime(emitterIdA -> 1L), localLogId = logId, localSequenceNr = 1)
       registerCollaborator(aggregateId = None, collaborator = replyToProbe)
@@ -561,13 +561,13 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
     "not read events from the source log that are in causal past of the target log (using the target time from the request)" in {
       generateEmittedEvents()
       log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, remoteLogId, dl, timestamp(1)), replyToProbe.ref)
-      replyToProbe.expectMsgType[ReplicationReadSuccess].events.map(_.payload) should be(Seq("a-2", "a-3"))
+      replyToProbe.expectMsgType[ReplicationReadSuccess].events.map(_.payload) should be(Seq("a-1", "a-2"))
     }
     "not read events from the source log that are in causal past of the target log (using the target time from the cache)" in {
       generateEmittedEvents()
       log ! ReplicationWrite(Nil, 5, remoteLogId, timestamp(2)) // update time cache
       log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, remoteLogId, dl, timestamp(1)), replyToProbe.ref)
-      replyToProbe.expectMsgType[ReplicationReadSuccess].events.map(_.payload) should be(Seq("a-3"))
+      replyToProbe.expectMsgType[ReplicationReadSuccess].events.map(_.payload) should be(Seq("a-2"))
     }
     "delete all events when requested sequence nr is higher than current" in {
       generateEmittedEvents()

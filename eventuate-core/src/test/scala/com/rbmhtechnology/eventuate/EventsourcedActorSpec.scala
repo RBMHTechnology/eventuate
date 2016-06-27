@@ -168,8 +168,7 @@ object EventsourcedActorSpec {
   class TestCausalityActor(
     val logProbe: ActorRef,
     val cmdProbe: ActorRef,
-    val evtProbe: ActorRef,
-    override val sharedClockEntry: Boolean) extends EventsourcedActor {
+    val evtProbe: ActorRef /*override val sharedClockEntry: Boolean*/ ) extends EventsourcedActor {
 
     val id = emitterIdA
     val eventLog = logProbe
@@ -220,7 +219,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
     system.actorOf(Props(new TestSnapshotActor(logProbe.ref, cmdProbe.ref, evtProbe.ref)))
 
   def unrecoveredCausalityActor(sharedClockEntry: Boolean): ActorRef =
-    system.actorOf(Props(new TestCausalityActor(logProbe.ref, cmdProbe.ref, evtProbe.ref, sharedClockEntry)))
+    system.actorOf(Props(new TestCausalityActor(logProbe.ref, cmdProbe.ref, evtProbe.ref /*, sharedClockEntry*/ )))
 
   def recoveredEventsourcedActor(stateSync: Boolean): ActorRef =
     processRecover(unrecoveredEventsourcedActor(stateSync))
@@ -702,8 +701,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
         actor ! Written(eventB2)
         logProbe.sender() ! WriteSuccess(Seq(eventA1, eventA2), write.correlationId, instanceId)
 
-        evtProbe.expectMsg(("b-1", timestamp(0, 1), timestamp(1, 1), 1L))
-        evtProbe.expectMsg(("b-2", timestamp(0, 2), timestamp(2, 2), 2L))
+        evtProbe.expectMsg(("b-1", timestamp(0, 1), timestamp(0, 1), 1L))
+        evtProbe.expectMsg(("b-2", timestamp(0, 2), timestamp(0, 2), 2L))
         evtProbe.expectMsg(("a-1", timestamp(3, 0), timestamp(3, 2), 3L))
         evtProbe.expectMsg(("a-2", timestamp(4, 0), timestamp(4, 2), 4L))
       }
@@ -770,9 +769,9 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
         actor ! "status"
         actor ! Written(event2d)
 
-        evtProbe.expectMsg(("b", event2b.vectorTimestamp, timestamp(2, 1), event2b.localSequenceNr))
-        cmdProbe.expectMsg(("status", event2b.vectorTimestamp, timestamp(2, 1), event2b.localSequenceNr))
-        evtProbe.expectMsg(("d", event2d.vectorTimestamp, timestamp(4, 3), event2d.localSequenceNr))
+        evtProbe.expectMsg(("b", event2b.vectorTimestamp, timestamp(0, 1), event2b.localSequenceNr))
+        cmdProbe.expectMsg(("status", event2b.vectorTimestamp, timestamp(0, 1), event2b.localSequenceNr))
+        evtProbe.expectMsg(("d", event2d.vectorTimestamp, timestamp(0, 3), event2d.localSequenceNr))
       }
       "must dispatch unhandled commands to the unhandled method" in {
         val actor = recoveredEventsourcedActor(stateSync = true)
@@ -786,8 +785,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
         val write = logProbe.expectMsgClass(classOf[Write])
         val event = write.events(0).copy(localLogId = logIdA, localSequenceNr = 1L)
 
-        logProbe.sender() ! WriteSuccess(Seq(event.copy()), write.correlationId, instanceId)
-        evtProbe.expectMsg((event.payload, event.vectorTimestamp, timestamp(1), event.localSequenceNr))
+        logProbe.sender() ! WriteSuccess(Seq(event), write.correlationId, instanceId)
+        evtProbe.expectMsg((event.payload, event.vectorTimestamp, event.vectorTimestamp, event.localSequenceNr))
         logProbe.sender() ! WriteSuccess(Seq(event), write.correlationId, instanceId)
         evtProbe.expectNoMsg(timeout)
       }
@@ -909,7 +908,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
 
       val actor = recoveredSnapshotActor()
       actor ! Written(event1)
-      evtProbe.expectMsg((Vector("x"), timestamp(0, 1), timestamp(1, 1), 1))
+      evtProbe.expectMsg((Vector("x"), timestamp(0, 1), timestamp(0, 1), 1))
       actor ! Cmd("a")
       actor ! Cmd("b")
 
@@ -971,6 +970,11 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
   }
 
   "An EventsourcedActor" when {
+
+    // -----------------------------------
+    //  TODO: modify or remove (obsolete)
+    // -----------------------------------
+
     "in sharedClockEntry = false mode" must {
       def timestamp(a: Long = 0L, b: Long = 0L) = (a, b) match {
         case (0L, 0L) => VectorTime()
@@ -992,7 +996,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
         evtProbe.expectMsg(("a", e1.vectorTimestamp, e1.vectorTimestamp, e1.localSequenceNr))
         evtProbe.expectMsg(("b", e2.vectorTimestamp, e2.vectorTimestamp, e2.localSequenceNr))
       }
-      "recover from replayed self-emitted and remote events" in {
+      /*"recover from replayed self-emitted and remote events" in {
         val actor = unrecoveredCausalityActor(sharedClockEntry = false)
 
         val e1 = event2a.copy(vectorTimestamp = timestamp(1, 0), processId = emitterIdA, localSequenceNr = 6L)
@@ -1032,7 +1036,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
         evtProbe.expectMsg(("x", e1.vectorTimestamp, timestamp(1, 1), 1L))
         evtProbe.expectMsg(("a", e2.vectorTimestamp, timestamp(2, 1), 2L))
         evtProbe.expectMsg(("b", e3.vectorTimestamp, timestamp(3, 1), 3L))
-      }
+      }*/
     }
   }
 }

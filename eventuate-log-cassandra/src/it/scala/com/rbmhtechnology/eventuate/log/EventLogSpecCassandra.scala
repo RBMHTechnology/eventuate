@@ -64,8 +64,8 @@ class EventLogSpecCassandra extends TestKit(ActorSystem("test", EventLogSpecCass
     "serve small replication reads efficiently" in {
       val num = 1000
 
-      val events = 1 to num map { i =>
-        event(s"e-$i", timestamp(i, 0), emitterIdA)
+      val events = 0 until num map { i =>
+        event(s"e-$i", timestamp(i), emitterIdA)
       }
 
       writeEmittedEvents(events)

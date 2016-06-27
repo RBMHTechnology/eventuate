@@ -184,8 +184,7 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
       emitterId = id,
       emitterAggregateId = aggregateId,
       customDestinationAggregateIds = customDestinationAggregateIds,
-      vectorTimestamp = lastVectorTimestamp,
-      processId = DurableEvent.UndefinedLogId)
+      vectorTimestamp = lastVectorTimestamp)
 }
 
 /**

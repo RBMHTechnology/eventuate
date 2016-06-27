@@ -69,9 +69,6 @@ object LWWRegister {
     override def value(crdt: LWWRegister[A]): Option[A] =
       crdt.value
 
-    override def precondition: Boolean =
-      false
-
     override def update(crdt: LWWRegister[A], operation: Any, event: DurableEvent): LWWRegister[A] = operation match {
       case SetOp(value) => crdt.set(value.asInstanceOf[A], event.vectorTimestamp, event.systemTimestamp, event.emitterId)
     }

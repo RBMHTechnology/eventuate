@@ -90,7 +90,7 @@ object DurableEventSerializerSpec {
     emitterAggregateId = Some("a"),
     customDestinationAggregateIds = Set("x", "y"),
     systemTimestamp = 2L,
-    vectorTimestamp = VectorTime("p1" -> 1L, "p2" -> 2L),
+    vectorTimestamp = VectorTime("p1" -> 1L, "p2" -> 2L).dotted("p1", 8L, 0L),
     processId = "p4",
     localLogId = "p3",
     localSequenceNr = 17L,

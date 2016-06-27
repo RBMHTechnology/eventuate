@@ -186,6 +186,12 @@ trait CRDTService[A, B] {
     var crdt: A =
       ops.zero
 
+    // --------------------------------------------------------------------
+    //  FIXME:
+    //  - events emitted with ops.precondition == false may be concurrent
+    //  - this breaks MVRegister, ... (but not Counter ...)
+    // --------------------------------------------------------------------
+
     override def stateSync: Boolean =
       ops.precondition
 
