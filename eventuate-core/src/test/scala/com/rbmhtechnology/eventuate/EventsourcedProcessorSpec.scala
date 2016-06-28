@@ -45,12 +45,16 @@ object EventsourcedProcessorSpec {
     override val targetEventLog = trgProbe
     override val replayBatchSize = 2
 
+    private var processedEvents: Vector[String] = Vector.empty
+
     override def onCommand = {
-      case cmd => appProbe ! cmd
+      case "state" => appProbe ! processedEvents
     }
 
     override val processEvent: Process = {
-      case evt: String => Seq(s"${evt}-1", s"${evt}-2")
+      case evt: String =>
+        processedEvents = processedEvents :+ evt
+        Seq(s"${evt}-1", s"${evt}-2")
     }
 
     override def writeSuccess(result: Long): Unit = {
@@ -209,6 +213,8 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
       appProbe.expectMsg(2)
       actor ! Written(eventC)
       processWrite(3, Seq(eventC1, eventC2))
+      actor ! "state"
+      appProbe.expectMsg(Vector("a", "b", "c"))
     }
     "write events with current vector time" in {
       val actor = recoveredStatefulProcessor()
