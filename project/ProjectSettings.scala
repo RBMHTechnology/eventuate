@@ -62,7 +62,8 @@ object ProjectSettings {
   lazy val testSettings: Seq[Setting[_]] = Seq(
     testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v", "-a"),
     parallelExecution in Test := false,
-    fork in Test := true
+    fork in Test := true,
+    crossPaths := false
   )
 
   lazy val headerSettings: Seq[Setting[_]] = {
