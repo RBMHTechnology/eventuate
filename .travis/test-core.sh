@@ -1,3 +1,3 @@
-#!/bin/sh
+#!/bin/bash
 
-sbt $1 "core/test"
+.travis/test-template.sh $1 core
