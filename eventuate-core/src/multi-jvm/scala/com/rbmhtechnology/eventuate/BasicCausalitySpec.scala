@@ -45,7 +45,7 @@ object BasicCausalitySpec {
     }
 
     def onEvent = {
-      case s: String => probe ! ((s, lastVectorTimestamp, currentVectorTime))
+      case s: String => probe ! ((s, lastVectorTimestamp, currentVersion))
     }
   }
 }
@@ -78,7 +78,7 @@ abstract class BasicCausalitySpec(config: BasicCausalityConfig) extends MultiNod
           val endpoint = createEndpoint(nodeA.name, Set(node(nodeB).address.toReplicationConnection))
           val actor = system.actorOf(Props(new ReplicatedActor("pa", endpoint.log, probe.ref)))
 
-          probe.expectMsg(("x", vectorTime(0, 1), vectorTime(1, 1)))
+          probe.expectMsg(("x", vectorTime(0, 1), vectorTime(0, 1)))
 
           actor ! "y"
           probe.expectMsg(("y", vectorTime(2, 1), vectorTime(2, 1)))
@@ -93,7 +93,7 @@ abstract class BasicCausalitySpec(config: BasicCausalityConfig) extends MultiNod
           enterBarrier("repair")
           testConductor.passThrough(nodeA, nodeB, Direction.Both).await
 
-          probe.expectMsg(("z2", vectorTime(2, 3), vectorTime(4, 3)))
+          probe.expectMsg(("z2", vectorTime(2, 3), vectorTime(3, 3)))
         }
 
         runOn(nodeB) {
@@ -102,7 +102,7 @@ abstract class BasicCausalitySpec(config: BasicCausalityConfig) extends MultiNod
 
           actor ! "x"
           probe.expectMsg(("x", vectorTime(0, 1), vectorTime(0, 1)))
-          probe.expectMsg(("y", vectorTime(2, 1), vectorTime(2, 2)))
+          probe.expectMsg(("y", vectorTime(2, 1), vectorTime(2, 1)))
 
           enterBarrier("reply")
           enterBarrier("broken")
@@ -112,7 +112,7 @@ abstract class BasicCausalitySpec(config: BasicCausalityConfig) extends MultiNod
 
           enterBarrier("repair")
 
-          probe.expectMsg(("z1", vectorTime(3, 1), vectorTime(3, 4)))
+          probe.expectMsg(("z1", vectorTime(3, 1), vectorTime(3, 3)))
         }
 
         enterBarrier("finish")

@@ -217,7 +217,7 @@ trait EventsourcedView extends Actor with Stash {
       _eventHandling = true
       receiveEventInternal(event)
       behavior(event.payload)
-      if (!recovering) conditionChanged(currentVectorTime)
+      if (!recovering) versionChanged(currentVersion)
       _eventHandling = false
     } else _lastHandledEvent = previous
   }
@@ -245,7 +245,7 @@ trait EventsourcedView extends Actor with Stash {
   /**
    * Internal API.
    */
-  private[eventuate] def currentVectorTime: VectorTime =
+  private[eventuate] def currentVersion: VectorTime =
     VectorTime.Zero
 
   /**
@@ -257,7 +257,7 @@ trait EventsourcedView extends Actor with Stash {
   /**
    * Internal API.
    */
-  private[eventuate] def conditionChanged(condition: VectorTime): Unit =
+  private[eventuate] def versionChanged(condition: VectorTime): Unit =
     ()
 
   /**
@@ -303,7 +303,7 @@ trait EventsourcedView extends Actor with Stash {
       case other                              => other
     }
 
-    val prototype = Snapshot(payload, id, lastHandledEvent, currentVectorTime)
+    val prototype = Snapshot(payload, id, lastHandledEvent, currentVersion)
     val metadata = prototype.metadata
     val iid = instanceId
 
@@ -392,7 +392,7 @@ trait EventsourcedView extends Actor with Stash {
     }
     case ReplaySuccess(Seq(), progress, iid) => if (iid == instanceId) {
       context.become(initiated)
-      conditionChanged(currentVectorTime)
+      versionChanged(currentVersion)
       recovered()
       unstashAll()
     }

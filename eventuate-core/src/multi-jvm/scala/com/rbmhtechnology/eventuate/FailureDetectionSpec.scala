@@ -32,7 +32,7 @@ class FailureDetectionConfig(providerConfig: Config) extends MultiNodeReplicatio
 
   val customConfig = ConfigFactory.parseString("""
     |eventuate.log.replication.remote-read-timeout = 1s
-    |eventuate.log.replication.failure-detection-limit = 5s
+    |eventuate.log.replication.failure-detection-limit = 10s
   """.stripMargin)
 
   setConfig(customConfig.withFallback(providerConfig))

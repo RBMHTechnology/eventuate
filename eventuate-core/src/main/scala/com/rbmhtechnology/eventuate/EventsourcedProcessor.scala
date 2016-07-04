@@ -195,13 +195,9 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
  * A `StatefulProcessor` writes events with vector timestamps set to the processor's current vector time. In
  * other words, a written event has a potential causal relationship to all past source events.
  *
- * Usually, a `StatefulProcessor`'s source event log is different from its target event log. If a processor
- * needs to write processed events back to its source event log, it must reserve its own entry in the vector
- * clock by setting `sharedClockEntry` to `false`, otherwise, writing to the source event log has no effect.
- *
  * @see [[EventsourcedProcessor]].
  */
-trait StatefulProcessor extends EventsourcedProcessor with EventsourcedClock {
+trait StatefulProcessor extends EventsourcedProcessor with EventsourcedVersion {
   /**
    * Internal API.
    */

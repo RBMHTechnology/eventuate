@@ -171,7 +171,7 @@ trait EventsourcedWriter[R, W] extends EventsourcedView {
     }
     case ReplaySuccess(Seq(), progress, iid) => if (iid == instanceId) {
       context.become(initiated)
-      conditionChanged(currentVectorTime)
+      versionChanged(currentVersion)
       recovered()
       unstashAll()
     }

@@ -172,53 +172,6 @@ object LoadSnapshot {
   //#
 }
 
-object ClockEntryClass {
-  import akka.actor._
-  import com.rbmhtechnology.eventuate.EventsourcedActor
-
-  //#clock-entry-class
-  class ExampleActor(override val id: String,
-                     override val eventLog: ActorRef) extends EventsourcedActor {
-
-    override def sharedClockEntry: Boolean = false
-
-    // ...
-  //#
-    override def onCommand = {
-      case cmd => // ...
-    }
-
-    override def onEvent = {
-      case evt => // ...
-    }
-  //#clock-entry-class
-  }
-  //#
-}
-
-object ClockEntryInstance {
-  import akka.actor._
-  import com.rbmhtechnology.eventuate.EventsourcedActor
-
-  //#clock-entry-instance
-  class ExampleActor(override val id: String,
-                     override val eventLog: ActorRef,
-                     override val sharedClockEntry: Boolean) extends EventsourcedActor {
-
-    // ..
-  //#
-    override def onCommand = {
-      case cmd => // ...
-    }
-
-    override def onEvent = {
-      case evt => // ...
-    }
-  //#clock-entry-instance
-  }
-  //#
-}
-
 object BatchReplay {
   import akka.actor._
   import com.rbmhtechnology.eventuate.EventsourcedActor

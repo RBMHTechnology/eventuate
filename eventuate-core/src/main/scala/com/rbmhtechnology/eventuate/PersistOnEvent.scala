@@ -56,13 +56,6 @@ class PersistOnEventException(cause: Throwable) extends RuntimeException(cause)
  * `persistOnEvent` call for that event during event replay has no effect. A failed `persistOnEvent` operation will
  * restart the actor by throwing a [[PersistOnEventException]]. After restart, failed `persistOnEvent` operations
  * are automatically re-tried.
- *
- * An `EventsourcedActor` that has a `PersistOnEvent` mixin is to some extend comparable to a [[StatefulProcessor]]
- * that is configured to write events to its source event log. Both write new events on receiving events, however,
- * a `StatefulProcessor` that writes new events to its source event log requires its own entry in the vector clock,
- * whereas `PersistOnEvent` does not. Furthermore, a `StatefulProcessor` can not write new events during command
- * processing. As a general rule, when operating on a single event log, applications should prefer `PersistOnEvent`
- * over `StatefulProcessor`.
  */
 trait PersistOnEvent extends EventsourcedActor {
   import PersistOnEvent._

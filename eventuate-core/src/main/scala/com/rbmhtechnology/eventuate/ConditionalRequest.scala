@@ -22,7 +22,7 @@ import akka.actor._
  * A conditional request is a request to an actor in the [[EventsourcedView]]
  * hierarchy whose delivery to the actor's command handler is delayed until
  * the request's `condition` is in the causal past of that actor (i.e. if the
- * `condition` is `<=` the view's current time).
+ * `condition` is `<=` the actor's current version).
  */
 case class ConditionalRequest(condition: VectorTime, req: Any)
 
@@ -37,7 +37,7 @@ class ConditionalRequestException(msg: String) extends RuntimeException(msg)
  * Must be extended by actors in the [[EventsourcedView]] hierarchy if they
  * want to support [[ConditionalRequest]] processing.
  */
-trait ConditionalRequests extends EventsourcedView with EventsourcedClock {
+trait ConditionalRequests extends EventsourcedView with EventsourcedVersion {
   import ConditionalRequests._
 
   private val requestManager = context.actorOf(Props(new RequestManager(self)))
@@ -51,7 +51,7 @@ trait ConditionalRequests extends EventsourcedView with EventsourcedClock {
   /**
    * Internal API.
    */
-  override private[eventuate] def conditionChanged(condition: VectorTime): Unit =
+  override private[eventuate] def versionChanged(condition: VectorTime): Unit =
     requestManager ! condition
 }
 
@@ -63,13 +63,13 @@ private object ConditionalRequests {
 
   class RequestManager(owner: ActorRef) extends Actor {
     val requestBuffer = context.actorOf(Props(new RequestBuffer(owner)))
-    var currentTime: VectorTime = VectorTime.Zero
+    var currentVersion: VectorTime = VectorTime.Zero
 
     val idle: Receive = {
       case cr: Request =>
         process(cr)
       case t: VectorTime =>
-        currentTime = t
+        currentVersion = t
         requestBuffer ! Send(t)
         context.become(sending)
     }
@@ -78,17 +78,17 @@ private object ConditionalRequests {
       case cr: Request =>
         process(cr)
       case t: VectorTime =>
-        currentTime = t
-      case Sent(olderThan, num) if olderThan == currentTime =>
+        currentVersion = t
+      case Sent(olderThan, num) if olderThan == currentVersion =>
         context.become(idle)
       case Sent(olderThan, num) =>
-        requestBuffer ! Send(currentTime)
+        requestBuffer ! Send(currentVersion)
     }
 
     def receive = idle
 
     def process(cr: Request): Unit = {
-      if (cr.condition <= currentTime) owner.tell(cr.req, cr.sdr)
+      if (cr.condition <= currentVersion) owner.tell(cr.req, cr.sdr)
       else requestBuffer ! cr
     }
   }

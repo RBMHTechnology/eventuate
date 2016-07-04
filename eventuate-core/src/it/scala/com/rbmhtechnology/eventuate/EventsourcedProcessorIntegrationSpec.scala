@@ -62,7 +62,7 @@ object EventsourcedProcessorIntegrationSpec {
     }
   }
 
-  class StatefulSampleProcessor(id: String, eventLog: ActorRef, targetEventLog: ActorRef, override val sharedClockEntry: Boolean, eventProbe: ActorRef, progressProbe: ActorRef)
+  class StatefulSampleProcessor(id: String, eventLog: ActorRef, targetEventLog: ActorRef, eventProbe: ActorRef, progressProbe: ActorRef)
     extends StatelessSampleProcessor(id, eventLog, targetEventLog, eventProbe, progressProbe) with StatefulProcessor
 }
 
@@ -103,8 +103,8 @@ trait EventsourcedProcessorIntegrationSpec extends TestKitBase with WordSpecLike
   def statelessProcessor(): ActorRef =
     system.actorOf(Props(new StatelessSampleProcessor("p", sourceLog, targetLog, processorEventProbe.ref, processorProgressProbe.ref)))
 
-  def statefulProcessor(sourceLog: ActorRef, targetLog: ActorRef, sharedClockEntry: Boolean): ActorRef =
-    system.actorOf(Props(new StatefulSampleProcessor("p", sourceLog, targetLog, sharedClockEntry, processorEventProbe.ref, processorProgressProbe.ref)))
+  def statefulProcessor(sourceLog: ActorRef, targetLog: ActorRef): ActorRef =
+    system.actorOf(Props(new StatefulSampleProcessor("p", sourceLog, targetLog, processorEventProbe.ref, processorProgressProbe.ref)))
 
   def waitForProgressWrite(progress: Long): Unit = {
     processorProgressProbe.fishForMessage() {
@@ -115,7 +115,7 @@ trait EventsourcedProcessorIntegrationSpec extends TestKitBase with WordSpecLike
 
   "A StatefulProcessor" must {
     "write processed events to a target log and recover from scratch" in {
-      val p = statefulProcessor(sourceLog, targetLog, sharedClockEntry = true)
+      val p = statefulProcessor(sourceLog, targetLog)
 
       a1 ! "a"
       a1 ! "b"
@@ -137,13 +137,16 @@ trait EventsourcedProcessorIntegrationSpec extends TestKitBase with WordSpecLike
       p ! "boom"
       a1 ! "d"
 
+      processorEventProbe.expectMsg("a")
+      processorEventProbe.expectMsg("b")
+      processorEventProbe.expectMsg("c")
       processorEventProbe.expectMsg("d")
 
       targetProbe.expectMsg(("d-processed-1", VectorTime(sourceLogId -> 4L, targetLogId -> 7L)))
       targetProbe.expectMsg(("d-processed-2", VectorTime(sourceLogId -> 4L, targetLogId -> 8L)))
     }
     "write processed events to a target log and recover from snapshot" in {
-      val p = statefulProcessor(sourceLog, targetLog, sharedClockEntry = true)
+      val p = statefulProcessor(sourceLog, targetLog)
 
       a1 ! "a"
       a1 ! "b"
@@ -171,55 +174,11 @@ trait EventsourcedProcessorIntegrationSpec extends TestKitBase with WordSpecLike
       p ! "boom"
       a1 ! "d"
 
+      processorEventProbe.expectMsg("c")
       processorEventProbe.expectMsg("d")
 
       targetProbe.expectMsg(("d-processed-1", VectorTime(sourceLogId -> 4L, targetLogId -> 7L)))
       targetProbe.expectMsg(("d-processed-2", VectorTime(sourceLogId -> 4L, targetLogId -> 8L)))
-    }
-    "update event vector timestamps when having set sharedClockEntry to false" in {
-      val p = statefulProcessor(sourceLog, targetLog, sharedClockEntry = false)
-
-      a1 ! "a"
-      a1 ! "b"
-      a1 ! "c"
-
-      processorEventProbe.expectMsg("a")
-      processorEventProbe.expectMsg("b")
-
-      targetProbe.expectMsg(("a-processed-1", VectorTime(sourceLogId -> 1L, "p" -> 2L)))
-      targetProbe.expectMsg(("a-processed-2", VectorTime(sourceLogId -> 1L, "p" -> 3L)))
-      targetProbe.expectMsg(("b-processed-1", VectorTime(sourceLogId -> 2L, "p" -> 5L)))
-      targetProbe.expectMsg(("b-processed-2", VectorTime(sourceLogId -> 2L, "p" -> 6L)))
-    }
-  }
-
-  "A stateful EventsourcedProcessor" when {
-    "writing to the source event log" must {
-      "have its own vector clock entry" in {
-        a1 ! "a"
-        a1 ! "b"
-        a1 ! "c"
-
-        sourceProbe.expectMsg(("a", VectorTime(sourceLogId -> 1L)))
-        sourceProbe.expectMsg(("b", VectorTime(sourceLogId -> 2L)))
-        sourceProbe.expectMsg(("c", VectorTime(sourceLogId -> 3L)))
-
-        val p = statefulProcessor(sourceLog, sourceLog, sharedClockEntry = false)
-
-        sourceProbe.expectMsg(("a-processed-1", VectorTime(sourceLogId -> 1L, "p" -> 2L)))
-        sourceProbe.expectMsg(("a-processed-2", VectorTime(sourceLogId -> 1L, "p" -> 3L)))
-        sourceProbe.expectMsg(("b-processed-1", VectorTime(sourceLogId -> 2L, "p" -> 5L)))
-        sourceProbe.expectMsg(("b-processed-2", VectorTime(sourceLogId -> 2L, "p" -> 6L)))
-        sourceProbe.expectMsg(("c-processed-1", VectorTime(sourceLogId -> 3L, "p" -> 8L)))
-        sourceProbe.expectMsg(("c-processed-2", VectorTime(sourceLogId -> 3L, "p" -> 9L)))
-
-        p ! "boom"
-        a1 ! "d"
-
-        sourceProbe.expectMsg(("d", VectorTime(sourceLogId -> 10L, "p" -> 9)))
-        sourceProbe.expectMsg(("d-processed-1", VectorTime(sourceLogId -> 10L, "p" -> 11L)))
-        sourceProbe.expectMsg(("d-processed-2", VectorTime(sourceLogId -> 10L, "p" -> 12L)))
-      }
     }
   }
 
