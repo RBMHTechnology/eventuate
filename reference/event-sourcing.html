@@ -293,28 +293,6 @@
 <p class="last">An event handler should only update internal actor state without having further side-effects. An exception is <a class="reference internal" href="#reliable-delivery"><span class="std std-ref">Reliable delivery</span></a> of messages and <a class="reference internal" href="../user-guide.html#guide-event-driven-communication"><span class="std std-ref">Event-driven communication</span></a> with <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a>.</p>
 </div>
 </div>
-<div class="section" id="causality-tracking">
-<h2>Causality tracking<a class="headerlink" href="#causality-tracking" title="Permalink to this headline">¶</a></h2>
-<p>As described in section <a class="reference internal" href="../architecture.html#vector-clocks"><span class="std std-ref">Vector clocks</span></a>, Eventuate’s causality tracking default can be formalized in <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/68">plausible clocks</a>. To achieve more fine-grained causality tracking, event-sourced actors can reserve their own entry in a vector clock. To reserve its own entry, a concrete <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> must override the <code class="docutils literal"><span class="pre">sharedClockEntry</span></code> method to return <code class="docutils literal"><span class="pre">false</span></code>.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
-                   <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
-
-  <span class="k">override</span> <span class="k">def</span> <span class="n">sharedClockEntry</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span>
-
-  <span class="c1">// ...</span>
-<span class="o">}</span>
-</pre></div>
-</div>
-<p>The value of <code class="docutils literal"><span class="pre">sharedClockEntry</span></code> may also be instance-specific, if required.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
-                   <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">,</span>
-                   <span class="k">override</span> <span class="k">val</span> <span class="n">sharedClockEntry</span><span class="k">:</span> <span class="kt">Boolean</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
-
-  <span class="c1">// ..</span>
-<span class="o">}</span>
-</pre></div>
-</div>
-</div>
 </div>
 <div class="section" id="event-sourced-views">
 <span id="ref-event-sourced-views"></span><h1>Event-sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h1>

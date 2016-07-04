@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>EventsourcedClock - com.rbmhtechnology.eventuate.EventsourcedClock</title>
-          <meta name="description" content="EventsourcedClock - com.rbmhtechnology.eventuate.EventsourcedClock" />
-          <meta name="keywords" content="EventsourcedClock com.rbmhtechnology.eventuate.EventsourcedClock" />
+          <title>EventsourcedVersion - com.rbmhtechnology.eventuate.EventsourcedVersion</title>
+          <meta name="description" content="EventsourcedVersion - com.rbmhtechnology.eventuate.EventsourcedVersion" />
+          <meta name="keywords" content="EventsourcedVersion com.rbmhtechnology.eventuate.EventsourcedVersion" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.EventsourcedClock';
+            var hash = 'com.rbmhtechnology.eventuate.EventsourcedVersion';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -30,10 +30,10 @@
       <div id="definition">
         <img alt="Trait" src="../../../lib/trait_big.png" />
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a></p>
-        <h1>EventsourcedClock</h1><h3><span class="morelinks"><div>Related Doc:
+        <h1>EventsourcedVersion</h1><h3><span class="morelinks"><div>Related Doc:
             <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">package eventuate</a>
           </div></span></h3><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -45,11 +45,12 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">EventsourcedClock</span><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></span>
+        <span class="name">EventsourcedVersion</span><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Manages a <a href="VectorClock.html" class="extype" name="com.rbmhtechnology.eventuate.VectorClock">VectorClock</a> and implements rules for updating the clock from <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Maintains the current version of an event-sourced entity. The current version is updated by merging
+<a href="DurableEvent.html#vectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" class="extmbr" name="com.rbmhtechnology.eventuate.DurableEvent#vectorTimestamp">DurableEvent.vectorTimestamp</a>s of handled events.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -73,7 +74,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.EventsourcedClock"><span>EventsourcedClock</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.EventsourcedVersion"><span>EventsourcedVersion</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -106,7 +107,7 @@
         <span class="name">Handler</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> = (<span class="extype" name="scala.util.Try">Try</span>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView.Handler.A">A</span>]) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -123,7 +124,7 @@
         <span class="name">Receive</span><span class="result"> = <span class="extype" name="scala.PartialFunction">PartialFunction</span>[<span class="extype" name="scala.Any">Any</span>, <span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@Receive=akka.actor.Actor.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@Receive=akka.actor.Actor.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -145,7 +146,7 @@
         <span class="name">eventLog</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@eventLog:akka.actor.ActorRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@eventLog:akka.actor.ActorRef" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -163,7 +164,7 @@
         <span class="name">id</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@id:String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@id:String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -178,10 +179,10 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onCommand</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedClock.Receive">Receive</a></span>
+        <span class="name">onCommand</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedVersion.Receive">Receive</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@onCommand:EventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@onCommand:EventsourcedView.this.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -196,10 +197,10 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onEvent</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedClock.Receive">Receive</a></span>
+        <span class="name">onEvent</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedVersion.Receive">Receive</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@onEvent:EventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@onEvent:EventsourcedView.this.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -222,7 +223,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -239,7 +240,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@##():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@##():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -256,7 +257,7 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -273,7 +274,7 @@
         <span class="name">aggregateId</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@aggregateId:Option[String]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@aggregateId:Option[String]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -295,7 +296,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundPostRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@aroundPostRestart(reason:Throwable):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@aroundPostRestart(reason:Throwable):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -312,7 +313,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundPostStop</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@aroundPostStop():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@aroundPostStop():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -329,7 +330,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundPreRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="message">message: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Any">Any</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@aroundPreRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@aroundPreRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -346,7 +347,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundPreStart</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@aroundPreStart():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@aroundPreStart():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -363,7 +364,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">aroundReceive</span><span class="params">(<span name="receive">receive: <span class="extype" name="akka.actor.Actor.Receive">akka.actor.Actor.Receive</span></span>, <span name="msg">msg: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@aroundReceive(receive:akka.actor.Actor.Receive,msg:Any):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@aroundReceive(receive:akka.actor.Actor.Receive,msg:Any):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -380,7 +381,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -397,7 +398,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@clone():Object" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@clone():Object" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -420,7 +421,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">commandContext</span><span class="result">: <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@commandContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@commandContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -438,7 +439,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">context</span><span class="result">: <span class="extype" name="akka.actor.ActorContext">ActorContext</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@context:akka.actor.ActorContext" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@context:akka.actor.ActorContext" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -455,7 +456,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -472,7 +473,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@equals(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -489,7 +490,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">eventContext</span><span class="result">: <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@eventContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@eventContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -507,7 +508,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -530,7 +531,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -547,7 +548,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@hashCode():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@hashCode():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -564,7 +565,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">instanceId</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@instanceId:Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@instanceId:Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -581,7 +582,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -598,7 +599,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">lastEmitterAggregateId</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@lastEmitterAggregateId:Option[String]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@lastEmitterAggregateId:Option[String]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -616,7 +617,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">lastEmitterId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@lastEmitterId:String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@lastEmitterId:String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -634,7 +635,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">lastSequenceNr</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@lastSequenceNr:Long" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@lastSequenceNr:Long" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -652,7 +653,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">lastSystemTimestamp</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@lastSystemTimestamp:Long" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@lastSystemTimestamp:Long" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -670,7 +671,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">lastVectorTimestamp</span><span class="result">: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -688,7 +689,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">logger</span><span class="result">: <span class="extype" name="akka.event.LoggingAdapter">LoggingAdapter</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@logger:akka.event.LoggingAdapter" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@logger:akka.event.LoggingAdapter" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -706,7 +707,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -723,7 +724,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@notify():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -740,7 +741,7 @@ is defined it will only receive events with a matching aggregate id in
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -754,10 +755,10 @@ is defined it will only receive events with a matching aggregate id in
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onRecovery</span><span class="result">: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedClock.Handler">Handler</a>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+        <span class="name">onRecovery</span><span class="result">: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedVersion.Handler">Handler</a>[<span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@onRecovery:EventsourcedView.this.Handler[Unit]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@onRecovery:EventsourcedView.this.Handler[Unit]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -774,10 +775,10 @@ implementation does nothing and can be overridden by implementations.
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">onSnapshot</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedClock.Receive">Receive</a></span>
+        <span class="name">onSnapshot</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedVersion.Receive">Receive</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@onSnapshot:EventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@onSnapshot:EventsourcedView.this.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -795,7 +796,7 @@ implementation does nothing and can be overridden by implementations.
         <span class="name">postRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@postRestart(reason:Throwable):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@postRestart(reason:Throwable):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -818,7 +819,7 @@ implementation does nothing and can be overridden by implementations.
         <span class="name">postStop</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@postStop():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@postStop():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -836,13 +837,13 @@ implementation does nothing and can be overridden by implementations.
         <span class="name">preRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="message">message: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Any">Any</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@preRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@preRestart(reason:Throwable,message:Option[Any]):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Sets <code>recovering</code> to <code>false</code> before calling <code>super.preRestart</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Sets <code>recovering</code> to <code>false</code> before calling <code>super.preRestart</code>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → UnrestrictedStash → Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedClock#preStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#preStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="preStart():Unit"></a>
       <a id="preStart():Unit"></a>
       <h4 class="signature">
@@ -854,12 +855,12 @@ implementation does nothing and can be overridden by implementations.
         <span class="name">preStart</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@preStart():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@preStart():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Initializes the vector clock and sets the clock's <code>processId</code> to the log <code>id</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Initializes the vector clock and sets the clock's <code>processId</code> to the log <code>id</code>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
+      <p class="shortcomment cmt">Initiates recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Initiates recovery.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="receive:EventsourcedView.this.Receive"></a>
       <a id="receive:Receive"></a>
@@ -869,10 +870,10 @@ implementation does nothing and can be overridden by implementations.
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">receive</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedClock.Receive">Receive</a></span>
+        <span class="name">receive</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedVersion.Receive">Receive</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@receive:EventsourcedView.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@receive:EventsourcedView.this.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -890,7 +891,7 @@ implementation does nothing and can be overridden by implementations.
         <span class="name">recovering</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@recovering:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@recovering:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -911,7 +912,7 @@ the actor switches to consuming live events.
         <span class="name">replayBatchSize</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@replayBatchSize:Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@replayBatchSize:Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -929,10 +930,10 @@ is resumed automatically after all replayed events haven been handled by this ac
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">save</span><span class="params">(<span name="snapshot">snapshot: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedClock.Handler">Handler</a>[<a href="SnapshotMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.SnapshotMetadata">SnapshotMetadata</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">save</span><span class="params">(<span name="snapshot">snapshot: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="params">(<span name="handler">handler: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedVersion.Handler">Handler</a>[<a href="SnapshotMetadata.html" class="extype" name="com.rbmhtechnology.eventuate.SnapshotMetadata">SnapshotMetadata</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -953,7 +954,7 @@ sender with <code>sender()</code>.
         <span class="name">self</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@self:akka.actor.ActorRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@self:akka.actor.ActorRef" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -970,32 +971,11 @@ sender with <code>sender()</code>.
         <span class="name">sender</span><span class="params">()</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@sender():akka.actor.ActorRef" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@sender():akka.actor.ActorRef" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedClock#sharedClockEntry" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="sharedClockEntry:Boolean"></a>
-      <a id="sharedClockEntry:Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">sharedClockEntry</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@sharedClockEntry:Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">If <code>true</code>, this actor shares a vector clock entry with those actors on the same local <code>eventLog</code>
-that have set <code>sharedClockEntry</code> to <code>true</code> as well.</p><div class="fullcomment"><div class="comment cmt"><p>If <code>true</code>, this actor shares a vector clock entry with those actors on the same local <code>eventLog</code>
-that have set <code>sharedClockEntry</code> to <code>true</code> as well. Otherwise, this actor has its own entry in
-the vector clock.
-</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#snapshotContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext"></a>
       <a id="snapshotContext:BehaviorContext"></a>
@@ -1008,7 +988,7 @@ the vector clock.
         <span class="name">snapshotContext</span><span class="result">: <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -1026,7 +1006,7 @@ the vector clock.
         <span class="name">stash</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@stash():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@stash():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -1044,7 +1024,7 @@ the vector clock.
         <span class="name">supervisorStrategy</span><span class="result">: <span class="extype" name="akka.actor.SupervisorStrategy">SupervisorStrategy</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@supervisorStrategy:akka.actor.SupervisorStrategy" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@supervisorStrategy:akka.actor.SupervisorStrategy" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -1061,7 +1041,7 @@ the vector clock.
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -1078,7 +1058,7 @@ the vector clock.
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@toString():String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@toString():String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -1095,7 +1075,7 @@ the vector clock.
         <span class="name">unhandled</span><span class="params">(<span name="message">message: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@unhandled(message:Any):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@unhandled(message:Any):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -1112,7 +1092,7 @@ the vector clock.
         <span class="name">unstashAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@unstashAll():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@unstashAll():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -1131,7 +1111,7 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@wait():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -1154,7 +1134,7 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -1177,7 +1157,7 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedClock@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>

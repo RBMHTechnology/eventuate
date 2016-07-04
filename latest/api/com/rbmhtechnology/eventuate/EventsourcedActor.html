@@ -45,7 +45,7 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">EventsourcedActor</span><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> with <a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a></span>
+        <span class="name">EventsourcedActor</span><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> with <a href="EventsourcedVersion.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedVersion">EventsourcedVersion</a></span>
       </span>
       </h4>
       
@@ -59,7 +59,7 @@ handler should additionally mixin the <a href="PersistOnEvent.html" class="extyp
 <a href="PersistOnEvent.html#persistOnEvent[A](event:A,customDestinationAggregateIds:Set[String]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.PersistOnEvent#persistOnEvent">persistOnEvent</a> method.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="PersistOnEvent.html" class="extype" name="com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a></p></span><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="EventsourcedVersion.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedVersion">EventsourcedVersion</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
             <span class="toggle">Known Subclasses</span>
             <div class="subClasses hiddenContent"><a href="AbstractEventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor">AbstractEventsourcedActor</a>, <a href="ConfirmedDelivery.html" class="extype" name="com.rbmhtechnology.eventuate.ConfirmedDelivery">ConfirmedDelivery</a>, <a href="PersistOnEvent.html" class="extype" name="com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a></div>
@@ -80,7 +80,7 @@ handler should additionally mixin the <a href="PersistOnEvent.html" class="extyp
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.EventsourcedActor"><span>EventsourcedActor</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedClock"><span>EventsourcedClock</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.EventsourcedActor"><span>EventsourcedActor</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedVersion"><span>EventsourcedVersion</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -901,7 +901,7 @@ parameter.
     </span>
       <p class="shortcomment cmt">Sets <code>recovering</code> to <code>false</code> before calling <code>super.preRestart</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Sets <code>recovering</code> to <code>false</code> before calling <code>super.preRestart</code>.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → UnrestrictedStash → Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedClock#preStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#preStart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="preStart():Unit"></a>
       <a id="preStart():Unit"></a>
       <h4 class="signature">
@@ -917,8 +917,8 @@ parameter.
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Initializes the vector clock and sets the clock's <code>processId</code> to the log <code>id</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Initializes the vector clock and sets the clock's <code>processId</code> to the log <code>id</code>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
+      <p class="shortcomment cmt">Initiates recovery.</p><div class="fullcomment"><div class="comment cmt"><p>Initiates recovery.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="receive:EventsourcedView.this.Receive"></a>
       <a id="receive:Receive"></a>
@@ -1034,27 +1034,6 @@ sender with <code>sender()</code>.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedClock#sharedClockEntry" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="sharedClockEntry:Boolean"></a>
-      <a id="sharedClockEntry:Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">sharedClockEntry</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedActor@sharedClockEntry:Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">If <code>true</code>, this actor shares a vector clock entry with those actors on the same local <code>eventLog</code>
-that have set <code>sharedClockEntry</code> to <code>true</code> as well.</p><div class="fullcomment"><div class="comment cmt"><p>If <code>true</code>, this actor shares a vector clock entry with those actors on the same local <code>eventLog</code>
-that have set <code>sharedClockEntry</code> to <code>true</code> as well. Otherwise, this actor has its own entry in
-the vector clock.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#snapshotContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext"></a>
       <a id="snapshotContext:BehaviorContext"></a>
@@ -1278,8 +1257,8 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedClock">
-              <h3>Inherited from <a href="EventsourcedClock.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedClock">EventsourcedClock</a></h3>
+        <div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedVersion">
+              <h3>Inherited from <a href="EventsourcedVersion.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedVersion">EventsourcedVersion</a></h3>
             </div><div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedView">
               <h3>Inherited from <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></h3>
             </div><div class="parent" name="akka.actor.Stash">

@@ -52,7 +52,7 @@
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A conditional request is a request to an actor in the <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>
 hierarchy whose delivery to the actor's command handler is delayed until
 the request's <code>condition</code> is in the causal past of that actor (i.e. if the
-<code>condition</code> is <code>&lt;=</code> the view's current time).
+<code>condition</code> is <code>&lt;=</code> the actor's current version).
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
