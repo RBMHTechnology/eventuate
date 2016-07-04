@@ -349,13 +349,7 @@ Eventuate currently provides services for the following operation-based CRDTs: *
 Vector clocks
 -------------
 
-Eventuates uses `vector clocks`_ to track *happened-before* relationships (= potential causality) of events and provides means to limit the size of these clocks. 
-
-By default, event-sourced actors that share an event log at a given location also share an entry in a vector clock. Event-sourced actors from different locations contribute to different entries in a vector clock. Consequently, concurrency of events can only be reliably detected if they have been emitted at different locations. This is formalized in `plausible clocks`_ and further described in `ticket 68`_. The main advantage of this approach are clock sizes that scale with the usually small number of locations but still covers most use cases.
-
-Although plausible clocks are a reasonable default for many Eventuate applications, others need more fine-grained tracking of potential causality. To achieve that goal, event-sourced actors can opt-in to have their own entry in a vector clock instead of sharing it with others. This is especially useful for applications that additionally need to detect concurrent events within a location which is further described in `ticket 103`_.
-
-A consequence of more-fine grained causality tracking can be larger vector clocks. On the other hand, only events that are actually handled by an event-sourced actor contribute to that actor’s vector clock. Therefore, selective event handling in combination with :ref:`event-routing` rules, as applied in a one-\ aggregate_-per-actor design, for example, can help to keep vector clock sizes small.
+Eventuates uses `vector clocks`_ on event log level to track *happened-before* relationships (= potential causality) of events. Event-sourced actors that share a local event log also share an entry in a vector clock whereas actors from different locations contribute to different entries in a vector clock. This is formalized in `plausible clocks`_ and further described in `ticket 68`_. Log level vector clocks are a reasonable choice as all actors that share a local event log also receive events in the same order. The size of a log level vector clock scales with the number of locations. 
 
 .. _batching:
 

@@ -1,3 +1,3 @@
-#!/bin/sh
+#!/bin/bash
 
-sbt $1 "logLeveldb/test"
+.travis/test-template.sh $1 logLeveldb

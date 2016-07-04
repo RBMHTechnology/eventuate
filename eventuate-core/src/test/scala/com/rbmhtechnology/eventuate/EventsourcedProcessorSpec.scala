@@ -68,7 +68,7 @@ object EventsourcedProcessorSpec {
     }
   }
 
-  class StatefulTestProcessor(srcProbe: ActorRef, trgProbe: ActorRef, appProbe: ActorRef, override val sharedClockEntry: Boolean)
+  class StatefulTestProcessor(srcProbe: ActorRef, trgProbe: ActorRef, appProbe: ActorRef)
     extends StatelessTestProcessor(srcProbe, trgProbe, appProbe) with StatefulProcessor
 
   def update(event: DurableEvent): DurableEvent =
@@ -98,8 +98,8 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
   def unrecoveredStatelessProcessor(): ActorRef =
     system.actorOf(Props(new StatelessTestProcessor(srcProbe.ref, trgProbe.ref, appProbe.ref)))
 
-  def unrecoveredStatefulProcessor(sharedClockEntry: Boolean = true): ActorRef =
-    system.actorOf(Props(new StatefulTestProcessor(srcProbe.ref, trgProbe.ref, appProbe.ref, sharedClockEntry)))
+  def unrecoveredStatefulProcessor(): ActorRef =
+    system.actorOf(Props(new StatefulTestProcessor(srcProbe.ref, trgProbe.ref, appProbe.ref)))
 
   def recoveredStatelessProcessor(): ActorRef = {
     val actor = unrecoveredStatelessProcessor()
@@ -108,8 +108,8 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
     actor
   }
 
-  def recoveredStatefulProcessor(sharedClockEntry: Boolean = true): ActorRef = {
-    val actor = unrecoveredStatefulProcessor(sharedClockEntry)
+  def recoveredStatefulProcessor(): ActorRef = {
+    val actor = unrecoveredStatefulProcessor()
     processRead(0)
     processLoad(actor)
     processReplay(actor, 1)
@@ -224,20 +224,8 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
         eventA1.copy(vectorTimestamp = timestamp(1, 0)),
         eventA2.copy(vectorTimestamp = timestamp(1, 0))))
       processWrite(2, Seq(
-        eventB1.copy(vectorTimestamp = timestamp(2, 1)),
-        eventB2.copy(vectorTimestamp = timestamp(2, 1))))
-    }
-  }
-
-  "A StatefulProcessor" when {
-    "using its own vector clock entry" must {
-      "update the process id and vector time of emitted events" in {
-        val actor = recoveredStatefulProcessor(sharedClockEntry = false)
-        actor ! Written(eventA)
-        processWrite(1, Seq(
-          eventA1.copy(processId = emitterIdB, vectorTimestamp = eventA.vectorTimestamp.merge(VectorTime(emitterIdB -> 2L))),
-          eventA2.copy(processId = emitterIdB, vectorTimestamp = eventA.vectorTimestamp.merge(VectorTime(emitterIdB -> 3L)))))
-      }
+        eventB1.copy(vectorTimestamp = timestamp(1, 1)),
+        eventB2.copy(vectorTimestamp = timestamp(1, 1))))
     }
   }
 

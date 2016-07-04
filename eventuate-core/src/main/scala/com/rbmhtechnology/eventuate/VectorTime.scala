@@ -21,59 +21,6 @@ import scalaz._
 import Scalaz._
 
 /**
- * An immutable vector clock.
- *
- * @param processId Id of the owner process.
- * @param currentTime The clock's current time.
- */
-case class VectorClock(processId: String, currentTime: VectorTime = VectorTime.Zero) {
-  /**
-   * Returns the local time of `processId` recorded in this clock.
-   */
-  def currentLocalTime(): Long =
-    currentTime.localTime(processId)
-
-  /**
-   * Updates current time with `t` (single tick and merge).
-   */
-  def update(t: VectorTime): VectorClock =
-    merge(t).tick()
-
-  /**
-   * Merges current time with `t`.
-   */
-  def merge(t: VectorTime): VectorClock =
-    copy(currentTime = currentTime.merge(t))
-
-  /**
-   * Advances local time by a single tick.
-   */
-  def tick(): VectorClock =
-    copy(currentTime = currentTime.increment(processId))
-
-  /**
-   * Sets the local time of given `processId` to `t`.
-   */
-  def set(processId: String, t: Long): VectorClock =
-    copy(currentTime = currentTime.setLocalTime(processId, t))
-
-  /**
-   * Checks whether the owner process is in agreement with an emitter process about
-   * the state of all other processes contained in `emitterTime`. Return `false` if the
-   * emitter process has seen one or more events that the owner process hasn't seen,
-   * `true` otherwise.
-   *
-   * @param emitterTimestamp vector time of the emitter process.
-   * @param emitterProcessId id of the emitter process.
-   */
-  def covers(emitterTimestamp: VectorTime, emitterProcessId: String): Boolean =
-    !emitterTimestamp.value.exists {
-      case (pid, time) if pid != processId && pid != emitterProcessId => currentTime.localTime(pid) < time
-      case _ => false
-    }
-}
-
-/**
  * Vector time, represented as ''process id'' -> ''logical time'' map.
  */
 case class VectorTime(value: Map[String, Long] = Map.empty) {

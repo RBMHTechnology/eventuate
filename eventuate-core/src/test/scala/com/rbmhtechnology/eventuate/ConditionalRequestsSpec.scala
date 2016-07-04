@@ -29,7 +29,7 @@ object ConditionalRequestsSpec {
     val eventLog = logProbe
 
     def onCommand = {
-      case t: VectorTime => conditionChanged(t)
+      case t: VectorTime => versionChanged(t)
       case cmd           => sender() ! s"re: ${cmd}"
     }
 

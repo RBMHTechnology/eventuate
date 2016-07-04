@@ -66,19 +66,6 @@ Event metadata of the last handled event can be obtained with the ``last*`` meth
 .. note::
    An event handler should only update internal actor state without having further side-effects. An exception is :ref:`reliable-delivery` of messages and :ref:`guide-event-driven-communication` with PersistOnEvent_.
 
-Causality tracking
-~~~~~~~~~~~~~~~~~~
-
-As described in section :ref:`vector-clocks`, Eventuate’s causality tracking default can be formalized in `plausible clocks`_. To achieve more fine-grained causality tracking, event-sourced actors can reserve their own entry in a vector clock. To reserve its own entry, a concrete ``EventsourcedActor`` must override the ``sharedClockEntry`` method to return ``false``.
-
-.. includecode:: ../code/EventSourcingDoc.scala
-   :snippet: clock-entry-class
-
-The value of ``sharedClockEntry`` may also be instance-specific, if required.
-
-.. includecode:: ../code/EventSourcingDoc.scala
-   :snippet: clock-entry-instance
-
 .. _ref-event-sourced-views:
 
 Event-sourced views

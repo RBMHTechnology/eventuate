@@ -43,7 +43,7 @@ private class EventsourcedActorSettings(config: Config) {
  * @see [[EventsourcedView]]
  * @see [[PersistOnEvent]]
  */
-trait EventsourcedActor extends EventsourcedView with EventsourcedClock {
+trait EventsourcedActor extends EventsourcedView with EventsourcedVersion {
   import EventsourcingProtocol._
 
   private val settings =

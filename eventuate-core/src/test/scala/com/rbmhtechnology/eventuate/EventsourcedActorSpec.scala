@@ -51,26 +51,26 @@ object EventsourcedActorSpec {
 
     override def onCommand = {
       case "boom"   => throw TestException
-      case "status" => cmdProbe ! (("status", lastVectorTimestamp, currentVectorTime, lastSequenceNr))
+      case "status" => cmdProbe ! (("status", lastVectorTimestamp, currentVersion, lastSequenceNr))
       case Ping(i)  => cmdProbe ! Pong(i)
       case "test-handler-order" =>
-        persist("a")(r => cmdProbe ! ((s"${r.get}-1", lastVectorTimestamp, currentVectorTime, lastSequenceNr)))
-        persist("b")(r => cmdProbe ! ((s"${r.get}-2", lastVectorTimestamp, currentVectorTime, lastSequenceNr)))
+        persist("a")(r => cmdProbe ! ((s"${r.get}-1", lastVectorTimestamp, currentVersion, lastSequenceNr)))
+        persist("b")(r => cmdProbe ! ((s"${r.get}-2", lastVectorTimestamp, currentVersion, lastSequenceNr)))
       case "test-multi-persist" =>
-        val handler = (r: Try[String]) => cmdProbe ! ((r.get, currentVectorTime, lastVectorTimestamp, lastSequenceNr))
+        val handler = (r: Try[String]) => cmdProbe ! ((r.get, currentVersion, lastVectorTimestamp, lastSequenceNr))
         persistN(Seq("a", "b", "c"), handler)(handler)
       case Cmd(p, num) => 1 to num foreach { i =>
         persist(s"${p}-${i}") {
           case Success(evt) =>
           case Failure(err) =>
-            cmdProbe ! ((err, lastVectorTimestamp, currentVectorTime, lastSequenceNr))
+            cmdProbe ! ((err, lastVectorTimestamp, currentVersion, lastSequenceNr))
         }
       }
     }
 
     override def onEvent = {
       case "boom"            => throw TestException
-      case evt if evt != "x" => evtProbe ! ((evt, lastVectorTimestamp, currentVectorTime, lastSequenceNr))
+      case evt if evt != "x" => evtProbe ! ((evt, lastVectorTimestamp, currentVersion, lastSequenceNr))
     }
 
     override def unhandled(message: Any): Unit = message match {
@@ -162,29 +162,7 @@ object EventsourcedActorSpec {
     }
 
     private def message(payload: Any) =
-      (payload, lastVectorTimestamp, currentVectorTime, lastSequenceNr)
-  }
-
-  class TestCausalityActor(
-    val logProbe: ActorRef,
-    val cmdProbe: ActorRef,
-    val evtProbe: ActorRef,
-    override val sharedClockEntry: Boolean) extends EventsourcedActor {
-
-    val id = emitterIdA
-    val eventLog = logProbe
-
-    override def onCommand = {
-      case Cmd(p: String, _) =>
-        persist(p) {
-          case Success(evt) =>
-          case Failure(err) => cmdProbe ! err
-        }
-    }
-
-    override def onEvent = {
-      case evt => evtProbe ! ((evt, lastVectorTimestamp, currentVectorTime, lastSequenceNr))
-    }
+      (payload, lastVectorTimestamp, currentVersion, lastSequenceNr)
   }
 }
 
@@ -219,17 +197,11 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
   def unrecoveredSnapshotActor(): ActorRef =
     system.actorOf(Props(new TestSnapshotActor(logProbe.ref, cmdProbe.ref, evtProbe.ref)))
 
-  def unrecoveredCausalityActor(sharedClockEntry: Boolean): ActorRef =
-    system.actorOf(Props(new TestCausalityActor(logProbe.ref, cmdProbe.ref, evtProbe.ref, sharedClockEntry)))
-
   def recoveredEventsourcedActor(stateSync: Boolean): ActorRef =
     processRecover(unrecoveredEventsourcedActor(stateSync))
 
   def recoveredSnapshotActor(): ActorRef =
     processRecover(unrecoveredSnapshotActor())
-
-  def recoveredCausalityActor(sharedClockEntry: Boolean): ActorRef =
-    processRecover(unrecoveredCausalityActor(sharedClockEntry))
 
   def recoveredStashingActor(probe: ActorRef, stateSync: Boolean): ActorRef =
     processRecover(system.actorOf(Props(new TestStashingActor(logProbe.ref, probe, stateSync))))
@@ -702,8 +674,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
         actor ! Written(eventB2)
         logProbe.sender() ! WriteSuccess(Seq(eventA1, eventA2), write.correlationId, instanceId)
 
-        evtProbe.expectMsg(("b-1", timestamp(0, 1), timestamp(1, 1), 1L))
-        evtProbe.expectMsg(("b-2", timestamp(0, 2), timestamp(2, 2), 2L))
+        evtProbe.expectMsg(("b-1", timestamp(0, 1), timestamp(0, 1), 1L))
+        evtProbe.expectMsg(("b-2", timestamp(0, 2), timestamp(0, 2), 2L))
         evtProbe.expectMsg(("a-1", timestamp(3, 0), timestamp(3, 2), 3L))
         evtProbe.expectMsg(("a-2", timestamp(4, 0), timestamp(4, 2), 4L))
       }
@@ -770,9 +742,9 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
         actor ! "status"
         actor ! Written(event2d)
 
-        evtProbe.expectMsg(("b", event2b.vectorTimestamp, timestamp(2, 1), event2b.localSequenceNr))
-        cmdProbe.expectMsg(("status", event2b.vectorTimestamp, timestamp(2, 1), event2b.localSequenceNr))
-        evtProbe.expectMsg(("d", event2d.vectorTimestamp, timestamp(4, 3), event2d.localSequenceNr))
+        evtProbe.expectMsg(("b", event2b.vectorTimestamp, timestamp(0, 1), event2b.localSequenceNr))
+        cmdProbe.expectMsg(("status", event2b.vectorTimestamp, timestamp(0, 1), event2b.localSequenceNr))
+        evtProbe.expectMsg(("d", event2d.vectorTimestamp, timestamp(0, 3), event2d.localSequenceNr))
       }
       "must dispatch unhandled commands to the unhandled method" in {
         val actor = recoveredEventsourcedActor(stateSync = true)
@@ -786,8 +758,8 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
         val write = logProbe.expectMsgClass(classOf[Write])
         val event = write.events(0).copy(localLogId = logIdA, localSequenceNr = 1L)
 
-        logProbe.sender() ! WriteSuccess(Seq(event.copy()), write.correlationId, instanceId)
-        evtProbe.expectMsg((event.payload, event.vectorTimestamp, timestamp(1), event.localSequenceNr))
+        logProbe.sender() ! WriteSuccess(Seq(event), write.correlationId, instanceId)
+        evtProbe.expectMsg((event.payload, event.vectorTimestamp, event.vectorTimestamp, event.localSequenceNr))
         logProbe.sender() ! WriteSuccess(Seq(event), write.correlationId, instanceId)
         evtProbe.expectNoMsg(timeout)
       }
@@ -909,7 +881,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
 
       val actor = recoveredSnapshotActor()
       actor ! Written(event1)
-      evtProbe.expectMsg((Vector("x"), timestamp(0, 1), timestamp(1, 1), 1))
+      evtProbe.expectMsg((Vector("x"), timestamp(0, 1), timestamp(0, 1), 1))
       actor ! Cmd("a")
       actor ! Cmd("b")
 
@@ -967,72 +939,6 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
       actor ! "snap"
       actor ! "snap"
       cmdProbe.expectMsgClass(classOf[IllegalStateException])
-    }
-  }
-
-  "An EventsourcedActor" when {
-    "in sharedClockEntry = false mode" must {
-      def timestamp(a: Long = 0L, b: Long = 0L) = (a, b) match {
-        case (0L, 0L) => VectorTime()
-        case (a, 0L)  => VectorTime(emitterIdA -> a)
-        case (0L, b)  => VectorTime(emitterIdB -> b)
-        case (a, b)   => VectorTime(emitterIdA -> a, emitterIdB -> b)
-      }
-      "recover from replayed self-emitted events" in {
-        val actor = unrecoveredCausalityActor(sharedClockEntry = false)
-
-        val e1 = event1a.copy(vectorTimestamp = timestamp(1, 0), processId = emitterIdA)
-        val e2 = event1b.copy(vectorTimestamp = timestamp(2, 0), processId = emitterIdA)
-
-        logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
-        logProbe.sender() ! LoadSnapshotSuccess(None, instanceId)
-        logProbe.expectMsg(Replay(1L, Some(actor), instanceId))
-        logProbe.sender() ! ReplaySuccess(List(e1, e2), e2.localSequenceNr, instanceId)
-
-        evtProbe.expectMsg(("a", e1.vectorTimestamp, e1.vectorTimestamp, e1.localSequenceNr))
-        evtProbe.expectMsg(("b", e2.vectorTimestamp, e2.vectorTimestamp, e2.localSequenceNr))
-      }
-      "recover from replayed self-emitted and remote events" in {
-        val actor = unrecoveredCausalityActor(sharedClockEntry = false)
-
-        val e1 = event2a.copy(vectorTimestamp = timestamp(1, 0), processId = emitterIdA, localSequenceNr = 6L)
-        val e2 = event2b.copy(vectorTimestamp = timestamp(0, 1), processId = emitterIdB, localSequenceNr = 7L)
-        val e3 = event2c.copy(vectorTimestamp = timestamp(0, 2), processId = emitterIdB, localSequenceNr = 8L)
-        val e4 = event2d.copy(vectorTimestamp = timestamp(0, 3), processId = emitterIdB, localSequenceNr = 9L)
-
-        logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
-        logProbe.sender() ! LoadSnapshotSuccess(None, instanceId)
-        logProbe.expectMsg(Replay(1L, Some(actor), instanceId))
-        logProbe.sender() ! ReplaySuccess(List(e1, e2, e3, e4), e4.localSequenceNr, instanceId)
-
-        evtProbe.expectMsg(("a", e1.vectorTimestamp, timestamp(1, 0), e1.localSequenceNr))
-        evtProbe.expectMsg(("b", e2.vectorTimestamp, timestamp(2, 1), e2.localSequenceNr))
-        evtProbe.expectMsg(("c", e3.vectorTimestamp, timestamp(3, 2), e3.localSequenceNr))
-        evtProbe.expectMsg(("d", e4.vectorTimestamp, timestamp(4, 3), e4.localSequenceNr))
-      }
-      "increase local time when persisting an event" in {
-        val actor = recoveredCausalityActor(sharedClockEntry = false)
-
-        val e1 = DurableEvent("x", emitterIdB, None, Set(), 0L, timestamp(0, 1), emitterIdB, logIdA, 1L)
-        val e2 = DurableEvent("a", emitterIdA, None, Set(), 0L, timestamp(2, 1), emitterIdA)
-        val e3 = DurableEvent("b", emitterIdA, None, Set(), 0L, timestamp(3, 1), emitterIdA)
-
-        actor ! Written(e1)
-        actor ! Cmd("a")
-        actor ! Cmd("b")
-
-        val write1 = logProbe.expectMsgClass(classOf[Write])
-        write1.events.head.copy(systemTimestamp = 0L) should be(e2)
-        logProbe.sender() ! WriteSuccess(Seq(e2.copy(localLogId = logIdA, localSequenceNr = 2L)), write1.correlationId, instanceId)
-
-        val write2 = logProbe.expectMsgClass(classOf[Write])
-        write2.events.head.copy(systemTimestamp = 0L) should be(e3)
-        logProbe.sender() ! WriteSuccess(Seq(e3.copy(localLogId = logIdA, localSequenceNr = 3L)), write2.correlationId, instanceId)
-
-        evtProbe.expectMsg(("x", e1.vectorTimestamp, timestamp(1, 1), 1L))
-        evtProbe.expectMsg(("a", e2.vectorTimestamp, timestamp(2, 1), 2L))
-        evtProbe.expectMsg(("b", e3.vectorTimestamp, timestamp(3, 1), 3L))
-      }
     }
   }
 }

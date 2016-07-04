@@ -25,7 +25,7 @@ import scala.collection.immutable.Seq
 import scala.util._
 
 object EventsourcedActorCausalitySpec {
-  class Collaborator(val id: String, val eventLog: ActorRef, override val sharedClockEntry: Boolean, handles: Set[String], probe: ActorRef) extends EventsourcedActor {
+  class Collaborator(val id: String, val eventLog: ActorRef, handles: Set[String], probe: ActorRef) extends EventsourcedActor {
     def onCommand = {
       case s: String => persist(s) {
         case Success(e) =>
@@ -35,7 +35,7 @@ object EventsourcedActorCausalitySpec {
 
     def onEvent = {
       case s: String if handles.contains(s) =>
-        probe ! ((s, lastVectorTimestamp, currentVectorTime))
+        probe ! ((s, lastVectorTimestamp, currentVersion))
     }
   }
 }
@@ -51,7 +51,7 @@ trait EventsourcedActorCausalitySpec extends WordSpec with Matchers with MultiLo
 
   "Event-sourced actors" when {
     "located at different locations" can {
-      "track causality by default (sharedClockEntry = true)" in {
+      "track causality" in {
         val logName = "L1"
 
         val locationA = location("A")
@@ -71,10 +71,10 @@ trait EventsourcedActorCausalitySpec extends WordSpec with Matchers with MultiLo
         val probeA3 = new TestProbe(locationA.system)
         val probeB = new TestProbe(locationB.system)
 
-        val actorA1 = locationA.system.actorOf(Props(new Collaborator("pa1", logA, sharedClockEntry = true, Set("e1", "e2", "e5"), probeA1.ref)))
-        val actorA2 = locationA.system.actorOf(Props(new Collaborator("pa2", logA, sharedClockEntry = true, Set("e3", "e5", "e6"), probeA2.ref)))
-        val actorA3 = locationA.system.actorOf(Props(new Collaborator("pa3", logA, sharedClockEntry = true, Set("e4"), probeA3.ref)))
-        val actorB = locationB.system.actorOf(Props(new Collaborator("pb", logB, sharedClockEntry = true, Set("e1", "e6"), probeB.ref)))
+        val actorA1 = locationA.system.actorOf(Props(new Collaborator("pa1", logA, Set("e1", "e2", "e5"), probeA1.ref)))
+        val actorA2 = locationA.system.actorOf(Props(new Collaborator("pa2", logA, Set("e3", "e5", "e6"), probeA2.ref)))
+        val actorA3 = locationA.system.actorOf(Props(new Collaborator("pa3", logA, Set("e4"), probeA3.ref)))
+        val actorB = locationB.system.actorOf(Props(new Collaborator("pb", logB, Set("e1", "e6"), probeB.ref)))
 
         def vectorTime(a: Long, b: Long) = (a, b) match {
           case (0L, 0L) => VectorTime()
@@ -84,7 +84,7 @@ trait EventsourcedActorCausalitySpec extends WordSpec with Matchers with MultiLo
         }
 
         actorB ! "e1"
-        probeA1.expectMsg(("e1", vectorTime(0, 1), vectorTime(1, 1)))
+        probeA1.expectMsg(("e1", vectorTime(0, 1), vectorTime(0, 1)))
         probeB.expectMsg(("e1", vectorTime(0, 1), vectorTime(0, 1)))
 
         actorA1 ! "e2"
@@ -102,49 +102,13 @@ trait EventsourcedActorCausalitySpec extends WordSpec with Matchers with MultiLo
 
         actorA2 ! "e6"
         probeA2.expectMsg(("e6", vectorTime(6, 1), vectorTime(6, 1)))
-        probeB.expectMsg(("e6", vectorTime(6, 1), vectorTime(6, 6)))
+        probeB.expectMsg(("e6", vectorTime(6, 1), vectorTime(6, 1)))
 
         // -----------------------------------------------------------
         //  Please note:
         //  - e2 <-> e3 (because e1 -> e2 and e1 <-> e3)
         //  - e3 <-> e4 (but plausible clocks reports e3 -> e4)
         // -----------------------------------------------------------
-      }
-    }
-    "located at the same location" can {
-      "track causality if enabled (sharedClockEntry = false)" in {
-        val logName = "L1"
-
-        val locationA = location("A")
-        val endpointA = locationA.endpoint(Set(logName), Set())
-
-        val logA = endpointA.logs(logName)
-        val logIdA = endpointA.logId(logName)
-
-        val actorIdA = "PA"
-        val actorIdB = "PB"
-        val actorIdC = "PC"
-
-        val probeA = new TestProbe(locationA.system)
-        val probeB = new TestProbe(locationA.system)
-        val probeC = new TestProbe(locationA.system)
-
-        val actorA = locationA.system.actorOf(Props(new Collaborator(actorIdA, logA, sharedClockEntry = false, Set("e1", "e3"), probeA.ref)))
-        val actorB = locationA.system.actorOf(Props(new Collaborator(actorIdB, logA, sharedClockEntry = false, Set("e2", "e3"), probeB.ref)))
-        val actorC = locationA.system.actorOf(Props(new Collaborator(actorIdC, logA, sharedClockEntry = true, Set("e1", "e2", "e3"), probeC.ref)))
-
-        actorA ! "e1"
-        probeA.expectMsg(("e1", VectorTime(actorIdA -> 1L), VectorTime(actorIdA -> 1L)))
-        probeC.expectMsg(("e1", VectorTime(actorIdA -> 1L), VectorTime(actorIdA -> 1L, logIdA -> 1L)))
-
-        actorB ! "e2"
-        probeB.expectMsg(("e2", VectorTime(actorIdB -> 1L), VectorTime(actorIdB -> 1L)))
-        probeC.expectMsg(("e2", VectorTime(actorIdB -> 1L), VectorTime(actorIdA -> 1L, actorIdB -> 1L, logIdA -> 2L)))
-
-        actorC ! "e3"
-        probeA.expectMsg(("e3", VectorTime(actorIdA -> 1L, actorIdB -> 1L, logIdA -> 3L), VectorTime(actorIdA -> 2L, actorIdB -> 1L, logIdA -> 3L)))
-        probeB.expectMsg(("e3", VectorTime(actorIdA -> 1L, actorIdB -> 1L, logIdA -> 3L), VectorTime(actorIdA -> 1L, actorIdB -> 2L, logIdA -> 3L)))
-        probeC.expectMsg(("e3", VectorTime(actorIdA -> 1L, actorIdB -> 1L, logIdA -> 3L), VectorTime(actorIdA -> 1L, actorIdB -> 1L, logIdA -> 3L)))
       }
     }
   }
