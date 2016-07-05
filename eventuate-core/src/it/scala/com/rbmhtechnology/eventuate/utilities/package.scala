@@ -29,7 +29,7 @@ import scala.concurrent._
 import scala.concurrent.duration._
 
 package object utilities {
-  val timeoutDuration = 10.seconds
+  val timeoutDuration = 20.seconds
 
   implicit class AwaitHelper[T](awaitable: Awaitable[T]) {
     def await: T = Await.result(awaitable, timeoutDuration)

@@ -18,24 +18,30 @@ import sbt._
 
 object ProjectDependencyVersions {
   val AkkaVersion = "2.4.4"
+  val Log4jVersion = "2.5"
   val ProtobufVersion = "2.5.0"
+  val SparkVersion = "1.6.1"
 }
 
 object ProjectDependencies {
   import ProjectDependencyVersions._
 
-  val AkkaRemote = "com.typesafe.akka" %% "akka-remote" % AkkaVersion
-  val AkkaTestkit = "com.typesafe.akka" %% "akka-testkit" % AkkaVersion
-  val AkkaTestkitMultiNode = "com.typesafe.akka" %% "akka-multi-node-testkit" % AkkaVersion
-  val CassandraDriver = "com.datastax.cassandra" % "cassandra-driver-core" % "2.1.9"
-  val CassandraUnit = "org.cassandraunit" % "cassandra-unit" % "2.0.2.2"
-  val CommonsIo =  "commons-io" % "commons-io" % "2.4"
-  val Leveldb = "org.fusesource.leveldbjni" % "leveldbjni-all" % "1.8"
-  val Java8Compat = "org.scala-lang.modules" % "scala-java8-compat_2.11" % "0.7.0"
-  val Javaslang = "com.javaslang" % "javaslang" % "2.0.0-RC3"
-  val JunitInterface = "com.novocode" % "junit-interface" % "0.11"
-  val Protobuf = "com.google.protobuf" % "protobuf-java" % ProtobufVersion
-  val Scalatest = "org.scalatest" %% "scalatest" % "2.1.4"
-  val Scalaz = "org.scalaz" %% "scalaz-core" % "7.1.0"
+  val CassandraDriver =      "com.datastax.cassandra"     % "cassandra-driver-core"     % "3.0.2"
+  val Javaslang =            "com.javaslang"              % "javaslang"                 % "2.0.0-RC3"
+  val Protobuf =             "com.google.protobuf"        % "protobuf-java"             % ProtobufVersion
+  val JunitInterface =       "com.novocode"               % "junit-interface"           % "0.11"
+  val AkkaRemote =           "com.typesafe.akka"         %% "akka-remote"               % AkkaVersion
+  val AkkaTestkit =          "com.typesafe.akka"         %% "akka-testkit"              % AkkaVersion
+  val AkkaTestkitMultiNode = "com.typesafe.akka"         %% "akka-multi-node-testkit"   % AkkaVersion
+  val CommonsIo =            "commons-io"                 % "commons-io"                % "2.4"
+  val Log4jApi =             "org.apache.logging.log4j"   % "log4j-api"                 % Log4jVersion
+  val Log4jCore =            "org.apache.logging.log4j"   % "log4j-core"                % Log4jVersion
+  val Log4jSlf4j =           "org.apache.logging.log4j"   % "log4j-slf4j-impl"          % Log4jVersion
+  val CassandraUnit =        "org.cassandraunit"          % "cassandra-unit"            % "3.0.0.1"
+  val Leveldb =              "org.fusesource.leveldbjni"  % "leveldbjni-all"            % "1.8"
+  val Sigar =                "org.fusesource"             % "sigar"                     % "1.6.4"
+  val Java8Compat =          "org.scala-lang.modules"     % "scala-java8-compat_2.11"   % "0.7.0"
+  val Scalatest =            "org.scalatest"             %% "scalatest"                 % "2.1.4"
+  val Scalaz =               "org.scalaz"                %% "scalaz-core"               % "7.1.0"
 }
 

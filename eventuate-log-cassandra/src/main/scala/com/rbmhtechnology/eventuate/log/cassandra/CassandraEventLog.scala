@@ -147,7 +147,7 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
         context.parent ! ServiceFailed(num)
         logger.error(e, s"write attempt ${num} failed: timeout after ${cassandra.settings.writeTimeout} ms - retry now")
         writeRetry(events, partition, clock, num + 1)
-      case Failure(e: QueryTimeoutException) =>
+      case Failure(e: WriteTimeoutException) =>
         context.parent ! ServiceFailed(num)
         logger.error(e, s"write attempt ${num} failed - retry now")
         writeRetry(events, partition, clock, num + 1)

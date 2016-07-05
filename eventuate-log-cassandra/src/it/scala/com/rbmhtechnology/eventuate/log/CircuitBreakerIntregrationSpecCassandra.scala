@@ -121,7 +121,7 @@ class CircuitBreakerIntregrationSpecCassandra extends TestKit(ActorSystem("test"
 
   override def beforeAll(): Unit = {
     super.beforeAll()
-    EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
+    EmbeddedCassandra.start(EmbeddedCassandra.DefaultCassandraDir)
   }
 
   override def afterAll(): Unit = {

@@ -26,8 +26,6 @@ import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.log.cassandra.CassandraIndex.AggregateEvents
 import com.typesafe.config._
 
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper
-
 import scala.concurrent._
 
 trait LocationCleanupCassandra extends LocationCleanup {
@@ -35,7 +33,7 @@ trait LocationCleanupCassandra extends LocationCleanup {
     List("eventuate.snapshot.filesystem.dir").map(s => new File(config.getString(s)))
 
   override def afterAll(): Unit = {
-    EmbeddedCassandraServerHelper.cleanEmbeddedCassandra()
+    EmbeddedCassandra.clean()
     super.afterAll()
   }
 }
@@ -114,16 +112,11 @@ trait SingleLocationSpecCassandra extends SingleLocationSpec with LocationCleanu
 
   override def beforeAll(): Unit = {
     super.beforeAll()
-    EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
+    EmbeddedCassandra.start(cassandraDir)
   }
 
-  private def _createLog(failureSpec: TestFailureSpec, indexProbe: ActorRef): ActorRef =
-    system.actorOf(logProps(logId, failureSpec, indexProbe))
-
-  def createLog(failureSpec: TestFailureSpec, indexProbe: ActorRef): ActorRef = {
-    generateLogId()
-    _createLog(failureSpec, indexProbe)
-  }
+  def cassandraDir: String =
+    EmbeddedCassandra.DefaultCassandraDir
 
   def indexProbe: TestProbe =
     _indexProbe
@@ -136,6 +129,14 @@ trait SingleLocationSpecCassandra extends SingleLocationSpec with LocationCleanu
 
   def logProps(logId: String, failureSpec: TestFailureSpec, indexProbe: ActorRef): Props =
     TestEventLog.props(logId, failureSpec, indexProbe, batching)
+
+  def createLog(failureSpec: TestFailureSpec, indexProbe: ActorRef): ActorRef = {
+    generateLogId()
+    _createLog(failureSpec, indexProbe)
+  }
+
+  private def _createLog(failureSpec: TestFailureSpec, indexProbe: ActorRef): ActorRef =
+    system.actorOf(logProps(logId, failureSpec, indexProbe))
 }
 
 trait MultiLocationSpecCassandra extends MultiLocationSpec with LocationCleanupCassandra {
@@ -149,8 +150,11 @@ trait MultiLocationSpecCassandra extends MultiLocationSpec with LocationCleanupC
 
   override def beforeAll(): Unit = {
     super.beforeAll()
-    EmbeddedCassandraServerHelper.startEmbeddedCassandra(60000)
+    EmbeddedCassandra.start(cassandraDir)
   }
+
+  def cassandraDir: String =
+    EmbeddedCassandra.DefaultCassandraDir
 
   override def location(name: String, customPort: Int = 0, customConfig: Config = ConfigFactory.empty()): Location = {
     val location = super.location(name, customPort, customConfig)
