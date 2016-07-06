@@ -125,7 +125,7 @@ trait EventsourcedWriter[R, W] extends EventsourcedView {
     ()
 
   /**
-   * Called with failure details after a `write` operation failed. Throws [[EventsourcedWriter#ReadException]]
+   * Called with failure details after a `read` operation failed. Throws [[EventsourcedWriter#ReadException]]
    * by default (causing the writer to restart) and can be overridden.
    */
   def readFailure(cause: Throwable): Unit =

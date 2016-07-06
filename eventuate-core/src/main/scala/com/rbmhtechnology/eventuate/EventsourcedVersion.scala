@@ -17,7 +17,7 @@
 package com.rbmhtechnology.eventuate
 
 /**
- * Maintains the current version of an event-sourced entity. The current version is updated by merging
+ * Maintains the current version of an event-sourced component. The current version is updated by merging
  * [[DurableEvent.vectorTimestamp]]s of handled events.
  */
 trait EventsourcedVersion extends EventsourcedView {

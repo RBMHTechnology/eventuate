@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo $2
-
 sbt $1 "$2/test:testOnly";  exit_1=$?
 sbt $1 "$2/it:testOnly";    exit_2=$?
 sbt $1 "$2/multi-jvm:test"; exit_3=$?

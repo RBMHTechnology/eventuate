@@ -23,7 +23,7 @@ import java.nio.file.StandardOpenOption._
 import com.typesafe.sbt.SbtGhPages.ghpages
 import com.typesafe.sbt.SbtGit.git
 import com.typesafe.sbt.SbtMultiJvm
-import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys._
+import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.{ connectInput => multiJvmConnectInput, _ }
 import com.typesafe.sbt.SbtScalariform
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import com.typesafe.sbt.SbtSite.site
@@ -195,6 +195,9 @@ object ProjectSettings {
 
         Files.write(file, output.getBytes, CREATE, TRUNCATE_EXISTING)
         file.toFile.setExecutable(true)
-      })
+      },
+      fork in run := true,
+      connectInput in run := true
+    )
   }
 }

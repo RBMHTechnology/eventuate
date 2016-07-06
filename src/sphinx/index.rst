@@ -11,7 +11,7 @@ Eventuate is a toolkit for building applications composed of event-driven and ev
 - supports the implementation of reliable business processes from collaborating services that are tolerant to inter-service network partitions
 - supports the aggregation of events from distributed services for updating persistent and in-memory query databases
 - provides implementations of operation-based CRDTs as specified in `A comprehensive study of Convergent and Commutative Replicated Data Types`_
-- provides adapters to 3rd-party stream processing frameworks for analyzing generated events (planned)
+- provides adapters to 3rd-party stream processing frameworks for analyzing generated events
 
 .. _Java: http://www.oracle.com/technetwork/java/javase/overview/index.html
 .. _Scala: http://www.scala-lang.org/
