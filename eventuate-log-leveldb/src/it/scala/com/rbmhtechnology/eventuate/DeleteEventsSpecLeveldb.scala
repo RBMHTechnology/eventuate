@@ -16,31 +16,15 @@
 
 package com.rbmhtechnology.eventuate
 
-import akka.actor._
+import com.rbmhtechnology.eventuate.log.EventLogWriter
 import com.rbmhtechnology.eventuate.utilities.AwaitHelper
 import com.typesafe.config.ConfigFactory
-import org.scalatest.{Matchers, WordSpec}
 
-import scala.util.{Failure, Success}
+import org.scalatest.{ Matchers, WordSpec }
 
 object DeleteEventsSpecLeveldb {
-  class Emitter(locationId: String, val eventLog: ActorRef) extends EventsourcedActor with ActorLogging {
-    override def id =
-      s"${locationId}_Emitter"
-
-    override def onEvent =
-      Actor.emptyBehavior
-
-    override def onCommand = {
-      case msg => persist(msg) {
-        case Success(_) =>
-        case Failure(ex) => log.error(ex, s"Error when persisting $msg in test")
-      }
-    }
-  }
-
-  def emitter(endpoint: ReplicationEndpoint, logName: String) =
-    endpoint.system.actorOf(Props(new Emitter(endpoint.id, endpoint.logs(logName))))
+  def emitter(endpoint: ReplicationEndpoint, logName: String): EventLogWriter =
+    new EventLogWriter(s"${endpoint.id}_Emitter", endpoint.logs(logName))(endpoint.system)
 
   val config = ConfigFactory.parseString(
     """
@@ -69,7 +53,7 @@ class DeleteEventsSpecLeveldb extends WordSpec with Matchers with MultiLocationS
       val listenerA = locationA1.listener(endpointA1.logs(L1))
       val emitterA = emitter(endpointA1, L1)
 
-      (0 to 5).foreach(emitterA ! _)
+      emitterA.write(0 to 5)
       listenerA.waitForMessage(5)
 
       endpointA1.delete(L1, 3, Set.empty).await shouldBe 3
@@ -98,7 +82,7 @@ class DeleteEventsSpecLeveldb extends WordSpec with Matchers with MultiLocationS
       val listenerB = locationB.listener(endpointB.logs(L1))
       val listenerC = locationC.listener(endpointC.logs(L1))
 
-      (0 to 5).foreach(emitterA ! _)
+      emitterA.write(0 to 5)
       listenerA.waitForMessage(5)
 
       endpointA.delete(L1, 3, Set(endpointB.id, endpointC.id)).await shouldBe 3

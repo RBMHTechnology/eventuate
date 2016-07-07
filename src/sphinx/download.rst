@@ -11,14 +11,18 @@ Eventuate is a multi-module project with the following modules:
      - Description
    * - ``eventuate-core``
      - Core module, required for all applications.
+   * - ``eventuate-crdt``
+     - Provides :ref:`commutative-replicated-data-types`.
    * - ``eventuate-log-cassandra``
      - Provides the :ref:`cassandra-storage-backend`.
    * - ``eventuate-log-leveldb``
      - Provides the :ref:`leveldb-storage-backend`.
-   * - ``eventuate-crdt``
-     - Provides :ref:`commutative-replicated-data-types`.
+   * - ``eventuate-adapter-spark``
+     - Provides the :ref:`spark-adapter`.
    * - ``eventuate-examples``
      - Provides :ref:`example-application` among others.
+   * - ``eventuate-example-spark``
+     - Provides Spark adapter example applications.
 
 |
 
@@ -33,7 +37,7 @@ Release binaries are published to Bintray_, snapshot binaries to OJO_ (oss.jfrog
 Maven
 ~~~~~
 
-To include the latest release into a Maven project, add the following dependencies to your ``pom.xml``::
+Latest release dependencies::
 
     <repository>
         <id>eventuate-releases</id>
@@ -49,6 +53,12 @@ To include the latest release into a Maven project, add the following dependenci
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-crdt_2.11</artifactId>
+        <version>0.7.1</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-log-leveldb_2.11</artifactId>
         <version>0.7.1</version>
     </dependency>
@@ -59,13 +69,7 @@ To include the latest release into a Maven project, add the following dependenci
         <version>0.7.1</version>
     </dependency>
 
-    <dependency>
-        <groupId>com.rbmhtechnology</groupId>
-        <artifactId>eventuate-crdt_2.11</artifactId>
-        <version>0.7.1</version>
-    </dependency>
-
-To include the latest development snapshot::
+Development snapshot dependencies::
 
     <repository>
         <id>ojo-snapshots</id>
@@ -81,6 +85,12 @@ To include the latest development snapshot::
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-crdt_2.11</artifactId>
+        <version>0.8-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-log-leveldb_2.11</artifactId>
         <version>0.8-SNAPSHOT</version>
     </dependency>
@@ -93,36 +103,38 @@ To include the latest development snapshot::
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
-        <artifactId>eventuate-crdt_2.11</artifactId>
+        <artifactId>eventuate-adapter-spark_2.11</artifactId>
         <version>0.8-SNAPSHOT</version>
     </dependency>
 
 SBT
 ~~~
 
-To include the latest release into an sbt_ project, add the following dependencies to your ``build.sbt``::
+Latest release dependencies::
 
     resolvers += "Eventuate Releases" at "https://dl.bintray.com/rbmhtechnology/maven"
 
     libraryDependencies += "com.rbmhtechnology" %% "eventuate-core" % "0.7.1"
 
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.7.1"
+
     libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-leveldb" % "0.7.1"
 
     libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-cassandra" % "0.7.1"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.7.1"
-
-To include the latest development snapshot::
+Development snapshot dependencies::
 
     resolvers += "OJO Snapshots" at "https://oss.jfrog.org/oss-snapshot-local"
 
     libraryDependencies += "com.rbmhtechnology" %% "eventuate-core" % "0.8-SNAPSHOT"
 
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.8-SNAPSHOT"
+
     libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-leveldb" % "0.8-SNAPSHOT"
 
     libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-cassandra" % "0.8-SNAPSHOT"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.8-SNAPSHOT"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-spark" % "0.8-SNAPSHOT"
 
 Sources
 -------
