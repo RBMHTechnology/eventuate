@@ -78,7 +78,7 @@ Eventuate comes with an implementation of :ref:`operation-based-crdts` (commutat
 Stream processing adapters
 --------------------------
 
-Although Eventuate can be used to build distributed stream processing applications, it doesn’t aim to compete with existing, more elaborate stream processing frameworks such as `Spark Streaming`_, `Apache Flink`_ or `Akka Streams`_, for example. Eventuate rather provides adapters to these frameworks so that events produced by Eventuate applications can be further analyzed there and results written back to Eventuate event logs \ [#]_. 
+Although Eventuate can be used to build distributed stream processing applications, it doesn’t aim to compete with existing, more elaborate stream processing frameworks such as `Spark Streaming`_, `Apache Flink`_ or `Akka Streams`_, for example. Eventuate rather provides :ref:`adapters` to these frameworks so that events produced by Eventuate applications can be further analyzed there and results written back to Eventuate event logs. 
 
 Related projects
 ----------------
@@ -93,7 +93,6 @@ Two other Red Bull Media House Technology projects are related to Eventuate:
 .. [#] `A comparison of Akka Persistence with Eventuate`_
 .. [#] `Akka Persistence and Eventuate - A CQRS/ES tool comparison`_
 .. [#] See also `reliable messaging in Akka Persistence`_ and :ref:`reliable messaging in Eventuate <reliable-delivery>`.
-.. [#] The current version of Eventuate doesn’t provide any adapters yet. They are planned for future versions.
 
 .. _Java: http://www.oracle.com/technetwork/java/javase/overview/index.html
 .. _Scala: http://www.scala-lang.org/

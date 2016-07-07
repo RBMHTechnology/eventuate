@@ -125,6 +125,7 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
 </li>
@@ -208,7 +209,7 @@
 <li><a class="reference internal" href="architecture.html#event-sourced-writers"><span class="std std-ref">Event-sourced writer</span></a>. An Akka actor that consumes events from an event log to update a persistent query database. State derived from consumed events is a persistent <em>read model</em> contributing to the query-side (Q) of CQRS.</li>
 <li><a class="reference internal" href="architecture.html#event-sourced-processors"><span class="std std-ref">Event-sourced processor</span></a>. An Akka actor that consumes events from one event log and produces processed events to another event log. Processors can be used to connect event logs to event processing pipelines or graphs.</li>
 </ul>
-<p>Implementations of these abstractions are referred to as <em>event-sourced components</em>. Applications compose them to <em>event-sourced services</em> and make them accessible via application-level protocols<a class="footnote-reference" href="#id8" id="id2">[1]</a>.</p>
+<p>Implementations of these abstractions are referred to as <em>event-sourced components</em>. Applications compose them to <em>event-sourced services</em> and make them accessible via application-level protocols<a class="footnote-reference" href="#id7" id="id2">[1]</a>.</p>
 </div>
 <div class="section" id="event-collaboration">
 <span id="overview-event-collaboration"></span><h2>Event collaboration<a class="headerlink" href="#event-collaboration" title="Permalink to this headline">¶</a></h2>
@@ -233,12 +234,12 @@
 </div>
 <div class="section" id="event-ordering-and-consistency">
 <span id="overview-event-ordering"></span><h2>Event ordering and consistency<a class="headerlink" href="#event-ordering-and-consistency" title="Permalink to this headline">¶</a></h2>
-<p>The delivery order of events during push updates (see <a class="reference internal" href="#overview-event-bus"><span class="std std-ref">Event bus</span></a>) is identical to that during later event replays because the delivery order of events to event-sourced components is determined by local event storage order. Within a location, all event-sourced components see the same order of events. The delivery and storage order of replicated events at distinct locations is consistent with causal order: causally related events have the same order at all locations whereas concurrent events may have different order. This is important to achieve <a class="reference external" href="http://en.wikipedia.org/wiki/Causal_consistency">causal consistency</a> which is the strongest possible consistency for applications that choose AP of <a class="reference external" href="http://en.wikipedia.org/wiki/CAP_theorem">CAP</a> i.e. applications that should remain available for writes during network partitions<a class="footnote-reference" href="#id9" id="id3">[2]</a>. In Eventuate, causality is tracked as <em>potential causality</em> with <a class="reference internal" href="architecture.html#vector-clocks"><span class="std std-ref">Vector clocks</span></a>.</p>
-<p>Applications that favor strong consistency (CP of CAP) of actor state on the command-side should consider single-location deployments with event-sourced actor singletons. From a high-level perspective, single-location Eventuate applications share many similarities with <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.4/scala/persistence.html">Akka Persistence</a> applications<a class="footnote-reference" href="#id10" id="id4">[3]</a><a class="footnote-reference" href="#id11" id="id5">[4]</a>. In this context, Eventuate can be regarded as functional superset of Akka Persistence with additional support for</p>
+<p>The delivery order of events during push updates (see <a class="reference internal" href="#overview-event-bus"><span class="std std-ref">Event bus</span></a>) is identical to that during later event replays because the delivery order of events to event-sourced components is determined by local event storage order. Within a location, all event-sourced components see the same order of events. The delivery and storage order of replicated events at distinct locations is consistent with causal order: causally related events have the same order at all locations whereas concurrent events may have different order. This is important to achieve <a class="reference external" href="http://en.wikipedia.org/wiki/Causal_consistency">causal consistency</a> which is the strongest possible consistency for applications that choose AP of <a class="reference external" href="http://en.wikipedia.org/wiki/CAP_theorem">CAP</a> i.e. applications that should remain available for writes during network partitions<a class="footnote-reference" href="#id8" id="id3">[2]</a>. In Eventuate, causality is tracked as <em>potential causality</em> with <a class="reference internal" href="architecture.html#vector-clocks"><span class="std std-ref">Vector clocks</span></a>.</p>
+<p>Applications that favor strong consistency (CP of CAP) of actor state on the command-side should consider single-location deployments with event-sourced actor singletons. From a high-level perspective, single-location Eventuate applications share many similarities with <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.4/scala/persistence.html">Akka Persistence</a> applications<a class="footnote-reference" href="#id9" id="id4">[3]</a><a class="footnote-reference" href="#id10" id="id5">[4]</a>. In this context, Eventuate can be regarded as functional superset of Akka Persistence with additional support for</p>
 <ul class="simple">
 <li>actor state replication by relaxing strong consistency to causal consistency</li>
 <li>event aggregation from multiple producers that preserves causal event ordering and</li>
-<li>event collaboration with stronger ordering guarantees than provided by plain reliable messaging<a class="footnote-reference" href="#id12" id="id6">[5]</a>.</li>
+<li>event collaboration with stronger ordering guarantees than provided by plain reliable messaging<a class="footnote-reference" href="#id11" id="id6">[5]</a>.</li>
 </ul>
 </div>
 <div class="section" id="operation-based-crdts">
@@ -247,7 +248,7 @@
 </div>
 <div class="section" id="stream-processing-adapters">
 <span id="overview-stream-processing-adapters"></span><h2>Stream processing adapters<a class="headerlink" href="#stream-processing-adapters" title="Permalink to this headline">¶</a></h2>
-<p>Although Eventuate can be used to build distributed stream processing applications, it doesn’t aim to compete with existing, more elaborate stream processing frameworks such as <a class="reference external" href="http://spark.apache.org/streaming/">Spark Streaming</a>, <a class="reference external" href="http://flink.apache.org/">Apache Flink</a> or <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.4/scala/stream/index.html">Akka Streams</a>, for example. Eventuate rather provides adapters to these frameworks so that events produced by Eventuate applications can be further analyzed there and results written back to Eventuate event logs <a class="footnote-reference" href="#id13" id="id7">[6]</a>.</p>
+<p>Although Eventuate can be used to build distributed stream processing applications, it doesn’t aim to compete with existing, more elaborate stream processing frameworks such as <a class="reference external" href="http://spark.apache.org/streaming/">Spark Streaming</a>, <a class="reference external" href="http://flink.apache.org/">Apache Flink</a> or <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.4/scala/stream/index.html">Akka Streams</a>, for example. Eventuate rather provides <a class="reference internal" href="reference/adapters.html#adapters"><span class="std std-ref">Adapters</span></a> to these frameworks so that events produced by Eventuate applications can be further analyzed there and results written back to Eventuate event logs.</p>
 </div>
 <div class="section" id="related-projects">
 <h2>Related projects<a class="headerlink" href="#related-projects" title="Permalink to this headline">¶</a></h2>
@@ -256,40 +257,34 @@
 <li>The <a class="reference external" href="https://github.com/RBMHTechnology/eventuate-chaos">Eventuate Chaos</a> project provides utilities for chaos-testing Eventuate applications. They can randomly introduce node crashes, network partitions and packet loss into distributed Eventuate applications and Apache Cassandra clusters. Among other tests, they have been used to test the convergence of <a class="reference internal" href="#overview-operation-based-crdts"><span class="std std-ref">Operation-based CRDTs</span></a> under chaotic conditions.</li>
 <li>The <a class="reference external" href="https://github.com/RBMHTechnology/eventuate-tools">Eventuate Tools</a> project provides tools that support the operation of Eventuate-based applications. The current version provides <a class="reference external" href="https://github.com/RBMHTechnology/eventuate-tools/blob/master/log-viewer/README.md">log viewer</a>, a command-line tool for viewing the contents of an event log. Tools for monitoring Eventuate applications and collecting metrics are planned.</li>
 </ul>
-<table class="docutils footnote" frame="void" id="id8" rules="none">
+<table class="docutils footnote" frame="void" id="id7" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>Eventuate is not a complete (micro-)service development framework. It focuses more on event-sourcing building blocks and the reliable and causally consistent communication infrastructure between event-sourced services. It leaves service deployment and accessibility an application-level concern. Later versions of Eventuate may extend into these directions though.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id9" rules="none">
+<table class="docutils footnote" frame="void" id="id8" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>Wyatt Lloyd et al, <a class="reference external" href="https://www.cs.cmu.edu/~dga/papers/cops-sosp2011.pdf">Don’t settle for Eventual</a>: Scalable Causal Consistency for Wide-Area Storage with COPS.</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id10" rules="none">
+<table class="docutils footnote" frame="void" id="id9" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td><a class="reference external" href="https://krasserm.github.io/2015/05/25/akka-persistence-eventuate-comparison/">A comparison of Akka Persistence with Eventuate</a></td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id11" rules="none">
+<table class="docutils footnote" frame="void" id="id10" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id5">[4]</a></td><td><a class="reference external" href="http://www.slideshare.net/mrt1nz/akka-persistence-and-eventuate">Akka Persistence and Eventuate - A CQRS/ES tool comparison</a></td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id12" rules="none">
+<table class="docutils footnote" frame="void" id="id11" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id6">[5]</a></td><td>See also <a class="reference external" href="http://doc.akka.io/docs/akka/2.4.4/scala/persistence.html#At-Least-Once_Delivery">reliable messaging in Akka Persistence</a> and <a class="reference internal" href="reference/event-sourcing.html#reliable-delivery"><span class="std std-ref">reliable messaging in Eventuate</span></a>.</td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="id13" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id7">[6]</a></td><td>The current version of Eventuate doesn’t provide any adapters yet. They are planned for future versions.</td></tr>
 </tbody>
 </table>
 </div>
