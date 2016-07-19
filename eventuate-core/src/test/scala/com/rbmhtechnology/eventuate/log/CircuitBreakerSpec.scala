@@ -20,11 +20,9 @@ import akka.actor._
 import akka.pattern.ask
 import akka.testkit._
 import akka.util.Timeout
-
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.typesafe.config.ConfigFactory
-
 import org.scalatest._
 
 import scala.collection.immutable.Seq
@@ -33,6 +31,9 @@ import scala.concurrent.duration._
 
 object CircuitBreakerSpec {
   implicit val timeout = Timeout(3.seconds)
+
+  private val LogId: String = "logId"
+  private val TestLogFailureException = new RuntimeException("event-log-failure in test")
 
   implicit class AwaitHelper[T](awaitable: Awaitable[T]) {
     def await: T = Await.result(awaitable, timeout.duration)
@@ -67,37 +68,61 @@ class CircuitBreakerSpec extends TestKit(ActorSystem("test", ConfigFactory.parse
       breaker.ask("a").await should be("re-a")
     }
     "be closed after initial failure" in {
-      breaker ! ServiceFailed(0)
+      breaker ! ServiceFailed(LogId, 0, TestLogFailureException)
       breaker.ask("a").await should be("re-a")
     }
     "open after first failed retry" in {
-      breaker ! ServiceFailed(1)
+      breaker ! ServiceFailed(LogId, 1, TestLogFailureException)
       intercept[EventLogUnavailableException] {
         breaker.ask("a").await
       }
     }
     "close again after service success" in {
-      breaker ! ServiceFailed(1)
+      breaker ! ServiceFailed(LogId, 1, TestLogFailureException)
       intercept[EventLogUnavailableException] {
         breaker.ask("a").await
       }
-      breaker ! ServiceNormal
+      breaker ! ServiceNormal(LogId)
       breaker.ask("a").await should be("re-a")
     }
     "close again after service initialization" in {
-      breaker ! ServiceFailed(1)
+      breaker ! ServiceFailed(LogId, 1, TestLogFailureException)
       intercept[EventLogUnavailableException] {
         breaker.ask("a").await
       }
-      breaker ! ServiceInitialized
+      breaker ! ServiceInitialized(LogId)
       breaker.ask("a").await should be("re-a")
     }
     "reply with a special failure message on Write requests if open" in {
       val events = Seq(DurableEvent("a", "emitter"))
-      breaker ! ServiceFailed(1)
+      breaker ! ServiceFailed(LogId, 1, TestLogFailureException)
       breaker ! Write(events, probe.ref, probe.ref, 1, 2)
       probe.expectMsg(WriteFailure(events, Exception, 1, 2))
       probe.sender() should be(probe.ref)
+    }
+    "publish ServiceFailed once on event-stream when opened" in {
+      system.eventStream.subscribe(probe.ref, classOf[ServiceFailed])
+
+      val serviceFailed = ServiceFailed(LogId, 1, TestLogFailureException)
+      breaker ! serviceFailed
+      probe.expectMsg(serviceFailed)
+
+      breaker ! ServiceFailed(LogId, 2, TestLogFailureException)
+      probe.expectNoMsg(300.millis)
+    }
+    "publish ServiceNormal once on event-stream when closed" in {
+      system.eventStream.subscribe(probe.ref, classOf[ServiceEvent])
+
+      breaker ! ServiceFailed(LogId, 1, TestLogFailureException)
+      probe.fishForMessage() {
+        case _: ServiceFailed => true
+        case _                => false
+      }
+      breaker ! ServiceNormal(LogId)
+      probe.expectMsg(ServiceNormal(LogId))
+
+      breaker ! ServiceNormal(LogId)
+      probe.expectNoMsg(300.millis)
     }
   }
 }

@@ -29,7 +29,6 @@ import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.utilities.AwaitHelper
 import com.typesafe.config._
 
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import org.scalatest._
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Millis, Seconds, Span}

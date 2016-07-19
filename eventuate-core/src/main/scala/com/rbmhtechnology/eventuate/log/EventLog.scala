@@ -605,6 +605,7 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
 }
 
 object EventLog {
+
   /**
    * Periodically sent to an [[EventLog]] after reception of a [[Delete]]-command to
    * instruct the log to physically delete logically deleted events that are alreday replicated.
