@@ -20,11 +20,11 @@ import akka.actor._
 import akka.pattern.ask
 import akka.testkit._
 import akka.util.Timeout
-
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
+import com.rbmhtechnology.eventuate.log.EventLog.EventLogAvailable
+import com.rbmhtechnology.eventuate.log.EventLog.EventLogUnavailable
 import com.typesafe.config.ConfigFactory
-
 import org.scalatest._
 
 import scala.collection.immutable.Seq
@@ -33,6 +33,9 @@ import scala.concurrent.duration._
 
 object CircuitBreakerSpec {
   implicit val timeout = Timeout(3.seconds)
+
+  private val LogId: String = "logId"
+  private val TestLogFailureException = new RuntimeException("event-log-failure in test")
 
   implicit class AwaitHelper[T](awaitable: Awaitable[T]) {
     def await: T = Await.result(awaitable, timeout.duration)
@@ -59,7 +62,7 @@ class CircuitBreakerSpec extends TestKit(ActorSystem("test", ConfigFactory.parse
 
   override def beforeEach(): Unit = {
     probe = TestProbe()
-    breaker = system.actorOf(Props(new CircuitBreaker(Props(new TestLog), batching = false)))
+    breaker = system.actorOf(Props(new CircuitBreaker(Props(new TestLog), batching = false, logId = LogId)))
   }
 
   "A circuit breaker" must {
@@ -67,17 +70,17 @@ class CircuitBreakerSpec extends TestKit(ActorSystem("test", ConfigFactory.parse
       breaker.ask("a").await should be("re-a")
     }
     "be closed after initial failure" in {
-      breaker ! ServiceFailed(0)
+      breaker ! ServiceFailed(0, TestLogFailureException)
       breaker.ask("a").await should be("re-a")
     }
     "open after first failed retry" in {
-      breaker ! ServiceFailed(1)
+      breaker ! ServiceFailed(1, TestLogFailureException)
       intercept[EventLogUnavailableException] {
         breaker.ask("a").await
       }
     }
     "close again after service success" in {
-      breaker ! ServiceFailed(1)
+      breaker ! ServiceFailed(1, TestLogFailureException)
       intercept[EventLogUnavailableException] {
         breaker.ask("a").await
       }
@@ -85,7 +88,7 @@ class CircuitBreakerSpec extends TestKit(ActorSystem("test", ConfigFactory.parse
       breaker.ask("a").await should be("re-a")
     }
     "close again after service initialization" in {
-      breaker ! ServiceFailed(1)
+      breaker ! ServiceFailed(1, TestLogFailureException)
       intercept[EventLogUnavailableException] {
         breaker.ask("a").await
       }
@@ -94,10 +97,34 @@ class CircuitBreakerSpec extends TestKit(ActorSystem("test", ConfigFactory.parse
     }
     "reply with a special failure message on Write requests if open" in {
       val events = Seq(DurableEvent("a", "emitter"))
-      breaker ! ServiceFailed(1)
+      breaker ! ServiceFailed(1, TestLogFailureException)
       breaker ! Write(events, probe.ref, probe.ref, 1, 2)
       probe.expectMsg(WriteFailure(events, Exception, 1, 2))
       probe.sender() should be(probe.ref)
+    }
+    "publish EventLogUnavailable once on event-stream when opened" in {
+      system.eventStream.subscribe(probe.ref, classOf[EventLogUnavailable])
+
+      breaker ! ServiceFailed(1, TestLogFailureException)
+      probe.expectMsg(EventLogUnavailable(LogId, TestLogFailureException))
+
+      breaker ! ServiceFailed(2, TestLogFailureException)
+      probe.expectNoMsg(300.millis)
+    }
+    "publish EventLogAvailable once on event-stream when closed" in {
+      system.eventStream.subscribe(probe.ref, classOf[EventLogAvailable])
+      system.eventStream.subscribe(probe.ref, classOf[EventLogUnavailable])
+
+      breaker ! ServiceFailed(1, TestLogFailureException)
+      probe.fishForMessage() {
+        case _: EventLogUnavailable => true
+        case _                      => false
+      }
+      breaker ! ServiceNormal
+      probe.expectMsg(EventLogAvailable(LogId))
+
+      breaker ! ServiceNormal
+      probe.expectNoMsg(300.millis)
     }
   }
 }

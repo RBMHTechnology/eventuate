@@ -140,7 +140,7 @@ class CircuitBreakerIntregrationSpecCassandra extends TestKit(ActorSystem("test"
 
   def logProps(logId: String, failureSpec: TestFailureSpec): Props = {
     val logProps = Props(new TestEventLog(logId, failureSpec)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
-    Props(new CircuitBreaker(logProps, batching = true))
+    Props(new CircuitBreaker(logProps, batching = true, logId))
   }
 
   def createLog(failureSpec: TestFailureSpec = this.failureSpec(-1)): Unit = {

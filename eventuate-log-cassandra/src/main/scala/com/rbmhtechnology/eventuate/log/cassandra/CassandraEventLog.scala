@@ -144,20 +144,20 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
         context.stop(self)
         throw e
       case Failure(e: TimeoutException) =>
-        context.parent ! ServiceFailed(num)
+        context.parent ! ServiceFailed(num, e)
         logger.error(e, s"write attempt ${num} failed: timeout after ${cassandra.settings.writeTimeout} ms - retry now")
         writeRetry(events, partition, clock, num + 1)
       case Failure(e: WriteTimeoutException) =>
-        context.parent ! ServiceFailed(num)
+        context.parent ! ServiceFailed(num, e)
         logger.error(e, s"write attempt ${num} failed - retry now")
         writeRetry(events, partition, clock, num + 1)
       case Failure(e: QueryExecutionException) =>
-        context.parent ! ServiceFailed(num)
+        context.parent ! ServiceFailed(num, e)
         logger.error(e, s"write attempt ${num} failed - retry in ${cassandra.settings.writeTimeout} ms")
         Thread.sleep(cassandra.settings.writeTimeout)
         writeRetry(events, partition, clock, num + 1)
       case Failure(e: NoHostAvailableException) =>
-        context.parent ! ServiceFailed(num)
+        context.parent ! ServiceFailed(num, e)
         logger.error(e, s"write attempt ${num} failed - retry in ${cassandra.settings.writeTimeout} ms")
         Thread.sleep(cassandra.settings.writeTimeout)
         writeRetry(events, partition, clock, num + 1)
@@ -279,6 +279,6 @@ object CassandraEventLog {
    */
   def props(logId: String, batching: Boolean = true): Props = {
     val logProps = Props(new CassandraEventLog(logId)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
-    Props(new CircuitBreaker(logProps, batching))
+    Props(new CircuitBreaker(logProps, batching, logId))
   }
 }

@@ -605,6 +605,19 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
 }
 
 object EventLog {
+
+  /**
+   * Published on the event-stream, when the [[CircuitBreaker]] closes as a write finally
+   * was successful (after n retries).
+   */
+  case class EventLogAvailable(logId: String)
+
+  /**
+   * Published on the event-stream, if the [[CircuitBreaker]] opens due to an error
+   * when writing events after a configured number of retries.
+   */
+  case class EventLogUnavailable(logId: String, initialCause: Throwable)
+
   /**
    * Periodically sent to an [[EventLog]] after reception of a [[Delete]]-command to
    * instruct the log to physically delete logically deleted events that are alreday replicated.

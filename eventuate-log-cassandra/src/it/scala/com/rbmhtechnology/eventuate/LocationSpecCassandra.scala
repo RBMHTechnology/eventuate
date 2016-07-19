@@ -53,7 +53,7 @@ object SingleLocationSpecCassandra {
 
     def props(logId: String, failureSpec: TestFailureSpec, indexProbe: Option[ActorRef], batching: Boolean): Props = {
       val logProps = Props(new TestEventLog(logId, failureSpec, indexProbe)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
-      Props(new CircuitBreaker(logProps, batching))
+      Props(new CircuitBreaker(logProps, batching, logId))
     }
   }
 
