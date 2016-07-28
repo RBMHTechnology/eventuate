@@ -183,7 +183,7 @@ private class Acceptor(endpoint: ReplicationEndpoint) extends Actor {
     case re: ReplicationReadEnvelope if re.incompatibleWith(endpoint.applicationName, endpoint.applicationVersion) =>
       sender ! ReplicationReadFailure(IncompatibleApplicationVersionException(endpoint.id, endpoint.applicationVersion, re.targetApplicationVersion), re.payload.targetLogId)
     case ReplicationReadEnvelope(r, logName, _, _) =>
-      val r2 = endpoint.filters.get(logName) match {
+      val r2 = endpoint.filters.get(r.targetLogId).orElse(endpoint.filters.get(logName)) match {
         case Some(filter) => r.copy(filter = r.filter and filter)
         case None         => r
       }
