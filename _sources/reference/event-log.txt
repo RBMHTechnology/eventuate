@@ -189,10 +189,12 @@ For the definition of filter logic based on application-defined events, replicat
 Local replication filters
 .........................
 
-Local replication filters can be defined per ``ReplicationEndpoint`` and event log name. They are applied locally at the endpoint at which they are defined. The following example configures a local replication filter for log ``L``:
+Local replication filters can be defined per ``ReplicationEndpoint`` and remote target event log id or local event log name. They are applied locally at the endpoint at which they are defined. The following example configures a local replication filter for the log with name ``L``:
 
 .. includecode:: ../code/EventLogDoc.scala
    :snippet: local-filters
+
+Only events that pass ``filter1`` are replicated to remote logs. By specifying a target log id (``ReplicationEndpointInfo.logId(remoteEndpointId, logName)``) as key a filter is only applied for this specific target log. If there is also a filter defined for the log name the one for the target log id takes precedence.
 
 .. hint::
    Local replication filters are especially useful to prevent location-specific (or location-private) events from being replicated to other locations.
