@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.function.{ Function => JFunction }
 
 import akka.actor._
+import akka.event.Logging
 import akka.pattern.ask
 import akka.pattern.pipe
 import akka.util.Timeout
@@ -474,7 +475,7 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
       context.become(reading)
       read(storedReplicationProgress, currentTargetVersionVector)
     case GetReplicationProgressFailure(cause) =>
-      log.error(cause, "replication progress read failed")
+      log.warning("replication progress read failed: {}", cause)
       scheduleFetch()
   }
 
@@ -492,7 +493,7 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
       write(events, replicationProgress, currentSourceVersionVector, replicationProgress >= fromSequenceNr)
     case ReplicationReadFailure(cause, _) =>
       detector ! FailureDetected(cause)
-      log.error(cause, s"replication read failed")
+      log.warning(s"replication read failed: {}", cause)
       context.become(idle)
       scheduleRead()
   }
@@ -507,7 +508,7 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
       context.become(reading)
       read(storedReplicationProgress, currentTargetVersionVector)
     case ReplicationWriteFailure(cause) =>
-      log.error(cause, "replication write failed")
+      log.warning("replication write failed: {}", cause)
       context.become(idle)
       scheduleRead()
   }
@@ -566,7 +567,7 @@ private object FailureDetector {
   case class FailureDetectionLimitReached(counter: Int)
 }
 
-private class FailureDetector(sourceEndpointId: String, logName: String, failureDetectionLimit: FiniteDuration) extends Actor {
+private class FailureDetector(sourceEndpointId: String, logName: String, failureDetectionLimit: FiniteDuration) extends Actor with ActorLogging {
   import ReplicationEndpoint._
   import FailureDetector._
   import context.dispatcher
@@ -592,6 +593,8 @@ private class FailureDetector(sourceEndpointId: String, logName: String, failure
     case FailureDetected(cause) =>
       causes = causes :+ cause
     case FailureDetectionLimitReached(scheduledCount) if scheduledCount == counter =>
+      log.error(causes.lastOption.getOrElse(Logging.Error.NoCause), "replication failure detection limit reached ({})," +
+        " publishing Unavailable for {}/{} (last exception being reported)", failureDetectionLimit, sourceEndpointId, logName)
       context.system.eventStream.publish(Unavailable(sourceEndpointId, logName, causes))
       schedule = scheduleFailureDetectionLimitReached()
       causes = Vector.empty
