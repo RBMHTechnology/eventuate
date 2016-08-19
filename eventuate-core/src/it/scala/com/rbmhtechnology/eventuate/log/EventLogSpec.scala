@@ -499,6 +499,15 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
       log.tell(GetEventLogClock, replyToProbe.ref)
       replyToProbe.expectMsgType[GetEventLogClockSuccess].clock.sequenceNr should be(3L)
     }
+    "recover an adjusted sequence number on restart" in {
+      val evt = DurableEvent("a", emitterIdA, processId = logId, vectorTimestamp = VectorTime(logId -> 5L), localLogId = logId, localSequenceNr = 1)
+      registerCollaborator(aggregateId = None, collaborator = replyToProbe)
+      log ! ReplicationWrite(List(evt), 1, remoteLogId, VectorTime())
+      replyToProbe.expectMsgType[Written]
+      (log ? AdjustEventLogClock).await
+      log ! "boom"
+      (log ? GetEventLogClock).mapTo[GetEventLogClockSuccess].await.clock.sequenceNr should be(5L)
+    }
     "recover the replication progress on (re)start" in {
       log.tell(SetReplicationProgress("x", 17), replyToProbe.ref)
       replyToProbe.expectMsg(SetReplicationProgressSuccess("x", 17))

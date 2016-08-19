@@ -22,6 +22,10 @@ import akka.actor._
 import akka.pattern.ask
 import akka.testkit.TestProbe
 import akka.util.Timeout
+import com.rbmhtechnology.eventuate.EndpointFilters.targetFilters
+import com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgress
+import com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgressesFailure
+import com.rbmhtechnology.eventuate.log.EventLogWriter
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSettings
 import com.rbmhtechnology.eventuate.utilities._
 import com.typesafe.config.ConfigFactory
@@ -61,6 +65,25 @@ object RecoverySpecLeveldb {
     implicit val timeout = Timeout(3.seconds)
     target.log.ask("dir").mapTo[File].await
   }
+
+  class FailOnGetReplicationProgress(logProps: Props, exception: Exception) extends Actor {
+    private val logActor = context.actorOf(logProps)
+
+    override def receive: Receive = {
+      case GetReplicationProgress(_) => sender() ! GetReplicationProgressesFailure(exception)
+      case m => logActor.forward(m)
+    }
+  }
+
+  class PrefixesFilter(prefixes: String*) extends ReplicationFilter {
+    override def apply(event: DurableEvent): Boolean = event.payload match {
+      case stringPayload: String if prefixes.exists(stringPayload.startsWith) => true
+      case _ => false
+    }
+  }
+
+  def newWriter(endpoint: ReplicationEndpoint) =
+    new EventLogWriter(s"Writer-${endpoint.id}", endpoint.logs("L1"))(endpoint.system)
 }
 
 class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpecLeveldb {
@@ -88,7 +111,7 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpecL
       val locationB = location("B", customConfig = RecoverySpecLeveldb.config)
 
       val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port)), activate = false)
-      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port)))
+      locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port)))
 
       val recovery = endpointA.recover()
 
@@ -105,6 +128,22 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpecL
       }
 
       recoveryException.partialUpdate should be(false)
+    }
+    "fail when resetting the replication progress fails for one remote endpoint" in {
+      val GetProgressException = new RuntimeException("GetProgress test-failure")
+      val locationA = location("A", customConfig = RecoverySpecLeveldb.config)
+      val locationB = location("B", customConfig = RecoverySpecLeveldb.config)
+      val locationC = location("C", customConfig = RecoverySpecLeveldb.config,
+        logFactory = id => Props(new FailOnGetReplicationProgress(logFactory(id), GetProgressException)))
+      val locationD = location("D", customConfig = RecoverySpecLeveldb.config, customPort = customPort)
+
+      locationA.endpoint(Set("L1"), Set(replicationConnection(locationD.port)))
+      locationB.endpoint(Set("L1"), Set(replicationConnection(locationD.port)))
+      locationC.endpoint(Set("L1"), Set(replicationConnection(locationD.port)))
+      val endpointD = locationD.endpoint(Set("L1"), Set(replicationConnection(locationA.port), replicationConnection(locationB.port), replicationConnection(locationC.port)), activate = false)
+
+      val expected = the[RecoveryException] thrownBy endpointD.recover().await
+      expected.getMessage should include (GetProgressException.getMessage)
     }
     "succeed normally if the endpoint was healthy (but not convergent yet)" in {
       val locationB = location("B", customConfig = RecoverySpecLeveldb.config)
@@ -289,6 +328,146 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpecL
       endpointA3.recover().await
 
       assertConvergence(all, endpointA3, endpointB)
+    }
+    "not deadlock if two endpoints are recovered simultaneously" in {
+      val locationB = location("B", customConfig = RecoverySpecLeveldb.config)
+      val locationA = location("A", customConfig = RecoverySpecLeveldb.config)
+
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port)), activate = false)
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port)), activate = false)
+
+      val recoverB = endpointB.recover()
+      val recoverA = endpointA.recover()
+
+      recoverA.await
+      recoverB.await
+    }
+    "repair inconsistencies if the recovered endpoint upgraded to a new version" in {
+      val oldVersion = ApplicationVersion("1.0")
+      val newVersion = ApplicationVersion("2.0")
+      val locationB = location("B", customConfig = RecoverySpecLeveldb.config)
+      def newLocationA = location("A", customConfig = RecoverySpecLeveldb.config)
+      val locationA1 = newLocationA
+
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA1.port)), applicationVersion = oldVersion)
+      def newEndpointA(l: Location, version: ApplicationVersion, activate: Boolean) = l.endpoint(Set("L1"), Set(replicationConnection(locationB.port)), activate = activate)
+      val endpointA1 = newEndpointA(locationA1, oldVersion, activate = true)
+
+      val targetA = endpointA1.target("L1")
+      val logDirA = logDirectory(targetA)
+      val targetB = endpointB.target("L1")
+
+      write(targetA, List("A"))
+      write(targetB, List("B"))
+      assertConvergence(Set("A", "B"), endpointA1, endpointB)
+
+      locationA1.terminate().await
+      FileUtils.deleteDirectory(logDirA)
+
+      val locationA2 = newLocationA
+      val endpointA2 = newEndpointA(locationA2, newVersion, activate = false)
+
+      endpointA2.recover().await
+      assertConvergence(Set("A", "B"), endpointA2, endpointB)
+    }
+    "repair inconsistencies if the recovered endpoint is connected through filtered and unfiltered connection to multiple endpoints" in {
+      val locationA = location("A", customConfig = RecoverySpecLeveldb.config)
+      val locationB = location("B", customConfig = RecoverySpecLeveldb.config)
+      def newLocationC = location("C", customConfig = RecoverySpecLeveldb.config, customPort = customPort)
+      val locationC1 = newLocationC
+
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationC1.port)))
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationC1.port)))
+      def newEndpointC(l: Location, activate: Boolean = true) = l.endpoint(
+        Set("L1"),
+        Set(replicationConnection(locationA.port), replicationConnection(locationB.port)),
+        targetFilters(Map(endpointA.logId("L1") -> new PrefixesFilter("a", "b"))), // A does not receive cs
+        activate = activate)
+      val endpointC1 = newEndpointC(locationC1)
+
+      val logDirC = logDirectory(endpointC1.target("L1"))
+
+      val cs = (1 to 5).map("c" + _)
+      newWriter(endpointC1).write(cs)
+      assertConvergence(cs.toSet, endpointB, endpointC1)
+      newWriter(endpointB).write(List("b"))
+      assertConvergence(Set("b"), endpointA)
+
+      // disaster on C
+      locationC1.terminate().await
+      FileUtils.deleteDirectory(logDirC)
+
+      newWriter(endpointA).write(List("a"))
+
+      val locationC2 = newLocationC
+      val endpointC2 = newEndpointC(locationC2, activate = false)
+
+      endpointC2.recover().await
+      assertConvergence(cs.toSet + "b" + "a", endpointC2)
+    }
+    "allow to write more events after partial recovery over a filtered connection" in {
+      val locationA = location("A", customConfig = RecoverySpecLeveldb.config)
+      def newLocationB = location("B", customConfig = RecoverySpecLeveldb.config, customPort = customPort)
+      val locationB1 = newLocationB
+
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB1.port)))
+      def newEndpointB(l: Location, activate: Boolean = true) = l.endpoint(
+        Set("L1"),
+        Set(replicationConnection(locationA.port)),
+        targetFilters(Map(endpointA.logId("L1") -> new PrefixesFilter("a"))), // A does not receive bs
+        activate = activate)
+      val endpointB1 = newEndpointB(locationB1)
+
+      val logDirB = logDirectory(endpointB1.target("L1"))
+
+      newWriter(endpointB1).write(List("b", "a1"))
+      assertConvergence(Set("a1"), endpointA)
+
+      // disaster on B
+      locationB1.terminate().await
+      FileUtils.deleteDirectory(logDirB)
+
+      val locationB2 = newLocationB
+      val endpointB2 = newEndpointB(locationB2, activate = false)
+
+      endpointB2.recover().await
+      newWriter(endpointB2).write(List("a2"))
+      assertConvergence(Set("a1", "a2"), endpointA)
+    }
+    "allow to write more events after partial recovery over a filtered connection and a restart" in {
+      val locationA = location("A", customConfig = RecoverySpecLeveldb.config)
+      def newLocationB = location("B", customConfig = RecoverySpecLeveldb.config, customPort = customPort)
+      val locationB1 = newLocationB
+
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB1.port)))
+      def newEndpointB(l: Location, activate: Boolean = true) = l.endpoint(
+        Set("L1"),
+        Set(replicationConnection(locationA.port)),
+        targetFilters(Map(endpointA.logId("L1") -> new PrefixesFilter("a"))), // A does not receive bs
+        activate = activate)
+      val endpointB1 = newEndpointB(locationB1)
+
+      val logDirB = logDirectory(endpointB1.target("L1"))
+
+      newWriter(endpointB1).write(List("b", "a1"))
+      assertConvergence(Set("a1"), endpointA)
+
+      // disaster on B
+      locationB1.terminate().await
+      FileUtils.deleteDirectory(logDirB)
+
+      val locationB2 = newLocationB
+      val endpointB2 = newEndpointB(locationB2, activate = false)
+
+      endpointB2.recover().await
+
+      locationB2.terminate().await
+
+      val locationB3 = newLocationB
+      val endpointB3 = newEndpointB(locationB3, activate = true)
+
+      newWriter(endpointB3).write(List("a2"))
+      assertConvergence(Set("a1", "a2"), endpointA)
     }
   }
 
