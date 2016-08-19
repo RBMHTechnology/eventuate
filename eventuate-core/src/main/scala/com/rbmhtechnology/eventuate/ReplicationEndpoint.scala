@@ -248,8 +248,10 @@ class ReplicationEndpoint(
   private[eventuate] val connectors: Set[SourceConnector] =
     connections.map(new SourceConnector(this, _))
 
+  // lazy to make sure concurrently running (created actors) do not access null-reference
   private[eventuate] lazy val acceptor: ActorRef =
     system.actorOf(Props(new Acceptor(this)), name = Acceptor.Name)
+  acceptor // make sure acceptor is started
 
   /**
    * Returns the unique log id for given `logName`.
@@ -287,9 +289,11 @@ class ReplicationEndpoint(
       }
 
       val recoveryOperation = for {
-        infos <- recovery.readEndpointInfos.recoverWith(recoveryFailure(partialUpdate = false))
-        clocks <- recovery.readEventLogClocks.recoverWith(recoveryFailure(partialUpdate = false))
-        links = recovery.recoveryLinks(infos, clocks)
+        localEndpointInfo <- recovery.readEndpointInfo.recoverWith(recoveryFailure(partialUpdate = false))
+        _ = logLocalState(localEndpointInfo)
+        remoteEndpointInfos <- recovery.synchronizeReplicationProgressesWithRemote(localEndpointInfo).recoverWith(recoveryFailure(partialUpdate = false))
+        _ = logRemoteState(remoteEndpointInfos)
+        links = recovery.recoveryLinks(remoteEndpointInfos, localEndpointInfo)
         _ <- recovery.deleteSnapshots(links).recoverWith(recoveryFailure(partialUpdate = true))
       } yield acceptor ! Recover(links, promise)
 
@@ -300,6 +304,22 @@ class ReplicationEndpoint(
       promise.future
     } else Future.failed(new IllegalStateException("Recovery running or endpoint already activated"))
   }
+
+  private def logLocalState(info: ReplicationEndpointInfo): Unit = {
+    system.log.info("Disaster recovery initiated for endpoint {}. Sequence numbers of local logs are: {}",
+      info.endpointId, sequenceNrsLogString(info))
+    system.log.info("Need to reset replication progress stored at remote replicas {}",
+      connectors.map(_.remoteAcceptor).mkString(","))
+  }
+
+  private def logRemoteState(infos: Set[ReplicationEndpointInfo]): Unit = {
+    system.log.info("Successfully reset remote replication progress")
+    system.log.info("After disaster progress at remote endpoints:\n{}",
+      infos.map(info => s"Endpoint [${info.endpointId}]: ${sequenceNrsLogString(info)}").mkString("\n"))
+  }
+
+  private def sequenceNrsLogString(info: ReplicationEndpointInfo): String =
+    info.logSequenceNrs.map { case (logName, sequenceNr) => s"$logName:$sequenceNr" } mkString ","
 
   /**
    * Delete events from a local log identified by `logName` with a sequence number less than or equal to

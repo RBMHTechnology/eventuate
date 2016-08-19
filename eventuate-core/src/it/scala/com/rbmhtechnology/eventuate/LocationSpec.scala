@@ -148,7 +148,7 @@ trait MultiLocationSpec extends LocationCleanup with BeforeAndAfterEach {
 
   def logFactory: String => Props
 
-  def location(name: String, customPort: Int = 0, customConfig: Config = ConfigFactory.empty()): Location = {
+  def location(name: String, customPort: Int = 0, customConfig: Config = ConfigFactory.empty(), logFactory: String => Props = logFactory): Location = {
     val location = new Location(locationId(name), logFactory, customPort, customConfig.withFallback(providerConfig))
     registerLocation(location)
     location
