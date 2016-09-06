@@ -108,4 +108,14 @@ trait ReplicationFilter extends Serializable {
     case f @ OrFilter(filters) => f.copy(filter +: filters)
     case _                     => OrFilter(Seq(filter, this))
   }
+
+  /**
+   * Combines this filter and the given `filter` by ignoring the given `filter`, i.e. returns `this`
+   */
+  def leftIdentity(filter: ReplicationFilter): ReplicationFilter = this
+
+  /**
+   * Combines this filter and the given `filter` by ignoring this filter, i.e. returns `filter`
+   */
+  def rightIdentity(filter: ReplicationFilter): ReplicationFilter = filter
 }

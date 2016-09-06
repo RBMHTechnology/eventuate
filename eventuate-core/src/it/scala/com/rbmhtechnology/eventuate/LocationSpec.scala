@@ -20,11 +20,10 @@ import java.io.File
 
 import akka.actor._
 import akka.testkit._
-
+import com.rbmhtechnology.eventuate.EndpointFilters.NoFilters
 import com.rbmhtechnology.eventuate.ReplicationEndpoint._
 import com.rbmhtechnology.eventuate.log._
 import com.typesafe.config._
-
 import org.apache.commons.io.FileUtils
 import org.scalatest._
 
@@ -182,12 +181,12 @@ class Location(val id: String, logFactory: String => Props, customPort: Int, cus
   def endpoint(
     logNames: Set[String],
     connections: Set[ReplicationConnection],
-    filters: Map[String, ReplicationFilter] = Map.empty,
+    endpointFilters: EndpointFilters = NoFilters,
     applicationName: String = DefaultApplicationName,
     applicationVersion: ApplicationVersion = DefaultApplicationVersion,
     activate: Boolean = true): ReplicationEndpoint = {
 
-    val endpoint = new ReplicationEndpoint(id, logNames, logFactory, connections, filters, applicationName, applicationVersion)(system)
+    val endpoint = new ReplicationEndpoint(id, logNames, logFactory, connections, endpointFilters, applicationName, applicationVersion)(system)
     if (activate) endpoint.activate()
     endpoint
   }
