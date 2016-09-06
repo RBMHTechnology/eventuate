@@ -130,7 +130,7 @@ trait ReplicationFilterDoc {
   val endpoint = new ReplicationEndpoint(id = "2", logNames = Set("L", "M"),
     logFactory = logId => LeveldbEventLog.props(logId),
     connections = Set(ReplicationConnection("127.0.0.1", 2553)),
-    filters = Map("L" -> filter1)
+    endpointFilters = EndpointFilters.sourceFilters(Map("L" -> filter1))
   )
   //#
 

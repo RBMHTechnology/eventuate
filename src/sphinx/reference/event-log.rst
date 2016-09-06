@@ -189,12 +189,12 @@ For the definition of filter logic based on application-defined events, replicat
 Local replication filters
 .........................
 
-Local replication filters can be defined per ``ReplicationEndpoint`` and remote target event log id or local event log name. They are applied locally at the endpoint at which they are defined. The following example configures a local replication filter for the log with name ``L``:
+Local replication filters can be defined per ``ReplicationEndpoint`` in Form of an ``EndpointFilters`` instance. An ``EndpointFilters`` instance allows to specify filters for specific target event logs (by target log id) or source log (by source log name). The filters are applied on incoming replication read request at the endpoint at which they are defined. The following example configures a local replication filter for the log with name ``L``:
 
 .. includecode:: ../code/EventLogDoc.scala
    :snippet: local-filters
 
-Only events that pass ``filter1`` are replicated to remote logs. By specifying a target log id (``ReplicationEndpointInfo.logId(remoteEndpointId, logName)``) as key a filter is only applied for this specific target log. If there is also a filter defined for the log name the one for the target log id takes precedence.
+Events of log ``L`` are only replicated to remote logs when they pass filter ``filter1``. See EndpointFilters_ for various options to combine source and target log specific filters.
 
 .. hint::
    Local replication filters are especially useful to prevent location-specific (or location-private) events from being replicated to other locations.
@@ -314,6 +314,7 @@ Depending on the storage backend, this call also triggers physical deletion of e
 .. _EventsourcingProtocol: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$
 .. _ReplicationProtocol: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$
 .. _ReplicationEndpoint: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint$
+.. _EndpointFilters: ../latest/api/index.html#com.rbmhtechnology.eventuate.EndpointFilters$
 .. _ReplicationConnection: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationConnection$
 .. _ReplicationFilter: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationFilter
 .. _DurableEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent

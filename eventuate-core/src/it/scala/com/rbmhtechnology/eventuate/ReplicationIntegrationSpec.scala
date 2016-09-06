@@ -18,6 +18,8 @@ package com.rbmhtechnology.eventuate
 
 import akka.actor._
 import akka.testkit.TestProbe
+import com.rbmhtechnology.eventuate.EndpointFilters.sourceFilters
+import com.rbmhtechnology.eventuate.EndpointFilters.targetOverwritesSourceFilters
 import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
 import com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo.logId
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
@@ -138,11 +140,12 @@ trait ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocati
       val locationB = location("B")
 
       val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port)),
-        filters = Map("L1" -> new PayloadEqualityFilter("a2")))
+        sourceFilters(Map("L1" -> new PayloadEqualityFilter("a2"))))
       val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port)),
-        filters = Map(
-          logId(locationA.id, "L1")-> new PayloadInequalityFilter("b2"), // takes precedence
-          "L1" -> new PayloadEqualityFilter("b2")))
+        targetOverwritesSourceFilters(
+          Map(logId(locationA.id, "L1")-> new PayloadInequalityFilter("b2")),
+          Map("L1" -> new PayloadEqualityFilter("b2"))
+        ))
 
       val actorA = locationA.system.actorOf(Props(new ReplicatedActor("pa", endpointA.logs("L1"), locationA.probe.ref)))
       val actorB = locationB.system.actorOf(Props(new ReplicatedActor("pb", endpointB.logs("L1"), locationB.probe.ref)))
@@ -162,8 +165,8 @@ trait ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocati
       val locationA = location("A")
       val locationB = location("B")
 
-      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port, filters = Map("L1" -> new PayloadInequalityFilter("b1")))), filters = Map("L1" -> new PayloadInequalityFilter("a3")))
-      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port, filters = Map("L1" -> new PayloadInequalityFilter("a1")))), filters = Map("L1" -> new PayloadInequalityFilter("b3")))
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port, filters = Map("L1" -> new PayloadInequalityFilter("b1")))), sourceFilters(Map("L1" -> new PayloadInequalityFilter("a2"))))
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port, filters = Map("L1" -> new PayloadInequalityFilter("a1")))), sourceFilters(Map("L1" -> new PayloadInequalityFilter("b2"))))
 
       val actorA = locationA.system.actorOf(Props(new ReplicatedActor("pa", endpointA.logs("L1"), locationA.probe.ref)))
       val actorB = locationB.system.actorOf(Props(new ReplicatedActor("pb", endpointB.logs("L1"), locationB.probe.ref)))
@@ -176,8 +179,8 @@ trait ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocati
       actorB ! "b2"
       actorB ! "b3"
 
-      val eventsA = locationA.probe.expectMsgAllOf("a1", "a2", "a3", "b2")
-      val eventsB = locationB.probe.expectMsgAllOf("b1", "b2", "b3", "a2")
+      val eventsA = locationA.probe.expectMsgAllOf("a1", "a2", "a3", "b3")
+      val eventsB = locationB.probe.expectMsgAllOf("b1", "b2", "b3", "a3")
     }
     "immediately attempt next batch if last replicated batch was not empty" in {
       val locationA = location("A")
@@ -330,7 +333,7 @@ trait ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocati
     targetApplicationVersion: ApplicationVersion): TestProbe = {
 
     val locationA = location("A")
-    val endpointA = locationA.endpoint(Set("L1"), Set(), Map(), sourceApplicationName, sourceApplicationVersion)
+    val endpointA = locationA.endpoint(Set("L1"), Set(), applicationName = sourceApplicationName, applicationVersion = sourceApplicationVersion)
 
     val message = ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, DurableEvent.UndefinedLogId, locationA.system.deadLetters, VectorTime())
     val envelope = ReplicationReadEnvelope(message, "L1", targetApplicationName, targetApplicationVersion)

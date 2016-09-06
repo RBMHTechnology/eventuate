@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit
 import akka.actor._
 import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
-
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 import com.rbmhtechnology.eventuate.log.EventLogClock
@@ -183,10 +182,7 @@ private class Acceptor(endpoint: ReplicationEndpoint) extends Actor {
     case re: ReplicationReadEnvelope if re.incompatibleWith(endpoint.applicationName, endpoint.applicationVersion) =>
       sender ! ReplicationReadFailure(IncompatibleApplicationVersionException(endpoint.id, endpoint.applicationVersion, re.targetApplicationVersion), re.payload.targetLogId)
     case ReplicationReadEnvelope(r, logName, _, _) =>
-      val r2 = endpoint.filters.get(r.targetLogId).orElse(endpoint.filters.get(logName)) match {
-        case Some(filter) => r.copy(filter = r.filter and filter)
-        case None         => r
-      }
+      val r2 = r.copy(filter = endpoint.endpointFilters.filterFor(r.targetLogId, logName) and r.filter)
       endpoint.logs(logName) forward r2
     case _: ReplicationWriteSuccess =>
   }
