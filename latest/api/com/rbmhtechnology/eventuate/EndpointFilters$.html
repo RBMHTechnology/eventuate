@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>ReplicationFilter - com.rbmhtechnology.eventuate.ReplicationFilter</title>
-          <meta name="description" content="ReplicationFilter - com.rbmhtechnology.eventuate.ReplicationFilter" />
-          <meta name="keywords" content="ReplicationFilter com.rbmhtechnology.eventuate.ReplicationFilter" />
+          <title>EndpointFilters - com.rbmhtechnology.eventuate.EndpointFilters</title>
+          <meta name="description" content="EndpointFilters - com.rbmhtechnology.eventuate.EndpointFilters" />
+          <meta name="keywords" content="EndpointFilters com.rbmhtechnology.eventuate.EndpointFilters" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.ReplicationFilter';
+            var hash = 'com.rbmhtechnology.eventuate.EndpointFilters$';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -26,16 +26,16 @@
    	  </script>
     
         </head>
-        <body class="type">
+        <body class="value">
       <div id="definition">
-        <a href="ReplicationFilter$.html" title="See companion object"><img alt="Trait/Object" src="../../../lib/trait_to_object_big.png" /></a>
+        <a href="EndpointFilters.html" title="See companion trait"><img alt="Object/Trait" src="../../../lib/object_to_trait_big.png" /></a>
         <p id="owner"><a href="../../package.html" class="extype" name="com">com</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a></p>
-        <h1><a href="ReplicationFilter$.html" title="See companion object">ReplicationFilter</a></h1><h3><span class="morelinks"><div>
+        <h1><a href="EndpointFilters.html" title="See companion trait">EndpointFilters</a></h1><h3><span class="morelinks"><div>
             Related Docs:
-            <a href="ReplicationFilter$.html" title="See companion object">object ReplicationFilter</a>
+            <a href="EndpointFilters.html" title="See companion trait">trait EndpointFilters</a>
             | <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate">package eventuate</a>
           </div></span></h3><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -44,21 +44,17 @@
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">trait</span>
+        <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationFilter</span><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">EndpointFilters</span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Serializable and composable replication filter.
-</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
-        </div><div class="toggleContainer block">
-            <span class="toggle">Known Subclasses</span>
-            <div class="subClasses hiddenContent"><a href="ReplicationFilter$$AndFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter.AndFilter">AndFilter</a>, <a href="ReplicationFilter$$NoFilter$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter">NoFilter</a>, <a href="ReplicationFilter$$OrFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter.OrFilter">OrFilter</a></div>
-          </div></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
         
 
       <div id="mbrsel">
@@ -75,7 +71,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.ReplicationFilter"><span>ReplicationFilter</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.EndpointFilters"><span>EndpointFilters</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -96,30 +92,10 @@
 
         
 
-        <div id="values" class="values members">
-              <h3>Abstract Value Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.ReplicationFilter#apply" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="apply(event:com.rbmhtechnology.eventuate.DurableEvent):Boolean"></a>
-      <a id="apply(DurableEvent):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">abstract </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="event">event: <a href="DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@apply(event:com.rbmhtechnology.eventuate.DurableEvent):Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Evaluates this filter on the given <code>event</code>.</p>
-    </li></ol>
-            </div>
+        
 
         <div id="values" class="values members">
-              <h3>Concrete Value Members</h3>
+              <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
@@ -132,7 +108,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -149,7 +125,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@##():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@##():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -166,29 +142,29 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationFilter#and" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="and(filter:com.rbmhtechnology.eventuate.ReplicationFilter):com.rbmhtechnology.eventuate.ReplicationFilter"></a>
-      <a id="and(ReplicationFilter):ReplicationFilter"></a>
+    </li><li name="com.rbmhtechnology.eventuate.EndpointFilters#NoFilters" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="NoFilters:com.rbmhtechnology.eventuate.EndpointFilters"></a>
+      <a id="NoFilters:EndpointFilters"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">and</span><span class="params">(<span name="filter">filter: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>
+        <span class="name">NoFilters</span><span class="result">: <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@and(filter:com.rbmhtechnology.eventuate.ReplicationFilter):com.rbmhtechnology.eventuate.ReplicationFilter" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@NoFilters:com.rbmhtechnology.eventuate.EndpointFilters" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Returns a composed replication filter that represents a logical AND of
-this filter and the given <code>filter</code>.</p>
+      <p class="shortcomment cmt">An <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a> instance that always returns <a href="ReplicationFilter$$NoFilter$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter">com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter</a>
+independent from source/target logs of the replication read request.</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -201,7 +177,7 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -218,7 +194,7 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@clone():Object" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@clone():Object" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -241,7 +217,7 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -258,7 +234,7 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@equals(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -275,7 +251,7 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -298,7 +274,7 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -315,7 +291,7 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@hashCode():Int" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@hashCode():Int" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -332,29 +308,11 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationFilter#leftIdentity" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="leftIdentity(filter:com.rbmhtechnology.eventuate.ReplicationFilter):com.rbmhtechnology.eventuate.ReplicationFilter"></a>
-      <a id="leftIdentity(ReplicationFilter):ReplicationFilter"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">leftIdentity</span><span class="params">(<span name="filter">filter: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@leftIdentity(filter:com.rbmhtechnology.eventuate.ReplicationFilter):com.rbmhtechnology.eventuate.ReplicationFilter" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Combines this filter and the given <code>filter</code> by ignoring the given <code>filter</code>, i.e.</p><div class="fullcomment"><div class="comment cmt"><p>Combines this filter and the given <code>filter</code> by ignoring the given <code>filter</code>, i.e. returns <code>this</code>
-</p></div></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -367,7 +325,7 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -384,7 +342,7 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@notify():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -401,47 +359,33 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationFilter#or" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="or(filter:com.rbmhtechnology.eventuate.ReplicationFilter):com.rbmhtechnology.eventuate.ReplicationFilter"></a>
-      <a id="or(ReplicationFilter):ReplicationFilter"></a>
+    </li><li name="com.rbmhtechnology.eventuate.EndpointFilters#sourceFilters" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="sourceFilters(sourceFilters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]):com.rbmhtechnology.eventuate.EndpointFilters"></a>
+      <a id="sourceFilters(Map[String,ReplicationFilter]):EndpointFilters"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">or</span><span class="params">(<span name="filter">filter: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>
+        <span class="name">sourceFilters</span><span class="params">(<span name="sourceFilters">sourceFilters: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a>]</span>)</span><span class="result">: <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@or(filter:com.rbmhtechnology.eventuate.ReplicationFilter):com.rbmhtechnology.eventuate.ReplicationFilter" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@sourceFilters(sourceFilters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]):com.rbmhtechnology.eventuate.EndpointFilters" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Returns a composed replication filter that represents a logical OR of
-this filter and the given <code>filter</code>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationFilter#rightIdentity" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="rightIdentity(filter:com.rbmhtechnology.eventuate.ReplicationFilter):com.rbmhtechnology.eventuate.ReplicationFilter"></a>
-      <a id="rightIdentity(ReplicationFilter):ReplicationFilter"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">rightIdentity</span><span class="params">(<span name="filter">filter: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>)</span><span class="result">: <a href="" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@rightIdentity(filter:com.rbmhtechnology.eventuate.ReplicationFilter):com.rbmhtechnology.eventuate.ReplicationFilter" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Combines this filter and the given <code>filter</code> by ignoring this filter, i.e.</p><div class="fullcomment"><div class="comment cmt"><p>Combines this filter and the given <code>filter</code> by ignoring this filter, i.e. returns <code>filter</code>
-</p></div></div>
+      <p class="shortcomment cmt">Creates an <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a> instance that computes a <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> for a replication read request
+from a source log to any target log by returning the source filter when given in <code>sourceFilters</code> or
+<a href="ReplicationFilter$$NoFilter$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter">com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter</a> otherwise.</p><div class="fullcomment"><div class="comment cmt"><p>Creates an <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a> instance that computes a <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> for a replication read request
+from a source log to any target log by returning the source filter when given in <code>sourceFilters</code> or
+<a href="ReplicationFilter$$NoFilter$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter">com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter</a> otherwise.
+</p></div><dl class="paramcmts block"><dt class="param">sourceFilters</dt><dd class="cmt"><p>maps source log names to the <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> that shall be applied when replicating from this source log to any target log</p></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -454,11 +398,77 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EndpointFilters#targetAndSourceFilters" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="targetAndSourceFilters(targetFilters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter],sourceFilters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]):com.rbmhtechnology.eventuate.EndpointFilters"></a>
+      <a id="targetAndSourceFilters(Map[String,ReplicationFilter],Map[String,ReplicationFilter]):EndpointFilters"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">targetAndSourceFilters</span><span class="params">(<span name="targetFilters">targetFilters: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a>]</span>, <span name="sourceFilters">sourceFilters: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a>]</span>)</span><span class="result">: <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@targetAndSourceFilters(targetFilters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter],sourceFilters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]):com.rbmhtechnology.eventuate.EndpointFilters" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Creates an <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a> instance that computes a <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> for a replication read request
+from a source log to a target log by and-combining target and source filters when given in the provided <span class="extype" name="Map">Map</span>s.</p><div class="fullcomment"><div class="comment cmt"><p>Creates an <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a> instance that computes a <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> for a replication read request
+from a source log to a target log by and-combining target and source filters when given in the provided <span class="extype" name="Map">Map</span>s.
+If only source or target filter is given that is returned. If no filter is given <a href="ReplicationFilter$$NoFilter$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter">com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter</a> is returned.
+A typical use case is that target specific filters are and-combined with a (default) source filter.
+</p></div><dl class="paramcmts block"><dt class="param">targetFilters</dt><dd class="cmt"><p>maps target log ids to the <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> that shall be applied when replicating from a source log to this target log</p></dd><dt class="param">sourceFilters</dt><dd class="cmt"><p>maps source log names to the <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> that shall be applied when replicating from this source log to any target log</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EndpointFilters#targetFilters" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="targetFilters(targetFilters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]):com.rbmhtechnology.eventuate.EndpointFilters"></a>
+      <a id="targetFilters(Map[String,ReplicationFilter]):EndpointFilters"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">targetFilters</span><span class="params">(<span name="targetFilters">targetFilters: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a>]</span>)</span><span class="result">: <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@targetFilters(targetFilters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]):com.rbmhtechnology.eventuate.EndpointFilters" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Creates an <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a> instance that computes a <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> for a replication read request
+to a target log by returning the target filter when given in <code>targetFilters</code> or
+<a href="ReplicationFilter$$NoFilter$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter">com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter</a> otherwise.</p><div class="fullcomment"><div class="comment cmt"><p>Creates an <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a> instance that computes a <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> for a replication read request
+to a target log by returning the target filter when given in <code>targetFilters</code> or
+<a href="ReplicationFilter$$NoFilter$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter">com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter</a> otherwise.
+</p></div><dl class="paramcmts block"><dt class="param">targetFilters</dt><dd class="cmt"><p>maps target log ids to the <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> that shall be applied when replicating from a source log to this target log</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EndpointFilters#targetOverwritesSourceFilters" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="targetOverwritesSourceFilters(targetFilters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter],sourceFilters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]):com.rbmhtechnology.eventuate.EndpointFilters"></a>
+      <a id="targetOverwritesSourceFilters(Map[String,ReplicationFilter],Map[String,ReplicationFilter]):EndpointFilters"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">targetOverwritesSourceFilters</span><span class="params">(<span name="targetFilters">targetFilters: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a>]</span>, <span name="sourceFilters">sourceFilters: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a>]</span>)</span><span class="result">: <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@targetOverwritesSourceFilters(targetFilters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter],sourceFilters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]):com.rbmhtechnology.eventuate.EndpointFilters" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Creates an <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a> instance that computes a <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> for a replication read request
+from a source log to a target log by returning a target filter when given in <code>targetFilters</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Creates an <a href="EndpointFilters.html" class="extype" name="com.rbmhtechnology.eventuate.EndpointFilters">EndpointFilters</a> instance that computes a <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> for a replication read request
+from a source log to a target log by returning a target filter when given in <code>targetFilters</code>. If only
+a source filter is given in <code>sourceFilters</code> that is returned otherwise <a href="ReplicationFilter$$NoFilter$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter">com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter</a> is returned.
+A typical use case is that (more privileged) remote targets may replace a (default) source filter with a target-specific filter.
+</p></div><dl class="paramcmts block"><dt class="param">targetFilters</dt><dd class="cmt"><p>maps target log ids to the <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> that shall be applied when replicating from a source log to this target log</p></dd><dt class="param">sourceFilters</dt><dd class="cmt"><p>maps source log names to the <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> that shall be applied when replicating from this source log to any target log</p></dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -471,7 +481,7 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@toString():String" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@toString():String" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -488,7 +498,7 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@wait():Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -511,7 +521,7 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -534,7 +544,7 @@ this filter and the given <code>filter</code>.</p>
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationFilter@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EndpointFilters$@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -554,11 +564,7 @@ this filter and the given <code>filter</code>.</p>
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="scala.Serializable">
-              <h3>Inherited from <span class="extype" name="scala.Serializable">Serializable</span></h3>
-            </div><div class="parent" name="java.io.Serializable">
-              <h3>Inherited from <span class="extype" name="java.io.Serializable">Serializable</span></h3>
-            </div><div class="parent" name="scala.AnyRef">
+        <div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
               <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
