@@ -63,7 +63,7 @@ object CircuitBreakerIntregrationSpecCassandra {
       new TestEventLogStore(cassandra, logId, failureSpec)
   }
 
-  class TestEventLogStore(cassandra: Cassandra, logId: String, failureSpec: TestFailureSpec) extends CassandraEventLogStore(cassandra, logId) {
+  class TestEventLogStore(cassandra: Cassandra, logId: String, failureSpec: TestFailureSpec) extends CassandraEventLogStore(cassandra, cassandra.settings, logId) {
     import failureSpec._
 
     var numAttempts = 0

@@ -21,10 +21,10 @@ import java.lang.{ Long => JLong }
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
-private[eventuate] class CassandraDeletedToStore(cassandra: Cassandra, logId: String) {
+private[eventuate] class CassandraDeletedToStore(cassandra: Cassandra, settings: CassandraEventLogSettings, logId: String) {
 
   def writeDeletedTo(deletedTo: Long): Unit =
-    cassandra.execute(cassandra.preparedWriteDeletedToStatement.bind(logId, deletedTo: JLong), cassandra.settings.writeTimeout)
+    cassandra.execute(cassandra.preparedWriteDeletedToStatement.bind(logId, deletedTo: JLong), settings.writeTimeout)
 
   def readDeletedToAsync(implicit executor: ExecutionContext): Future[Long] = {
     cassandra.session.executeAsync(cassandra.preparedReadDeletedToStatement.bind(logId)).map { resultSet =>

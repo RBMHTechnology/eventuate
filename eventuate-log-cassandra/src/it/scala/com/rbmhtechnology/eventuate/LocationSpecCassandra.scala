@@ -74,7 +74,7 @@ object SingleLocationSpecCassandra {
       indexProbe.foreach(_ ! event)
   }
 
-  class TestIndexStore(cassandra: Cassandra, logId: String, failureSpec: TestFailureSpec) extends CassandraIndexStore(cassandra, logId) {
+  class TestIndexStore(cassandra: Cassandra, logId: String, failureSpec: TestFailureSpec) extends CassandraIndexStore(cassandra, cassandra.settings, logId) {
     private var writeIncrementFailed = false
     private var readClockFailed = false
 

@@ -119,7 +119,6 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
       extension.settings
   }
 
-  import settings._
   import statements._
 
   private var _session: Session = _
@@ -127,7 +126,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   Try {
     _session = connect()
 
-    if (keyspaceAutoCreate)
+    if (settings.keyspaceAutoCreate)
       _session.execute(createKeySpaceStatement)
 
     _session.execute(createEventLogClockTableStatement)
@@ -146,7 +145,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
     val curAttempt = retries + 1
     val maxAttempts = settings.connectRetryMax + 1
 
-    Try(clusterBuilder.build().connect()) match {
+    Try(settings.clusterBuilder.build().connect()) match {
       case Failure(e: NoHostAvailableException) if retries < settings.connectRetryMax =>
         logging.error(e, s"Cannot connect to cluster (attempt ${curAttempt}/${maxAttempts} ...)")
         Thread.sleep(settings.connectRetryDelay.toMillis)
@@ -180,38 +179,38 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   private[eventuate] def createAggregateEventTable(logId: String): Unit =
     session.execute(createAggregateEventTableStatement(logId))
 
-  private[eventuate] def prepareWriteEvent(logId: String): PreparedStatement =
-    session.prepare(writeEventStatement(logId)).setConsistencyLevel(writeConsistency)
+  private[eventuate] def prepareWriteEvent(logId: String)(implicit settings: CassandraEventLogSettings): PreparedStatement =
+    session.prepare(writeEventStatement(logId)).setConsistencyLevel(settings.writeConsistency)
 
-  private[eventuate] def prepareReadEvents(logId: String): PreparedStatement =
-    session.prepare(readEventsStatement(logId)).setConsistencyLevel(readConsistency)
+  private[eventuate] def prepareReadEvents(logId: String)(implicit settings: CassandraEventLogSettings): PreparedStatement =
+    session.prepare(readEventsStatement(logId)).setConsistencyLevel(settings.readConsistency)
 
-  private[eventuate] def prepareWriteAggregateEvent(logId: String): PreparedStatement =
-    session.prepare(writeAggregateEventStatement(logId)).setConsistencyLevel(writeConsistency)
+  private[eventuate] def prepareWriteAggregateEvent(logId: String)(implicit settings: CassandraEventLogSettings): PreparedStatement =
+    session.prepare(writeAggregateEventStatement(logId)).setConsistencyLevel(settings.writeConsistency)
 
-  private[eventuate] def prepareReadAggregateEvents(logId: String): PreparedStatement =
-    session.prepare(readAggregateEventsStatement(logId)).setConsistencyLevel(readConsistency)
+  private[eventuate] def prepareReadAggregateEvents(logId: String)(implicit settings: CassandraEventLogSettings): PreparedStatement =
+    session.prepare(readAggregateEventsStatement(logId)).setConsistencyLevel(settings.readConsistency)
 
   private[eventuate] val preparedWriteEventLogClockStatement: PreparedStatement =
-    session.prepare(writeEventLogClockStatement).setConsistencyLevel(writeConsistency)
+    session.prepare(writeEventLogClockStatement).setConsistencyLevel(settings.writeConsistency)
 
   private[eventuate] val preparedReadEventLogClockStatement: PreparedStatement =
-    session.prepare(readEventLogClockStatement).setConsistencyLevel(readConsistency)
+    session.prepare(readEventLogClockStatement).setConsistencyLevel(settings.readConsistency)
 
   private[eventuate] val preparedWriteReplicationProgressStatement: PreparedStatement =
-    session.prepare(writeReplicationProgressStatement).setConsistencyLevel(writeConsistency)
+    session.prepare(writeReplicationProgressStatement).setConsistencyLevel(settings.writeConsistency)
 
   private[eventuate] val preparedReadReplicationProgressesStatement: PreparedStatement =
-    session.prepare(readReplicationProgressesStatement).setConsistencyLevel(readConsistency)
+    session.prepare(readReplicationProgressesStatement).setConsistencyLevel(settings.readConsistency)
 
   private[eventuate] val preparedReadReplicationProgressStatement: PreparedStatement =
-    session.prepare(readReplicationProgressStatement).setConsistencyLevel(readConsistency)
+    session.prepare(readReplicationProgressStatement).setConsistencyLevel(settings.readConsistency)
 
   private[eventuate] val preparedWriteDeletedToStatement: PreparedStatement =
-    session.prepare(writeDeletedToStatement).setConsistencyLevel(writeConsistency)
+    session.prepare(writeDeletedToStatement).setConsistencyLevel(settings.writeConsistency)
 
   private[eventuate] val preparedReadDeletedToStatement: PreparedStatement =
-    session.prepare(readDeletedToStatement).setConsistencyLevel(readConsistency)
+    session.prepare(readDeletedToStatement).setConsistencyLevel(settings.readConsistency)
 
   private[eventuate] def eventToByteBuffer(event: DurableEvent): ByteBuffer =
     ByteBuffer.wrap(serializer.serialize(event).get)
@@ -228,14 +227,14 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   private[eventuate] def execute(statement: Statement, timeout: Long): Unit =
     session.executeAsync(statement).getUninterruptibly(timeout, TimeUnit.MILLISECONDS)
 
-  private[eventuate] def executeBatch(body: BatchStatement => Unit): Unit =
+  private[eventuate] def executeBatch(body: BatchStatement => Unit)(implicit settings: CassandraEventLogSettings): Unit =
     execute(withBatch(body), settings.writeTimeout)
 
-  private[eventuate] def executeBatchAsync(body: BatchStatement => Unit)(implicit executor: ExecutionContext): Future[Unit] =
+  private[eventuate] def executeBatchAsync(body: BatchStatement => Unit)(implicit executor: ExecutionContext, settings: CassandraEventLogSettings): Future[Unit] =
     session.executeAsync(withBatch(body)).map(_ => ())
 
-  private def withBatch(body: BatchStatement => Unit): BatchStatement = {
-    val batch = new BatchStatement().setConsistencyLevel(writeConsistency).asInstanceOf[BatchStatement]
+  private def withBatch(body: BatchStatement => Unit)(implicit settings: CassandraEventLogSettings): BatchStatement = {
+    val batch = new BatchStatement().setConsistencyLevel(settings.writeConsistency).asInstanceOf[BatchStatement]
     body(batch)
     batch
   }

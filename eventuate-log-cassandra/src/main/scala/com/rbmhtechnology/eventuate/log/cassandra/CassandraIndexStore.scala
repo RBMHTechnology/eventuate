@@ -27,7 +27,7 @@ import scala.collection.JavaConverters._
 import scala.collection.immutable.Seq
 import scala.concurrent._
 
-private[eventuate] class CassandraIndexStore(cassandra: Cassandra, logId: String) {
+private[eventuate] class CassandraIndexStore(cassandra: Cassandra, implicit val settings: CassandraEventLogSettings, logId: String) {
   import CassandraIndex._
 
   private val preparedReadAggregateEventStatement: PreparedStatement = cassandra.prepareReadAggregateEvents(logId)
@@ -75,7 +75,7 @@ private[eventuate] class CassandraIndexStore(cassandra: Cassandra, logId: String
     final def hasNext: Boolean = {
       if (currentIter.hasNext) {
         true
-      } else if (rowCount < cassandra.settings.partitionSize) {
+      } else if (rowCount < settings.partitionSize) {
         // all events consumed
         false
       } else {
