@@ -18,8 +18,6 @@ package com.rbmhtechnology.eventuate.log
 
 import akka.actor._
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
-import com.rbmhtechnology.eventuate.log.EventLog.EventLogAvailable
-import com.rbmhtechnology.eventuate.log.EventLog.EventLogUnavailable
 import com.typesafe.config.Config
 
 private class CircuitBreakerSettings(config: Config) {
@@ -38,7 +36,7 @@ private class CircuitBreakerSettings(config: Config) {
  *
  * @see [[EventLogSPI.write]]
  */
-class CircuitBreaker(logProps: Props, batching: Boolean, logId: String) extends Actor {
+class CircuitBreaker(logProps: Props, batching: Boolean) extends Actor {
   import CircuitBreaker._
 
   private val settings =
@@ -48,11 +46,13 @@ class CircuitBreaker(logProps: Props, batching: Boolean, logId: String) extends 
     context.watch(createLog)
 
   private val closed: Receive = {
-    case ServiceInitialized | ServiceNormal =>
+    case serviceFailed: ServiceFailed =>
+      if (serviceFailed.retry >= settings.openAfterRetries) {
+        publish(serviceFailed)
+        context.become(open)
+      }
+    case _: ServiceEvent =>
     // normal operation
-    case ServiceFailed(retry, cause) =>
-      publishUnavailable(cause)
-      if (retry >= settings.openAfterRetries) context.become(open)
     case Terminated(_) =>
       context.stop(self)
     case msg =>
@@ -60,11 +60,11 @@ class CircuitBreaker(logProps: Props, batching: Boolean, logId: String) extends 
   }
 
   private val open: Receive = {
-    case ServiceInitialized | ServiceNormal =>
-      publishAvailable()
-      context.become(closed)
-    case ServiceFailed(retry, cause) =>
+    case _: ServiceFailed =>
     // failure persists
+    case serviceEvent: ServiceEvent =>
+      publish(serviceEvent)
+      context.become(closed)
     case Terminated(_) =>
       context.stop(self)
     case Write(events, initiator, replyTo, cid, iid) =>
@@ -78,19 +78,11 @@ class CircuitBreaker(logProps: Props, batching: Boolean, logId: String) extends 
   def receive =
     closed
 
-  override def preStart(): Unit = {
-    super.preStart()
-    publishAvailable()
-  }
-
   private def createLog(): ActorRef =
     if (batching) context.actorOf(Props(new BatchingLayer(logProps))) else context.actorOf(logProps)
 
-  private def publishUnavailable(cause: Throwable): Unit =
-    context.system.eventStream.publish(EventLogUnavailable(logId, cause))
-
-  private def publishAvailable(): Unit =
-    context.system.eventStream.publish(EventLogAvailable(logId))
+  private def publish(serviceEvent: ServiceEvent): Unit =
+    context.system.eventStream.publish(serviceEvent)
 }
 
 object CircuitBreaker {
@@ -107,17 +99,23 @@ object CircuitBreaker {
   /**
    * Sent by an event log to indicate that it has been successfully initialized.
    */
-  case object ServiceInitialized extends ServiceEvent
+  case class ServiceInitialized(logId: String) extends ServiceEvent
 
   /**
    * Sent by an event log to indicate that it has successfully written an event batch.
+   *
+   * This is also published on the event-stream when it closes the [[CircuitBreaker]]
+   * (after previous failures that opened the [[CircuitBreaker]]).
    */
-  case object ServiceNormal extends ServiceEvent
+  case class ServiceNormal(logId: String) extends ServiceEvent
 
   /**
    * Sent by an event log to indicate that it failed to write an event batch. The current
    * retry count is given by the `retry` parameter.
+   *
+   * This is also published on the event-stream when it opens the [[CircuitBreaker]],
+   * i.e. when `retry` exceeds a configured limit.
    */
-  case class ServiceFailed(retry: Int, cause: Throwable) extends ServiceEvent
+  case class ServiceFailed(logId: String, retry: Int, cause: Throwable) extends ServiceEvent
 
 }

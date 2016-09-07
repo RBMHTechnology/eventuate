@@ -29,7 +29,6 @@ import com.rbmhtechnology.eventuate.log.cassandra._
 import com.rbmhtechnology.eventuate.utilities.AwaitHelper
 import com.typesafe.config._
 
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 import org.scalatest._
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Millis, Seconds, Span}
@@ -140,7 +139,7 @@ class CircuitBreakerIntregrationSpecCassandra extends TestKit(ActorSystem("test"
 
   def logProps(logId: String, failureSpec: TestFailureSpec): Props = {
     val logProps = Props(new TestEventLog(logId, failureSpec)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
-    Props(new CircuitBreaker(logProps, batching = true, logId))
+    Props(new CircuitBreaker(logProps, batching = true))
   }
 
   def createLog(failureSpec: TestFailureSpec = this.failureSpec(-1)): Unit = {
