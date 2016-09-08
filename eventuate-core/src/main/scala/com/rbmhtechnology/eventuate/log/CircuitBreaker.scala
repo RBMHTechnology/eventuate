@@ -17,7 +17,6 @@
 package com.rbmhtechnology.eventuate.log
 
 import akka.actor._
-
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.typesafe.config.Config
 
@@ -47,10 +46,13 @@ class CircuitBreaker(logProps: Props, batching: Boolean) extends Actor {
     context.watch(createLog)
 
   private val closed: Receive = {
-    case ServiceInitialized | ServiceNormal =>
+    case serviceFailed: ServiceFailed =>
+      if (serviceFailed.retry >= settings.openAfterRetries) {
+        publish(serviceFailed)
+        context.become(open)
+      }
+    case _: ServiceEvent =>
     // normal operation
-    case ServiceFailed(retry) =>
-      if (retry >= settings.openAfterRetries) context.become(open)
     case Terminated(_) =>
       context.stop(self)
     case msg =>
@@ -58,10 +60,11 @@ class CircuitBreaker(logProps: Props, batching: Boolean) extends Actor {
   }
 
   private val open: Receive = {
-    case ServiceInitialized | ServiceNormal =>
-      context.become(closed)
-    case ServiceFailed(retry) =>
+    case _: ServiceFailed =>
     // failure persists
+    case serviceEvent: ServiceEvent =>
+      publish(serviceEvent)
+      context.become(closed)
     case Terminated(_) =>
       context.stop(self)
     case Write(events, initiator, replyTo, cid, iid) =>
@@ -77,9 +80,12 @@ class CircuitBreaker(logProps: Props, batching: Boolean) extends Actor {
 
   private def createLog(): ActorRef =
     if (batching) context.actorOf(Props(new BatchingLayer(logProps))) else context.actorOf(logProps)
+
+  private def publish(serviceEvent: ServiceEvent): Unit =
+    context.system.eventStream.publish(serviceEvent)
 }
 
-private object CircuitBreaker {
+object CircuitBreaker {
   /**
    * Default [[EventLogUnavailableException]] instance.
    */
@@ -93,17 +99,23 @@ private object CircuitBreaker {
   /**
    * Sent by an event log to indicate that it has been successfully initialized.
    */
-  case object ServiceInitialized extends ServiceEvent
+  case class ServiceInitialized(logId: String) extends ServiceEvent
 
   /**
    * Sent by an event log to indicate that it has successfully written an event batch.
+   *
+   * This is also published on the event-stream when it closes the [[CircuitBreaker]]
+   * (after previous failures that opened the [[CircuitBreaker]]).
    */
-  case object ServiceNormal extends ServiceEvent
+  case class ServiceNormal(logId: String) extends ServiceEvent
 
   /**
    * Sent by an event log to indicate that it failed to write an event batch. The current
    * retry count is given by the `retry` parameter.
+   *
+   * This is also published on the event-stream when it opens the [[CircuitBreaker]],
+   * i.e. when `retry` exceeds a configured limit.
    */
-  case class ServiceFailed(retry: Int) extends ServiceEvent
+  case class ServiceFailed(logId: String, retry: Int, cause: Throwable) extends ServiceEvent
 
 }
