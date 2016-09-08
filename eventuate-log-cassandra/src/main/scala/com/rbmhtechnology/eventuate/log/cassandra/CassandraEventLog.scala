@@ -65,13 +65,11 @@ case class CassandraEventLogState(eventLogClock: EventLogClock, eventLogClockSna
  *    [[EventsourcedView#aggregateId aggregateId]] defined.
  *
  * @param id unique log id.
- * @param overrideConfig Optional cassandra settings to override the 'global' configuration on a per-eventlog basis.
- *                       The settings of the akka extension's `Cassandra` are used if not specified.
  *
  * @see [[Cassandra]]
  * @see [[DurableEvent]]
  */
-class CassandraEventLog(id: String, overrideConfig: Option[CassandraEventLogSettings] = None) extends EventLog[CassandraEventLogState](id) {
+class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id) {
   import CassandraEventLog._
   import CassandraIndex._
 
@@ -79,7 +77,7 @@ class CassandraEventLog(id: String, overrideConfig: Option[CassandraEventLogSett
     throw new IllegalArgumentException(s"invalid id '$id' specified - Cassandra allows alphanumeric and underscore characters only")
 
   private val cassandra: Cassandra = Cassandra(context.system)
-  override val settings: CassandraEventLogSettings = overrideConfig getOrElse cassandra.settings
+  override val settings: CassandraEventLogSpecificSettings = new CassandraEventLogSpecificSettings(context.system.settings.config, id)
 
   cassandra.createEventTable(id)
   cassandra.createAggregateEventTable(id)
@@ -278,11 +276,9 @@ object CassandraEventLog {
    *
    * @param logId unique log id.
    * @param batching `true` if write-batching shall be enabled (recommended).
-   * @param overrideConfig Optional cassandra settings to override the 'global' configuration on a per-eventlog basis.
-   *                       The settings of the akka extension's `Cassandra` are used if not specified.
    */
-  def props(logId: String, batching: Boolean = true, overrideConfig: Option[CassandraEventLogSettings] = None): Props = {
-    val logProps = Props(new CassandraEventLog(logId, overrideConfig)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
+  def props(logId: String, batching: Boolean = true): Props = {
+    val logProps = Props(new CassandraEventLog(logId)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
     Props(new CircuitBreaker(logProps, batching))
   }
 }

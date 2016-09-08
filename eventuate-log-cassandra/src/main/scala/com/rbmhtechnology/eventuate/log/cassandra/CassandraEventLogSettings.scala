@@ -29,14 +29,61 @@ import com.rbmhtechnology.eventuate.log._
 import scala.collection.JavaConverters._
 import scala.concurrent.duration._
 
+class CassandraEventLogSpecificSettings(config: Config, eventlog: String)
+  extends CassandraEventLogSettings(config) {
+  import CassandraEventLogSettings._
+
+  private val getLong = get(config.getLong) _
+  private val getInt = get(config.getInt) _
+  private val getConsistency = get(key => ConsistencyLevel.valueOf(config.getString(key))) _
+  private val getMilliseconds = get(key => config.getDuration(key, TimeUnit.MILLISECONDS)) _
+
+  override val writeBatchSize: Int =
+    getInt(WriteBatchSize, super.writeBatchSize)
+
+  override val writeTimeout: Long =
+    getMilliseconds(WriteTimeout, super.writeTimeout)
+
+  override val partitionSize: Long =
+    getLong(CassandraPartitionSize, super.partitionSize)
+
+  override val writeRetryMax: Int =
+    getInt(CassandraWriteRetryMax, super.writeRetryMax)
+
+  override val readConsistency: ConsistencyLevel =
+    getConsistency(CassandraReadConsistency, super.readConsistency)
+
+  override val writeConsistency: ConsistencyLevel =
+    getConsistency(CassandraWriteConsistency, super.writeConsistency)
+
+  private def get[T](getter: String => T)(key: String, fallback: => T): T = {
+    val settingKey = s"eventuate.log.eventlog.$eventlog.$key"
+    if (config.hasPath(settingKey)) getter(settingKey) else fallback
+  }
+}
+
 class CassandraEventLogSettings(config: Config) extends EventLogSettings {
   import CassandraEventLogSettings._
 
-  val writeTimeout: Long =
-    config.getDuration("eventuate.log.write-timeout", TimeUnit.MILLISECONDS)
+  def writeTimeout: Long =
+    config.getDuration(s"eventuate.log.$WriteTimeout", TimeUnit.MILLISECONDS)
 
-  val writeBatchSize: Int =
-    config.getInt("eventuate.log.write-batch-size")
+  def writeBatchSize: Int =
+    config.getInt(s"eventuate.log.$WriteBatchSize")
+
+  def readConsistency: ConsistencyLevel =
+    ConsistencyLevel.valueOf(config.getString(s"eventuate.log.$CassandraReadConsistency"))
+
+  def writeConsistency: ConsistencyLevel =
+    ConsistencyLevel.valueOf(config.getString(s"eventuate.log.$CassandraWriteConsistency"))
+
+  def writeRetryMax: Int =
+    config.getInt(s"eventuate.log.$CassandraWriteRetryMax")
+
+  override def partitionSize: Long =
+    config.getLong(s"eventuate.log.$CassandraPartitionSize")
+      .requiring(_ > writeBatchSize,
+        s"eventuate.log.cassandra.partition-size must be greater than eventuate.log.write-batch-size (${writeBatchSize})")
 
   val keyspace: String =
     config.getString("eventuate.log.cassandra.keyspace")
@@ -50,25 +97,11 @@ class CassandraEventLogSettings(config: Config) extends EventLogSettings {
   val tablePrefix: String =
     config.getString("eventuate.log.cassandra.table-prefix")
 
-  val readConsistency: ConsistencyLevel =
-    ConsistencyLevel.valueOf(config.getString("eventuate.log.cassandra.read-consistency"))
-
-  val writeConsistency: ConsistencyLevel =
-    ConsistencyLevel.valueOf(config.getString("eventuate.log.cassandra.write-consistency"))
-
-  val writeRetryMax: Int =
-    config.getInt("eventuate.log.cassandra.write-retry-max")
-
   val defaultPort: Int =
     config.getInt("eventuate.log.cassandra.default-port")
 
   val contactPoints =
     getContactPoints(config.getStringList("eventuate.log.cassandra.contact-points").asScala, defaultPort)
-
-  val partitionSize: Long =
-    config.getLong("eventuate.log.cassandra.partition-size")
-      .requiring(_ > writeBatchSize,
-        s"eventuate.log.cassandra.partition-size must be greater than eventuate.log.write-batch-size (${writeBatchSize})")
 
   val indexUpdateLimit: Int =
     config.getInt("eventuate.log.cassandra.index-update-limit")
@@ -95,6 +128,13 @@ class CassandraEventLogSettings(config: Config) extends EventLogSettings {
 }
 
 private object CassandraEventLogSettings {
+  val WriteBatchSize = "write-batch-size"
+  val WriteTimeout = "write-timeout"
+  val CassandraPartitionSize = "cassandra.partition-size"
+  val CassandraWriteRetryMax = "cassandra.write-retry-max"
+  val CassandraReadConsistency = "cassandra.read-consistency"
+  val CassandraWriteConsistency = "cassandra.write-consistency"
+
   def getContactPoints(contactPoints: Seq[String], defaultPort: Int): Seq[InetSocketAddress] = {
     contactPoints match {
       case null | Nil => throw new IllegalArgumentException("a contact point list cannot be empty.")
