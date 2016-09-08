@@ -154,12 +154,12 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
       case Failure(e: QueryExecutionException) =>
         context.parent ! ServiceFailed(id, num, e)
         logger.error(e, s"write attempt ${num} failed - retry in ${settings.writeTimeout} ms")
-        Thread.sleep(cassandra.settings.writeTimeout)
+        Thread.sleep(settings.writeTimeout)
         writeRetry(events, partition, clock, num + 1)
       case Failure(e: NoHostAvailableException) =>
         context.parent ! ServiceFailed(id, num, e)
         logger.error(e, s"write attempt ${num} failed - retry in ${settings.writeTimeout} ms")
-        Thread.sleep(cassandra.settings.writeTimeout)
+        Thread.sleep(settings.writeTimeout)
         writeRetry(events, partition, clock, num + 1)
       case Failure(e) =>
         logger.error(e, s"write attempt ${num} failed - stop self")
