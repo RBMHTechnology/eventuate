@@ -30,8 +30,19 @@ import org.scalatest._
 object ReplicationProtocolSerializerSpec {
   import ReplicationFilterSerializerSpec._
 
+  private val endpointInfo = ReplicationEndpointInfo("A", Map("B" -> 0l, "C" -> 10l))
+
   val getReplicationEndpointInfoSuccess =
-    GetReplicationEndpointInfoSuccess(ReplicationEndpointInfo("A", Set(LogInfo("B", 0l), LogInfo("C", 10l))))
+    GetReplicationEndpointInfoSuccess(endpointInfo)
+
+  val synchronizeReplicationProgress =
+    SynchronizeReplicationProgress(endpointInfo)
+
+  val synchronizeReplicationProgressSuccess =
+    SynchronizeReplicationProgressSuccess(endpointInfo)
+
+  val synchronizeReplicationProgressFailure =
+    SynchronizeReplicationProgressFailure(SynchronizeReplicationProgressSourceException("cause"))
 
   val replicationReadSuccess =
     ReplicationReadSuccess(List(
@@ -79,6 +90,15 @@ class ReplicationProtocolSerializerSpec extends WordSpec with Matchers with Befo
     }
     "serialize GetReplicationEndpointInfoSuccess messages" in {
       serializations(0).deserialize(serializations(0).serialize(getReplicationEndpointInfoSuccess).get, classOf[GetReplicationEndpointInfoSuccess]).get should be(getReplicationEndpointInfoSuccess)
+    }
+    "serialize SynchronizeReplicationProgress messages" in {
+      serializations(0).deserialize(serializations(0).serialize(synchronizeReplicationProgress).get, classOf[SynchronizeReplicationProgress]).get should be(synchronizeReplicationProgress)
+    }
+    "serialize SynchronizeReplicationProgressSuccess messages" in {
+      serializations(0).deserialize(serializations(0).serialize(synchronizeReplicationProgressSuccess).get, classOf[SynchronizeReplicationProgressSuccess]).get should be(synchronizeReplicationProgressSuccess)
+    }
+    "serialize SynchronizeReplicationFailure messages" in {
+      serializations(0).deserialize(serializations(0).serialize(synchronizeReplicationProgressFailure).get, classOf[SynchronizeReplicationProgressFailure]).get should be(synchronizeReplicationProgressFailure)
     }
     "serialize ReplicationReadEnvelope messages" in {
       serializations(0).deserialize(serializations(0).serialize(replicationReadEnvelope(replicationRead1(dl1))).get, classOf[ReplicationReadEnvelope]).get should be(replicationReadEnvelope(replicationRead1(dl1)))
