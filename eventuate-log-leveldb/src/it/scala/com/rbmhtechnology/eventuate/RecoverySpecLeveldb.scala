@@ -22,8 +22,10 @@ import akka.actor._
 import akka.pattern.ask
 import akka.testkit.TestProbe
 import akka.util.Timeout
+import com.rbmhtechnology.eventuate.EndpointFilters.targetFilters
 import com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgress
 import com.rbmhtechnology.eventuate.ReplicationProtocol.GetReplicationProgressesFailure
+import com.rbmhtechnology.eventuate.log.EventLogWriter
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLogSettings
 import com.rbmhtechnology.eventuate.utilities._
 import com.typesafe.config.ConfigFactory
@@ -72,6 +74,16 @@ object RecoverySpecLeveldb {
       case m => logActor.forward(m)
     }
   }
+
+  class PrefixesFilter(prefixes: String*) extends ReplicationFilter {
+    override def apply(event: DurableEvent): Boolean = event.payload match {
+      case stringPayload: String if prefixes.exists(stringPayload.startsWith) => true
+      case _ => false
+    }
+  }
+
+  def newWriter(endpoint: ReplicationEndpoint) =
+    new EventLogWriter(s"Writer-${endpoint.id}", endpoint.logs("L1"))(endpoint.system)
 }
 
 class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpecLeveldb {
@@ -125,9 +137,9 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpecL
         logFactory = id => Props(new FailOnGetReplicationProgress(logFactory(id), GetProgressException)))
       val locationD = location("D", customConfig = RecoverySpecLeveldb.config, customPort = customPort)
 
-      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationD.port)))
-      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationD.port)))
-      val endpointC = locationC.endpoint(Set("L1"), Set(replicationConnection(locationD.port)))
+      locationA.endpoint(Set("L1"), Set(replicationConnection(locationD.port)))
+      locationB.endpoint(Set("L1"), Set(replicationConnection(locationD.port)))
+      locationC.endpoint(Set("L1"), Set(replicationConnection(locationD.port)))
       val endpointD = locationD.endpoint(Set("L1"), Set(replicationConnection(locationA.port), replicationConnection(locationB.port), replicationConnection(locationC.port)), activate = false)
 
       val expected = the[RecoveryException] thrownBy endpointD.recover().await
@@ -357,6 +369,41 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpecL
 
       endpointA2.recover().await
       assertConvergence(Set("A", "B"), endpointA2, endpointB)
+    }
+    "repair inconsistencies if the recovered endpoint is connected through filtered and unfiltered connection to multiple endpoints" in {
+      val locationA = location("A", customConfig = RecoverySpecLeveldb.config)
+      val locationB = location("B", customConfig = RecoverySpecLeveldb.config)
+      def newLocationC = location("C", customConfig = RecoverySpecLeveldb.config, customPort = customPort)
+      val locationC1 = newLocationC
+
+      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationC1.port)))
+      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationC1.port)))
+      def newEndpointC(l: Location, activate: Boolean = true) = l.endpoint(
+        Set("L1"),
+        Set(replicationConnection(locationA.port), replicationConnection(locationB.port)),
+        targetFilters(Map(endpointA.logId("L1") -> new PrefixesFilter("a", "b"))), // A does not receive cs
+        activate = activate)
+      val endpointC1 = newEndpointC(locationC1)
+
+      val logDirC = logDirectory(endpointC1.target("L1"))
+
+      val cs = (1 to 5).map("c" + _)
+      newWriter(endpointC1).write(cs)
+      assertConvergence(cs.toSet, endpointB, endpointC1)
+      newWriter(endpointB).write(List("b"))
+      assertConvergence(Set("b"), endpointA)
+
+      // disaster on C
+      locationC1.terminate().await
+      FileUtils.deleteDirectory(logDirC)
+
+      newWriter(endpointA).write(List("a"))
+
+      val locationC2 = newLocationC
+      val endpointC2 = newEndpointC(locationC2, activate = false)
+
+      endpointC2.recover().await
+      assertConvergence(cs.toSet + "b" + "a", endpointC2)
     }
   }
 

@@ -281,27 +281,24 @@ class ReplicationEndpoint(
     else if (active.compareAndSet(false, true)) {
       import system.dispatcher
 
-      val promise = Promise[Unit]()
       val recovery = new Recovery(this)
 
       def recoveryFailure[U](partialUpdate: Boolean): PartialFunction[Throwable, Future[U]] = {
         case t => Future.failed(new RecoveryException(t, partialUpdate))
       }
 
-      val recoveryOperation = for {
+      for {
         localEndpointInfo <- recovery.readEndpointInfo.recoverWith(recoveryFailure(partialUpdate = false))
         _ = logLocalState(localEndpointInfo)
         remoteEndpointInfos <- recovery.synchronizeReplicationProgressesWithRemote(localEndpointInfo).recoverWith(recoveryFailure(partialUpdate = false))
         _ = logRemoteState(remoteEndpointInfos)
-        links = recovery.recoveryLinks(remoteEndpointInfos, localEndpointInfo)
-        _ <- recovery.deleteSnapshots(links).recoverWith(recoveryFailure(partialUpdate = true))
-      } yield acceptor ! Recover(links, promise)
-
-      recoveryOperation.onFailure {
-        case ex => promise.failure(ex)
-      }
-
-      promise.future
+        unfilteredLinks = recovery.recoveryLinks(remoteEndpointInfos, localEndpointInfo, filtered = false)
+        _ = logLinksToBeRecovered(unfilteredLinks, "unfiltered")
+        _ <- recovery.recoverLinks(unfilteredLinks).recoverWith(recoveryFailure(partialUpdate = true))
+        filteredLinks = recovery.recoveryLinks(remoteEndpointInfos, localEndpointInfo, filtered = true)
+        _ = logLinksToBeRecovered(filteredLinks, "filtered")
+        _ <- recovery.recoverLinks(filteredLinks).recoverWith(recoveryFailure(partialUpdate = true))
+      } yield acceptor ! RecoveryFinished
     } else Future.failed(new IllegalStateException("Recovery running or endpoint already activated"))
   }
 
@@ -316,6 +313,11 @@ class ReplicationEndpoint(
     system.log.info("Successfully reset remote replication progress")
     system.log.info("After disaster progress at remote endpoints:\n{}",
       infos.map(info => s"Endpoint [${info.endpointId}]: ${sequenceNrsLogString(info)}").mkString("\n"))
+  }
+
+  private def logLinksToBeRecovered(links: Set[RecoveryLink], linkType: String): Unit = {
+    system.log.info("Start recovery for {} links: (from remote source log (target seq no) -> local target log (initial seq no))\n{}",
+      linkType, links.map(l => s"(${l.remoteLogId} (${l.remoteSequenceNr}) -> ${l.logName} (${l.localSequenceNr}))").mkString(", "))
   }
 
   private def sequenceNrsLogString(info: ReplicationEndpointInfo): String =
@@ -362,7 +364,7 @@ class ReplicationEndpoint(
    */
   def activate(): Unit = if (active.compareAndSet(false, true)) {
     acceptor ! Process
-    connectors.foreach(_.activate())
+    connectors.foreach(_.activate(sourceLogIdFilter = None))
   } else throw new IllegalStateException("Recovery running or endpoint already activated")
 
   /**
@@ -494,8 +496,8 @@ private class SourceConnector(val targetEndpoint: ReplicationEndpoint, val conne
       ReplicationLink(source, targetEndpoint.target(logName))
     }
 
-  def activate(): Unit =
-    targetEndpoint.system.actorOf(Props(new Connector(this)))
+  def activate(sourceLogIdFilter: Option[Set[String]]): Unit =
+    targetEndpoint.system.actorOf(Props(new Connector(this, sourceLogIdFilter)))
 
   def remoteAcceptor: ActorSelection =
     remoteActorSelection(Acceptor.Name)
@@ -515,9 +517,10 @@ private class SourceConnector(val targetEndpoint: ReplicationEndpoint, val conne
 /**
  * Reliably sends [[GetReplicationEndpointInfo]] requests to the [[Acceptor]] at a source [[ReplicationEndpoint]].
  * On receiving a [[GetReplicationEndpointInfoSuccess]] reply, this connector sets up log [[Replicator]]s, one per
- * common log name between source and target endpoints.
+ * common log name between source and target endpoints. If `sourceLogIds` is not [[None]] [[Replicator]]s will
+ * only be setup for the given source log ids.
  */
-private class Connector(sourceConnector: SourceConnector) extends Actor {
+private class Connector(sourceConnector: SourceConnector, sourceLogIds: Option[Set[String]]) extends Actor {
   import context.dispatcher
 
   private val acceptor = sourceConnector.remoteAcceptor
@@ -529,11 +532,13 @@ private class Connector(sourceConnector: SourceConnector) extends Actor {
     case GetReplicationEndpointInfoSuccess(info) if !connected =>
       sourceConnector.links(info).foreach {
         case ReplicationLink(source, target) =>
-          val filter = sourceConnector.connection.filters.get(target.logName) match {
-            case Some(f) => f
-            case None    => NoFilter
+          if (sourceLogIds.forall(_.contains(source.logId))) {
+            val filter = sourceConnector.connection.filters.get(target.logName) match {
+              case Some(f) => f
+              case None    => NoFilter
+            }
+            context.actorOf(Props(new Replicator(target, source, filter)))
           }
-          context.actorOf(Props(new Replicator(target, source, filter)))
 
       }
       connected = true

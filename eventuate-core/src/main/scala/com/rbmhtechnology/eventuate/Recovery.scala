@@ -21,7 +21,9 @@ import java.util.concurrent.TimeUnit
 import akka.actor._
 import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
+import com.rbmhtechnology.eventuate.Acceptor.Recover
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
+import com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 import com.rbmhtechnology.eventuate.log.EventLogClock
 import com.typesafe.config.Config
@@ -133,10 +135,26 @@ private class Recovery(endpoint: ReplicationEndpoint) {
   }
 
   /**
+   * Initiates event recovery for the given [[ReplicationLink]]s. The returned [[Future]] completes when
+   * all events are successfully recovered.
+   */
+  def recoverLinks(recoveryLinks: Set[RecoveryLink])(implicit ec: ExecutionContext): Future[Unit] = {
+    if (recoveryLinks.isEmpty) {
+      Future.successful(())
+    } else {
+      val recoveryFinishedPromise = Promise[Unit]()
+      deleteSnapshots(recoveryLinks).onSuccess {
+        case _ => endpoint.acceptor ! Recover(recoveryLinks, recoveryFinishedPromise)
+      }
+      recoveryFinishedPromise.future
+    }
+  }
+
+  /**
    * Deletes all invalid snapshots from local event logs. A snapshot is invalid if it covers
    * events that have been lost.
    */
-  def deleteSnapshots(links: Set[RecoveryLink]): Future[Unit] =
+  private def deleteSnapshots(links: Set[RecoveryLink]): Future[Unit] =
     Future.sequence(links.map(deleteSnapshots)).map(_ => ())
 
   def readEventLogClock(targetLog: ActorRef): Future[EventLogClock] =
@@ -151,9 +169,10 @@ private class Recovery(endpoint: ReplicationEndpoint) {
     readResult[DeleteSnapshotsSuccess.type, DeleteSnapshotsFailure, Unit](
       endpoint.logs(link.logName).ask(DeleteSnapshots(link.localSequenceNr + 1L))(Timeout(snapshotDeletionTimeout)), _ => (), _.cause)
 
-  def recoveryLinks(remoteEndpointInfos: Set[ReplicationEndpointInfo], localEndpointInfo: ReplicationEndpointInfo): Set[RecoveryLink] = for {
+  def recoveryLinks(remoteEndpointInfos: Set[ReplicationEndpointInfo], localEndpointInfo: ReplicationEndpointInfo, filtered: Boolean): Set[RecoveryLink] = for {
     endpointInfo <- remoteEndpointInfos
     logName <- endpoint.commonLogNames(endpointInfo)
+    if (endpoint.endpointFilters.filterFor(endpointInfo.logId(logName), logName) != NoFilter) == filtered
   } yield RecoveryLink(logName, localEndpointInfo.logSequenceNrs(logName), endpointInfo.logId(logName), endpointInfo.logSequenceNrs(logName))
 
   private def readResult[S: ClassTag, F: ClassTag, R](f: Future[Any], result: S => R, cause: F => Throwable): Future[R] = f.flatMap {
@@ -180,13 +199,18 @@ private class Acceptor(endpoint: ReplicationEndpoint) extends Actor {
 
   private val recovery = new Recovery(endpoint)
 
-  def initializing: Receive = {
+  def initializing: Receive = recovering orElse {
     case Process =>
       context.become(processing)
+  }
+
+  def recovering: Receive = {
     case Recover(links, promise) =>
-      endpoint.connectors.foreach(_.activate())
+      endpoint.connectors.foreach(_.activate(Some(links.map(_.remoteLogId))))
       val recoveryManager = context.actorOf(Props(new RecoveryManager(endpoint.id, links)))
       context.become(recoveringEvents(recoveryManager, promise) orElse processing)
+    case RecoveryFinished =>
+      context.become(processing)
   }
 
   def recoveringEvents(recoveryManager: ActorRef, promise: Promise[Unit]): Receive = {
@@ -194,7 +218,7 @@ private class Acceptor(endpoint: ReplicationEndpoint) extends Actor {
       recoveryManager forward writeSuccess
     case EventRecoveryCompleted =>
       promise.success(())
-      context.become(processing)
+      context.become(recovering orElse processing)
   }
 
   def processing: Receive = {
@@ -230,6 +254,7 @@ private object Acceptor {
 
   case object Process
   case class Recover(links: Set[RecoveryLink], promise: Promise[Unit])
+  case object RecoveryFinished
   case class RecoveryStepCompleted(link: RecoveryLink)
   case object MetadataRecoveryCompleted
   case object EventRecoveryCompleted
