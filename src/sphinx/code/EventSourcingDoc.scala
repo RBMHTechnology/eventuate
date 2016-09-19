@@ -172,6 +172,28 @@ object LoadSnapshot {
   //#
 }
 
+object AppDefinedSeqNr {
+  import akka.actor._
+  import com.rbmhtechnology.eventuate.EventsourcedActor
+
+  //#replay-from-sequence-nr
+  class CustomRecoveryExampleActor(snr: Long) extends EventsourcedActor {
+
+    override def replayFromSequenceNr: Option[Long] = Some(snr)
+
+    // ...
+    //#
+
+    override def id: String = ???
+    override def eventLog: ActorRef = ???
+    override def onCommand: Receive = ???
+    override def onEvent: Receive = ???
+
+  //#replay-from-sequence-nr
+  }
+  //#
+}
+
 object BatchReplay {
   import akka.actor._
   import com.rbmhtechnology.eventuate.EventsourcedActor

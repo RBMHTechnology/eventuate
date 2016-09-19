@@ -18,9 +18,9 @@ package com.rbmhtechnology.eventuate
 
 import akka.actor._
 import akka.testkit._
-
 import org.scalatest._
 
+import scala.concurrent.Future
 import scala.util._
 
 object EventsourcedViewSpec {
@@ -36,7 +36,8 @@ object EventsourcedViewSpec {
   class TestEventsourcedView(
     val logProbe: ActorRef,
     val msgProbe: ActorRef,
-    customReplayBatchSize: Option[Int]) extends EventsourcedView {
+    customReplayBatchSize: Option[Int],
+    override val replayFromSequenceNr: Option[Long] = None) extends EventsourcedView {
 
     val id = emitterIdA
     val eventLog = logProbe
@@ -217,6 +218,10 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
   def recoveredGuardingView(): ActorRef =
     processRecover(system.actorOf(Props(new TestGuardingView(logProbe.ref, msgProbe.ref))))
 
+  def replayControllingActor(snr: Option[Long]): ActorRef = {
+    system.actorOf(Props(new TestEventsourcedView(logProbe.ref, msgProbe.ref, None, snr)))
+  }
+
   def processRecover(actor: ActorRef, instanceId: Int = instanceId): ActorRef = {
     logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
     logProbe.sender() ! LoadSnapshotSuccess(None, instanceId)
@@ -268,6 +273,18 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
       msgProbe.expectMsg(("a", event1a.vectorTimestamp, event1a.localSequenceNr))
       msgProbe.expectMsg(("b", event1b.vectorTimestamp, event1b.localSequenceNr))
       msgProbe.expectMsg(("c", event1c.vectorTimestamp, event1c.localSequenceNr))
+    }
+    "replay from application-defined sequence number (not load snapshot)" in {
+      val actor = replayControllingActor(Some(2L))
+
+      logProbe.expectMsg(Replay(2L, Some(actor), instanceId))
+      logProbe.sender() ! ReplaySuccess(List(event1b, event1c), event1c.localSequenceNr, instanceId)
+
+      msgProbe.expectMsg(("b", event1b.vectorTimestamp, event1b.localSequenceNr))
+      msgProbe.expectMsg(("c", event1c.vectorTimestamp, event1c.localSequenceNr))
+    }
+    "not replay from application-defined sequence number (load snapshot)" in {
+      processRecover(replayControllingActor(None))
     }
     "stash commands during recovery and handle them after initial recovery" in {
       val actor = unrecoveredEventsourcedView()
