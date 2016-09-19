@@ -27,6 +27,7 @@ message SnapshotFormat {
   optional VectorTimeFormat currentTime = 4;
   repeated DeliveryAttemptFormat deliveryAttempts = 5;
   repeated PersistOnEventRequestFormat persistOnEventRequests = 6;
+  optional int64 sequenceNr = 7;
 }
 
 message DeliveryAttemptFormat {

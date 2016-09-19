@@ -93,7 +93,7 @@ public abstract class BaseSpec {
     }
 
     protected Snapshot createSnapshot(final String emitterId, final DurableEvent event) {
-        return new Snapshot(event, emitterId, event, VectorTime.apply(toSeq()),
+        return new Snapshot(event, emitterId, event, VectorTime.apply(toSeq()), event.localSequenceNr(),
                 Vector$.MODULE$.<ConfirmedDelivery.DeliveryAttempt>empty(), Vector$.MODULE$.<PersistOnEvent.PersistOnEventRequest>empty());
     }
 

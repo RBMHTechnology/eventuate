@@ -26,6 +26,7 @@ import scala.util._
 object EventsourcedActorIntegrationSpec {
   case class Cmd(payloads: String*)
   case class State(state: Vector[String])
+  case object UnhandledEvent
 
   class ReplyActor(val id: String, val eventLog: ActorRef) extends EventsourcedActor {
     override def onCommand = {
@@ -167,6 +168,10 @@ object EventsourcedActorIntegrationSpec {
         case Success(r) =>
         case Failure(e) => throw e
       }
+      case UnhandledEvent => persist(UnhandledEvent) {
+        case Success(r) =>
+        case Failure(e) => throw e
+      }
     }
 
     override def onEvent = {
@@ -198,6 +203,10 @@ object EventsourcedActorIntegrationSpec {
       case s: String =>
         state = state :+ s"v-${s}"
         probe ! state
+      case UnhandledEvent =>
+        // in constrast to the `SnapshotActor` the `SnapshotView` actor should react on the `UnhandledEvent`
+        // so we can wait for that event during the test run
+        probe ! UnhandledEvent
     }
 
     override def onSnapshot = {
@@ -378,18 +387,24 @@ trait EventsourcedActorIntegrationSpec extends TestKitBase with WordSpecLike wit
 
       actor ! "a"
       actor ! "b"
+      actor ! UnhandledEvent
+      actor ! UnhandledEvent
 
       actorProbe.expectMsg(Vector("a"))
       actorProbe.expectMsg(Vector("a", "b"))
 
       viewProbe.expectMsg(Vector("v-a"))
       viewProbe.expectMsg(Vector("v-a", "v-b"))
+      viewProbe.expectMsg(UnhandledEvent)
+      viewProbe.expectMsg(UnhandledEvent)
 
       actor.tell("snap", actorProbe.ref)
       view.tell("snap", viewProbe.ref)
 
-      actorProbe.expectMsg(2)
-      viewProbe.expectMsg(2)
+      // although the `SnapshotActor` handled only events up to sequence number 2
+      // we expect the snapshot to be saved until all 4 'processed' events
+      actorProbe.expectMsg(4)
+      viewProbe.expectMsg(4)
 
       actor ! "c"
 

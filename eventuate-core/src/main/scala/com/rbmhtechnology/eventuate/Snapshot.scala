@@ -39,6 +39,7 @@ case class SnapshotMetadata(emitterId: String, sequenceNr: Long)
  * @param emitterId Id of the event-sourced actor, view, stateful writer or processor that saved the snapshot.
  * @param lastEvent Last handled event before the snapshot was saved.
  * @param currentTime Current vector time when the snapshot was saved.
+ * @param sequenceNr Sequence number of the last *received* event when the snapshot was saved.
  * @param deliveryAttempts Unconfirmed [[ConfirmedDelivery.DeliveryAttempt DeliveryAttempt]]s when the snapshot was
  *                         saved (can only be non-empty if the actor implements [[ConfirmedDelivery]]).
  * @param persistOnEventRequests Unconfirmed [[PersistOnEvent.PersistOnEventRequest PersistOnEventRequest]]s when the
@@ -49,11 +50,12 @@ case class Snapshot(
   emitterId: String,
   lastEvent: DurableEvent,
   currentTime: VectorTime,
+  sequenceNr: Long,
   deliveryAttempts: Vector[DeliveryAttempt] = Vector.empty,
   persistOnEventRequests: Vector[PersistOnEventRequest] = Vector.empty) {
 
   val metadata: SnapshotMetadata =
-    SnapshotMetadata(emitterId, lastEvent.localSequenceNr)
+    SnapshotMetadata(emitterId, sequenceNr)
 
   def addDeliveryAttempt(deliveryAttempt: DeliveryAttempt): Snapshot =
     copy(deliveryAttempts = deliveryAttempts :+ deliveryAttempt)
