@@ -89,6 +89,12 @@ trait EventsourcedWriter[R, W] extends EventsourcedView {
   private var numPending: Int = 0
 
   /**
+   * Disallow for [[EventsourcedWriter]] and subclasses as event processing progress is determined by `read`
+   * and `readSuccess`.
+   */
+  override final def replayFromSequenceNr: Option[Long] = None
+
+  /**
    * Asynchronously reads an initial value from the target database, usually to obtain information about
    * event processing progress. This method is called during initialization.
    */
@@ -115,7 +121,7 @@ trait EventsourcedWriter[R, W] extends EventsourcedView {
    * and can be overridden.
    */
   def readSuccess(result: R): Option[Long] =
-    None
+    replayFromSequenceNr
 
   /**
    * Called with a write result after a `write` operation successfully completes. This method may update
