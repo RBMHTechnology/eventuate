@@ -1025,6 +1025,26 @@ is resumed automatically after all replayed events haven been handled by this ac
 (= backpressure). The default value for the maximum replay batch size is given by configuration item
 <code>eventuate.log.replay-batch-size</code>. Configured values can be overridden by overriding this method.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriter#replayFromSequenceNr" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="replayFromSequenceNr:Option[Long]"></a>
+      <a id="replayFromSequenceNr:Option[Long]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">replayFromSequenceNr</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedWriter@replayFromSequenceNr:Option[Long]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Disallow for <a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> and subclasses as event processing progress is determined by <code>read</code>
+and <code>readSuccess</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Disallow for <a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> and subclasses as event processing progress is determined by <code>read</code>
+and <code>readSuccess</code>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#save" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit"></a>
       <a id="save(Any)(Handler[SnapshotMetadata]):Unit"></a>

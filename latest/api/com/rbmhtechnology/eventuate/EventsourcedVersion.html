@@ -921,6 +921,25 @@ is resumed automatically after all replayed events haven been handled by this ac
 (= backpressure). The default value for the maximum replay batch size is given by configuration item
 <code>eventuate.log.replay-batch-size</code>. Configured values can be overridden by overriding this method.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#replayFromSequenceNr" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="replayFromSequenceNr:Option[Long]"></a>
+      <a id="replayFromSequenceNr:Option[Long]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">replayFromSequenceNr</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.EventsourcedVersion@replayFromSequenceNr:Option[Long]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Override to provide an application-defined log sequence number from which event replay will start.</p><div class="fullcomment"><div class="comment cmt"><p>Override to provide an application-defined log sequence number from which event replay will start.</p><p>If <code>Some(snr)</code> is returned snapshot loading will be skipped and replay will start from
+the given sequence number <code>snr</code>.</p><p>If <code>None</code> is returned the actor proceeds with the regular snapshot loading procedure.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#save" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit"></a>
       <a id="save(Any)(Handler[SnapshotMetadata]):Unit"></a>
