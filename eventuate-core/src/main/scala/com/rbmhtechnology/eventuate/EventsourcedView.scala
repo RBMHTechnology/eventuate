@@ -98,6 +98,7 @@ trait EventsourcedView extends Actor with Stash {
   private var _recovering: Boolean = true
   private var _eventHandling: Boolean = false
   private var _lastHandledEvent: DurableEvent = _
+  private var _lastReceivedSequenceNr = 0L
 
   private val settings = new EventsourcedViewSettings(context.system.settings.config)
   private var saveRequests: Map[SnapshotMetadata, Handler[SnapshotMetadata]] = Map.empty
@@ -220,6 +221,8 @@ trait EventsourcedView extends Actor with Stash {
       if (!recovering) versionChanged(currentVersion)
       _eventHandling = false
     } else _lastHandledEvent = previous
+
+    _lastReceivedSequenceNr = event.localSequenceNr
   }
 
   /**
@@ -303,7 +306,7 @@ trait EventsourcedView extends Actor with Stash {
       case other                              => other
     }
 
-    val prototype = Snapshot(payload, id, lastHandledEvent, currentVersion)
+    val prototype = Snapshot(payload, id, lastHandledEvent, currentVersion, _lastReceivedSequenceNr)
     val metadata = prototype.metadata
     val iid = instanceId
 

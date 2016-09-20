@@ -828,7 +828,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
   "An EventsourcedActor" must {
     "recover from a snapshot" in {
       val actor = unrecoveredSnapshotActor()
-      val snapshot = Snapshot(State(Vector("a", "b")), emitterIdA, event("b", 2), timestamp(2, 4))
+      val snapshot = Snapshot(State(Vector("a", "b")), emitterIdA, event("b", 2), timestamp(2, 4), 2)
 
       logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
       logProbe.sender() ! LoadSnapshotSuccess(Some(snapshot), instanceId)
@@ -838,7 +838,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
     }
     "recover from a snapshot and remaining events" in {
       val actor = unrecoveredSnapshotActor()
-      val snapshot = Snapshot(State(Vector("a", "b")), emitterIdA, event("b", 2), timestamp(2, 4))
+      val snapshot = Snapshot(State(Vector("a", "b")), emitterIdA, event("b", 2), timestamp(2, 4), 2)
 
       logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
       logProbe.sender() ! LoadSnapshotSuccess(Some(snapshot), instanceId)
@@ -853,7 +853,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
       val unconfirmed = Vector(
         DeliveryAttempt("3", "x", cmdProbe.ref.path),
         DeliveryAttempt("4", "y", cmdProbe.ref.path))
-      val snapshot = Snapshot(State(Vector("a", "b")), emitterIdA, event("b", 2), timestamp(2, 4), deliveryAttempts = unconfirmed)
+      val snapshot = Snapshot(State(Vector("a", "b")), emitterIdA, event("b", 2), timestamp(2, 4), 2, deliveryAttempts = unconfirmed)
 
       logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
       logProbe.sender() ! LoadSnapshotSuccess(Some(snapshot), instanceId)
@@ -865,7 +865,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
     }
     "recover from scratch if onSnapshot doesn't handle loaded snapshot" in {
       val actor = unrecoveredSnapshotActor()
-      val snapshot = Snapshot("foo", emitterIdA, event("b", 2), timestamp(2, 4))
+      val snapshot = Snapshot("foo", emitterIdA, event("b", 2), timestamp(2, 4), 2)
 
       logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
       logProbe.sender() ! LoadSnapshotSuccess(Some(snapshot), instanceId)
@@ -895,7 +895,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
       evtProbe.expectMsg((Vector("x", "a", "b"), timestamp(3, 1), timestamp(3, 1), 3))
       actor ! "snap"
 
-      val snapshot = Snapshot(State(Vector("x", "a", "b")), emitterIdA, event3, timestamp(3, 1))
+      val snapshot = Snapshot(State(Vector("x", "a", "b")), emitterIdA, event3, timestamp(3, 1), 3)
       logProbe.expectMsg(SaveSnapshot(snapshot, system.deadLetters, instanceId))
       logProbe.sender() ! SaveSnapshotSuccess(snapshot.metadata, instanceId)
       cmdProbe.expectMsg(snapshot.metadata)
@@ -928,7 +928,7 @@ class EventsourcedActorSpec extends TestKit(ActorSystem("test", EventsourcedActo
       val unconfirmed = Vector(
         DeliveryAttempt("3", ("x", timestamp(3), timestamp(3), 3), cmdProbe.ref.path),
         DeliveryAttempt("4", ("y", timestamp(4), timestamp(4), 4), cmdProbe.ref.path))
-      val snapshot = Snapshot(State(Vector("a", "b")), emitterIdA, event(DeliverRequested("y"), 4), timestamp(4), deliveryAttempts = unconfirmed)
+      val snapshot = Snapshot(State(Vector("a", "b")), emitterIdA, event(DeliverRequested("y"), 4), timestamp(4), 4, deliveryAttempts = unconfirmed)
 
       logProbe.expectMsg(SaveSnapshot(snapshot, system.deadLetters, instanceId))
       logProbe.sender() ! SaveSnapshotSuccess(snapshot.metadata, instanceId)
