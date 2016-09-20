@@ -344,7 +344,7 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
       val requests = Vector(
         PersistOnEventRequest(3L, Vector(PersistOnEventInvocation("y", Set())), instanceId),
         PersistOnEventRequest(4L, Vector(PersistOnEventInvocation("z", Set())), instanceId))
-      val snapshot = Snapshot("foo", emitterIdA, event("x", 2), timestamp(2), persistOnEventRequests = requests)
+      val snapshot = Snapshot("foo", emitterIdA, event("x", 2), timestamp(2), 2, persistOnEventRequests = requests)
 
       logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
       logProbe.sender() ! LoadSnapshotSuccess(Some(snapshot), instanceId)

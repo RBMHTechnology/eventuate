@@ -44,6 +44,22 @@ message GetReplicationEndpointInfoSuccessFormat {
   required ReplicationEndpointInfoFormat info = 1;
 }
 
+message SynchronizeReplicationProgressFormat {
+  optional ReplicationEndpointInfoFormat info = 1;
+}
+
+message SynchronizeReplicationProgressSuccessFormat {
+  optional ReplicationEndpointInfoFormat info = 1;
+}
+
+message SynchronizeReplicationProgressFailureFormat {
+  optional PayloadFormat cause = 1;
+}
+
+message SynchronizeReplicationProgressSourceExceptionFormat {
+  optional string message = 1;
+}
+
 message ReplicationReadEnvelopeFormat {
   optional ReplicationReadFormat payload = 1;
   optional string logName = 2;

@@ -18,7 +18,9 @@ package com.rbmhtechnology.eventuate.serializer
 
 import akka.actor.ExtendedActorSystem
 import akka.serialization._
-
+import com.rbmhtechnology.eventuate.ReplicationProtocol.SynchronizeReplicationProgressFailure
+import com.rbmhtechnology.eventuate.ReplicationProtocol.SynchronizeReplicationProgressSourceException
+import com.rbmhtechnology.eventuate.ReplicationProtocol.SynchronizeReplicationProgressSuccess
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 import com.rbmhtechnology.eventuate.serializer.ReplicationProtocolFormats._
@@ -35,6 +37,10 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
 
   val GetReplicationEndpointInfoClass = GetReplicationEndpointInfo.getClass
   val GetReplicationEndpointInfoSuccessClass = classOf[GetReplicationEndpointInfoSuccess]
+  val SynchronizeReplicationProgressClass = classOf[SynchronizeReplicationProgress]
+  val SynchronizeReplicationProgressSuccessClass = classOf[SynchronizeReplicationProgressSuccess]
+  val SynchronizeReplicationProgressFailureClass = classOf[SynchronizeReplicationProgressFailure]
+  val SynchronizeReplicationProgressSourceExceptionClass = classOf[SynchronizeReplicationProgressSourceException]
   val ReplicationReadEnvelopeClass = classOf[ReplicationReadEnvelope]
   val ReplicationReadClass = classOf[ReplicationRead]
   val ReplicationReadSuccessClass = classOf[ReplicationReadSuccess]
@@ -52,6 +58,12 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         GetReplicationEndpointInfoFormat.newBuilder().build().toByteArray
       case m: GetReplicationEndpointInfoSuccess =>
         getReplicationEndpointInfoSuccessFormatBuilder(m).build().toByteArray
+      case m: SynchronizeReplicationProgress =>
+        synchronizeReplicationProgressFormatBuilder(m).build().toByteArray
+      case m: SynchronizeReplicationProgressSuccess =>
+        synchronizeReplicationProgressSuccessFormatBuilder(m).build().toByteArray
+      case m: SynchronizeReplicationProgressFailure =>
+        synchronizeReplicationProgressFailureFormatBuilder(m).build().toByteArray
       case m: ReplicationReadEnvelope =>
         replicationReadEnvelopeFormatBuilder(m).build().toByteArray
       case m: ReplicationRead =>
@@ -66,6 +78,8 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         replicationReadSourceExceptionFormatBuilder(m).build().toByteArray
       case m: IncompatibleApplicationVersionException =>
         incompatibleApplicationVersionExceptionFormatBuilder(m).build().toByteArray
+      case m: SynchronizeReplicationProgressSourceException =>
+        synchronizeReplicationProgressSourceExceptionFormatBuilder(m).build().toByteArray
       case _ =>
         throw new IllegalArgumentException(s"can't serialize object of type ${o.getClass}")
     }
@@ -78,6 +92,12 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         GetReplicationEndpointInfo
       case GetReplicationEndpointInfoSuccessClass =>
         getReplicationEndpointInfoSuccess(GetReplicationEndpointInfoSuccessFormat.parseFrom(bytes))
+      case SynchronizeReplicationProgressClass =>
+        synchronizeReplicationProgress(SynchronizeReplicationProgressFormat.parseFrom(bytes))
+      case SynchronizeReplicationProgressSuccessClass =>
+        synchronizeReplicationProgressSuccess(SynchronizeReplicationProgressSuccessFormat.parseFrom(bytes))
+      case SynchronizeReplicationProgressFailureClass =>
+        synchronizeReplicationProgressFailure(SynchronizeReplicationProgressFailureFormat.parseFrom(bytes))
       case ReplicationReadEnvelopeClass =>
         replicationReadEnvelope(ReplicationReadEnvelopeFormat.parseFrom(bytes))
       case ReplicationReadClass =>
@@ -92,6 +112,8 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
         replicationReadSourceException(ReplicationReadSourceExceptionFormat.parseFrom(bytes))
       case IncompatibleApplicationVersionExceptionClass =>
         incompatibleApplicationVersionException(IncompatibleApplicationVersionExceptionFormat.parseFrom(bytes))
+      case SynchronizeReplicationProgressSourceExceptionClass =>
+        synchronizeReplicationProgressSourceException(SynchronizeReplicationProgressSourceExceptionFormat.parseFrom(bytes))
       case _ =>
         throw new IllegalArgumentException(s"can't deserialize object of type ${clazz}")
     }
@@ -142,17 +164,26 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   private def getReplicationEndpointInfoSuccessFormatBuilder(message: GetReplicationEndpointInfoSuccess): GetReplicationEndpointInfoSuccessFormat.Builder =
     GetReplicationEndpointInfoSuccessFormat.newBuilder().setInfo(replicationEndpointInfoFormatBuilder(message.info))
 
+  private def synchronizeReplicationProgressFormatBuilder(message: SynchronizeReplicationProgress): SynchronizeReplicationProgressFormat.Builder =
+    SynchronizeReplicationProgressFormat.newBuilder().setInfo(replicationEndpointInfoFormatBuilder(message.info))
+
+  private def synchronizeReplicationProgressSuccessFormatBuilder(message: SynchronizeReplicationProgressSuccess): SynchronizeReplicationProgressSuccessFormat.Builder =
+    SynchronizeReplicationProgressSuccessFormat.newBuilder().setInfo(replicationEndpointInfoFormatBuilder(message.info))
+
+  private def synchronizeReplicationProgressFailureFormatBuilder(message: SynchronizeReplicationProgressFailure): SynchronizeReplicationProgressFailureFormat.Builder =
+    SynchronizeReplicationProgressFailureFormat.newBuilder().setCause(commonSerializer.payloadFormatBuilder(message.cause))
+
   private def replicationEndpointInfoFormatBuilder(info: ReplicationEndpointInfo): ReplicationEndpointInfoFormat.Builder = {
     val builder = ReplicationEndpointInfoFormat.newBuilder()
     builder.setEndpointId(info.endpointId)
-    info.logInfos.foreach(logInfo => builder.addLogInfos(logInfoFormatBuilder(logInfo)))
+    info.logSequenceNrs.foreach(logInfo => builder.addLogInfos(logInfoFormatBuilder(logInfo)))
     builder
   }
 
-  private def logInfoFormatBuilder(info: LogInfo): LogInfoFormat.Builder = {
+  private def logInfoFormatBuilder(info: (String, Long)): LogInfoFormat.Builder = {
     val builder = LogInfoFormat.newBuilder()
-    builder.setLogName(info.logName)
-    builder.setSequenceNr(info.sequenceNr)
+    builder.setLogName(info._1)
+    builder.setSequenceNr(info._2)
     builder
   }
 
@@ -176,6 +207,9 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     builder.setMessage(exception.getMessage)
     builder
   }
+
+  private def synchronizeReplicationProgressSourceExceptionFormatBuilder(ex: SynchronizeReplicationProgressSourceException): SynchronizeReplicationProgressSourceExceptionFormat.Builder =
+    SynchronizeReplicationProgressSourceExceptionFormat.newBuilder().setMessage(ex.message)
 
   // --------------------------------------------------------------------------------
   //  fromBinary helpers
@@ -221,14 +255,23 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
   private def getReplicationEndpointInfoSuccess(messageFormat: GetReplicationEndpointInfoSuccessFormat) =
     GetReplicationEndpointInfoSuccess(replicationEndpointInfo(messageFormat.getInfo))
 
+  private def synchronizeReplicationProgress(messageFormat: SynchronizeReplicationProgressFormat) =
+    SynchronizeReplicationProgress(replicationEndpointInfo(messageFormat.getInfo))
+
+  private def synchronizeReplicationProgressSuccess(messageFormat: SynchronizeReplicationProgressSuccessFormat) =
+    SynchronizeReplicationProgressSuccess(replicationEndpointInfo(messageFormat.getInfo))
+
+  private def synchronizeReplicationProgressFailure(messageFormat: SynchronizeReplicationProgressFailureFormat): SynchronizeReplicationProgressFailure =
+    SynchronizeReplicationProgressFailure(commonSerializer.payload(messageFormat.getCause).asInstanceOf[SynchronizeReplicationProgressException])
+
   private def replicationEndpointInfo(infoFormat: ReplicationEndpointInfoFormat): ReplicationEndpointInfo = {
     ReplicationEndpointInfo(
       infoFormat.getEndpointId,
       infoFormat.getLogInfosList.asScala.map(logInfo)(breakOut))
   }
 
-  private def logInfo(infoFormat: LogInfoFormat): LogInfo =
-    LogInfo(infoFormat.getLogName, infoFormat.getSequenceNr)
+  private def logInfo(infoFormat: LogInfoFormat): (String, Long) =
+    infoFormat.getLogName -> infoFormat.getSequenceNr
 
   private def applicationVersion(applicationVersionFormat: ApplicationVersionFormat): ApplicationVersion =
     ApplicationVersion(applicationVersionFormat.getMajor, applicationVersionFormat.getMinor)
@@ -241,4 +284,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
 
   private def replicationReadSourceException(exceptionFormat: ReplicationReadSourceExceptionFormat): ReplicationReadSourceException =
     ReplicationReadSourceException(exceptionFormat.getMessage)
+
+  private def synchronizeReplicationProgressSourceException(exceptionFormat: SynchronizeReplicationProgressSourceExceptionFormat): SynchronizeReplicationProgressSourceException =
+    SynchronizeReplicationProgressSourceException(exceptionFormat.getMessage)
 }

@@ -104,7 +104,7 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
     index = createIndex(cassandra, state.eventLogClockSnapshot, indexStore, eventLogStore, id)
     indexSequenceNr = state.eventLogClockSnapshot.sequenceNr
     updateCount = state.eventLogClock.sequenceNr - indexSequenceNr
-    context.parent ! ServiceInitialized
+    context.parent ! ServiceInitialized(id)
   }
 
   override def readReplicationProgresses: Future[Map[String, Long]] =
@@ -128,6 +128,11 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
   override def writeDeletionMetadata(deleteMetadata: DeletionMetadata) =
     deletedToStore.writeDeletedTo(deleteMetadata.toSequenceNr)
 
+  override def writeEventLogClockSnapshot(clock: EventLogClock): Future[Unit] = {
+    import context.dispatcher
+    indexStore.writeEventLogClockSnapshotAsync(clock).map(_ => ())
+  }
+
   override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
     writeRetry(events, partition, clock)
 
@@ -138,26 +143,26 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
   private def writeRetry(events: Seq[DurableEvent], partition: Long, clock: EventLogClock, num: Int = 0): Unit = {
     Try(writeBatch(events, partition, clock)) match {
       case Success(r) =>
-        context.parent ! ServiceNormal
+        context.parent ! ServiceNormal(id)
       case Failure(e) if num >= cassandra.settings.writeRetryMax =>
         logger.error(e, s"write attempt ${num} failed: reached maximum number of retries - stop self")
         context.stop(self)
         throw e
       case Failure(e: TimeoutException) =>
-        context.parent ! ServiceFailed(num)
+        context.parent ! ServiceFailed(id, num, e)
         logger.error(e, s"write attempt ${num} failed: timeout after ${cassandra.settings.writeTimeout} ms - retry now")
         writeRetry(events, partition, clock, num + 1)
       case Failure(e: WriteTimeoutException) =>
-        context.parent ! ServiceFailed(num)
+        context.parent ! ServiceFailed(id, num, e)
         logger.error(e, s"write attempt ${num} failed - retry now")
         writeRetry(events, partition, clock, num + 1)
       case Failure(e: QueryExecutionException) =>
-        context.parent ! ServiceFailed(num)
+        context.parent ! ServiceFailed(id, num, e)
         logger.error(e, s"write attempt ${num} failed - retry in ${cassandra.settings.writeTimeout} ms")
         Thread.sleep(cassandra.settings.writeTimeout)
         writeRetry(events, partition, clock, num + 1)
       case Failure(e: NoHostAvailableException) =>
-        context.parent ! ServiceFailed(num)
+        context.parent ! ServiceFailed(id, num, e)
         logger.error(e, s"write attempt ${num} failed - retry in ${cassandra.settings.writeTimeout} ms")
         Thread.sleep(cassandra.settings.writeTimeout)
         writeRetry(events, partition, clock, num + 1)

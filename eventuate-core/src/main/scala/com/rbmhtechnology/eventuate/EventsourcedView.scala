@@ -98,6 +98,7 @@ trait EventsourcedView extends Actor with Stash {
   private var _recovering: Boolean = true
   private var _eventHandling: Boolean = false
   private var _lastHandledEvent: DurableEvent = _
+  private var _lastReceivedSequenceNr = 0L
 
   private val settings = new EventsourcedViewSettings(context.system.settings.config)
   private var saveRequests: Map[SnapshotMetadata, Handler[SnapshotMetadata]] = Map.empty
@@ -220,6 +221,8 @@ trait EventsourcedView extends Actor with Stash {
       if (!recovering) versionChanged(currentVersion)
       _eventHandling = false
     } else _lastHandledEvent = previous
+
+    _lastReceivedSequenceNr = event.localSequenceNr
   }
 
   /**
@@ -303,12 +306,12 @@ trait EventsourcedView extends Actor with Stash {
       case other                              => other
     }
 
-    val prototype = Snapshot(payload, id, lastHandledEvent, currentVersion)
+    val prototype = Snapshot(payload, id, lastHandledEvent, currentVersion, _lastReceivedSequenceNr)
     val metadata = prototype.metadata
     val iid = instanceId
 
     if (saveRequests.contains(metadata)) {
-      handler(Failure(new IllegalStateException(s"snapshot with metadata ${metadata} is currently being saved")))
+      handler(Failure(new IllegalStateException(s"snapshot with metadata $metadata is currently being saved")))
     } else {
       saveRequests += (metadata -> handler)
       val snapshot = snapshotCaptured(prototype)
@@ -317,6 +320,17 @@ trait EventsourcedView extends Actor with Stash {
       }.pipeTo(self)(sender())
     }
   }
+
+  /**
+   * Override to provide an application-defined log sequence number from which event replay will start.
+   *
+   * If `Some(snr)` is returned snapshot loading will be skipped and replay will start from
+   * the given sequence number `snr`.
+   *
+   * If `None` is returned the actor proceeds with the regular snapshot loading procedure.
+   */
+  def replayFromSequenceNr: Option[Long] =
+    None
 
   /**
    * Internal API.
@@ -342,7 +356,10 @@ trait EventsourcedView extends Actor with Stash {
    * Internal API.
    */
   private[eventuate] def init(): Unit =
-    load()
+    replayFromSequenceNr match {
+      case Some(snr) => replay(snr, subscribe = true)
+      case None      => load()
+    }
 
   /**
    * Internal API.

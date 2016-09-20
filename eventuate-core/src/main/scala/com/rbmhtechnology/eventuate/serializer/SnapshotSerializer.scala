@@ -75,6 +75,7 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
     builder.setEmitterId(snapshot.emitterId)
     builder.setLastEvent(eventSerializer.durableEventFormatBuilder(snapshot.lastEvent))
     builder.setCurrentTime(commonSerializer.vectorTimeFormatBuilder(snapshot.currentTime))
+    builder.setSequenceNr(snapshot.sequenceNr)
 
     snapshot.deliveryAttempts.foreach { da =>
       builder.addDeliveryAttempts(deliveryAttemptFormatBuilder(da))
@@ -161,11 +162,17 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
       persistOnEventRequestsBuilder += persistOnEventRequest(prf)
     }
 
+    val durableEvent = eventSerializer.durableEvent(snapshotFormat.getLastEvent)
+    val sequenceNr =
+      if (snapshotFormat.hasSequenceNr) snapshotFormat.getSequenceNr
+      else durableEvent.localSequenceNr
+
     Snapshot(
       commonSerializer.payload(snapshotFormat.getPayload),
       snapshotFormat.getEmitterId,
-      eventSerializer.durableEvent(snapshotFormat.getLastEvent),
+      durableEvent,
       commonSerializer.vectorTime(snapshotFormat.getCurrentTime),
+      sequenceNr,
       deliveryAttemptsBuilder.result(),
       persistOnEventRequestsBuilder.result())
   }

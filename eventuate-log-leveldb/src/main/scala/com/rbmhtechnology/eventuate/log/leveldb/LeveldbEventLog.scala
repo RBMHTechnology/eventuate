@@ -112,6 +112,9 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventL
   override def writeReplicationProgress(logId: String, progress: Long): Future[Unit] =
     completed(withBatch(batch => replicationProgressMap.writeReplicationProgress(logId, progress, batch)))
 
+  def writeEventLogClockSnapshot(clock: EventLogClock): Future[Unit] =
+    withBatch(batch => Future.fromTry(Try(writeEventLogClockSnapshotSync(clock, batch))))
+
   private def eventIterator(from: Long, classifier: Int): EventIterator =
     new EventIterator(from, classifier)
 
@@ -136,9 +139,7 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventL
   override def recoverState: Future[LeveldbEventLogState] = completed {
     val clockSnapshot = readEventLogClockSnapshot
     val clockRecovered = withEventIterator(clockSnapshot.sequenceNr + 1L, EventKey.DefaultClassifier) { iter =>
-      iter.foldLeft(clockSnapshot) {
-        case (clock, event) => clock.update(event)
-      }
+      iter.foldLeft(clockSnapshot)(_ update _)
     }
     LeveldbEventLogState(clockRecovered, deletionMetadataStore.readDeletionMetadata())
   }
@@ -199,10 +200,13 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventL
     updateCount += events.size
 
     if (updateCount >= settings.stateSnapshotLimit) {
-      batch.put(clockKeyBytes, clockBytes(clock))
+      writeEventLogClockSnapshotSync(clock, batch)
       updateCount = 0
     }
   }
+
+  private def writeEventLogClockSnapshotSync(clock: EventLogClock, batch: WriteBatch): Unit =
+    batch.put(clockKeyBytes, clockBytes(clock))
 
   private def withIterator[R](body: DBIterator => R): R = {
     val so = snapshotOptions()
@@ -226,7 +230,6 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventL
 
   private class EventIterator(from: Long, classifier: Int) extends Iterator[DurableEvent] with Closeable {
     val opts = snapshotOptions()
-    var last = -1L
 
     val iter1 = leveldb.iterator(opts)
     val iter2 = iter1.asScala.takeWhile(entry => eventKey(entry.getKey).classifier == classifier).map(entry => event(entry.getValue))
@@ -236,22 +239,8 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventL
     override def hasNext: Boolean =
       iter2.hasNext
 
-    override def next(): DurableEvent = {
-      val event = iter2.next()
-
-      // LeveldbEventLog must deliver gap-less event sequence numbers. If this
-      // requirement is not met by the current event log we rather fail early
-      // in here than working on a possibly broken state instead.
-      if (classifier == EventKey.DefaultClassifier) {
-        val expectedSequenceNr = last + 1L
-
-        if (event.localSequenceNr != expectedSequenceNr && expectedSequenceNr > 0L)
-          throw new SequenceGapDetectedException(expectedSequenceNr, event.localSequenceNr)
-        else
-          last = event.localSequenceNr
-      }
-      event
-    }
+    override def next(): DurableEvent =
+      iter2.next()
 
     override def close(): Unit = {
       iter1.close()
@@ -373,10 +362,4 @@ object LeveldbEventLog {
     val logProps = Props(new LeveldbEventLog(logId, prefix)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
     if (batching) Props(new BatchingLayer(logProps)) else logProps
   }
-
-  /**
-   * Reported if a sequence number gap has been detected while reading events from the LevelDB event log.
-   */
-  class SequenceGapDetectedException(val expectedSequenceNr: Long, val actualSequenceNr: Long)
-    extends IllegalStateException(s"LevelDB event log contains unexpected sequence number gap. Detected $actualSequenceNr where $expectedSequenceNr was expected.")
 }
