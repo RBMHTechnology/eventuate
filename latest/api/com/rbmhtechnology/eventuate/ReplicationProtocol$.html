@@ -90,7 +90,42 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.AdjustEventLogClockFailure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AdjustEventLogClockFailureextendsProductwithSerializable"></a>
+      <a id="AdjustEventLogClockFailure:AdjustEventLogClockFailure"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReplicationProtocol$$AdjustEventLogClockFailure.html"><span class="name">AdjustEventLogClockFailure</span></a><span class="params">(<span name="cause">cause: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@AdjustEventLogClockFailureextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Failure reply after a <a href="ReplicationProtocol$$AdjustEventLogClock$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.AdjustEventLogClock">AdjustEventLogClock</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.AdjustEventLogClockSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="AdjustEventLogClockSuccessextendsProductwithSerializable"></a>
+      <a id="AdjustEventLogClockSuccess:AdjustEventLogClockSuccess"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReplicationProtocol$$AdjustEventLogClockSuccess.html"><span class="name">AdjustEventLogClockSuccess</span></a><span class="params">(<span name="clock">clock: <a href="log/EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@AdjustEventLogClockSuccessextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Success reply after a <a href="ReplicationProtocol$$AdjustEventLogClock$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.AdjustEventLogClock">AdjustEventLogClock</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Success reply after a <a href="ReplicationProtocol$$AdjustEventLogClock$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.AdjustEventLogClock">AdjustEventLogClock</a>. Contains the adjusted clock.
+</p></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="FormatextendsSerializable"></a>
       <a id="Format:Format"></a>
       <h4 class="signature">
@@ -228,24 +263,6 @@
     </span>
       <p class="shortcomment cmt">Indicates that events cannot be replication from a source <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a> to a target <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>
 because their application versions are incompatible.</p>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.LogInfo" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="LogInfoextendsReplicationProtocol.FormatwithProductwithSerializable"></a>
-      <a id="LogInfo:LogInfo"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="ReplicationProtocol$$LogInfo.html"><span class="name">LogInfo</span></a><span class="params">(<span name="logName">logName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="sequenceNr">sequenceNr: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@LogInfoextendsReplicationProtocol.FormatwithProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Info about an event log.</p><div class="fullcomment"><div class="comment cmt"><p>Info about an event log. Part of <a href="ReplicationProtocol$$ReplicationEndpointInfo.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo">ReplicationEndpointInfo</a>.
-</p></div><dl class="paramcmts block"><dt class="param">logName</dt><dd class="cmt"><p>Name of the log this info object is about</p></dd><dt class="param">sequenceNr</dt><dd class="cmt"><p>Current sequence number of this log</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationEndpointInfo" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ReplicationEndpointInfoextendsReplicationProtocol.FormatwithProductwithSerializable"></a>
       <a id="ReplicationEndpointInfo:ReplicationEndpointInfo"></a>
@@ -255,7 +272,7 @@ because their application versions are incompatible.</p>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ReplicationProtocol$$ReplicationEndpointInfo.html"><span class="name">ReplicationEndpointInfo</span></a><span class="params">(<span name="endpointId">endpointId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logInfos">logInfos: <span class="extype" name="scala.Predef.Set">Set</span>[<a href="ReplicationProtocol$$LogInfo.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.LogInfo">LogInfo</a>]</span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="ReplicationProtocol$$ReplicationEndpointInfo.html"><span class="name">ReplicationEndpointInfo</span></a><span class="params">(<span name="endpointId">endpointId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logSequenceNrs">logSequenceNrs: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Long">Long</span>]</span>)</span><span class="result"> extends <a href="ReplicationProtocol$$Format.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.Format">Format</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@ReplicationEndpointInfoextendsReplicationProtocol.FormatwithProductwithSerializable" title="Permalink" target="_top">
@@ -263,7 +280,7 @@ because their application versions are incompatible.</p>
       </a>
     </span>
       <p class="shortcomment cmt"><a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a> info object.</p><div class="fullcomment"><div class="comment cmt"><p><a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a> info object. Exchanged between replication endpoints to establish replication connections.
-</p></div><dl class="paramcmts block"><dt class="param">endpointId</dt><dd class="cmt"><p>Replication endpoint id.</p></dd><dt class="param">logInfos</dt><dd class="cmt"><p><a href="ReplicationProtocol$$LogInfo.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationProtocol.LogInfo">LogInfo</a>s of logs managed by the replication endpoint.</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="param">endpointId</dt><dd class="cmt"><p>Replication endpoint id.</p></dd><dt class="param">logSequenceNrs</dt><dd class="cmt"><p>sequence numbers of logs managed by the replication endpoint.</p></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.ReplicationRead" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicationReadextendsReplicationProtocol.FormatwithProductwithSerializable"></a>
       <a id="ReplicationRead:ReplicationRead"></a>
@@ -563,6 +580,25 @@ dispatch the request to the appropriate log.</p>
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.AdjustEventLogClock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="AdjustEventLogClock"></a>
+      <a id="AdjustEventLogClock:AdjustEventLogClock"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ReplicationProtocol$$AdjustEventLogClock$.html"><span class="name">AdjustEventLogClock</span></a><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationProtocol$@AdjustEventLogClock" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Instruct a log to adjust the sequence nr of the internal <span class="extype" name="EventLogClock">EventLogClock</span> to the version vector.</p><div class="fullcomment"><div class="comment cmt"><p>Instruct a log to adjust the sequence nr of the internal <span class="extype" name="EventLogClock">EventLogClock</span> to the version vector.
+This is ensures that the sequence nr is greater than or equal to the log's entry in the version vector.
+</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.ReplicationProtocol.GetEventLogClock" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="GetEventLogClock"></a>
       <a id="GetEventLogClock:GetEventLogClock"></a>

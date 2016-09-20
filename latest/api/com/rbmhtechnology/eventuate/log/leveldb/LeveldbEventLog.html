@@ -1124,6 +1124,25 @@ themselves against request overload.
 <a href="../DeletionMetadata.html#toSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.log.DeletionMetadata#toSequenceNr">DeletionMetadata.toSequenceNr</a> as deleted, i.e. they are not read on replay and indicates which remote logs
 must have replicated these events before they are allowed to be physically deleted locally.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#writeEventLogClockSnapshot" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="writeEventLogClockSnapshot(clock:com.rbmhtechnology.eventuate.log.EventLogClock):scala.concurrent.Future[Unit]"></a>
+      <a id="writeEventLogClockSnapshot(EventLogClock):Future[Unit]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">writeEventLogClockSnapshot</span><span class="params">(<span name="clock">clock: <a href="../EventLogClock.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogClock">EventLogClock</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog@writeEventLogClockSnapshot(clock:com.rbmhtechnology.eventuate.log.EventLogClock):scala.concurrent.Future[Unit]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Asynchronously writes the current snapshot of the event log clock
+</p><div class="fullcomment"><div class="comment cmt"><p>Asynchronously writes the current snapshot of the event log clock
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog">LeveldbEventLog</a> → <a href="../EventLogSPI.html" class="extype" name="com.rbmhtechnology.eventuate.log.EventLogSPI">EventLogSPI</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog#writeReplicationProgress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="writeReplicationProgress(logId:String,progress:Long):scala.concurrent.Future[Unit]"></a>
       <a id="writeReplicationProgress(String,Long):Future[Unit]"></a>
