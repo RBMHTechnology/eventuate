@@ -156,8 +156,8 @@ trait MultiLocationSpecCassandra extends MultiLocationSpec with LocationCleanupC
   def cassandraDir: String =
     EmbeddedCassandra.DefaultCassandraDir
 
-  override def location(name: String, customPort: Int = 0, customConfig: Config = ConfigFactory.empty()): Location = {
-    val location = super.location(name, customPort, customConfig)
+  override def location(name: String, customPort: Int = 0, customConfig: Config = ConfigFactory.empty(), logFactory: String => Props = logFactory): Location = {
+    val location = super.location(name, customPort, customConfig, logFactory)
     Cassandra(location.system) // enforce keyspace/schema setup
     location
   }

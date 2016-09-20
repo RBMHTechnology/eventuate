@@ -128,6 +128,11 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
   override def writeDeletionMetadata(deleteMetadata: DeletionMetadata) =
     deletedToStore.writeDeletedTo(deleteMetadata.toSequenceNr)
 
+  override def writeEventLogClockSnapshot(clock: EventLogClock): Future[Unit] = {
+    import context.dispatcher
+    indexStore.writeEventLogClockSnapshotAsync(clock).map(_ => ())
+  }
+
   override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
     writeRetry(events, partition, clock)
 

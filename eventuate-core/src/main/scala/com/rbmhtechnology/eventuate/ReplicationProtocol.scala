@@ -29,14 +29,6 @@ object ReplicationProtocol {
    */
   trait Format extends Serializable
 
-  /**
-   * Info about an event log. Part of [[ReplicationEndpointInfo]].
-   *
-   * @param logName Name of the log this info object is about
-   * @param sequenceNr Current sequence number of this log
-   */
-  case class LogInfo(logName: String, sequenceNr: Long) extends Format
-
   object ReplicationEndpointInfo {
     /**
      * Creates a log identifier from `endpointId` and `logName`.
@@ -49,24 +41,19 @@ object ReplicationProtocol {
    * [[ReplicationEndpoint]] info object. Exchanged between replication endpoints to establish replication connections.
    *
    * @param endpointId Replication endpoint id.
-   * @param logInfos [[LogInfo]]s of logs managed by the replication endpoint.
+   * @param logSequenceNrs sequence numbers of logs managed by the replication endpoint.
    */
-  case class ReplicationEndpointInfo(endpointId: String, logInfos: Set[LogInfo]) extends Format {
+  case class ReplicationEndpointInfo(endpointId: String, logSequenceNrs: Map[String, Long]) extends Format {
     /**
      * The names of logs managed by the [[ReplicationEndpoint]].
      */
-    val logNames: Set[String] = logInfos.map(_.logName)
+    val logNames: Set[String] = logSequenceNrs.keySet
 
     /**
      * Creates a log identifier from this info object's `endpointId` and `logName`.
      */
     def logId(logName: String): String =
       ReplicationEndpointInfo.logId(endpointId, logName)
-
-    /**
-     * Returns a [[LogInfo]] for the given `logName`.
-     */
-    def logInfo(logName: String): Option[LogInfo] = logInfos.find(_.logName == logName)
   }
 
   /**
@@ -78,6 +65,38 @@ object ReplicationProtocol {
    * Success reply to [[GetReplicationEndpointInfo]].
    */
   private[eventuate] case class GetReplicationEndpointInfoSuccess(info: ReplicationEndpointInfo) extends Format
+
+  /**
+   * Used to synchronize replication progress between two [[ReplicationEndpoint]]s when disaster recovery
+   * is initiated (through [[ReplicationEndpoint.recover()]]. Sent by the [[ReplicationEndpoint]]
+   * that is recovered to instruct a remote [[ReplicationEndpoint]] to
+   *
+   * - reset locally stored replication progress according to the sequence numbers given in ``info`` and
+   * - respond with a [[ReplicationEndpointInfo]] containing the after disaster progress of its logs
+   */
+  private[eventuate] case class SynchronizeReplicationProgress(info: ReplicationEndpointInfo) extends Format
+
+  /**
+   * Successful response to a [[SynchronizeReplicationProgress]] request.
+   */
+  private[eventuate] case class SynchronizeReplicationProgressSuccess(info: ReplicationEndpointInfo) extends Format
+
+  /**
+   * Failure response to a [[SynchronizeReplicationProgress]] request.
+   */
+  private[eventuate] case class SynchronizeReplicationProgressFailure(cause: SynchronizeReplicationProgressException) extends Format
+
+  /**
+   * Base class for all [[SynchronizeReplicationProgressFailure]] `cause`s.
+   */
+  private[eventuate] abstract class SynchronizeReplicationProgressException(message: String) extends RuntimeException(message)
+
+  /**
+   * Indicates a problem synchronizing the replication progress of a remote [[ReplicationEndpoint]]
+   */
+  private[eventuate] case class SynchronizeReplicationProgressSourceException(message: String)
+    extends SynchronizeReplicationProgressException(s"Failure when updating local replication progress: $message")
+    with Format
 
   /**
    * Update notification sent to a replicator indicating that new events are available for replication.
@@ -211,6 +230,22 @@ object ReplicationProtocol {
    * Indicates that a [[ReplicationRead]] request timed out.
    */
   case class ReplicationReadTimeoutException(timeout: FiniteDuration) extends ReplicationReadException(s"Replication read timed out after $timeout")
+
+  /**
+   * Instruct a log to adjust the sequence nr of the internal [[EventLogClock]] to the version vector.
+   * This is ensures that the sequence nr is greater than or equal to the log's entry in the version vector.
+   */
+  case object AdjustEventLogClock
+
+  /**
+   * Success reply after a [[AdjustEventLogClock]]. Contains the adjusted clock.
+   */
+  case class AdjustEventLogClockSuccess(clock: EventLogClock)
+
+  /**
+   * Failure reply after a [[AdjustEventLogClock]].
+   */
+  case class AdjustEventLogClockFailure(cause: Throwable)
 
   /**
    * Indicates that events cannot be replication from a source [[ReplicationEndpoint]] to a target [[ReplicationEndpoint]]
