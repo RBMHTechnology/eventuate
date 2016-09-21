@@ -200,14 +200,14 @@
 <h1>Eventuate<a class="headerlink" href="#eventuate" title="Permalink to this headline">¶</a></h1>
 <p>Eventuate is a toolkit for building applications composed of event-driven and event-sourced services that collaborate by exchanging events over shared event logs. Services can either be co-located on a single node or distributed up to global scale. Services can also be replicated with causal consistency and remain available for writes during network partitions. Eventuate has a <a class="reference external" href="http://www.oracle.com/technetwork/java/javase/overview/index.html">Java</a> and <a class="reference external" href="http://www.scala-lang.org/">Scala</a> API, is written in Scala and built on top of <a class="reference external" href="http://akka.io">Akka</a>, a toolkit for building highly concurrent, distributed, and resilient message-driven applications on the JVM. Eventuate</p>
 <ul class="simple">
-<li>provides event-sourcing abstractions for building stateful services on the command-side and query-side of <a class="reference external" href="http://martinfowler.com/bliki/CQRS.html">CQRS</a>-based applications</li>
-<li>offers services a reliable and partition-tolerant event storage and event-based communication infrastructure that preserves causal ordering</li>
-<li>supports the development of <em>always-on</em> applications by allowing services to be distributed across multiple availability zones (locations)</li>
-<li>supports stateful service replication with causal consistency and concurrent state updates with automated and interactive conflict resolution options</li>
-<li>supports the implementation of reliable business processes from collaborating services that are tolerant to inter-service network partitions</li>
-<li>supports the aggregation of events from distributed services for updating persistent and in-memory query databases</li>
+<li>provides abstractions for building stateful event-sourced services, persistent and in-memory query databases and event processing pipelines</li>
+<li>provides services a reliable and partition-tolerant event bus with causal event ordering and distribution options up to global scale</li>
+<li>supports stateful service replication with causal consistency and concurrent state updates with automated and interactive conflict resolution</li>
 <li>provides implementations of operation-based CRDTs as specified in <a class="reference external" href="http://hal.upmc.fr/file/index/docid/555588/filename/techreport.pdf">A comprehensive study of Convergent and Commutative Replicated Data Types</a></li>
-<li>provides adapters to 3rd-party stream processing frameworks for analyzing generated events</li>
+<li>supports the development of <em>always-on</em> applications by allowing services to be distributed across multiple availability zones (locations)</li>
+<li>supports the implementation of reliable business processes from event-driven and command-driven service interactions</li>
+<li>supports the aggregation of events from distributed services for updating query databases</li>
+<li>provides adapters to 3rd-party stream processing frameworks for analyzing event streams</li>
 </ul>
 <div class="section" id="table-of-contents">
 <h2>Table of contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
