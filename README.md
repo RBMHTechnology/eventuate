@@ -7,14 +7,14 @@ Eventuate
 
 Eventuate is a toolkit for building applications composed of event-driven and event-sourced services that collaborate by exchanging events over shared event logs. Services can either be co-located on a single node or distributed up to global scale. Services can also be replicated with causal consistency and remain available for writes during network partitions. Eventuate has a [Java](http://www.oracle.com/technetwork/java/javase/overview/index.html) and [Scala](http://www.scala-lang.org/) API, is written in Scala and built on top of [Akka](http://akka.io), a toolkit for building highly concurrent, distributed, and resilient message-driven applications on the JVM. Eventuate
 
-- provides event-sourcing abstractions for building stateful services on the command-side and query-side of CQRS-based applications
-- offers services a reliable and partition-tolerant event storage and event-based communication infrastructure that preserves causal ordering
-- supports the development of *always-on* applications by allowing services to be distributed across multiple availability zones (locations)
-- supports stateful service replication with causal consistency and concurrent state updates with automated and interactive conflict resolution options
-- supports the implementation of reliable business processes from collaborating services that are tolerant to inter-service network partitions
-- supports the aggregation of events from distributed services for updating persistent and in-memory query databases
+- provides abstractions for building stateful event-sourced services, persistent and in-memory query databases and event processing pipelines
+- provides services a reliable and partition-tolerant event bus with causal event ordering and distribution options up to global scale  
+- supports stateful service replication with causal consistency and concurrent state updates with automated and interactive conflict resolution
 - provides implementations of operation-based CRDTs as specified in [A comprehensive study of Convergent and Commutative Replicated Data Types](http://hal.upmc.fr/file/index/docid/555588/filename/techreport.pdf)
-- provides adapters to 3rd-party stream processing frameworks for analyzing generated events
+- supports the development of *always-on* applications by allowing services to be distributed across multiple availability zones (locations)
+- supports the implementation of reliable business processes from event-driven and command-driven service interactions
+- supports the aggregation of events from distributed services for updating query databases
+- provides adapters to 3rd-party stream processing frameworks for analyzing event streams
 
 Documentation
 -------------

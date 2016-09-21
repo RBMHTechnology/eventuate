@@ -224,8 +224,8 @@ trait EventLogSPI[A] { this: Actor =>
   def writeDeletionMetadata(data: DeletionMetadata): Unit
 
   /**
-    * Asynchronously writes the current snapshot of the event log clock
-    */
+   * Asynchronously writes the current snapshot of the event log clock
+   */
   def writeEventLogClockSnapshot(clock: EventLogClock): Future[Unit]
 
   /**
@@ -494,7 +494,7 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
       clock = clock.adjustSequenceNrToProcessTime(id)
       val sdr = sender()
       writeEventLogClockSnapshot(clock) onComplete {
-        case Success(_) => sdr ! AdjustEventLogClockSuccess(clock)
+        case Success(_)  => sdr ! AdjustEventLogClockSuccess(clock)
         case Failure(ex) => sdr ! AdjustEventLogClockFailure(ex)
       }
     case Terminated(subscriber) =>
