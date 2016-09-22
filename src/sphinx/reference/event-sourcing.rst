@@ -480,11 +480,11 @@ When eventuate serializes application-defined events, :ref:`replication-filters`
 .. [#] The routing destinations of a DurableEvent_ can be obtained with its ``destinationAggregateIds`` method.
 
 .. _CQRS: http://martinfowler.com/bliki/CQRS.html
-.. _stashed: http://doc.akka.io/docs/akka/2.4.4/scala/actors.html#stash
-.. _watch: http://doc.akka.io/docs/akka/2.4.4/scala/actors.html#deathwatch-scala
-.. _serialization extension: http://doc.akka.io/docs/akka/2.4.4/scala/serialization.html
-.. _Serializer: http://doc.akka.io/api/akka/2.4.4/#akka.serialization.Serializer
-.. _manifest: http://doc.akka.io/docs/akka/2.4.4/scala/serialization.html#Serializer_with_String_Manifest
+.. _stashed: http://doc.akka.io/docs/akka/2.4/scala/actors.html#stash
+.. _watch: http://doc.akka.io/docs/akka/2.4/scala/actors.html#deathwatch-scala
+.. _serialization extension: http://doc.akka.io/docs/akka/2.4/scala/serialization.html
+.. _Serializer: http://doc.akka.io/api/akka/2.4/#akka.serialization.Serializer
+.. _manifest: http://doc.akka.io/docs/akka/2.4/scala/serialization.html#Serializer_with_String_Manifest
 .. _Protocol Buffers: https://developers.google.com/protocol-buffers/
 .. _plausible clocks: https://github.com/RBMHTechnology/eventuate/issues/68
 .. _Cassandra: http://cassandra.apache.org/
