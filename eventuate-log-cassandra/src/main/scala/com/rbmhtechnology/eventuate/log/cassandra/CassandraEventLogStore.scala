@@ -32,7 +32,7 @@ private[eventuate] class CassandraEventLogStore(cassandra: Cassandra, implicit v
     cassandra.prepareWriteEvent(logId)
 
   val preparedReadEventsStatement: PreparedStatement =
-    cassandra.prepareReadEvents(logId)
+    cassandra.prepareReadEvents(logId, settings)
 
   def write(events: Seq[DurableEvent], partition: Long) =
     cassandra.executeBatch { batch =>

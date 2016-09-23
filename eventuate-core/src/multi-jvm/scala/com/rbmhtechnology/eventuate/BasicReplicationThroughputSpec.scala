@@ -38,6 +38,7 @@ class BasicReplicationThroughputConfig(providerConfig: Config) extends MultiNode
     s"""
       |akka.remote.netty.tcp.maximum-frame-size = 1048576b
       |eventuate.log.write-batch-size = 2000
+      |eventuate.log.cassandra.write-batch-size = 2000
       |eventuate.log.replication.retry-delay = 10s
     """.stripMargin)
 

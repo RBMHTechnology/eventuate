@@ -21,7 +21,7 @@ import com.typesafe.config._
 object MultiNodeConfigCassandra {
   val providerConfig: Config = ConfigFactory.parseString(
     s"""
-       |eventuate.log.cassandra.default-port = 9142
+       |eventuate.cassandra.default-port = 9142
        |eventuate.log.cassandra.index-update-limit = 3
        |eventuate.log.cassandra.table-prefix = mnt
      """.stripMargin)

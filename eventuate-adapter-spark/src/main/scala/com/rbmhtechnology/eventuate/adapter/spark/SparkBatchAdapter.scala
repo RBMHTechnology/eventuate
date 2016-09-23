@@ -18,13 +18,11 @@ package com.rbmhtechnology.eventuate.adapter.spark
 
 import akka.actor.ActorSystem
 import akka.serialization.SerializationExtension
-
 import com.datastax.spark.connector._
 import com.datastax.spark.connector.types._
 import com.rbmhtechnology.eventuate.DurableEvent
-import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings
+import com.rbmhtechnology.eventuate.log.cassandra.CassandraSettings
 import com.typesafe.config._
-
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 
@@ -44,7 +42,7 @@ import org.apache.spark.rdd.RDD
  */
 class SparkBatchAdapter(val context: SparkContext, val config: Config) {
   private val cassandraSettings =
-    new CassandraEventLogSettings(config)
+    new CassandraSettings(config)
 
   private implicit val converter: DurableEventConverter =
     new DurableEventConverter(ConfigFactory.parseString("""akka.actor.provider = "akka.actor.LocalActorRefProvider"""").withFallback(config))

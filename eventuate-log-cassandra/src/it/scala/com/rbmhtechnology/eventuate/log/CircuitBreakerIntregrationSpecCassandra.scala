@@ -45,9 +45,9 @@ object CircuitBreakerIntregrationSpecCassandra {
       |akka.loglevel = "ERROR"
       |akka.test.single-expect-default = 20s
       |
+      |eventuate.cassandra.default-port = 9142
       |eventuate.log.circuit-breaker.open-after-retries = 2
       |eventuate.log.cassandra.write-retry-max = 3
-      |eventuate.log.cassandra.default-port = 9142
       |eventuate.log.cassandra.index-update-limit = 3
       |eventuate.log.cassandra.init-retry-delay = 1s
       |eventuate.snapshot.filesystem.dir = target/test-snapshot
@@ -60,10 +60,10 @@ object CircuitBreakerIntregrationSpecCassandra {
 
   class TestEventLog(id: String, failureSpec: TestFailureSpec) extends CassandraEventLog(id) {
     override private[eventuate] def createEventLogStore(cassandra: Cassandra, logId: String) =
-      new TestEventLogStore(cassandra, logId, failureSpec)
+      new TestEventLogStore(cassandra, logId, settings, failureSpec)
   }
 
-  class TestEventLogStore(cassandra: Cassandra, logId: String, failureSpec: TestFailureSpec) extends CassandraEventLogStore(cassandra, cassandra.settings, logId) {
+  class TestEventLogStore(cassandra: Cassandra, logId: String, settings: CassandraEventLogSettings, failureSpec: TestFailureSpec) extends CassandraEventLogStore(cassandra, settings, logId) {
     import failureSpec._
 
     var numAttempts = 0

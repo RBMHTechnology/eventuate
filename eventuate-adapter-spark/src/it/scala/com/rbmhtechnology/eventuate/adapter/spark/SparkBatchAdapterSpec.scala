@@ -18,22 +18,20 @@ package com.rbmhtechnology.eventuate.adapter.spark
 
 import akka.actor._
 import akka.testkit._
-
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.utilities._
 import com.rbmhtechnology.eventuate.log.EventLogWriter
-import com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLogSettings
-
+import com.rbmhtechnology.eventuate.log.cassandra.CassandraSettings
 import org.apache.spark._
 import org.scalatest._
 
 class SparkBatchAdapterSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with SingleLocationSpecCassandraAdapter {
-  val cassandraSettings = new CassandraEventLogSettings(system.settings.config)
+  val cassandraSettings = new CassandraSettings(system.settings.config)
   val sparkConfig = new SparkConf(true)
     .set("spark.cassandra.connection.host", cassandraSettings.contactPoints.head.getHostName)
     .set("spark.cassandra.connection.port", cassandraSettings.contactPoints.head.getPort.toString)
-    .set("spark.cassandra.auth.username", system.settings.config.getString("eventuate.log.cassandra.username"))
-    .set("spark.cassandra.auth.password", system.settings.config.getString("eventuate.log.cassandra.password"))
+    .set("spark.cassandra.auth.username", system.settings.config.getString("eventuate.cassandra.username"))
+    .set("spark.cassandra.auth.password", system.settings.config.getString("eventuate.cassandra.password"))
     .setAppName("adapter")
     .setMaster("local[4]")
 

@@ -33,9 +33,9 @@ object EventLogPartitioningSpecCassandra {
       |
       |eventuate.snapshot.filesystem.dir = target/test-snapshot
       |
-      |eventuate.log.write-batch-size = 3
+      |eventuate.cassandra.default-port = 9142
+      |eventuate.log.cassandra.write-batch-size = 3
       |eventuate.log.cassandra.partition-size = 5
-      |eventuate.log.cassandra.default-port = 9142
     """.stripMargin)
 }
 

@@ -19,15 +19,14 @@ package com.rbmhtechnology.eventuate.log.cassandra
 import java.io.Closeable
 
 import akka.actor._
-
 import com.datastax.driver.core.QueryOptions
 import com.datastax.driver.core.exceptions._
-
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.log._
 import com.rbmhtechnology.eventuate.log.CircuitBreaker._
+import com.typesafe.config.Config
 
-import scala.collection.immutable.{ VectorBuilder, Seq }
+import scala.collection.immutable.{ Seq, VectorBuilder }
 import scala.concurrent._
 import scala.language.postfixOps
 import scala.util._
@@ -77,7 +76,7 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
     throw new IllegalArgumentException(s"invalid id '$id' specified - Cassandra allows alphanumeric and underscore characters only")
 
   private val cassandra: Cassandra = Cassandra(context.system)
-  override val settings: CassandraEventLogSpecificSettings = new CassandraEventLogSpecificSettings(context.system.settings.config, id)
+  override val settings: CassandraEventLogSettings = new CassandraEventLogSettings(getCassandraConfig)
 
   cassandra.createEventTable(id)
   cassandra.createAggregateEventTable(id)
@@ -252,6 +251,19 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
 
     def close(): Unit =
       ()
+  }
+
+  private def getCassandraConfig: Config = {
+    val config = context.system.settings.config
+    val fallbackConfigPath = "eventuate.log.cassandra"
+    val eventlogSpecificPath = s"${fallbackConfigPath}.${id}"
+    val fallbackConfig = config.getConfig(fallbackConfigPath)
+
+    if (config.hasPath(eventlogSpecificPath)) {
+      config.getConfig(eventlogSpecificPath)
+        .withFallback(fallbackConfig)
+    } else
+      fallbackConfig
   }
 
   // ------------------------------------------------------------------

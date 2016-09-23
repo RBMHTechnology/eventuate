@@ -104,7 +104,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
    * Settings used by the Cassandra storage backend. Closed when the `ActorSystem` of
    * this extension terminates.
    */
-  private[eventuate] val settings = new CassandraEventLogSettings(system.settings.config)
+  private[eventuate] val settings = new CassandraSettings(system.settings.config)
 
   /**
    * Serializer used by the Cassandra storage backend. Closed when the `ActorSystem` of
@@ -115,7 +115,7 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   private val logging = Logging(system, this)
   private val statements = new CassandraEventStatements with CassandraAggregateEventStatements with CassandraEventLogClockStatements with CassandraReplicationProgressStatements with CassandraDeletedToStatements {
 
-    override def settings: CassandraEventLogSettings =
+    override def settings: CassandraSettings =
       extension.settings
   }
 
@@ -182,14 +182,14 @@ class Cassandra(val system: ExtendedActorSystem) extends Extension { extension =
   private[eventuate] def prepareWriteEvent(logId: String)(implicit settings: CassandraEventLogSettings): PreparedStatement =
     session.prepare(writeEventStatement(logId)).setConsistencyLevel(settings.writeConsistency)
 
-  private[eventuate] def prepareReadEvents(logId: String)(implicit settings: CassandraEventLogSettings): PreparedStatement =
-    session.prepare(readEventsStatement(logId)).setConsistencyLevel(settings.readConsistency)
+  private[eventuate] def prepareReadEvents(logId: String, settings: CassandraEventLogSettings): PreparedStatement =
+    session.prepare(readEventsStatement(logId, settings)).setConsistencyLevel(settings.readConsistency)
 
   private[eventuate] def prepareWriteAggregateEvent(logId: String)(implicit settings: CassandraEventLogSettings): PreparedStatement =
     session.prepare(writeAggregateEventStatement(logId)).setConsistencyLevel(settings.writeConsistency)
 
-  private[eventuate] def prepareReadAggregateEvents(logId: String)(implicit settings: CassandraEventLogSettings): PreparedStatement =
-    session.prepare(readAggregateEventsStatement(logId)).setConsistencyLevel(settings.readConsistency)
+  private[eventuate] def prepareReadAggregateEvents(logId: String, settings: CassandraEventLogSettings): PreparedStatement =
+    session.prepare(readAggregateEventsStatement(logId, settings)).setConsistencyLevel(settings.readConsistency)
 
   private[eventuate] val preparedWriteEventLogClockStatement: PreparedStatement =
     session.prepare(writeEventLogClockStatement).setConsistencyLevel(settings.writeConsistency)

@@ -30,7 +30,7 @@ import scala.concurrent._
 private[eventuate] class CassandraIndexStore(cassandra: Cassandra, implicit val settings: CassandraEventLogSettings, logId: String) {
   import CassandraIndex._
 
-  private val preparedReadAggregateEventStatement: PreparedStatement = cassandra.prepareReadAggregateEvents(logId)
+  private val preparedReadAggregateEventStatement: PreparedStatement = cassandra.prepareReadAggregateEvents(logId, settings)
   private val preparedWriteAggregateEventStatement: PreparedStatement = cassandra.prepareWriteAggregateEvent(logId)
 
   def readEventLogClockSnapshotAsync(implicit executor: ExecutionContext): Future[EventLogClock] =
