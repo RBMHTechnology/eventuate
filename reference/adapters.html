@@ -281,7 +281,7 @@
 </div>
 <div class="section" id="stream-processing">
 <h3>Stream processing<a class="headerlink" href="#stream-processing" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkStreamAdapter">SparkStreamAdapter</a> supports event stream processing from event logs with any storage backend. The stream adapter connects to the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a><a class="footnote-reference" href="#id4" id="id3">[1]</a> of an event log for exposing it as <a class="reference external" href="http://spark.apache.org/docs/latest/streaming-programming-guide.html#discretized-streams-dstreams">Spark DStream</a> of <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s:</p>
+<p><a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkStreamAdapter">SparkStreamAdapter</a> supports event stream processing from event logs with any storage backend. The stream adapter connects to the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a><a class="footnote-reference" href="#replicationep" id="id3">[1]</a> of an event log for exposing it as <a class="reference external" href="http://spark.apache.org/docs/latest/streaming-programming-guide.html#discretized-streams-dstreams">Spark DStream</a> of <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate._</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.spark.SparkStreamAdapter</span>
 
@@ -319,10 +319,400 @@
 <p class="first admonition-title">Hint</p>
 <p class="last">The full example source code is in <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-spark/src/main/scala/com/rbmhtechnology/example/spark/SparkStreamAdapterExample.scala">SparkStreamAdapterExample.scala</a></p>
 </div>
-<table class="docutils footnote" frame="void" id="id4" rules="none">
+</div>
+</div>
+<div class="section" id="vert-x-adapter">
+<span id="vertx-adapter"></span><h2>Vert.x adapter<a class="headerlink" href="#vert-x-adapter" title="Permalink to this headline">¶</a></h2>
+<p>The Eventuate Vert.x adapter allows applications using a <a class="reference external" href="http://vertx.io/">Vert.x</a> instance to interact with event logs. Events can both be consumed from and produced to an event log by a Vert.x instance.</p>
+<p>Event exchange is performed over the Vert.x <a class="reference external" href="http://vertx.io/docs/vertx-core/java/#event_bus">event bus</a>. Events delivered to a Vert.x instance are either published to all subscribers or sent to a single subscriber on the event bus. Events received from a Vert.x instance are persisted to an event log by consuming events from a particular endpoint on the event bus.</p>
+<div class="section" id="event-producers">
+<h3>Event Producers<a class="headerlink" href="#event-producers" title="Permalink to this headline">¶</a></h3>
+<p>The Vert.x adapter exchanges events with a Vert.x instance by using so called <em>event producers</em>. An event producer consumes events from a given source and produces the same events to a specified destination. Both sources and destinations can either be an event bus endpoint or an even log.</p>
+<p>The Vert.x adapter supports two kinds of event producers:</p>
+<ul class="simple">
+<li><strong>Vert.x event producers</strong> consume events from an event log and publish or send the events to a configurable event bus endpoint.</li>
+<li><strong>Log event producers</strong> consume events from a given event bus endpoint and persist the events in an event log.</li>
+</ul>
+<p>An event producer establishes an unidirectional connection between exactly one event log and one or multiple event bus endpoints. Event producers are instantiated by using the <code class="docutils literal"><span class="pre">EventProducer</span></code> API. The configuration of a producer consists of:</p>
+<ul class="simple">
+<li>an event source,</li>
+<li>an event destination and</li>
+<li>a unique id.</li>
+</ul>
+<p><em>Vert.x producers</em> are created by using the <code class="docutils literal"><span class="pre">EventProducer.fromLog</span></code> method. Applications define the source log, the delivery method and an arbitrary amount of event bus endpoints, the events will be delivered to.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">publishTo</span> <span class="o">{</span> <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="s">&quot;address-1&quot;</span> <span class="o">}</span>
+  <span class="o">.</span><span class="n">as</span><span class="o">(</span><span class="s">&quot;vertx-producer&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">EventProducer</span><span class="o">.</span><span class="na">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">publishTo</span><span class="o">(</span><span class="s">&quot;address-1&quot;</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="s">&quot;vertx-producer&quot;</span><span class="o">);</span>
+</pre></div>
+</div>
+</div>
+<p><em>Log producers</em> are created by using the <code class="docutils literal"><span class="pre">EventProducer.fromEndpoints</span></code> method. Multiple event bus endpoints can be defined, which are used to consume events from the event bus and persist the same events to the given event log.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromEndpoints</span><span class="o">(</span><span class="s">&quot;address-2&quot;</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">writeTo</span><span class="o">(</span><span class="n">destinationLog</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">as</span><span class="o">(</span><span class="s">&quot;log-producer&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">EventProducer</span><span class="o">.</span><span class="na">fromEndpoints</span><span class="o">(</span><span class="s">&quot;address-2&quot;</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">writeTo</span><span class="o">(</span><span class="n">destinationLog</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="s">&quot;log-producer&quot;</span><span class="o">);</span>
+</pre></div>
+</div>
+</div>
+<p>An event log must be supplied as an <code class="docutils literal"><span class="pre">ActorRef</span></code> which is usually obtained from a <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a><a class="footnote-reference" href="#replicationep" id="id4">[1]</a>. Event producers are implementation-agnostic in respect to event logs - any event log implementation may be used in combination with a producer.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The id of a producer must be unique and should be stable over time. It is used as the primary key to store meta information about the producer.</p>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Event producers are covered in more detail in the sections <a class="reference internal" href="#vert-x-publish-event-producer">Vert.x Publish Event Producer</a> and <a class="reference internal" href="#vert-x-point-to-point-event-producer">Vert.x Point-to-Point Event Producer</a>. Log producers are covered in the section <a class="reference internal" href="#log-event-producer">Log Event Producer</a>.</p>
+</div>
+</div>
+<div class="section" id="event-processing">
+<h3>Event processing<a class="headerlink" href="#event-processing" title="Permalink to this headline">¶</a></h3>
+<p>Applications process events sent from Vert.x producers by registering event bus handlers at the configured endpoints on the event bus. An event bus endpoint is a simple address represented as a <code class="docutils literal"><span class="pre">String</span></code>, which can follow any addressing scheme. Vert.x producers deliver events on the event bus as instances of an event bus <a class="reference external" href="http://vertx.io/docs/apidocs/io/vertx/core/eventbus/Message.html">message</a>. Event bus handlers access the underlying event by obtaining the body of a message.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">consumer</span><span class="o">[</span><span class="kt">Event</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="n">handler</span><span class="o">(</span><span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">]]</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">handle</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">event</span> <span class="k">=</span> <span class="n">message</span><span class="o">.</span><span class="n">body</span>
+  <span class="o">}</span>
+<span class="o">})</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="na">eventBus</span><span class="o">().&lt;</span><span class="n">Event</span><span class="o">&gt;</span><span class="n">consumer</span><span class="o">(</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="na">handler</span><span class="o">(</span><span class="n">message</span> <span class="o">-&gt;</span> <span class="o">{</span>
+  <span class="n">Event</span> <span class="n">event</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="na">body</span><span class="o">();</span>
+<span class="o">});</span>
+</pre></div>
+</div>
+</div>
+<p>For events to be written to an event log, applications send events to the specified endpoints configured for a log producer. The log producer consumes all events from these endpoints and persists the events to the configured event log.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">send</span><span class="o">(</span><span class="s">&quot;address-2&quot;</span><span class="o">,</span> <span class="nc">Event</span><span class="o">(</span><span class="s">&quot;event-1&quot;</span><span class="o">))</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="na">eventBus</span><span class="o">().</span><span class="na">send</span><span class="o">(</span><span class="s">&quot;address-2&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Event</span><span class="o">(</span><span class="s">&quot;event-1&quot;</span><span class="o">));</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Event processing in event handlers should be performed idempotent because a Vert.x producer may deliver the same event multiple times under certain conditions. Events may be redelivered after a restart of a producer if it was not able to successfully persist its read progress on shutdown (or crash).</p>
+</div>
+</div>
+<div class="section" id="adapter-usage">
+<h3>Adapter Usage<a class="headerlink" href="#adapter-usage" title="Permalink to this headline">¶</a></h3>
+<p>Event producers are managed by a <code class="docutils literal"><span class="pre">VertxAdapter</span></code>. Applications can connect to multiple event logs by instantiating event producers and supplying them to the <code class="docutils literal"><span class="pre">VertxAdapterConfig</span></code>.</p>
+<p>The <code class="docutils literal"><span class="pre">VertxAdatperConfig</span></code> is passed to the <code class="docutils literal"><span class="pre">VertxAdapter</span></code> together with an <code class="docutils literal"><span class="pre">ActorSystem</span></code> and the <code class="docutils literal"><span class="pre">Vert.x</span></code> instance the adapter will connect to. The adapter is also supplied with a <code class="docutils literal"><span class="pre">StorageProvider</span></code> which is used to persist the read progress of the individual event producers.</p>
+<p>Applications invoke the <code class="docutils literal"><span class="pre">start</span></code> method of the system to initialize the registered event producers and start event exchange with the <code class="docutils literal"><span class="pre">Vert.x</span></code> instance.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">akka.actor.ActorSystem</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.ReplicationEndpoint</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.VertxAdapter</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.api.</span><span class="o">{</span> <span class="nc">EventProducer</span><span class="o">,</span> <span class="nc">VertxAdapterConfig</span> <span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog</span>
+<span class="k">import</span> <span class="nn">io.vertx.core.eventbus.Message</span>
+<span class="k">import</span> <span class="nn">io.vertx.core.</span><span class="o">{</span> <span class="nc">Handler</span><span class="o">,</span> <span class="nc">Vertx</span> <span class="o">}</span>
+
+<span class="k">implicit</span> <span class="k">val</span> <span class="n">actorSystem</span> <span class="k">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;system&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">vertx</span> <span class="k">=</span> <span class="nc">Vertx</span><span class="o">.</span><span class="n">vertx</span><span class="o">()</span>
+
+<span class="k">val</span> <span class="n">endpoint</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ReplicationEndpoint</span><span class="o">(</span>
+  <span class="n">id</span> <span class="k">=</span> <span class="s">&quot;endpoint&quot;</span><span class="o">,</span>
+  <span class="n">logNames</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">(</span><span class="s">&quot;sourceLog&quot;</span><span class="o">,</span> <span class="s">&quot;destinationLog&quot;</span><span class="o">),</span>
+  <span class="n">logFactory</span> <span class="k">=</span> <span class="n">logId</span> <span class="k">=&gt;</span> <span class="nc">LeveldbEventLog</span><span class="o">.</span><span class="n">props</span><span class="o">(</span><span class="n">logId</span><span class="o">),</span> <span class="n">connections</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">sourceLog</span> <span class="k">=</span> <span class="n">endpoint</span><span class="o">.</span><span class="n">logs</span><span class="o">(</span><span class="s">&quot;sourceLog&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">destinationLog</span> <span class="k">=</span> <span class="n">endpoint</span><span class="o">.</span><span class="n">logs</span><span class="o">(</span><span class="s">&quot;destinationLog&quot;</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">config</span> <span class="k">=</span> <span class="nc">VertxAdapterConfig</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">addProducer</span><span class="o">(</span>
+    <span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
+      <span class="o">.</span><span class="n">publishTo</span> <span class="o">{</span> <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="s">&quot;address-1&quot;</span> <span class="o">}</span>
+      <span class="o">.</span><span class="n">as</span><span class="o">(</span><span class="s">&quot;vertx-producer&quot;</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">addProducer</span><span class="o">(</span>
+    <span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromEndpoints</span><span class="o">(</span><span class="s">&quot;address-2&quot;</span><span class="o">)</span>
+      <span class="o">.</span><span class="n">writeTo</span><span class="o">(</span><span class="n">destinationLog</span><span class="o">)</span>
+      <span class="o">.</span><span class="n">as</span><span class="o">(</span><span class="s">&quot;log-producer&quot;</span><span class="o">))</span>
+
+<span class="k">val</span> <span class="n">adapter</span> <span class="k">=</span> <span class="nc">VertxAdapter</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="n">vertx</span><span class="o">,</span> <span class="n">storageProvider</span><span class="o">)(</span><span class="n">actorSystem</span><span class="o">)</span>
+
+<span class="c1">// receive events from sourceLog...</span>
+<span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">consumer</span><span class="o">[</span><span class="kt">Event</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="n">handler</span><span class="o">(</span><span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">]]</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">handle</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">event</span> <span class="k">=</span> <span class="n">message</span><span class="o">.</span><span class="n">body</span>
+    <span class="c1">// ...and persist the event in destinationLog</span>
+    <span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">send</span><span class="o">(</span><span class="s">&quot;address-2&quot;</span><span class="o">,</span> <span class="n">event</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">})</span>
+
+<span class="n">adapter</span><span class="o">.</span><span class="n">start</span><span class="o">()</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">akka.actor.ActorRef</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">akka.actor.ActorSystem</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.ApplicationVersion</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.EndpointFilters</span><span class="n">$</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.ReplicationEndpoint</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.VertxAdapter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.api.Confirmation</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.japi.ConfirmationType</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.japi.EventProducer</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.japi.ProcessingResult</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.japi.StorageProvider</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.japi.VertxAdapterConfig</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">io.vertx.core.Vertx</span><span class="o">;</span>
+
+<span class="n">ActorSystem</span> <span class="n">actorSystem</span> <span class="o">=</span> <span class="n">ActorSystem</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="s">&quot;system&quot;</span><span class="o">);</span>
+<span class="n">Vertx</span> <span class="n">vertx</span> <span class="o">=</span> <span class="n">Vertx</span><span class="o">.</span><span class="na">vertx</span><span class="o">();</span>
+
+<span class="n">ReplicationEndpoint</span> <span class="n">endpoint</span> <span class="o">=</span> <span class="n">ReplicationEndpoint</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="s">&quot;endpoint&quot;</span><span class="o">,</span>
+  <span class="n">set</span><span class="o">(</span><span class="s">&quot;sourceLog&quot;</span><span class="o">,</span> <span class="s">&quot;destinationLog&quot;</span><span class="o">),</span>
+  <span class="n">id</span> <span class="o">-&gt;</span> <span class="n">LeveldbEventLog</span><span class="o">.</span><span class="na">props</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="s">&quot;log&quot;</span><span class="o">,</span> <span class="kc">true</span><span class="o">),</span> <span class="n">set</span><span class="o">(),</span> <span class="n">EndpointFilters$</span><span class="o">.</span><span class="na">MODULE$</span><span class="o">.</span><span class="na">NoFilters</span><span class="o">(),</span> <span class="s">&quot;default&quot;</span><span class="o">,</span> <span class="n">ApplicationVersion</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="s">&quot;0.1&quot;</span><span class="o">),</span> <span class="n">actorSystem</span><span class="o">);</span>
+
+<span class="n">ActorRef</span> <span class="n">sourceLog</span> <span class="o">=</span> <span class="n">endpoint</span><span class="o">.</span><span class="na">logs</span><span class="o">().</span><span class="na">apply</span><span class="o">(</span><span class="s">&quot;sourceLog&quot;</span><span class="o">);</span>
+<span class="n">ActorRef</span> <span class="n">destinationLog</span> <span class="o">=</span> <span class="n">endpoint</span><span class="o">.</span><span class="na">logs</span><span class="o">().</span><span class="na">apply</span><span class="o">(</span><span class="s">&quot;destinationLog&quot;</span><span class="o">);</span>
+
+<span class="n">VertxAdapterConfig</span> <span class="n">config</span> <span class="o">=</span> <span class="n">VertxAdapterConfig</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
+  <span class="o">.</span><span class="na">addProducer</span><span class="o">(</span>
+    <span class="n">EventProducer</span><span class="o">.</span><span class="na">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
+      <span class="o">.</span><span class="na">publishTo</span><span class="o">(</span><span class="s">&quot;address-1&quot;</span><span class="o">)</span>
+      <span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="s">&quot;vertx-producer&quot;</span><span class="o">)</span>
+  <span class="o">)</span>
+  <span class="o">.</span><span class="na">addProducer</span><span class="o">(</span>
+    <span class="n">EventProducer</span><span class="o">.</span><span class="na">fromEndpoints</span><span class="o">(</span><span class="s">&quot;address-2&quot;</span><span class="o">)</span>
+      <span class="o">.</span><span class="na">writeTo</span><span class="o">(</span><span class="n">destinationLog</span><span class="o">)</span>
+      <span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="s">&quot;log-producer&quot;</span><span class="o">)</span>
+  <span class="o">);</span>
+
+<span class="n">VertxAdapter</span> <span class="n">adapter</span> <span class="o">=</span> <span class="n">VertxAdapter</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="n">vertx</span><span class="o">,</span> <span class="n">storageProvider</span><span class="o">,</span> <span class="n">actorSystem</span><span class="o">);</span>
+
+<span class="c1">// receive events from sourceLog...</span>
+<span class="n">vertx</span><span class="o">.</span><span class="na">eventBus</span><span class="o">().&lt;</span><span class="n">Event</span><span class="o">&gt;</span><span class="n">consumer</span><span class="o">(</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="na">handler</span><span class="o">(</span><span class="n">message</span> <span class="o">-&gt;</span> <span class="o">{</span>
+  <span class="kd">final</span> <span class="n">Event</span> <span class="n">event</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="na">body</span><span class="o">();</span>
+
+  <span class="c1">// ...and persist the event in destinationLog</span>
+  <span class="n">vertx</span><span class="o">.</span><span class="na">eventBus</span><span class="o">().</span><span class="na">send</span><span class="o">(</span><span class="s">&quot;address-2&quot;</span><span class="o">,</span> <span class="n">event</span><span class="o">);</span>
+<span class="o">});</span>
+
+<span class="n">adapter</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The <code class="docutils literal"><span class="pre">start</span></code> method should only be called after all handlers on the event bus have been registered. Failing to do so may lead to loss of events because a producer might try to deliver events to an event bus endpoint which has not yet an event handler assigned to it.</p>
+</div>
+<p>The following sections contain a detailed description of the different kinds of event producers.</p>
+</div>
+<div class="section" id="vert-x-publish-event-producer">
+<h3>Vert.x Publish Event Producer<a class="headerlink" href="#vert-x-publish-event-producer" title="Permalink to this headline">¶</a></h3>
+<p>A <em>Publish Event Producer</em> publishes events from an event log to <em>multiple</em> subscribers on the event bus. Events are delivered to specific endpoints defined in the configuration of the producer. A producer can route events to different event bus endpoints based on the content of the event. Event routing is enabled by supplying a partial function which maps events to event bus endpoints. If the partial function is not defined at the event, the event will not be processed.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">publishTo</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="n">e</span><span class="k">:</span> <span class="kt">Event</span>  <span class="o">=&gt;</span> <span class="s">&quot;address-1&quot;</span>
+    <span class="k">case</span> <span class="n">e</span><span class="k">:</span> <span class="kt">Event2</span> <span class="o">=&gt;</span> <span class="s">&quot;address-2&quot;</span>
+    <span class="k">case</span> <span class="k">_</span>         <span class="k">=&gt;</span> <span class="s">&quot;default-address&quot;</span>
+  <span class="o">}</span>
+  <span class="o">.</span><span class="n">as</span><span class="o">(</span><span class="s">&quot;vertx-publish-producer&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">EventProducer</span><span class="o">.</span><span class="na">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">publishTo</span><span class="o">(</span><span class="n">ev</span> <span class="o">-&gt;</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">ev</span> <span class="k">instanceof</span> <span class="n">Event</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&quot;address1&quot;</span><span class="o">);</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">ev</span> <span class="k">instanceof</span> <span class="n">Event2</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&quot;address2&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&quot;default-address&quot;</span><span class="o">);</span>
+  <span class="o">})</span>
+  <span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="s">&quot;vertx-publish-producer&quot;</span><span class="o">);</span>
+</pre></div>
+</div>
+</div>
+<p>Event publishing is performed with <em>At-Most-Once</em> delivery semantics, so no guarantees about the successful delivery of events can be made.</p>
+<p>Applications consume events by registering an event handler at the configured endpoints on the event bus.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">consumer</span><span class="o">[</span><span class="kt">Event</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="n">handler</span><span class="o">(</span><span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">]]</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">handle</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">event</span> <span class="k">=</span> <span class="n">message</span><span class="o">.</span><span class="n">body</span>
+  <span class="o">}</span>
+<span class="o">})</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="na">eventBus</span><span class="o">().&lt;</span><span class="n">Event</span><span class="o">&gt;</span><span class="n">consumer</span><span class="o">(</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="na">handler</span><span class="o">(</span><span class="n">message</span> <span class="o">-&gt;</span> <span class="o">{</span>
+  <span class="n">Event</span> <span class="n">event</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="na">body</span><span class="o">();</span>
+<span class="o">});</span>
+</pre></div>
+</div>
+</div>
+<p>Read progress from the source event log is tracked by persisting the <code class="docutils literal"><span class="pre">localSequenceNr</span></code> of the latest sent event to the <code class="docutils literal"><span class="pre">StorageProvider</span></code> supplied to the <code class="docutils literal"><span class="pre">VertxAdapter</span></code>. After publishing one or multiple events the read progress is persisted. The producer continues publishing events from the latest known <code class="docutils literal"><span class="pre">localSequenceNr</span></code> once the it is started.</p>
+</div>
+<div class="section" id="vert-x-point-to-point-event-producer">
+<h3>Vert.x Point-to-Point Event Producer<a class="headerlink" href="#vert-x-point-to-point-event-producer" title="Permalink to this headline">¶</a></h3>
+<p>A <em>Point-to-Point Event Producer</em> sends an event to a <em>single</em> subscriber on the event bus. If a single subscriber is registered for an endpoint all events are delivered to this subscriber. If multiple subscribers are registered for the same endpoint, events are delivered alternately to only one of those subscribers using a non-strict round-robin algorithm. Event routing can be enabled by supplying a partial function.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">sendTo</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="n">e</span><span class="k">:</span> <span class="kt">Event</span>  <span class="o">=&gt;</span> <span class="s">&quot;address-1&quot;</span>
+    <span class="k">case</span> <span class="n">e</span><span class="k">:</span> <span class="kt">Event2</span> <span class="o">=&gt;</span> <span class="s">&quot;address-2&quot;</span>
+    <span class="k">case</span> <span class="k">_</span>         <span class="k">=&gt;</span> <span class="s">&quot;default-address&quot;</span>
+  <span class="o">}</span>
+  <span class="o">.</span><span class="n">as</span><span class="o">(</span><span class="s">&quot;vertx-ptp-producer&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">EventProducer</span><span class="o">.</span><span class="na">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">sendTo</span><span class="o">(</span><span class="n">ev</span> <span class="o">-&gt;</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">ev</span> <span class="k">instanceof</span> <span class="n">Event</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&quot;address1&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">ev</span> <span class="k">instanceof</span> <span class="n">Event2</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&quot;address2&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">return</span> <span class="n">Optional</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="s">&quot;default-address&quot;</span><span class="o">);</span>
+  <span class="o">})</span>
+<span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="s">&quot;vertx-ptp-producer&quot;</span><span class="o">);</span>
+</pre></div>
+</div>
+</div>
+<p>Point-to-point event producers support both <em>At-Most-Once</em> and <em>At-Least-Once</em> delivery semantics. If not specified otherwise <em>At-Most-Once</em> delivery is chosen. <em>At-Least-Once</em> delivery is enabled by configuring the adapter accordingly.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">sendTo</span> <span class="o">{</span> <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="s">&quot;address-1&quot;</span> <span class="o">}</span>
+  <span class="o">.</span><span class="n">atLeastOnce</span><span class="o">(</span><span class="n">confirmationType</span> <span class="k">=</span> <span class="nc">Batch</span><span class="o">(</span><span class="n">size</span> <span class="k">=</span> <span class="mi">5</span><span class="o">),</span> <span class="n">confirmationTimeout</span> <span class="k">=</span> <span class="mf">5.</span><span class="n">seconds</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">as</span><span class="o">(</span><span class="s">&quot;vertx-ptp-producer&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">EventProducer</span><span class="o">.</span><span class="na">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">sendTo</span><span class="o">(</span><span class="s">&quot;address-1&quot;</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">atLeastOnce</span><span class="o">(</span><span class="n">ConfirmationType</span><span class="o">.</span><span class="na">Batch</span><span class="o">.</span><span class="na">withSize</span><span class="o">(</span><span class="mi">5</span><span class="o">),</span> <span class="n">Duration</span><span class="o">.</span><span class="na">ofSeconds</span><span class="o">(</span><span class="mi">5</span><span class="o">))</span>
+  <span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="s">&quot;vertx-ptp-producer&quot;</span><span class="o">);</span>
+</pre></div>
+</div>
+</div>
+<p>Events sent by a point-to-point event producer are received by registering an event handler on the event bus.</p>
+<p>Using <em>At-Least-Once</em> delivery semantics, every event must be confirmed by the receiver. Unconfirmed events are redelivered until a confirmation was received by the adapter. Event handlers confirm event delivery by replying to the event bus message with a <code class="docutils literal"><span class="pre">Confirmation</span></code>.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">consumer</span><span class="o">[</span><span class="kt">Event</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="n">handler</span><span class="o">(</span><span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">]]</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">handle</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">event</span> <span class="k">=</span> <span class="n">message</span><span class="o">.</span><span class="n">body</span>
+    <span class="c1">// confirm event receipt</span>
+    <span class="n">message</span><span class="o">.</span><span class="n">reply</span><span class="o">(</span><span class="nc">Confirmation</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">})</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="na">eventBus</span><span class="o">().&lt;</span><span class="n">Event</span><span class="o">&gt;</span><span class="n">consumer</span><span class="o">(</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="na">handler</span><span class="o">(</span><span class="n">message</span> <span class="o">-&gt;</span> <span class="o">{</span>
+  <span class="n">Event</span> <span class="n">event</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="na">body</span><span class="o">();</span>
+  <span class="c1">// confirm event receipt</span>
+  <span class="n">message</span><span class="o">.</span><span class="na">reply</span><span class="o">(</span><span class="n">Confirmation</span><span class="o">.</span><span class="na">create</span><span class="o">());</span>
+<span class="o">});</span>
+</pre></div>
+</div>
+</div>
+<p>Event confirmations are persisted on a per-event basis or in batches of configurable size.</p>
+<ul class="simple">
+<li><strong>Per-event confirmations</strong>:
+Using per-event confirmations, every confirmation received by the adapter is persisted to the source event log. Confirmation events are not delivered to any event bus handlers but will increase the size of the source event log. With this confirmation mode events will not be redelivered once an event confirmation has been received.</li>
+<li><strong>Batch event confirmations</strong>:
+Using batch confirmations, events are delivered in batches where the next batch is only delivered once all events of the previous batch have been confirmed. Batches containing events which have not been confirmed are redelivered as a whole, resulting in redelivery of all events of the same batch. This approach leads to modest storage requirements as no individual per-event confirmation information has to be tracked. Using this confirmation mode, events may be redelivered multiple times even though a confirmation has already been received.</li>
+</ul>
+</div>
+<div class="section" id="log-event-producer">
+<h3>Log Event Producer<a class="headerlink" href="#log-event-producer" title="Permalink to this headline">¶</a></h3>
+<p>A <em>Log Event Producer</em> consumes events from multiple event bus endpoints and persists these events to a single event log. Every persisted event creates a write confirmation which is returned to the sender of the event, containing the result of the write operation.</p>
+<p>Log event producers can be configured with an optional event filter. This filter is applied to events sent to the producer.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromEndpoints</span><span class="o">(</span><span class="s">&quot;address-1&quot;</span><span class="o">,</span> <span class="s">&quot;address-2&quot;</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">writeTo</span><span class="o">(</span><span class="n">destinationLog</span><span class="o">,</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="k">_:</span> <span class="kt">Event</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:</span> <span class="kt">Event2</span> <span class="o">=&gt;</span> <span class="kc">true</span>
+    <span class="k">case</span> <span class="k">_</span>                    <span class="k">=&gt;</span> <span class="kc">false</span>
+  <span class="o">})</span>
+  <span class="o">.</span><span class="n">as</span><span class="o">(</span><span class="s">&quot;log-producer&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">EventProducer</span><span class="o">.</span><span class="na">fromEndpoints</span><span class="o">(</span><span class="s">&quot;address-1&quot;</span><span class="o">,</span> <span class="s">&quot;address-2&quot;</span><span class="o">)</span>
+  <span class="o">.</span><span class="na">writeTo</span><span class="o">(</span><span class="n">destinationLog</span><span class="o">,</span>
+    <span class="n">ev</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">ev</span> <span class="k">instanceof</span> <span class="n">Event</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span>
+      <span class="k">if</span> <span class="o">(</span><span class="n">ev</span> <span class="k">instanceof</span> <span class="n">Event2</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+      <span class="o">}</span>
+      <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">})</span>
+<span class="o">.</span><span class="na">as</span><span class="o">(</span><span class="s">&quot;log-producer&quot;</span><span class="o">);</span>
+</pre></div>
+</div>
+</div>
+<p>Events accepted by the filter are written to the configured destination log. Events rejected by the filter are dropped and a corresponding write result is returned to the sender.</p>
+<p>Applications persist events by sending them to the endpoint configured for the producer. The result of the write operation is returned as a response message.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">send</span><span class="o">[</span><span class="kt">ProcessingResult</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">,</span> <span class="nc">Event</span><span class="o">(</span><span class="s">&quot;event-1&quot;</span><span class="o">),</span> <span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">AsyncResult</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">ProcessingResult</span><span class="o">]]]</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">handle</span><span class="o">(</span><span class="n">ar</span><span class="k">:</span> <span class="kt">AsyncResult</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">ProcessingResult</span><span class="o">]])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">ar</span><span class="o">.</span><span class="n">succeeded</span><span class="o">())</span> <span class="o">{</span>
+      <span class="k">var</span> <span class="n">result</span> <span class="k">=</span> <span class="n">ar</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">body</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+      <span class="c1">// write failed</span>
+      <span class="k">var</span> <span class="n">failure</span> <span class="k">=</span> <span class="n">ar</span><span class="o">.</span><span class="n">cause</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">})</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="na">eventBus</span><span class="o">().&lt;</span><span class="n">ProcessingResult</span><span class="o">&gt;</span><span class="n">send</span><span class="o">(</span><span class="s">&quot;address-1&quot;</span><span class="o">,</span> <span class="k">new</span> <span class="n">Event</span><span class="o">(</span><span class="s">&quot;event-1&quot;</span><span class="o">),</span> <span class="n">ar</span> <span class="o">-&gt;</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">ar</span><span class="o">.</span><span class="na">succeeded</span><span class="o">())</span> <span class="o">{</span>
+    <span class="n">ProcessingResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">ar</span><span class="o">.</span><span class="na">result</span><span class="o">().</span><span class="na">body</span><span class="o">();</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    <span class="c1">// write failed</span>
+    <span class="n">Throwable</span> <span class="n">failure</span> <span class="o">=</span> <span class="n">ar</span><span class="o">.</span><span class="na">cause</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">});</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">A single endpoint can only be configured once as the source for an log event producer. This ensures that write confirmations can reliably be returned to the source endpoint. Configuring the same source endpoint for multiple producers will lead to a configuration error.</p>
+</div>
+</div>
+<div class="section" id="message-codecs">
+<h3>Message Codecs<a class="headerlink" href="#message-codecs" title="Permalink to this headline">¶</a></h3>
+<p>All messages transmitted over the event bus must provide a Vert.x <a class="reference external" href="http://vertx.io/docs/apidocs/io/vertx/core/eventbus/MessageCodec.html">message codec</a>. The event bus uses this message codec to serialize and deserialize the body of an event bus message.</p>
+<p>Events sent or received by the Vert.x adapter may not have an instance of a <code class="docutils literal"><span class="pre">MessageCodec</span></code> defined, since they usually originate from an external system. To ease the integration of external events into a Vert.x application, the adapter offers a generic message codec for types serializable by the <code class="docutils literal"><span class="pre">ActorSystem</span></code> provided to the <code class="docutils literal"><span class="pre">VertxAdapter</span></code>. All events persisted to an event log are serializable by the <code class="docutils literal"><span class="pre">ActorSystem</span></code>, hence the generic message codec can be used for those objects.</p>
+<p>The generic <code class="docutils literal"><span class="pre">MessageCodec</span></code> is applied for an object type by registering the type with the <code class="docutils literal"><span class="pre">VertxAdapterConfig</span></code>.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">VertxAdapterConfig</span><span class="o">()</span>
+  <span class="o">.</span><span class="n">registerDefaultCodecFor</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">Event</span><span class="o">],</span> <span class="n">classOf</span><span class="o">[</span><span class="kt">Event2</span><span class="o">])</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">VertxAdapterConfig</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
+  <span class="o">.</span><span class="na">registerDefaultCodecFor</span><span class="o">(</span><span class="n">Event</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Event2</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</pre></div>
+</div>
+</div>
+<p>A message codec for the type is created which uses the <code class="docutils literal"><span class="pre">Serializer</span></code> assigned to the type at the <code class="docutils literal"><span class="pre">ActorSystem</span></code>. This codec is registered as the default message codec for the type and will subsequently be used to encode and decode all messages of this type on the event bus.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The generic <code class="docutils literal"><span class="pre">MessageCodec</span></code> can also be used for events not stored in an event log if a <code class="docutils literal"><span class="pre">Serializer</span></code> for the event type is configured at the <code class="docutils literal"><span class="pre">ActorSystem</span></code>. If no <code class="docutils literal"><span class="pre">Serializer</span></code> for a type is configured the generated <code class="docutils literal"><span class="pre">MessageCodec</span></code> will fail to process instances of the type.</p>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">A detailed example can be found in <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-vertx/src/main/scala/com/rbmhtechnology/example/vertx/VertxAdapterExample.scala">VertxAdapterExample.scala</a> or <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-vertx/src/main/java/com/rbmhtechnology/example/vertx/japi/VertxAdapterExample.java">VertxAdapterExample.java</a>.</p>
+</div>
+<table class="docutils footnote" frame="void" id="replicationep" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[1]</a></td><td>See also <a class="reference internal" href="event-log.html#replication-endpoints"><span class="std std-ref">Replication endpoints</span></a> in the reference documentation.</td></tr>
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id4">2</a>)</em> See also <a class="reference internal" href="event-log.html#replication-endpoints"><span class="std std-ref">Replication endpoints</span></a> in the reference documentation.</td></tr>
 </tbody>
 </table>
 </div>

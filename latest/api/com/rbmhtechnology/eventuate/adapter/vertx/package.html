@@ -1,0 +1,486 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>vertx - com.rbmhtechnology.eventuate.adapter.vertx</title>
+          <meta name="description" content="vertx - com.rbmhtechnology.eventuate.adapter.vertx" />
+          <meta name="keywords" content="vertx com.rbmhtechnology.eventuate.adapter.vertx" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../index.html';
+            var hash = 'com.rbmhtechnology.eventuate.adapter.vertx.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../../package.html" class="extype" name="com">com</a>.<a href="../../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate.adapter">adapter</a></p>
+        <h1>vertx</h1><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">vertx</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="com.rbmhtechnology.eventuate.adapter.vertx"><span>vertx</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show all</span></li>
+            </ol>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="com.rbmhtechnology.eventuate.adapter.vertx.AkkaSerializationMessageCodec" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AkkaSerializationMessageCodecextendsMessageCodec[AnyRef,AnyRef]"></a>
+      <a id="AkkaSerializationMessageCodec:AkkaSerializationMessageCodec"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="AkkaSerializationMessageCodec.html"><span class="name">AkkaSerializationMessageCodec</span></a><span class="result"> extends <span class="extype" name="io.vertx.core.eventbus.MessageCodec">MessageCodec</span>[<span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@AkkaSerializationMessageCodecextendsMessageCodec[AnyRef,AnyRef]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.EventEnvelope" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EventEnvelopeextendsProductwithSerializable"></a>
+      <a id="EventEnvelope:EventEnvelope"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="EventEnvelope.html"><span class="name">EventEnvelope</span></a><span class="params">(<span name="address">address: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="evt">evt: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@EventEnvelopeextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.LogEventDispatcher" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LogEventDispatcherextendsActor"></a>
+      <a id="LogEventDispatcher:LogEventDispatcher"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="LogEventDispatcher.html"><span class="name">LogEventDispatcher</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@LogEventDispatcherextendsActor" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.PayloadSerializationExtension" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PayloadSerializationExtensionextendsExtension"></a>
+      <a id="PayloadSerializationExtension:PayloadSerializationExtension"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="PayloadSerializationExtension.html"><span class="name">PayloadSerializationExtension</span></a><span class="result"> extends <span class="extype" name="akka.actor.Extension">Extension</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@PayloadSerializationExtensionextendsExtension" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.ProgressStore" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ProgressStore[R,W]extendsAnyRef"></a>
+      <a id="ProgressStore[R,W]:ProgressStore[R,W]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="ProgressStore.html"><span class="name">ProgressStore</span></a><span class="tparams">[<span name="R">R</span>, <span name="W">W</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@ProgressStore[R,W]extendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.SequenceNumberProgressStore" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="SequenceNumberProgressStoreextendsProgressStore[Long,Long]"></a>
+      <a id="SequenceNumberProgressStore:SequenceNumberProgressStore"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="SequenceNumberProgressStore.html"><span class="name">SequenceNumberProgressStore</span></a><span class="result"> extends <a href="ProgressStore.html" class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.ProgressStore">ProgressStore</a>[<span class="extype" name="scala.Long">Long</span>, <span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@SequenceNumberProgressStoreextendsProgressStore[Long,Long]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.VertxAdapter" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="VertxAdapterextendsAnyRef"></a>
+      <a id="VertxAdapter:VertxAdapter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="VertxAdapter.html"><span class="name">VertxAdapter</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@VertxAdapterextendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A <a href="http://vertx.io/docs/apidocs/io/vertx/core/Vertx.html" target="_blank">Vert.x</a> adapter connects event logs to a <a href="http://vertx.io/docs/apidocs/io/vertx/core/Vertx.html" target="_blank">Vert.x</a> instance.</p><div class="fullcomment"><div class="comment cmt"><p>A <a href="http://vertx.io/docs/apidocs/io/vertx/core/Vertx.html" target="_blank">Vert.x</a> adapter connects event logs to a <a href="http://vertx.io/docs/apidocs/io/vertx/core/Vertx.html" target="_blank">Vert.x</a> instance.</p><p>Event exchange is performed over the <a href="http://vertx.io/docs/apidocs/io/vertx/core/eventbus/EventBus.html" target="_blank">Vert.x event bus</a> by <code>event producers</code>.
+An <code>event producer</code> is a unidirectional connection between an event log and one or multiple event bus endpoints.
+Events can be exchanged in both directions by different <code>event producers</code>.</p><p><code>Event producers</code> are created using the <a href="api/EventProducer$.html" class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.api.EventProducer">EventProducer</a>
+factory methods and supplied to the adapter via the <a href="api/VertxAdapterConfig.html" class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.api.VertxAdapterConfig">VertxAdapterConfig</a>.</p><p>An adapter manages multiple <code>event producers</code>, initializes the producers and establishes the connection to the supplied <a href="http://vertx.io/docs/apidocs/io/vertx/core/Vertx.html" target="_blank">Vert.x</a> instance.</p><p>A <a href="api/StorageProvider.html" class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.api.StorageProvider">StorageProvider</a> is used by the adapter to persist the replication progress of the individual <code>event producers</code>.</p><p>Example:</p><pre><span class="kw">val</span> config = VertxAdapterConfig()
+   .addProducer(
+     EventProducer.fromLog(sourceLog)
+       .publishTo { <span class="kw">case</span> _ <span class="kw">=&gt;</span> <span class="lit">"address-1"</span> }
+       .as(<span class="lit">"vertx-producer"</span>)
+   )
+   .addProducer(
+     EventProducer.fromEndpoints(<span class="lit">"address-2"</span>)
+       .writeTo(destinationLog)
+       .as(<span class="lit">"log-producer"</span>)
+   )
+
+<span class="kw">val</span> adapter = VertxAdapter(config, vertx, storageProvider)(actorSystem)
+adapter.start()</pre></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.VertxEventDispatcher" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="VertxEventDispatcher[R,W]extendsEventsourcedWriter[R,W]withProgressStore[R,W]"></a>
+      <a id="VertxEventDispatcher[R,W]:VertxEventDispatcher[R,W]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="VertxEventDispatcher.html"><span class="name">VertxEventDispatcher</span></a><span class="tparams">[<span name="R">R</span>, <span name="W">W</span>]</span><span class="result"> extends <a href="../../EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a>[<span class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.VertxEventDispatcher.R">R</span>, <span class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.VertxEventDispatcher.W">W</span>] with <a href="ProgressStore.html" class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.ProgressStore">ProgressStore</a>[<span class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.VertxEventDispatcher.R">R</span>, <span class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.VertxEventDispatcher.W">W</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@VertxEventDispatcher[R,W]extendsEventsourcedWriter[R,W]withProgressStore[R,W]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.VertxProducer" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="VertxProducerextendsAnyRef"></a>
+      <a id="VertxProducer:VertxProducer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="VertxProducer.html"><span class="name">VertxProducer</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@VertxProducerextendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.VertxPublisher" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="VertxPublisherextendsVertxProducer"></a>
+      <a id="VertxPublisher:VertxPublisher"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="VertxPublisher.html"><span class="name">VertxPublisher</span></a><span class="result"> extends <a href="VertxProducer.html" class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.VertxProducer">VertxProducer</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@VertxPublisherextendsVertxProducer" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.VertxSender" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="VertxSenderextendsVertxProducer"></a>
+      <a id="VertxSender:VertxSender"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="VertxSender.html"><span class="name">VertxSender</span></a><span class="result"> extends <a href="VertxProducer.html" class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.VertxProducer">VertxProducer</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@VertxSenderextendsVertxProducer" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="com.rbmhtechnology.eventuate.adapter.vertx.AkkaSerializationMessageCodec" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AkkaSerializationMessageCodec"></a>
+      <a id="AkkaSerializationMessageCodec:AkkaSerializationMessageCodec"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="AkkaSerializationMessageCodec$.html"><span class="name">AkkaSerializationMessageCodec</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@AkkaSerializationMessageCodec" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.LogEventDispatcher" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LogEventDispatcher"></a>
+      <a id="LogEventDispatcher:LogEventDispatcher"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="LogEventDispatcher$.html"><span class="name">LogEventDispatcher</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@LogEventDispatcher" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.PayloadSerializationExtension" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PayloadSerializationExtension"></a>
+      <a id="PayloadSerializationExtension:PayloadSerializationExtension"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="PayloadSerializationExtension$.html"><span class="name">PayloadSerializationExtension</span></a><span class="result"> extends <span class="extype" name="akka.actor.ExtensionId">ExtensionId</span>[<a href="PayloadSerializationExtension.html" class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.PayloadSerializationExtension">PayloadSerializationExtension</a>] with <span class="extype" name="akka.actor.ExtensionIdProvider">ExtensionIdProvider</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@PayloadSerializationExtension" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.RxConverters" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="RxConverters"></a>
+      <a id="RxConverters:RxConverters"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="package$$RxConverters$.html"><span class="name">RxConverters</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@RxConverters" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.VertxAdapter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="VertxAdapter"></a>
+      <a id="VertxAdapter:VertxAdapter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="VertxAdapter$.html"><span class="name">VertxAdapter</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@VertxAdapter" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.VertxConverters" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="VertxConverters"></a>
+      <a id="VertxConverters:VertxConverters"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="package$$VertxConverters$.html"><span class="name">VertxConverters</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@VertxConverters" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.VertxHandlerConverters" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="VertxHandlerConverters"></a>
+      <a id="VertxHandlerConverters:VertxHandlerConverters"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="package$$VertxHandlerConverters$.html"><span class="name">VertxHandlerConverters</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@VertxHandlerConverters" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.api" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="api"></a>
+      <a id="api:api"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="api/package.html"><span class="name">api</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@api" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.japi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="japi"></a>
+      <a id="japi:japi"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="japi/package.html"><span class="name">japi</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.package@japi" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>
