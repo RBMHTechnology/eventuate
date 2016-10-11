@@ -43,6 +43,12 @@ import scala.reflect.ClassTag
 class RecoveryException(cause: Throwable, val partialUpdate: Boolean) extends RuntimeException(cause)
 
 private class RecoverySettings(config: Config) {
+  val localReadTimeout: FiniteDuration =
+    config.getDuration("eventuate.log.read-timeout", TimeUnit.MILLISECONDS).millis
+
+  val localWriteTimeout: FiniteDuration =
+    config.getDuration("eventuate.log.write-timeout", TimeUnit.MILLISECONDS).millis
+
   val remoteOperationRetryMax: Int =
     config.getInt("eventuate.log.recovery.remote-operation-retry-max")
 
@@ -133,7 +139,7 @@ private class Recovery(endpoint: ReplicationEndpoint) {
 
   private def readReplicationProgress(logActor: ActorRef, logId: String): Future[Long] =
     readResult[GetReplicationProgressSuccess, GetReplicationProgressFailure, Long](
-      logActor.ask(GetReplicationProgress(logId)), _.storedReplicationProgress, _.cause)
+      logActor.ask(GetReplicationProgress(logId))(localReadTimeout), _.storedReplicationProgress, _.cause)
 
   /**
    * Sets the replication progress for the remote replicate with id `logId` to `replicationProgress`
@@ -141,7 +147,7 @@ private class Recovery(endpoint: ReplicationEndpoint) {
    */
   private def updateReplicationMetadata(logActor: ActorRef, logId: String, replicationProgress: Long): Future[Long] = {
     readResult[ReplicationWriteSuccess, ReplicationWriteFailure, Long](
-      logActor.ask(ReplicationWrite(Seq.empty, replicationProgress, logId, VectorTime.Zero)), _.storedReplicationProgress, _.cause)
+      logActor.ask(ReplicationWrite(Seq.empty, replicationProgress, logId, VectorTime.Zero))(localWriteTimeout), _.storedReplicationProgress, _.cause)
   }
 
   /**
@@ -175,7 +181,7 @@ private class Recovery(endpoint: ReplicationEndpoint) {
     Future.sequence(links.map(deleteSnapshots)).map(_ => ())
 
   def readEventLogClock(targetLog: ActorRef): Future[EventLogClock] =
-    targetLog.ask(GetEventLogClock).mapTo[GetEventLogClockSuccess].map(_.clock)
+    targetLog.ask(GetEventLogClock)(localReadTimeout).mapTo[GetEventLogClockSuccess].map(_.clock)
 
   private def deleteSnapshots(link: RecoveryLink): Future[Unit] =
     readResult[DeleteSnapshotsSuccess.type, DeleteSnapshotsFailure, Unit](
