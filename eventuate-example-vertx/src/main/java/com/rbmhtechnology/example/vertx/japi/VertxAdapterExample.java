@@ -25,9 +25,9 @@ import com.rbmhtechnology.eventuate.AbstractEventsourcedView;
 import com.rbmhtechnology.eventuate.ApplicationVersion;
 import com.rbmhtechnology.eventuate.EndpointFilters$;
 import com.rbmhtechnology.eventuate.ReplicationEndpoint;
+import com.rbmhtechnology.eventuate.adapter.vertx.ProcessingResult;
 import com.rbmhtechnology.eventuate.adapter.vertx.VertxAdapter;
-import com.rbmhtechnology.eventuate.adapter.vertx.api.Confirmation;
-import com.rbmhtechnology.eventuate.adapter.vertx.api.Confirmation$;
+import com.rbmhtechnology.eventuate.adapter.vertx.Confirmation;
 import com.rbmhtechnology.eventuate.adapter.vertx.japi.ConfirmationType;
 import com.rbmhtechnology.eventuate.adapter.vertx.japi.EventProducer;
 import com.rbmhtechnology.eventuate.adapter.vertx.japi.VertxAdapterConfig;
@@ -144,7 +144,7 @@ public class VertxAdapterExample {
             } else {
               out.println(String.format("[v_processor] processed [%s]", ev));
 
-              vertx.eventBus().sendObservable(Endpoints.WRITER, ev.copy("*processed*" + ev.id()))
+              vertx.eventBus().<ProcessingResult>sendObservable(Endpoints.WRITER, ev.copy("*processed*" + ev.id()))
                 .subscribe(
                   res -> {
                     confirmedEvents = confirmedEvents.add(ev);

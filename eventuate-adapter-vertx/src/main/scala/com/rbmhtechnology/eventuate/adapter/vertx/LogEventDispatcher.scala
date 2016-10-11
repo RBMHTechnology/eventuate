@@ -19,7 +19,6 @@ package com.rbmhtechnology.eventuate.adapter.vertx
 import akka.actor.{ Actor, ActorRef, Props }
 import com.rbmhtechnology.eventuate.adapter.vertx.LogEventDispatcher.EndpointRoute
 import com.rbmhtechnology.eventuate.adapter.vertx.LogProducer.PersistMessage
-import com.rbmhtechnology.eventuate.adapter.vertx.japi.ProcessingResult.FILTERED
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.{ Message, MessageConsumer }
 
@@ -48,7 +47,7 @@ class LogEventDispatcher(routes: Seq[EndpointRoute], vertx: Vertx) extends Actor
       if (filter.applyOrElse(msg.body(), (_: Any) => false)) {
         producer ! PersistMessage(msg)
       } else {
-        msg.reply(FILTERED)
+        msg.reply(ProcessingResult.FILTERED)
       }
     }
     vertx.eventBus().consumer[Any](endpoint, handler.asVertxHandler)

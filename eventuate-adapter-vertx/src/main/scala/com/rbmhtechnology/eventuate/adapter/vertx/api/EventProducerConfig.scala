@@ -152,7 +152,3 @@ class LogProducerConfigFactory(endpoints: Set[String]) {
       LogProducerConfig(id, log, endpoints, filter)
   }
 }
-
-case object Confirmation {
-  val create = this
-}

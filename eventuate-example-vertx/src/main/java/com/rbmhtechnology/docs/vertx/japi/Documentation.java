@@ -22,17 +22,19 @@ import akka.actor.ActorSystem;
 import com.rbmhtechnology.eventuate.ApplicationVersion;
 import com.rbmhtechnology.eventuate.EndpointFilters$;
 import com.rbmhtechnology.eventuate.ReplicationEndpoint;
+import com.rbmhtechnology.eventuate.adapter.vertx.Confirmation;
+import com.rbmhtechnology.eventuate.adapter.vertx.ProcessingResult;
 import com.rbmhtechnology.eventuate.adapter.vertx.VertxAdapter;
-import com.rbmhtechnology.eventuate.adapter.vertx.api.Confirmation;
 import com.rbmhtechnology.eventuate.adapter.vertx.japi.ConfirmationType;
 import com.rbmhtechnology.eventuate.adapter.vertx.japi.EventProducer;
-import com.rbmhtechnology.eventuate.adapter.vertx.japi.ProcessingResult;
 import com.rbmhtechnology.eventuate.adapter.vertx.japi.StorageProvider;
 import com.rbmhtechnology.eventuate.adapter.vertx.japi.VertxAdapterConfig;
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog;
 import io.vertx.core.Vertx;
 //#
 
+import com.rbmhtechnology.eventuate.adapter.vertx.japi.EventMetadata;
+import io.vertx.core.MultiMap;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Optional;
@@ -177,6 +179,26 @@ public class Documentation {
     //#message-codec
     VertxAdapterConfig.create()
       .registerDefaultCodecFor(Event.class, Event2.class);
+    //#
+
+    //#event-metadata-from-headers
+    vertx.eventBus().<Event>consumer("address-1").handler(message -> {
+      MultiMap headers = message.headers();
+
+      String localLogId = headers.get(EventMetadata.Headers.LOCAL_LOG_ID);
+      Long localSeqNr = Long.valueOf(headers.get(EventMetadata.Headers.LOCAL_SEQUENCE_NR));
+      String emitterId = headers.get(EventMetadata.Headers.EMITTER_ID);
+    });
+    //#
+
+    //#event-metadata-from-helper
+    vertx.eventBus().<Event>consumer("address-1").handler(message -> {
+      EventMetadata metadata = EventMetadata.fromHeaders(message.headers()).get();
+
+      String localLogId = metadata.localLogId();
+      Long localSeqNr = metadata.localSequenceNr();
+      String emitterId = metadata.emitterId();
+    });
     //#
   }
 

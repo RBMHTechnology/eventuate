@@ -16,6 +16,8 @@
 
 package com.rbmhtechnology.eventuate.adapter.vertx
 
+import com.rbmhtechnology.eventuate.DurableEvent
+import com.rbmhtechnology.eventuate.adapter.vertx.api.EventMetadata
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.{ DeliveryOptions, Message }
 
@@ -24,22 +26,26 @@ import scala.concurrent.{ ExecutionContext, Future, Promise }
 
 trait VertxProducer {
   def vertx: Vertx
+
+  protected def deliveryOptions(event: DurableEvent): DeliveryOptions =
+    new DeliveryOptions().setHeaders(EventMetadata(event).toHeaders)
 }
 
 trait VertxPublisher extends VertxProducer {
-  def publish(address: String, evt: Any): Unit =
-    vertx.eventBus().publish(address, evt)
+  def publish(address: String, evt: DurableEvent): Unit =
+    vertx.eventBus().publish(address, evt.payload, deliveryOptions(evt))
 }
 
 trait VertxSender extends VertxProducer {
+
   import VertxHandlerConverters._
 
-  def send[A](address: String, evt: Any, timeout: FiniteDuration)(implicit ec: ExecutionContext): Future[A] = {
+  def send[A](address: String, evt: DurableEvent, timeout: FiniteDuration)(implicit ec: ExecutionContext): Future[A] = {
     val promise = Promise[Message[A]]
-    vertx.eventBus().send(address, evt, new DeliveryOptions().setSendTimeout(timeout.toMillis), promise.asVertxHandler)
+    vertx.eventBus().send(address, evt.payload, deliveryOptions(evt).setSendTimeout(timeout.toMillis), promise.asVertxHandler)
     promise.future.map(_.body)
   }
 
-  def send(address: String, evt: Any): Unit =
-    vertx.eventBus().send(address, evt)
+  def send(address: String, evt: DurableEvent): Unit =
+    vertx.eventBus().send(address, evt.payload, deliveryOptions(evt))
 }

@@ -18,7 +18,6 @@ package com.rbmhtechnology.eventuate.adapter.vertx
 
 import akka.actor.{ ActorRef, Props }
 import com.rbmhtechnology.eventuate.EventsourcedActor
-import com.rbmhtechnology.eventuate.adapter.vertx.japi.ProcessingResult.PERSISTED
 import io.vertx.core.eventbus.Message
 
 import scala.util.{ Failure, Success }
@@ -42,7 +41,7 @@ private[vertx] class LogProducer(val id: String, val eventLog: ActorRef) extends
   override def onCommand: Receive = {
     case PersistMessage(msg) =>
       persist(msg.body()) {
-        case Success(res) => msg.reply(PERSISTED)
+        case Success(res) => msg.reply(ProcessingResult.PERSISTED)
         case Failure(err) => msg.fail(0, err.getMessage)
       }
   }

@@ -16,8 +16,8 @@
 
 package com.rbmhtechnology.docs.vertx
 
-import com.rbmhtechnology.eventuate.adapter.vertx.api.{ Batch, Confirmation, StorageProvider }
-import com.rbmhtechnology.eventuate.adapter.vertx.japi.ProcessingResult
+import com.rbmhtechnology.eventuate.adapter.vertx.{ Confirmation, ProcessingResult }
+import com.rbmhtechnology.eventuate.adapter.vertx.api.{ Batch, EventMetadata, StorageProvider }
 import io.vertx.core.AsyncResult
 
 import scala.concurrent.duration._
@@ -164,5 +164,29 @@ object Documentation {
   //#message-codec
   VertxAdapterConfig()
     .registerDefaultCodecFor(classOf[Event], classOf[Event2])
+  //#
+
+  //#event-metadata-from-headers
+  vertx.eventBus().consumer[Event]("address-1").handler(new Handler[Message[Event]] {
+    override def handle(message: Message[Event]): Unit = {
+      val headers = message.headers
+
+      val localLogId = headers.get(EventMetadata.Headers.LocalLogId)
+      val localSeqNr = headers.get(EventMetadata.Headers.LocalSequenceNr).toLong
+      val emitterId = headers.get(EventMetadata.Headers.EmitterId)
+    }
+  })
+  //#
+
+  //#event-metadata-from-helper
+  vertx.eventBus().consumer[Event]("address-1").handler(new Handler[Message[Event]] {
+    override def handle(message: Message[Event]): Unit = {
+      val metadata = EventMetadata.fromHeaders(message.headers).get
+
+      val localLogId = metadata.localLogId
+      val localSeqNr = metadata.localSequenceNr
+      val emitterId = metadata.emitterId
+    }
+  })
   //#
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.eventuate.adapter.vertx.japi;
+package com.rbmhtechnology.eventuate.adapter.vertx;
 
 public enum ProcessingResult {
   FILTERED,
