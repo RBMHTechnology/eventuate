@@ -18,7 +18,6 @@ package com.rbmhtechnology.eventuate
 
 import akka.actor._
 import akka.testkit._
-
 import org.scalatest._
 
 import scala.util._
@@ -39,7 +38,9 @@ object EventsourcedProcessorIntegrationSpec {
 
   class StatelessSampleProcessor(val id: String, val eventLog: ActorRef, val targetEventLog: ActorRef, eventProbe: ActorRef, progressProbe: ActorRef) extends EventsourcedProcessor {
     override def onCommand = {
-      case "boom" => throw IntegrationTestException
+      case "boom" =>
+        eventProbe ! "died"
+        throw IntegrationTestException
       case "snap" => save("") {
         case Success(_) => eventProbe ! "snapped"
         case Failure(_) =>
@@ -135,6 +136,9 @@ trait EventsourcedProcessorIntegrationSpec extends TestKitBase with WordSpecLike
       waitForProgressWrite(3L)
 
       p ! "boom"
+
+      processorEventProbe.expectMsg("died") // Fix #306: Make sure "boom" is processed before "d"
+
       a1 ! "d"
 
       processorEventProbe.expectMsg("a")
@@ -172,6 +176,9 @@ trait EventsourcedProcessorIntegrationSpec extends TestKitBase with WordSpecLike
       waitForProgressWrite(3L)
 
       p ! "boom"
+
+      processorEventProbe.expectMsg("died")
+
       a1 ! "d"
 
       processorEventProbe.expectMsg("c")
@@ -204,6 +211,9 @@ trait EventsourcedProcessorIntegrationSpec extends TestKitBase with WordSpecLike
       waitForProgressWrite(3L)
 
       p ! "boom"
+
+      processorEventProbe.expectMsg("died")
+
       a1 ! "d"
 
       processorEventProbe.expectMsg("d")
