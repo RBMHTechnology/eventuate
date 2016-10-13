@@ -125,7 +125,7 @@ public class AbstractEventsourcedProcessorSpec extends BaseSpec {
 
     private void processWriteSuccess(final long progress, final DurableEvent... events) {
         targetProbe.expectMsg(new ReplicationWrite(toSeq(events), progress, EMITTER_ID, vectorTimeZero(), false, null));
-        processResult(new ReplicationWriteSuccess(events.length, progress, EMITTER_ID, vectorTimeZero(), false));
+        processResult(new ReplicationWriteSuccess(toSeq(events), progress, EMITTER_ID, vectorTimeZero(), false));
     }
 
     private void processWriteFailure(final long progress, final DurableEvent... events) {

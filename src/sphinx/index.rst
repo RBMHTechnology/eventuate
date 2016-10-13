@@ -30,6 +30,7 @@ Table of contents
    architecture
    user-guide
    reference
+   adapters
    resources
    download
    developers

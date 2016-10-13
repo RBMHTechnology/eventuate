@@ -147,7 +147,7 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test", Eventsourced
   def processPartialWrite(progress: Long, events: Seq[DurableEvent], success: Boolean = true): Unit = {
     trgProbe.expectMsg(ReplicationWrite(events, progress, emitterIdB, VectorTime()))
     if (success) {
-      processResult(ReplicationWriteSuccess(events.size, progress, emitterIdB, VectorTime()))
+      processResult(ReplicationWriteSuccess(events, progress, emitterIdB, VectorTime()))
     } else {
       processResult(ReplicationWriteFailure(TestException))
     }

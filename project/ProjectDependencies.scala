@@ -17,7 +17,7 @@
 import sbt._
 
 object ProjectDependencyVersions {
-  val AkkaVersion = "2.4.4"
+  val AkkaVersion = "2.4.10"
   val CassandraVersion = "3.4"
   val Log4jVersion = "2.5"
   val ProtobufVersion = "2.5.0"
@@ -35,6 +35,8 @@ object ProjectDependencies {
   val Protobuf =             "com.google.protobuf"        % "protobuf-java"             % ProtobufVersion
   val JunitInterface =       "com.novocode"               % "junit-interface"           % "0.11"
   val AkkaRemote =           "com.typesafe.akka"         %% "akka-remote"               % AkkaVersion
+  val AkkaStream =           "com.typesafe.akka"         %% "akka-stream"               % AkkaVersion
+  val AkkaStreamTestkit =    "com.typesafe.akka"         %% "akka-stream-testkit"       % AkkaVersion
   val AkkaTestkit =          "com.typesafe.akka"         %% "akka-testkit"              % AkkaVersion
   val AkkaTestkitMultiNode = "com.typesafe.akka"         %% "akka-multi-node-testkit"   % AkkaVersion
   val CommonsIo =            "commons-io"                 % "commons-io"                % "2.4"

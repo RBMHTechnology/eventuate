@@ -10,5 +10,4 @@ Reference
    reference/api-docs
    reference/event-log
    reference/event-sourcing
-   reference/adapters
    reference/configuration

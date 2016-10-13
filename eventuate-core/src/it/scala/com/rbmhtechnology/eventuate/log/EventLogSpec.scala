@@ -143,7 +143,7 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with SingleLocation
 
   def writeReplicationProgress(replicationProgress: Long, expectedStoredReplicationProgress: Long, remoteLogId: String = remoteLogId): Unit = {
     log.tell(ReplicationWrite(Seq(), replicationProgress, remoteLogId, VectorTime()), replicatorProbe.ref)
-    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(0, `expectedStoredReplicationProgress`, _, _, _) => }
+    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(Seq(), `expectedStoredReplicationProgress`, _, _, _) => }
   }
 
   def registerCollaborator(aggregateId: Option[String] = None, collaborator: TestProbe = TestProbe()): TestProbe = {

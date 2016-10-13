@@ -221,7 +221,7 @@ private class DurableEventReceiver(id: String, connection: ReplicationConnection
 
     private def write(events: Seq[DurableEvent], replicationProgress: Long, currentSourceVersionVector: VectorTime, continueReplication: Boolean): Unit = {
       Future(store(events.iterator)) map {
-        case _ => ReplicationWriteSuccess(events.length, replicationProgress, source.logId, VectorTime.Zero, continueReplication)
+        case _ => ReplicationWriteSuccess(events, replicationProgress, source.logId, VectorTime.Zero, continueReplication)
       } recover {
         case t => ReplicationWriteFailure(t)
       } pipeTo self

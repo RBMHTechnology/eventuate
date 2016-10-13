@@ -26,7 +26,7 @@ import scala.concurrent.duration._
 import scala.util._
 
 private object EventLogWriter {
-  class EventLogWriterActor(val id: String, val eventLog: ActorRef) extends EventsourcedActor {
+  class EventLogWriterActor(val id: String, val eventLog: ActorRef, override val aggregateId: Option[String]) extends EventsourcedActor {
     override def onCommand: Receive = {
       case event => persist(event) {
         case Success(r) => sender() ! lastHandledEvent
@@ -41,12 +41,13 @@ private object EventLogWriter {
 }
 
 /**
- * Simple utility for writing events to an event log.
+ * Utility for writing events to an event log.
  *
  * @param id Unique emitter id.
  * @param eventLog Event log to write to.
+ * @param aggregateId Optional aggregate id.
  */
-class EventLogWriter(id: String, eventLog: ActorRef)(implicit val system: ActorSystem) {
+class EventLogWriter(id: String, eventLog: ActorRef, aggregateId: Option[String])(implicit val system: ActorSystem) {
   import EventLogWriter._
   import system.dispatcher
 
@@ -61,7 +62,10 @@ class EventLogWriter(id: String, eventLog: ActorRef)(implicit val system: ActorS
     Timeout(10.seconds)
 
   private val actor =
-    system.actorOf(Props(new EventLogWriterActor(id, eventLog)))
+    system.actorOf(Props(new EventLogWriterActor(id, eventLog, aggregateId)))
+
+  def this(id: String, eventLog: ActorRef)(implicit system: ActorSystem) =
+    this(id, eventLog, None)
 
   /**
    * Asynchronously writes the given `events` to `eventLog`.
