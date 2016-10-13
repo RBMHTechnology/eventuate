@@ -35,7 +35,7 @@ object VertxAdapterSpec {
 }
 
 class VertxAdapterSpec extends TestKit(ActorSystem("test", VertxAdapterSpec.Config))
-  with WordSpecLike with MustMatchers with BeforeAndAfterAll with ActorStorage with StopSystemAfterAll with LocationCleanupLeveldb
+  with WordSpecLike with MustMatchers with BeforeAndAfterAll with StopSystemAfterAll with LocationCleanupLeveldb
   with VertxEnvironment with VertxEventBusProbes {
 
   import VertxAdapterSpec._
@@ -43,12 +43,14 @@ class VertxAdapterSpec extends TestKit(ActorSystem("test", VertxAdapterSpec.Conf
 
   val logName = "logA"
   val adapterId = "adapter1"
+  var storage: ActorStorageProvider = _
   var endpoint: ReplicationEndpoint = _
 
   override def config: Config = VertxAdapterSpec.Config
 
   override def beforeAll(): Unit = {
     super.beforeAll()
+    storage = new ActorStorageProvider(adapterId)
     endpoint = new ReplicationEndpoint(id = "1", logNames = Set(logName), logFactory = logId => LeveldbEventLog.props(logId), connections = Set())
   }
 
@@ -63,34 +65,28 @@ class VertxAdapterSpec extends TestKit(ActorSystem("test", VertxAdapterSpec.Conf
           .as("adapter1"))
         .registerDefaultCodecFor(classOf[Event])
 
-      val vertxAdapter = VertxAdapter(adapterConfig, vertx, actorStorageProvider())
+      val vertxAdapter = VertxAdapter(adapterConfig, vertx, storage)
       val logWriter = new EventLogWriter("w1", endpoint.logs(logName))
-      val storageName = adapterId
 
       endpoint.activate()
       vertxAdapter.start()
 
-      val write1 = logWriter.write(Seq(Event("1"))).await.head
+      logWriter.write(Seq(Event("1"))).await.head
 
-      storageProbe.expectMsg(read(storageName))
-      storageProbe.reply(0L)
-
-      storageProbe.expectMsg(write(storageName)(1))
-      storageProbe.reply(1L)
+      storage.expectRead(replySequenceNr = 0)
+      storage.expectWrite(sequenceNr = 1)
 
       endpoint1Probe.expectVertxMsg(body = Event("1"))
 
-      val write2 = logWriter.write(Seq(Event("2"))).await
+      logWriter.write(Seq(Event("2"))).await
 
-      storageProbe.expectMsg(write(storageName)(2))
-      storageProbe.reply(2L)
+      storage.expectWrite(sequenceNr = 2)
 
       endpoint1Probe.expectVertxMsg(body = Event("2"))
 
-      val write3 = logWriter.write(Seq(Event("3"), Event("4"))).await
+      logWriter.write(Seq(Event("3"), Event("4"))).await
 
-      storageProbe.expectMsgAnyOf(write(storageName)(3), write(storageName)(4))
-      storageProbe.reply(4L)
+      storage.expectWriteAnyOf(sequenceNrs = Seq(3, 4))
 
       endpoint1Probe.expectVertxMsg(body = Event("3"))
       endpoint1Probe.expectVertxMsg(body = Event("4"))

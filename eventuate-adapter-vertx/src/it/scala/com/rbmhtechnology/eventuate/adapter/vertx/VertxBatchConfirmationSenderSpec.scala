@@ -16,36 +16,32 @@
 
 package com.rbmhtechnology.eventuate.adapter.vertx
 
-import akka.actor.{ActorRef, ActorSystem, Status}
-import akka.testkit.{TestKit, TestProbe}
+import akka.actor.{ActorRef, ActorSystem}
+import akka.testkit.TestKit
 import com.rbmhtechnology.eventuate.SingleLocationSpecLeveldb
 import com.rbmhtechnology.eventuate.adapter.vertx.api.{Confirmation, EndpointRouter}
-import com.rbmhtechnology.eventuate.adapter.vertx.japi.ProcessingResult
 import org.scalatest.{MustMatchers, WordSpecLike}
 
 import scala.concurrent.duration._
 
 class VertxBatchConfirmationSenderSpec extends TestKit(ActorSystem("test", TestConfig.default()))
   with WordSpecLike with MustMatchers with SingleLocationSpecLeveldb with StopSystemAfterAll
-  with ActorStorage with EventWriter with VertxEnvironment with VertxEventBusProbes {
+  with EventWriter with VertxEnvironment with VertxEventBusProbes {
 
   import utilities._
 
   val confirmationTimeout = 2.seconds
-  val storageTimeout = 500.millis
-  val inboundLogId = "log_inbound_confirm"
+  val adapterId = "adapter-1"
+  var storage: ActorStorageProvider = _
 
   override def beforeEach(): Unit = {
     super.beforeEach()
+    storage = new ActorStorageProvider(adapterId)
     registerEventBusCodec(Confirmation.getClass)
   }
 
   def vertxBatchConfirmationSender(endpointRouter: EndpointRouter, batchSize: Int = 10): ActorRef =
-    system.actorOf(VertxBatchConfirmationSender.props(inboundLogId, log, endpointRouter, vertx, actorStorageProvider(), batchSize, confirmationTimeout))
-
-  def read: String = read(inboundLogId)
-
-  def write: (Long) => String = write(inboundLogId)
+    system.actorOf(VertxBatchConfirmationSender.props(adapterId, log, endpointRouter, vertx, storage, batchSize, confirmationTimeout))
 
   "A VertxBatchConfirmationSender" when {
     "reading events from an event log" must {
@@ -53,8 +49,7 @@ class VertxBatchConfirmationSenderSpec extends TestKit(ActorSystem("test", TestC
         writeEvents("e", 5)
         vertxBatchConfirmationSender(EndpointRouter.routeAllTo(endpoint1))
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(0L)
+        storage.expectRead(replySequenceNr = 0)
 
         endpoint1Probe.expectVertxMsg(body = "e-1")
         endpoint1Probe.expectVertxMsg(body = "e-2")
@@ -66,8 +61,7 @@ class VertxBatchConfirmationSenderSpec extends TestKit(ActorSystem("test", TestC
         writeEvents("e", 5)
         vertxBatchConfirmationSender(EndpointRouter.routeAllTo(endpoint1))
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(2L)
+        storage.expectRead(replySequenceNr = 2)
 
         endpoint1Probe.expectVertxMsg(body = "e-3")
         endpoint1Probe.expectVertxMsg(body = "e-4")
@@ -77,61 +71,50 @@ class VertxBatchConfirmationSenderSpec extends TestKit(ActorSystem("test", TestC
         writeEvents("e", 3)
         vertxBatchConfirmationSender(EndpointRouter.routeAllTo(endpoint1))
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(0L)
-        storageProbe.expectNoMsg(storageTimeout)
+        storage.expectRead(replySequenceNr = 0)
 
         endpoint1Probe.expectVertxMsg(body = "e-1").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-2").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-3").confirm()
 
-        storageProbe.expectMsg(write(3))
+        storage.expectWrite(sequenceNr = 3)
       }
       "persist event confirmations in batches" in {
         writeEvents("e", 4)
         vertxBatchConfirmationSender(EndpointRouter.routeAllTo(endpoint1), batchSize = 2)
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(0L)
-        storageProbe.expectNoMsg(storageTimeout)
+        storage.expectRead(replySequenceNr = 0)
 
         endpoint1Probe.expectVertxMsg(body = "e-1").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-2").confirm()
 
-        storageProbe.expectMsg(write(2))
-        storageProbe.reply(2L)
+        storage.expectWrite(sequenceNr = 2)
 
         endpoint1Probe.expectVertxMsg(body = "e-3").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-4").confirm()
 
-        storageProbe.expectMsg(write(4))
-        storageProbe.reply(2L)
+        storage.expectWrite(sequenceNr = 4)
       }
       "persist event confirmations in batches of smaller size if no further events present" in {
         writeEvents("e", 3)
         vertxBatchConfirmationSender(EndpointRouter.routeAllTo(endpoint1), batchSize = 2)
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(0L)
-        storageProbe.expectNoMsg(storageTimeout)
+        storage.expectRead(replySequenceNr = 0)
 
         endpoint1Probe.expectVertxMsg(body = "e-1").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-2").confirm()
 
-        storageProbe.expectMsg(write(2))
-        storageProbe.reply(2L)
+        storage.expectWrite(sequenceNr = 2)
 
         endpoint1Probe.expectVertxMsg(body = "e-3").confirm()
 
-        storageProbe.expectMsg(write(3))
-        storageProbe.reply(3L)
+        storage.expectWrite(sequenceNr = 3)
       }
       "redeliver whole batch if events are unconfirmed" in {
         writeEvents("e", 5)
         vertxBatchConfirmationSender(EndpointRouter.routeAllTo(endpoint1))
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(0L)
+        storage.expectRead(replySequenceNr = 0)
 
         endpoint1Probe.expectVertxMsg(body = "e-1")
         endpoint1Probe.expectVertxMsg(body = "e-2").confirm()
@@ -139,8 +122,7 @@ class VertxBatchConfirmationSenderSpec extends TestKit(ActorSystem("test", TestC
         endpoint1Probe.expectVertxMsg(body = "e-4").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-5").confirm()
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(0L)
+        storage.expectRead(replySequenceNr = 0)
 
         endpoint1Probe.expectVertxMsg(body = "e-1")
         endpoint1Probe.expectVertxMsg(body = "e-2")
@@ -152,48 +134,43 @@ class VertxBatchConfirmationSenderSpec extends TestKit(ActorSystem("test", TestC
         writeEvents("e", 4)
         vertxBatchConfirmationSender(EndpointRouter.routeAllTo(endpoint1), batchSize = 2)
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(0L)
+        storage.expectRead(replySequenceNr = 0)
 
         endpoint1Probe.expectVertxMsg(body = "e-1").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-2").confirm()
 
-        storageProbe.expectMsg(write(2))
-        storageProbe.reply(2L)
+        storage.expectWrite(sequenceNr = 2)
 
         endpoint1Probe.expectVertxMsg(body = "e-3").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-4")
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(2L)
+        storage.expectRead(replySequenceNr = 2)
 
         endpoint1Probe.expectVertxMsg(body = "e-3").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-4").confirm()
+
+        storage.expectWrite(sequenceNr = 4)
       }
       "redeliver unconfirmed event batches while processing new events" in {
         writeEvents("e", 2)
         vertxBatchConfirmationSender(EndpointRouter.routeAllTo(endpoint1), batchSize = 2)
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(0L)
+        storage.expectRead(replySequenceNr = 0)
 
         endpoint1Probe.expectVertxMsg(body = "e-1").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-2").confirm()
 
-        storageProbe.expectMsg(write(2))
-        storageProbe.reply(2L)
+        storage.expectWrite(sequenceNr = 2)
 
         writeEvents("e", 1, start = 3)
 
         endpoint1Probe.expectVertxMsg(body = "e-3")
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(2L)
+        storage.expectRead(replySequenceNr = 2)
 
         endpoint1Probe.expectVertxMsg(body = "e-3").confirm()
 
-        storageProbe.expectMsg(write(3))
-        storageProbe.reply(3L)
+        storage.expectWrite(sequenceNr = 3)
       }
       "deliver selected events only" in {
         writeEvents("e", 10)
@@ -201,8 +178,7 @@ class VertxBatchConfirmationSenderSpec extends TestKit(ActorSystem("test", TestC
           case ev: String if isOddEvent(ev, "e") => endpoint1
         })
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(0L)
+        storage.expectRead(replySequenceNr = 0)
 
         endpoint1Probe.expectVertxMsg(body = "e-1").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-3").confirm()
@@ -210,8 +186,7 @@ class VertxBatchConfirmationSenderSpec extends TestKit(ActorSystem("test", TestC
         endpoint1Probe.expectVertxMsg(body = "e-7").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-9").confirm()
 
-        storageProbe.expectMsg(write(10))
-        storageProbe.reply(10L)
+        storage.expectWrite(sequenceNr = 10)
       }
       "route events to different endpoints" in {
         writeEvents("e", 10)
@@ -220,8 +195,7 @@ class VertxBatchConfirmationSenderSpec extends TestKit(ActorSystem("test", TestC
           case ev: String if isOddEvent(ev, "e") => endpoint2
         })
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(0L)
+        storage.expectRead(replySequenceNr = 0)
 
         endpoint1Probe.expectVertxMsg(body = "e-2").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-4").confirm()
@@ -235,8 +209,7 @@ class VertxBatchConfirmationSenderSpec extends TestKit(ActorSystem("test", TestC
         endpoint2Probe.expectVertxMsg(body = "e-7").confirm()
         endpoint2Probe.expectVertxMsg(body = "e-9").confirm()
 
-        storageProbe.expectMsg(write(10))
-        storageProbe.reply(10L)
+        storage.expectWrite(sequenceNr = 10)
       }
       "deliver no events if the routing does not match" in {
         writeEvents("e", 10)
@@ -244,13 +217,11 @@ class VertxBatchConfirmationSenderSpec extends TestKit(ActorSystem("test", TestC
           case "i-will-never-match" => endpoint1
         })
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(0L)
+        storage.expectRead(replySequenceNr = 0)
 
         endpoint1Probe.expectNoMsg(1.second)
 
-        storageProbe.expectMsg(write(10))
-        storageProbe.reply(10L)
+        storage.expectWrite(sequenceNr = 10)
       }
     }
     "encountering a write failure" must {
@@ -258,18 +229,14 @@ class VertxBatchConfirmationSenderSpec extends TestKit(ActorSystem("test", TestC
         writeEvents("e", 3)
         vertxBatchConfirmationSender(EndpointRouter.routeAllTo(endpoint1))
 
-        storageProbe.expectMsg(read)
-        storageProbe.reply(0L)
+        storage.expectRead(replySequenceNr = 0)
 
         endpoint1Probe.expectVertxMsg(body = "e-1").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-2").confirm()
         endpoint1Probe.expectVertxMsg(body = "e-3").confirm()
 
-        storageProbe.expectMsg(write(3))
-        storageProbe.reply(Status.Failure(new RuntimeException("err")))
-
-        storageProbe.expectMsg(read)
-        storageProbe.reply(0L)
+        storage.expectWriteAndFail(sequenceNr = 3, failure = new RuntimeException("storage write failure."))
+        storage.expectRead(replySequenceNr = 0)
 
         endpoint1Probe.expectVertxMsg(body = "e-1")
         endpoint1Probe.expectVertxMsg(body = "e-2")

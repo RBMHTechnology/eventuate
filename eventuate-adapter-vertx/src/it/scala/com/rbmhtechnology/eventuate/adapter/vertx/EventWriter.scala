@@ -31,7 +31,7 @@ trait EventWriter {
     new EventLogWriter("w1", log).write((start until eventCount + start).map(i => s"$prefix-$i")).await
 
   def isEvenEvent(ev: String, prefix: String): Boolean =
-    Integer.valueOf(ev.replace(prefix, "")) % 2 == 0
+    ev.replace(prefix, "").toInt % 2 == 0
 
   def isOddEvent(ev: String, prefix: String): Boolean =
     !isEvenEvent(ev, prefix)
