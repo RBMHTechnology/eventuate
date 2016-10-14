@@ -187,14 +187,14 @@ Event-sourced components can override the configured default value by overriding
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: replay-batch-size
 
-.. _snapshots:
-
 Recovery using an application-defined log sequence number
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In order to keep recovery times small it is almost always sensible to recover using snapshots. However, in some very rare cases an event-sourced actor or view can recover quickly using an application-defined log sequence number. If defined, only events with a sequence number equal to or larger than the given sequence number are replayed.
 
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: replay-from-sequence-nr
+
+.. _snapshots:
 
 Snapshots
 ---------
