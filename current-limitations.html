@@ -118,7 +118,7 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-writers">Event-sourced writers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-processors">Event-sourced processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#state-recovery">State recovery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#id8">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-routing">Event routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-driven-communication">Event-driven communication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
@@ -204,7 +204,7 @@
 <p>The following is a list of known limitations that are going to be addressed in future versions. If some of these limitations are particularly painful to you, please <a class="reference external" href="https://gitter.im/RBMHTechnology/eventuate">let us know</a> so that we can target them accordingly.</p>
 <ul class="simple">
 <li>Replication network topologies must be statically defined at the moment. Dynamic changes, such as adding new locations or changing the replication network topology at runtime, will be supported in future versions. We also think about an integration with <a class="reference external" href="http://doc.akka.io/docs/akka/2.4/scala/cluster-usage.html">Akka Cluster</a>.</li>
-<li><a class="reference internal" href="reference/event-sourcing.html#snapshots"><span class="std std-ref">Recovery using an application-defined log sequence number</span></a> are written to the local filesystem at the moment. Applications that need to share snapshots across nodes should consider storing them on NFS or replicate them with <code class="docutils literal"><span class="pre">rsync</span></code>, for example.</li>
+<li><a class="reference internal" href="reference/event-sourcing.html#snapshots"><span class="std std-ref">Snapshots</span></a> are written to the local filesystem at the moment. Applications that need to share snapshots across nodes should consider storing them on NFS or replicate them with <code class="docutils literal"><span class="pre">rsync</span></code>, for example.</li>
 <li>No performance optimizations have been made yet.</li>
 </ul>
 </div>

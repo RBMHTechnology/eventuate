@@ -120,7 +120,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#event-sourced-writers">Event-sourced writers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#event-sourced-processors">Event-sourced processors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#state-recovery">State recovery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id8">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#snapshots">Snapshots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#event-routing">Event routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#event-driven-communication">Event-driven communication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#reliable-delivery">Reliable delivery</a></li>
@@ -534,7 +534,7 @@
 </div>
 </div>
 <div class="section" id="recovery-using-an-application-defined-log-sequence-number">
-<span id="snapshots"></span><h2>Recovery using an application-defined log sequence number<a class="headerlink" href="#recovery-using-an-application-defined-log-sequence-number" title="Permalink to this headline">¶</a></h2>
+<h2>Recovery using an application-defined log sequence number<a class="headerlink" href="#recovery-using-an-application-defined-log-sequence-number" title="Permalink to this headline">¶</a></h2>
 <p>In order to keep recovery times small it is almost always sensible to recover using snapshots. However, in some very rare cases an event-sourced actor or view can recover quickly using an application-defined log sequence number. If defined, only events with a sequence number equal to or larger than the given sequence number are replayed.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CustomRecoveryExampleActor</span><span class="o">(</span><span class="n">snr</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
 
@@ -546,8 +546,8 @@
 </div>
 </div>
 </div>
-<div class="section" id="id8">
-<h1>Snapshots<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="snapshots">
+<span id="id8"></span><h1>Snapshots<a class="headerlink" href="#snapshots" title="Permalink to this headline">¶</a></h1>
 <p>Recovery times increase with the number of events that are replayed to event-sourced components. They can be decreased by starting event replay from a previously saved snapshot of internal state rather than replaying events from scratch. Event-sourced components can save snapshots by calling <code class="docutils literal"><span class="pre">save</span></code> within their command handler:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
@@ -821,7 +821,7 @@
 <p>This works for all event-sourcing abstractions except for <code class="docutils literal"><span class="pre">EventsourcedProcessor</span></code>. Its <code class="docutils literal"><span class="pre">eventContext</span></code> does not allow behavior changes as <code class="docutils literal"><span class="pre">EventsourcedProcessor</span></code> implements default <code class="docutils literal"><span class="pre">onEvent</span></code> behavior that should be changed by applications. An attempt to change that behavior will throw an <code class="docutils literal"><span class="pre">UnsupportedOperationException</span></code>. Changing an <code class="docutils literal"><span class="pre">EventsourcedProcessor</span></code>’s <code class="docutils literal"><span class="pre">processEvent</span></code> behavior is not supported yet.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Command and event handling behaviors are managed by internal behavior stacks. Eventuate does <strong>not</strong> include these behavior stacks into <a class="reference internal" href="#snapshots"><span class="std std-ref">Recovery using an application-defined log sequence number</span></a> when applications <code class="docutils literal"><span class="pre">save</span></code> actor state. Although the state of an event handling behavior stack can be recovered by replaying events from scratch, that stack is not automatically recovered when a snapshot is loaded. Applications are therefore responsible to restore the required command and event handling behavior from application-specific snapshot details in the <code class="docutils literal"><span class="pre">onSnapshot</span></code> handler. Of course, this is only necessary if the required behavior differs from the default <code class="docutils literal"><span class="pre">onEvent</span></code> and <code class="docutils literal"><span class="pre">onCommand</span></code> behavior.</p>
+<p class="last">Command and event handling behaviors are managed by internal behavior stacks. Eventuate does <strong>not</strong> include these behavior stacks into <a class="reference internal" href="#snapshots"><span class="std std-ref">Snapshots</span></a> when applications <code class="docutils literal"><span class="pre">save</span></code> actor state. Although the state of an event handling behavior stack can be recovered by replaying events from scratch, that stack is not automatically recovered when a snapshot is loaded. Applications are therefore responsible to restore the required command and event handling behavior from application-specific snapshot details in the <code class="docutils literal"><span class="pre">onSnapshot</span></code> handler. Of course, this is only necessary if the required behavior differs from the default <code class="docutils literal"><span class="pre">onEvent</span></code> and <code class="docutils literal"><span class="pre">onCommand</span></code> behavior.</p>
 </div>
 </div>
 <div class="section" id="failure-handling">
@@ -971,7 +971,7 @@ batch_size_fail_threshold_in_kb: 50
 <table class="docutils footnote" frame="void" id="id18" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id7">[3]</a></td><td>Event replay can optionally start from <a class="reference internal" href="#snapshots"><span class="std std-ref">Recovery using an application-defined log sequence number</span></a> of actor state.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id7">[3]</a></td><td>Event replay can optionally start from <a class="reference internal" href="#snapshots"><span class="std std-ref">Snapshots</span></a> of actor state.</td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id19" rules="none">
