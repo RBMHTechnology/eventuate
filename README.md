@@ -5,10 +5,10 @@
 Eventuate
 =========
 
-Eventuate is a toolkit for building applications composed of event-driven and event-sourced services that collaborate by exchanging events over shared event logs. Services can either be co-located on a single node or distributed up to global scale. Services can also be replicated with causal consistency and remain available for writes during network partitions. Eventuate has a [Java](http://www.oracle.com/technetwork/java/javase/overview/index.html) and [Scala](http://www.scala-lang.org/) API, is written in Scala and built on top of [Akka](http://akka.io), a toolkit for building highly concurrent, distributed, and resilient message-driven applications on the JVM. Eventuate
+Eventuate is a toolkit for building applications composed of event-driven and event-sourced services that communicate via causally ordered event streams. Services can either be co-located on a single node or distributed up to global scale. Services can also be replicated with causal consistency and remain available for writes during network partitions. Eventuate has a [Java](http://www.oracle.com/technetwork/java/javase/overview/index.html) and [Scala](http://www.scala-lang.org/) API, is written in Scala and built on top of [Akka](http://akka.io), a toolkit for building highly concurrent, distributed, and resilient message-driven applications on the JVM. Eventuate
 
 - provides abstractions for building stateful event-sourced services, persistent and in-memory query databases and event processing pipelines
-- provides services a reliable and partition-tolerant event bus with causal event ordering and distribution options up to global scale  
+- enables services to communicate over a reliable and partition-tolerant event bus with causal event ordering and distribution up to global scale
 - supports stateful service replication with causal consistency and concurrent state updates with automated and interactive conflict resolution
 - provides implementations of operation-based CRDTs as specified in [A comprehensive study of Convergent and Commutative Replicated Data Types](http://hal.upmc.fr/file/index/docid/555588/filename/techreport.pdf)
 - supports the development of *always-on* applications by allowing services to be distributed across multiple availability zones (locations)
