@@ -91,4 +91,19 @@ package object vertx {
       }
     }
   }
+
+  object VertxExtensions {
+
+    implicit class RichMultiMap(map: MultiMap) {
+      def getAsOption(name: String): Option[String] =
+        Option(map.get(name))
+
+      def getOrElseThrow(name: String): String =
+        if (map.contains(name)) {
+          map.get(name)
+        } else {
+          throw new IllegalArgumentException(s"No entry for key '$name' found.")
+        }
+    }
+  }
 }

@@ -75,7 +75,7 @@ private[vertx] class VertxSingleConfirmationSender(val id: String, val eventLog:
       endpointRouter.endpoint(ev) match {
         case Some(endpoint) =>
           val deliveryId = lastSequenceNr.toString
-          deliver(deliveryId, DeliverEvent(EventEnvelope(endpoint, ev), deliveryId), self.path)
+          deliver(deliveryId, DeliverEvent(EventEnvelope(endpoint, lastHandledEvent), deliveryId), self.path)
         case None =>
       }
   }

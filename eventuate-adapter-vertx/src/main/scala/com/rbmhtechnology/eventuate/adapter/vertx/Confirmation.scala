@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package com.rbmhtechnology.eventuate.adapter.vertx.utilities
+package com.rbmhtechnology.eventuate.adapter.vertx
 
-import com.rbmhtechnology.eventuate.adapter.vertx.Confirmation
-import io.vertx.core.MultiMap
-import io.vertx.core.eventbus.Message
-
-case class VertxEventBusMessage[T](body: T, message: Message[T]) {
-  def confirm(): Unit = {
-    message.reply(Confirmation)
-  }
-
-  def headers: MultiMap =
-    message.headers()
+case object Confirmation {
+  def create = this
 }

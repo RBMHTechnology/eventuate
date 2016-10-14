@@ -19,7 +19,7 @@ package com.rbmhtechnology.eventuate.adapter.vertx
 import akka.actor.{ActorRef, ActorSystem}
 import akka.testkit.TestKit
 import com.rbmhtechnology.eventuate.SingleLocationSpecLeveldb
-import com.rbmhtechnology.eventuate.adapter.vertx.api.{Confirmation, EndpointRouter}
+import com.rbmhtechnology.eventuate.adapter.vertx.api.EndpointRouter
 import org.scalatest.{MustMatchers, WordSpecLike}
 
 import scala.concurrent.duration._

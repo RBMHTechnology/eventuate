@@ -16,10 +16,10 @@
 
 package com.rbmhtechnology.eventuate.adapter.vertx.api
 
-import com.rbmhtechnology.eventuate.adapter.vertx.japi.ProcessingResult
-import com.rbmhtechnology.eventuate.adapter.vertx.VertxAdapter
+import com.rbmhtechnology.eventuate.adapter.vertx.{ Confirmation, ProcessingResult, VertxAdapter }
 
 import scala.collection.immutable.Seq
+import scala.language.existentials
 
 object VertxAdapterConfig {
 

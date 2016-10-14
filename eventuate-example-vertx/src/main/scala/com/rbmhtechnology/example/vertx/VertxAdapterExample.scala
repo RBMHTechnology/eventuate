@@ -25,7 +25,6 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.rbmhtechnology.eventuate.adapter.vertx._
 import com.rbmhtechnology.eventuate.adapter.vertx.api._
-import com.rbmhtechnology.eventuate.adapter.vertx.japi.ProcessingResult
 import com.rbmhtechnology.eventuate.log.EventLogWriter
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
 import com.rbmhtechnology.eventuate.{ EventsourcedView, ReplicationConnection, ReplicationEndpoint }

@@ -16,13 +16,13 @@
 
 package com.rbmhtechnology.eventuate.adapter.vertx
 
-import com.rbmhtechnology.eventuate.EventsourcedWriter
+import com.rbmhtechnology.eventuate.{ DurableEvent, EventsourcedWriter }
 import com.rbmhtechnology.eventuate.adapter.vertx.api.EndpointRouter
 
 import scala.collection.immutable.Seq
 import scala.concurrent.{ ExecutionContext, Future }
 
-case class EventEnvelope(address: String, evt: Any)
+case class EventEnvelope(address: String, evt: DurableEvent)
 
 trait VertxEventDispatcher[R, W] extends EventsourcedWriter[R, W] with ProgressStore[R, W] {
   import context.dispatcher
@@ -40,7 +40,7 @@ trait VertxEventDispatcher[R, W] extends EventsourcedWriter[R, W] with ProgressS
   override def onEvent: Receive = {
     case ev =>
       events = endpointRouter.endpoint(ev) match {
-        case Some(endpoint) => events :+ EventEnvelope(endpoint, ev)
+        case Some(endpoint) => events :+ EventEnvelope(endpoint, lastHandledEvent)
         case None           => events
       }
   }

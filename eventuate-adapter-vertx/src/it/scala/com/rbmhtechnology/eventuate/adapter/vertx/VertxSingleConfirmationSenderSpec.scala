@@ -19,7 +19,7 @@ package com.rbmhtechnology.eventuate.adapter.vertx
 import akka.actor.{ActorRef, ActorSystem}
 import akka.testkit.TestKit
 import com.rbmhtechnology.eventuate.SingleLocationSpecLeveldb
-import com.rbmhtechnology.eventuate.adapter.vertx.api.{Confirmation, EndpointRouter}
+import com.rbmhtechnology.eventuate.adapter.vertx.api.{EndpointRouter, EventMetadata}
 import org.scalatest.{MustMatchers, WordSpecLike}
 
 import scala.concurrent.duration._
@@ -134,6 +134,27 @@ class VertxSingleConfirmationSenderSpec extends TestKit(ActorSystem("test", Test
         writeEvents("e", 10)
 
         endpoint1Probe.expectNoMsg(1.second)
+      }
+      "send event metadata in event bus message headers" in {
+        val event = writeEvents("e", 1).head
+        vertxSingleConfirmationSender(EndpointRouter.routeAllTo(endpoint1))
+
+        val msg = endpoint1Probe.expectVertxMsg(body = "e-1")
+
+        msg.headers.get(EventMetadata.Headers.LocalLogId) mustBe event.localLogId
+        msg.headers.get(EventMetadata.Headers.LocalSequenceNr).toLong mustBe event.localSequenceNr
+        msg.headers.get(EventMetadata.Headers.EmitterId) mustBe event.emitterId
+      }
+      "send event metadata in event bus message headers readable from EventMetadata" in {
+        val event = writeEvents("e", 1).head
+        vertxSingleConfirmationSender(EndpointRouter.routeAllTo(endpoint1))
+
+        val msg = endpoint1Probe.expectVertxMsg(body = "e-1")
+        val metadata = EventMetadata.fromHeaders(msg.headers)
+
+        metadata.map(_.localLogId) mustBe Some(event.localLogId)
+        metadata.map(_.localSequenceNr) mustBe Some(event.localSequenceNr)
+        metadata.map(_.emitterId) mustBe Some(event.emitterId)
       }
     }
   }
