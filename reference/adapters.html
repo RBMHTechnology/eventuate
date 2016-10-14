@@ -460,11 +460,11 @@
 <span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.ApplicationVersion</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.EndpointFilters</span><span class="n">$</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.ReplicationEndpoint</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.Confirmation</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.ProcessingResult</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.VertxAdapter</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.api.Confirmation</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.japi.ConfirmationType</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.japi.EventProducer</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.japi.ProcessingResult</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.japi.StorageProvider</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.japi.VertxAdapterConfig</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog</span><span class="o">;</span>
@@ -704,6 +704,61 @@ Using batch confirmations, events are delivered in batches where the next batch 
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The generic <code class="docutils literal"><span class="pre">MessageCodec</span></code> can also be used for events not stored in an event log if a <code class="docutils literal"><span class="pre">Serializer</span></code> for the event type is configured at the <code class="docutils literal"><span class="pre">ActorSystem</span></code>. If no <code class="docutils literal"><span class="pre">Serializer</span></code> for a type is configured the generated <code class="docutils literal"><span class="pre">MessageCodec</span></code> will fail to process instances of the type.</p>
+</div>
+</div>
+<div class="section" id="event-metadata">
+<h3>Event Metadata<a class="headerlink" href="#event-metadata" title="Permalink to this headline">¶</a></h3>
+<p>Applications can access the metadata of an event by querying the <a class="reference external" href="http://vertx.io/docs/apidocs/io/vertx/core/eventbus/Message.html#headers--">headers</a> of an event bus message. The following metadata is available for each event:</p>
+<ul class="simple">
+<li>the <em>local log id</em> of the event,</li>
+<li>the <em>local sequence number</em> of the event and</li>
+<li>the <em>id of the emitter</em> that persisted the event.</li>
+</ul>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">consumer</span><span class="o">[</span><span class="kt">Event</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="n">handler</span><span class="o">(</span><span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">]]</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">handle</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">headers</span> <span class="k">=</span> <span class="n">message</span><span class="o">.</span><span class="n">headers</span>
+
+    <span class="k">val</span> <span class="n">localLogId</span> <span class="k">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="nc">EventMetadata</span><span class="o">.</span><span class="nc">Headers</span><span class="o">.</span><span class="nc">LocalLogId</span><span class="o">)</span>
+    <span class="k">val</span> <span class="n">localSeqNr</span> <span class="k">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="nc">EventMetadata</span><span class="o">.</span><span class="nc">Headers</span><span class="o">.</span><span class="nc">LocalSequenceNr</span><span class="o">).</span><span class="n">toLong</span>
+    <span class="k">val</span> <span class="n">emitterId</span> <span class="k">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="nc">EventMetadata</span><span class="o">.</span><span class="nc">Headers</span><span class="o">.</span><span class="nc">EmitterId</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">})</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="na">eventBus</span><span class="o">().&lt;</span><span class="n">Event</span><span class="o">&gt;</span><span class="n">consumer</span><span class="o">(</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="na">handler</span><span class="o">(</span><span class="n">message</span> <span class="o">-&gt;</span> <span class="o">{</span>
+  <span class="n">MultiMap</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="na">headers</span><span class="o">();</span>
+
+  <span class="n">String</span> <span class="n">localLogId</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">EventMetadata</span><span class="o">.</span><span class="na">Headers</span><span class="o">.</span><span class="na">LOCAL_LOG_ID</span><span class="o">);</span>
+  <span class="n">Long</span> <span class="n">localSeqNr</span> <span class="o">=</span> <span class="n">Long</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">headers</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">EventMetadata</span><span class="o">.</span><span class="na">Headers</span><span class="o">.</span><span class="na">LOCAL_SEQUENCE_NR</span><span class="o">));</span>
+  <span class="n">String</span> <span class="n">emitterId</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">EventMetadata</span><span class="o">.</span><span class="na">Headers</span><span class="o">.</span><span class="na">EMITTER_ID</span><span class="o">);</span>
+<span class="o">});</span>
+</pre></div>
+</div>
+</div>
+<p>The Vert.x adapter also offers the <code class="docutils literal"><span class="pre">EventMetadata</span></code> helper, which is instantiated from the message headers and provides the metadata of an event.
+An <code class="docutils literal"><span class="pre">EventMetadata</span></code> instance is only created if the message originated from a Vert.x producer.</p>
+<div class="tabbed-code container">
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">consumer</span><span class="o">[</span><span class="kt">Event</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="n">handler</span><span class="o">(</span><span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">]]</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">handle</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">metadata</span> <span class="k">=</span> <span class="nc">EventMetadata</span><span class="o">.</span><span class="n">fromHeaders</span><span class="o">(</span><span class="n">message</span><span class="o">.</span><span class="n">headers</span><span class="o">).</span><span class="n">get</span>
+
+    <span class="k">val</span> <span class="n">localLogId</span> <span class="k">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">localLogId</span>
+    <span class="k">val</span> <span class="n">localSeqNr</span> <span class="k">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">localSequenceNr</span>
+    <span class="k">val</span> <span class="n">emitterId</span> <span class="k">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">emitterId</span>
+  <span class="o">}</span>
+<span class="o">})</span>
+</pre></div>
+</div>
+<div class="highlight-java"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="na">eventBus</span><span class="o">().&lt;</span><span class="n">Event</span><span class="o">&gt;</span><span class="n">consumer</span><span class="o">(</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="na">handler</span><span class="o">(</span><span class="n">message</span> <span class="o">-&gt;</span> <span class="o">{</span>
+  <span class="n">EventMetadata</span> <span class="n">metadata</span> <span class="o">=</span> <span class="n">EventMetadata</span><span class="o">.</span><span class="na">fromHeaders</span><span class="o">(</span><span class="n">message</span><span class="o">.</span><span class="na">headers</span><span class="o">()).</span><span class="na">get</span><span class="o">();</span>
+
+  <span class="n">String</span> <span class="n">localLogId</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="na">localLogId</span><span class="o">();</span>
+  <span class="n">Long</span> <span class="n">localSeqNr</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="na">localSequenceNr</span><span class="o">();</span>
+  <span class="n">String</span> <span class="n">emitterId</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="na">emitterId</span><span class="o">();</span>
+<span class="o">});</span>
+</pre></div>
+</div>
 </div>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>

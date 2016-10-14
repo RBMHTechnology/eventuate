@@ -251,6 +251,30 @@ A message codec for the type is created which uses the ``Serializer`` assigned t
 .. note::
    The generic ``MessageCodec`` can also be used for events not stored in an event log if a ``Serializer`` for the event type is configured at the ``ActorSystem``. If no ``Serializer`` for a type is configured the generated ``MessageCodec`` will fail to process instances of the type.
 
+Event Metadata
+~~~~~~~~~~~~~~
+
+Applications can access the metadata of an event by querying the `headers`_ of an event bus message. The following metadata is available for each event:
+
+- the *local log id* of the event,
+- the *local sequence number* of the event and
+- the *id of the emitter* that persisted the event.
+
+.. tabbed-code::
+   .. includecode:: ../../../eventuate-example-vertx/src/main/scala/com/rbmhtechnology/docs/vertx/Documentation.scala
+      :snippet: event-metadata-from-headers
+   .. includecode:: ../../../eventuate-example-vertx/src/main/java/com/rbmhtechnology/docs/vertx/japi/Documentation.java
+      :snippet: event-metadata-from-headers
+
+The Vert.x adapter also offers the ``EventMetadata`` helper, which is instantiated from the message headers and provides the metadata of an event.
+An ``EventMetadata`` instance is only created if the message originated from a Vert.x producer.
+
+.. tabbed-code::
+   .. includecode:: ../../../eventuate-example-vertx/src/main/scala/com/rbmhtechnology/docs/vertx/Documentation.scala
+      :snippet: event-metadata-from-helper
+   .. includecode:: ../../../eventuate-example-vertx/src/main/java/com/rbmhtechnology/docs/vertx/japi/Documentation.java
+      :snippet: event-metadata-from-helper
+
 .. hint::
    A detailed example can be found in `VertxAdapterExample.scala`_ or `VertxAdapterExample.java`_.
 
@@ -270,6 +294,7 @@ A message codec for the type is created which uses the ``Serializer`` assigned t
 .. _event bus: http://vertx.io/docs/vertx-core/java/#event_bus
 .. _message codec: http://vertx.io/docs/apidocs/io/vertx/core/eventbus/MessageCodec.html
 .. _message: http://vertx.io/docs/apidocs/io/vertx/core/eventbus/Message.html
+.. _headers: http://vertx.io/docs/apidocs/io/vertx/core/eventbus/Message.html#headers--
 .. _VertxAdapterExample.scala: https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-vertx/src/main/scala/com/rbmhtechnology/example/vertx/VertxAdapterExample.scala
 .. _VertxAdapterExample.java: https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-vertx/src/main/java/com/rbmhtechnology/example/vertx/japi/VertxAdapterExample.java
 

@@ -205,6 +205,23 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.VertxProducer#deliveryOptions" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="deliveryOptions(event:com.rbmhtechnology.eventuate.DurableEvent):io.vertx.core.eventbus.DeliveryOptions"></a>
+      <a id="deliveryOptions(DurableEvent):DeliveryOptions"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">deliveryOptions</span><span class="params">(<span name="event">event: <a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>)</span><span class="result">: <span class="extype" name="io.vertx.core.eventbus.DeliveryOptions">DeliveryOptions</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.VertxSender@deliveryOptions(event:com.rbmhtechnology.eventuate.DurableEvent):io.vertx.core.eventbus.DeliveryOptions" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="VertxProducer.html" class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.VertxProducer">VertxProducer</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -365,35 +382,35 @@
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.VertxSender#send" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="send(address:String,evt:Any):Unit"></a>
-      <a id="send(String,Any):Unit"></a>
+      <a id="send(address:String,evt:com.rbmhtechnology.eventuate.DurableEvent):Unit"></a>
+      <a id="send(String,DurableEvent):Unit"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">send</span><span class="params">(<span name="address">address: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="evt">evt: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">send</span><span class="params">(<span name="address">address: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="evt">evt: <a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.VertxSender@send(address:String,evt:Any):Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.VertxSender@send(address:String,evt:com.rbmhtechnology.eventuate.DurableEvent):Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       
     </li><li name="com.rbmhtechnology.eventuate.adapter.vertx.VertxSender#send" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="send[A](address:String,evt:Any,timeout:scala.concurrent.duration.FiniteDuration)(implicitec:scala.concurrent.ExecutionContext):scala.concurrent.Future[A]"></a>
-      <a id="send[A](String,Any,FiniteDuration)(ExecutionContext):Future[A]"></a>
+      <a id="send[A](address:String,evt:com.rbmhtechnology.eventuate.DurableEvent,timeout:scala.concurrent.duration.FiniteDuration)(implicitec:scala.concurrent.ExecutionContext):scala.concurrent.Future[A]"></a>
+      <a id="send[A](String,DurableEvent,FiniteDuration)(ExecutionContext):Future[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">send</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="address">address: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="evt">evt: <span class="extype" name="scala.Any">Any</span></span>, <span name="timeout">timeout: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ec">ec: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.VertxSender.send.A">A</span>]</span>
+        <span class="name">send</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="address">address: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="evt">evt: <a href="../../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>, <span name="timeout">timeout: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ec">ec: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.VertxSender.send.A">A</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.VertxSender@send[A](address:String,evt:Any,timeout:scala.concurrent.duration.FiniteDuration)(implicitec:scala.concurrent.ExecutionContext):scala.concurrent.Future[A]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.adapter.vertx.VertxSender@send[A](address:String,evt:com.rbmhtechnology.eventuate.DurableEvent,timeout:scala.concurrent.duration.FiniteDuration)(implicitec:scala.concurrent.ExecutionContext):scala.concurrent.Future[A]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
