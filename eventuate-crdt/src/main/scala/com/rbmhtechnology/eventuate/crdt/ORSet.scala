@@ -114,9 +114,13 @@ class ORSetService[A](val serviceId: String, val log: ActorRef)(implicit val sys
   start()
 }
 
-/** Persistent add operation */
-private[eventuate] case class AddOp(entry: Any) extends CRDTFormat
+/**
+ * Persistent add operation used for [[ORSet]] and [[ORCart]].
+ */
+case class AddOp(entry: Any) extends CRDTFormat
 
-/** Persistent remove operation */
-private[eventuate] case class RemoveOp(entry: Any, timestamps: Set[VectorTime] = Set.empty) extends CRDTFormat
+/**
+ * Persistent remove operation used for [[ORSet]] and [[ORCart]].
+ */
+case class RemoveOp(entry: Any, timestamps: Set[VectorTime] = Set.empty) extends CRDTFormat
 //#
