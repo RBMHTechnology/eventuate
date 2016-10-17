@@ -19,10 +19,8 @@ package com.rbmhtechnology.eventuate.serializer
 import akka.actor._
 import akka.serialization.SerializerWithStringManifest
 import akka.serialization.Serializer
-
 import com.rbmhtechnology.eventuate._
 import com.typesafe.config.ConfigFactory
-
 import org.scalatest._
 
 object DurableEventSerializerSpec {
@@ -47,6 +45,10 @@ object DurableEventSerializerSpec {
       |  "com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec$ExamplePayload" = eventuate-test
       |}
     """.stripMargin)
+
+  val binaryPayloadSerializerConfig = ConfigFactory.parseString(
+    s"akka.actor.serializers.eventuate-durable-event = ${classOf[DurableEventSerializerWithBinaryPayload].getName}")
+
   /**
    * Swaps `foo` and `bar` of `ExamplePayload`.
    */
@@ -64,7 +66,7 @@ object DurableEventSerializerSpec {
   class ExamplePayloadSerializer(system: ExtendedActorSystem) extends Serializer with SwappingExamplePayloadSerializer {
     val ExamplePayloadClass = classOf[ExamplePayload]
 
-    override def identifier: Int = 44085
+    override def identifier: Int = ExamplePayloadSerializer.serializerId
     override def includeManifest: Boolean = true
 
     override def fromBinary(bytes: Array[Byte], manifest: Option[Class[_]]): AnyRef = manifest.get match {
@@ -72,16 +74,25 @@ object DurableEventSerializerSpec {
     }
   }
 
-  class ExamplePayloadSerializerWithStringManifest(system: ExtendedActorSystem) extends SerializerWithStringManifest with SwappingExamplePayloadSerializer {
-    val StringManifest = "manifest"
+  object ExamplePayloadSerializer {
+    val serializerId = 44085
+  }
 
-    override def identifier: Int = 44084
+  class ExamplePayloadSerializerWithStringManifest(system: ExtendedActorSystem) extends SerializerWithStringManifest with SwappingExamplePayloadSerializer {
+    import ExamplePayloadSerializerWithStringManifest._
+
+    override def identifier: Int = serializerId
 
     override def manifest(o: AnyRef) = StringManifest
 
     override def fromBinary(bytes: Array[Byte], manifest: String): AnyRef = manifest match {
       case StringManifest => _fromBinary(bytes)
     }
+  }
+
+  object ExamplePayloadSerializerWithStringManifest {
+    val serializerId = 44084
+    val StringManifest = "manifest"
   }
 
   val event = DurableEvent(
@@ -98,29 +109,59 @@ object DurableEventSerializerSpec {
     persistOnEventSequenceNr = Some(12L))
 }
 
-class DurableEventSerializerSpec extends WordSpec with Matchers with BeforeAndAfterAll {
+class DurableEventSerializerSpec extends WordSpec with Matchers with Inside with BeforeAndAfterAll {
   import DurableEventSerializerSpec._
 
-  val context = new SerializationContext(
-    MultiLocationConfig.create(),
+  val context = new SerializationContext(MultiLocationConfig.create(),
     MultiLocationConfig.create(customConfig = serializerConfig),
-    MultiLocationConfig.create(customConfig = serializerWithStringManifestConfig))
+    MultiLocationConfig.create(customConfig = serializerWithStringManifestConfig),
+    MultiLocationConfig.create(customConfig = binaryPayloadSerializerConfig))
+
+  val Seq(defaultSerialization, swappingSerialization, swappingSerializationWithStringManigest, binaryPayloadSerialization) = context.serializations
 
   override def afterAll(): Unit =
     context.shutdown()
-
-  import context._
 
   "A DurableEventSerializer" must {
     "support default payload serialization" in {
       val expected = event
 
-      serializations(0).deserialize(serializations(0).serialize(event).get, classOf[DurableEvent]).get should be(expected)
+      defaultSerialization.deserialize(defaultSerialization.serialize(event).get, classOf[DurableEvent]).get should be(expected)
     }
-    "support custom payload serialization" in serializations.tail.foreach { serialization =>
+    "support custom payload serialization" in Seq(swappingSerialization, swappingSerializationWithStringManigest).foreach { serialization =>
       val expected = event.copy(ExamplePayload("bar", "foo"))
 
       serialization.deserialize(serialization.serialize(event).get, classOf[DurableEvent]).get should be(expected)
+    }
+  }
+
+  "A DurableEventSerializerWithBinaryPayload" must {
+    "deserialize from a custom serializer into a BinaryPayload" in {
+      val bytes = swappingSerialization.serialize(event).get
+
+      inside(binaryPayloadSerialization.deserialize(bytes, classOf[DurableEvent]).get.payload) {
+        case BinaryPayload(_, serializerId, manifest, isStringManifest) =>
+          serializerId should be (ExamplePayloadSerializer.serializerId)
+          manifest should be (Some(classOf[ExamplePayload].getName))
+          isStringManifest should be (false)
+      }
+    }
+    "deserialize from a custom serializer with string manifest into a BinaryPayload" in {
+      val bytes = swappingSerializationWithStringManigest.serialize(event).get
+
+      inside(binaryPayloadSerialization.deserialize(bytes, classOf[DurableEvent]).get.payload) {
+        case BinaryPayload(_, serializerId, manifest, isStringManifest) =>
+          serializerId should be (ExamplePayloadSerializerWithStringManifest.serializerId)
+          manifest should be (Some(ExamplePayloadSerializerWithStringManifest.StringManifest))
+          isStringManifest should be (true)
+      }
+    }
+    "serialize into custom source serializer compatible byte array" in Seq(swappingSerialization, swappingSerializationWithStringManigest).foreach { serialization =>
+      val bytes = serialization.serialize(event).get
+
+      val binaryPayloadBytes = binaryPayloadSerialization.serialize(binaryPayloadSerialization.deserialize(bytes, classOf[DurableEvent]).get).get
+
+      serialization.deserialize(binaryPayloadBytes, classOf[DurableEvent]).get should be (event.copy(ExamplePayload("bar", "foo")))
     }
   }
 }

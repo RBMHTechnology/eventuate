@@ -18,7 +18,6 @@ package com.rbmhtechnology.eventuate.serializer
 
 import akka.actor._
 import akka.serialization._
-
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.serializer.DurableEventFormats._
 
@@ -29,8 +28,34 @@ import scala.language.existentials
  * A [[https://developers.google.com/protocol-buffers/ Protocol Buffers]] based serializer for [[DurableEvent]]s.
  * Serialization of `DurableEvent`'s `payload` is delegated to a serializer that is configured with Akka's
  * [[http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html serialization extension]] mechanism.
+ *
+ * This serializer is configured by default (in `reference.conf`) for [[DurableEvent]]s
  */
-class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
+class DelegatingDurableEventSerializer(system: ExtendedActorSystem)
+  extends DurableEventSerializer(system, new DelegatingPayloadSerializer(system))
+
+/**
+ * A [[https://developers.google.com/protocol-buffers/ Protocol Buffers]] based serializer for [[DurableEvent]]s.
+ * Serialization of `DurableEvent`'s `payload` is delegated to [[BinaryPayloadSerializer]].
+ *
+ * To use this serializer the default config provided by `reference.conf` has to be overwritten in an
+ * `application.conf` like follows:
+ *
+ * {{{
+ *   akka.actor.serializers.eventuate-durable-event = com.rbmhtechnology.eventuate.serializer.DurableEventSerializerWithBinaryPayload
+ * }}}
+ *
+ * This serializer can be useful in scenarios where an Eventuate application is just used for
+ * event forwarding (through replication) and only handles the payload of events
+ * based on their metadata (like the manifest).
+ */
+class DurableEventSerializerWithBinaryPayload(system: ExtendedActorSystem)
+  extends DurableEventSerializer(system, new BinaryPayloadSerializer(system))
+
+abstract class DurableEventSerializer(
+  system: ExtendedActorSystem,
+  payloadSerializer: PayloadSerializer) extends Serializer {
+
   val commonSerializer = new CommonSerializer(system)
 
   val DurableEventClass = classOf[DurableEvent]
@@ -62,7 +87,7 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
 
   def durableEventFormatBuilder(durableEvent: DurableEvent): DurableEventFormat.Builder = {
     val builder = DurableEventFormat.newBuilder
-    builder.setPayload(commonSerializer.payloadFormatBuilder(durableEvent.payload.asInstanceOf[AnyRef]))
+    builder.setPayload(payloadSerializer.payloadFormatBuilder(durableEvent.payload.asInstanceOf[AnyRef]))
     builder.setEmitterId(durableEvent.emitterId)
     builder.setSystemTimestamp(durableEvent.systemTimestamp)
     builder.setVectorTimestamp(commonSerializer.vectorTimeFormatBuilder(durableEvent.vectorTimestamp))
@@ -105,7 +130,7 @@ class DurableEventSerializer(system: ExtendedActorSystem) extends Serializer {
     val persistOnEventSequenceNr = if (durableEventFormat.hasPersistOnEventSequenceNr) Some(durableEventFormat.getPersistOnEventSequenceNr) else None
 
     DurableEvent(
-      payload = commonSerializer.payload(durableEventFormat.getPayload),
+      payload = payloadSerializer.payload(durableEventFormat.getPayload),
       emitterId = durableEventFormat.getEmitterId,
       emitterAggregateId = emitterAggregateId,
       customDestinationAggregateIds = customDestinationAggregateIds,

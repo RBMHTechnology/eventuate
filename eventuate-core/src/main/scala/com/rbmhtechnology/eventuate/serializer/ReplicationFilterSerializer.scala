@@ -32,7 +32,7 @@ import scala.language.existentials
 class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serializer {
   import ReplicationFilterTreeFormat.NodeType._
 
-  val commonSerializer = new CommonSerializer(system)
+  val payloadSerializer = new DelegatingPayloadSerializer(system)
 
   val AndFilterClass = classOf[AndFilter]
   val OrFilterClass = classOf[OrFilter]
@@ -77,7 +77,7 @@ class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serialize
         filters.foreach(filter => builder.addChildren(filterTreeFormatBuilder(filter)))
       case filter =>
         builder.setNodeType(LEAF)
-        builder.setFilter(commonSerializer.payloadFormatBuilder(filter))
+        builder.setFilter(payloadSerializer.payloadFormatBuilder(filter))
     }
     builder
   }
@@ -90,7 +90,7 @@ class ReplicationFilterSerializer(system: ExtendedActorSystem) extends Serialize
     filterTreeFormat.getNodeType match {
       case AND  => AndFilter(filterTreeFormat.getChildrenList.asScala.map(filterTree).toList)
       case OR   => OrFilter(filterTreeFormat.getChildrenList.asScala.map(filterTree).toList)
-      case LEAF => commonSerializer.payload(filterTreeFormat.getFilter).asInstanceOf[ReplicationFilter]
+      case LEAF => payloadSerializer.payload(filterTreeFormat.getFilter).asInstanceOf[ReplicationFilter]
     }
   }
 }

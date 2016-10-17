@@ -18,7 +18,7 @@ package com.rbmhtechnology.eventuate.adapter.vertx
 
 import akka.actor.{ ActorSystem, ExtendedActorSystem, Extension, ExtensionId, ExtensionIdProvider }
 import com.rbmhtechnology.eventuate.serializer.CommonFormats.PayloadFormat
-import com.rbmhtechnology.eventuate.serializer.CommonSerializer
+import com.rbmhtechnology.eventuate.serializer.DelegatingPayloadSerializer
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.eventbus.MessageCodec
 
@@ -67,7 +67,7 @@ object PayloadSerializationExtension extends ExtensionId[PayloadSerializationExt
 
 class PayloadSerializationExtension(system: ExtendedActorSystem) extends Extension {
 
-  val serializer = new CommonSerializer(system)
+  val serializer = new DelegatingPayloadSerializer(system)
 
   def toBinary(o: AnyRef): Array[Byte] =
     serializer.payloadFormatBuilder(o).build().toByteArray

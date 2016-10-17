@@ -28,6 +28,7 @@ import scala.collection.JavaConverters._
 
 class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   val commonSerializer = new CommonSerializer(system)
+  import commonSerializer.payloadSerializer
 
   private val MVRegisterClass = classOf[MVRegister[_]]
   private val LWWRegisterClass = classOf[LWWRegister[_]]
@@ -131,27 +132,27 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private def orCartEntryFormatBuilder(orCartEntry: ORCartEntry[_]): ORCartEntryFormat.Builder = {
     val builder = ORCartEntryFormat.newBuilder
 
-    builder.setKey(commonSerializer.payloadFormatBuilder(orCartEntry.key.asInstanceOf[AnyRef]))
+    builder.setKey(payloadSerializer.payloadFormatBuilder(orCartEntry.key.asInstanceOf[AnyRef]))
     builder.setQuantity(orCartEntry.quantity)
     builder
   }
 
   private def valueUpdatedFormat(valueUpdated: ValueUpdated): ValueUpdatedFormat.Builder =
-    ValueUpdatedFormat.newBuilder.setOperation(commonSerializer.payloadFormatBuilder(valueUpdated.operation.asInstanceOf[AnyRef]))
+    ValueUpdatedFormat.newBuilder.setOperation(payloadSerializer.payloadFormatBuilder(valueUpdated.operation.asInstanceOf[AnyRef]))
 
   private def updateOpFormatBuilder(op: UpdateOp): UpdateOpFormat.Builder =
-    UpdateOpFormat.newBuilder.setDelta(commonSerializer.payloadFormatBuilder(op.delta.asInstanceOf[AnyRef]))
+    UpdateOpFormat.newBuilder.setDelta(payloadSerializer.payloadFormatBuilder(op.delta.asInstanceOf[AnyRef]))
 
   private def assignOpFormatBuilder(op: AssignOp): AssignOpFormat.Builder =
-    AssignOpFormat.newBuilder.setValue(commonSerializer.payloadFormatBuilder(op.value.asInstanceOf[AnyRef]))
+    AssignOpFormat.newBuilder.setValue(payloadSerializer.payloadFormatBuilder(op.value.asInstanceOf[AnyRef]))
 
   private def addOpFormatBuilder(op: AddOp): AddOpFormat.Builder =
-    AddOpFormat.newBuilder.setEntry(commonSerializer.payloadFormatBuilder(op.entry.asInstanceOf[AnyRef]))
+    AddOpFormat.newBuilder.setEntry(payloadSerializer.payloadFormatBuilder(op.entry.asInstanceOf[AnyRef]))
 
   private def removeOpFormatBuilder(op: RemoveOp): RemoveOpFormat.Builder = {
     val builder = RemoveOpFormat.newBuilder
 
-    builder.setEntry(commonSerializer.payloadFormatBuilder(op.entry.asInstanceOf[AnyRef]))
+    builder.setEntry(payloadSerializer.payloadFormatBuilder(op.entry.asInstanceOf[AnyRef]))
 
     op.timestamps.foreach { timestamp =>
       builder.addTimestamps(commonSerializer.vectorTimeFormatBuilder(timestamp))
@@ -188,25 +189,25 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     ORCart(orSet(orCartFormat.getOrSet).asInstanceOf[ORSet[ORCartEntry[Any]]])
 
   private def orCartEntry(orCartEntryFormat: ORCartEntryFormat): ORCartEntry[Any] =
-    ORCartEntry(commonSerializer.payload(orCartEntryFormat.getKey), orCartEntryFormat.getQuantity)
+    ORCartEntry(payloadSerializer.payload(orCartEntryFormat.getKey), orCartEntryFormat.getQuantity)
 
   private def valueUpdated(valueUpdatedFormat: ValueUpdatedFormat): ValueUpdated =
-    ValueUpdated(commonSerializer.payload(valueUpdatedFormat.getOperation))
+    ValueUpdated(payloadSerializer.payload(valueUpdatedFormat.getOperation))
 
   private def updateOp(opFormat: UpdateOpFormat): UpdateOp =
-    UpdateOp(commonSerializer.payload(opFormat.getDelta))
+    UpdateOp(payloadSerializer.payload(opFormat.getDelta))
 
   private def assignOp(opFormat: AssignOpFormat): AssignOp =
-    AssignOp(commonSerializer.payload(opFormat.getValue))
+    AssignOp(payloadSerializer.payload(opFormat.getValue))
 
   private def addOp(opFormat: AddOpFormat): AddOp =
-    AddOp(commonSerializer.payload(opFormat.getEntry))
+    AddOp(payloadSerializer.payload(opFormat.getEntry))
 
   private def removeOp(opFormat: RemoveOpFormat): RemoveOp = {
     val timestamps = opFormat.getTimestampsList.iterator().asScala.foldLeft(Set.empty[VectorTime]) {
       case (result, timestampFormat) => result + commonSerializer.vectorTime(timestampFormat)
     }
 
-    RemoveOp(commonSerializer.payload(opFormat.getEntry), timestamps)
+    RemoveOp(payloadSerializer.payload(opFormat.getEntry), timestamps)
   }
 }
