@@ -95,4 +95,7 @@ class MVRegisterService[A](val serviceId: String, val log: ActorRef)(implicit va
   start()
 }
 
-private case class SetOp(value: Any) extends CRDTFormat
+/**
+ * Persistent set operation used for [[MVRegister]] and [[LWWRegister]].
+ */
+case class SetOp(value: Any) extends CRDTFormat

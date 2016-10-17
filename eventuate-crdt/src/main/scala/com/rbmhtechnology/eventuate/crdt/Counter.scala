@@ -78,4 +78,7 @@ class CounterService[A](val serviceId: String, val log: ActorRef)(implicit val s
   start()
 }
 
-private case class UpdateOp(delta: Any) extends CRDTFormat
+/**
+ * Persistent update operation used for [[Counter]].
+ */
+case class UpdateOp(delta: Any) extends CRDTFormat
