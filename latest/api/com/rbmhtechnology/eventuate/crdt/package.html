@@ -66,7 +66,24 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.crdt.CRDTFormat" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.crdt.AddOp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AddOpextendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="AddOp:AddOp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="AddOp.html"><span class="name">AddOp</span></a><span class="params">(<span name="entry">entry: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@AddOpextendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Persistent add operation used for <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> and <a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTFormat" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="CRDTFormatextendsSerializable"></a>
       <a id="CRDTFormat:CRDTFormat"></a>
       <h4 class="signature">
@@ -362,6 +379,57 @@ type <a href="ORCartEntry.html" class="extype" name="com.rbmhtechnology.eventuat
     </span>
       <p class="shortcomment cmt">Replicated <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> CRDT service.
 </p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> entry type.</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.RemoveOp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="RemoveOpextendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="RemoveOp:RemoveOp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="RemoveOp.html"><span class="name">RemoveOp</span></a><span class="params">(<span name="entry">entry: <span class="extype" name="scala.Any">Any</span></span>, <span name="timestamps">timestamps: <span class="extype" name="scala.collection.immutable.Set">Set</span>[<a href="../VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a>] = <span class="symbol">Set.empty</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@RemoveOpextendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Persistent remove operation used for <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> and <a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.SetOp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SetOpextendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="SetOp:SetOp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="SetOp.html"><span class="name">SetOp</span></a><span class="params">(<span name="value">value: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@SetOpextendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Persistent set operation used for <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> and <a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.UpdateOp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="UpdateOpextendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="UpdateOp:UpdateOp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="UpdateOp.html"><span class="name">UpdateOp</span></a><span class="params">(<span name="delta">delta: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@UpdateOpextendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Persistent update operation used for <a href="Counter.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.Counter">Counter</a>.</p>
     </li></ol>
             </div>
 

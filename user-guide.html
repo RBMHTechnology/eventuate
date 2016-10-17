@@ -884,11 +884,15 @@
   <span class="n">start</span><span class="o">()</span>
 <span class="o">}</span>
 
-<span class="cm">/** Persistent add operation */</span>
-<span class="k">private</span><span class="o">[</span><span class="kt">eventuate</span><span class="o">]</span> <span class="k">case</span> <span class="k">class</span> <span class="nc">AddOp</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">Any</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">CRDTFormat</span>
+<span class="cm">/**</span>
+<span class="cm"> * Persistent add operation used for [[ORSet]] and [[ORCart]].</span>
+<span class="cm"> */</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">AddOp</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">Any</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">CRDTFormat</span>
 
-<span class="cm">/** Persistent remove operation */</span>
-<span class="k">private</span><span class="o">[</span><span class="kt">eventuate</span><span class="o">]</span> <span class="k">case</span> <span class="k">class</span> <span class="nc">RemoveOp</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">Any</span><span class="o">,</span> <span class="n">timestamps</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">VectorTime</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">CRDTFormat</span>
+<span class="cm">/**</span>
+<span class="cm"> * Persistent remove operation used for [[ORSet]] and [[ORCart]].</span>
+<span class="cm"> */</span>
+<span class="k">case</span> <span class="k">class</span> <span class="nc">RemoveOp</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">Any</span><span class="o">,</span> <span class="n">timestamps</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">VectorTime</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Set</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">CRDTFormat</span>
 </pre></div>
 </div>
 <div class="highlight-java"><div class="highlight"><pre><span></span><span class="cm">/**</span>
