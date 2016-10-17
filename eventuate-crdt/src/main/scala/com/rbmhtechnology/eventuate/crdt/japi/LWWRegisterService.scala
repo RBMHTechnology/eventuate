@@ -46,5 +46,5 @@ class LWWRegisterService[A](val serviceId: String, val log: ActorRef, implicit v
    * Assigns a `value` to the LWW-Register identified by `id` and returns the updated LWW-Register value.
    */
   def set(id: String, value: A): CompletionStage[JOption[A]] =
-    delegate.set(id, value).asJava
+    delegate.assign(id, value).asJava
 }

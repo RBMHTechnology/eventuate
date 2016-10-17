@@ -36,7 +36,7 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private val ORCartEntryClass = classOf[ORCartEntry[_]]
   private val ValueUpdatedClass = classOf[ValueUpdated]
   private val UpdatedOpClass = classOf[UpdateOp]
-  private val SetOpClass = classOf[SetOp]
+  private val AssignOpClass = classOf[AssignOp]
   private val AddOpClass = classOf[AddOp]
   private val RemoveOpClass = classOf[RemoveOp]
 
@@ -58,8 +58,8 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
       valueUpdatedFormat(v).build().toByteArray
     case o: UpdateOp =>
       updateOpFormatBuilder(o).build().toByteArray
-    case o: SetOp =>
-      setOpFormatBuilder(o).build().toByteArray
+    case o: AssignOp =>
+      assignOpFormatBuilder(o).build().toByteArray
     case o: AddOp =>
       addOpFormatBuilder(o).build().toByteArray
     case o: RemoveOp =>
@@ -85,8 +85,8 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
         valueUpdated(ValueUpdatedFormat.parseFrom(bytes))
       case UpdatedOpClass =>
         updateOp(UpdateOpFormat.parseFrom(bytes))
-      case SetOpClass =>
-        setOp(SetOpFormat.parseFrom(bytes))
+      case AssignOpClass =>
+        assignOp(AssignOpFormat.parseFrom(bytes))
       case AddOpClass =>
         addOp(AddOpFormat.parseFrom(bytes))
       case RemoveOpClass =>
@@ -142,8 +142,8 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private def updateOpFormatBuilder(op: UpdateOp): UpdateOpFormat.Builder =
     UpdateOpFormat.newBuilder.setDelta(commonSerializer.payloadFormatBuilder(op.delta.asInstanceOf[AnyRef]))
 
-  private def setOpFormatBuilder(op: SetOp): SetOpFormat.Builder =
-    SetOpFormat.newBuilder.setValue(commonSerializer.payloadFormatBuilder(op.value.asInstanceOf[AnyRef]))
+  private def assignOpFormatBuilder(op: AssignOp): AssignOpFormat.Builder =
+    AssignOpFormat.newBuilder.setValue(commonSerializer.payloadFormatBuilder(op.value.asInstanceOf[AnyRef]))
 
   private def addOpFormatBuilder(op: AddOp): AddOpFormat.Builder =
     AddOpFormat.newBuilder.setEntry(commonSerializer.payloadFormatBuilder(op.entry.asInstanceOf[AnyRef]))
@@ -196,8 +196,8 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private def updateOp(opFormat: UpdateOpFormat): UpdateOp =
     UpdateOp(commonSerializer.payload(opFormat.getDelta))
 
-  private def setOp(opFormat: SetOpFormat): SetOp =
-    SetOp(commonSerializer.payload(opFormat.getValue))
+  private def assignOp(opFormat: AssignOpFormat): AssignOp =
+    AssignOp(commonSerializer.payload(opFormat.getValue))
 
   private def addOp(opFormat: AddOpFormat): AddOp =
     AddOp(commonSerializer.payload(opFormat.getEntry))

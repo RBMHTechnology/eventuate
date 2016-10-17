@@ -48,7 +48,7 @@ message UpdateOpFormat {
   optional PayloadFormat delta = 1;
 }
 
-message SetOpFormat {
+message AssignOpFormat {
   optional PayloadFormat value = 1;
 }
 

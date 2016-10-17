@@ -79,7 +79,7 @@ object ORSet {
         super.prepare(crdt, op)
     }
 
-    override def update(crdt: ORSet[A], operation: Any, event: DurableEvent): ORSet[A] = operation match {
+    override def effect(crdt: ORSet[A], operation: Any, event: DurableEvent): ORSet[A] = operation match {
       case RemoveOp(_, timestamps) =>
         crdt.remove(timestamps)
       case AddOp(entry) =>
