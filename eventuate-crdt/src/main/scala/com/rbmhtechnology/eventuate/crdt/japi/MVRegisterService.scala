@@ -47,5 +47,5 @@ class MVRegisterService[A](val serviceId: String, val log: ActorRef, implicit va
    * Assigns a `value` to the MV-Register identified by `id` and returns the updated MV-Register value.
    */
   def set(id: String, value: A): CompletionStage[JSet[A]] =
-    delegate.set(id, value).asJava
+    delegate.assign(id, value).asJava
 }

@@ -63,7 +63,7 @@ trait CRDTServiceOps[A, B] {
   /**
    * Update phase 2 ("downstream").
    */
-  def update(crdt: A, operation: Any, event: DurableEvent): A
+  def effect(crdt: A, operation: Any, event: DurableEvent): A
 }
 
 object CRDTService {
@@ -215,7 +215,7 @@ trait CRDTService[A, B] {
 
     override def onEvent = {
       case evt @ ValueUpdated(operation) =>
-        crdt = ops.update(crdt, operation, lastHandledEvent)
+        crdt = ops.effect(crdt, operation, lastHandledEvent)
         context.parent ! OnChange(crdt, operation)
     }
 
