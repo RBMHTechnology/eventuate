@@ -83,6 +83,23 @@
       </a>
     </span>
       <p class="shortcomment cmt">Persistent add operation used for <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> and <a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.AssignOp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AssignOpextendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="AssignOp:AssignOp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="AssignOp.html"><span class="name">AssignOp</span></a><span class="params">(<span name="value">value: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@AssignOpextendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Persistent assign operation used for <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> and <a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>.</p>
     </li><li name="com.rbmhtechnology.eventuate.crdt.CRDTFormat" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="CRDTFormatextendsSerializable"></a>
       <a id="CRDTFormat:CRDTFormat"></a>
@@ -268,7 +285,7 @@ value is not important for concurrent updates occurring within the clock skew.
 otherwise, a single <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value. Concurrent assignments can be reduced to a single assignment by
 assigning a <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> value with a vector timestamp that is greater than those of the currently assigned
 <a href="../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a> values.
-</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>MV-Register value type.</p></dd><dt class="param">versioned</dt><dd class="cmt"><p>Registered values. Initially empty.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a></p></span></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Assigned value type.</p></dd><dt class="param">versioned</dt><dd class="cmt"><p>Assigned values. Initially empty.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf" target="_blank">A comprehensive study of Convergent and Commutative Replicated Data Types</a></p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.crdt.MVRegisterService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MVRegisterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.MVRegister[A],Set[A]]"></a>
       <a id="MVRegisterService[A]:MVRegisterService[A]"></a>
@@ -396,23 +413,6 @@ type <a href="ORCartEntry.html" class="extype" name="com.rbmhtechnology.eventuat
       </a>
     </span>
       <p class="shortcomment cmt">Persistent remove operation used for <a href="ORSet.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORSet">ORSet</a> and <a href="ORCart.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.ORCart">ORCart</a>.</p>
-    </li><li name="com.rbmhtechnology.eventuate.crdt.SetOp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="SetOpextendsCRDTFormatwithProductwithSerializable"></a>
-      <a id="SetOp:SetOp"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="SetOp.html"><span class="name">SetOp</span></a><span class="params">(<span name="value">value: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.crdt.package@SetOpextendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Persistent set operation used for <a href="MVRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.MVRegister">MVRegister</a> and <a href="LWWRegister.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.LWWRegister">LWWRegister</a>.</p>
     </li><li name="com.rbmhtechnology.eventuate.crdt.UpdateOp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="UpdateOpextendsCRDTFormatwithProductwithSerializable"></a>
       <a id="UpdateOp:UpdateOp"></a>
