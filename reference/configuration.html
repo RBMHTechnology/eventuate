@@ -211,7 +211,7 @@
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">akka</span> <span class="o">{</span>
   <span class="n">actor</span> <span class="o">{</span>
     <span class="n">serializers</span> <span class="o">{</span>
-      <span class="n">eventuate</span><span class="o">-</span><span class="n">durable</span><span class="o">-</span><span class="n">event</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.DurableEventSerializer&quot;</span>
+      <span class="n">eventuate</span><span class="o">-</span><span class="n">durable</span><span class="o">-</span><span class="n">event</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer&quot;</span>
       <span class="n">eventuate</span><span class="o">-</span><span class="n">replication</span><span class="o">-</span><span class="n">filter</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer&quot;</span>
       <span class="n">eventuate</span><span class="o">-</span><span class="n">replication</span><span class="o">-</span><span class="n">protocol</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.ReplicationProtocolSerializer&quot;</span>
       <span class="n">eventuate</span><span class="o">-</span><span class="n">snapshot</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.SnapshotSerializer&quot;</span>

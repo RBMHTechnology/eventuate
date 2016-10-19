@@ -41,7 +41,7 @@
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">abstract </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
@@ -49,13 +49,13 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A <a href="https://developers.google.com/protocol-buffers/" target="_blank">Protocol Buffers</a> based serializer for <a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s.
-Serialization of <code>DurableEvent</code>'s <code>payload</code> is delegated to a serializer that is configured with Akka's
-<a href="http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html" target="_blank">serialization extension</a> mechanism.
-</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="akka.serialization.Serializer">Serializer</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
-        </div></div>
+        </div><div class="toggleContainer block">
+            <span class="toggle">Known Subclasses</span>
+            <div class="subClasses hiddenContent"><a href="DelegatingDurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer">DelegatingDurableEventSerializer</a>, <a href="DurableEventSerializerWithBinaryPayload.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializerWithBinaryPayload">DurableEventSerializerWithBinaryPayload</a></div>
+          </div></div>
         
 
       <div id="mbrsel">
@@ -92,7 +92,7 @@ Serialization of <code>DurableEvent</code>'s <code>payload</code> is delegated t
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(system:akka.actor.ExtendedActorSystem):com.rbmhtechnology.eventuate.serializer.DurableEventSerializer"></a>
+      <a id="&lt;init&gt;(system:akka.actor.ExtendedActorSystem,payloadSerializer:com.rbmhtechnology.eventuate.serializer.PayloadSerializer):com.rbmhtechnology.eventuate.serializer.DurableEventSerializer"></a>
       <a id="&lt;init&gt;:DurableEventSerializer"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -100,10 +100,10 @@ Serialization of <code>DurableEvent</code>'s <code>payload</code> is delegated t
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">DurableEventSerializer</span><span class="params">(<span name="system">system: <span class="extype" name="akka.actor.ExtendedActorSystem">ExtendedActorSystem</span></span>)</span>
+        <span class="name">DurableEventSerializer</span><span class="params">(<span name="system">system: <span class="extype" name="akka.actor.ExtendedActorSystem">ExtendedActorSystem</span></span>, <span name="payloadSerializer">payloadSerializer: <a href="PayloadSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer">PayloadSerializer</a></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DurableEventSerializer@&lt;init&gt;(system:akka.actor.ExtendedActorSystem):com.rbmhtechnology.eventuate.serializer.DurableEventSerializer" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DurableEventSerializer@&lt;init&gt;(system:akka.actor.ExtendedActorSystem,payloadSerializer:com.rbmhtechnology.eventuate.serializer.PayloadSerializer):com.rbmhtechnology.eventuate.serializer.DurableEventSerializer" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>

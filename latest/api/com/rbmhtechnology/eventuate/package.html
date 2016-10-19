@@ -206,6 +206,26 @@ If a handler is overridden, the behaviour of it's respective set-method will be 
       </a>
     </span>
       <p class="shortcomment cmt">Provides a context for managing behaviors.</p>
+    </li><li name="com.rbmhtechnology.eventuate.BinaryPayloadManifestFilter" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="BinaryPayloadManifestFilterextendsReplicationFilterwithProductwithSerializable"></a>
+      <a id="BinaryPayloadManifestFilter:BinaryPayloadManifestFilter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="BinaryPayloadManifestFilter.html"><span class="name">BinaryPayloadManifestFilter</span></a><span class="params">(<span name="regex">regex: <span class="extype" name="scala.util.matching.Regex">Regex</span></span>)</span><span class="result"> extends <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@BinaryPayloadManifestFilterextendsReplicationFilterwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> that can be used in combination with
+<a href="serializer/DurableEventSerializerWithBinaryPayload.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializerWithBinaryPayload">com.rbmhtechnology.eventuate.serializer.DurableEventSerializerWithBinaryPayload</a>.</p><div class="fullcomment"><div class="comment cmt"><p>A <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a> that can be used in combination with
+<a href="serializer/DurableEventSerializerWithBinaryPayload.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializerWithBinaryPayload">com.rbmhtechnology.eventuate.serializer.DurableEventSerializerWithBinaryPayload</a>.</p><p>It evaluates to <code>true</code> if the payload's manifest matches <code>regex</code>.
+</p></div></div>
     </li><li name="com.rbmhtechnology.eventuate.ConcurrentVersions" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="ConcurrentVersions[A,B]extendsSerializable"></a>
       <a id="ConcurrentVersions[A,B]:ConcurrentVersions[A,B]"></a>
@@ -906,6 +926,23 @@ other words, a written event has a potential causal relationship to all past sou
       </span>
       </h4><span class="permalink">
       <a href="../../../index.html#com.rbmhtechnology.eventuate.package@ApplicationVersion" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.BinaryPayloadManifestFilter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="BinaryPayloadManifestFilter"></a>
+      <a id="BinaryPayloadManifestFilter:BinaryPayloadManifestFilter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="BinaryPayloadManifestFilter$.html"><span class="name">BinaryPayloadManifestFilter</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@BinaryPayloadManifestFilter" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>

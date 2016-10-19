@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>ReplicationFilterSerializer - com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer</title>
-          <meta name="description" content="ReplicationFilterSerializer - com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer" />
-          <meta name="keywords" content="ReplicationFilterSerializer com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer" />
+          <title>DelegatingDurableEventSerializer - com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer</title>
+          <meta name="description" content="DelegatingDurableEventSerializer - com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer" />
+          <meta name="keywords" content="DelegatingDurableEventSerializer com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../../index.html';
-            var hash = 'com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer';
+            var hash = 'com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -30,10 +30,10 @@
       <div id="definition">
         <img alt="Class" src="../../../../lib/class_big.png" />
         <p id="owner"><a href="../../../package.html" class="extype" name="com">com</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.serializer">serializer</a></p>
-        <h1>ReplicationFilterSerializer</h1><h3><span class="morelinks"><div>Related Doc:
+        <h1>DelegatingDurableEventSerializer</h1><h3><span class="morelinks"><div>Related Doc:
             <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.serializer">package serializer</a>
           </div></span></h3><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -45,13 +45,16 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationFilterSerializer</span><span class="result"> extends <span class="extype" name="akka.serialization.Serializer">Serializer</span></span>
+        <span class="name">DelegatingDurableEventSerializer</span><span class="result"> extends <a href="DurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">DurableEventSerializer</a></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A <a href="https://developers.google.com/protocol-buffers/" target="_blank">Protocol Buffers</a> based serializer for <a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s.
+Serialization of <code>DurableEvent</code>'s <code>payload</code> is delegated to a serializer that is configured with Akka's
+<a href="http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html" target="_blank">serialization extension</a> mechanism.</p><p>This serializer is configured by default (in <code>reference.conf</code>) for <a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s
+</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="akka.serialization.Serializer">Serializer</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="DurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">DurableEventSerializer</a>, <span class="extype" name="akka.serialization.Serializer">Serializer</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -69,7 +72,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer"><span>ReplicationFilterSerializer</span></li><li class="in" name="akka.serialization.Serializer"><span>Serializer</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer"><span>DelegatingDurableEventSerializer</span></li><li class="in" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer"><span>DurableEventSerializer</span></li><li class="in" name="akka.serialization.Serializer"><span>Serializer</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -88,19 +91,19 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(system:akka.actor.ExtendedActorSystem):com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer"></a>
-      <a id="&lt;init&gt;:ReplicationFilterSerializer"></a>
+              <ol><li name="com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(system:akka.actor.ExtendedActorSystem):com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer"></a>
+      <a id="&lt;init&gt;:DelegatingDurableEventSerializer"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationFilterSerializer</span><span class="params">(<span name="system">system: <span class="extype" name="akka.actor.ExtendedActorSystem">ExtendedActorSystem</span></span>)</span>
+        <span class="name">DelegatingDurableEventSerializer</span><span class="params">(<span name="system">system: <span class="extype" name="akka.actor.ExtendedActorSystem">ExtendedActorSystem</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@&lt;init&gt;(system:akka.actor.ExtendedActorSystem):com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@&lt;init&gt;(system:akka.actor.ExtendedActorSystem):com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -126,7 +129,7 @@
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -143,7 +146,7 @@
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@##():Int" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@##():Int" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -160,62 +163,28 @@
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer#AndFilterClass" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="AndFilterClass:Class[com.rbmhtechnology.eventuate.ReplicationFilter.AndFilter]"></a>
-      <a id="AndFilterClass:Class[AndFilter]"></a>
+    </li><li name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer#DurableEventClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="DurableEventClass:Class[com.rbmhtechnology.eventuate.DurableEvent]"></a>
+      <a id="DurableEventClass:Class[DurableEvent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">AndFilterClass</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[<a href="../ReplicationFilter$$AndFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter.AndFilter">AndFilter</a>]</span>
+        <span class="name">DurableEventClass</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[<a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@AndFilterClass:Class[com.rbmhtechnology.eventuate.ReplicationFilter.AndFilter]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@DurableEventClass:Class[com.rbmhtechnology.eventuate.DurableEvent]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer#NoFilterClass" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="NoFilterClass:Class[_&lt;:com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter.type]"></a>
-      <a id="NoFilterClass:Class[_&lt;:NoFilter]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">NoFilterClass</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_ &lt;: <a href="../ReplicationFilter$$NoFilter$.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter">NoFilter</a>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@NoFilterClass:Class[_&lt;:com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter.type]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer#OrFilterClass" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="OrFilterClass:Class[com.rbmhtechnology.eventuate.ReplicationFilter.OrFilter]"></a>
-      <a id="OrFilterClass:Class[OrFilter]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">OrFilterClass</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[<a href="../ReplicationFilter$$OrFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter.OrFilter">OrFilter</a>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@OrFilterClass:Class[com.rbmhtechnology.eventuate.ReplicationFilter.OrFilter]" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="DurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">DurableEventSerializer</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -228,7 +197,7 @@
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -245,7 +214,7 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@clone():Object" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@clone():Object" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -256,6 +225,57 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer#commonSerializer" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="commonSerializer:com.rbmhtechnology.eventuate.serializer.CommonSerializer"></a>
+      <a id="commonSerializer:CommonSerializer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">commonSerializer</span><span class="result">: <a href="CommonSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.CommonSerializer">CommonSerializer</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@commonSerializer:com.rbmhtechnology.eventuate.serializer.CommonSerializer" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="DurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">DurableEventSerializer</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer#durableEvent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="durableEvent(durableEventFormat:com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat):com.rbmhtechnology.eventuate.DurableEvent"></a>
+      <a id="durableEvent(DurableEventFormat):DurableEvent"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">durableEvent</span><span class="params">(<span name="durableEventFormat">durableEventFormat: <span class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat">DurableEventFormat</span></span>)</span><span class="result">: <a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@durableEvent(durableEventFormat:com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat):com.rbmhtechnology.eventuate.DurableEvent" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="DurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">DurableEventSerializer</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer#durableEventFormatBuilder" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="durableEventFormatBuilder(durableEvent:com.rbmhtechnology.eventuate.DurableEvent):com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.Builder"></a>
+      <a id="durableEventFormatBuilder(DurableEvent):Builder"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">durableEventFormatBuilder</span><span class="params">(<span name="durableEvent">durableEvent: <a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a></span>)</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.Builder">Builder</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@durableEventFormatBuilder(durableEvent:com.rbmhtechnology.eventuate.DurableEvent):com.rbmhtechnology.eventuate.serializer.DurableEventFormats.DurableEventFormat.Builder" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="DurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">DurableEventSerializer</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -268,7 +288,7 @@
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -285,45 +305,11 @@
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@equals(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer#filterTree" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="filterTree(filterTreeFormat:com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat):com.rbmhtechnology.eventuate.ReplicationFilter"></a>
-      <a id="filterTree(ReplicationFilterTreeFormat):ReplicationFilter"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">filterTree</span><span class="params">(<span name="filterTreeFormat">filterTreeFormat: <span class="extype" name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat">ReplicationFilterTreeFormat</span></span>)</span><span class="result">: <a href="../ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@filterTree(filterTreeFormat:com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat):com.rbmhtechnology.eventuate.ReplicationFilter" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
-    </li><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer#filterTreeFormatBuilder" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="filterTreeFormatBuilder(filterTree:com.rbmhtechnology.eventuate.ReplicationFilter):com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder"></a>
-      <a id="filterTreeFormatBuilder(ReplicationFilter):Builder"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">filterTreeFormatBuilder</span><span class="params">(<span name="filterTree">filterTree: <a href="../ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a></span>)</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder">Builder</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@filterTreeFormatBuilder(filterTree:com.rbmhtechnology.eventuate.ReplicationFilter):com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats.ReplicationFilterTreeFormat.Builder" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -336,7 +322,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -347,7 +333,7 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer#fromBinary" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer#fromBinary" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="fromBinary(bytes:Array[Byte],manifest:Option[Class[_]]):AnyRef"></a>
       <a id="fromBinary(Array[Byte],Option[Class[_]]):AnyRef"></a>
       <h4 class="signature">
@@ -359,11 +345,11 @@
         <span class="name">fromBinary</span><span class="params">(<span name="bytes">bytes: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>, <span name="manifest">manifest: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.Class">Class</span>[_]]</span>)</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@fromBinary(bytes:Array[Byte],manifest:Option[Class[_]]):AnyRef" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@fromBinary(bytes:Array[Byte],manifest:Option[Class[_]]):AnyRef" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer">ReplicationFilterSerializer</a> → Serializer</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="DurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">DurableEventSerializer</a> → Serializer</dd></dl></div>
     </li><li name="akka.serialization.Serializer#fromBinary" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="fromBinary(bytes:Array[Byte],clazz:Class[_]):AnyRef"></a>
       <a id="fromBinary(Array[Byte],Class[_]):AnyRef"></a>
@@ -376,7 +362,7 @@
         <span class="name">fromBinary</span><span class="params">(<span name="bytes">bytes: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>, <span name="clazz">clazz: <span class="extype" name="scala.Predef.Class">Class</span>[_]</span>)</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@fromBinary(bytes:Array[Byte],clazz:Class[_]):AnyRef" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@fromBinary(bytes:Array[Byte],clazz:Class[_]):AnyRef" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -393,7 +379,7 @@
         <span class="name">fromBinary</span><span class="params">(<span name="bytes">bytes: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>)</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@fromBinary(bytes:Array[Byte]):AnyRef" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@fromBinary(bytes:Array[Byte]):AnyRef" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -410,7 +396,7 @@
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -427,12 +413,12 @@
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@hashCode():Int" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@hashCode():Int" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer#identifier" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer#identifier" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="identifier:Int"></a>
       <a id="identifier:Int"></a>
       <h4 class="signature">
@@ -444,12 +430,12 @@
         <span class="name">identifier</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@identifier:Int" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@identifier:Int" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer">ReplicationFilterSerializer</a> → Serializer</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer#includeManifest" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="DurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">DurableEventSerializer</a> → Serializer</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer#includeManifest" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="includeManifest:Boolean"></a>
       <a id="includeManifest:Boolean"></a>
       <h4 class="signature">
@@ -461,11 +447,11 @@
         <span class="name">includeManifest</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@includeManifest:Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@includeManifest:Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer">ReplicationFilterSerializer</a> → Serializer</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="DurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">DurableEventSerializer</a> → Serializer</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -478,7 +464,7 @@
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -495,7 +481,7 @@
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -512,7 +498,7 @@
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@notify():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -529,28 +515,11 @@
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer#payloadSerializer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="payloadSerializer:com.rbmhtechnology.eventuate.serializer.DelegatingPayloadSerializer"></a>
-      <a id="payloadSerializer:DelegatingPayloadSerializer"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">payloadSerializer</span><span class="result">: <a href="DelegatingPayloadSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DelegatingPayloadSerializer">DelegatingPayloadSerializer</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@payloadSerializer:com.rbmhtechnology.eventuate.serializer.DelegatingPayloadSerializer" title="Permalink" target="_top">
-        <img src="../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -563,12 +532,12 @@
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer#toBinary" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer#toBinary" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toBinary(o:AnyRef):Array[Byte]"></a>
       <a id="toBinary(AnyRef):Array[Byte]"></a>
       <h4 class="signature">
@@ -580,11 +549,11 @@
         <span class="name">toBinary</span><span class="params">(<span name="o">o: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@toBinary(o:AnyRef):Array[Byte]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@toBinary(o:AnyRef):Array[Byte]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer">ReplicationFilterSerializer</a> → Serializer</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="DurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">DurableEventSerializer</a> → Serializer</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -597,7 +566,7 @@
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@toString():String" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@toString():String" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -614,7 +583,7 @@
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@wait():Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -637,7 +606,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -660,7 +629,7 @@
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.ReplicationFilterSerializer@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -680,7 +649,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="akka.serialization.Serializer">
+        <div class="parent" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">
+              <h3>Inherited from <a href="DurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">DurableEventSerializer</a></h3>
+            </div><div class="parent" name="akka.serialization.Serializer">
               <h3>Inherited from <span class="extype" name="akka.serialization.Serializer">Serializer</span></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>

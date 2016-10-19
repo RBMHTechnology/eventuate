@@ -66,7 +66,24 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.serializer.CommonFormats" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.serializer.BinaryPayloadSerializer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="BinaryPayloadSerializerextendsPayloadSerializer"></a>
+      <a id="BinaryPayloadSerializer:BinaryPayloadSerializer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="BinaryPayloadSerializer.html"><span class="name">BinaryPayloadSerializer</span></a><span class="result"> extends <a href="PayloadSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer">PayloadSerializer</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.package@BinaryPayloadSerializerextendsPayloadSerializer" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A <a href="PayloadSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer">PayloadSerializer</a> converting between <code>BinaryPayloads</code> and <code>PayloadFormats</code>.</p>
+    </li><li name="com.rbmhtechnology.eventuate.serializer.CommonFormats" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="CommonFormatsextendsObject"></a>
       <a id="CommonFormats:CommonFormats"></a>
       <h4 class="signature">
@@ -100,6 +117,44 @@
       </a>
     </span>
       
+    </li><li name="com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="DelegatingDurableEventSerializerextendsDurableEventSerializer"></a>
+      <a id="DelegatingDurableEventSerializer:DelegatingDurableEventSerializer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="DelegatingDurableEventSerializer.html"><span class="name">DelegatingDurableEventSerializer</span></a><span class="result"> extends <a href="DurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">DurableEventSerializer</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.package@DelegatingDurableEventSerializerextendsDurableEventSerializer" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A <a href="https://developers.google.com/protocol-buffers/" target="_blank">Protocol Buffers</a> based serializer for <a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s.</p><div class="fullcomment"><div class="comment cmt"><p>A <a href="https://developers.google.com/protocol-buffers/" target="_blank">Protocol Buffers</a> based serializer for <a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s.
+Serialization of <code>DurableEvent</code>'s <code>payload</code> is delegated to a serializer that is configured with Akka's
+<a href="http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html" target="_blank">serialization extension</a> mechanism.</p><p>This serializer is configured by default (in <code>reference.conf</code>) for <a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s
+</p></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.serializer.DelegatingPayloadSerializer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DelegatingPayloadSerializerextendsPayloadSerializer"></a>
+      <a id="DelegatingPayloadSerializer:DelegatingPayloadSerializer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="DelegatingPayloadSerializer.html"><span class="name">DelegatingPayloadSerializer</span></a><span class="result"> extends <a href="PayloadSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer">PayloadSerializer</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.package@DelegatingPayloadSerializerextendsPayloadSerializer" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A <a href="PayloadSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer">PayloadSerializer</a> delegating to a serializer that is configured with Akka's
+<a href="http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html" target="_blank">serialization extension</a> mechanism.</p>
     </li><li name="com.rbmhtechnology.eventuate.serializer.DurableEventFormats" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="DurableEventFormatsextendsObject"></a>
       <a id="DurableEventFormats:DurableEventFormats"></a>
@@ -117,12 +172,12 @@
       </a>
     </span>
       
-    </li><li name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="DurableEventSerializerextendsSerializer"></a>
       <a id="DurableEventSerializer:DurableEventSerializer"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">abstract </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
@@ -133,10 +188,46 @@
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializerWithBinaryPayload" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="DurableEventSerializerWithBinaryPayloadextendsDurableEventSerializer"></a>
+      <a id="DurableEventSerializerWithBinaryPayload:DurableEventSerializerWithBinaryPayload"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="DurableEventSerializerWithBinaryPayload.html"><span class="name">DurableEventSerializerWithBinaryPayload</span></a><span class="result"> extends <a href="DurableEventSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.DurableEventSerializer">DurableEventSerializer</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.package@DurableEventSerializerWithBinaryPayloadextendsDurableEventSerializer" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
       <p class="shortcomment cmt">A <a href="https://developers.google.com/protocol-buffers/" target="_blank">Protocol Buffers</a> based serializer for <a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s.</p><div class="fullcomment"><div class="comment cmt"><p>A <a href="https://developers.google.com/protocol-buffers/" target="_blank">Protocol Buffers</a> based serializer for <a href="../DurableEvent.html" class="extype" name="com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s.
-Serialization of <code>DurableEvent</code>'s <code>payload</code> is delegated to a serializer that is configured with Akka's
-<a href="http://doc.akka.io/docs/akka/2.3.9/scala/serialization.html" target="_blank">serialization extension</a> mechanism.
+Serialization of <code>DurableEvent</code>'s <code>payload</code> is delegated to <a href="BinaryPayloadSerializer.html" class="extype" name="com.rbmhtechnology.eventuate.serializer.BinaryPayloadSerializer">BinaryPayloadSerializer</a>.</p><p>To use this serializer the default config provided by <code>reference.conf</code> has to be overwritten in an
+<code>application.conf</code> like follows:</p><pre>akka.actor.serializers.eventuate-durable-event = com.rbmhtechnology.eventuate.serializer.DurableEventSerializerWithBinaryPayload</pre><p>This serializer can be useful in scenarios where an Eventuate application is just used for
+event forwarding (through replication) and only handles the payload of events
+based on their metadata (like the manifest).
 </p></div></div>
+    </li><li name="com.rbmhtechnology.eventuate.serializer.PayloadSerializer" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="PayloadSerializerextendsAnyRef"></a>
+      <a id="PayloadSerializer:PayloadSerializer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="PayloadSerializer.html"><span class="name">PayloadSerializer</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.serializer.package@PayloadSerializerextendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Interface of a serializer converting between payloads and <code>PayloadFormat</code>.</p>
     </li><li name="com.rbmhtechnology.eventuate.serializer.ReplicationFilterFormats" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReplicationFilterFormatsextendsObject"></a>
       <a id="ReplicationFilterFormats:ReplicationFilterFormats"></a>
