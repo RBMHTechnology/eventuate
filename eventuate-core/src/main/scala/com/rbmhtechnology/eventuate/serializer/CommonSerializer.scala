@@ -17,39 +17,19 @@
 package com.rbmhtechnology.eventuate.serializer
 
 import akka.actor.ExtendedActorSystem
-import akka.serialization.SerializationExtension
-import akka.serialization.SerializerWithStringManifest
 
-import com.google.protobuf.ByteString
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.serializer.CommonFormats._
 
 import scala.collection.JavaConverters._
 
 class CommonSerializer(system: ExtendedActorSystem) {
+
+  val payloadSerializer = new DelegatingPayloadSerializer(system)
+
   // --------------------------------------------------------------------------------
   //  toBinary helpers
   // --------------------------------------------------------------------------------
-
-  def payloadFormatBuilder(payload: AnyRef) = {
-    val serializer = SerializationExtension(system).findSerializerFor(payload)
-    val builder = PayloadFormat.newBuilder()
-
-    if (serializer.includeManifest) {
-      val stringManifest = serializer match {
-        case serializerWithStringManifest: SerializerWithStringManifest =>
-          builder.setIsStringManifest(true)
-          serializerWithStringManifest.manifest(payload)
-        case _ =>
-          payload.getClass.getName
-      }
-      builder.setPayloadManifest(stringManifest)
-    }
-
-    builder.setPayload(ByteString.copyFrom(serializer.toBinary(payload)))
-    builder.setSerializerId(serializer.identifier)
-    builder
-  }
 
   def vectorTimeFormatBuilder(vectorTime: VectorTime): VectorTimeFormat.Builder = {
     val builder = VectorTimeFormat.newBuilder
@@ -63,7 +43,7 @@ class CommonSerializer(system: ExtendedActorSystem) {
 
   def versionedFormatBuilder(versioned: Versioned[_]): VersionedFormat.Builder = {
     val builder = VersionedFormat.newBuilder
-    builder.setPayload(payloadFormatBuilder(versioned.value.asInstanceOf[AnyRef]))
+    builder.setPayload(payloadSerializer.payloadFormatBuilder(versioned.value.asInstanceOf[AnyRef]))
     builder.setVectorTimestamp(vectorTimeFormatBuilder(versioned.vectorTimestamp))
     builder.setSystemTimestamp(versioned.systemTimestamp)
     builder.setCreator(versioned.creator)
@@ -73,26 +53,6 @@ class CommonSerializer(system: ExtendedActorSystem) {
   //  fromBinary helpers
   // --------------------------------------------------------------------------------
 
-  def payload(payloadFormat: PayloadFormat): Any = {
-    val deserialized = if (payloadFormat.getIsStringManifest) {
-      SerializationExtension(system).deserialize(
-        payloadFormat.getPayload.toByteArray,
-        payloadFormat.getSerializerId,
-        payloadFormat.getPayloadManifest)
-    } else if (payloadFormat.hasPayloadManifest) {
-      val manifestClass = system.dynamicAccess.getClassFor[AnyRef](payloadFormat.getPayloadManifest).get
-      SerializationExtension(system).deserialize(
-        payloadFormat.getPayload.toByteArray,
-        manifestClass)
-    } else {
-      SerializationExtension(system).deserialize(
-        payloadFormat.getPayload.toByteArray,
-        payloadFormat.getSerializerId,
-        None)
-    }
-    deserialized.get
-  }
-
   def vectorTime(vectorTimeFormat: VectorTimeFormat): VectorTime = {
     VectorTime(vectorTimeFormat.getEntriesList.iterator.asScala.foldLeft(Map.empty[String, Long]) {
       case (result, entry) => result.updated(entry.getProcessId, entry.getLogicalTime)
@@ -101,7 +61,7 @@ class CommonSerializer(system: ExtendedActorSystem) {
 
   def versioned(versionedFormat: VersionedFormat): Versioned[Any] = {
     Versioned[Any](
-      payload(versionedFormat.getPayload),
+      payloadSerializer.payload(versionedFormat.getPayload),
       vectorTime(versionedFormat.getVectorTimestamp),
       versionedFormat.getSystemTimestamp,
       versionedFormat.getCreator)

@@ -30,10 +30,11 @@ import scala.collection.breakOut
 import scala.collection.immutable.VectorBuilder
 
 class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Serializer {
-  val eventSerializer = new DurableEventSerializer(system)
+  lazy val eventSerializer = SerializationExtension(system).serializerFor(classOf[DurableEvent]).asInstanceOf[DurableEventSerializer]
   val filterSerializer = new ReplicationFilterSerializer(system)
 
   import eventSerializer.commonSerializer
+  import commonSerializer.payloadSerializer
 
   val GetReplicationEndpointInfoClass = GetReplicationEndpointInfo.getClass
   val GetReplicationEndpointInfoSuccessClass = classOf[GetReplicationEndpointInfoSuccess]
@@ -125,7 +126,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
 
   private def replicationReadFailureFormatBuilder(message: ReplicationReadFailure): ReplicationReadFailureFormat.Builder = {
     val builder = ReplicationReadFailureFormat.newBuilder()
-    builder.setCause(commonSerializer.payloadFormatBuilder(message.cause))
+    builder.setCause(payloadSerializer.payloadFormatBuilder(message.cause))
     builder.setTargetLogId(message.targetLogId)
     builder
   }
@@ -171,7 +172,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     SynchronizeReplicationProgressSuccessFormat.newBuilder().setInfo(replicationEndpointInfoFormatBuilder(message.info))
 
   private def synchronizeReplicationProgressFailureFormatBuilder(message: SynchronizeReplicationProgressFailure): SynchronizeReplicationProgressFailureFormat.Builder =
-    SynchronizeReplicationProgressFailureFormat.newBuilder().setCause(commonSerializer.payloadFormatBuilder(message.cause))
+    SynchronizeReplicationProgressFailureFormat.newBuilder().setCause(payloadSerializer.payloadFormatBuilder(message.cause))
 
   private def replicationEndpointInfoFormatBuilder(info: ReplicationEndpointInfo): ReplicationEndpointInfoFormat.Builder = {
     val builder = ReplicationEndpointInfoFormat.newBuilder()
@@ -217,7 +218,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
 
   private def replicationReadFailure(messageFormat: ReplicationReadFailureFormat): ReplicationReadFailure =
     ReplicationReadFailure(
-      commonSerializer.payload(messageFormat.getCause).asInstanceOf[ReplicationReadException],
+      payloadSerializer.payload(messageFormat.getCause).asInstanceOf[ReplicationReadException],
       messageFormat.getTargetLogId)
 
   private def replicationReadSuccess(messageFormat: ReplicationReadSuccessFormat): ReplicationReadSuccess = {
@@ -262,7 +263,7 @@ class ReplicationProtocolSerializer(system: ExtendedActorSystem) extends Seriali
     SynchronizeReplicationProgressSuccess(replicationEndpointInfo(messageFormat.getInfo))
 
   private def synchronizeReplicationProgressFailure(messageFormat: SynchronizeReplicationProgressFailureFormat): SynchronizeReplicationProgressFailure =
-    SynchronizeReplicationProgressFailure(commonSerializer.payload(messageFormat.getCause).asInstanceOf[SynchronizeReplicationProgressException])
+    SynchronizeReplicationProgressFailure(payloadSerializer.payload(messageFormat.getCause).asInstanceOf[SynchronizeReplicationProgressException])
 
   private def replicationEndpointInfo(infoFormat: ReplicationEndpointInfoFormat): ReplicationEndpointInfo = {
     ReplicationEndpointInfo(
