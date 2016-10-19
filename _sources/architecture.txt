@@ -342,7 +342,7 @@ Eventuate currently provides services for the following operation-based CRDTs: *
 .. hint::
    More details are covered in the :ref:`commutative-replicated-data-types` section of the user guide and in `this article`_.
 
-.. _this article: https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/
+.. _this article: http://krasserm.github.io/2016/10/19/operation-based-crdt-framework/
 
 .. _vector-clocks:
 
