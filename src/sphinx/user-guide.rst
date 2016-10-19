@@ -253,7 +253,7 @@ New operation-based CRDTs and their corresponding services can be developed with
 .. hint::
    Eventuate’s CRDT approach is also described in `this article`_.
 
-.. _this article: https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/
+.. _this article: http://krasserm.github.io/2016/10/19/operation-based-crdt-framework/
 
 .. _guide-event-sourced-views:
 
