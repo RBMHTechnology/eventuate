@@ -36,9 +36,11 @@ class CounterService[A](val serviceId: String, val log: ActorRef, implicit val s
   import CRDTConverter._
   import system._
 
-  override protected val delegate = new com.rbmhtechnology.eventuate.crdt.CounterService[A](serviceId, log)
+  override protected val delegate =
+    new com.rbmhtechnology.eventuate.crdt.CounterService[A](serviceId, log)
 
-  implicit protected def c: CRDTConverter[A, A] = CRDTConverter(identity[A])
+  implicit protected def c: CRDTConverter[A, A] =
+    CRDTConverter(identity[A])
 
   /**
    * Adds `delta` (which can also be negative) to the counter identified by `id` and returns the updated counter value.

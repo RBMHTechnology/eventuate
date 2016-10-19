@@ -39,13 +39,15 @@ class MVRegisterService[A](val serviceId: String, val log: ActorRef, implicit va
   import CRDTConverter._
   import system._
 
-  override protected val delegate = new com.rbmhtechnology.eventuate.crdt.MVRegisterService[A](serviceId, log)
+  override protected val delegate =
+    new com.rbmhtechnology.eventuate.crdt.MVRegisterService[A](serviceId, log)
 
-  implicit protected def c: CRDTConverter[Set[A], JSet[A]] = CRDTConverter(_.asJava)
+  implicit protected def c: CRDTConverter[Set[A], JSet[A]] =
+    CRDTConverter(_.asJava)
 
   /**
    * Assigns a `value` to the MV-Register identified by `id` and returns the updated MV-Register value.
    */
-  def set(id: String, value: A): CompletionStage[JSet[A]] =
+  def assign(id: String, value: A): CompletionStage[JSet[A]] =
     delegate.assign(id, value).asJava
 }
