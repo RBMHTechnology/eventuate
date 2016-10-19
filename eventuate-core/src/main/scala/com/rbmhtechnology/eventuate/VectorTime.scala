@@ -74,6 +74,12 @@ case class VectorTime(value: Map[String, Long] = Map.empty) {
     Ordering.tryCompare(this, that).isEmpty
 
   /**
+   * Returns `true` if this vector time is concurrent to `that`.
+   */
+  def <->(that: VectorTime): Boolean =
+    conc(that)
+
+  /**
    * Returns `true` if this vector time is less than or equal to `that`.
    */
   def <=(that: VectorTime): Boolean =

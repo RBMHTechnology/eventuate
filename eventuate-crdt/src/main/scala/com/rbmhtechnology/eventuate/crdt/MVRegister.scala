@@ -45,13 +45,8 @@ case class MVRegister[A](versioned: Set[Versioned[A]] = Set.empty[Versioned[A]])
    * @param emitterId id of the value emitter.
    */
   def assign(v: A, vectorTimestamp: VectorTime, systemTimestamp: Long = 0L, emitterId: String = ""): MVRegister[A] = {
-    val (vvs, updated) = versioned.foldLeft((Set.empty[Versioned[A]], false)) {
-      case ((acc, upd), vv) if vectorTimestamp > vv.vectorTimestamp =>
-        (acc + vv.copy(v, vectorTimestamp), true)
-      case ((acc, upd), vv) /* vectorTimestamp conc vv.vectorTimestamp */ =>
-        (acc + vv, upd)
-    }
-    if (!updated) copy(versioned + Versioned(v, vectorTimestamp, systemTimestamp, emitterId)) else copy(vvs)
+    val concurrent = versioned.filter(_.vectorTimestamp <-> vectorTimestamp)
+    copy(concurrent + Versioned(v, vectorTimestamp, systemTimestamp, emitterId))
   }
 }
 

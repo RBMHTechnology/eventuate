@@ -56,6 +56,13 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
         .assign(2, vectorTime(2, 0))
         .value should be(Set(2))
     }
+    "replace a value if it happened before a new write and retain a value if it is concurrent to the new write" in {
+      mvReg
+        .assign(1, vectorTime(1, 0))
+        .assign(2, vectorTime(0, 1))
+        .assign(3, vectorTime(2, 0))
+        .value should be(Set(2, 3))
+    }
     "replace multiple concurrent values if they happened before a new write" in {
       mvReg
         .assign(1, vectorTime(1, 0))
