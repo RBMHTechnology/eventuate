@@ -27,6 +27,7 @@ import com.typesafe.config.Config
 import scala.collection.immutable.Seq
 import scala.concurrent._
 import scala.concurrent.duration._
+import scala.util._
 
 private class EventsourcedProcessorSettings(config: Config) {
   val readTimeout =
@@ -73,7 +74,7 @@ object EventsourcedProcessor {
  *
  * @see [[StatefulProcessor]]
  */
-trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
+trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] with ActorLogging {
   import ReplicationProtocol._
   import context.dispatcher
 
@@ -84,7 +85,7 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
 
   private val settings = new EventsourcedProcessorSettings(context.system.settings.config)
 
-  private var processedEvents: Vector[DurableEvent] = Vector.empty
+  private var processedEvents: Vector[Seq[DurableEvent]] = Vector.empty
   private var processingProgress: Long = 0L
 
   /**
@@ -112,19 +113,22 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
     case payload if processEvent.isDefinedAt(payload) =>
       val currentProcessedEvents = processEvent(payload)
       if (lastSequenceNr > processingProgress)
-        processedEvents = currentProcessedEvents.map(createEvent(_, lastHandledEvent.customDestinationAggregateIds)).foldLeft(processedEvents)(_ :+ _)
+        processedEvents = processedEvents :+ currentProcessedEvents.map(createEvent(_, lastHandledEvent.customDestinationAggregateIds))
   }
 
   /**
    * Asynchronously writes processed events that have been collected since the last write together
-   * with the current processing progress.
+   * with the current processing progress. If the number of processed events since the last write
+   * is greater than the configured `eventuate.log.write-batch-size` multiple batches with a size
+   * less than or equal to `eventuate.log.write-batch-size` will be written sequentially. When
+   * splitting into multiple batches it is guaranteed that the processing result of a single event
+   * is part of the same batch i.e. it is guaranteed that the processing result of a single event
+   * is written atomically. If the processing result of a single event is larger than
+   * `eventuate.log.write-batch-size`, `write` fails with a [[EventsourcedProcessingResultTooLargeException]].
    */
   override final def write(): Future[Long] =
     if (lastSequenceNr > processingProgress) {
-      val result = targetEventLog.ask(ReplicationWrite(processedEvents, lastSequenceNr, id, VectorTime.Zero))(Timeout(writeTimeout)).flatMap {
-        case s: ReplicationWriteSuccess => Future.successful(s.storedReplicationProgress)
-        case f: ReplicationWriteFailure => Future.failed(f.cause)
-      }
+      val result = writeBatches(processedEvents, processingProgress, lastSequenceNr)
       processedEvents = Vector.empty
       result
     } else Future.successful(processingProgress)
@@ -140,17 +144,23 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
   }
 
   /**
-   * Limits the replay batch size to `eventuate.log.write-batch-size`. Can be overridden.
-   */
-  override def replayBatchSize: Int =
-    settings.writeBatchSize
-
-  /**
    * Sets the written processing progress for this processor.
    */
   override def writeSuccess(progress: Long): Unit = {
     processingProgress = progress
     super.writeSuccess(progress)
+  }
+
+  /**
+   * Stops the processor if called with a [[EventsourcedProcessingResultTooLargeException]]
+   * otherwise delegates to `super`.
+   */
+  override def writeFailure(cause: Throwable): Unit = cause match {
+    case e: EventsourcedProcessingResultTooLargeException =>
+      log.error(cause, "shutting down processor")
+      context.stop(self)
+    case e =>
+      super.writeFailure(e)
   }
 
   /**
@@ -186,7 +196,50 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] {
       customDestinationAggregateIds = customDestinationAggregateIds,
       vectorTimestamp = lastVectorTimestamp,
       processId = DurableEvent.UndefinedLogId)
+
+  private def splitBatches(events: Vector[Seq[DurableEvent]]): (Vector[Seq[DurableEvent]], Vector[Seq[DurableEvent]]) = {
+    var num = 0
+    // Ensure that a single processEvent result
+    // is not partitioned across write batches.
+    events.span { w =>
+      val size = w.size
+      if (size > settings.writeBatchSize) {
+        throw new EventsourcedProcessingResultTooLargeException(size, settings.writeBatchSize)
+      } else {
+        num += size
+        num <= settings.writeBatchSize
+      }
+    }
+  }
+
+  private def writeBatches(events: Vector[Seq[DurableEvent]], previousProgress: Long, currentProgress: Long): Future[Long] = {
+    Try(splitBatches(events)) match {
+      case Failure(e) =>
+        Future.failed(e)
+      case Success((w, r)) =>
+        (w.flatten, r) match {
+          case (Vector(), Vector()) =>
+            Future.successful(currentProgress)
+          case (batch, Vector()) =>
+            writeBatch(batch, currentProgress)
+          case (batch, tail) =>
+            writeBatch(batch, previousProgress).flatMap(_ => writeBatches(tail, previousProgress, currentProgress))
+        }
+    }
+  }
+
+  private def writeBatch(events: Seq[DurableEvent], progress: Long): Future[Long] =
+    targetEventLog.ask(ReplicationWrite(events, progress, id, VectorTime.Zero))(Timeout(writeTimeout)).flatMap {
+      case s: ReplicationWriteSuccess => Future.successful(s.storedReplicationProgress)
+      case f: ReplicationWriteFailure => Future.failed(f.cause)
+    }
 }
+
+/**
+ * Thrown if the processing result of a single event is larger than the configured `eventuate.log.write-batch-size`.
+ */
+class EventsourcedProcessingResultTooLargeException(actualSize: Int, allowedSize: Int)
+  extends RuntimeException(s"Processing result of size $actualSize is greater than eventuate.log.write-batch-size $allowedSize")
 
 /**
  * An [[EventsourcedProcessor]] that supports stateful event processing. In-memory state created from source
