@@ -16,16 +16,14 @@
 
 package com.rbmhtechnology.eventuate.adapter.vertx
 
+import java.util.UUID
+
 import akka.testkit.TestKit
 import io.vertx.core.Vertx
 import org.scalatest.{BeforeAndAfterEach, Suite}
 
 trait VertxEnvironment extends BeforeAndAfterEach {
   this: TestKit with Suite =>
-
-  val endpoint1 = "vertx-endpoint1"
-  val endpoint2 = "vertx-endpoint2"
-  val endpoint3 = "vertx-endpoint3"
 
   var vertx: Vertx = _
 
@@ -37,4 +35,7 @@ trait VertxEnvironment extends BeforeAndAfterEach {
   def registerEventBusCodec(clazz: Class[_]): Unit = {
     vertx.eventBus().registerDefaultCodec(clazz.asInstanceOf[Class[AnyRef]], AkkaSerializationMessageCodec(clazz))
   }
+
+  def endpointAddress(id: String): String =
+    s"vertx-endpoint-$id-${UUID.randomUUID().toString}"
 }
