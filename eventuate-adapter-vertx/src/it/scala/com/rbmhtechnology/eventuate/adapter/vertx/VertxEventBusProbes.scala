@@ -16,32 +16,41 @@
 
 package com.rbmhtechnology.eventuate.adapter.vertx
 
+import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
+import com.rbmhtechnology.eventuate.adapter.vertx.utilities.EventBusMessage
 import io.vertx.core.eventbus.Message
 import org.scalatest.{BeforeAndAfterEach, Suite}
-import utilities.VertxEventBusMessage
 
 trait VertxEventBusProbes extends BeforeAndAfterEach {
   this: TestKit with Suite with VertxEnvironment =>
 
   import VertxHandlerConverters._
 
-  var endpoint1Probe: TestProbe = _
-  var endpoint2Probe: TestProbe = _
-  var endpoint3Probe: TestProbe = _
+  var endpoint1: EventBusEndpoint = _
+  var endpoint2: EventBusEndpoint = _
 
   override def beforeEach(): Unit = {
     super.beforeEach()
 
-    endpoint1Probe = eventBusProbe(endpoint1)
-    endpoint2Probe = eventBusProbe(endpoint2)
-    endpoint3Probe = eventBusProbe(endpoint3)
+    endpoint1 = EventBusEndpoint.withId("1")
+    endpoint2 = EventBusEndpoint.withId("2")
   }
 
   def eventBusProbe(endpoint: String): TestProbe = {
     val probe = TestProbe()
-    val handler = (m: Message[String]) => probe.ref ! VertxEventBusMessage(m.body(), m)
+    val handler = (m: Message[String]) => probe.ref ! EventBusMessage(m.body(), m, endpoint)
     vertx.eventBus().consumer[String](endpoint, handler.asVertxHandler)
     probe
   }
+
+  object EventBusEndpoint {
+    def apply(address: String): EventBusEndpoint =
+      new EventBusEndpoint(address, eventBusProbe(address))
+
+    def withId(id: String): EventBusEndpoint =
+      apply(endpointAddress(id))
+  }
+
+  case class EventBusEndpoint(address: String, probe: TestProbe)
 }

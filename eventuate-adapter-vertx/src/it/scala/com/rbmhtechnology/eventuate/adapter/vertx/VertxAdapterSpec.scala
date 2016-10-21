@@ -60,7 +60,7 @@ class VertxAdapterSpec extends TestKit(ActorSystem("test", VertxAdapterSpec.Conf
       val adapterConfig = VertxAdapterConfig()
         .addProducer(EventProducer.fromLog(log)
           .publishTo {
-            case _ => endpoint1
+            case _ => endpoint1.address
           }
           .as("adapter1"))
         .registerDefaultCodecFor(classOf[Event])
@@ -76,20 +76,20 @@ class VertxAdapterSpec extends TestKit(ActorSystem("test", VertxAdapterSpec.Conf
       storage.expectRead(replySequenceNr = 0)
       storage.expectWrite(sequenceNr = 1)
 
-      endpoint1Probe.expectVertxMsg(body = Event("1"))
+      endpoint1.probe.expectVertxMsg(body = Event("1"))
 
       logWriter.write(Seq(Event("2"))).await
 
       storage.expectWrite(sequenceNr = 2)
 
-      endpoint1Probe.expectVertxMsg(body = Event("2"))
+      endpoint1.probe.expectVertxMsg(body = Event("2"))
 
       logWriter.write(Seq(Event("3"), Event("4"))).await
 
       storage.expectWriteAnyOf(sequenceNrs = Seq(3, 4))
 
-      endpoint1Probe.expectVertxMsg(body = Event("3"))
-      endpoint1Probe.expectVertxMsg(body = Event("4"))
+      endpoint1.probe.expectVertxMsg(body = Event("3"))
+      endpoint1.probe.expectVertxMsg(body = Event("4"))
     }
   }
 }

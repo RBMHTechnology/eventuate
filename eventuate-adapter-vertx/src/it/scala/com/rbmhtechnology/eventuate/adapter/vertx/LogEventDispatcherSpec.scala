@@ -62,7 +62,9 @@ class LogEventDispatcherSpec extends TestKit(ActorSystem("test", TestConfig.defa
   import ProcessingResult._
   import VertxHandlerConverters._
   import system.dispatcher
-  import utilities._
+
+  var endpoint1: String = _
+  var endpoint2: String = _
 
   var logA: ActorRef = _
   var logB: ActorRef = _
@@ -73,6 +75,9 @@ class LogEventDispatcherSpec extends TestKit(ActorSystem("test", TestConfig.defa
   override def beforeEach(): Unit = {
     super.beforeEach()
     registerEventBusCodec(classOf[ProcessingResult])
+
+    endpoint1 = endpointAddress("1")
+    endpoint2 = endpointAddress("2")
 
     logA = system.actorOf(logProps(logId("logA")))
     logB = system.actorOf(logProps(logId("logB")))
@@ -120,7 +125,7 @@ class LogEventDispatcherSpec extends TestKit(ActorSystem("test", TestConfig.defa
         persist(endpoint1, "ev-1")
         persist(endpoint1, "ev-2")
 
-        logAProbe.receiveInAnyOrder(
+        logAProbe.expectMsgAllOf(
           ReadEvent(emitterId = "id1", event = "ev-1"),
           ReadEvent(emitterId = "id1", event = "ev-2"))
       }
@@ -133,7 +138,7 @@ class LogEventDispatcherSpec extends TestKit(ActorSystem("test", TestConfig.defa
         persist(endpoint1, "ev-1")
         persist(endpoint2, "ev-2")
 
-        logAProbe.receiveInAnyOrder(
+        logAProbe.expectMsgAllOf(
           ReadEvent(emitterId = "id1", event = "ev-1"),
           ReadEvent(emitterId = "id1", event = "ev-2"))
       }
@@ -149,11 +154,11 @@ class LogEventDispatcherSpec extends TestKit(ActorSystem("test", TestConfig.defa
         persist(endpoint2, "ev-b1")
         persist(endpoint2, "ev-b2")
 
-        logAProbe.receiveInAnyOrder(
+        logAProbe.expectMsgAllOf(
           ReadEvent(emitterId = "id-a", event = "ev-a1"),
           ReadEvent(emitterId = "id-a", event = "ev-a2"))
 
-        logBProbe.receiveInAnyOrder(
+        logBProbe.expectMsgAllOf(
           ReadEvent(emitterId = "id-b", event = "ev-b1"),
           ReadEvent(emitterId = "id-b", event = "ev-b2"))
       }
@@ -167,7 +172,7 @@ class LogEventDispatcherSpec extends TestKit(ActorSystem("test", TestConfig.defa
         persist(endpoint1, "ev-3")
         persist(endpoint1, "ev-4-filter")
 
-        logAProbe.receiveInAnyOrder(
+        logAProbe.expectMsgAllOf(
           ReadEvent(emitterId = "id-a1", event = "ev-1"),
           ReadEvent(emitterId = "id-a1", event = "ev-3"))
       }
@@ -207,7 +212,7 @@ class LogEventDispatcherSpec extends TestKit(ActorSystem("test", TestConfig.defa
         persist(endpoint1, "ev-fail").failed.await mustBe a[ReplyException]
         persist(endpoint1, "ev-2").await must be(PERSISTED)
 
-        logAProbe.receiveInAnyOrder(
+        logAProbe.expectMsgAllOf(
           ReadEvent(emitterId = "id1", event = "ev-1"),
           ReadEvent(emitterId = "id1", event = "ev-2"))
       }

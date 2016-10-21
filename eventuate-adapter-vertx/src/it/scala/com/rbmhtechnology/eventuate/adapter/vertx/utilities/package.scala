@@ -24,22 +24,15 @@ import scala.util.Failure
 
 package object utilities {
 
-  implicit class TestProbeExtension(probe: TestProbe) {
-    def receiveInAnyOrder[T](objs: T*): Unit = {
-      val received = probe.receiveN(objs.size)
-      objs.foreach(o => assert(received.contains(o), s"$received did not contain $o"))
-    }
-  }
-
   implicit class VertxTestProbeExtension(probe: TestProbe) {
-    def expectVertxMsg[T](body: T, max: Duration = Duration.Undefined)(implicit t: ClassTag[T]): VertxEventBusMessage[T] = {
-      probe.expectMsgPF[VertxEventBusMessage[T]](max, hint = s"VertxEventBusMessage($body, _)") {
-        case m: VertxEventBusMessage[T] if m.body == body => m
+    def expectVertxMsg[T](body: T, max: Duration = Duration.Undefined)(implicit t: ClassTag[T]): EventBusMessage[T] = {
+      probe.expectMsgPF[EventBusMessage[T]](max, hint = s"EventBusMessage($body, _, _)") {
+        case m: EventBusMessage[T] if m.body == body => m
       }
     }
 
-    def receiveNVertxMsg[T](n: Int): Seq[VertxEventBusMessage[T]] =
-      probe.receiveN(n).asInstanceOf[Seq[VertxEventBusMessage[T]]]
+    def receiveNVertxMsg[T](n: Int): Seq[EventBusMessage[T]] =
+      probe.receiveN(n).asInstanceOf[Seq[EventBusMessage[T]]]
 
     def expectFailure[T](max: Duration = Duration.Undefined)(implicit t: ClassTag[T]): T = {
       probe.expectMsgPF[T](max, hint = s"Failure($t)") {

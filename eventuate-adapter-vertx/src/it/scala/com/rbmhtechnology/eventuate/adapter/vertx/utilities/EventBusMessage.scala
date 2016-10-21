@@ -20,7 +20,7 @@ import com.rbmhtechnology.eventuate.adapter.vertx.Confirmation
 import io.vertx.core.MultiMap
 import io.vertx.core.eventbus.Message
 
-case class VertxEventBusMessage[T](body: T, message: Message[T]) {
+case class EventBusMessage[T](body: T, message: Message[T], address: String) {
   def confirm(): Unit = {
     message.reply(Confirmation)
   }
