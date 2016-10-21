@@ -460,7 +460,7 @@ object EndpointFilters {
   /**
    * Creates an [[EndpointFilters]] instance that computes a [[ReplicationFilter]] for a replication read request
    * from a source log to a target log by and-combining target and source filters when given in the provided [[Map]]s.
-   * If only source or target filter is given that is returned. If no filter is given [[com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter]] is returned.
+   * If only source or target filter is given that is returned. If no filter is given [[NoFilter]] is returned.
    * A typical use case is that target specific filters are and-combined with a (default) source filter.
    *
    * @param targetFilters maps target log ids to the [[ReplicationFilter]] that shall be applied when replicating from a source log to this target log
@@ -472,7 +472,7 @@ object EndpointFilters {
   /**
    * Creates an [[EndpointFilters]] instance that computes a [[ReplicationFilter]] for a replication read request
    * from a source log to a target log by returning a target filter when given in `targetFilters`. If only
-   * a source filter is given in `sourceFilters` that is returned otherwise [[com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter]] is returned.
+   * a source filter is given in `sourceFilters` that is returned otherwise [[NoFilter]] is returned.
    * A typical use case is that (more privileged) remote targets may replace a (default) source filter with a target-specific filter.
    *
    * @param targetFilters maps target log ids to the [[ReplicationFilter]] that shall be applied when replicating from a source log to this target log
@@ -484,7 +484,7 @@ object EndpointFilters {
   /**
    * Creates an [[EndpointFilters]] instance that computes a [[ReplicationFilter]] for a replication read request
    * from a source log to any target log by returning the source filter when given in `sourceFilters` or
-   * [[com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter]] otherwise.
+   * [[NoFilter]] otherwise.
    *
    * @param sourceFilters maps source log names to the [[ReplicationFilter]] that shall be applied when replicating from this source log to any target log
    */
@@ -496,7 +496,7 @@ object EndpointFilters {
   /**
    * Creates an [[EndpointFilters]] instance that computes a [[ReplicationFilter]] for a replication read request
    * to a target log by returning the target filter when given in `targetFilters` or
-   * [[com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter]] otherwise.
+   * [[NoFilter]] otherwise.
    *
    * @param targetFilters maps target log ids to the [[ReplicationFilter]] that shall be applied when replicating from a source log to this target log
    */
@@ -506,7 +506,7 @@ object EndpointFilters {
   }
 
   /**
-   * An [[EndpointFilters]] instance that always returns [[com.rbmhtechnology.eventuate.ReplicationFilter.NoFilter]]
+   * An [[EndpointFilters]] instance that always returns [[NoFilter]]
    * independent from source/target logs of the replication read request.
    */
   val NoFilters: EndpointFilters = new EndpointFilters {
@@ -597,11 +597,7 @@ private class Connector(sourceConnector: SourceConnector, replicationLinks: Opti
     })
 
   private def createReplicator(link: ReplicationLink): Unit = {
-    val filter = sourceConnector.connection.filters.get(link.target.logName) match {
-      case Some(f) => f
-      case None    => NoFilter
-    }
-    context.actorOf(Props(new Replicator(link.target, link.source, filter)))
+    context.actorOf(Props(new Replicator(link.target, link.source)))
   }
 
   override def preStart(): Unit =
@@ -620,7 +616,7 @@ private class Connector(sourceConnector: SourceConnector, replicationLinks: Opti
  * (which is an optimization) or at target (for correctness). Duplicate detection is based on tracked
  * event vector times.
  */
-private class Replicator(target: ReplicationTarget, source: ReplicationSource, filter: ReplicationFilter) extends Actor with ActorLogging {
+private class Replicator(target: ReplicationTarget, source: ReplicationSource) extends Actor with ActorLogging {
   import FailureDetector._
   import context.dispatcher
   import target.endpoint.settings
@@ -699,7 +695,7 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
 
   private def read(storedReplicationProgress: Long, currentTargetVersionVector: VectorTime): Unit = {
     implicit val timeout = Timeout(settings.remoteReadTimeout)
-    val replicationRead = ReplicationRead(storedReplicationProgress + 1, settings.writeBatchSize, settings.remoteScanLimit, filter, target.logId, self, currentTargetVersionVector)
+    val replicationRead = ReplicationRead(storedReplicationProgress + 1, settings.writeBatchSize, settings.remoteScanLimit, NoFilter, target.logId, self, currentTargetVersionVector)
 
     (source.acceptor ? ReplicationReadEnvelope(replicationRead, source.logName, target.endpoint.applicationName, target.endpoint.applicationVersion)) recover {
       case t => ReplicationReadFailure(ReplicationReadTimeoutException(settings.remoteReadTimeout), target.logId)
