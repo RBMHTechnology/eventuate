@@ -58,7 +58,7 @@ object EventsourcedProcessorSpec {
       case "x" =>
         Vector.fill(4)("x")
       case "y" =>
-        Vector.fill(10)("y")
+        Vector.fill(5)("y")
       case "z" =>
         Vector.fill(11)("z")
       case evt: String =>
@@ -295,20 +295,44 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test", Eventsourced
     "write events in a single batch if the number of generated events during processing since the last write is equal to settings.writeBatchSize" in {
       val actor = recoveredStatelessProcessor()
 
-      val evt = event("y", 1).copy(vectorTimestamp = timestamp(1, 0))
-      actor ! Written(evt)
+      val evt1 = event("x", 1).copy(vectorTimestamp = timestamp(1, 0))
+      val evt2 = event("y", 2).copy(vectorTimestamp = timestamp(2, 0))
+      val evt3 = event("y", 3).copy(vectorTimestamp = timestamp(3, 0))
+
+      actor ! Written(evt1) // ensure that a write is in progress when processing the next events
+      actor ! Written(evt2)
+      actor ! Written(evt3)
 
       // process first write
-      processWrite(1, Seq.fill(10)(update(evt)))
+      processWrite(1, Seq.fill(4)(update(evt1)))
+
+      // process remaining writes
+      processWrite(3, Seq.fill(5)(update(evt2)) ++ Seq.fill(5)(update(evt3)))
     }
-    "stop if the number of generated events during processing of a single event is greater than settings.writeBatchSize" in {
-      val settings = new EventsourcedProcessorSettings(system.settings.config)
+    "allow batch sizes greater than settings.writeBatchSize if that batch was generated from a single input event (case 1)" in {
       val actor = recoveredStatelessProcessor()
 
-      val evt = event("z", 1).copy(vectorTimestamp = timestamp(1, 0))
-      actor ! Written(evt)
+      val evt1 = event("x", 1).copy(vectorTimestamp = timestamp(1, 0))
+      val evt2 = event("x", 2).copy(vectorTimestamp = timestamp(2, 0))
+      val evt3 = event("z", 3).copy(vectorTimestamp = timestamp(3, 0))
 
-      appProbe.expectMsgType[EventsourcedProcessingResultTooLargeException].getMessage should be(new EventsourcedProcessingResultTooLargeException(11, 10).getMessage)
+      actor ! Written(evt1) // ensure that a write is in progress when processing the next events
+      actor ! Written(evt2)
+      actor ! Written(evt3)
+
+      // process first write
+      processWrite(1, Seq.fill(4)(update(evt1)))
+
+      // process remaining writes
+      processPartialWrite(1, Seq.fill(4)(update(evt2)))
+      processWrite(3, Seq.fill(11)(update(evt3)))
+    }
+    "allow batch sizes greater than settings.writeBatchSize if that batch was generated from a single input event (case 2)" in {
+      val actor = recoveredStatelessProcessor()
+      val evt1 = event("z", 1).copy(vectorTimestamp = timestamp(1, 0))
+
+      actor ! Written(evt1)
+      processWrite(1, Seq.fill(11)(update(evt1)))
     }
   }
 }

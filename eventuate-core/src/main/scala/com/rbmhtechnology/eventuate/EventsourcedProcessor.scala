@@ -124,7 +124,7 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] with ActorLog
    * splitting into multiple batches it is guaranteed that the processing result of a single event
    * is part of the same batch i.e. it is guaranteed that the processing result of a single event
    * is written atomically. If the processing result of a single event is larger than
-   * `eventuate.log.write-batch-size`, `write` fails with a [[EventsourcedProcessingResultTooLargeException]].
+   * `eventuate.log.write-batch-size`, `write` write does not split that batch into smaller batches.
    */
   override final def write(): Future[Long] =
     if (lastSequenceNr > processingProgress) {
@@ -149,18 +149,6 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] with ActorLog
   override def writeSuccess(progress: Long): Unit = {
     processingProgress = progress
     super.writeSuccess(progress)
-  }
-
-  /**
-   * Stops the processor if called with a [[EventsourcedProcessingResultTooLargeException]]
-   * otherwise delegates to `super`.
-   */
-  override def writeFailure(cause: Throwable): Unit = cause match {
-    case e: EventsourcedProcessingResultTooLargeException =>
-      log.error(cause, "shutting down processor")
-      context.stop(self)
-    case e =>
-      super.writeFailure(e)
   }
 
   /**
@@ -203,30 +191,22 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] with ActorLog
     // is not partitioned across write batches.
     events.span { w =>
       val size = w.size
-      if (size > settings.writeBatchSize) {
-        throw new EventsourcedProcessingResultTooLargeException(size, settings.writeBatchSize)
-      } else {
-        num += size
-        num <= settings.writeBatchSize
-      }
+      num += size
+      num <= settings.writeBatchSize || num == size
     }
   }
 
-  private def writeBatches(events: Vector[Seq[DurableEvent]], previousProgress: Long, currentProgress: Long): Future[Long] = {
-    Try(splitBatches(events)) match {
-      case Failure(e) =>
-        Future.failed(e)
-      case Success((w, r)) =>
-        (w.flatten, r) match {
-          case (Vector(), Vector()) =>
-            Future.successful(currentProgress)
-          case (batch, Vector()) =>
-            writeBatch(batch, currentProgress)
-          case (batch, tail) =>
-            writeBatch(batch, previousProgress).flatMap(_ => writeBatches(tail, previousProgress, currentProgress))
-        }
+  private def writeBatches(events: Vector[Seq[DurableEvent]], previousProgress: Long, currentProgress: Long): Future[Long] =
+    Future(splitBatches(events)).flatMap {
+      case (w, r) => (w.flatten, r) match {
+        case (Vector(), Vector()) =>
+          Future.successful(currentProgress)
+        case (batch, Vector()) =>
+          writeBatch(batch, currentProgress)
+        case (batch, tail) =>
+          writeBatch(batch, previousProgress).flatMap(_ => writeBatches(tail, previousProgress, currentProgress))
+      }
     }
-  }
 
   private def writeBatch(events: Seq[DurableEvent], progress: Long): Future[Long] =
     targetEventLog.ask(ReplicationWrite(events, progress, id, VectorTime.Zero))(Timeout(writeTimeout)).flatMap {
@@ -234,12 +214,6 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] with ActorLog
       case f: ReplicationWriteFailure => Future.failed(f.cause)
     }
 }
-
-/**
- * Thrown if the processing result of a single event is larger than the configured `eventuate.log.write-batch-size`.
- */
-class EventsourcedProcessingResultTooLargeException(actualSize: Int, allowedSize: Int)
-  extends RuntimeException(s"Processing result of size $actualSize is greater than eventuate.log.write-batch-size $allowedSize")
 
 /**
  * An [[EventsourcedProcessor]] that supports stateful event processing. In-memory state created from source
