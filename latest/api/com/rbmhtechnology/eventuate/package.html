@@ -468,23 +468,6 @@ for command validation. <code>EventsourcedActor</code>s that want to persist new
 handler should additionally mixin the <a href="PersistOnEvent.html" class="extype" name="com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a> trait and use the
 <a href="PersistOnEvent.html#persistOnEvent[A](event:A,customDestinationAggregateIds:Set[String]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.PersistOnEvent#persistOnEvent">persistOnEvent</a> method.
 </p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="PersistOnEvent.html" class="extype" name="com.rbmhtechnology.eventuate.PersistOnEvent">PersistOnEvent</a></p></span><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessingResultTooLargeException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="EventsourcedProcessingResultTooLargeExceptionextendsRuntimeException"></a>
-      <a id="EventsourcedProcessingResultTooLargeException:EventsourcedProcessingResultTooLargeException"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">class</span>
-      </span>
-      <span class="symbol">
-        <a href="EventsourcedProcessingResultTooLargeException.html"><span class="name">EventsourcedProcessingResultTooLargeException</span></a><span class="result"> extends <span class="extype" name="scala.RuntimeException">RuntimeException</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.package@EventsourcedProcessingResultTooLargeExceptionextendsRuntimeException" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Thrown if the processing result of a single event is larger than the configured <code>eventuate.log.write-batch-size</code>.</p>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EventsourcedProcessorextendsEventsourcedWriter[Long,Long]withActorLogging"></a>
       <a id="EventsourcedProcessor:EventsourcedProcessor"></a>

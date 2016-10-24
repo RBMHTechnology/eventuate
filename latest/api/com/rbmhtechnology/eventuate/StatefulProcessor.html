@@ -1360,9 +1360,9 @@ less than or equal to <code>eventuate.log.write-batch-size</code> will be writte
 splitting into multiple batches it is guaranteed that the processing result of a single event
 is part of the same batch i.e. it is guaranteed that the processing result of a single event
 is written atomically. If the processing result of a single event is larger than
-<code>eventuate.log.write-batch-size</code>, <code>write</code> fails with a <a href="EventsourcedProcessingResultTooLargeException.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessingResultTooLargeException">EventsourcedProcessingResultTooLargeException</a>.
+<code>eventuate.log.write-batch-size</code>, <code>write</code> write does not split that batch into smaller batches.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#writeFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriter#writeFailure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="writeFailure(cause:Throwable):Unit"></a>
       <a id="writeFailure(Throwable):Unit"></a>
       <h4 class="signature">
@@ -1378,10 +1378,9 @@ is written atomically. If the processing result of a single event is larger than
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Stops the processor if called with a <a href="EventsourcedProcessingResultTooLargeException.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessingResultTooLargeException">EventsourcedProcessingResultTooLargeException</a>
-otherwise delegates to <code>super</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Stops the processor if called with a <a href="EventsourcedProcessingResultTooLargeException.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessingResultTooLargeException">EventsourcedProcessingResultTooLargeException</a>
-otherwise delegates to <code>super</code>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a> → <a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
+      <p class="shortcomment cmt">Called with failure details after a <code>write</code> operation failed.</p><div class="fullcomment"><div class="comment cmt"><p>Called with failure details after a <code>write</code> operation failed. Throws <a href="EventsourcedWriter$$WriteException.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter.WriteException">EventsourcedWriter#WriteException</a>
+by default (causing the writer to restart) and can be overridden.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedProcessor#writeSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="writeSuccess(progress:Long):Unit"></a>
       <a id="writeSuccess(Long):Unit"></a>
