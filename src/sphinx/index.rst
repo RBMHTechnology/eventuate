@@ -37,4 +37,3 @@ Table of contents
    project
    faq
    example-application
-   current-limitations

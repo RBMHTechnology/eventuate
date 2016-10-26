@@ -4,6 +4,9 @@
 Example application
 -------------------
 
+.. hint::
+   The example application is rather outdated and we plan to design and implement a better one to demonstrate the latest Eventuate features and best practices. If you have any preferences what you'd like to see in a new example application, please add a comment to ticket `#337`_ or contact us in the forum_.
+
 The example application is an over-simplified order management application that allows users to add and remove items from orders via a command-line interface. Order instances are replicated across locations and can be updated at any location. Orders remain writeable during partitions and conflicting updates can be resolved interactively when the partition heals. The example application source code is available as `Scala version`_ and as `Java 8 version`_.
 
 .. note::
@@ -48,7 +51,7 @@ Each location of the example application has a simple command-line interface to 
 - ``cancel <order-id>`` cancels an order.
 - ``save <order-id>`` saves a snapshot of an order.
 
-If there’s a conflict from a concurrent update, the conflict must be resolved by selecting one of the conflicting versions:
+If there’s a conflict from a concurrent update, the conflict must be resolved by selecting one of the conflicting versions\ [#]_:
 
 - ``resolve <order-id> <index>`` resolves a conflict by selecting a version ``index``. Only the location that initially created the order can resolve the conflict\ [#]_.
 
@@ -118,6 +121,7 @@ Recovery may take up to 20 seconds when using the default :ref:`configuration` s
 
 Disaster recovery can also start from a previous, older backup of the LevelDB directory. After having removed the current LevelDB directory, install the backup and try running disaster recovery again.
 
+.. [#] Merging the content of conflicting versions is another option which will be supported in a later release (see `#101`_). 
 .. [#] This is a static rule for distributed agreement which doesn’t require coordination among locations.
 
 .. _sbt: http://www.scala-sbt.org/
@@ -127,5 +131,8 @@ Disaster recovery can also start from a previous, older backup of the LevelDB di
 .. _activator: https://www.typesafe.com/community/core-tools/activator-and-sbt
 .. _akka-eventuate-scala: https://www.typesafe.com/activator/template/akka-eventuate-scala
 
-.. _shopping cart CRDT: latest/api/index.html#com.rbmhtechnology.eventuate.crdt.ORCartService
 
+.. _shopping cart CRDT: latest/api/index.html#com.rbmhtechnology.eventuate.crdt.ORCartService
+.. _#337: https://github.com/RBMHTechnology/eventuate/issues/337
+.. _#101: https://github.com/RBMHTechnology/eventuate/issues/101
+.. _forum: https://gitter.im/RBMHTechnology/eventuate
