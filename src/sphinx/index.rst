@@ -31,6 +31,7 @@ Table of contents
    user-guide
    reference
    adapters
+   api-docs
    resources
    download
    developers
