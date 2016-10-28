@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Resources &mdash; Eventuate</title>
+  <title>Adapters &mdash; Eventuate</title>
   
 
   
@@ -37,8 +37,8 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Eventuate" href="index.html"/>
-        <link rel="next" title="Download" href="download.html"/>
-        <link rel="prev" title="API docs" href="api-docs.html"/> 
+        <link rel="next" title="Akka Streams adapter" href="adapters/stream.html"/>
+        <link rel="prev" title="Configuration" href="reference/configuration.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -130,16 +130,16 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Adapters</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="adapters/stream.html">Akka Streams adapter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="adapters/spark.html">Spark adapter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html">Vert.x adapter</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api-docs.html">API docs</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Resources</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#articles">Articles</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#presentations">Presentations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="resources.html#articles">Articles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resources.html#presentations">Presentations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="download.html">Download</a><ul>
@@ -195,7 +195,7 @@
 		<a href="index.html"><h2><span class="breadcrumbicon rbicons topfront"><i class="fa fa-calendar"></i></span>Eventuate</h2></a> &raquo;
 	</li>
     
-    <li>Resources</li>
+    <li>Adapters</li>
       <li class="wy-breadcrumbs-aside">
         
       </li>
@@ -204,20 +204,37 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="resources">
-<span id="id1"></span><h1>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="articles">
-<span id="id2"></span><h2>Articles<a class="headerlink" href="#articles" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>2016-10-19: <a class="reference external" href="http://krasserm.github.io/2016/10/19/operation-based-crdt-framework/">A service framework for operation-based CRDTs</a></li>
-<li>2015-05-25: <a class="reference external" href="https://krasserm.github.io/2015/05/25/akka-persistence-eventuate-comparison/">A comparison of Akka Persistence with Eventuate</a></li>
-<li>2015-01-13: <a class="reference external" href="https://krasserm.github.io/2015/01/13/event-sourcing-at-global-scale/">Event sourcing at global scale</a></li>
+  <div class="section" id="adapters">
+<span id="id1"></span><h1>Adapters<a class="headerlink" href="#adapters" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="adapters/stream.html">Akka Streams adapter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adapters/stream.html#event-source">Event source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/stream.html#event-writer">Event writer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/stream.html#event-processor">Event processor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="adapters/stream.html#consuming-from-a-shared-source">Consuming from a shared source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="adapters/stream.html#consuming-from-a-multiple-sources">Consuming from a multiple sources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="adapters/stream.html#event-processing-progress-tracking">Event processing progress tracking</a></li>
 </ul>
-</div>
-<div class="section" id="presentations">
-<span id="id3"></span><h2>Presentations<a class="headerlink" href="#presentations" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>2015-11-05 <a class="reference external" href="http://www.slideshare.net/mrt1nz/akka-persistence-and-eventuate">Akka Persistence and Eventuate - A CQRS/ES tool comparison</a></li>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="adapters/spark.html">Spark adapter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adapters/spark.html#batch-processing">Batch processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/spark.html#stream-processing">Stream processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="adapters/vertx.html">Vert.x adapter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html#event-producers">Event producers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html#event-processing">Event processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html#adapter-usage">Adapter usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html#vert-x-publish-event-producer">Vert.x publish event producer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html#vert-x-point-to-point-event-producer">Vert.x point-to-point event producer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html#log-event-producer">Log event producer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html#message-codecs">Message codecs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html#event-metadata">Event metadata</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -227,10 +244,10 @@
 		    
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="download.html" class="float-right" title="Download">Next</a>
+        <a href="adapters/stream.html" class="float-right" title="Akka Streams adapter">Next</a>
       
       
-        <a href="api-docs.html" title="API docs">Previous</a>
+        <a href="reference/configuration.html" title="Configuration">Previous</a>
       
     </div>
   

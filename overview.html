@@ -112,7 +112,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference/api-docs.html">API docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
@@ -128,10 +127,16 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adapters/stream.html">Akka Streams adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/spark.html">Spark adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html">Vert.x adapter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-docs.html">API docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="resources.html#articles">Articles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="resources.html#presentations">Presentations</a></li>
@@ -165,7 +170,6 @@
 <li class="toctree-l2"><a class="reference internal" href="example-application.html#disaster-recovery">Disaster recovery</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="current-limitations.html">Current limitations</a></li>
 </ul>
 
           
@@ -251,7 +255,7 @@
 </div>
 <div class="section" id="stream-processing-adapters">
 <span id="overview-stream-processing-adapters"></span><h2>Stream processing adapters<a class="headerlink" href="#stream-processing-adapters" title="Permalink to this headline">¶</a></h2>
-<p>Although Eventuate can be used to build distributed stream processing applications, it doesn’t aim to compete with existing, more elaborate stream processing frameworks such as <a class="reference external" href="http://spark.apache.org/streaming/">Spark Streaming</a>, <a class="reference external" href="http://flink.apache.org/">Apache Flink</a> or <a class="reference external" href="http://doc.akka.io/docs/akka/2.4/scala/stream/index.html">Akka Streams</a>, for example. Eventuate rather provides <a class="reference internal" href="reference/adapters.html#adapters"><span class="std std-ref">Adapters</span></a> to these frameworks so that events produced by Eventuate applications can be further analyzed there and results written back to Eventuate event logs.</p>
+<p>Although Eventuate can be used to build distributed stream processing applications, it doesn’t aim to compete with existing, more elaborate stream processing frameworks such as <a class="reference external" href="http://spark.apache.org/streaming/">Spark Streaming</a> or <a class="reference external" href="http://doc.akka.io/docs/akka/2.4/scala/stream/index.html">Akka Streams</a>, for example. Eventuate rather provides <a class="reference internal" href="adapters.html#adapters"><span class="std std-ref">Adapters</span></a> to these frameworks so that events produced by Eventuate applications can be further analyzed there and results written back to Eventuate event logs.</p>
 </div>
 <div class="section" id="related-projects">
 <h2>Related projects<a class="headerlink" href="#related-projects" title="Permalink to this headline">¶</a></h2>

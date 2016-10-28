@@ -112,7 +112,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference/api-docs.html">API docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
@@ -128,10 +127,16 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adapters/stream.html">Akka Streams adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/spark.html">Spark adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html">Vert.x adapter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-docs.html">API docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="resources.html#articles">Articles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="resources.html#presentations">Presentations</a></li>
@@ -165,7 +170,6 @@
 <li class="toctree-l2"><a class="reference internal" href="example-application.html#disaster-recovery">Disaster recovery</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="current-limitations.html">Current limitations</a></li>
 </ul>
 
           
@@ -227,14 +231,14 @@
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">eventuate-log-leveldb</span></code></td>
 <td>Provides the <a class="reference internal" href="reference/event-log.html#leveldb-storage-backend"><span class="std std-ref">LevelDB storage backend</span></a>.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">eventuate-adapter-spark</span></code></td>
-<td>Provides the <a class="reference internal" href="reference/adapters.html#spark-adapter"><span class="std std-ref">Spark adapter</span></a>.</td>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">eventuate-adapter-stream</span></code></td>
+<td>Provides the <a class="reference internal" href="adapters/stream.html#akka-streams-adapter"><span class="std std-ref">Akka Streams adapter</span></a>.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">eventuate-examples</span></code></td>
-<td>Provides <a class="reference internal" href="example-application.html#example-application"><span class="std std-ref">Example application</span></a> among others.</td>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">eventuate-adapter-spark</span></code></td>
+<td>Provides the <a class="reference internal" href="adapters/spark.html#spark-adapter"><span class="std std-ref">Spark adapter</span></a>.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">eventuate-example-spark</span></code></td>
-<td>Provides Spark adapter example applications.</td>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">eventuate-adapter-vertx</span></code></td>
+<td>Provides the <a class="reference internal" href="adapters/vertx.html#vertx-adapter"><span class="std std-ref">Vert.x adapter</span></a>.</td>
 </tr>
 </tbody>
 </table>
@@ -315,7 +319,19 @@
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">stream_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">-</span><span class="nc">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
+
+<span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">spark_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">-</span><span class="nc">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
+
+<span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">vertx_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">-</span><span class="nc">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 </pre></div>
@@ -346,7 +362,11 @@
 
 <span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-log-cassandra&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8-SNAPSHOT&quot;</span>
 
+<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-adapter-stream&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8-SNAPSHOT&quot;</span>
+
 <span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-adapter-spark&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8-SNAPSHOT&quot;</span>
+
+<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-adapter-vertx&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8-SNAPSHOT&quot;</span>
 </pre></div>
 </div>
 </div>

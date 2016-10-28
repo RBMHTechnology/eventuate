@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Adapters &mdash; Eventuate</title>
+  <title>Vert.x adapter &mdash; Eventuate</title>
   
 
   
@@ -37,9 +37,9 @@
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="Eventuate" href="../index.html"/>
-        <link rel="up" title="Reference" href="../reference.html"/>
-        <link rel="next" title="Configuration" href="configuration.html"/>
-        <link rel="prev" title="Event-sourced actors" href="event-sourcing.html"/> 
+        <link rel="up" title="Adapters" href="../adapters.html"/>
+        <link rel="next" title="API docs" href="../api-docs.html"/>
+        <link rel="prev" title="Spark adapter" href="spark.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -112,27 +112,32 @@
 <li class="toctree-l2"><a class="reference internal" href="../user-guide.html#event-driven-communication">Event-driven communication</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="../reference.html">Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="api-docs.html">API docs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-log.html">Event log</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html">Event-sourced actors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#event-sourced-writers">Event-sourced writers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#event-sourced-processors">Event-sourced processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#state-recovery">State recovery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#snapshots">Snapshots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#event-routing">Event routing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#event-driven-communication">Event-driven communication</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#conditional-requests">Conditional requests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#command-stashing">Command stashing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#behavior-changes">Behavior changes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#failure-handling">Failure handling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#custom-serialization">Custom serialization</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Adapters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-log.html">Event log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-sourced-writers">Event-sourced writers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-sourced-processors">Event-sourced processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#state-recovery">State recovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#snapshots">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-routing">Event routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-driven-communication">Event-driven communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#conditional-requests">Conditional requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#command-stashing">Command stashing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#failure-handling">Failure handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/configuration.html">Configuration</a></li>
 </ul>
 </li>
+<li class="toctree-l1 current"><a class="reference internal" href="../adapters.html">Adapters</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="stream.html">Akka Streams adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spark.html">Spark adapter</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Vert.x adapter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api-docs.html">API docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../resources.html#articles">Articles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../resources.html#presentations">Presentations</a></li>
@@ -166,7 +171,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../example-application.html#disaster-recovery">Disaster recovery</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../current-limitations.html">Current limitations</a></li>
 </ul>
 
           
@@ -192,9 +196,9 @@
 		<a href="../index.html"><h2><span class="breadcrumbicon rbicons topfront"><i class="fa fa-calendar"></i></span>Eventuate</h2></a> &raquo;
 	</li>
     
-    <li><a href="../reference.html">Reference</a> &raquo;</li>
+    <li><a href="../adapters.html">Adapters</a> &raquo;</li>
     
-    <li>Adapters</li>
+    <li>Vert.x adapter</li>
       <li class="wy-breadcrumbs-aside">
         
       </li>
@@ -203,130 +207,12 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="adapters">
-<span id="id1"></span><h1>Adapters<a class="headerlink" href="#adapters" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="spark-adapter">
-<span id="id2"></span><h2>Spark adapter<a class="headerlink" href="#spark-adapter" title="Permalink to this headline">¶</a></h2>
-<p>The Eventuate Spark adapter allows applications to consume events from event logs and to process them in <a class="reference external" href="http://spark.apache.org/">Apache Spark</a>. Writing processed events back to event logs is not possible yet but will be supported in future versions.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">The Spark adapter is experimental. Its feature set and API is likely to change based on user feedback.</p>
-</div>
-<div class="section" id="batch-processing">
-<h3>Batch processing<a class="headerlink" href="#batch-processing" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkBatchAdapter">SparkBatchAdapter</a> supports event batch processing from event logs with a <a class="reference internal" href="event-log.html#cassandra-storage-backend"><span class="std std-ref">Cassandra storage backend</span></a>. The batch adapter internally uses the <a class="reference external" href="https://github.com/datastax/spark-cassandra-connector">Spark Cassandra Connector</a> for exposing an event log as <a class="reference external" href="http://spark.apache.org/docs/latest/programming-guide.html#resilient-distributed-datasets-rdds">Spark RDD</a> of <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">akka.actor.ActorSystem</span>
-
-<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.DurableEvent</span>
-<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.spark.SparkBatchAdapter</span>
-
-<span class="k">import</span> <span class="nn">org.apache.spark.rdd.RDD</span>
-<span class="k">import</span> <span class="nn">org.apache.spark.</span><span class="o">{</span> <span class="nc">SparkConf</span><span class="o">,</span> <span class="nc">SparkContext</span> <span class="o">}</span>
-
-<span class="k">implicit</span> <span class="k">val</span> <span class="n">system</span> <span class="k">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;spark-example&quot;</span><span class="o">)</span>
-
-<span class="k">val</span> <span class="n">sparkConfig</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">SparkConf</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">&quot;spark.cassandra.connection.host&quot;</span><span class="o">,</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">&quot;spark.cassandra.connection.port&quot;</span><span class="o">,</span> <span class="s">&quot;9042&quot;</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">&quot;spark.cassandra.auth.username&quot;</span><span class="o">,</span> <span class="s">&quot;cassandra&quot;</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">&quot;spark.cassandra.auth.password&quot;</span><span class="o">,</span> <span class="s">&quot;cassandra&quot;</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">setAppName</span><span class="o">(</span><span class="s">&quot;adapter&quot;</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">setMaster</span><span class="o">(</span><span class="s">&quot;local[4]&quot;</span><span class="o">)</span>
-
-<span class="k">val</span> <span class="n">logId</span> <span class="k">=</span> <span class="s">&quot;example&quot;</span>
-<span class="k">val</span> <span class="n">sparkContext</span><span class="k">:</span> <span class="kt">SparkContext</span> <span class="o">=</span>
-  <span class="k">new</span> <span class="nc">SparkContext</span><span class="o">(</span><span class="n">sparkConfig</span><span class="o">)</span>
-
-<span class="c1">// Create an Eventuate Spark batch adapter</span>
-<span class="k">val</span> <span class="n">sparkBatchAdapter</span><span class="k">:</span> <span class="kt">SparkBatchAdapter</span> <span class="o">=</span>
-  <span class="k">new</span> <span class="nc">SparkBatchAdapter</span><span class="o">(</span><span class="n">sparkContext</span><span class="o">,</span> <span class="n">system</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">config</span><span class="o">)</span>
-
-<span class="c1">// Expose all events of given event log as Spark RDD</span>
-<span class="k">val</span> <span class="n">events</span><span class="k">:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">DurableEvent</span><span class="o">]</span> <span class="k">=</span>
-  <span class="n">sparkBatchAdapter</span><span class="o">.</span><span class="n">eventBatch</span><span class="o">(</span><span class="n">logId</span><span class="o">)</span>
-
-<span class="c1">// Expose events of given event log as Spark RDD, starting at sequence number 3</span>
-<span class="k">val</span> <span class="n">eventsFrom</span><span class="k">:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">DurableEvent</span><span class="o">]</span> <span class="k">=</span>
-  <span class="n">sparkBatchAdapter</span><span class="o">.</span><span class="n">eventBatch</span><span class="o">(</span><span class="n">logId</span><span class="o">,</span> <span class="n">fromSequenceNr</span> <span class="k">=</span> <span class="mi">3L</span><span class="o">)</span>
-</pre></div>
-</div>
-<p>A <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkBatchAdapter">SparkBatchAdapter</a> is instantiated with a <code class="docutils literal"><span class="pre">SparkContext</span></code>, configured for connecting to a Cassandra storage backend, and a <a class="reference internal" href="event-sourcing.html#event-serialization"><span class="std std-ref">Custom event serialization</span></a> configuration (if any). The <code class="docutils literal"><span class="pre">eventBatch</span></code> method exposes an event log with given <code class="docutils literal"><span class="pre">logId</span></code> as <code class="docutils literal"><span class="pre">RDD[DurableEvent]</span></code>, optionally starting from a custom sequence number.</p>
-<p>Event logs can span several partitions in a Cassandra cluster and the batch adapter reads from these partitions concurrently. Hence, events in the resulting RDD are ordered per partition. Applications that require a total order by <code class="docutils literal"><span class="pre">localSequenceNr</span></code> can sort the resulting RDD:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="c1">// By default, events are sorted by sequence number *per partition*.</span>
-<span class="c1">// Use .sortBy(_.localSequenceNr) to create a totally ordered RDD.</span>
-<span class="k">val</span> <span class="n">eventsSorted</span><span class="k">:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">DurableEvent</span><span class="o">]</span> <span class="k">=</span> <span class="n">events</span><span class="o">.</span><span class="n">sortBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">localSequenceNr</span><span class="o">)</span>
-</pre></div>
-</div>
-<p>Exposing <a class="reference external" href="http://spark.apache.org/docs/latest/sql-programming-guide.html#dataframes">Spark DataFrames</a> directly is not possible yet but will be supported in future versions. In the meantime, applications should convert RDDs to DataFrames or Datasets as shown in the following example:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">org.apache.spark.sql.</span><span class="o">{</span> <span class="nc">Dataset</span><span class="o">,</span> <span class="nc">DataFrame</span><span class="o">,</span> <span class="nc">SQLContext</span> <span class="o">}</span>
-
-<span class="k">case</span> <span class="k">class</span> <span class="nc">DomainEvent</span><span class="o">(</span><span class="n">sequenceNr</span><span class="k">:</span> <span class="kt">Long</span><span class="o">,</span> <span class="n">payload</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
-
-<span class="k">val</span> <span class="n">sqlContext</span><span class="k">:</span> <span class="kt">SQLContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SQLContext</span><span class="o">(</span><span class="n">sparkContext</span><span class="o">)</span>
-<span class="k">import</span> <span class="nn">sqlContext.implicits._</span>
-
-<span class="c1">// Create a DataFrame from RDD[DurableEvent]</span>
-<span class="k">val</span> <span class="n">eventsDF</span><span class="k">:</span> <span class="kt">DataFrame</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">event</span> <span class="k">=&gt;</span>
-  <span class="nc">DomainEvent</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="n">localSequenceNr</span><span class="o">,</span> <span class="n">event</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">toString</span><span class="o">)).</span><span class="n">toDF</span><span class="o">()</span>
-
-<span class="c1">// Create a Dataset from RDD[DurableEvent]</span>
-<span class="k">val</span> <span class="n">eventDS</span><span class="k">:</span> <span class="kt">Dataset</span><span class="o">[</span><span class="kt">DomainEvent</span><span class="o">]</span> <span class="k">=</span> <span class="n">events</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">event</span> <span class="k">=&gt;</span>
-  <span class="nc">DomainEvent</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="n">localSequenceNr</span><span class="o">,</span> <span class="n">event</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">toString</span><span class="o">)).</span><span class="n">toDS</span><span class="o">()</span>
-</pre></div>
-</div>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">The full example source code is in <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-spark/src/main/scala/com/rbmhtechnology/example/spark/SparkBatchAdapterExample.scala">SparkBatchAdapterExample.scala</a></p>
-</div>
-</div>
-<div class="section" id="stream-processing">
-<h3>Stream processing<a class="headerlink" href="#stream-processing" title="Permalink to this headline">¶</a></h3>
-<p><a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkStreamAdapter">SparkStreamAdapter</a> supports event stream processing from event logs with any storage backend. The stream adapter connects to the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a><a class="footnote-reference" href="#replicationep" id="id3">[1]</a> of an event log for exposing it as <a class="reference external" href="http://spark.apache.org/docs/latest/streaming-programming-guide.html#discretized-streams-dstreams">Spark DStream</a> of <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate._</span>
-<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.spark.SparkStreamAdapter</span>
-
-<span class="k">import</span> <span class="nn">org.apache.spark._</span>
-<span class="k">import</span> <span class="nn">org.apache.spark.storage.StorageLevel</span>
-<span class="k">import</span> <span class="nn">org.apache.spark.streaming._</span>
-<span class="k">import</span> <span class="nn">org.apache.spark.streaming.dstream.DStream</span>
-
-<span class="k">val</span> <span class="n">sparkConfig</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">SparkConf</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">setAppName</span><span class="o">(</span><span class="s">&quot;adapter&quot;</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">setMaster</span><span class="o">(</span><span class="s">&quot;local[4]&quot;</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">sparkContext</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">SparkContext</span><span class="o">(</span><span class="n">sparkConfig</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">sparkStreamingContext</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">StreamingContext</span><span class="o">(</span><span class="n">sparkContext</span><span class="o">,</span> <span class="nc">Seconds</span><span class="o">(</span><span class="mi">1</span><span class="o">))</span>
-
-<span class="c1">// Create an Eventuate Spark stream adapter</span>
-<span class="k">val</span> <span class="n">sparkStreamAdapter</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">SparkStreamAdapter</span><span class="o">(</span>
-  <span class="n">sparkStreamingContext</span><span class="o">,</span> <span class="n">system</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">config</span><span class="o">)</span>
-
-<span class="c1">// Create a DStream from event log L by connecting to its replication endpoint</span>
-<span class="k">val</span> <span class="n">stream</span><span class="k">:</span> <span class="kt">DStream</span><span class="o">[</span><span class="kt">DurableEvent</span><span class="o">]</span> <span class="k">=</span> <span class="n">sparkStreamAdapter</span><span class="o">.</span><span class="n">eventStream</span><span class="o">(</span>
-  <span class="n">id</span> <span class="k">=</span> <span class="s">&quot;s1&quot;</span><span class="o">,</span> <span class="n">host</span> <span class="k">=</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">2552</span><span class="o">,</span> <span class="n">logName</span> <span class="k">=</span> <span class="s">&quot;L&quot;</span><span class="o">,</span>
-  <span class="n">fromSequenceNr</span> <span class="k">=</span> <span class="mi">1L</span><span class="o">,</span> <span class="n">storageLevel</span> <span class="k">=</span> <span class="nc">StorageLevel</span><span class="o">.</span><span class="nc">MEMORY_ONLY</span><span class="o">)</span>
-
-<span class="c1">// For processing in strict event storage order, use repartition(1)</span>
-<span class="n">stream</span><span class="o">.</span><span class="n">repartition</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">foreachRDD</span><span class="o">(</span><span class="n">rdd</span> <span class="k">=&gt;</span> <span class="n">rdd</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">println</span><span class="o">))</span>
-
-<span class="c1">// Start event stream processing</span>
-<span class="n">sparkStreamingContext</span><span class="o">.</span><span class="n">start</span><span class="o">()</span>
-</pre></div>
-</div>
-<p>A <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkStreamAdapter">SparkStreamAdapter</a> is instantiated with a Spark <code class="docutils literal"><span class="pre">StreamingContext</span></code> and a <a class="reference internal" href="event-sourcing.html#event-serialization"><span class="std std-ref">Custom event serialization</span></a> configuration (if any). The <code class="docutils literal"><span class="pre">eventStream</span></code> method exposes an event log with given <code class="docutils literal"><span class="pre">logName</span></code> as <code class="docutils literal"><span class="pre">DStream[DurableEvent]</span></code>. The stream is updated by interacting with the event log&#8217;s replication endpoint at given <code class="docutils literal"><span class="pre">host</span></code> and <code class="docutils literal"><span class="pre">port</span></code>.</p>
-<p>The stream starts from the given <code class="docutils literal"><span class="pre">fromSequenceNr</span></code> and is updated with both, replayed events and newly written events. The storage level of events in Spark can be set with the <code class="docutils literal"><span class="pre">storageLevel</span></code> parameter. Applications that want to enforce event processing in strict event log storage order should repartition the stream with <code class="docutils literal"><span class="pre">.repartition(1)</span></code>, as shown in the example.</p>
-<p>For persisting the stream processing progress, an application should store the last processed sequence number at a custom place. When the application is restarted, the stored sequence number should be used as argument to the <code class="docutils literal"><span class="pre">eventStream</span></code> call. Later versions will additionally support internal storage of event processing progresses.</p>
-<div class="admonition hint">
-<p class="first admonition-title">Hint</p>
-<p class="last">The full example source code is in <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-spark/src/main/scala/com/rbmhtechnology/example/spark/SparkStreamAdapterExample.scala">SparkStreamAdapterExample.scala</a></p>
-</div>
-</div>
-</div>
-<div class="section" id="vert-x-adapter">
-<span id="vertx-adapter"></span><h2>Vert.x adapter<a class="headerlink" href="#vert-x-adapter" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="vert-x-adapter">
+<span id="vertx-adapter"></span><h1>Vert.x adapter<a class="headerlink" href="#vert-x-adapter" title="Permalink to this headline">¶</a></h1>
 <p>The Eventuate Vert.x adapter allows applications using a <a class="reference external" href="http://vertx.io/">Vert.x</a> instance to interact with event logs. Events can both be consumed from and produced to an event log by a Vert.x instance.</p>
 <p>Event exchange is performed over the Vert.x <a class="reference external" href="http://vertx.io/docs/vertx-core/java/#event_bus">event bus</a>. Events delivered to a Vert.x instance are either published to all subscribers or sent to a single subscriber on the event bus. Events received from a Vert.x instance are persisted to an event log by consuming events from a particular endpoint on the event bus.</p>
 <div class="section" id="event-producers">
-<h3>Event Producers<a class="headerlink" href="#event-producers" title="Permalink to this headline">¶</a></h3>
+<h2>Event producers<a class="headerlink" href="#event-producers" title="Permalink to this headline">¶</a></h2>
 <p>The Vert.x adapter exchanges events with a Vert.x instance by using so called <em>event producers</em>. An event producer consumes events from a given source and produces the same events to a specified destination. Both sources and destinations can either be an event bus endpoint or an even log.</p>
 <p>The Vert.x adapter supports two kinds of event producers:</p>
 <ul class="simple">
@@ -365,7 +251,7 @@
 </pre></div>
 </div>
 </div>
-<p>An event log must be supplied as an <code class="docutils literal"><span class="pre">ActorRef</span></code> which is usually obtained from a <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a><a class="footnote-reference" href="#replicationep" id="id4">[1]</a>. Event producers are implementation-agnostic in respect to event logs - any event log implementation may be used in combination with a producer.</p>
+<p>An event log must be supplied as an <code class="docutils literal"><span class="pre">ActorRef</span></code> which is usually obtained from a <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a><a class="footnote-reference" href="#id2" id="id1">[1]</a>. Event producers are implementation-agnostic in respect to event logs - any event log implementation may be used in combination with a producer.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The id of a producer must be unique and should be stable over time. It is used as the primary key to store meta information about the producer.</p>
@@ -376,7 +262,7 @@
 </div>
 </div>
 <div class="section" id="event-processing">
-<h3>Event processing<a class="headerlink" href="#event-processing" title="Permalink to this headline">¶</a></h3>
+<h2>Event processing<a class="headerlink" href="#event-processing" title="Permalink to this headline">¶</a></h2>
 <p>Applications process events sent from Vert.x producers by registering event bus handlers at the configured endpoints on the event bus. An event bus endpoint is a simple address represented as a <code class="docutils literal"><span class="pre">String</span></code>, which can follow any addressing scheme. Vert.x producers deliver events on the event bus as instances of an event bus <a class="reference external" href="http://vertx.io/docs/apidocs/io/vertx/core/eventbus/Message.html">message</a>. Event bus handlers access the underlying event by obtaining the body of a message.</p>
 <div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">consumer</span><span class="o">[</span><span class="kt">Event</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="n">handler</span><span class="o">(</span><span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">]]</span> <span class="o">{</span>
@@ -407,7 +293,7 @@
 </div>
 </div>
 <div class="section" id="adapter-usage">
-<h3>Adapter Usage<a class="headerlink" href="#adapter-usage" title="Permalink to this headline">¶</a></h3>
+<h2>Adapter usage<a class="headerlink" href="#adapter-usage" title="Permalink to this headline">¶</a></h2>
 <p>Event producers are managed by a <code class="docutils literal"><span class="pre">VertxAdapter</span></code>. Applications can connect to multiple event logs by instantiating event producers and supplying them to the <code class="docutils literal"><span class="pre">VertxAdapterConfig</span></code>.</p>
 <p>The <code class="docutils literal"><span class="pre">VertxAdatperConfig</span></code> is passed to the <code class="docutils literal"><span class="pre">VertxAdapter</span></code> together with an <code class="docutils literal"><span class="pre">ActorSystem</span></code> and the <code class="docutils literal"><span class="pre">Vert.x</span></code> instance the adapter will connect to. The adapter is also supplied with a <code class="docutils literal"><span class="pre">StorageProvider</span></code> which is used to persist the read progress of the individual event producers.</p>
 <p>Applications invoke the <code class="docutils literal"><span class="pre">start</span></code> method of the system to initialize the registered event producers and start event exchange with the <code class="docutils literal"><span class="pre">Vert.x</span></code> instance.</p>
@@ -513,7 +399,7 @@
 <p>The following sections contain a detailed description of the different kinds of event producers.</p>
 </div>
 <div class="section" id="vert-x-publish-event-producer">
-<h3>Vert.x Publish Event Producer<a class="headerlink" href="#vert-x-publish-event-producer" title="Permalink to this headline">¶</a></h3>
+<h2>Vert.x publish event producer<a class="headerlink" href="#vert-x-publish-event-producer" title="Permalink to this headline">¶</a></h2>
 <p>A <em>Publish Event Producer</em> publishes events from an event log to <em>multiple</em> subscribers on the event bus. Events are delivered to specific endpoints defined in the configuration of the producer. A producer can route events to different event bus endpoints based on the content of the event. Event routing is enabled by supplying a partial function which maps events to event bus endpoints. If the partial function is not defined at the event, the event will not be processed.</p>
 <div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
@@ -557,7 +443,7 @@
 <p>Read progress from the source event log is tracked by persisting the <code class="docutils literal"><span class="pre">localSequenceNr</span></code> of the latest sent event to the <code class="docutils literal"><span class="pre">StorageProvider</span></code> supplied to the <code class="docutils literal"><span class="pre">VertxAdapter</span></code>. After publishing one or multiple events the read progress is persisted. The producer continues publishing events from the latest known <code class="docutils literal"><span class="pre">localSequenceNr</span></code> once the it is started.</p>
 </div>
 <div class="section" id="vert-x-point-to-point-event-producer">
-<h3>Vert.x Point-to-Point Event Producer<a class="headerlink" href="#vert-x-point-to-point-event-producer" title="Permalink to this headline">¶</a></h3>
+<h2>Vert.x point-to-point event producer<a class="headerlink" href="#vert-x-point-to-point-event-producer" title="Permalink to this headline">¶</a></h2>
 <p>A <em>Point-to-Point Event Producer</em> sends an event to a <em>single</em> subscriber on the event bus. If a single subscriber is registered for an endpoint all events are delivered to this subscriber. If multiple subscribers are registered for the same endpoint, events are delivered alternately to only one of those subscribers using a non-strict round-robin algorithm. Event routing can be enabled by supplying a partial function.</p>
 <div class="tabbed-code container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
@@ -627,7 +513,7 @@ Using batch confirmations, events are delivered in batches where the next batch 
 </ul>
 </div>
 <div class="section" id="log-event-producer">
-<h3>Log Event Producer<a class="headerlink" href="#log-event-producer" title="Permalink to this headline">¶</a></h3>
+<h2>Log event producer<a class="headerlink" href="#log-event-producer" title="Permalink to this headline">¶</a></h2>
 <p>A <em>Log Event Producer</em> consumes events from multiple event bus endpoints and persists these events to a single event log. Every persisted event creates a write confirmation which is returned to the sender of the event, containing the result of the write operation.</p>
 <p>Log event producers can be configured with an optional event filter. This filter is applied to events sent to the producer.</p>
 <div class="tabbed-code container">
@@ -686,7 +572,7 @@ Using batch confirmations, events are delivered in batches where the next batch 
 </div>
 </div>
 <div class="section" id="message-codecs">
-<h3>Message Codecs<a class="headerlink" href="#message-codecs" title="Permalink to this headline">¶</a></h3>
+<h2>Message codecs<a class="headerlink" href="#message-codecs" title="Permalink to this headline">¶</a></h2>
 <p>All messages transmitted over the event bus must provide a Vert.x <a class="reference external" href="http://vertx.io/docs/apidocs/io/vertx/core/eventbus/MessageCodec.html">message codec</a>. The event bus uses this message codec to serialize and deserialize the body of an event bus message.</p>
 <p>Events sent or received by the Vert.x adapter may not have an instance of a <code class="docutils literal"><span class="pre">MessageCodec</span></code> defined, since they usually originate from an external system. To ease the integration of external events into a Vert.x application, the adapter offers a generic message codec for types serializable by the <code class="docutils literal"><span class="pre">ActorSystem</span></code> provided to the <code class="docutils literal"><span class="pre">VertxAdapter</span></code>. All events persisted to an event log are serializable by the <code class="docutils literal"><span class="pre">ActorSystem</span></code>, hence the generic message codec can be used for those objects.</p>
 <p>The generic <code class="docutils literal"><span class="pre">MessageCodec</span></code> is applied for an object type by registering the type with the <code class="docutils literal"><span class="pre">VertxAdapterConfig</span></code>.</p>
@@ -707,7 +593,7 @@ Using batch confirmations, events are delivered in batches where the next batch 
 </div>
 </div>
 <div class="section" id="event-metadata">
-<h3>Event Metadata<a class="headerlink" href="#event-metadata" title="Permalink to this headline">¶</a></h3>
+<h2>Event metadata<a class="headerlink" href="#event-metadata" title="Permalink to this headline">¶</a></h2>
 <p>Applications can access the metadata of an event by querying the <a class="reference external" href="http://vertx.io/docs/apidocs/io/vertx/core/eventbus/Message.html#headers--">headers</a> of an event bus message. The following metadata is available for each event:</p>
 <ul class="simple">
 <li>the <em>local log id</em> of the event,</li>
@@ -764,13 +650,12 @@ An <code class="docutils literal"><span class="pre">EventMetadata</span></code> 
 <p class="first admonition-title">Hint</p>
 <p class="last">A detailed example can be found in <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-vertx/src/main/scala/com/rbmhtechnology/example/vertx/VertxAdapterExample.scala">VertxAdapterExample.scala</a> or <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-vertx/src/main/java/com/rbmhtechnology/example/vertx/japi/VertxAdapterExample.java">VertxAdapterExample.java</a>.</p>
 </div>
-<table class="docutils footnote" frame="void" id="replicationep" rules="none">
+<table class="docutils footnote" frame="void" id="id2" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id4">2</a>)</em> See also <a class="reference internal" href="event-log.html#replication-endpoints"><span class="std std-ref">Replication endpoints</span></a> in the reference documentation.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>See also <a class="reference internal" href="../reference/event-log.html#replication-endpoints"><span class="std std-ref">Replication endpoints</span></a> in the reference documentation.</td></tr>
 </tbody>
 </table>
-</div>
 </div>
 </div>
 
@@ -779,10 +664,10 @@ An <code class="docutils literal"><span class="pre">EventMetadata</span></code> 
 		    
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="configuration.html" class="float-right" title="Configuration">Next</a>
+        <a href="../api-docs.html" class="float-right" title="API docs">Next</a>
       
       
-        <a href="event-sourcing.html" title="Event-sourced actors">Previous</a>
+        <a href="spark.html" title="Spark adapter">Previous</a>
       
     </div>
   

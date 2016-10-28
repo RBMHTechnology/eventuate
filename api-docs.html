@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Current limitations &mdash; Eventuate</title>
+  <title>API docs &mdash; Eventuate</title>
   
 
   
@@ -37,7 +37,8 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Eventuate" href="index.html"/>
-        <link rel="prev" title="Example application" href="example-application.html"/> 
+        <link rel="next" title="Resources" href="resources.html"/>
+        <link rel="prev" title="Vert.x adapter" href="adapters/vertx.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -111,7 +112,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference/api-docs.html">API docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
@@ -127,10 +127,16 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adapters/stream.html">Akka Streams adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/spark.html">Spark adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html">Vert.x adapter</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="resources.html#articles">Articles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="resources.html#presentations">Presentations</a></li>
@@ -164,7 +170,6 @@
 <li class="toctree-l2"><a class="reference internal" href="example-application.html#disaster-recovery">Disaster recovery</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Current limitations</a></li>
 </ul>
 
           
@@ -190,7 +195,7 @@
 		<a href="index.html"><h2><span class="breadcrumbicon rbicons topfront"><i class="fa fa-calendar"></i></span>Eventuate</h2></a> &raquo;
 	</li>
     
-    <li>Current limitations</li>
+    <li>API docs</li>
       <li class="wy-breadcrumbs-aside">
         
       </li>
@@ -199,13 +204,11 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="current-limitations">
-<span id="id1"></span><h1>Current limitations<a class="headerlink" href="#current-limitations" title="Permalink to this headline">¶</a></h1>
-<p>The following is a list of known limitations that are going to be addressed in future versions. If some of these limitations are particularly painful to you, please <a class="reference external" href="https://gitter.im/RBMHTechnology/eventuate">let us know</a> so that we can target them accordingly.</p>
+  <div class="section" id="api-docs">
+<h1>API docs<a class="headerlink" href="#api-docs" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li>Replication network topologies must be statically defined at the moment. Dynamic changes, such as adding new locations or changing the replication network topology at runtime, will be supported in future versions. We also think about an integration with <a class="reference external" href="http://doc.akka.io/docs/akka/2.4/scala/cluster-usage.html">Akka Cluster</a>.</li>
-<li><a class="reference internal" href="reference/event-sourcing.html#snapshots"><span class="std std-ref">Snapshots</span></a> are written to the local filesystem at the moment. Applications that need to share snapshots across nodes should consider storing them on NFS or replicate them with <code class="docutils literal"><span class="pre">rsync</span></code>, for example.</li>
-<li>No performance optimizations have been made yet.</li>
+<li><a class="reference external" href="latest/api/index.html">Scala API</a></li>
+<li>Java API</li>
 </ul>
 </div>
 
@@ -214,8 +217,10 @@
 		    
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="resources.html" class="float-right" title="Resources">Next</a>
       
-        <a href="example-application.html" title="Example application">Previous</a>
+      
+        <a href="adapters/vertx.html" title="Vert.x adapter">Previous</a>
       
     </div>
   

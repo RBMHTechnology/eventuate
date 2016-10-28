@@ -1,0 +1,457 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Akka Streams adapter &mdash; Eventuate</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/tabbedcode.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Eventuate" href="../index.html"/>
+        <link rel="up" title="Adapters" href="../adapters.html"/>
+        <link rel="next" title="Spark adapter" href="spark.html"/>
+        <link rel="prev" title="Adapters" href="../adapters.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  
+	<script src="//fonts.redbullmediahouse.com/snv5vzo.js"></script>
+	<script>try{Typekit.load();}catch(e){}</script>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          
+          <a href="../index.html"><img src="../_static/RedBullMediaHouse-dark.png" class="logo" /></a>
+        
+        
+		
+<div role="search" class="searchbox">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Eventuate" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+	
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#event-sourcing">Event sourcing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#event-collaboration">Event collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#event-log">Event log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#event-bus">Event bus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#event-ordering-and-consistency">Event ordering and consistency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#operation-based-crdts">Operation-based CRDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#stream-processing-adapters">Stream processing adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#related-projects">Related projects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-logs">Event logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-sourcing">Event sourcing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-collaboration">Event collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#operation-based-crdts">Operation-based CRDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#vector-clocks">Vector clocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#batching">Batching</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#event-sourced-actors">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#detecting-concurrent-updates">Detecting concurrent updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#tracking-conflicting-versions">Tracking conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#resolving-conflicting-versions">Resolving conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#operation-based-crdts">Operation-based CRDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#conditional-requests">Conditional requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#event-driven-communication">Event-driven communication</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-log.html">Event log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-sourced-writers">Event-sourced writers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-sourced-processors">Event-sourced processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#state-recovery">State recovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#snapshots">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-routing">Event routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-driven-communication">Event-driven communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#conditional-requests">Conditional requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#command-stashing">Command stashing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#failure-handling">Failure handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/configuration.html">Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../adapters.html">Adapters</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Akka Streams adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spark.html">Spark adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vertx.html">Vert.x adapter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api-docs.html">API docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../resources.html#articles">Articles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../resources.html#presentations">Presentations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../download.html">Download</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../download.html#binaries">Binaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../download.html#sources">Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../developers.html#contributing-to-eventuate">Contributing to Eventuate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers.html#building-eventuate">Building Eventuate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../project.html">Project</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../project.html#community">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../project.html#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#how-does-akka-persistence-compare-to-eventuate">How does Akka Persistence compare to Eventuate?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#how-can-apache-kafka-be-integrated-with-eventuate">How can Apache Kafka be integrated with Eventuate?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../example-application.html">Example application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#domain">Domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#replication">Replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#interface">Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#running">Running</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#disaster-recovery">Disaster recovery</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html"><img src="../_static/RedBullMediaHouse-light.png" class="logo" /></a>
+      </nav>
+ 
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li>
+		<a href="../index.html"><h2><span class="breadcrumbicon rbicons topfront"><i class="fa fa-calendar"></i></span>Eventuate</h2></a> &raquo;
+	</li>
+    
+    <li><a href="../adapters.html">Adapters</a> &raquo;</li>
+    
+    <li>Akka Streams adapter</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="akka-streams-adapter">
+<span id="id1"></span><h1>Akka Streams adapter<a class="headerlink" href="#akka-streams-adapter" title="Permalink to this headline">¶</a></h1>
+<p>This adapter provides an <a class="reference external" href="http://doc.akka.io/docs/akka/2.4/scala/stream/index.html">Akka Streams</a> interface for Eventuate <a class="reference internal" href="../architecture.html#event-logs"><span class="std std-ref">Event logs</span></a>. It allows applications to consume event streams from event logs, write event streams to event logs, build idempotent event stream processing networks and exchange events with other systems that provide a <a class="reference external" href="http://www.reactive-streams.org/">Reactive Streams</a> API.</p>
+<p>The examples in the following subsections depend on the event log references <code class="docutils literal"><span class="pre">logA</span></code>, <code class="docutils literal"><span class="pre">logB</span></code> and <code class="docutils literal"><span class="pre">logC</span></code>. Here, they reference isolated <a class="reference internal" href="../reference/event-log.html#local-event-log"><span class="std std-ref">Local event log</span></a>s with a <a class="reference internal" href="../reference/event-log.html#leveldb-storage-backend"><span class="std std-ref">LevelDB storage backend</span></a>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">akka.actor.</span><span class="o">{</span> <span class="nc">ActorRef</span><span class="o">,</span> <span class="nc">ActorSystem</span> <span class="o">}</span>
+<span class="k">import</span> <span class="nn">akka.stream.</span><span class="o">{</span> <span class="nc">ActorMaterializer</span><span class="o">,</span> <span class="nc">Materializer</span> <span class="o">}</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog</span>
+
+<span class="k">implicit</span> <span class="k">val</span> <span class="n">system</span><span class="k">:</span> <span class="kt">ActorSystem</span> <span class="o">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;example&quot;</span><span class="o">)</span>
+<span class="k">implicit</span> <span class="k">val</span> <span class="n">materializer</span><span class="k">:</span> <span class="kt">Materializer</span> <span class="o">=</span> <span class="nc">ActorMaterializer</span><span class="o">()</span>
+
+<span class="k">val</span> <span class="n">logA</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="n">createLog</span><span class="o">(</span><span class="s">&quot;A&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">logB</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="n">createLog</span><span class="o">(</span><span class="s">&quot;B&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">logC</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="n">createLog</span><span class="o">(</span><span class="s">&quot;C&quot;</span><span class="o">)</span>
+
+<span class="k">def</span> <span class="n">createLog</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span>
+  <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">LeveldbEventLog</span><span class="o">.</span><span class="n">props</span><span class="o">(</span><span class="n">id</span><span class="o">))</span>
+</pre></div>
+</div>
+<p>We could also have used the local references of <a class="reference internal" href="../reference/event-log.html#replicated-event-log"><span class="std std-ref">Replicated event log</span></a>s but this had no influence on the examples. Obtaining the local references of replicated event logs is explained in section <a class="reference internal" href="../reference/event-log.html#replication-endpoints"><span class="std std-ref">Replication endpoints</span></a>.</p>
+<div class="section" id="event-source">
+<span id="id2"></span><h2>Event source<a class="headerlink" href="#event-source" title="Permalink to this headline">¶</a></h2>
+<p>An event source can be created with <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.stream.DurableEventSource$">DurableEventSource</a> from an event log reference. The result is a <code class="docutils literal"><span class="pre">Graph[SourceShape[DurableEvent],</span> <span class="pre">ActorRef]</span></code> which can be used with the Akka Streams <a class="reference external" href="http://doc.akka.io/api/akka/2.4/#akka.stream.scaladsl.package">Scala DSL</a> or <a class="reference external" href="http://doc.akka.io/api/akka/2.4/#akka.stream.javadsl.package">Java DSL</a>. Here, the Scala DSL is used to create a <code class="docutils literal"><span class="pre">Source[DurableEvent,</span> <span class="pre">ActorRef]</span></code> from <code class="docutils literal"><span class="pre">logA</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">akka.stream.scaladsl.Source</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.stream.DurableEventSource</span>
+
+<span class="k">val</span> <span class="n">source1</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromGraph</span><span class="o">(</span><span class="nc">DurableEventSource</span><span class="o">(</span><span class="n">logA</span><span class="o">))</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal"><span class="pre">DurableEventSource</span></code> does not only emit events that already exist in an event log but also those events that have been written to the event log after the source has been materialized. A <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a> contains the application-specific event (<code class="docutils literal"><span class="pre">payload</span></code> field) and its metadata (all other fields).</p>
+<p>To create a source that emits elements from a given sequence number and/or for a given aggregate id only, the parameters <code class="docutils literal"><span class="pre">fromSequenceNr</span></code> and <code class="docutils literal"><span class="pre">aggregateId</span></code> should be used, respectively. If <code class="docutils literal"><span class="pre">aggregateId</span></code> is <code class="docutils literal"><span class="pre">None</span></code> events with any aggregate id, defined or not, are emitted (see also <a class="reference internal" href="../reference/event-sourcing.html#event-routing"><span class="std std-ref">Event routing</span></a>).</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">source2</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromGraph</span><span class="o">(</span><span class="nc">DurableEventSource</span><span class="o">(</span><span class="n">logA</span><span class="o">,</span>
+  <span class="n">fromSequenceNr</span> <span class="k">=</span> <span class="mi">12414</span><span class="o">,</span> <span class="n">aggregateId</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;user-17&quot;</span><span class="o">)))</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">DurableEventSource</span></code> emits events in local storage order. Local storage order is consistent with the <em>potential causality</em> of events which is tracked with <a class="reference internal" href="../architecture.html#vector-clocks"><span class="std std-ref">Vector clocks</span></a>. Find more details in section <a class="reference internal" href="../architecture.html#event-logs"><span class="std std-ref">Event logs</span></a>. Emission in local storage order also means that the order is repeatable across source materializations.</p>
+</div>
+</div>
+<div class="section" id="event-writer">
+<span id="id3"></span><h2>Event writer<a class="headerlink" href="#event-writer" title="Permalink to this headline">¶</a></h2>
+<p>An event writer is a stream stage that writes input events to an event log in stream order. It can be created with <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.stream.DurableEventWriter$">DurableEventWriter</a> from a unique writer id and an event log reference. The result is a <code class="docutils literal"><span class="pre">Graph[FlowShape[DurableEvent,</span> <span class="pre">DurableEvent],</span> <span class="pre">NotUsed]</span></code> that emits the written events with updated metadata.</p>
+<p>The following example converts a stream of <code class="docutils literal"><span class="pre">String</span></code>s to a stream of <code class="docutils literal"><span class="pre">DurableEvent</span></code>s and writes that stream to <code class="docutils literal"><span class="pre">logA</span></code>. It then extracts <code class="docutils literal"><span class="pre">payload</span></code> and <code class="docutils literal"><span class="pre">localSequenceNr</span></code> from the written events and prints the results to <code class="docutils literal"><span class="pre">stdout</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">akka.stream.scaladsl.Source</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.DurableEvent</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.stream.DurableEventWriter</span>
+
+<span class="k">val</span> <span class="n">writerId</span> <span class="k">=</span> <span class="s">&quot;writer-1&quot;</span>
+
+<span class="nc">Source</span><span class="o">(</span><span class="nc">List</span><span class="o">(</span><span class="s">&quot;a&quot;</span><span class="o">,</span> <span class="s">&quot;b&quot;</span><span class="o">,</span> <span class="s">&quot;c&quot;</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="nc">DurableEvent</span><span class="o">(</span><span class="k">_</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">via</span><span class="o">(</span><span class="nc">DurableEventWriter</span><span class="o">(</span><span class="n">writerId</span><span class="o">,</span> <span class="n">logA</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">event</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="n">payload</span><span class="o">,</span> <span class="n">event</span><span class="o">.</span><span class="n">localSequenceNr</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">runForeach</span><span class="o">(</span><span class="n">println</span><span class="o">)</span>
+
+<span class="c1">// prints (on first run):</span>
+<span class="c1">// (a,1)</span>
+<span class="c1">// (b,2)</span>
+<span class="c1">// (c,3)</span>
+</pre></div>
+</div>
+<p>The writer sets the <code class="docutils literal"><span class="pre">emitterId</span></code> of the input events to <code class="docutils literal"><span class="pre">writerId</span></code>. The <code class="docutils literal"><span class="pre">processId</span></code>, <code class="docutils literal"><span class="pre">localLogId</span></code>, <code class="docutils literal"><span class="pre">localSequenceNr</span></code> and <code class="docutils literal"><span class="pre">systemTimestamp</span></code> are set by the event log. The event log also updates the local time of <code class="docutils literal"><span class="pre">vectorTimestamp</span></code>. All other <code class="docutils literal"><span class="pre">DurableEvent</span></code> fields are written to the event log without modification.</p>
+<p>Input events are batched if they are produced faster than they can be written. The maximum batch size can be configured with <code class="docutils literal"><span class="pre">eventuate.log.write-batch-size</span></code>. On write failure, the writer fails the stream.</p>
+</div>
+<div class="section" id="event-processor">
+<span id="id4"></span><h2>Event processor<a class="headerlink" href="#event-processor" title="Permalink to this headline">¶</a></h2>
+<p>An event processor is a stream stage that expects input events from one or more source event logs, processes these events with application-defined <em>processing logic</em> and writes the processed events to a target event log. An event processor can be a <em>stateful processor</em> or a <em>stateless processor</em> and can be created with <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.stream.DurableEventProcessor$">DurableEventProcessor</a>.</p>
+<p>Stateful processors apply processing logic of type <code class="docutils literal"><span class="pre">(S,</span> <span class="pre">DurableEvent)</span> <span class="pre">=&gt;</span> <span class="pre">(S,</span> <span class="pre">Seq[O])</span></code> to input events where <code class="docutils literal"><span class="pre">S</span></code> is the type of the processing state and <code class="docutils literal"><span class="pre">O</span></code> is the type of the processed <strong>payload</strong>. Stateless processors apply processing logic of type <code class="docutils literal"><span class="pre">DurableEvent</span> <span class="pre">=&gt;</span> <span class="pre">Seq[O]</span></code> to input events.</p>
+<p>Processing logic can filter, transform and/or split input events. To filter an input event from the event stream, an empty sequence should be returned. To transform an input event into one output event a sequence of length 1 should be returned. To split an input event into multiple output events a sequence of corresponding length should be returned.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Application-defined processing logic can read the payload and metadata from the input event but can only return updated payloads. This makes metadata update a processor-internal concern, ensuring that event processing to the target log works correctly and is idempotent.</p>
+</div>
+<p>The following example is a stateless processor that consumes events from <code class="docutils literal"><span class="pre">logA</span></code> and writes the processing results to <code class="docutils literal"><span class="pre">logB</span></code>. The processing logic filters an input event if the payload equals <code class="docutils literal"><span class="pre">a</span></code>, it appends the source sequence number if the payload equals <code class="docutils literal"><span class="pre">b</span></code> and duplicates the input event if the payload equals <code class="docutils literal"><span class="pre">c</span></code>. Events with other payloads remain unchanged:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">akka.stream.scaladsl.Source</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.DurableEvent</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.stream.DurableEventSource</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.stream.DurableEventProcessor._</span>
+<span class="k">import</span> <span class="nn">scala.collection.immutable.Seq</span>
+
+<span class="k">val</span> <span class="n">processorId1</span> <span class="k">=</span> <span class="s">&quot;processor-1&quot;</span>
+
+<span class="k">def</span> <span class="n">statelessProcessingLogic</span><span class="o">(</span><span class="n">event</span><span class="k">:</span> <span class="kt">DurableEvent</span><span class="o">)</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">Any</span><span class="o">]</span> <span class="k">=</span> <span class="n">event</span><span class="o">.</span><span class="n">payload</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="s">&quot;a&quot;</span> <span class="k">=&gt;</span> <span class="nc">Seq</span><span class="o">()</span>
+  <span class="k">case</span> <span class="s">&quot;b&quot;</span> <span class="k">=&gt;</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">s&quot;b-</span><span class="si">${</span><span class="n">event</span><span class="o">.</span><span class="n">localSequenceNr</span><span class="si">}</span><span class="s">&quot;</span><span class="o">)</span>
+  <span class="k">case</span> <span class="s">&quot;c&quot;</span> <span class="k">=&gt;</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">&quot;c&quot;</span><span class="o">,</span> <span class="s">&quot;c&quot;</span><span class="o">)</span>
+  <span class="k">case</span> <span class="n">evt</span> <span class="k">=&gt;</span> <span class="nc">Seq</span><span class="o">(</span><span class="n">evt</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="nc">Source</span><span class="o">.</span><span class="n">fromGraph</span><span class="o">(</span><span class="nc">DurableEventSource</span><span class="o">(</span><span class="n">logA</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">via</span><span class="o">(</span><span class="n">statelessProcessor</span><span class="o">(</span><span class="n">processorId1</span><span class="o">,</span> <span class="n">logB</span><span class="o">)(</span><span class="n">statelessProcessingLogic</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">event</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="n">payload</span><span class="o">,</span> <span class="n">event</span><span class="o">.</span><span class="n">localSequenceNr</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">runForeach</span><span class="o">(</span><span class="n">println</span><span class="o">)</span>
+
+<span class="c1">// prints (on first run):</span>
+<span class="c1">// (b-2,1)</span>
+<span class="c1">// (c,2)</span>
+<span class="c1">// (c,3)</span>
+</pre></div>
+</div>
+<p>The example assumes that <code class="docutils literal"><span class="pre">logA</span></code> still contains the events that have been written by the event writer in the previous section. The next example uses a stateful processor that counts the number of events with a <code class="docutils literal"><span class="pre">b</span></code> payload and appends that number to all events. The processor consumes events from <code class="docutils literal"><span class="pre">logA</span></code> and writes the processing results to <code class="docutils literal"><span class="pre">logC</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">processorId2</span> <span class="k">=</span> <span class="s">&quot;processor-2&quot;</span>
+
+<span class="k">def</span> <span class="n">statefulProcessingLogic</span><span class="o">(</span><span class="n">count</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">event</span><span class="k">:</span> <span class="kt">DurableEvent</span><span class="o">)</span><span class="k">:</span> <span class="o">(</span><span class="kt">Int</span><span class="o">,</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="n">event</span><span class="o">.</span><span class="n">payload</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="s">&quot;b&quot;</span> <span class="k">=&gt;</span>
+      <span class="k">val</span> <span class="n">updated</span> <span class="k">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+      <span class="o">(</span><span class="n">updated</span><span class="o">,</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">s&quot;b-</span><span class="si">$updated</span><span class="s">&quot;</span><span class="o">))</span>
+    <span class="k">case</span> <span class="n">evt</span> <span class="k">=&gt;</span>
+      <span class="o">(</span><span class="n">count</span><span class="o">,</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">s&quot;</span><span class="si">$evt</span><span class="s">-</span><span class="si">$count</span><span class="s">&quot;</span><span class="o">))</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="nc">Source</span><span class="o">.</span><span class="n">fromGraph</span><span class="o">(</span><span class="nc">DurableEventSource</span><span class="o">(</span><span class="n">logA</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">via</span><span class="o">(</span><span class="n">statefulProcessor</span><span class="o">(</span><span class="n">processorId2</span><span class="o">,</span> <span class="n">logC</span><span class="o">)(</span><span class="mi">0</span><span class="o">)(</span><span class="n">statefulProcessingLogic</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">event</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="n">payload</span><span class="o">,</span> <span class="n">event</span><span class="o">.</span><span class="n">localSequenceNr</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">runForeach</span><span class="o">(</span><span class="n">println</span><span class="o">)</span>
+
+<span class="c1">// prints (on first run):</span>
+<span class="c1">// (a-0,1)</span>
+<span class="c1">// (b-1,2)</span>
+<span class="c1">// (c-1,3)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When running the examples a second time or more often, no events will be written to <code class="docutils literal"><span class="pre">logB</span></code> and <code class="docutils literal"><span class="pre">logC</span></code> because the processors will detect previously processed events as duplicates and discard them. This makes event processing <strong>idempotent</strong> i.e. it can be re-started after failures without generating duplicates in the target event logs.</p>
+</div>
+<p>Input events are batched if they are produced faster than they can be processed. The maximum batch size can be configured with <code class="docutils literal"><span class="pre">eventuate.log.write-batch-size</span></code>. On write failure, a processor fails the stream.</p>
+<div class="section" id="consuming-from-a-shared-source">
+<h3>Consuming from a shared source<a class="headerlink" href="#consuming-from-a-shared-source" title="Permalink to this headline">¶</a></h3>
+<p>In the above example, both processors use their own <code class="docutils literal"><span class="pre">DurableEventSource</span></code> to read from <code class="docutils literal"><span class="pre">logA</span></code>. A better alternative is to use a single source and broadcast the events to both processors which reduces the read load on <code class="docutils literal"><span class="pre">logA</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">akka.stream.ClosedShape</span>
+<span class="k">import</span> <span class="nn">akka.stream.scaladsl._</span>
+
+<span class="k">val</span> <span class="n">source</span> <span class="k">=</span> <span class="nc">DurableEventSource</span><span class="o">(</span><span class="n">logA</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">sink</span> <span class="k">=</span> <span class="nc">Flow</span><span class="o">[</span><span class="kt">DurableEvent</span><span class="o">]</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">event</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="n">payload</span><span class="o">,</span> <span class="n">event</span><span class="o">.</span><span class="n">localSequenceNr</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">to</span><span class="o">(</span><span class="nc">Sink</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">println</span><span class="o">))</span>
+
+<span class="k">val</span> <span class="n">processor1</span> <span class="k">=</span> <span class="n">statelessProcessor</span><span class="o">(</span><span class="n">processorId1</span><span class="o">,</span> <span class="n">logB</span><span class="o">)(</span><span class="n">statelessProcessingLogic</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">processor2</span> <span class="k">=</span> <span class="n">statefulProcessor</span><span class="o">(</span><span class="n">processorId2</span><span class="o">,</span> <span class="n">logC</span><span class="o">)(</span><span class="mi">0</span><span class="o">)(</span><span class="n">statefulProcessingLogic</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">graph</span> <span class="k">=</span> <span class="nc">RunnableGraph</span><span class="o">.</span><span class="n">fromGraph</span><span class="o">(</span><span class="nc">GraphDSL</span><span class="o">.</span><span class="n">create</span><span class="o">()</span> <span class="o">{</span> <span class="k">implicit</span> <span class="n">b</span> <span class="k">=&gt;</span>
+  <span class="k">import</span> <span class="nn">GraphDSL.Implicits._</span>
+
+  <span class="k">val</span> <span class="n">bcast</span> <span class="k">=</span> <span class="n">b</span><span class="o">.</span><span class="n">add</span><span class="o">(</span><span class="nc">Broadcast</span><span class="o">[</span><span class="kt">DurableEvent</span><span class="o">](</span><span class="mi">2</span><span class="o">))</span>
+
+  <span class="n">source</span> <span class="o">~&gt;</span> <span class="n">bcast</span>
+  <span class="n">bcast</span> <span class="o">~&gt;</span> <span class="n">processor1</span> <span class="o">~&gt;</span> <span class="n">sink</span>
+  <span class="n">bcast</span> <span class="o">~&gt;</span> <span class="n">processor2</span> <span class="o">~&gt;</span> <span class="n">sink</span>
+
+  <span class="nc">ClosedShape</span>
+<span class="o">})</span>
+
+<span class="n">graph</span><span class="o">.</span><span class="n">run</span><span class="o">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="consuming-from-a-multiple-sources">
+<h3>Consuming from a multiple sources<a class="headerlink" href="#consuming-from-a-multiple-sources" title="Permalink to this headline">¶</a></h3>
+<p>An event processor may also consume events from multiple sources. In the following example, the processor consumes the merged stream from <code class="docutils literal"><span class="pre">logA</span></code> and <code class="docutils literal"><span class="pre">logB</span></code> and writes the processing results to <code class="docutils literal"><span class="pre">logC</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">Source</span><span class="o">.</span><span class="n">fromGraph</span><span class="o">(</span><span class="nc">DurableEventSource</span><span class="o">(</span><span class="n">logA</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">merge</span><span class="o">(</span><span class="nc">DurableEventSource</span><span class="o">(</span><span class="n">logB</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">via</span><span class="o">(</span><span class="n">statelessProcessor</span><span class="o">(</span><span class="n">processorId1</span><span class="o">,</span> <span class="n">logC</span><span class="o">)(</span><span class="n">statelessProcessingLogic</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">event</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="n">payload</span><span class="o">,</span> <span class="n">event</span><span class="o">.</span><span class="n">localSequenceNr</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">runForeach</span><span class="o">(</span><span class="n">println</span><span class="o">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The example assumes that <code class="docutils literal"><span class="pre">logA</span></code> and <code class="docutils literal"><span class="pre">logB</span></code> are independent i.e. have no causal relationship. A plain stream <code class="docutils literal"><span class="pre">merge</span></code> is sufficient in this case. If these two logs had a causal relationship (e.g. after having processed events from <code class="docutils literal"><span class="pre">logA</span></code> into <code class="docutils literal"><span class="pre">logB</span></code>) a plain stream <code class="docutils literal"><span class="pre">merge</span></code> may generate a stream that is not consistent with <em>potential causality</em>.</p>
+<p class="last">Processing such a stream may generate <code class="docutils literal"><span class="pre">vectorTimestamps</span></code> that indicate concurrency of otherwise causally related events. This is acceptable for some applications but many others require stream merges that preserve causality. We will therefore soon provide a <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/342">causal stream merge stage</a>.</p>
+</div>
+</div>
+<div class="section" id="event-processing-progress-tracking">
+<h3>Event processing progress tracking<a class="headerlink" href="#event-processing-progress-tracking" title="Permalink to this headline">¶</a></h3>
+<p>Event processing <em>progress</em> is not tracked automatically at the moment. An application should therefore save at regular intervals a recent <strong>source</strong> sequence number that has been successfully processed by all processors that consume from a shared source. This sequence number should then be used as <code class="docutils literal"><span class="pre">fromSequenceNr</span></code> argument when creating a <code class="docutils literal"><span class="pre">DurableEventSource</span></code>. We will support automated sequence number tracking in one of the next Eventuate releases.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+		    
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="spark.html" class="float-right" title="Spark adapter">Next</a>
+      
+      
+        <a href="../adapters.html" title="Adapters">Previous</a>
+      
+    </div>
+  
+        </div>
+	  </div>
+    <div class="wrapper-footer">
+<footer>
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015 - 2016 Red Bull Media House.  | <a href="http://rbmhtechnology.github.io/imprint" target="_blank">Imprint</a> | <a href="http://rbmhtechnology.github.io/termsconditions" target="_blank">Terms &amp; Conditions</a> | <a href="http://rbmhtechnology.github.io/dataprivacypolicy" target="_blank">Data Privacy Policy</a> 
+    </p>
+  </div>
+
+</footer>
+</div>
+      
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.8-SNAPSHOT',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/tabbedcode.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

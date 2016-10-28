@@ -1,59 +1,3 @@
-.. _adapters:
-
---------
-Adapters
---------
-
-.. _spark-adapter:
-
-Spark adapter
--------------
-
-The Eventuate Spark adapter allows applications to consume events from event logs and to process them in `Apache Spark`_. Writing processed events back to event logs is not possible yet but will be supported in future versions.
-
-.. warning::
-   The Spark adapter is experimental. Its feature set and API is likely to change based on user feedback.
-
-Batch processing
-~~~~~~~~~~~~~~~~
-
-`SparkBatchAdapter`_ supports event batch processing from event logs with a :ref:`cassandra-storage-backend`. The batch adapter internally uses the `Spark Cassandra Connector`_ for exposing an event log as `Spark RDD`_ of `DurableEvent`_\ s:
-
-.. includecode:: ../../../eventuate-example-spark/src/main/scala/com/rbmhtechnology/example/spark/SparkBatchAdapterExample.scala
-   :snippet: spark-batch-adapter
-
-A `SparkBatchAdapter`_ is instantiated with a ``SparkContext``, configured for connecting to a Cassandra storage backend, and a :ref:`event-serialization` configuration (if any). The ``eventBatch`` method exposes an event log with given ``logId`` as ``RDD[DurableEvent]``, optionally starting from a custom sequence number.
-
-Event logs can span several partitions in a Cassandra cluster and the batch adapter reads from these partitions concurrently. Hence, events in the resulting RDD are ordered per partition. Applications that require a total order by ``localSequenceNr`` can sort the resulting RDD:
-
-.. includecode:: ../../../eventuate-example-spark/src/main/scala/com/rbmhtechnology/example/spark/SparkBatchAdapterExample.scala
-   :snippet: spark-batch-sorting
-
-Exposing `Spark DataFrames`_ directly is not possible yet but will be supported in future versions. In the meantime, applications should convert RDDs to DataFrames or Datasets as shown in the following example:
-
-.. includecode:: ../../../eventuate-example-spark/src/main/scala/com/rbmhtechnology/example/spark/SparkBatchAdapterExample.scala
-   :snippet: spark-batch-dataframe
-
-.. hint::
-   The full example source code is in `SparkBatchAdapterExample.scala`_
-
-Stream processing
-~~~~~~~~~~~~~~~~~
-
-`SparkStreamAdapter`_ supports event stream processing from event logs with any storage backend. The stream adapter connects to the `ReplicationEndpoint`_\ [#replicationEP]_ of an event log for exposing it as `Spark DStream`_ of `DurableEvent`_\ s:
-
-.. includecode:: ../../../eventuate-example-spark/src/main/scala/com/rbmhtechnology/example/spark/SparkStreamAdapterExample.scala
-   :snippet: spark-stream-adapter
-
-A `SparkStreamAdapter`_ is instantiated with a Spark ``StreamingContext`` and a :ref:`event-serialization` configuration (if any). The ``eventStream`` method exposes an event log with given ``logName`` as ``DStream[DurableEvent]``. The stream is updated by interacting with the event log's replication endpoint at given ``host`` and ``port``.
-
-The stream starts from the given ``fromSequenceNr`` and is updated with both, replayed events and newly written events. The storage level of events in Spark can be set with the ``storageLevel`` parameter. Applications that want to enforce event processing in strict event log storage order should repartition the stream with ``.repartition(1)``, as shown in the example.
-
-For persisting the stream processing progress, an application should store the last processed sequence number at a custom place. When the application is restarted, the stored sequence number should be used as argument to the ``eventStream`` call. Later versions will additionally support internal storage of event processing progresses.
-
-.. hint::
-   The full example source code is in `SparkStreamAdapterExample.scala`_
-
 .. _vertx-adapter:
 
 Vert.x adapter
@@ -63,7 +7,7 @@ The Eventuate Vert.x adapter allows applications using a `Vert.x`_ instance to i
 
 Event exchange is performed over the Vert.x `event bus`_. Events delivered to a Vert.x instance are either published to all subscribers or sent to a single subscriber on the event bus. Events received from a Vert.x instance are persisted to an event log by consuming events from a particular endpoint on the event bus.
 
-Event Producers
+Event producers
 ~~~~~~~~~~~~~~~
 
 The Vert.x adapter exchanges events with a Vert.x instance by using so called *event producers*. An event producer consumes events from a given source and produces the same events to a specified destination. Both sources and destinations can either be an event bus endpoint or an even log.
@@ -95,7 +39,7 @@ An event producer establishes an unidirectional connection between exactly one e
    .. includecode:: ../../../eventuate-example-vertx/src/main/java/com/rbmhtechnology/docs/vertx/japi/Documentation.java
       :snippet: log-event-producer
 
-An event log must be supplied as an ``ActorRef`` which is usually obtained from a `ReplicationEndpoint`_\ [#replicationEP]_. Event producers are implementation-agnostic in respect to event logs - any event log implementation may be used in combination with a producer.
+An event log must be supplied as an ``ActorRef`` which is usually obtained from a `ReplicationEndpoint`_\ [#]_. Event producers are implementation-agnostic in respect to event logs - any event log implementation may be used in combination with a producer.
 
 .. note::
    The id of a producer must be unique and should be stable over time. It is used as the primary key to store meta information about the producer.
@@ -125,7 +69,7 @@ For events to be written to an event log, applications send events to the specif
 .. note::
    Event processing in event handlers should be performed idempotent because a Vert.x producer may deliver the same event multiple times under certain conditions. Events may be redelivered after a restart of a producer if it was not able to successfully persist its read progress on shutdown (or crash).
 
-Adapter Usage
+Adapter usage
 ~~~~~~~~~~~~~
 
 Event producers are managed by a ``VertxAdapter``. Applications can connect to multiple event logs by instantiating event producers and supplying them to the ``VertxAdapterConfig``.
@@ -145,7 +89,7 @@ Applications invoke the ``start`` method of the system to initialize the registe
 
 The following sections contain a detailed description of the different kinds of event producers.
 
-Vert.x Publish Event Producer
+Vert.x publish event producer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A *Publish Event Producer* publishes events from an event log to *multiple* subscribers on the event bus. Events are delivered to specific endpoints defined in the configuration of the producer. A producer can route events to different event bus endpoints based on the content of the event. Event routing is enabled by supplying a partial function which maps events to event bus endpoints. If the partial function is not defined at the event, the event will not be processed.
@@ -168,7 +112,7 @@ Applications consume events by registering an event handler at the configured en
 
 Read progress from the source event log is tracked by persisting the ``localSequenceNr`` of the latest sent event to the ``StorageProvider`` supplied to the ``VertxAdapter``. After publishing one or multiple events the read progress is persisted. The producer continues publishing events from the latest known ``localSequenceNr`` once the it is started.
 
-Vert.x Point-to-Point Event Producer
+Vert.x point-to-point event producer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A *Point-to-Point Event Producer* sends an event to a *single* subscriber on the event bus. If a single subscriber is registered for an endpoint all events are delivered to this subscriber. If multiple subscribers are registered for the same endpoint, events are delivered alternately to only one of those subscribers using a non-strict round-robin algorithm. Event routing can be enabled by supplying a partial function.
@@ -205,7 +149,7 @@ Event confirmations are persisted on a per-event basis or in batches of configur
 - **Batch event confirmations**:
   Using batch confirmations, events are delivered in batches where the next batch is only delivered once all events of the previous batch have been confirmed. Batches containing events which have not been confirmed are redelivered as a whole, resulting in redelivery of all events of the same batch. This approach leads to modest storage requirements as no individual per-event confirmation information has to be tracked. Using this confirmation mode, events may be redelivered multiple times even though a confirmation has already been received.
 
-Log Event Producer
+Log event producer
 ~~~~~~~~~~~~~~~~~~
 
 A *Log Event Producer* consumes events from multiple event bus endpoints and persists these events to a single event log. Every persisted event creates a write confirmation which is returned to the sender of the event, containing the result of the write operation.
@@ -231,7 +175,7 @@ Applications persist events by sending them to the endpoint configured for the p
 .. note::
    A single endpoint can only be configured once as the source for an log event producer. This ensures that write confirmations can reliably be returned to the source endpoint. Configuring the same source endpoint for multiple producers will lead to a configuration error.
 
-Message Codecs
+Message codecs
 ~~~~~~~~~~~~~~
 
 All messages transmitted over the event bus must provide a Vert.x `message codec`_. The event bus uses this message codec to serialize and deserialize the body of an event bus message.
@@ -251,7 +195,7 @@ A message codec for the type is created which uses the ``Serializer`` assigned t
 .. note::
    The generic ``MessageCodec`` can also be used for events not stored in an event log if a ``Serializer`` for the event type is configured at the ``ActorSystem``. If no ``Serializer`` for a type is configured the generated ``MessageCodec`` will fail to process instances of the type.
 
-Event Metadata
+Event metadata
 ~~~~~~~~~~~~~~
 
 Applications can access the metadata of an event by querying the `headers`_ of an event bus message. The following metadata is available for each event:
@@ -278,18 +222,6 @@ An ``EventMetadata`` instance is only created if the message originated from a V
 .. hint::
    A detailed example can be found in `VertxAdapterExample.scala`_ or `VertxAdapterExample.java`_.
 
-.. _Apache Spark: http://spark.apache.org/
-.. _Spark Cassandra Connector: https://github.com/datastax/spark-cassandra-connector
-.. _Spark RDD: http://spark.apache.org/docs/latest/programming-guide.html#resilient-distributed-datasets-rdds
-.. _Spark DStream: http://spark.apache.org/docs/latest/streaming-programming-guide.html#discretized-streams-dstreams
-.. _Spark DataFrames: http://spark.apache.org/docs/latest/sql-programming-guide.html#dataframes
-.. _DurableEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent
-.. _ReplicationEndpoint: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint
-.. _SparkBatchAdapter: ../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkBatchAdapter
-.. _SparkStreamAdapter: ../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkStreamAdapter
-.. _SparkBatchAdapterExample.scala: https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-spark/src/main/scala/com/rbmhtechnology/example/spark/SparkBatchAdapterExample.scala
-.. _SparkStreamAdapterExample.scala: https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-spark/src/main/scala/com/rbmhtechnology/example/spark/SparkStreamAdapterExample.scala
-
 .. _Vert.x: http://vertx.io/
 .. _event bus: http://vertx.io/docs/vertx-core/java/#event_bus
 .. _message codec: http://vertx.io/docs/apidocs/io/vertx/core/eventbus/MessageCodec.html
@@ -297,5 +229,6 @@ An ``EventMetadata`` instance is only created if the message originated from a V
 .. _headers: http://vertx.io/docs/apidocs/io/vertx/core/eventbus/Message.html#headers--
 .. _VertxAdapterExample.scala: https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-vertx/src/main/scala/com/rbmhtechnology/example/vertx/VertxAdapterExample.scala
 .. _VertxAdapterExample.java: https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-vertx/src/main/java/com/rbmhtechnology/example/vertx/japi/VertxAdapterExample.java
+.. _ReplicationEndpoint: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint
 
-.. [#replicationEP] See also :ref:`replication-endpoints` in the reference documentation.
+.. [#] See also :ref:`replication-endpoints` in the reference documentation.

@@ -38,8 +38,8 @@
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="Eventuate" href="../index.html"/>
         <link rel="up" title="Reference" href="../reference.html"/>
-        <link rel="next" title="Resources" href="../resources.html"/>
-        <link rel="prev" title="Adapters" href="adapters.html"/> 
+        <link rel="next" title="Adapters" href="../adapters.html"/>
+        <link rel="prev" title="Event-sourced actors" href="event-sourcing.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -113,7 +113,6 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../reference.html">Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="api-docs.html">API docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-log.html">Event log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
@@ -129,10 +128,16 @@
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#custom-serialization">Custom serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adapters.html">Adapters</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Configuration</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../adapters.html">Adapters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/stream.html">Akka Streams adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/spark.html">Spark adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../adapters/vertx.html">Vert.x adapter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api-docs.html">API docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../resources.html#articles">Articles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../resources.html#presentations">Presentations</a></li>
@@ -166,7 +171,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../example-application.html#disaster-recovery">Disaster recovery</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../current-limitations.html">Current limitations</a></li>
 </ul>
 
           
@@ -487,6 +491,14 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="eventuate-adapter-stream">
+<h2>eventuate-adapter-stream<a class="headerlink" href="#eventuate-adapter-stream" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">adapter</span><span class="o">.</span><span class="n">stream</span> <span class="o">{</span>
+  <span class="n">read</span><span class="o">-</span><span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">10</span><span class="n">s</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -494,10 +506,10 @@
 		    
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../resources.html" class="float-right" title="Resources">Next</a>
+        <a href="../adapters.html" class="float-right" title="Adapters">Next</a>
       
       
-        <a href="adapters.html" title="Adapters">Previous</a>
+        <a href="event-sourcing.html" title="Event-sourced actors">Previous</a>
       
     </div>
   

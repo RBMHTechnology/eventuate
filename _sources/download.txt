@@ -17,12 +17,12 @@ Eventuate is a multi-module project with the following modules:
      - Provides the :ref:`cassandra-storage-backend`.
    * - ``eventuate-log-leveldb``
      - Provides the :ref:`leveldb-storage-backend`.
+   * - ``eventuate-adapter-stream``
+     - Provides the :ref:`akka-streams-adapter`.
    * - ``eventuate-adapter-spark``
      - Provides the :ref:`spark-adapter`.
-   * - ``eventuate-examples``
-     - Provides :ref:`example-application` among others.
-   * - ``eventuate-example-spark``
-     - Provides Spark adapter example applications.
+   * - ``eventuate-adapter-vertx``
+     - Provides the :ref:`vertx-adapter`.
 
 |
 
@@ -103,7 +103,19 @@ Development snapshot dependencies::
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-adapter-stream_2.11</artifactId>
+        <version>0.8-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-adapter-spark_2.11</artifactId>
+        <version>0.8-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-adapter-vertx_2.11</artifactId>
         <version>0.8-SNAPSHOT</version>
     </dependency>
 
@@ -134,7 +146,11 @@ Development snapshot dependencies::
 
     libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-cassandra" % "0.8-SNAPSHOT"
 
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-stream" % "0.8-SNAPSHOT"
+
     libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-spark" % "0.8-SNAPSHOT"
+
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-vertx" % "0.8-SNAPSHOT"
 
 Sources
 -------

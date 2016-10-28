@@ -37,7 +37,7 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Eventuate" href="index.html"/>
-        <link rel="next" title="API docs" href="reference/api-docs.html"/>
+        <link rel="next" title="Event log" href="reference/event-log.html"/>
         <link rel="prev" title="User guide" href="user-guide.html"/> 
 
   
@@ -112,7 +112,6 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference/api-docs.html">API docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
@@ -128,10 +127,16 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adapters/stream.html">Akka Streams adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/spark.html">Spark adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html">Vert.x adapter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-docs.html">API docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="resources.html#articles">Articles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="resources.html#presentations">Presentations</a></li>
@@ -165,7 +170,6 @@
 <li class="toctree-l2"><a class="reference internal" href="example-application.html#disaster-recovery">Disaster recovery</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="current-limitations.html">Current limitations</a></li>
 </ul>
 
           
@@ -204,7 +208,6 @@
 <span id="id1"></span><h1>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="reference/api-docs.html">API docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/event-log.html">Event log</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-log.html#local-event-log">Local event log</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/event-log.html#leveldb-storage-backend">LevelDB storage backend</a></li>
@@ -267,30 +270,12 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#resolution-of-serializers-when-deserializing">Resolution of serializers when deserializing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reference/adapters.html">Adapters</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference/adapters.html#spark-adapter">Spark adapter</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/adapters.html#batch-processing">Batch processing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/adapters.html#stream-processing">Stream processing</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/adapters.html#vert-x-adapter">Vert.x adapter</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/adapters.html#event-producers">Event Producers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/adapters.html#event-processing">Event processing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/adapters.html#adapter-usage">Adapter Usage</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/adapters.html#vert-x-publish-event-producer">Vert.x Publish Event Producer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/adapters.html#vert-x-point-to-point-event-producer">Vert.x Point-to-Point Event Producer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/adapters.html#log-event-producer">Log Event Producer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/adapters.html#message-codecs">Message Codecs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/adapters.html#event-metadata">Event Metadata</a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="reference/configuration.html">Configuration</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html#eventuate-core">eventuate-core</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html#eventuate-crdt">eventuate-crdt</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html#eventuate-log-cassandra">eventuate-log-cassandra</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html#eventuate-log-leveldb">eventuate-log-leveldb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/configuration.html#eventuate-adapter-stream">eventuate-adapter-stream</a></li>
 </ul>
 </li>
 </ul>
@@ -302,7 +287,7 @@
 		    
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="reference/api-docs.html" class="float-right" title="API docs">Next</a>
+        <a href="reference/event-log.html" class="float-right" title="Event log">Next</a>
       
       
         <a href="user-guide.html" title="User guide">Previous</a>

@@ -49,7 +49,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Simple utility for writing events to an event log.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Utility for writing events to an event log.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -89,7 +89,7 @@
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="com.rbmhtechnology.eventuate.log.EventLogWriter#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+              <ol><li name="com.rbmhtechnology.eventuate.log.EventLogWriter#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="&lt;init&gt;(id:String,eventLog:akka.actor.ActorRef)(implicitsystem:akka.actor.ActorSystem):com.rbmhtechnology.eventuate.log.EventLogWriter"></a>
       <a id="&lt;init&gt;:EventLogWriter"></a>
       <h4 class="signature">
@@ -105,7 +105,24 @@
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">id</dt><dd class="cmt"><p>Unique emitter id.</p></dd><dt class="param">eventLog</dt><dd class="cmt"><p>Event log to write to.</p></dd></dl></div>
+      
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogWriter#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(id:String,eventLog:akka.actor.ActorRef,aggregateId:Option[String])(implicitsystem:akka.actor.ActorSystem):com.rbmhtechnology.eventuate.log.EventLogWriter"></a>
+      <a id="&lt;init&gt;:EventLogWriter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">new</span>
+      </span>
+      <span class="symbol">
+        <span class="name">EventLogWriter</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="eventLog">eventLog: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>, <span name="aggregateId">aggregateId: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>)</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogWriter@&lt;init&gt;(id:String,eventLog:akka.actor.ActorRef,aggregateId:Option[String])(implicitsystem:akka.actor.ActorSystem):com.rbmhtechnology.eventuate.log.EventLogWriter" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">id</dt><dd class="cmt"><p>Unique emitter id.</p></dd><dt class="param">eventLog</dt><dd class="cmt"><p>Event log to write to.</p></dd><dt class="param">aggregateId</dt><dd class="cmt"><p>Optional aggregate id.</p></dd></dl></div>
     </li></ol>
             </div>
 

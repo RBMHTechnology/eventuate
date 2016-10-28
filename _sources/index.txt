@@ -30,10 +30,11 @@ Table of contents
    architecture
    user-guide
    reference
+   adapters
+   api-docs
    resources
    download
    developers
    project
    faq
    example-application
-   current-limitations

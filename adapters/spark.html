@@ -1,0 +1,397 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Spark adapter &mdash; Eventuate</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/tabbedcode.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Eventuate" href="../index.html"/>
+        <link rel="up" title="Adapters" href="../adapters.html"/>
+        <link rel="next" title="Vert.x adapter" href="vertx.html"/>
+        <link rel="prev" title="Akka Streams adapter" href="stream.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+  
+	<script src="//fonts.redbullmediahouse.com/snv5vzo.js"></script>
+	<script>try{Typekit.load();}catch(e){}</script>
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          
+          <a href="../index.html"><img src="../_static/RedBullMediaHouse-dark.png" class="logo" /></a>
+        
+        
+		
+<div role="search" class="searchbox">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search Eventuate" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+	
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#event-sourcing">Event sourcing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#event-collaboration">Event collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#event-log">Event log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#event-bus">Event bus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#event-ordering-and-consistency">Event ordering and consistency</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#operation-based-crdts">Operation-based CRDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#stream-processing-adapters">Stream processing adapters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview.html#related-projects">Related projects</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-logs">Event logs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-sourcing">Event sourcing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#event-collaboration">Event collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#operation-based-crdts">Operation-based CRDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#vector-clocks">Vector clocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../architecture.html#batching">Batching</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../user-guide.html">User guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#event-sourced-actors">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#detecting-concurrent-updates">Detecting concurrent updates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#tracking-conflicting-versions">Tracking conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#resolving-conflicting-versions">Resolving conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#operation-based-crdts">Operation-based CRDTs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#conditional-requests">Conditional requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../user-guide.html#event-driven-communication">Event-driven communication</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-log.html">Event log</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-sourced-writers">Event-sourced writers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-sourced-processors">Event-sourced processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#state-recovery">State recovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#snapshots">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-routing">Event routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#event-driven-communication">Event-driven communication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#conditional-requests">Conditional requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#command-stashing">Command stashing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#failure-handling">Failure handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/configuration.html">Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../adapters.html">Adapters</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="stream.html">Akka Streams adapter</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Spark adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vertx.html">Vert.x adapter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api-docs.html">API docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resources.html">Resources</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../resources.html#articles">Articles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../resources.html#presentations">Presentations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../download.html">Download</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../download.html#binaries">Binaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../download.html#sources">Sources</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../developers.html#contributing-to-eventuate">Contributing to Eventuate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developers.html#building-eventuate">Building Eventuate</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../project.html">Project</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../project.html#community">Community</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../project.html#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#how-does-akka-persistence-compare-to-eventuate">How does Akka Persistence compare to Eventuate?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faq.html#how-can-apache-kafka-be-integrated-with-eventuate">How can Apache Kafka be integrated with Eventuate?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../example-application.html">Example application</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#domain">Domain</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#replication">Replication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#interface">Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#running">Running</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../example-application.html#disaster-recovery">Disaster recovery</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html"><img src="../_static/RedBullMediaHouse-light.png" class="logo" /></a>
+      </nav>
+ 
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li>
+		<a href="../index.html"><h2><span class="breadcrumbicon rbicons topfront"><i class="fa fa-calendar"></i></span>Eventuate</h2></a> &raquo;
+	</li>
+    
+    <li><a href="../adapters.html">Adapters</a> &raquo;</li>
+    
+    <li>Spark adapter</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="spark-adapter">
+<span id="id1"></span><h1>Spark adapter<a class="headerlink" href="#spark-adapter" title="Permalink to this headline">¶</a></h1>
+<p>The Eventuate Spark adapter allows applications to consume events from event logs and to process them in <a class="reference external" href="http://spark.apache.org/">Apache Spark</a>. Writing processed events back to event logs is not possible yet but will be supported in future versions.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The Spark adapter is experimental. Its feature set and API is likely to change based on user feedback.</p>
+</div>
+<div class="section" id="batch-processing">
+<h2>Batch processing<a class="headerlink" href="#batch-processing" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkBatchAdapter">SparkBatchAdapter</a> supports event batch processing from event logs with a <a class="reference internal" href="../reference/event-log.html#cassandra-storage-backend"><span class="std std-ref">Cassandra storage backend</span></a>. The batch adapter internally uses the <a class="reference external" href="https://github.com/datastax/spark-cassandra-connector">Spark Cassandra Connector</a> for exposing an event log as <a class="reference external" href="http://spark.apache.org/docs/latest/programming-guide.html#resilient-distributed-datasets-rdds">Spark RDD</a> of <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">akka.actor.ActorSystem</span>
+
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.DurableEvent</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.spark.SparkBatchAdapter</span>
+
+<span class="k">import</span> <span class="nn">org.apache.spark.rdd.RDD</span>
+<span class="k">import</span> <span class="nn">org.apache.spark.</span><span class="o">{</span> <span class="nc">SparkConf</span><span class="o">,</span> <span class="nc">SparkContext</span> <span class="o">}</span>
+
+<span class="k">implicit</span> <span class="k">val</span> <span class="n">system</span> <span class="k">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;spark-example&quot;</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">sparkConfig</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">SparkConf</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">&quot;spark.cassandra.connection.host&quot;</span><span class="o">,</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">&quot;spark.cassandra.connection.port&quot;</span><span class="o">,</span> <span class="s">&quot;9042&quot;</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">&quot;spark.cassandra.auth.username&quot;</span><span class="o">,</span> <span class="s">&quot;cassandra&quot;</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">set</span><span class="o">(</span><span class="s">&quot;spark.cassandra.auth.password&quot;</span><span class="o">,</span> <span class="s">&quot;cassandra&quot;</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">setAppName</span><span class="o">(</span><span class="s">&quot;adapter&quot;</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">setMaster</span><span class="o">(</span><span class="s">&quot;local[4]&quot;</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">logId</span> <span class="k">=</span> <span class="s">&quot;example&quot;</span>
+<span class="k">val</span> <span class="n">sparkContext</span><span class="k">:</span> <span class="kt">SparkContext</span> <span class="o">=</span>
+  <span class="k">new</span> <span class="nc">SparkContext</span><span class="o">(</span><span class="n">sparkConfig</span><span class="o">)</span>
+
+<span class="c1">// Create an Eventuate Spark batch adapter</span>
+<span class="k">val</span> <span class="n">sparkBatchAdapter</span><span class="k">:</span> <span class="kt">SparkBatchAdapter</span> <span class="o">=</span>
+  <span class="k">new</span> <span class="nc">SparkBatchAdapter</span><span class="o">(</span><span class="n">sparkContext</span><span class="o">,</span> <span class="n">system</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">config</span><span class="o">)</span>
+
+<span class="c1">// Expose all events of given event log as Spark RDD</span>
+<span class="k">val</span> <span class="n">events</span><span class="k">:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">DurableEvent</span><span class="o">]</span> <span class="k">=</span>
+  <span class="n">sparkBatchAdapter</span><span class="o">.</span><span class="n">eventBatch</span><span class="o">(</span><span class="n">logId</span><span class="o">)</span>
+
+<span class="c1">// Expose events of given event log as Spark RDD, starting at sequence number 3</span>
+<span class="k">val</span> <span class="n">eventsFrom</span><span class="k">:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">DurableEvent</span><span class="o">]</span> <span class="k">=</span>
+  <span class="n">sparkBatchAdapter</span><span class="o">.</span><span class="n">eventBatch</span><span class="o">(</span><span class="n">logId</span><span class="o">,</span> <span class="n">fromSequenceNr</span> <span class="k">=</span> <span class="mi">3L</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>A <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkBatchAdapter">SparkBatchAdapter</a> is instantiated with a <code class="docutils literal"><span class="pre">SparkContext</span></code>, configured for connecting to a Cassandra storage backend, and a <a class="reference internal" href="../reference/event-sourcing.html#event-serialization"><span class="std std-ref">Custom event serialization</span></a> configuration (if any). The <code class="docutils literal"><span class="pre">eventBatch</span></code> method exposes an event log with given <code class="docutils literal"><span class="pre">logId</span></code> as <code class="docutils literal"><span class="pre">RDD[DurableEvent]</span></code>, optionally starting from a custom sequence number.</p>
+<p>Event logs can span several partitions in a Cassandra cluster and the batch adapter reads from these partitions concurrently. Hence, events in the resulting RDD are ordered per partition. Applications that require a total order by <code class="docutils literal"><span class="pre">localSequenceNr</span></code> can sort the resulting RDD:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="c1">// By default, events are sorted by sequence number *per partition*.</span>
+<span class="c1">// Use .sortBy(_.localSequenceNr) to create a totally ordered RDD.</span>
+<span class="k">val</span> <span class="n">eventsSorted</span><span class="k">:</span> <span class="kt">RDD</span><span class="o">[</span><span class="kt">DurableEvent</span><span class="o">]</span> <span class="k">=</span> <span class="n">events</span><span class="o">.</span><span class="n">sortBy</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">localSequenceNr</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Exposing <a class="reference external" href="http://spark.apache.org/docs/latest/sql-programming-guide.html#dataframes">Spark DataFrames</a> directly is not possible yet but will be supported in future versions. In the meantime, applications should convert RDDs to DataFrames or Datasets as shown in the following example:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">org.apache.spark.sql.</span><span class="o">{</span> <span class="nc">Dataset</span><span class="o">,</span> <span class="nc">DataFrame</span><span class="o">,</span> <span class="nc">SQLContext</span> <span class="o">}</span>
+
+<span class="k">case</span> <span class="k">class</span> <span class="nc">DomainEvent</span><span class="o">(</span><span class="n">sequenceNr</span><span class="k">:</span> <span class="kt">Long</span><span class="o">,</span> <span class="n">payload</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">sqlContext</span><span class="k">:</span> <span class="kt">SQLContext</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SQLContext</span><span class="o">(</span><span class="n">sparkContext</span><span class="o">)</span>
+<span class="k">import</span> <span class="nn">sqlContext.implicits._</span>
+
+<span class="c1">// Create a DataFrame from RDD[DurableEvent]</span>
+<span class="k">val</span> <span class="n">eventsDF</span><span class="k">:</span> <span class="kt">DataFrame</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">event</span> <span class="k">=&gt;</span>
+  <span class="nc">DomainEvent</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="n">localSequenceNr</span><span class="o">,</span> <span class="n">event</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">toString</span><span class="o">)).</span><span class="n">toDF</span><span class="o">()</span>
+
+<span class="c1">// Create a Dataset from RDD[DurableEvent]</span>
+<span class="k">val</span> <span class="n">eventDS</span><span class="k">:</span> <span class="kt">Dataset</span><span class="o">[</span><span class="kt">DomainEvent</span><span class="o">]</span> <span class="k">=</span> <span class="n">events</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">event</span> <span class="k">=&gt;</span>
+  <span class="nc">DomainEvent</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="n">localSequenceNr</span><span class="o">,</span> <span class="n">event</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">toString</span><span class="o">)).</span><span class="n">toDS</span><span class="o">()</span>
+</pre></div>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">The full example source code is in <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-spark/src/main/scala/com/rbmhtechnology/example/spark/SparkBatchAdapterExample.scala">SparkBatchAdapterExample.scala</a></p>
+</div>
+</div>
+<div class="section" id="stream-processing">
+<h2>Stream processing<a class="headerlink" href="#stream-processing" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkStreamAdapter">SparkStreamAdapter</a> supports event stream processing from event logs with any storage backend. The stream adapter connects to the <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a><a class="footnote-reference" href="#id3" id="id2">[1]</a> of an event log for exposing it as <a class="reference external" href="http://spark.apache.org/docs/latest/streaming-programming-guide.html#discretized-streams-dstreams">Spark DStream</a> of <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent">DurableEvent</a>s:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate._</span>
+<span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.spark.SparkStreamAdapter</span>
+
+<span class="k">import</span> <span class="nn">org.apache.spark._</span>
+<span class="k">import</span> <span class="nn">org.apache.spark.storage.StorageLevel</span>
+<span class="k">import</span> <span class="nn">org.apache.spark.streaming._</span>
+<span class="k">import</span> <span class="nn">org.apache.spark.streaming.dstream.DStream</span>
+
+<span class="k">val</span> <span class="n">sparkConfig</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">SparkConf</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">setAppName</span><span class="o">(</span><span class="s">&quot;adapter&quot;</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">setMaster</span><span class="o">(</span><span class="s">&quot;local[4]&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">sparkContext</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">SparkContext</span><span class="o">(</span><span class="n">sparkConfig</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">sparkStreamingContext</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">StreamingContext</span><span class="o">(</span><span class="n">sparkContext</span><span class="o">,</span> <span class="nc">Seconds</span><span class="o">(</span><span class="mi">1</span><span class="o">))</span>
+
+<span class="c1">// Create an Eventuate Spark stream adapter</span>
+<span class="k">val</span> <span class="n">sparkStreamAdapter</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">SparkStreamAdapter</span><span class="o">(</span>
+  <span class="n">sparkStreamingContext</span><span class="o">,</span> <span class="n">system</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">config</span><span class="o">)</span>
+
+<span class="c1">// Create a DStream from event log L by connecting to its replication endpoint</span>
+<span class="k">val</span> <span class="n">stream</span><span class="k">:</span> <span class="kt">DStream</span><span class="o">[</span><span class="kt">DurableEvent</span><span class="o">]</span> <span class="k">=</span> <span class="n">sparkStreamAdapter</span><span class="o">.</span><span class="n">eventStream</span><span class="o">(</span>
+  <span class="n">id</span> <span class="k">=</span> <span class="s">&quot;s1&quot;</span><span class="o">,</span> <span class="n">host</span> <span class="k">=</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="o">,</span> <span class="n">port</span> <span class="k">=</span> <span class="mi">2552</span><span class="o">,</span> <span class="n">logName</span> <span class="k">=</span> <span class="s">&quot;L&quot;</span><span class="o">,</span>
+  <span class="n">fromSequenceNr</span> <span class="k">=</span> <span class="mi">1L</span><span class="o">,</span> <span class="n">storageLevel</span> <span class="k">=</span> <span class="nc">StorageLevel</span><span class="o">.</span><span class="nc">MEMORY_ONLY</span><span class="o">)</span>
+
+<span class="c1">// For processing in strict event storage order, use repartition(1)</span>
+<span class="n">stream</span><span class="o">.</span><span class="n">repartition</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">foreachRDD</span><span class="o">(</span><span class="n">rdd</span> <span class="k">=&gt;</span> <span class="n">rdd</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">println</span><span class="o">))</span>
+
+<span class="c1">// Start event stream processing</span>
+<span class="n">sparkStreamingContext</span><span class="o">.</span><span class="n">start</span><span class="o">()</span>
+</pre></div>
+</div>
+<p>A <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkStreamAdapter">SparkStreamAdapter</a> is instantiated with a Spark <code class="docutils literal"><span class="pre">StreamingContext</span></code> and a <a class="reference internal" href="../reference/event-sourcing.html#event-serialization"><span class="std std-ref">Custom event serialization</span></a> configuration (if any). The <code class="docutils literal"><span class="pre">eventStream</span></code> method exposes an event log with given <code class="docutils literal"><span class="pre">logName</span></code> as <code class="docutils literal"><span class="pre">DStream[DurableEvent]</span></code>. The stream is updated by interacting with the event log&#8217;s replication endpoint at given <code class="docutils literal"><span class="pre">host</span></code> and <code class="docutils literal"><span class="pre">port</span></code>.</p>
+<p>The stream starts from the given <code class="docutils literal"><span class="pre">fromSequenceNr</span></code> and is updated with both, replayed events and newly written events. The storage level of events in Spark can be set with the <code class="docutils literal"><span class="pre">storageLevel</span></code> parameter. Applications that want to enforce event processing in strict event log storage order should repartition the stream with <code class="docutils literal"><span class="pre">.repartition(1)</span></code>, as shown in the example.</p>
+<p>For persisting the stream processing progress, an application should store the last processed sequence number at a custom place. When the application is restarted, the stored sequence number should be used as argument to the <code class="docutils literal"><span class="pre">eventStream</span></code> call. Later versions will additionally support internal storage of event processing progresses.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">The full example source code is in <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-spark/src/main/scala/com/rbmhtechnology/example/spark/SparkStreamAdapterExample.scala">SparkStreamAdapterExample.scala</a></p>
+</div>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>See also <a class="reference internal" href="../reference/event-log.html#replication-endpoints"><span class="std std-ref">Replication endpoints</span></a> in the reference documentation.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+		    
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="vertx.html" class="float-right" title="Vert.x adapter">Next</a>
+      
+      
+        <a href="stream.html" title="Akka Streams adapter">Previous</a>
+      
+    </div>
+  
+        </div>
+	  </div>
+    <div class="wrapper-footer">
+<footer>
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015 - 2016 Red Bull Media House.  | <a href="http://rbmhtechnology.github.io/imprint" target="_blank">Imprint</a> | <a href="http://rbmhtechnology.github.io/termsconditions" target="_blank">Terms &amp; Conditions</a> | <a href="http://rbmhtechnology.github.io/dataprivacypolicy" target="_blank">Data Privacy Policy</a> 
+    </p>
+  </div>
+
+</footer>
+</div>
+      
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.8-SNAPSHOT',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/tabbedcode.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

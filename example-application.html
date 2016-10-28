@@ -37,7 +37,6 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Eventuate" href="index.html"/>
-        <link rel="next" title="Current limitations" href="current-limitations.html"/>
         <link rel="prev" title="FAQ" href="faq.html"/> 
 
   
@@ -112,7 +111,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference/api-docs.html">API docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
@@ -128,10 +126,16 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/adapters.html">Adapters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adapters/stream.html">Akka Streams adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/spark.html">Spark adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html">Vert.x adapter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-docs.html">API docs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="resources.html">Resources</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="resources.html#articles">Articles</a></li>
 <li class="toctree-l2"><a class="reference internal" href="resources.html#presentations">Presentations</a></li>
@@ -165,7 +169,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#disaster-recovery">Disaster recovery</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="current-limitations.html">Current limitations</a></li>
 </ul>
 
           
@@ -202,6 +205,10 @@
             
   <div class="section" id="example-application">
 <span id="id1"></span><h1>Example application<a class="headerlink" href="#example-application" title="Permalink to this headline">¶</a></h1>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">The example application is rather outdated and we plan to design and implement a better one to demonstrate the latest Eventuate features and best practices. If you have any preferences what you&#8217;d like to see in a new example application, please add a comment to ticket <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/337">#337</a> or contact us in the <a class="reference external" href="https://gitter.im/RBMHTechnology/eventuate">forum</a>.</p>
+</div>
 <p>The example application is an over-simplified order management application that allows users to add and remove items from orders via a command-line interface. Order instances are replicated across locations and can be updated at any location. Orders remain writeable during partitions and conflicting updates can be resolved interactively when the partition heals. The example application source code is available as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example/ordermgnt">Scala version</a> and as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/japi/ordermgnt">Java 8 version</a>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -254,9 +261,9 @@
 <li><code class="docutils literal"><span class="pre">cancel</span> <span class="pre">&lt;order-id&gt;</span></code> cancels an order.</li>
 <li><code class="docutils literal"><span class="pre">save</span> <span class="pre">&lt;order-id&gt;</span></code> saves a snapshot of an order.</li>
 </ul>
-<p>If there’s a conflict from a concurrent update, the conflict must be resolved by selecting one of the conflicting versions:</p>
+<p>If there’s a conflict from a concurrent update, the conflict must be resolved by selecting one of the conflicting versions<a class="footnote-reference" href="#id5" id="id2">[1]</a>:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">resolve</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;index&gt;</span></code> resolves a conflict by selecting a version <code class="docutils literal"><span class="pre">index</span></code>. Only the location that initially created the order can resolve the conflict<a class="footnote-reference" href="#id4" id="id2">[1]</a>.</li>
+<li><code class="docutils literal"><span class="pre">resolve</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;index&gt;</span></code> resolves a conflict by selecting a version <code class="docutils literal"><span class="pre">index</span></code>. Only the location that initially created the order can resolve the conflict<a class="footnote-reference" href="#id6" id="id3">[2]</a>.</li>
 </ul>
 <p>Other commands are:</p>
 <ul class="simple">
@@ -267,7 +274,7 @@
 <p>Update results from user commands and replicated events are written to <cite>stdout</cite>. A location’s current state is also printed after successful recovery.</p>
 </div>
 <div class="section" id="running">
-<span id="id3"></span><h2>Running<a class="headerlink" href="#running" title="Permalink to this headline">¶</a></h2>
+<span id="id4"></span><h2>Running<a class="headerlink" href="#running" title="Permalink to this headline">¶</a></h2>
 <p>Before you can run the example application, install <a class="reference external" href="http://www.scala-sbt.org/">sbt</a> and run:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">compile</span>
 </pre></div>
@@ -317,10 +324,16 @@
 </pre></div>
 </div>
 <p>Disaster recovery can also start from a previous, older backup of the LevelDB directory. After having removed the current LevelDB directory, install the backup and try running disaster recovery again.</p>
-<table class="docutils footnote" frame="void" id="id4" rules="none">
+<table class="docutils footnote" frame="void" id="id5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>This is a static rule for distributed agreement which doesn’t require coordination among locations.</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id2">[1]</a></td><td>Merging the content of conflicting versions is another option which will be supported in a later release (see <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/101">#101</a>).</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>This is a static rule for distributed agreement which doesn’t require coordination among locations.</td></tr>
 </tbody>
 </table>
 </div>
@@ -330,8 +343,6 @@
           </div>
 		    
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="current-limitations.html" class="float-right" title="Current limitations">Next</a>
       
       
         <a href="faq.html" title="FAQ">Previous</a>
