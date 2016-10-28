@@ -26,4 +26,9 @@ eventuate-log-leveldb
 
 .. literalinclude:: ../../../eventuate-log-leveldb/src/main/resources/reference.conf
 
+eventuate-adapter-stream
+------------------------
+
+.. literalinclude:: ../../../eventuate-adapter-stream/src/main/resources/reference.conf
+
 .. _config: https://github.com/typesafehub/config

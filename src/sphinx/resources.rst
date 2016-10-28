@@ -18,8 +18,7 @@ Articles
 Presentations
 -------------
 
-- 2015-11-05 `Akka Persistence and Eventuate - A CQRS/ES tool comparison`_ (`video <https://www.youtube.com/watch?v=vFVry457XLk>`_)
-
+- 2015-11-05 `Akka Persistence and Eventuate - A CQRS/ES tool comparison`_
 
 .. _Event sourcing at global scale: https://krasserm.github.io/2015/01/13/event-sourcing-at-global-scale/
 .. _A service framework for operation-based CRDTs: http://krasserm.github.io/2016/10/19/operation-based-crdt-framework/

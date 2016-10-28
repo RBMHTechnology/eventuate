@@ -423,12 +423,12 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
       sender() ! r
       channel.foreach(_ ! r)
     case w: Write =>
-      processWrites(Seq(w))
+      processWrites(Seq(w.withReplyToDefault(sender())))
     case WriteN(writes) =>
       processWrites(writes)
       sender() ! WriteNComplete
     case w: ReplicationWrite =>
-      processReplicationWrites(Seq(w.copy(replyTo = sender())))
+      processReplicationWrites(Seq(w.withReplyToDefault(sender())))
     case ReplicationWriteN(writes) =>
       processReplicationWrites(writes)
       sender() ! ReplicationWriteNComplete
@@ -529,11 +529,12 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
       case Success((updatedWrites, updatedEvents, clock2)) =>
         clock = clock2
         updatedWrites.foreach { w =>
-          val ws = ReplicationWriteSuccess(w.size, w.replicationProgress, w.sourceLogId, clock2.versionVector, w.continueReplication)
+          val ws = ReplicationWriteSuccess(w.events, w.replicationProgress, w.sourceLogId, clock2.versionVector, w.continueReplication)
           registry.notifySubscribers(w.events)
           channel.foreach(_ ! w)
           implicit val dispatcher = context.system.dispatchers.defaultGlobalDispatcher
-          writeReplicationProgress(w.sourceLogId, w.replicationProgress) onComplete {
+          if (w.sourceLogId == DurableEvent.UndefinedLogId) w.replyTo ! ws
+          else writeReplicationProgress(w.sourceLogId, w.replicationProgress) onComplete {
             case Success(_) =>
               w.replyTo ! ws
             case Failure(e) =>

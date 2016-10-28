@@ -35,7 +35,11 @@ object EventsourcingProtocol {
    * Instructs an event log to write the given `events`.
    */
   case class Write(events: Seq[DurableEvent], initiator: ActorRef, replyTo: ActorRef, correlationId: Int, instanceId: Int) extends UpdateableEventBatch[Write] {
-    override def update(events: Seq[DurableEvent]): Write = copy(events = events)
+    override def update(events: Seq[DurableEvent]): Write =
+      copy(events = events)
+
+    def withReplyToDefault(replyTo: ActorRef): Write =
+      if (this.replyTo eq null) copy(replyTo = replyTo) else this
   }
 
   /**

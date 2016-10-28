@@ -481,7 +481,7 @@ trait EventsourcedView extends Actor with Stash {
    * Initiates recovery.
    */
   override def preStart(): Unit = {
-    _lastHandledEvent = DurableEvent(id)
+    _lastHandledEvent = DurableEvent(null, id)
     context.watch(eventLog)
     init()
   }

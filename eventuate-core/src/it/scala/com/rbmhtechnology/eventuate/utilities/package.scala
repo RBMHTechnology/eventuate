@@ -73,7 +73,7 @@ package object utilities {
       rps <- readProgress
       res <- readEvents(rps)
       wes <- writeEvents(res)
-    } yield wes.num
+    } yield wes.events.size
 
     replication.await
   }

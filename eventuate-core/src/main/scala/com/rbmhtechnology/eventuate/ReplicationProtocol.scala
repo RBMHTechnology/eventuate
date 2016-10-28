@@ -203,13 +203,17 @@ object ReplicationProtocol {
    * `sourceLogId` along with the last read position in the source log (`replicationProgress`).
    */
   case class ReplicationWrite(events: Seq[DurableEvent], replicationProgress: Long, sourceLogId: String, currentSourceVersionVector: VectorTime, continueReplication: Boolean = false, replyTo: ActorRef = null) extends UpdateableEventBatch[ReplicationWrite] {
-    override def update(events: Seq[DurableEvent]): ReplicationWrite = copy(events = events)
+    override def update(events: Seq[DurableEvent]): ReplicationWrite =
+      copy(events = events)
+
+    def withReplyToDefault(replyTo: ActorRef): ReplicationWrite =
+      if (this.replyTo eq null) copy(replyTo = replyTo) else this
   }
 
   /**
    * Success reply after a [[ReplicationWrite]].
    */
-  case class ReplicationWriteSuccess(num: Int, storedReplicationProgress: Long, sourceLogId: String, currentTargetVersionVector: VectorTime, continueReplication: Boolean = false)
+  case class ReplicationWriteSuccess(events: Seq[DurableEvent], storedReplicationProgress: Long, sourceLogId: String, currentTargetVersionVector: VectorTime, continueReplication: Boolean = false)
 
   /**
    * Failure reply after a [[ReplicationWrite]].

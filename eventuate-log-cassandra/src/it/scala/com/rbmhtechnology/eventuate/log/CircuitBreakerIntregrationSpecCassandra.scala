@@ -258,7 +258,7 @@ class CircuitBreakerIntregrationSpecCassandra extends TestKit(ActorSystem("test"
     val w = ReplicationWrite(Seq(e), sequenceNr, "source", VectorTime.Zero)
 
     log.ask(w) flatMap {
-      case s: ReplicationWriteSuccess => Future.successful(s.num)
+      case s: ReplicationWriteSuccess => Future.successful(s.events.size)
       case f: ReplicationWriteFailure => Future.failed(f.cause)
     }
   }

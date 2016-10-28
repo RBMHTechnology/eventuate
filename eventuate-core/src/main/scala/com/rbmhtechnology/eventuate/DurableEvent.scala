@@ -47,7 +47,7 @@ import scala.collection.immutable.Seq
  */
 case class DurableEvent(
   payload: Any,
-  emitterId: String,
+  emitterId: String = DurableEvent.UndefinedEmittedId,
   emitterAggregateId: Option[String] = None,
   customDestinationAggregateIds: Set[String] = Set(),
   systemTimestamp: Long = 0L,
@@ -104,11 +104,9 @@ case class DurableEvent(
 }
 
 object DurableEvent {
+  val UndefinedEmittedId = ""
   val UndefinedLogId = ""
   val UndefinedSequenceNr = 0L
-
-  def apply(emitterId: String): DurableEvent =
-    apply(null, emitterId)
 }
 
 /**
