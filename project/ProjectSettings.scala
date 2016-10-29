@@ -103,6 +103,10 @@ object ProjectSettings {
     HeaderPlugin.settingsFor(IntegrationTest, MultiJvm) ++
     AutomateHeaderPlugin.automateFor(IntegrationTest, MultiJvm)
 
+  lazy val publishIntegrationTestSettings = Seq(
+    publishArtifact in Test := true
+  ) ++ Classpaths.defaultPackageKeys.map(tk => addArtifact(artifact in (IntegrationTest, tk), tk in IntegrationTest))
+
   // ----------------------------------------------------------------------
   //  Protobuf compiler settings
   // ----------------------------------------------------------------------
