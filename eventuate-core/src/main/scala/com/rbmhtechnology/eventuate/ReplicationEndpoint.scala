@@ -659,14 +659,15 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
   }
 
   val writing: Receive = {
-    case writeSuccess @ ReplicationWriteSuccess(_, storedReplicationProgress, _, _, false) =>
+    case writeSuccess @ ReplicationWriteSuccess(_, _, false) =>
       notifyLocalAcceptor(writeSuccess)
       context.become(idle)
       scheduleRead()
-    case writeSuccess @ ReplicationWriteSuccess(_, storedReplicationProgress, _, currentTargetVersionVector, true) =>
+    case writeSuccess @ ReplicationWriteSuccess(_, metadata, true) =>
+      val sourceMetadata = metadata(source.logId)
       notifyLocalAcceptor(writeSuccess)
       context.become(reading)
-      read(storedReplicationProgress, currentTargetVersionVector)
+      read(sourceMetadata.replicationProgress, sourceMetadata.currentVersionVector)
     case ReplicationWriteFailure(cause) =>
       log.warning("replication write failed: {}", cause)
       context.become(idle)
@@ -709,7 +710,7 @@ private class Replicator(target: ReplicationTarget, source: ReplicationSource, f
   private def write(events: Seq[DurableEvent], replicationProgress: Long, currentSourceVersionVector: VectorTime, continueReplication: Boolean): Unit = {
     implicit val timeout = Timeout(settings.writeTimeout)
 
-    target.log ? ReplicationWrite(events, replicationProgress, source.logId, currentSourceVersionVector, continueReplication) recover {
+    target.log ? ReplicationWrite(events, Map(source.logId -> ReplicationMetadata(replicationProgress, currentSourceVersionVector)), continueReplication) recover {
       case t => ReplicationWriteFailure(t)
     } pipeTo self
   }

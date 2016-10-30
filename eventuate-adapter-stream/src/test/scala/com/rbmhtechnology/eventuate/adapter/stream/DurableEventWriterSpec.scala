@@ -155,17 +155,20 @@ class EmissionWriterSpec extends DurableEventWriterSpec[DurableEvent, DurableEve
 class ReplicationWriterSpec extends DurableEventWriterSpec[Seq[DurableEvent], DurableEvent] {
   import DurableEventWriterSpec._
 
+  val undefinedMetadata: Map[String, ReplicationMetadata] =
+    Map(UndefinedLogId -> ReplicationMetadata(UndefinedSequenceNr, VectorTime.Zero))
+
   override def writer(log: ActorRef): Graph[FlowShape[Seq[DurableEvent], DurableEvent], NotUsed] =
     DurableEventWriter.replicationWriter(EmitterId, log)
 
-  def expectWrite(events: Seq[DurableEvent]): Seq[DurableEvent] = {
+  def expectWrite(events: Seq[DurableEvent], metadata: Map[String, ReplicationMetadata] = undefinedMetadata): Seq[DurableEvent] = {
     val written = events.map(_.copy(emitterId = EmitterId, processId = UndefinedLogId))
-    log.expectMsg(ReplicationWrite(written, UndefinedSequenceNr, UndefinedLogId, VectorTime.Zero))
+    log.expectMsg(ReplicationWrite(written, metadata))
     written
   }
 
   def writeSuccess(written: Seq[DurableEvent]): Unit = {
-    log.sender() ! ReplicationWriteSuccess(written, UndefinedSequenceNr, UndefinedLogId, VectorTime.Zero)
+    log.sender() ! ReplicationWriteSuccess(written, undefinedMetadata)
   }
 
   def writeFailure(cause: Throwable): Unit = {
@@ -237,6 +240,35 @@ class ReplicationWriterSpec extends DurableEventWriterSpec[Seq[DurableEvent], Du
       val written3 = expectWrite(Seq(e7, e8))
       writeSuccess(written3)
       written3.foreach(snk.expectNext)
+    }
+    "generate replication metadata for multiple sources" in {
+      val srcLogIdA = "a"
+      val srcLogIdB = "b"
+
+      val e1a = e1.copy(localLogId = srcLogIdA, localSequenceNr = 1)
+      val e2a = e1.copy(localLogId = srcLogIdA, localSequenceNr = 2)
+      val e3a = e1.copy(localLogId = srcLogIdA, localSequenceNr = 3)
+      val e4b = e1.copy(localLogId = srcLogIdB, localSequenceNr = 1)
+
+      snk.request(4)
+      src.sendNext(Seq(e1a))
+
+      val written1 = expectWrite(Seq(e1a), Map(
+        srcLogIdA -> ReplicationMetadata(1, VectorTime.Zero)))
+
+      src.sendNext(Seq(e2a))
+      src.sendNext(Seq(e3a))
+      src.sendNext(Seq(e4b))
+
+      writeSuccess(written1)
+      written1.foreach(snk.expectNext)
+
+      val written2 = expectWrite(Seq(e2a, e3a, e4b), Map(
+        srcLogIdA -> ReplicationMetadata(3, VectorTime.Zero),
+        srcLogIdB -> ReplicationMetadata(1, VectorTime.Zero)))
+
+      writeSuccess(written2)
+      written2.foreach(snk.expectNext)
     }
   }
 }

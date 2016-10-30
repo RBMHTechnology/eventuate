@@ -247,7 +247,7 @@ class CircuitBreakerIntregrationSpecCassandra extends TestKit(ActorSystem("test"
   }
 
   def assertUnavailable(): Unit = {
-    val w = ReplicationWrite(Seq(), 0L, "source", VectorTime.Zero)
+    val w = ReplicationWrite(Seq(), Map("source" -> ReplicationMetadata(0L, VectorTime.Zero)))
     eventually {
       intercept[EventLogUnavailableException] { log.ask(w).await }
     }
@@ -255,7 +255,7 @@ class CircuitBreakerIntregrationSpecCassandra extends TestKit(ActorSystem("test"
 
   def write(payload: Any, sequenceNr: Long)(implicit executor: ExecutionContext): Future[Int] = {
     val e = DurableEvent(payload, "emitter", vectorTimestamp = VectorTime("source" -> sequenceNr))
-    val w = ReplicationWrite(Seq(e), sequenceNr, "source", VectorTime.Zero)
+    val w = ReplicationWrite(Seq(e), Map("source" -> ReplicationMetadata(sequenceNr, VectorTime.Zero)))
 
     log.ask(w) flatMap {
       case s: ReplicationWriteSuccess => Future.successful(s.events.size)

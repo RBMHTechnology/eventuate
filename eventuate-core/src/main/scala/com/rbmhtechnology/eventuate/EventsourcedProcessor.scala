@@ -209,8 +209,8 @@ trait EventsourcedProcessor extends EventsourcedWriter[Long, Long] with ActorLog
     }
 
   private def writeBatch(events: Seq[DurableEvent], progress: Long): Future[Long] =
-    targetEventLog.ask(ReplicationWrite(events, progress, id, VectorTime.Zero))(Timeout(writeTimeout)).flatMap {
-      case s: ReplicationWriteSuccess => Future.successful(s.storedReplicationProgress)
+    targetEventLog.ask(ReplicationWrite(events, Map(id -> ReplicationMetadata(progress, VectorTime.Zero))))(Timeout(writeTimeout)).flatMap {
+      case _: ReplicationWriteSuccess => Future.successful(progress)
       case f: ReplicationWriteFailure => Future.failed(f.cause)
     }
 }
