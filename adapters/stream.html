@@ -218,9 +218,13 @@
 <span class="k">implicit</span> <span class="k">val</span> <span class="n">system</span><span class="k">:</span> <span class="kt">ActorSystem</span> <span class="o">=</span> <span class="nc">ActorSystem</span><span class="o">(</span><span class="s">&quot;example&quot;</span><span class="o">)</span>
 <span class="k">implicit</span> <span class="k">val</span> <span class="n">materializer</span><span class="k">:</span> <span class="kt">Materializer</span> <span class="o">=</span> <span class="nc">ActorMaterializer</span><span class="o">()</span>
 
-<span class="k">val</span> <span class="n">logA</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="n">createLog</span><span class="o">(</span><span class="s">&quot;A&quot;</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">logB</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="n">createLog</span><span class="o">(</span><span class="s">&quot;B&quot;</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">logC</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="n">createLog</span><span class="o">(</span><span class="s">&quot;C&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">logAId</span> <span class="k">=</span> <span class="s">&quot;A&quot;</span>
+<span class="k">val</span> <span class="n">logBId</span> <span class="k">=</span> <span class="s">&quot;B&quot;</span>
+<span class="k">val</span> <span class="n">logCId</span> <span class="k">=</span> <span class="s">&quot;C&quot;</span>
+
+<span class="k">val</span> <span class="n">logA</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="n">createLog</span><span class="o">(</span><span class="n">logAId</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">logB</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="n">createLog</span><span class="o">(</span><span class="n">logBId</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">logC</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="n">createLog</span><span class="o">(</span><span class="n">logCId</span><span class="o">)</span>
 
 <span class="k">def</span> <span class="n">createLog</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span>
   <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">LeveldbEventLog</span><span class="o">.</span><span class="n">props</span><span class="o">(</span><span class="n">id</span><span class="o">))</span>
@@ -367,8 +371,8 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="consuming-from-a-multiple-sources">
-<h3>Consuming from a multiple sources<a class="headerlink" href="#consuming-from-a-multiple-sources" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="consuming-from-multiple-sources">
+<span id="consume-multiple-sources"></span><h3>Consuming from multiple sources<a class="headerlink" href="#consuming-from-multiple-sources" title="Permalink to this headline">¶</a></h3>
 <p>An event processor may also consume events from multiple sources. In the following example, the processor consumes the merged stream from <code class="docutils literal"><span class="pre">logA</span></code> and <code class="docutils literal"><span class="pre">logB</span></code> and writes the processing results to <code class="docutils literal"><span class="pre">logC</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">Source</span><span class="o">.</span><span class="n">fromGraph</span><span class="o">(</span><span class="nc">DurableEventSource</span><span class="o">(</span><span class="n">logA</span><span class="o">))</span>
   <span class="o">.</span><span class="n">merge</span><span class="o">(</span><span class="nc">DurableEventSource</span><span class="o">(</span><span class="n">logB</span><span class="o">))</span>
@@ -385,7 +389,22 @@
 </div>
 <div class="section" id="event-processing-progress-tracking">
 <h3>Event processing progress tracking<a class="headerlink" href="#event-processing-progress-tracking" title="Permalink to this headline">¶</a></h3>
-<p>Event processing <em>progress</em> is not tracked automatically at the moment. An application should therefore save at regular intervals a recent <strong>source</strong> sequence number that has been successfully processed by all processors that consume from a shared source. This sequence number should then be used as <code class="docutils literal"><span class="pre">fromSequenceNr</span></code> argument when creating a <code class="docutils literal"><span class="pre">DurableEventSource</span></code>. We will support automated sequence number tracking in one of the next Eventuate releases.</p>
+<p>An event processor does not only write processed events to a target event log but also writes the latest source log sequence number to that log for tracking processing progress. When composing an event processing stream, an application should first read processing progresses from target logs in order to initialize <code class="docutils literal"><span class="pre">DurableEventSource</span></code>s with appropriate <code class="docutils literal"><span class="pre">fromSequenceNr</span></code>s. Eventuate provides <a class="reference external" href="../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.stream.ProgressSource$">ProgressSource</a> for reading the processing progress for a given source from a target log.</p>
+<p>In <a class="reference internal" href="#consume-multiple-sources"><span class="std std-ref">Consuming from multiple sources</span></a>, for example, the processing progress for <code class="docutils literal"><span class="pre">logA</span></code> and <code class="docutils literal"><span class="pre">logB</span></code> is stored at <code class="docutils literal"><span class="pre">logC</span></code>. The following example creates two sources, <code class="docutils literal"><span class="pre">sourceA</span></code> and <code class="docutils literal"><span class="pre">sourceB</span></code>, that first read the progress for values for <code class="docutils literal"><span class="pre">logA</span></code> and <code class="docutils literal"><span class="pre">logB</span></code> from <code class="docutils literal"><span class="pre">logC</span></code>, respectively, and then create the actual <code class="docutils literal"><span class="pre">DurableEventSource</span></code>s with an appropriate <code class="docutils literal"><span class="pre">fromSequenceNr</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.stream.ProgressSource</span>
+
+<span class="k">val</span> <span class="n">progressSourceA</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromGraph</span><span class="o">(</span><span class="nc">ProgressSource</span><span class="o">(</span><span class="n">logAId</span><span class="o">,</span> <span class="n">logC</span><span class="o">))</span>
+<span class="k">val</span> <span class="n">progressSourceB</span> <span class="k">=</span> <span class="nc">Source</span><span class="o">.</span><span class="n">fromGraph</span><span class="o">(</span><span class="nc">ProgressSource</span><span class="o">(</span><span class="n">logBId</span><span class="o">,</span> <span class="n">logC</span><span class="o">))</span>
+
+<span class="k">val</span> <span class="n">sourceA</span> <span class="k">=</span> <span class="n">progressSourceA</span><span class="o">.</span><span class="n">flatMapConcat</span> <span class="o">{</span> <span class="n">progress</span> <span class="k">=&gt;</span>
+  <span class="nc">Source</span><span class="o">.</span><span class="n">fromGraph</span><span class="o">(</span><span class="nc">DurableEventSource</span><span class="o">(</span><span class="n">logA</span><span class="o">,</span> <span class="n">fromSequenceNr</span> <span class="k">=</span> <span class="n">progress</span><span class="o">))</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">sourceB</span> <span class="k">=</span> <span class="n">progressSourceB</span><span class="o">.</span><span class="n">flatMapConcat</span> <span class="o">{</span> <span class="n">progress</span> <span class="k">=&gt;</span>
+  <span class="nc">Source</span><span class="o">.</span><span class="n">fromGraph</span><span class="o">(</span><span class="nc">DurableEventSource</span><span class="o">(</span><span class="n">logB</span><span class="o">,</span> <span class="n">fromSequenceNr</span> <span class="k">=</span> <span class="n">progress</span><span class="o">))</span>
+<span class="o">}</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>

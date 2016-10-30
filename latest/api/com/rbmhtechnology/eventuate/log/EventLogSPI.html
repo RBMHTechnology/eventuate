@@ -288,23 +288,23 @@ must have replicated these events before they are allowed to be physically delet
     </span>
       <p class="shortcomment cmt">Asynchronously writes the current snapshot of the event log clock
 </p>
-    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#writeReplicationProgress" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="writeReplicationProgress(logId:String,progress:Long):scala.concurrent.Future[Unit]"></a>
-      <a id="writeReplicationProgress(String,Long):Future[Unit]"></a>
+    </li><li name="com.rbmhtechnology.eventuate.log.EventLogSPI#writeReplicationProgresses" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="writeReplicationProgresses(progresses:Map[String,Long]):scala.concurrent.Future[Unit]"></a>
+      <a id="writeReplicationProgresses(Map[String,Long]):Future[Unit]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">writeReplicationProgress</span><span class="params">(<span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="progress">progress: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+        <span class="name">writeReplicationProgresses</span><span class="params">(<span name="progresses">progresses: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Long">Long</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSPI@writeReplicationProgress(logId:String,progress:Long):scala.concurrent.Future[Unit]" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.rbmhtechnology.eventuate.log.EventLogSPI@writeReplicationProgresses(progresses:Map[String,Long]):scala.concurrent.Future[Unit]" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Asynchronously writes the replication <code>progress</code> for given source <code>logId</code>.</p>
+      <p class="shortcomment cmt">Asynchronously writes the replication progresses for source log ids given by <code>progresses</code> keys.</p>
     </li></ol>
             </div>
 

@@ -85,8 +85,10 @@ In the above example, both processors use their own ``DurableEventSource`` to re
 .. includecode:: ../../../eventuate-example-stream/src/main/scala/com/rbmhtechnology/example/stream/DurableEventProcessorExample.scala
    :snippet: durable-event-processor-shared-source
 
-Consuming from a multiple sources
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _consume-multiple-sources:
+
+Consuming from multiple sources
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 An event processor may also consume events from multiple sources. In the following example, the processor consumes the merged stream from ``logA`` and ``logB`` and writes the processing results to ``logC``:
 
@@ -101,7 +103,12 @@ An event processor may also consume events from multiple sources. In the followi
 Event processing progress tracking
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Event processing *progress* is not tracked automatically at the moment. An application should therefore save at regular intervals a recent **source** sequence number that has been successfully processed by all processors that consume from a shared source. This sequence number should then be used as ``fromSequenceNr`` argument when creating a ``DurableEventSource``. We will support automated sequence number tracking in one of the next Eventuate releases.
+An event processor does not only write processed events to a target event log but also writes the latest source log sequence number to that log for tracking processing progress. When composing an event processing stream, an application should first read processing progresses from target logs in order to initialize ``DurableEventSource``\ s with appropriate ``fromSequenceNr``\ s. Eventuate provides ProgressSource_ for reading the processing progress for a given source from a target log. 
+
+In :ref:`consume-multiple-sources`, for example, the processing progress for ``logA`` and ``logB`` is stored at ``logC``. The following example creates two sources, ``sourceA`` and ``sourceB``, that first read the progress for values for ``logA`` and ``logB`` from ``logC``, respectively, and then create the actual ``DurableEventSource``\ s with an appropriate ``fromSequenceNr``:
+
+.. includecode:: ../../../eventuate-example-stream/src/main/scala/com/rbmhtechnology/example/stream/ProgressSourceExample.scala
+   :snippet: progress-source
 
 .. _Akka Streams: http://doc.akka.io/docs/akka/2.4/scala/stream/index.html
 .. _Reactive Streams: http://www.reactive-streams.org/
@@ -113,5 +120,6 @@ Event processing *progress* is not tracked automatically at the moment. An appli
 .. _DurableEventSource: ../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.stream.DurableEventSource$
 .. _DurableEventWriter: ../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.stream.DurableEventWriter$
 .. _DurableEventProcessor: ../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.stream.DurableEventProcessor$
+.. _ProgressSource: ../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.stream.ProgressSource$
 
 .. _causal stream merge stage: https://github.com/RBMHTechnology/eventuate/issues/342
