@@ -105,9 +105,14 @@ private object BatchWriteStage {
     }
 
   def replicationBatchWriter(id: String, eventLog: ActorRef)(implicit executionContext: ExecutionContext, timeout: Timeout): BatchWriter = (events: Seq[DurableEvent]) =>
-    eventLog.ask(ReplicationWrite(events.map(_.copy(emitterId = id, processId = UndefinedLogId)), 0L, UndefinedLogId, VectorTime.Zero)).flatMap {
+    eventLog.ask(ReplicationWrite(events.map(_.copy(emitterId = id, processId = UndefinedLogId)), replicationProgresses(events).mapValues(ReplicationMetadata(_, VectorTime.Zero)))).flatMap {
       case s: ReplicationWriteSuccess => Future.successful(s.events)
       case f: ReplicationWriteFailure => Future.failed(f.cause)
+    }
+
+  def replicationProgresses(events: Seq[DurableEvent]): Map[String, Long] =
+    events.foldLeft[Map[String, Long]](Map.empty) {
+      case (acc, event) => acc + (event.localLogId -> event.localSequenceNr)
     }
 }
 

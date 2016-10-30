@@ -77,7 +77,7 @@ class NotificationChannelSpec extends TestKit(ActorSystem("test")) with WordSpec
     channel ! Updated(events)
 
   def replicaVersionUpdate(targetLogId: String, targetVersionVector: VectorTime): Unit =
-    channel ! ReplicationWrite(Nil, 10L, targetLogId, targetVersionVector)
+    channel ! ReplicationWrite(Nil, Map(targetLogId -> ReplicationMetadata(10L, targetVersionVector)))
 
   "A notification channel" must {
     "send a notification if an update is not the causal past of the target" in {

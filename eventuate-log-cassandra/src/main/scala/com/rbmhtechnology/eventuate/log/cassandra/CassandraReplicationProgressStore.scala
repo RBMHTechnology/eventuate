@@ -18,6 +18,8 @@ package com.rbmhtechnology.eventuate.log.cassandra
 
 import java.lang.{ Long => JLong }
 
+import com.datastax.driver.core.ResultSetFuture
+
 import scala.collection.JavaConverters._
 import scala.concurrent._
 
@@ -34,6 +36,6 @@ private[eventuate] class CassandraReplicationProgressStore(cassandra: Cassandra,
       if (resultSet.isExhausted) 0L else resultSet.one().getLong("source_log_read_pos")
     }
 
-  def writeReplicationProgressAsync(sourceLogId: String, progress: Long)(implicit executor: ExecutionContext): Future[Unit] =
-    cassandra.session.executeAsync(cassandra.preparedWriteReplicationProgressStatement.bind(logId, sourceLogId, progress: JLong)).map(_ => ())
+  def writeReplicationProgressesAsync(progresses: Map[String, Long])(implicit executor: ExecutionContext): Future[Unit] =
+    Future.sequence(progresses.map(p => listenableFutureToFuture(cassandra.session.executeAsync(cassandra.preparedWriteReplicationProgressStatement.bind(logId, p._1, p._2: JLong))))).map(_ => ())
 }

@@ -147,7 +147,7 @@ private class Recovery(endpoint: ReplicationEndpoint) {
    */
   private def updateReplicationMetadata(logActor: ActorRef, logId: String, replicationProgress: Long): Future[Long] = {
     readResult[ReplicationWriteSuccess, ReplicationWriteFailure, Long](
-      logActor.ask(ReplicationWrite(Seq.empty, replicationProgress, logId, VectorTime.Zero))(localWriteTimeout), _.storedReplicationProgress, _.cause)
+      logActor.ask(ReplicationWrite(Seq.empty, Map(logId -> ReplicationMetadata(replicationProgress, VectorTime.Zero))))(localWriteTimeout), _ => replicationProgress, _.cause)
   }
 
   /**
@@ -299,7 +299,7 @@ private class RecoveryManager(endpointId: String, links: Set[RecoveryLink]) exte
   def receive = recoveringEvents(links)
 
   private def recoveringEvents(active: Set[RecoveryLink]): Receive = {
-    case writeSuccess: ReplicationWriteSuccess if active.exists(_.replicationLink.source.logId == writeSuccess.sourceLogId) =>
+    case writeSuccess: ReplicationWriteSuccess if active.exists(link => writeSuccess.metadata.contains(link.replicationLink.source.logId)) =>
       active.find(recoveryForLinkFinished(_, writeSuccess)).foreach { link =>
         val updatedActive = removeLink(active, link)
         if (updatedActive.isEmpty) {
@@ -311,7 +311,10 @@ private class RecoveryManager(endpointId: String, links: Set[RecoveryLink]) exte
   }
 
   private def recoveryForLinkFinished(link: RecoveryLink, writeSuccess: ReplicationWriteSuccess): Boolean =
-    link.replicationLink.source.logId == writeSuccess.sourceLogId && link.remoteSequenceNr <= writeSuccess.storedReplicationProgress
+    writeSuccess.metadata.get(link.replicationLink.source.logId) match {
+      case Some(md) => link.remoteSequenceNr <= md.replicationProgress
+      case None     => false
+    }
 
   private def removeLink(active: Set[RecoveryLink], link: RecoveryLink): Set[RecoveryLink] = {
     val updatedActive = active - link

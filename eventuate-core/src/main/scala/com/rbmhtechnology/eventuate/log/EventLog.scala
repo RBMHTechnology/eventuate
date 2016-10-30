@@ -165,9 +165,9 @@ trait EventLogSPI[A] { this: Actor =>
   def readReplicationProgress(logId: String): Future[Long]
 
   /**
-   * Asynchronously writes the replication `progress` for given source `logId`.
+   * Asynchronously writes the replication progresses for source log ids given by `progresses` keys.
    */
-  def writeReplicationProgress(logId: String, progress: Long): Future[Unit]
+  def writeReplicationProgresses(progresses: Map[String, Long]): Future[Unit]
 
   /**
    * Asynchronously batch-reads events from the raw event log. At most `max` events must be returned that are
@@ -375,7 +375,7 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
     case SetReplicationProgress(sourceLogId, progress) =>
       val sdr = sender()
       implicit val dispatcher = context.dispatcher
-      writeReplicationProgress(sourceLogId, progress) onComplete {
+      writeReplicationProgresses(Map(sourceLogId -> progress)) onComplete {
         case Success(_) => sdr ! SetReplicationProgressSuccess(sourceLogId, progress)
         case Failure(e) => sdr ! SetReplicationProgressFailure(e)
       }
@@ -524,17 +524,16 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
   }
 
   private def processReplicationWrites(writes: Seq[ReplicationWrite]): Unit = {
-    writes.foreach(w => replicaVersionVectors = replicaVersionVectors.updated(w.sourceLogId, w.currentSourceVersionVector))
+    for { w <- writes; (id, m) <- w.metadata } replicaVersionVectors = replicaVersionVectors.updated(id, m.currentVersionVector)
     writeBatches(writes, prepareReplicatedEvents) match {
       case Success((updatedWrites, updatedEvents, clock2)) =>
         clock = clock2
         updatedWrites.foreach { w =>
-          val ws = ReplicationWriteSuccess(w.events, w.replicationProgress, w.sourceLogId, clock2.versionVector, w.continueReplication)
+          val ws = ReplicationWriteSuccess(w.events, w.metadata.mapValues(_.withVersionVector(clock2.versionVector)), w.continueReplication)
           registry.notifySubscribers(w.events)
           channel.foreach(_ ! w)
           implicit val dispatcher = context.system.dispatchers.defaultGlobalDispatcher
-          if (w.sourceLogId == DurableEvent.UndefinedLogId) w.replyTo ! ws
-          else writeReplicationProgress(w.sourceLogId, w.replicationProgress) onComplete {
+          writeReplicationProgresses(w.replicationProgresses) onComplete {
             case Success(_) =>
               w.replyTo ! ws
             case Failure(e) =>

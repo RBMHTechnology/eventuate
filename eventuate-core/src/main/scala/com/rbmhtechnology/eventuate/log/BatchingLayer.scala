@@ -114,7 +114,11 @@ private class DefaultBatcher(val eventLog: ActorRef) extends Batcher[Write] {
     case WriteNComplete =>
       writeBatch()
     case r: Replay =>
-      writeAll() // ensures that Replay commands are properly ordered relative to Write commands
+      // ----------------------------------------------------------------------------
+      // Ensures that Replay commands are properly ordered relative to Write commands
+      // TODO: only force a writeAll() for replays that come from EventsourcedActors
+      // ----------------------------------------------------------------------------
+      writeAll()
       eventLog forward r
       context.become(idle)
   }

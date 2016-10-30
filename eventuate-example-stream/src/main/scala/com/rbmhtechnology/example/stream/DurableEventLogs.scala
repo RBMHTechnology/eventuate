@@ -27,9 +27,13 @@ trait DurableEventLogs {
   implicit val system: ActorSystem = ActorSystem("example")
   implicit val materializer: Materializer = ActorMaterializer()
 
-  val logA: ActorRef = createLog("A")
-  val logB: ActorRef = createLog("B")
-  val logC: ActorRef = createLog("C")
+  val logAId = "A"
+  val logBId = "B"
+  val logCId = "C"
+
+  val logA: ActorRef = createLog(logAId)
+  val logB: ActorRef = createLog(logBId)
+  val logC: ActorRef = createLog(logCId)
 
   def createLog(id: String): ActorRef =
     system.actorOf(LeveldbEventLog.props(id))
