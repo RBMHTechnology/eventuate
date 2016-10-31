@@ -33,7 +33,7 @@ import com.typesafe.config._
 object EventLogSpecCassandra {
   val config: Config = ConfigFactory.parseString(
     """
-      |eventuate.log.cassandra.default-port = 9142
+      |eventuate.cassandra.default-port = 9142
       |eventuate.log.cassandra.index-update-limit = 3
       |eventuate.log.cassandra.init-retry-delay = 1s
     """.stripMargin).withFallback(EventLogSpec.config)

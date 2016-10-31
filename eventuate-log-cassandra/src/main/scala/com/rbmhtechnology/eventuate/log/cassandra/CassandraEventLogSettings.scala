@@ -16,96 +16,57 @@
 
 package com.rbmhtechnology.eventuate.log.cassandra
 
-import java.net.InetSocketAddress
 import java.util.concurrent.TimeUnit
 
 import akka.util.Helpers.Requiring
-
-import com.datastax.driver.core.{ Cluster, ConsistencyLevel }
+import com.datastax.driver.core.ConsistencyLevel
 import com.typesafe.config.Config
-
 import com.rbmhtechnology.eventuate.log._
 
-import scala.collection.JavaConverters._
-import scala.concurrent.duration._
+import scala.concurrent.duration.{ DurationLong, FiniteDuration }
 
 class CassandraEventLogSettings(config: Config) extends EventLogSettings {
   import CassandraEventLogSettings._
 
-  val writeTimeout: Long =
-    config.getDuration("eventuate.log.write-timeout", TimeUnit.MILLISECONDS)
+  def writeTimeout: Long =
+    config.getDuration(WriteTimeout, TimeUnit.MILLISECONDS)
 
-  val writeBatchSize: Int =
-    config.getInt("eventuate.log.write-batch-size")
+  def writeBatchSize: Int =
+    config.getInt(WriteBatchSize)
 
-  val keyspace: String =
-    config.getString("eventuate.log.cassandra.keyspace")
+  def readConsistency: ConsistencyLevel =
+    ConsistencyLevel.valueOf(config.getString(CassandraSettings.CassandraReadConsistency))
 
-  val keyspaceAutoCreate: Boolean =
-    config.getBoolean("eventuate.log.cassandra.keyspace-autocreate")
+  def writeConsistency: ConsistencyLevel =
+    ConsistencyLevel.valueOf(config.getString(CassandraSettings.CassandraWriteConsistency))
 
-  val replicationFactor: Int =
-    config.getInt("eventuate.log.cassandra.replication-factor")
+  def writeRetryMax: Int =
+    config.getInt(CassandraWriteRetryMax)
 
-  val tablePrefix: String =
-    config.getString("eventuate.log.cassandra.table-prefix")
-
-  val readConsistency: ConsistencyLevel =
-    ConsistencyLevel.valueOf(config.getString("eventuate.log.cassandra.read-consistency"))
-
-  val writeConsistency: ConsistencyLevel =
-    ConsistencyLevel.valueOf(config.getString("eventuate.log.cassandra.write-consistency"))
-
-  val writeRetryMax: Int =
-    config.getInt("eventuate.log.cassandra.write-retry-max")
-
-  val defaultPort: Int =
-    config.getInt("eventuate.log.cassandra.default-port")
-
-  val contactPoints =
-    getContactPoints(config.getStringList("eventuate.log.cassandra.contact-points").asScala, defaultPort)
-
-  val partitionSize: Long =
-    config.getLong("eventuate.log.cassandra.partition-size")
+  override def partitionSize: Long =
+    config.getLong(CassandraPartitionSize)
       .requiring(_ > writeBatchSize,
-        s"eventuate.log.cassandra.partition-size must be greater than eventuate.log.write-batch-size (${writeBatchSize})")
+        s"partition-size must be greater than write-batch-size ($writeBatchSize)")
 
   val indexUpdateLimit: Int =
-    config.getInt("eventuate.log.cassandra.index-update-limit")
+    config.getInt(IndexUpdateLimit)
 
   val initRetryMax: Int =
-    config.getInt("eventuate.log.cassandra.init-retry-max")
+    config.getInt(InitRetryMax)
 
   val initRetryDelay: FiniteDuration =
-    config.getDuration("eventuate.log.cassandra.init-retry-delay", TimeUnit.MILLISECONDS).millis
+    config.getDuration(InitRetryDelay, TimeUnit.MILLISECONDS).millis
 
   def deletionRetryDelay: FiniteDuration =
     ???
-
-  val connectRetryMax: Int =
-    config.getInt("eventuate.log.cassandra.connect-retry-max")
-
-  val connectRetryDelay: FiniteDuration =
-    config.getDuration("eventuate.log.cassandra.connect-retry-delay", TimeUnit.MILLISECONDS).millis
-
-  val clusterBuilder: Cluster.Builder =
-    Cluster.builder.addContactPointsWithPorts(contactPoints.asJava).withCredentials(
-      config.getString("eventuate.log.cassandra.username"),
-      config.getString("eventuate.log.cassandra.password"))
 }
 
-private object CassandraEventLogSettings {
-  def getContactPoints(contactPoints: Seq[String], defaultPort: Int): Seq[InetSocketAddress] = {
-    contactPoints match {
-      case null | Nil => throw new IllegalArgumentException("a contact point list cannot be empty.")
-      case hosts => hosts map {
-        ipWithPort =>
-          ipWithPort.split(":") match {
-            case Array(host, port) => new InetSocketAddress(host, port.toInt)
-            case Array(host)       => new InetSocketAddress(host, defaultPort)
-            case msg               => throw new IllegalArgumentException(s"a contact point should have the form [host:port] or [host] but was: $msg.")
-          }
-      }
-    }
-  }
+object CassandraEventLogSettings {
+  val WriteBatchSize = "write-batch-size"
+  val WriteTimeout = "write-timeout"
+  val CassandraPartitionSize = "partition-size"
+  val CassandraWriteRetryMax = "write-retry-max"
+  val InitRetryMax = "init-retry-max"
+  val InitRetryDelay = "init-retry-delay"
+  val IndexUpdateLimit = "index-update-limit"
 }

@@ -121,6 +121,7 @@ object MultiLocationConfig {
          |akka.loglevel = "ERROR"
          |
          |eventuate.log.write-batch-size = 3
+         |eventuate.log.cassandra.write-batch-size = 3
          |eventuate.log.replication.retry-delay = 1s
          |eventuate.log.replication.remote-read-timeout = 1s
          |eventuate.log.replication.failure-detection-limit = 3s

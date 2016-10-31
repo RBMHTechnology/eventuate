@@ -25,13 +25,13 @@ import scala.collection.immutable.Seq
 import scala.concurrent._
 import scala.util._
 
-private[eventuate] class CassandraIndex(cassandra: Cassandra, eventLogClock: EventLogClock, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore, logId: String) extends Actor with Stash with ActorLogging {
+private[eventuate] class CassandraIndex(cassandra: Cassandra, settings: CassandraEventLogSettings, eventLogClock: EventLogClock, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore, logId: String) extends Actor with Stash with ActorLogging {
   import CassandraIndex._
 
   private val scheduler = context.system.scheduler
   private val eventLog = context.parent
 
-  private val indexUpdater = context.actorOf(Props(new CassandraIndexUpdater(cassandra, eventLogStore, indexStore)))
+  private val indexUpdater = context.actorOf(CassandraIndexUpdater.props(cassandra, settings, eventLogStore, indexStore))
 
   /**
    * Contains the sequence number of the last event in event log that
@@ -79,11 +79,11 @@ private[eventuate] object CassandraIndex {
     }
   }
 
-  def props(cassandra: Cassandra, eventLogClock: EventLogClock, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore, logId: String): Props =
-    Props(new CassandraIndex(cassandra, eventLogClock, eventLogStore, indexStore, logId))
+  def props(cassandra: Cassandra, settings: CassandraEventLogSettings, eventLogClock: EventLogClock, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore, logId: String): Props =
+    Props(new CassandraIndex(cassandra, settings, eventLogClock, eventLogStore, indexStore, logId))
 }
 
-private class CassandraIndexUpdater(cassandra: Cassandra, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore) extends Actor {
+private class CassandraIndexUpdater(cassandra: Cassandra, settings: CassandraEventLogSettings, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore) extends Actor {
   import CassandraIndex._
   import context.dispatcher
 
@@ -118,10 +118,15 @@ private class CassandraIndexUpdater(cassandra: Cassandra, eventLogStore: Cassand
 
   def updateAsync(fromSequenceNr: Long, toSequenceNr: Long, increment: IndexIncrement): Future[(IndexIncrement, Boolean)] =
     for {
-      res <- eventLogStore.readAsync(fromSequenceNr, toSequenceNr, cassandra.settings.indexUpdateLimit, cassandra.settings.indexUpdateLimit + 1)
+      res <- eventLogStore.readAsync(fromSequenceNr, toSequenceNr, settings.indexUpdateLimit, settings.indexUpdateLimit + 1)
       inc <- writeAsync(increment.update(res.events))
     } yield (inc, res.events.nonEmpty)
 
   def writeAsync(increment: IndexIncrement): Future[IndexIncrement] =
     indexStore.writeAsync(increment.aggregateEvents, increment.clock).map(_ => increment)
+}
+
+private object CassandraIndexUpdater {
+  def props(cassandra: Cassandra, settings: CassandraEventLogSettings, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore): Props =
+    Props(new CassandraIndexUpdater(cassandra, settings, eventLogStore, indexStore))
 }

@@ -19,15 +19,14 @@ package com.rbmhtechnology.eventuate.log.cassandra
 import java.io.Closeable
 
 import akka.actor._
-
 import com.datastax.driver.core.QueryOptions
 import com.datastax.driver.core.exceptions._
-
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.log._
 import com.rbmhtechnology.eventuate.log.CircuitBreaker._
+import com.typesafe.config.Config
 
-import scala.collection.immutable.{ VectorBuilder, Seq }
+import scala.collection.immutable.{ Seq, VectorBuilder }
 import scala.concurrent._
 import scala.language.postfixOps
 import scala.util._
@@ -77,7 +76,7 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
     throw new IllegalArgumentException(s"invalid id '$id' specified - Cassandra allows alphanumeric and underscore characters only")
 
   private val cassandra: Cassandra = Cassandra(context.system)
-  override val settings: CassandraEventLogSettings = cassandra.settings
+  override val settings: CassandraEventLogSettings = new CassandraEventLogSettings(getCassandraConfig)
 
   cassandra.createEventTable(id)
   cassandra.createAggregateEventTable(id)
@@ -144,13 +143,13 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
     Try(writeBatch(events, partition, clock)) match {
       case Success(r) =>
         context.parent ! ServiceNormal(id)
-      case Failure(e) if num >= cassandra.settings.writeRetryMax =>
+      case Failure(e) if num >= settings.writeRetryMax =>
         logger.error(e, s"write attempt ${num} failed: reached maximum number of retries - stop self")
         context.stop(self)
         throw e
       case Failure(e: TimeoutException) =>
         context.parent ! ServiceFailed(id, num, e)
-        logger.error(e, s"write attempt ${num} failed: timeout after ${cassandra.settings.writeTimeout} ms - retry now")
+        logger.error(e, s"write attempt ${num} failed: timeout after ${settings.writeTimeout} ms - retry now")
         writeRetry(events, partition, clock, num + 1)
       case Failure(e: WriteTimeoutException) =>
         context.parent ! ServiceFailed(id, num, e)
@@ -158,13 +157,13 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
         writeRetry(events, partition, clock, num + 1)
       case Failure(e: QueryExecutionException) =>
         context.parent ! ServiceFailed(id, num, e)
-        logger.error(e, s"write attempt ${num} failed - retry in ${cassandra.settings.writeTimeout} ms")
-        Thread.sleep(cassandra.settings.writeTimeout)
+        logger.error(e, s"write attempt ${num} failed - retry in ${settings.writeTimeout} ms")
+        Thread.sleep(settings.writeTimeout)
         writeRetry(events, partition, clock, num + 1)
       case Failure(e: NoHostAvailableException) =>
         context.parent ! ServiceFailed(id, num, e)
-        logger.error(e, s"write attempt ${num} failed - retry in ${cassandra.settings.writeTimeout} ms")
-        Thread.sleep(cassandra.settings.writeTimeout)
+        logger.error(e, s"write attempt ${num} failed - retry in ${settings.writeTimeout} ms")
+        Thread.sleep(settings.writeTimeout)
         writeRetry(events, partition, clock, num + 1)
       case Failure(e) =>
         logger.error(e, s"write attempt ${num} failed - stop self")
@@ -176,7 +175,7 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
   private def writeBatch(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit = {
     eventLogStore.write(events, partition)
     updateCount += events.size
-    if (updateCount >= cassandra.settings.indexUpdateLimit) {
+    if (updateCount >= settings.indexUpdateLimit) {
       index ! UpdateIndex(null, clock.sequenceNr)
       updateCount = 0L
     }
@@ -193,22 +192,22 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
   }
 
   private[eventuate] def createIndex(cassandra: Cassandra, eventLogClock: EventLogClock, indexStore: CassandraIndexStore, eventLogStore: CassandraEventLogStore, logId: String) =
-    context.actorOf(CassandraIndex.props(cassandra, eventLogClock, eventLogStore, indexStore, logId))
+    context.actorOf(CassandraIndex.props(cassandra, settings, eventLogClock, eventLogStore, indexStore, logId))
 
   private[eventuate] def createIndexStore(cassandra: Cassandra, logId: String) =
-    new CassandraIndexStore(cassandra, logId)
+    new CassandraIndexStore(cassandra, settings, logId)
 
   private[eventuate] def createEventLogStore(cassandra: Cassandra, logId: String) =
-    new CassandraEventLogStore(cassandra, logId)
+    new CassandraEventLogStore(cassandra, settings, logId)
 
   private[eventuate] def createReplicationProgressStore(cassandra: Cassandra, logId: String) =
     new CassandraReplicationProgressStore(cassandra, logId)
 
   private[eventuate] def createDeletedToStore(cassandra: Cassandra, logId: String) =
-    new CassandraDeletedToStore(cassandra, logId)
+    new CassandraDeletedToStore(cassandra, settings, logId)
 
   private def recoverEventLogClockAsync(snapshot: EventLogClock)(implicit executor: ExecutionContext): Future[EventLogClock] =
-    Future(eventLogStore.eventIterator(snapshot.sequenceNr + 1L, Long.MaxValue, cassandra.settings.indexUpdateLimit).foldLeft(snapshot)(_ update _))
+    Future(eventLogStore.eventIterator(snapshot.sequenceNr + 1L, Long.MaxValue, settings.indexUpdateLimit).foldLeft(snapshot)(_ update _))
 
   private def compositeReadAsync(fromSequenceNr: Long, indexSequenceNr: Long, toSequenceNr: Long, max: Int, fetchSize: Int, aggregateId: String)(implicit executor: ExecutionContext): Future[BatchReadResult] =
     Future(compositeRead(fromSequenceNr, toSequenceNr, max, fetchSize, aggregateId))
@@ -257,6 +256,19 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
 
     def close(): Unit =
       ()
+  }
+
+  private def getCassandraConfig: Config = {
+    val config = context.system.settings.config
+    val fallbackConfigPath = "eventuate.log.cassandra"
+    val eventlogSpecificPath = s"${fallbackConfigPath}.${id}"
+    val fallbackConfig = config.getConfig(fallbackConfigPath)
+
+    if (config.hasPath(eventlogSpecificPath)) {
+      config.getConfig(eventlogSpecificPath)
+        .withFallback(fallbackConfig)
+    } else
+      fallbackConfig
   }
 
   // ------------------------------------------------------------------

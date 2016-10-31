@@ -32,7 +32,10 @@ import scala.util._
 object EventsourcedActorSpec {
   import EventsourcedViewSpec._
 
-  val config = ConfigFactory.parseString("eventuate.log.write-timeout = 1s")
+  val config = ConfigFactory.parseString(s"""
+    |eventuate.log.write-timeout = 1s
+    |eventuate.log.cassandra.write-timeout = 1s
+  """.stripMargin)
   val timeout = 0.2.seconds
 
   case class Cmd(payload: Any, num: Int = 1)

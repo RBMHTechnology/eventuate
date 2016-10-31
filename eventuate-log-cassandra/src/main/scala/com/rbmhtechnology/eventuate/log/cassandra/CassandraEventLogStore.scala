@@ -27,12 +27,12 @@ import scala.collection.JavaConverters._
 import scala.collection.immutable.{ VectorBuilder, Seq }
 import scala.concurrent.{ ExecutionContext, Future }
 
-private[eventuate] class CassandraEventLogStore(cassandra: Cassandra, logId: String) {
+private[eventuate] class CassandraEventLogStore(cassandra: Cassandra, implicit val settings: CassandraEventLogSettings, logId: String) {
   val preparedWriteEventStatement: PreparedStatement =
     cassandra.prepareWriteEvent(logId)
 
   val preparedReadEventsStatement: PreparedStatement =
-    cassandra.prepareReadEvents(logId)
+    cassandra.prepareReadEvents(logId, settings)
 
   def write(events: Seq[DurableEvent], partition: Long) =
     cassandra.executeBatch { batch =>
@@ -71,7 +71,7 @@ private[eventuate] class CassandraEventLogStore(cassandra: Cassandra, logId: Str
     new EventIterator(fromSequenceNr, toSequenceNr, fetchSize)
 
   private class EventIterator(fromSequenceNr: Long, toSequenceNr: Long, fetchSize: Int) extends Iterator[DurableEvent] with Closeable {
-    import cassandra.settings._
+    import settings._
     import EventLog._
 
     var currentSequenceNr = math.max(fromSequenceNr, 1L)

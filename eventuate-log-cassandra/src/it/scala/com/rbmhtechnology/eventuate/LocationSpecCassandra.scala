@@ -68,13 +68,13 @@ object SingleLocationSpecCassandra {
     }
 
     private[eventuate] override def createIndexStore(cassandra: Cassandra, logId: String) =
-      new TestIndexStore(cassandra, logId, failureSpec)
+      new TestIndexStore(cassandra, logId, settings, failureSpec)
 
     private[eventuate] override def onIndexEvent(event: Any): Unit =
       indexProbe.foreach(_ ! event)
   }
 
-  class TestIndexStore(cassandra: Cassandra, logId: String, failureSpec: TestFailureSpec) extends CassandraIndexStore(cassandra, logId) {
+  class TestIndexStore(cassandra: Cassandra, logId: String, settings: CassandraEventLogSettings, failureSpec: TestFailureSpec) extends CassandraIndexStore(cassandra, settings, logId) {
     private var writeIncrementFailed = false
     private var readClockFailed = false
 
@@ -144,7 +144,7 @@ trait MultiLocationSpecCassandra extends MultiLocationSpec with LocationCleanupC
 
   override val providerConfig = ConfigFactory.parseString(
     s"""
-       |eventuate.log.cassandra.default-port = 9142
+       |eventuate.cassandra.default-port = 9142
        |eventuate.log.cassandra.index-update-limit = 3
      """.stripMargin)
 

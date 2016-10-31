@@ -17,7 +17,7 @@
 package com.rbmhtechnology.eventuate.log.cassandra
 
 private[eventuate] trait CassandraStatements {
-  def settings: CassandraEventLogSettings
+  def settings: CassandraSettings
 
   def createKeySpaceStatement = s"""
       CREATE KEYSPACE IF NOT EXISTS ${settings.keyspace}
@@ -43,7 +43,7 @@ private[eventuate] trait CassandraEventStatements extends CassandraStatements {
       VALUES (?, ?, ?)
     """
 
-  def readEventsStatement(logId: String) = s"""
+  def readEventsStatement(logId: String, settings: CassandraEventLogSettings) = s"""
       SELECT * FROM ${eventTable(logId)} WHERE
         partition_nr = ? AND
         sequence_nr >= ? AND
@@ -69,7 +69,7 @@ private[eventuate] trait CassandraAggregateEventStatements extends CassandraStat
       VALUES (?, ?, ?)
     """
 
-  def readAggregateEventsStatement(logId: String) = s"""
+  def readAggregateEventsStatement(logId: String, settings: CassandraEventLogSettings) = s"""
       SELECT * FROM ${aggregateEventTable(logId)} WHERE
         aggregate_id = ? AND
         sequence_nr >= ? AND

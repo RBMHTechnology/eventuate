@@ -28,6 +28,7 @@ trait MultiNodeReplicationConfig extends MultiNodeConfig {
          |akka.loglevel = "ERROR"
          |
          |eventuate.log.write-batch-size = 3
+         |eventuate.log.cassandra.write-batch-size = 3
          |eventuate.log.replication.retry-delay = 1s
          |eventuate.log.replication.failure-detection-limit = 60s
          |
