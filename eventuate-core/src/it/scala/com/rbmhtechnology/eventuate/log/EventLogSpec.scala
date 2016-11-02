@@ -443,7 +443,7 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
     }
     "reply with a failure message if replay fails" in {
       log.tell(Replay(ErrorSequenceNr, None, 0), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplayFailure(IntegrationTestException, 0))
+      replyToProbe.expectMsg(ReplayFailure(IntegrationTestException, ErrorSequenceNr, 0))
     }
     "replication-read local events" in {
       generateEmittedEvents()
