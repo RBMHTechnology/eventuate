@@ -33,7 +33,7 @@ import org.scalatest._
 object ProgressSourceSpec {
   val SrcLogId = "A"
 
-  val config = ConfigFactory.parseString("eventuate.log.read-timeout = 100ms")
+  val config = ConfigFactory.parseString("eventuate.log.read-timeout = 500ms")
 }
 
 class ProgressSourceSpec extends TestKit(ActorSystem("test", ProgressSourceSpec.config)) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
