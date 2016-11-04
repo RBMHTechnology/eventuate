@@ -40,8 +40,8 @@ private class DurableEventSourceSettings(config: Config) {
   val readTimeout =
     config.getDuration("eventuate.log.read-timeout", TimeUnit.MILLISECONDS).millis
 
-  val readRetryDelay =
-    config.getDuration("eventuate.adapter.stream.read-retry-delay", TimeUnit.MILLISECONDS).millis
+  val replayRetryDelay =
+    config.getDuration("eventuate.log.replay-retry-delay", TimeUnit.MILLISECONDS).millis
 }
 
 /**
@@ -56,7 +56,7 @@ object DurableEventSource {
    *  - `eventuate.log.replay-batch-size`. Maximum number of events to read from the event log when the internal
    *    buffer (of same size) is empty.
    *  - `eventuate.log.read-timeout`. Timeout for reading events from the event log.
-   *  - `eventuate.adapter.stream.read-retry-delay`. Delay between a failed read and the next read retry.
+   *  - `eventuate.log.replay-retry-delay`. Delay between a failed read and the next read retry.
    *
    * @param eventLog source event log.
    * @param fromSequenceNr sequence number from where the [[DurableEvent]] stream should start.
@@ -97,7 +97,7 @@ private class DurableEventSourceActor(eventLog: ActorRef, fromSequenceNr: Long, 
       } else {
         context.become(waiting)
       }
-    case ReplayFailure(cause, _) =>
+    case ReplayFailure(cause, _, _) =>
       schedule = Some(schedulePaused())
       context.become(pausing)
       log.warning(s"reading from log failed: $cause")
@@ -154,9 +154,10 @@ private class DurableEventSourceActor(eventLog: ActorRef, fromSequenceNr: Long, 
   private def read(subscribe: Boolean = false): Unit = {
     implicit val timeout = Timeout(settings.readTimeout)
     val subscriber = if (subscribe) Some(self) else None
+    val fromSequenceNr = progress + 1L
 
-    eventLog ? Replay(progress + 1L, settings.replayBatchSize, subscriber, aggregateId, 1) recover {
-      case t => ReplayFailure(t, 1)
+    eventLog ? Replay(fromSequenceNr, settings.replayBatchSize, subscriber, aggregateId, 1) recover {
+      case t => ReplayFailure(t, fromSequenceNr, 1)
     } pipeTo self
   }
 
@@ -175,5 +176,5 @@ private class DurableEventSourceActor(eventLog: ActorRef, fromSequenceNr: Long, 
   }
 
   private def schedulePaused(): Cancellable =
-    context.system.scheduler.scheduleOnce(settings.readRetryDelay, self, Paused)
+    context.system.scheduler.scheduleOnce(settings.replayRetryDelay, self, Paused)
 }

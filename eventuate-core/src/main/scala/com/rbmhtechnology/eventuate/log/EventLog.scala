@@ -387,7 +387,7 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
       }
       read(adjustFromSequenceNr(from), clock.sequenceNr, max, emitterAggregateId) onComplete {
         case Success(r) => sdr ! ReplaySuccess(r.events, r.to, iid)
-        case Failure(e) => sdr ! ReplayFailure(e, iid)
+        case Failure(e) => sdr ! ReplayFailure(e, from, iid)
       }
     case Replay(from, max, subscriber, None, iid) =>
       import services.readDispatcher
@@ -397,7 +397,7 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
       }
       read(adjustFromSequenceNr(from), clock.sequenceNr, max) onComplete {
         case Success(r) => sdr ! ReplaySuccess(r.events, r.to, iid)
-        case Failure(e) => sdr ! ReplayFailure(e, iid)
+        case Failure(e) => sdr ! ReplayFailure(e, from, iid)
       }
     case r @ ReplicationRead(from, max, scanLimit, filter, targetLogId, _, currentTargetVersionVector) =>
       import services.readDispatcher

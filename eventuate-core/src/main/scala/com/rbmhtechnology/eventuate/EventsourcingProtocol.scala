@@ -84,7 +84,12 @@ object EventsourcingProtocol {
   /**
    * Failure reply after a [[Replay]].
    */
-  case class ReplayFailure(cause: Throwable, instanceId: Int)
+  case class ReplayFailure(cause: Throwable, replayProgress: Long, instanceId: Int)
+
+  /**
+   * Internal message to trigger a new [[Replay]] attempt
+   */
+  private[eventuate] case class ReplayRetry(replayProgress: Long)
 
   /**
    * Instructs an event log to delete events with a sequence nr less or equal a given one.

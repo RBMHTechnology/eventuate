@@ -188,7 +188,7 @@ public class AbstractEventsourcedViewSpec extends BaseSpec {
         logProbe.sender().tell(new LoadSnapshotSuccess(Option.empty(), instanceId), logProbe.ref());
         logProbe.expectMsg(new Replay(1L, MAX_REPLAY_SIZE, Option.apply(actor), Option.empty(), instanceId));
 
-        actor.tell(new ReplayFailure(FAILURE, instanceId), getRef());
+        actor.tell(new ReplayFailure(FAILURE, 1L, instanceId), getRef());
         msgProbe.expectMsg(FAILURE);
     }
 

@@ -20,9 +20,8 @@ import akka.actor._
 import akka.pattern.ask
 import akka.testkit._
 import akka.util.Timeout
-
 import com.rbmhtechnology.eventuate.EventsourcedViewSpec._
-
+import com.typesafe.config.ConfigFactory
 import org.scalatest._
 
 import scala.concurrent._
@@ -30,6 +29,12 @@ import scala.concurrent.duration._
 import scala.util._
 
 object EventsourcedWriterSpec {
+  val config = ConfigFactory.parseString(
+    """
+      |eventuate.log.replay-retry-max = 1
+      |eventuate.log.replay-retry-delay = 5ms
+    """.stripMargin)
+
   class TestEventsourcedWriter(logProbe: ActorRef, appProbe: ActorRef, rwProbe: ActorRef, readSuccessResult: Option[Long]) extends EventsourcedWriter[String, String] {
     implicit val timeout = Timeout(3.seconds)
 
@@ -73,7 +78,7 @@ object EventsourcedWriterSpec {
   }
 }
 
-class EventsourcedWriterSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class EventsourcedWriterSpec extends TestKit(ActorSystem("test", EventsourcedWriterSpec.config)) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
   import EventsourcedWriterSpec._
   import EventsourcingProtocol._
 
@@ -184,13 +189,41 @@ class EventsourcedWriterSpec extends TestKit(ActorSystem("test")) with WordSpecL
         processWrite(Success("ws"))
       }
       "stash commands while read is in progress" in {
-        val promise = Promise[String]()
         val actor = unrecoveredEventsourcedWriter()
         actor ! "cmd"
         processRead(Success("rs"))
         processLoad(actor)
         processReplay(actor, 1)
         appProbe.expectMsg("cmd")
+      }
+      "retry replay on failure and finally succeed" in {
+        val actor = unrecoveredEventsourcedWriter()
+        actor ! "cmd"
+        processRead(Success("rs"))
+        processLoad(actor)
+
+        logProbe.expectMsg(Replay(1, 2, Some(actor), instanceId))
+        logProbe.sender() ! ReplayFailure(TestException, 1L, instanceId)
+
+        logProbe.expectMsg(Replay(1, 2, None, instanceId))
+        logProbe.sender() ! ReplaySuccess(Nil, 0L, instanceId)
+
+        appProbe.expectMsg("cmd")
+      }
+      "retry replay on failure and finally fail" in {
+        val actor = unrecoveredEventsourcedWriter()
+        watch(actor)
+
+        processRead(Success("rs"))
+        processLoad(actor)
+
+        logProbe.expectMsg(Replay(1, 2, Some(actor), instanceId))
+        logProbe.sender() ! ReplayFailure(TestException, 1L, instanceId)
+
+        logProbe.expectMsg(Replay(1, 2, None, instanceId))
+        logProbe.sender() ! ReplayFailure(TestException, 1L, instanceId)
+
+        expectTerminated(actor)
       }
       "stash commands while write is in progress after suspended replay" in {
         val actor = unrecoveredEventsourcedWriter()

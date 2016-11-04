@@ -84,7 +84,7 @@ object DurableEventSourceActorSpec {
   val ProcessId = "process"
   val LogId = "log"
 
-  val config = ConfigFactory.parseString("eventuate.adapter.stream.read-retry-delay = 500ms")
+  val config = ConfigFactory.parseString("eventuate.log.replay-retry-delay = 500ms")
 
   val e1 = durableEvent("a", 1)
   val e2 = durableEvent("b", 2)
@@ -145,7 +145,7 @@ class DurableEventSourceActorSpec extends TestKit(ActorSystem("test", DurableEve
   }
 
   def replayFailure(cause: Throwable): Unit = {
-    val msg = ReplayFailure(cause, 1)
+    val msg = ReplayFailure(cause, 1L, 1)
     log.sender() ! msg
     prb.expectMsg(msg)
   }
