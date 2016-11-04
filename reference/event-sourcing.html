@@ -518,7 +518,14 @@
 <span class="o">}</span>
 </pre></div>
 </div>
-<p>If replay fails the completion handler is called with a <code class="docutils literal"><span class="pre">Failure</span></code> and the actor will be stopped, regardless of the action taken by the handler. The default recovery completion handler does nothing.</p>
+<p>If replay fails the completion handler is called with a <code class="docutils literal"><span class="pre">Failure</span></code> and the actor will be stopped, regardless of the action taken by the handler. The default recovery completion handler does nothing. Internally each replay request towards the event log is retried a couple of times in order to cope with a temporarily unresponsive event log or its underlying storage backend. The maximum number of retries for a replay request can be configured with:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replay</span><span class="o">-</span><span class="n">retry</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+<p>Moreover the configuration value <code class="docutils literal"><span class="pre">replay-retry-delay</span></code> is used to determine the delay between consecutive replay attempts:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replay</span><span class="o">-</span><span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">10</span><span class="n">s</span>
+</pre></div>
+</div>
 <p>At the beginning of event replay, the initiating actor is registered at its event log so that newly written events can be routed to that actor. During replay, the actor internally stashes these newly written events and dispatches them to <code class="docutils literal"><span class="pre">onEvent</span></code> after successful replay. In a similar way, the actor also stashes new commands and dispatches them to <code class="docutils literal"><span class="pre">onCommand</span></code> afterwards. This ensures that new commands never see partially recovered state. When the actor is stopped it is automatically de-registered from its event log.</p>
 <div class="section" id="backpressure">
 <h2>Backpressure<a class="headerlink" href="#backpressure" title="Permalink to this headline">¶</a></h2>

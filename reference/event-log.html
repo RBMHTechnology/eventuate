@@ -423,6 +423,7 @@ akka.remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
 <span id="id13"></span><h3>Update notifications<a class="headerlink" href="#update-notifications" title="Permalink to this headline">¶</a></h3>
 <p>After having replicated a non-empty event batch, a replication endpoint immediately makes another replication attempt. On the other hand, if the replicated event batch is empty, the next replication attempt is delayed by a duration that can be configured with:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">5</span><span class="n">s</span>
+<span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replay</span><span class="o">-</span><span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">10</span><span class="n">s</span>
 </pre></div>
 </div>
 <p>Consequently, event replication latency has an upper bound that is determined by this parameter. To minimize event replication latency, replication endpoints by default send event log update notifications to each other. The corresponding configuration parameter is:</p>
