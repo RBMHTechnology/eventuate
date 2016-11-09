@@ -17,12 +17,12 @@
 package com.rbmhtechnology.eventuate.adapter.vertx
 
 import akka.actor.ActorSystem
-import akka.serialization.{Serializer, SerializerWithStringManifest}
+import akka.serialization.{ Serializer, SerializerWithStringManifest }
 import akka.testkit.TestKit
 import com.typesafe.config.ConfigFactory
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.eventbus.MessageCodec
-import org.scalatest.{BeforeAndAfterEach, MustMatchers, WordSpecLike}
+import org.scalatest.{ BeforeAndAfterEach, MustMatchers, WordSpecLike }
 
 object AkkaSerializationMessageCodecSpec {
 
@@ -65,7 +65,7 @@ object AkkaSerializationMessageCodecSpec {
 
     override def toBinary(o: AnyRef): Array[Byte] = o match {
       case c: TypeWithCustomSerializer => c.payload.getBytes
-      case _ => Array.empty
+      case _                           => Array.empty
     }
 
     override def fromBinary(bytes: Array[Byte], manifest: Option[Class[_]]): AnyRef = manifest match {
@@ -79,17 +79,17 @@ object AkkaSerializationMessageCodecSpec {
 
     override def manifest(o: AnyRef): String = o match {
       case c: TypeWithCustomStringManifestSerializer => "custom-type"
-      case _ => "unknown"
+      case _                                         => "unknown"
     }
 
     override def toBinary(o: AnyRef): Array[Byte] = o match {
       case c: TypeWithCustomStringManifestSerializer => c.payload.getBytes
-      case _ => Array.empty
+      case _                                         => Array.empty
     }
 
     override def fromBinary(bytes: Array[Byte], manifest: String): AnyRef = manifest match {
       case "custom-type" => new TypeWithCustomStringManifestSerializer(new String(bytes))
-      case _ => "invalid type "
+      case _             => "invalid type "
     }
   }
 

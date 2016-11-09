@@ -50,10 +50,10 @@ class EventLogSpecCassandra extends TestKit(ActorSystem("test", EventLogSpecCass
     probe = TestProbe()
   }
 
-  def expectReplay(aggregateId: Option[String], payloads: String *): Unit =
+  def expectReplay(aggregateId: Option[String], payloads: String*): Unit =
     expectReplay(1L, aggregateId, payloads: _*)
 
-  def expectReplay(fromSequenceNr: Long, aggregateId: Option[String], payloads: String *): Unit = {
+  def expectReplay(fromSequenceNr: Long, aggregateId: Option[String], payloads: String*): Unit = {
     log.tell(Replay(fromSequenceNr, None, aggregateId, 0), replyToProbe.ref)
     val act = replyToProbe.expectMsgClass(classOf[ReplaySuccess]).events.map(_.payload)
     val exp = payloads.toVector
@@ -197,9 +197,9 @@ class EventLogSpecCassandra extends TestKit(ActorSystem("test", EventLogSpecCass
         event("d", Some("a1"))))
 
       log.tell(Replay(1L, 2, None, Some("a1"), 0), replyToProbe.ref)
-      replyToProbe.expectMsgClass(classOf[ReplaySuccess]).events.map(_.payload) should be (Seq("a", "b"))
+      replyToProbe.expectMsgClass(classOf[ReplaySuccess]).events.map(_.payload) should be(Seq("a", "b"))
       log.tell(Replay(3L, 2, None, Some("a1"), 0), replyToProbe.ref)
-      replyToProbe.expectMsgClass(classOf[ReplaySuccess]).events.map(_.payload) should be (Seq("c", "d"))
+      replyToProbe.expectMsgClass(classOf[ReplaySuccess]).events.map(_.payload) should be(Seq("c", "d"))
     }
     "replication-read deleted (replicated or local) events" in {
       generateEmittedEvents()

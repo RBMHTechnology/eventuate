@@ -40,7 +40,6 @@ class BasicReplicationThroughputSpecCassandraMultiJvmNode4 extends BasicReplicat
 class BasicReplicationThroughputSpecCassandraMultiJvmNode5 extends BasicReplicationThroughputSpecCassandra
 class BasicReplicationThroughputSpecCassandraMultiJvmNode6 extends BasicReplicationThroughputSpecCassandra
 
-
 class BasicCausalitySpecCassandra extends BasicCausalitySpec(new BasicCausalityConfig(providerConfig)) with MultiNodeSupportCassandra {
   override def logName = "bc"
 }

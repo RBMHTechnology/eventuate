@@ -191,7 +191,8 @@ object VersionedAggregate {
     id: String,
     cmdHandler: BiFunction[S, C, E],
     evtHandler: BiFunction[S, E, S]) =
-    new VersionedAggregate[S, C, E](id,
+    new VersionedAggregate[S, C, E](
+      id,
       (s, c) => Try(cmdHandler.apply(s, c)),
       (s, e) => evtHandler.apply(s, e))
 

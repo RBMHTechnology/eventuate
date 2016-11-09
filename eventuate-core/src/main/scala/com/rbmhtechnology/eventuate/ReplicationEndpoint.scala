@@ -226,7 +226,8 @@ object ReplicationEndpoint {
    * @param applicationName Name of the application that creates this replication endpoint.
    * @param applicationVersion Version of the application that creates this replication endpoint.
    */
-  def create(id: String,
+  def create(
+    id: String,
     logNames: JSet[String],
     logFactory: JFunction[String, Props],
     connections: JSet[ReplicationConnection],
@@ -361,14 +362,17 @@ class ReplicationEndpoint(
   }
 
   private def logLocalState(info: ReplicationEndpointInfo): Unit = {
-    system.log.info("Disaster recovery initiated for endpoint {}. Sequence numbers of local logs are: {}",
+    system.log.info(
+      "Disaster recovery initiated for endpoint {}. Sequence numbers of local logs are: {}",
       info.endpointId, sequenceNrsLogString(info))
-    system.log.info("Need to reset replication progress stored at remote replicas {}",
+    system.log.info(
+      "Need to reset replication progress stored at remote replicas {}",
       connectors.map(_.remoteAcceptor).mkString(","))
   }
 
   private def logLinksToBeRecovered(links: Set[RecoveryLink], linkType: String): Unit = {
-    system.log.info("Start recovery for {} links: (from remote source log (target seq no) -> local target log (initial seq no))\n{}",
+    system.log.info(
+      "Start recovery for {} links: (from remote source log (target seq no) -> local target log (initial seq no))\n{}",
       linkType, links.map(l => s"(${l.replicationLink.source.logId} (${l.remoteSequenceNr}) -> ${l.replicationLink.target.logName} (${l.localSequenceNr}))").mkString(", "))
   }
 

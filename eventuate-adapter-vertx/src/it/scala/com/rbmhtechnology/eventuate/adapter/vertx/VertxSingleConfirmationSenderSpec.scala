@@ -16,11 +16,11 @@
 
 package com.rbmhtechnology.eventuate.adapter.vertx
 
-import akka.actor.{ActorRef, ActorSystem}
+import akka.actor.{ ActorRef, ActorSystem }
 import akka.testkit.TestKit
 import com.rbmhtechnology.eventuate.SingleLocationSpecLeveldb
-import com.rbmhtechnology.eventuate.adapter.vertx.api.{EndpointRouter, EventMetadata}
-import org.scalatest.{MustMatchers, WordSpecLike}
+import com.rbmhtechnology.eventuate.adapter.vertx.api.{ EndpointRouter, EventMetadata }
+import org.scalatest.{ MustMatchers, WordSpecLike }
 
 import scala.concurrent.duration._
 
@@ -111,7 +111,7 @@ class VertxSingleConfirmationSenderSpec extends TestKit(ActorSystem("test", Test
       "route events to different endpoints" in {
         vertxSingleConfirmationSender(EndpointRouter.route {
           case ev: String if isEvenEvent(ev, "e") => endpoint1.address
-          case ev: String if isOddEvent(ev, "e") => endpoint2.address
+          case ev: String if isOddEvent(ev, "e")  => endpoint2.address
         })
         writeEvents("e", 4)
 

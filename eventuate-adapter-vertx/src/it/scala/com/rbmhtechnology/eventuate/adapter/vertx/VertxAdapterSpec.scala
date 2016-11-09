@@ -18,13 +18,13 @@ package com.rbmhtechnology.eventuate.adapter.vertx
 
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
-import com.rbmhtechnology.eventuate.adapter.vertx.api.{EventProducer, VertxAdapterConfig}
+import com.rbmhtechnology.eventuate.adapter.vertx.api.{ EventProducer, VertxAdapterConfig }
 import com.rbmhtechnology.eventuate.log.EventLogWriter
 import com.rbmhtechnology.eventuate.log.leveldb.LeveldbEventLog
 import com.rbmhtechnology.eventuate.utilities._
-import com.rbmhtechnology.eventuate.{LocationCleanupLeveldb, ReplicationEndpoint}
+import com.rbmhtechnology.eventuate.{ LocationCleanupLeveldb, ReplicationEndpoint }
 import com.typesafe.config.Config
-import org.scalatest.{BeforeAndAfterAll, MustMatchers, WordSpecLike}
+import org.scalatest.{ BeforeAndAfterAll, MustMatchers, WordSpecLike }
 
 import scala.collection.immutable.Seq
 

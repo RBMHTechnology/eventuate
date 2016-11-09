@@ -66,9 +66,9 @@ object SingleLocationSpec {
       if (events.map(_.payload).contains("boom")) throw IntegrationTestException else super.write(events, partition, clock)
 
     override private[eventuate] def adjustFromSequenceNr(seqNr: Long) = seqNr match {
-      case ErrorSequenceNr => seqNr
+      case ErrorSequenceNr         => seqNr
       case IgnoreDeletedSequenceNr => 0
-      case s => super.adjustFromSequenceNr(s)
+      case s                       => super.adjustFromSequenceNr(s)
     }
   }
 }

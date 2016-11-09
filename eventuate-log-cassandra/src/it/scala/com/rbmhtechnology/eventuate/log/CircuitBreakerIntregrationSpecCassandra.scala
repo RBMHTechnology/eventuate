@@ -31,7 +31,7 @@ import com.typesafe.config._
 
 import org.scalatest._
 import org.scalatest.concurrent.Eventually
-import org.scalatest.time.{Millis, Seconds, Span}
+import org.scalatest.time.{ Millis, Seconds, Span }
 
 import scala.collection.immutable.Seq
 import scala.concurrent._

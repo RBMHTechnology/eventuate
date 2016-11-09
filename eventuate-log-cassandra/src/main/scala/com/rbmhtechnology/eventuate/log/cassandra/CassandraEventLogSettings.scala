@@ -67,7 +67,8 @@ class CassandraEventLogSettings(config: Config) extends EventLogSettings {
 
   val partitionSize: Long =
     config.getLong("eventuate.log.cassandra.partition-size")
-      .requiring(_ > writeBatchSize,
+      .requiring(
+        _ > writeBatchSize,
         s"eventuate.log.cassandra.partition-size must be greater than eventuate.log.write-batch-size (${writeBatchSize})")
 
   val indexUpdateLimit: Int =

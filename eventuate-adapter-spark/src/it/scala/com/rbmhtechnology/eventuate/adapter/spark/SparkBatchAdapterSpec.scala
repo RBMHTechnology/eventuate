@@ -65,12 +65,12 @@ class SparkBatchAdapterSpec extends TestKit(ActorSystem("test")) with WordSpecLi
     "read events from a local event log" in {
       val writtenEvents = writeEvents("a")
       val readEvents = sparkAdapter.eventBatch(logId)
-      readEvents.sortBy(_.localSequenceNr).collect() should be (writtenEvents)
+      readEvents.sortBy(_.localSequenceNr).collect() should be(writtenEvents)
     }
     "read events from a local event log starting from a given sequence number" in {
       val writtenEvents = writeEvents("a")
       val readEvents = sparkAdapter.eventBatch(logId, 23L)
-      readEvents.sortBy(_.localSequenceNr).collect() should be (writtenEvents.drop(22))
+      readEvents.sortBy(_.localSequenceNr).collect() should be(writtenEvents.drop(22))
     }
   }
 }

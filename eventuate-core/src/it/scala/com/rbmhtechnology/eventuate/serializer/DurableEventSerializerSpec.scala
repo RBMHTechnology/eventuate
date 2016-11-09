@@ -112,7 +112,8 @@ object DurableEventSerializerSpec {
 class DurableEventSerializerSpec extends WordSpec with Matchers with Inside with BeforeAndAfterAll {
   import DurableEventSerializerSpec._
 
-  val context = new SerializationContext(MultiLocationConfig.create(),
+  val context = new SerializationContext(
+    MultiLocationConfig.create(),
     MultiLocationConfig.create(customConfig = serializerConfig),
     MultiLocationConfig.create(customConfig = serializerWithStringManifestConfig),
     MultiLocationConfig.create(customConfig = binaryPayloadSerializerConfig))
@@ -141,9 +142,9 @@ class DurableEventSerializerSpec extends WordSpec with Matchers with Inside with
 
       inside(binaryPayloadSerialization.deserialize(bytes, classOf[DurableEvent]).get.payload) {
         case BinaryPayload(_, serializerId, manifest, isStringManifest) =>
-          serializerId should be (ExamplePayloadSerializer.serializerId)
-          manifest should be (Some(classOf[ExamplePayload].getName))
-          isStringManifest should be (false)
+          serializerId should be(ExamplePayloadSerializer.serializerId)
+          manifest should be(Some(classOf[ExamplePayload].getName))
+          isStringManifest should be(false)
       }
     }
     "deserialize from a custom serializer with string manifest into a BinaryPayload" in {
@@ -151,9 +152,9 @@ class DurableEventSerializerSpec extends WordSpec with Matchers with Inside with
 
       inside(binaryPayloadSerialization.deserialize(bytes, classOf[DurableEvent]).get.payload) {
         case BinaryPayload(_, serializerId, manifest, isStringManifest) =>
-          serializerId should be (ExamplePayloadSerializerWithStringManifest.serializerId)
-          manifest should be (Some(ExamplePayloadSerializerWithStringManifest.StringManifest))
-          isStringManifest should be (true)
+          serializerId should be(ExamplePayloadSerializerWithStringManifest.serializerId)
+          manifest should be(Some(ExamplePayloadSerializerWithStringManifest.StringManifest))
+          isStringManifest should be(true)
       }
     }
     "serialize into custom source serializer compatible byte array" in Seq(swappingSerialization, swappingSerializationWithStringManigest).foreach { serialization =>
@@ -161,7 +162,7 @@ class DurableEventSerializerSpec extends WordSpec with Matchers with Inside with
 
       val binaryPayloadBytes = binaryPayloadSerialization.serialize(binaryPayloadSerialization.deserialize(bytes, classOf[DurableEvent]).get).get
 
-      serialization.deserialize(binaryPayloadBytes, classOf[DurableEvent]).get should be (event.copy(ExamplePayload("bar", "foo")))
+      serialization.deserialize(binaryPayloadBytes, classOf[DurableEvent]).get should be(event.copy(ExamplePayload("bar", "foo")))
     }
   }
 }

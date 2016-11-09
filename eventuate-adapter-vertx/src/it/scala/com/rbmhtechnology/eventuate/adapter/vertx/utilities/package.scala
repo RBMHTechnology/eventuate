@@ -36,7 +36,7 @@ package object utilities {
 
     def expectFailure[T](max: Duration = Duration.Undefined)(implicit t: ClassTag[T]): T = {
       probe.expectMsgPF[T](max, hint = s"Failure($t)") {
-        case f@Failure(err:T) => err
+        case f @ Failure(err: T) => err
       }
     }
   }
