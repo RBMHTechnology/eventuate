@@ -8,7 +8,7 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.3")
 
 addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.3")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-scalariform" % "1.3.0")
+addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.6.0")
 
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "1.5.1")
 
