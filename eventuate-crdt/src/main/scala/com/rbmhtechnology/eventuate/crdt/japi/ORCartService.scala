@@ -44,9 +44,11 @@ class ORCartService[A](val serviceId: String, val log: ActorRef, implicit val sy
   import CRDTConverter._
   import system._
 
-  override protected val delegate = new com.rbmhtechnology.eventuate.crdt.ORCartService[A](serviceId, log)
+  override protected val delegate =
+    new com.rbmhtechnology.eventuate.crdt.ORCartService[A](serviceId, log)
 
-  implicit protected def c: CRDTConverter[Map[A, Int], JMap[A, JInt]] = CRDTConverter(_.mapValues(v => v: JInt).asJava)
+  implicit protected def c: CRDTConverter[Map[A, Int], JMap[A, JInt]] =
+    CRDTConverter(_.mapValues(v => v: JInt).asJava)
 
   /**
    * Adds the given `quantity` of `key` to the OR-Cart identified by `id` and returns the updated OR-Cart content.

@@ -159,7 +159,7 @@ private class DurableEventReceiver(id: String, connection: ReplicationConnection
     }
 
     val writing: Receive = {
-      case writeSuccess @ ReplicationWriteSuccess(_, storedReplicationProgress, _, _, false) =>
+      case writeSuccess @ ReplicationWriteSuccess(_, metadata, false) =>
         context.become(idle)
         scheduleRead()
 
@@ -167,17 +167,18 @@ private class DurableEventReceiver(id: String, connection: ReplicationConnection
         //  TODO: write progress to source log
         // ------------------------------------
 
-        readProgress = storedReplicationProgress
+        readProgress = metadata(source.logId).replicationProgress
 
-      case writeSuccess @ ReplicationWriteSuccess(_, storedReplicationProgress, _, currentTargetVersionVector, true) =>
+      case writeSuccess @ ReplicationWriteSuccess(_, metadata, true) =>
+        val sourceMetadata = metadata(source.logId)
         context.become(reading)
-        read(storedReplicationProgress, currentTargetVersionVector)
+        read(sourceMetadata.replicationProgress, sourceMetadata.currentVersionVector)
 
         // ------------------------------------
         //  TODO: write progress to source log
         // ------------------------------------
 
-        readProgress = storedReplicationProgress
+        readProgress = sourceMetadata.replicationProgress
 
       case ReplicationWriteFailure(cause) =>
         log.error(cause, "event write failed")
@@ -221,7 +222,7 @@ private class DurableEventReceiver(id: String, connection: ReplicationConnection
 
     private def write(events: Seq[DurableEvent], replicationProgress: Long, currentSourceVersionVector: VectorTime, continueReplication: Boolean): Unit = {
       Future(store(events.iterator)) map {
-        case _ => ReplicationWriteSuccess(events.length, replicationProgress, source.logId, VectorTime.Zero, continueReplication)
+        case _ => ReplicationWriteSuccess(events, Map(source.logId -> ReplicationMetadata(replicationProgress, VectorTime.Zero)), continueReplication)
       } recover {
         case t => ReplicationWriteFailure(t)
       } pipeTo self

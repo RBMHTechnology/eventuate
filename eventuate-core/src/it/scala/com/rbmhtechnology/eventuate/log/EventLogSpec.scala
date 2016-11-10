@@ -103,11 +103,11 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with SingleLocation
     super.afterEach()
   }
 
-  def timestamp(a: Long = 0L, b: Long= 0L) = (a, b) match {
+  def timestamp(a: Long = 0L, b: Long = 0L) = (a, b) match {
     case (0L, 0L) => VectorTime()
-    case (a,  0L) => VectorTime(logId -> a)
-    case (0L,  b) => VectorTime(remoteLogId -> b)
-    case (a,   b) => VectorTime(logId -> a, remoteLogId -> b)
+    case (a, 0L)  => VectorTime(logId -> a)
+    case (0L, b)  => VectorTime(remoteLogId -> b)
+    case (a, b)   => VectorTime(logId -> a, remoteLogId -> b)
   }
 
   def currentSequenceNr: Long = {
@@ -136,14 +136,14 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with SingleLocation
   def writeReplicatedEvents(events: Seq[DurableEvent], replicationProgress: Long, remoteLogId: String = remoteLogId): Seq[DurableEvent] = {
     val offset = currentSequenceNr + 1L
     val expected = expectedReplicatedEvents(events, offset)
-    log.tell(ReplicationWrite(events, replicationProgress, remoteLogId, VectorTime()), replicatorProbe.ref)
-    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(_, `replicationProgress`, _, _, _) => }
+    log.tell(ReplicationWrite(events, Map(remoteLogId -> ReplicationMetadata(replicationProgress, VectorTime.Zero))), replicatorProbe.ref)
+    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(_, metadata, _) => metadata(remoteLogId).replicationProgress should be(replicationProgress) }
     expected
   }
 
   def writeReplicationProgress(replicationProgress: Long, expectedStoredReplicationProgress: Long, remoteLogId: String = remoteLogId): Unit = {
-    log.tell(ReplicationWrite(Seq(), replicationProgress, remoteLogId, VectorTime()), replicatorProbe.ref)
-    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(0, `expectedStoredReplicationProgress`, _, _, _) => }
+    log.tell(ReplicationWrite(Seq(), Map(remoteLogId -> ReplicationMetadata(replicationProgress, VectorTime.Zero))), replicatorProbe.ref)
+    replicatorProbe.expectMsgPF() { case ReplicationWriteSuccess(Seq(), metadata, _) => metadata(remoteLogId).replicationProgress should be(replicationProgress) }
   }
 
   def registerCollaborator(aggregateId: Option[String] = None, collaborator: TestProbe = TestProbe()): TestProbe = {
@@ -154,7 +154,7 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with SingleLocation
 
   def generateEmittedEvents(emitterAggregateId: Option[String] = None, customDestinationAggregateIds: Set[String] = Set(), num: Int = 3): Unit = {
     _generatedEmittedEvents ++= writeEmittedEvents((1 to num).map { i =>
-        DurableEvent(s"a-$i", emitterIdA, emitterAggregateId, customDestinationAggregateIds)
+      DurableEvent(s"a-$i", emitterIdA, emitterAggregateId, customDestinationAggregateIds)
     })
   }
 
@@ -348,12 +348,29 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
       log.tell(GetReplicationProgresses, replyToProbe.ref)
       replyToProbe.expectMsg(GetReplicationProgressesSuccess(Map(remoteLogId -> 17L)))
     }
+    "write replicated events and update the replication progress map with multiple progress values" in {
+      val srcLog1 = "L1"
+      val srcLog2 = "L2"
+
+      val events: Vector[DurableEvent] = Vector(
+        DurableEvent("a", emitterIdB, None, Set(), 0L, VectorTime(srcLog1 -> 3L), srcLog1, srcLog1, 7),
+        DurableEvent("b", emitterIdB, None, Set(), 0L, VectorTime(srcLog2 -> 4L), srcLog2, srcLog2, 8))
+
+      val metadata = Map(
+        srcLog1 -> ReplicationMetadata(3, VectorTime.Zero),
+        srcLog2 -> ReplicationMetadata(4, VectorTime.Zero))
+
+      log.tell(ReplicationWrite(events, metadata), replicatorProbe.ref)
+      replicatorProbe.expectMsgType[ReplicationWriteSuccess]
+      log.tell(GetReplicationProgresses, replyToProbe.ref)
+      replyToProbe.expectMsg(GetReplicationProgressesSuccess(metadata.mapValues(_.replicationProgress)))
+    }
     "reply with a failure message if replication fails" in {
       val events: Vector[DurableEvent] = Vector(
         DurableEvent("boom", emitterIdB, None, Set(), 0L, timestamp(0, 7), remoteLogId, remoteLogId, 7),
         DurableEvent("okay", emitterIdB, None, Set(), 0L, timestamp(0, 8), remoteLogId, remoteLogId, 8))
 
-      log.tell(ReplicationWrite(events, 8, remoteLogId, VectorTime()), replicatorProbe.ref)
+      log.tell(ReplicationWrite(events, Map(remoteLogId -> ReplicationMetadata(8, VectorTime.Zero))), replicatorProbe.ref)
       replicatorProbe.expectMsg(ReplicationWriteFailure(IntegrationTestException))
     }
     "reply with a failure message if replication fails and not update the replication progress map" in {
@@ -363,7 +380,7 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
         DurableEvent("boom", emitterIdB, None, Set(), 0L, timestamp(0, 7), remoteLogId, remoteLogId, 7),
         DurableEvent("okay", emitterIdB, None, Set(), 0L, timestamp(0, 8), remoteLogId, remoteLogId, 8))
 
-      log.tell(ReplicationWrite(events, 8, remoteLogId, VectorTime()), replicatorProbe.ref)
+      log.tell(ReplicationWrite(events, Map(remoteLogId -> ReplicationMetadata(8, VectorTime.Zero))), replicatorProbe.ref)
       replicatorProbe.expectMsg(ReplicationWriteFailure(IntegrationTestException))
       log.tell(GetReplicationProgresses, replyToProbe.ref)
       replyToProbe.expectMsg(GetReplicationProgressesSuccess(Map()))
@@ -426,7 +443,7 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
     }
     "reply with a failure message if replay fails" in {
       log.tell(Replay(ErrorSequenceNr, None, 0), replyToProbe.ref)
-      replyToProbe.expectMsg(ReplayFailure(IntegrationTestException, 0))
+      replyToProbe.expectMsg(ReplayFailure(IntegrationTestException, ErrorSequenceNr, 0))
     }
     "replication-read local events" in {
       generateEmittedEvents()
@@ -502,7 +519,7 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
     "recover an adjusted sequence number on restart" in {
       val evt = DurableEvent("a", emitterIdA, processId = logId, vectorTimestamp = VectorTime(logId -> 5L), localLogId = logId, localSequenceNr = 1)
       registerCollaborator(aggregateId = None, collaborator = replyToProbe)
-      log ! ReplicationWrite(List(evt), 1, remoteLogId, VectorTime())
+      log ! ReplicationWrite(List(evt), Map(remoteLogId -> ReplicationMetadata(1, VectorTime.Zero)))
       replyToProbe.expectMsgType[Written]
       (log ? AdjustEventLogClock).await
       log ! "boom"
@@ -546,14 +563,14 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
       val evt = DurableEvent("a", emitterIdA, processId = UndefinedLogId, vectorTimestamp = VectorTime(remoteLogId -> 1L))
       val exp = DurableEvent("a", emitterIdA, processId = logId, vectorTimestamp = VectorTime(remoteLogId -> 1L, logId -> 1L), localLogId = logId, localSequenceNr = 1)
       registerCollaborator(aggregateId = None, collaborator = replyToProbe)
-      log ! ReplicationWrite(List(evt), 5, remoteLogId, VectorTime())
+      log ! ReplicationWrite(List(evt), Map(remoteLogId -> ReplicationMetadata(5, VectorTime.Zero)))
       replyToProbe.expectMsgType[Written].event should be(exp)
     }
     "not update a replicated event's process id and vector timestamp during if the process id is defined" in {
       val evt = DurableEvent("a", emitterIdA, processId = emitterIdA, vectorTimestamp = VectorTime(emitterIdA -> 1L))
       val exp = DurableEvent("a", emitterIdA, processId = emitterIdA, vectorTimestamp = VectorTime(emitterIdA -> 1L), localLogId = logId, localSequenceNr = 1)
       registerCollaborator(aggregateId = None, collaborator = replyToProbe)
-      log ! ReplicationWrite(List(evt), 5, remoteLogId, VectorTime())
+      log ! ReplicationWrite(List(evt), Map(remoteLogId -> ReplicationMetadata(5, VectorTime.Zero)))
       replyToProbe.expectMsgType[Written].event should be(exp)
     }
     "not write events to the target log that are in causal past of the target log" in {
@@ -561,8 +578,8 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
       val evt2 = DurableEvent("j", emitterIdB, vectorTimestamp = timestamp(0, 8), processId = remoteLogId)
       val evt3 = DurableEvent("k", emitterIdB, vectorTimestamp = timestamp(0, 9), processId = remoteLogId)
       registerCollaborator(aggregateId = None, collaborator = replyToProbe)
-      log ! ReplicationWrite(List(evt1, evt2), 5, remoteLogId, VectorTime())
-      log ! ReplicationWrite(List(evt2, evt3), 6, remoteLogId, VectorTime())
+      log ! ReplicationWrite(List(evt1, evt2), Map(remoteLogId -> ReplicationMetadata(5, VectorTime.Zero)))
+      log ! ReplicationWrite(List(evt2, evt3), Map(remoteLogId -> ReplicationMetadata(6, VectorTime.Zero)))
       replyToProbe.expectMsgType[Written].event.payload should be("i")
       replyToProbe.expectMsgType[Written].event.payload should be("j")
       replyToProbe.expectMsgType[Written].event.payload should be("k")
@@ -574,7 +591,7 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
     }
     "not read events from the source log that are in causal past of the target log (using the target time from the cache)" in {
       generateEmittedEvents()
-      log ! ReplicationWrite(Nil, 5, remoteLogId, timestamp(2)) // update time cache
+      log ! ReplicationWrite(Nil, Map(remoteLogId -> ReplicationMetadata(5, timestamp(2)))) // update time cache
       log.tell(ReplicationRead(1, Int.MaxValue, Int.MaxValue, NoFilter, remoteLogId, dl, timestamp(1)), replyToProbe.ref)
       replyToProbe.expectMsgType[ReplicationReadSuccess].events.map(_.payload) should be(Seq("a-3"))
     }

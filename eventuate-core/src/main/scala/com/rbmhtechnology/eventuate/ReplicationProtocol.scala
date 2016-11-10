@@ -199,17 +199,50 @@ object ReplicationProtocol {
   case object ReplicationWriteNComplete
 
   /**
-   * Instructs a target log to write replicated `events` from the source log identified by
-   * `sourceLogId` along with the last read position in the source log (`replicationProgress`).
+   * Source-scoped replication metadata.
+   *
+   * @param replicationProgress Replication read progress at source log.
+   * @param currentVersionVector When used with [[ReplicationWrite]] the current version vector at the source log. When
+   *                             used with [[ReplicationWriteSuccess]] the current version vector at the target log.
    */
-  case class ReplicationWrite(events: Seq[DurableEvent], replicationProgress: Long, sourceLogId: String, currentSourceVersionVector: VectorTime, continueReplication: Boolean = false, replyTo: ActorRef = null) extends UpdateableEventBatch[ReplicationWrite] {
-    override def update(events: Seq[DurableEvent]): ReplicationWrite = copy(events = events)
+  case class ReplicationMetadata(replicationProgress: Long, currentVersionVector: VectorTime) {
+    def withVersionVector(versionVector: VectorTime): ReplicationMetadata = copy(currentVersionVector = versionVector)
+  }
+
+  /**
+   * Instructs a target log to write replicated `events` from one or more source logs along with the latest read
+   * positions in the source logs.
+   */
+  case class ReplicationWrite(events: Seq[DurableEvent], metadata: Map[String, ReplicationMetadata], continueReplication: Boolean = false, replyTo: ActorRef = null) extends UpdateableEventBatch[ReplicationWrite] {
+    /**
+     * Java API.
+     */
+    def this(events: Seq[DurableEvent], replicationProgress: Long, sourceLogId: String, currentSourceVersionVector: VectorTime, continueReplication: Boolean, replyTo: ActorRef) =
+      this(events, Map(sourceLogId -> ReplicationMetadata(replicationProgress, currentSourceVersionVector)), continueReplication, replyTo)
+
+    override def update(events: Seq[DurableEvent]): ReplicationWrite =
+      copy(events = events)
+
+    def withReplyToDefault(replyTo: ActorRef): ReplicationWrite =
+      if (this.replyTo eq null) copy(replyTo = replyTo) else this
+
+    def replicationProgresses: Map[String, Long] =
+      metadata.mapValues(_.replicationProgress)
+
+    def sourceLogIds: Set[String] =
+      metadata.keySet
   }
 
   /**
    * Success reply after a [[ReplicationWrite]].
    */
-  case class ReplicationWriteSuccess(num: Int, storedReplicationProgress: Long, sourceLogId: String, currentTargetVersionVector: VectorTime, continueReplication: Boolean = false)
+  case class ReplicationWriteSuccess(events: Seq[DurableEvent], metadata: Map[String, ReplicationMetadata], continueReplication: Boolean = false) {
+    /**
+     * Java API.
+     */
+    def this(events: Seq[DurableEvent], storedReplicationProgress: Long, sourceLogId: String, currentTargetVersionVector: VectorTime, continueReplication: Boolean) =
+      this(events, Map(sourceLogId -> ReplicationMetadata(storedReplicationProgress, currentTargetVersionVector)))
+  }
 
   /**
    * Failure reply after a [[ReplicationWrite]].

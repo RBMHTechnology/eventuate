@@ -33,6 +33,12 @@ private class EventsourcedViewSettings(config: Config) {
   val replayBatchSize =
     config.getInt("eventuate.log.replay-batch-size")
 
+  val replayRetryMax =
+    config.getInt("eventuate.log.replay-retry-max")
+
+  val replayRetryDelay =
+    config.getDuration("eventuate.log.replay-retry-delay", TimeUnit.MILLISECONDS).millis
+
   val readTimeout =
     config.getDuration("eventuate.log.read-timeout", TimeUnit.MILLISECONDS).millis
 
@@ -101,6 +107,7 @@ trait EventsourcedView extends Actor with Stash {
   private var _lastReceivedSequenceNr = 0L
 
   private val settings = new EventsourcedViewSettings(context.system.settings.config)
+
   private var saveRequests: Map[SnapshotMetadata, Handler[SnapshotMetadata]] = Map.empty
 
   private lazy val _commandContext: BehaviorContext = new DefaultBehaviorContext(onCommand)
@@ -382,14 +389,14 @@ trait EventsourcedView extends Actor with Stash {
     val iid = instanceId
 
     eventLog ? Replay(fromSequenceNr, replayBatchSize, sub, aggregateId, instanceId) recover {
-      case t => ReplayFailure(t, iid)
+      case t => ReplayFailure(t, fromSequenceNr, iid)
     } pipeTo self
   }
 
   /**
    * Internal API.
    */
-  private[eventuate] def initiating: Receive = {
+  private[eventuate] def initiating(replayAttempts: Int): Receive = {
     case LoadSnapshotSuccess(Some(snapshot), iid) => if (iid == instanceId) {
       val behavior = _snapshotContext.current
       if (behavior.isDefinedAt(snapshot.payload)) {
@@ -415,13 +422,27 @@ trait EventsourcedView extends Actor with Stash {
     }
     case ReplaySuccess(events, progress, iid) => if (iid == instanceId) {
       events.foreach(receiveEvent)
+      // reset retry attempts
+      context.become(initiating(settings.replayRetryMax))
       replay(progress + 1L)
     }
-    case ReplayFailure(cause, iid) => if (iid == instanceId) {
-      logger.error(cause, s"replay failed, stopping self")
-      Try(onRecovery(Failure(cause)))
-      context.stop(self)
+    case ReplayFailure(cause, progress, iid) => if (iid == instanceId) {
+      if (replayAttempts < 1) {
+        logger.error(cause, "replay failed (maximum number of {} replay attempts reached), stopping self", settings.replayRetryMax)
+        Try(onRecovery(Failure(cause)))
+        context.stop(self)
+      } else {
+        // retry replay request while decreasing the remaining attempts
+        val attemptsRemaining = replayAttempts - 1
+        logger.warning(
+          "replay failed [{}] ({} replay attempts remaining), scheduling retry in {}ms",
+          cause.getMessage, attemptsRemaining, settings.replayRetryDelay.toMillis)
+        context.become(initiating(attemptsRemaining))
+        context.system.scheduler.scheduleOnce(settings.replayRetryDelay, self, ReplayRetry(progress))
+      }
     }
+    case ReplayRetry(progress) =>
+      replay(progress)
     case Terminated(ref) if ref == eventLog =>
       context.stop(self)
     case other =>
@@ -454,7 +475,7 @@ trait EventsourcedView extends Actor with Stash {
   /**
    * Initialization behavior.
    */
-  final def receive = initiating
+  final def receive = initiating(settings.replayRetryMax)
 
   /**
    * Adds the current command to the user's command stash. Must not be used in the event handler.
@@ -481,7 +502,7 @@ trait EventsourcedView extends Actor with Stash {
    * Initiates recovery.
    */
   override def preStart(): Unit = {
-    _lastHandledEvent = DurableEvent(id)
+    _lastHandledEvent = DurableEvent(null, id)
     context.watch(eventLog)
     init()
   }
@@ -494,3 +515,4 @@ trait EventsourcedView extends Actor with Stash {
     super.postStop()
   }
 }
+

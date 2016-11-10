@@ -32,7 +32,7 @@ object EventsourcedActorThroughputSpec {
 
     def onCommand = {
       case "stats" =>
-        probe ! s"${(1000.0 * 1000 * 1000 * num) / (stopTime - startTime) } events/sec"
+        probe ! s"${(1000.0 * 1000 * 1000 * num) / (stopTime - startTime)} events/sec"
       case s: String => persist(s) {
         case Success(e) =>
         case Failure(e) => throw e
@@ -71,7 +71,7 @@ object EventsourcedActorThroughputSpec {
 
     def receive = {
       case "stats" =>
-        probe ! s"${(1000.0 * 1000 * 1000 * num) / (stopTime - startTime) } events/sec"
+        probe ! s"${(1000.0 * 1000 * 1000 * num) / (stopTime - startTime)} events/sec"
       case s: String if num == 0 =>
         startTime = System.nanoTime()
         num += 1

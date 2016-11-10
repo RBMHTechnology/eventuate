@@ -1,9 +1,3 @@
-.. _adapters:
-
---------
-Adapters
---------
-
 .. _spark-adapter:
 
 Spark adapter
@@ -59,12 +53,10 @@ For persisting the stream processing progress, an application should store the l
 .. _Spark RDD: http://spark.apache.org/docs/latest/programming-guide.html#resilient-distributed-datasets-rdds
 .. _Spark DStream: http://spark.apache.org/docs/latest/streaming-programming-guide.html#discretized-streams-dstreams
 .. _Spark DataFrames: http://spark.apache.org/docs/latest/sql-programming-guide.html#dataframes
-
 .. _DurableEvent: ../latest/api/index.html#com.rbmhtechnology.eventuate.DurableEvent
 .. _ReplicationEndpoint: ../latest/api/index.html#com.rbmhtechnology.eventuate.ReplicationEndpoint
 .. _SparkBatchAdapter: ../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkBatchAdapter
 .. _SparkStreamAdapter: ../latest/api/index.html#com.rbmhtechnology.eventuate.adapter.spark.SparkStreamAdapter
-
 .. _SparkBatchAdapterExample.scala: https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-spark/src/main/scala/com/rbmhtechnology/example/spark/SparkBatchAdapterExample.scala
 .. _SparkStreamAdapterExample.scala: https://github.com/RBMHTechnology/eventuate/blob/master/eventuate-example-spark/src/main/scala/com/rbmhtechnology/example/spark/SparkStreamAdapterExample.scala
 

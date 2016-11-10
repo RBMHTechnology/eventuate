@@ -69,7 +69,7 @@ class CRDTChaosSpecLeveldb extends WordSpec with Matchers with MultiLocationSpec
     val probe = TestProbe()
     val service = new ORSetService[String](endpoint.id, endpoint.logs("L1")) {
       val startCounter = new AtomicInteger()
-      val stopCounter =  new AtomicInteger()
+      val stopCounter = new AtomicInteger()
 
       override private[crdt] def onChange(crdt: ORSet[String], operation: Any): Unit = {
         operation match {

@@ -113,8 +113,8 @@ class CassandraEventLog(id: String) extends EventLog[CassandraEventLogState](id)
   override def readReplicationProgress(logId: String): Future[Long] =
     progressStore.readReplicationProgressAsync(logId)(services.readDispatcher)
 
-  override def writeReplicationProgress(logId: String, progress: Long): Future[Unit] =
-    progressStore.writeReplicationProgressAsync(logId, progress)(context.system.dispatchers.defaultGlobalDispatcher)
+  override def writeReplicationProgresses(progresses: Map[String, Long]): Future[Unit] =
+    progressStore.writeReplicationProgressesAsync(progresses)(context.system.dispatchers.defaultGlobalDispatcher)
 
   override def replicationRead(fromSequenceNr: Long, toSequenceNr: Long, max: Int, scanLimit: Int, filter: DurableEvent => Boolean): Future[BatchReadResult] =
     eventLogStore.readAsync(fromSequenceNr, toSequenceNr, max, scanLimit, QueryOptions.DEFAULT_FETCH_SIZE, filter)(services.readDispatcher)

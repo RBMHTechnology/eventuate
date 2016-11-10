@@ -307,8 +307,8 @@ Depending on the storage backend, this call also triggers physical deletion of e
 .. _Getting Started: https://wiki.apache.org/cassandra/GettingStarted
 .. _cassandra-unit: https://github.com/jsevellec/cassandra-unit/wiki
 .. _LevelDB: https://github.com/google/leveldb
-.. _Akka Remoting: http://doc.akka.io/docs/akka/2.4.4/scala/remoting.html
-.. _event stream: http://doc.akka.io/docs/akka/2.4.4/scala/event-bus.html#event-stream
+.. _Akka Remoting: http://doc.akka.io/docs/akka/2.4/scala/remoting.html
+.. _event stream: http://doc.akka.io/docs/akka/2.4/scala/event-bus.html#event-stream
 .. _Chaos testing with Docker and Cassandra on Mac OS X: http://rbmhtechnology.github.io/chaos-testing-with-docker-and-cassandra/
 
 .. _EventsourcingProtocol: ../latest/api/index.html#com.rbmhtechnology.eventuate.EventsourcingProtocol$

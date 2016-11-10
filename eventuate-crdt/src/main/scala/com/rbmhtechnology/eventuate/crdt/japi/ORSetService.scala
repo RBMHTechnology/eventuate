@@ -39,9 +39,11 @@ class ORSetService[A](val serviceId: String, val log: ActorRef, implicit val sys
   import CRDTConverter._
   import system._
 
-  override protected val delegate = new com.rbmhtechnology.eventuate.crdt.ORSetService[A](serviceId, log)
+  override protected val delegate =
+    new com.rbmhtechnology.eventuate.crdt.ORSetService[A](serviceId, log)
 
-  implicit protected def c: CRDTConverter[Set[A], JSet[A]] = CRDTConverter(_.asJava)
+  implicit protected def c: CRDTConverter[Set[A], JSet[A]] =
+    CRDTConverter(_.asJava)
 
   /**
    * Adds `entry` to the OR-Set identified by `id` and returns the updated entry set.

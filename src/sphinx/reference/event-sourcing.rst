@@ -170,7 +170,15 @@ When an event-sourced actor or view is started or re-started, events are replaye
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: recovery-handler
 
-If replay fails the completion handler is called with a ``Failure`` and the actor will be stopped, regardless of the action taken by the handler. The default recovery completion handler does nothing.
+If replay fails the completion handler is called with a ``Failure`` and the actor will be stopped, regardless of the action taken by the handler. The default recovery completion handler does nothing. Internally each replay request towards the event log is retried a couple of times in order to cope with a temporarily unresponsive event log or its underlying storage backend. The maximum number of retries for a replay request can be configured with:
+
+.. includecode:: ../conf/common.conf
+   :snippet: replay-retry-max
+
+Moreover the configuration value ``replay-retry-delay`` is used to determine the delay between consecutive replay attempts:
+
+.. includecode:: ../conf/common.conf
+   :snippet: replay-retry-delay
 
 At the beginning of event replay, the initiating actor is registered at its event log so that newly written events can be routed to that actor. During replay, the actor internally stashes these newly written events and dispatches them to ``onEvent`` after successful replay. In a similar way, the actor also stashes new commands and dispatches them to ``onCommand`` afterwards. This ensures that new commands never see partially recovered state. When the actor is stopped it is automatically de-registered from its event log.
 
@@ -187,14 +195,14 @@ Event-sourced components can override the configured default value by overriding
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: replay-batch-size
 
-.. _snapshots:
-
 Recovery using an application-defined log sequence number
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 In order to keep recovery times small it is almost always sensible to recover using snapshots. However, in some very rare cases an event-sourced actor or view can recover quickly using an application-defined log sequence number. If defined, only events with a sequence number equal to or larger than the given sequence number are replayed.
 
 .. includecode:: ../code/EventSourcingDoc.scala
    :snippet: replay-from-sequence-nr
+
+.. _snapshots:
 
 Snapshots
 ---------
@@ -480,11 +488,11 @@ When eventuate serializes application-defined events, :ref:`replication-filters`
 .. [#] The routing destinations of a DurableEvent_ can be obtained with its ``destinationAggregateIds`` method.
 
 .. _CQRS: http://martinfowler.com/bliki/CQRS.html
-.. _stashed: http://doc.akka.io/docs/akka/2.4.4/scala/actors.html#stash
-.. _watch: http://doc.akka.io/docs/akka/2.4.4/scala/actors.html#deathwatch-scala
-.. _serialization extension: http://doc.akka.io/docs/akka/2.4.4/scala/serialization.html
-.. _Serializer: http://doc.akka.io/api/akka/2.4.4/#akka.serialization.Serializer
-.. _manifest: http://doc.akka.io/docs/akka/2.4.4/scala/serialization.html#Serializer_with_String_Manifest
+.. _stashed: http://doc.akka.io/docs/akka/2.4/scala/actors.html#stash
+.. _watch: http://doc.akka.io/docs/akka/2.4/scala/actors.html#deathwatch-scala
+.. _serialization extension: http://doc.akka.io/docs/akka/2.4/scala/serialization.html
+.. _Serializer: http://doc.akka.io/api/akka/2.4/#akka.serialization.Serializer
+.. _manifest: http://doc.akka.io/docs/akka/2.4/scala/serialization.html#Serializer_with_String_Manifest
 .. _Protocol Buffers: https://developers.google.com/protocol-buffers/
 .. _plausible clocks: https://github.com/RBMHTechnology/eventuate/issues/68
 .. _Cassandra: http://cassandra.apache.org/

@@ -20,6 +20,7 @@ import akka.actor._
 import akka.testkit._
 
 import com.rbmhtechnology.eventuate.EventsourcedViewSpec._
+import com.typesafe.config.ConfigFactory
 
 import org.scalatest._
 
@@ -27,6 +28,8 @@ import scala.collection.immutable.Seq
 
 object EventsourcedProcessorSpec {
   import DurableEvent._
+
+  val config = ConfigFactory.parseString("eventuate.log.write-batch-size = 10")
 
   val eventA = event("a", 1)
   val eventB = event("b", 2)
@@ -52,6 +55,12 @@ object EventsourcedProcessorSpec {
     }
 
     override val processEvent: Process = {
+      case "x" =>
+        Vector.fill(4)("x")
+      case "y" =>
+        Vector.fill(5)("y")
+      case "z" =>
+        Vector.fill(11)("z")
       case evt: String =>
         processedEvents = processedEvents :+ evt
         Seq(s"${evt}-1", s"${evt}-2")
@@ -75,7 +84,7 @@ object EventsourcedProcessorSpec {
     event.copy(emitterId = emitterIdB, processId = UndefinedLogId, localLogId = UndefinedLogId, localSequenceNr = UndefinedSequenceNr)
 }
 
-class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class EventsourcedProcessorSpec extends TestKit(ActorSystem("test", EventsourcedProcessorSpec.config)) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
   import EventsourcedProcessorSpec._
   import EventsourcingProtocol._
   import ReplicationProtocol._
@@ -135,13 +144,20 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
     else processResult(GetReplicationProgressFailure(TestException))
   }
 
-  def processWrite(progress: Long, events: Seq[DurableEvent], success: Boolean = true): Unit = {
-    trgProbe.expectMsg(ReplicationWrite(events, progress, emitterIdB, VectorTime()))
+  def processPartialWrite(progress: Long, events: Seq[DurableEvent], success: Boolean = true): Unit = {
+    trgProbe.expectMsg(ReplicationWrite(events, Map(emitterIdB -> ReplicationMetadata(progress, VectorTime.Zero))))
     if (success) {
-      processResult(ReplicationWriteSuccess(events.size, progress, emitterIdB, VectorTime()))
-      appProbe.expectMsg(progress)
+      processResult(ReplicationWriteSuccess(events, Map(emitterIdB -> ReplicationMetadata(progress, VectorTime()))))
     } else {
       processResult(ReplicationWriteFailure(TestException))
+    }
+  }
+
+  def processWrite(progress: Long, events: Seq[DurableEvent], success: Boolean = true): Unit = {
+    processPartialWrite(progress, events, success)
+    if (success) {
+      appProbe.expectMsg(progress)
+    } else {
       appProbe.expectMsg(TestException)
     }
   }
@@ -255,6 +271,68 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test")) with WordSp
       processWrite(2, Seq(
         eventB1.copy(vectorTimestamp = timestamp(0, 1)),
         eventB2.copy(vectorTimestamp = timestamp(0, 1))))
+    }
+    "write events in multiple batches if the number of generated events during processing since the last write is greater than settings.writeBatchSize" in {
+      val actor = recoveredStatelessProcessor()
+
+      val evt1 = event("x", 1).copy(vectorTimestamp = timestamp(1, 0))
+      val evt2 = event("x", 2).copy(vectorTimestamp = timestamp(2, 0))
+      val evt3 = event("x", 3).copy(vectorTimestamp = timestamp(3, 0))
+      val evt4 = event("x", 4).copy(vectorTimestamp = timestamp(4, 0))
+
+      actor ! Written(evt1) // ensure that a write is in progress when processing the next events
+      actor ! Written(evt2)
+      actor ! Written(evt3)
+      actor ! Written(evt4)
+
+      // process first write
+      processWrite(1, Seq.fill(4)(update(evt1)))
+
+      // process remaining writes
+      processPartialWrite(1, Seq.fill(4)(update(evt2)) ++ Seq.fill(4)(update(evt3)))
+      processWrite(4, Seq.fill(4)(update(evt4)))
+    }
+    "write events in a single batch if the number of generated events during processing since the last write is equal to settings.writeBatchSize" in {
+      val actor = recoveredStatelessProcessor()
+
+      val evt1 = event("x", 1).copy(vectorTimestamp = timestamp(1, 0))
+      val evt2 = event("y", 2).copy(vectorTimestamp = timestamp(2, 0))
+      val evt3 = event("y", 3).copy(vectorTimestamp = timestamp(3, 0))
+
+      actor ! Written(evt1) // ensure that a write is in progress when processing the next events
+      actor ! Written(evt2)
+      actor ! Written(evt3)
+
+      // process first write
+      processWrite(1, Seq.fill(4)(update(evt1)))
+
+      // process remaining writes
+      processWrite(3, Seq.fill(5)(update(evt2)) ++ Seq.fill(5)(update(evt3)))
+    }
+    "allow batch sizes greater than settings.writeBatchSize if that batch was generated from a single input event (case 1)" in {
+      val actor = recoveredStatelessProcessor()
+
+      val evt1 = event("x", 1).copy(vectorTimestamp = timestamp(1, 0))
+      val evt2 = event("x", 2).copy(vectorTimestamp = timestamp(2, 0))
+      val evt3 = event("z", 3).copy(vectorTimestamp = timestamp(3, 0))
+
+      actor ! Written(evt1) // ensure that a write is in progress when processing the next events
+      actor ! Written(evt2)
+      actor ! Written(evt3)
+
+      // process first write
+      processWrite(1, Seq.fill(4)(update(evt1)))
+
+      // process remaining writes
+      processPartialWrite(1, Seq.fill(4)(update(evt2)))
+      processWrite(3, Seq.fill(11)(update(evt3)))
+    }
+    "allow batch sizes greater than settings.writeBatchSize if that batch was generated from a single input event (case 2)" in {
+      val actor = recoveredStatelessProcessor()
+      val evt1 = event("z", 1).copy(vectorTimestamp = timestamp(1, 0))
+
+      actor ! Written(evt1)
+      processWrite(1, Seq.fill(11)(update(evt1)))
     }
   }
 }

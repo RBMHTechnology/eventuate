@@ -55,9 +55,9 @@ class NotificationChannel(logId: String) extends Actor {
     case r: ReplicationReadFailure =>
       reading -= r.targetLogId
     case w: ReplicationWrite =>
-      registry.get(w.sourceLogId) match {
-        case Some(reg) => registry += (w.sourceLogId -> reg.copy(currentTargetVersionVector = w.currentSourceVersionVector))
-        case None      =>
-      }
+      for {
+        id <- w.sourceLogIds
+        rr <- registry.get(id)
+      } registry += (id -> rr.copy(currentTargetVersionVector = w.metadata(id).currentVersionVector))
   }
 }

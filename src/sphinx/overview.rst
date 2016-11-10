@@ -4,7 +4,7 @@
 Overview
 --------
 
-Eventuate is a toolkit for building applications composed of event-driven and event-sourced services that collaborate by exchanging events over shared event logs. Services can either be co-located on a single node or distributed up to global scale. Services can also be replicated with causal consistency and remain available for writes during network partitions. Eventuate has a Java_ and Scala_ API, is written in Scala and built on top of `Akka`_, a toolkit for building highly concurrent, distributed, and resilient message-driven applications on the JVM.
+Eventuate is a toolkit for building applications composed of event-driven and event-sourced services that communicate via causally ordered event streams. Services can either be co-located on a single node or distributed up to global scale. Services can also be replicated with causal consistency and remain available for writes during network partitions. Eventuate has a Java_ and Scala_ API, is written in Scala and built on top of `Akka`_, a toolkit for building highly concurrent, distributed, and resilient message-driven applications on the JVM.
 
 .. _overview-event-sourcing:
 
@@ -78,7 +78,7 @@ Eventuate comes with an implementation of :ref:`operation-based-crdts` (commutat
 Stream processing adapters
 --------------------------
 
-Although Eventuate can be used to build distributed stream processing applications, it doesn’t aim to compete with existing, more elaborate stream processing frameworks such as `Spark Streaming`_, `Apache Flink`_ or `Akka Streams`_, for example. Eventuate rather provides :ref:`adapters` to these frameworks so that events produced by Eventuate applications can be further analyzed there and results written back to Eventuate event logs. 
+Although Eventuate can be used to build distributed stream processing applications, it doesn’t aim to compete with existing, more elaborate stream processing frameworks such as `Spark Streaming`_ or `Akka Streams`_, for example. Eventuate rather provides :ref:`adapters` to these frameworks so that events produced by Eventuate applications can be further analyzed there and results written back to Eventuate event logs. 
 
 Related projects
 ----------------
@@ -97,10 +97,9 @@ Two other Red Bull Media House Technology projects are related to Eventuate:
 .. _Java: http://www.oracle.com/technetwork/java/javase/overview/index.html
 .. _Scala: http://www.scala-lang.org/
 .. _Akka: http://akka.io
-.. _Akka Persistence: http://doc.akka.io/docs/akka/2.4.4/scala/persistence.html
-.. _Akka Streams: http://doc.akka.io/docs/akka/2.4.4/scala/stream/index.html
+.. _Akka Persistence: http://doc.akka.io/docs/akka/2.4/scala/persistence.html
+.. _Akka Streams: http://doc.akka.io/docs/akka/2.4/scala/stream/index.html
 .. _Spark Streaming: http://spark.apache.org/streaming/
-.. _Apache Flink: http://flink.apache.org/
 .. _Cassandra: http://cassandra.apache.org/
 .. _LevelDB: https://github.com/google/leveldb
 .. _Event sourcing: http://martinfowler.com/eaaDev/EventSourcing.html
@@ -109,7 +108,7 @@ Two other Red Bull Media House Technology projects are related to Eventuate:
 .. _CRDT: http://en.wikipedia.org/wiki/Conflict-free_replicated_data_type 
 .. _CQRS: http://martinfowler.com/bliki/CQRS.html
 .. _causal consistency: http://en.wikipedia.org/wiki/Causal_consistency
-.. _reliable messaging in Akka Persistence: http://doc.akka.io/docs/akka/2.4.4/scala/persistence.html#At-Least-Once_Delivery
+.. _reliable messaging in Akka Persistence: http://doc.akka.io/docs/akka/2.4/scala/persistence.html#At-Least-Once_Delivery
 .. _Eventuate Chaos: https://github.com/RBMHTechnology/eventuate-chaos
 .. _Eventuate Tools: https://github.com/RBMHTechnology/eventuate-tools
 .. _log viewer: https://github.com/RBMHTechnology/eventuate-tools/blob/master/log-viewer/README.md

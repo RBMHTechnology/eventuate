@@ -54,7 +54,7 @@ object BasicReplicationThroughputSpec {
 
     def onCommand = {
       case "stats" =>
-        probe ! s"${(1000.0 * 1000 * 1000 * events.size) / (stopTime - startTime) } events/sec"
+        probe ! s"${(1000.0 * 1000 * 1000 * events.size) / (stopTime - startTime)} events/sec"
       case s: String => persist(s) {
         case Success(e) =>
         case Failure(e) => throw e
@@ -108,7 +108,6 @@ abstract class BasicReplicationThroughputSpec(config: BasicReplicationThroughput
       //  B        F
       //
       // ---------------------------------------
-
 
       runOn(nodeA) {
         val endpoint = createEndpoint(nodeA.name, Set(node(nodeC).address.toReplicationConnection))

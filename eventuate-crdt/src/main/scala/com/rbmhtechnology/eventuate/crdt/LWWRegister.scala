@@ -36,7 +36,6 @@ import scala.concurrent.Future
  * value is not important for concurrent updates occurring within the clock skew.
  *
  * @param mvRegister Initially empty [[MVRegister]].
- *
  * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]], specification 9
  */
 case class LWWRegister[A](mvRegister: MVRegister[A] = MVRegister.apply[A]) extends CRDTFormat {
@@ -48,13 +47,13 @@ case class LWWRegister[A](mvRegister: MVRegister[A] = MVRegister.apply[A]) exten
   /**
    * Assigns a [[Versioned]] value from `v` and `vectorTimestamp` and returns an updated MV-Register.
    *
-   * @param v assigned value.
-   * @param vectorTimestamp vector timestamp of the assigned value.
-   * @param systemTimestamp system timestamp of the assigned value.
+   * @param v value to assign.
+   * @param vectorTimestamp vector timestamp of the value to assign.
+   * @param systemTimestamp system timestamp of the value to assign.
    * @param emitterId id of the value emitter.
    */
-  def set(v: A, vectorTimestamp: VectorTime, systemTimestamp: Long, emitterId: String): LWWRegister[A] = {
-    copy(mvRegister.set(v, vectorTimestamp, systemTimestamp, emitterId))
+  def assign(v: A, vectorTimestamp: VectorTime, systemTimestamp: Long, emitterId: String): LWWRegister[A] = {
+    copy(mvRegister.assign(v, vectorTimestamp, systemTimestamp, emitterId))
   }
 }
 
@@ -72,8 +71,8 @@ object LWWRegister {
     override def precondition: Boolean =
       false
 
-    override def update(crdt: LWWRegister[A], operation: Any, event: DurableEvent): LWWRegister[A] = operation match {
-      case SetOp(value) => crdt.set(value.asInstanceOf[A], event.vectorTimestamp, event.systemTimestamp, event.emitterId)
+    override def effect(crdt: LWWRegister[A], operation: Any, event: DurableEvent): LWWRegister[A] = operation match {
+      case AssignOp(value) => crdt.assign(value.asInstanceOf[A], event.vectorTimestamp, event.systemTimestamp, event.emitterId)
     }
   }
 
@@ -99,8 +98,8 @@ class LWWRegisterService[A](val serviceId: String, val log: ActorRef)(implicit v
   /**
    * Assigns a `value` to the LWW-Register identified by `id` and returns the updated LWW-Register value.
    */
-  def set(id: String, value: A): Future[Option[A]] =
-    op(id, SetOp(value))
+  def assign(id: String, value: A): Future[Option[A]] =
+    op(id, AssignOp(value))
 
   start()
 }

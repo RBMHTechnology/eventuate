@@ -43,9 +43,9 @@ object BasicPersistOnEventSpec {
     }
     override def onEvent = {
       case p @ Pong(10) => probe ! p
-      case p @ Pong(5) => probe ! p
-      case p @ Ping(6) => probe ! p
-      case Pong(i)  => persistOnEvent(Ping(i + 1))
+      case p @ Pong(5)  => probe ! p
+      case p @ Ping(6)  => probe ! p
+      case Pong(i)      => persistOnEvent(Ping(i + 1))
     }
   }
 

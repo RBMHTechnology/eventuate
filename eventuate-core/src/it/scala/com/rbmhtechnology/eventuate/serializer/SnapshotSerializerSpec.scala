@@ -26,7 +26,7 @@ import com.rbmhtechnology.eventuate.PersistOnEvent._
 import com.rbmhtechnology.eventuate.log.EventLogClock
 import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.serializerConfig
 import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.serializerWithStringManifestConfig
-import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.{event, ExamplePayload}
+import com.rbmhtechnology.eventuate.serializer.DurableEventSerializerSpec.{ event, ExamplePayload }
 
 import org.scalatest._
 

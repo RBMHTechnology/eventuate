@@ -109,8 +109,8 @@ class LeveldbEventLog(id: String, prefix: String) extends EventLog[LeveldbEventL
   override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
     withBatch(batch => writeSync(events, clock, batch))
 
-  override def writeReplicationProgress(logId: String, progress: Long): Future[Unit] =
-    completed(withBatch(batch => replicationProgressMap.writeReplicationProgress(logId, progress, batch)))
+  override def writeReplicationProgresses(progresses: Map[String, Long]): Future[Unit] =
+    completed(withBatch(batch => progresses.foreach(p => replicationProgressMap.writeReplicationProgress(p._1, p._2, batch))))
 
   def writeEventLogClockSnapshot(clock: EventLogClock): Future[Unit] =
     withBatch(batch => Future.fromTry(Try(writeEventLogClockSnapshotSync(clock, batch))))

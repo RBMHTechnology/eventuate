@@ -35,32 +35,39 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
     }
     "store a single value" in {
       mvReg
-        .set(1, vectorTime(1, 0))
+        .assign(1, vectorTime(1, 0))
         .value should be(Set(1))
     }
     "store multiple values in case of concurrent writes" in {
       mvReg
-        .set(1, vectorTime(1, 0))
-        .set(2, vectorTime(0, 1))
+        .assign(1, vectorTime(1, 0))
+        .assign(2, vectorTime(0, 1))
         .value should be(Set(1, 2))
     }
     "mask duplicate concurrent writes" in {
       mvReg
-        .set(1, vectorTime(1, 0))
-        .set(1, vectorTime(0, 1))
+        .assign(1, vectorTime(1, 0))
+        .assign(1, vectorTime(0, 1))
         .value should be(Set(1))
     }
     "replace a value if it happened before a new write" in {
       mvReg
-        .set(1, vectorTime(1, 0))
-        .set(2, vectorTime(2, 0))
+        .assign(1, vectorTime(1, 0))
+        .assign(2, vectorTime(2, 0))
         .value should be(Set(2))
+    }
+    "replace a value if it happened before a new write and retain a value if it is concurrent to the new write" in {
+      mvReg
+        .assign(1, vectorTime(1, 0))
+        .assign(2, vectorTime(0, 1))
+        .assign(3, vectorTime(2, 0))
+        .value should be(Set(2, 3))
     }
     "replace multiple concurrent values if they happened before a new write" in {
       mvReg
-        .set(1, vectorTime(1, 0))
-        .set(2, vectorTime(0, 1))
-        .set(3, vectorTime(1, 1))
+        .assign(1, vectorTime(1, 0))
+        .assign(2, vectorTime(0, 1))
+        .assign(3, vectorTime(1, 1))
         .value should be(Set(3))
     }
   }
@@ -71,33 +78,33 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
     }
     "store a single value" in {
       lwwReg
-        .set(1, vectorTime(1, 0), 0, "source-1")
+        .assign(1, vectorTime(1, 0), 0, "source-1")
         .value should be(Some(1))
     }
     "accept a new value if was set after the current value according to the vector clock" in {
       lwwReg
-        .set(1, vectorTime(1, 0), 1, "emitter-1")
-        .set(2, vectorTime(2, 0), 0, "emitter-2")
+        .assign(1, vectorTime(1, 0), 1, "emitter-1")
+        .assign(2, vectorTime(2, 0), 0, "emitter-2")
         .value should be(Some(2))
     }
     "fallback to the wall clock if the values' vector clocks are concurrent" in {
       lwwReg
-        .set(1, vectorTime(1, 0), 0, "emitter-1")
-        .set(2, vectorTime(0, 1), 1, "emitter-2")
+        .assign(1, vectorTime(1, 0), 0, "emitter-1")
+        .assign(2, vectorTime(0, 1), 1, "emitter-2")
         .value should be(Some(2))
       lwwReg
-        .set(1, vectorTime(1, 0), 1, "emitter-1")
-        .set(2, vectorTime(0, 1), 0, "emitter-2")
+        .assign(1, vectorTime(1, 0), 1, "emitter-1")
+        .assign(2, vectorTime(0, 1), 0, "emitter-2")
         .value should be(Some(1))
     }
     "fallback to the greatest emitter if the values' vector clocks and wall clocks are concurrent" in {
       lwwReg
-        .set(1, vectorTime(1, 0), 0, "emitter-1")
-        .set(2, vectorTime(0, 1), 0, "emitter-2")
+        .assign(1, vectorTime(1, 0), 0, "emitter-1")
+        .assign(2, vectorTime(0, 1), 0, "emitter-2")
         .value should be(Some(2))
       lwwReg
-        .set(1, vectorTime(1, 0), 0, "emitter-2")
-        .set(2, vectorTime(0, 1), 0, "emitter-1")
+        .assign(1, vectorTime(1, 0), 0, "emitter-2")
+        .assign(2, vectorTime(0, 1), 0, "emitter-1")
         .value should be(Some(1))
     }
   }

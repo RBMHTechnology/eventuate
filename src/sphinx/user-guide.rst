@@ -253,7 +253,7 @@ New operation-based CRDTs and their corresponding services can be developed with
 .. hint::
    Eventuate’s CRDT approach is also described in `this article`_.
 
-.. _this article: https://krasserm.github.io/2015/02/17/Implementing-operation-based-CRDTs/
+.. _this article: http://krasserm.github.io/2016/10/19/operation-based-crdt-framework/
 
 .. _guide-event-sourced-views:
 
@@ -334,7 +334,7 @@ In a more real-world example, there would be several actors of different type co
 .. _vector clock update rules: http://en.wikipedia.org/wiki/Vector_clock
 .. _version vector update rules: http://en.wikipedia.org/wiki/Version_vector
 .. _Lamport timestamps: http://en.wikipedia.org/wiki/Lamport_timestamps
-.. _multi node testkit: http://doc.akka.io/docs/akka/2.4.4/dev/multi-node-testing.html
+.. _multi node testkit: http://doc.akka.io/docs/akka/2.4/dev/multi-node-testing.html
 .. _ReplicatedOrSetSpec: https://github.com/RBMHTechnology/eventuate/blob/master/src/multi-jvm/scala/com/rbmhtechnology/eventuate/crdt/ReplicatedORSetSpec.scala
 .. _CRDT sources: https://github.com/RBMHTechnology/eventuate/tree/master/eventuate-crdt/src/main/scala/com/rbmhtechnology/eventuate/crdt
 .. _A comprehensive study of Convergent and Commutative Replicated Data Types: http://hal.upmc.fr/file/index/docid/555588/filename/techreport.pdf

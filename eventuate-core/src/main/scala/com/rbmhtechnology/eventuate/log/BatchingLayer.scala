@@ -101,20 +101,24 @@ private trait Batcher[A <: DurableEventBatch] extends Actor {
 private class DefaultBatcher(val eventLog: ActorRef) extends Batcher[Write] {
   val idle: Receive = {
     case w: Write =>
-      batch = batch :+ w
+      batch = batch :+ w.withReplyToDefault(sender())
       writeBatch()
       context.become(writing)
   }
 
   val writing: Receive = {
     case w: Write =>
-      batch = batch :+ w
+      batch = batch :+ w.withReplyToDefault(sender())
     case WriteNComplete if batch.isEmpty =>
       context.become(idle)
     case WriteNComplete =>
       writeBatch()
     case r: Replay =>
-      writeAll() // ensures that Replay commands are properly ordered relative to Write commands
+      // ----------------------------------------------------------------------------
+      // Ensures that Replay commands are properly ordered relative to Write commands
+      // TODO: only force a writeAll() for replays that come from EventsourcedActors
+      // ----------------------------------------------------------------------------
+      writeAll()
       eventLog forward r
       context.become(idle)
   }
@@ -126,14 +130,14 @@ private class DefaultBatcher(val eventLog: ActorRef) extends Batcher[Write] {
 private class ReplicationBatcher(val eventLog: ActorRef) extends Batcher[ReplicationWrite] {
   val idle: Receive = {
     case w: ReplicationWrite =>
-      batch = batch :+ w.copy(replyTo = sender())
+      batch = batch :+ w.withReplyToDefault(sender())
       writeBatch()
       context.become(writing)
   }
 
   val writing: Receive = {
     case w: ReplicationWrite =>
-      batch = batch :+ w.copy(replyTo = sender())
+      batch = batch :+ w.withReplyToDefault(sender())
     case ReplicationWriteNComplete if batch.isEmpty =>
       context.become(idle)
     case ReplicationWriteNComplete =>

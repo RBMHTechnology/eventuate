@@ -95,10 +95,10 @@ public class AbstractEventsourcedProcessorSpec extends BaseSpec {
 
     @Before
     public void beforeEach() {
+        instanceId = getInstanceId();
         srcProbe = new TestProbe(system);
         targetProbe = new TestProbe(system);
         appProbe = new TestProbe(system);
-        instanceId = getInstanceId();
     }
 
     private ActorRef unrecoveredStatelessEventProcessor() {
@@ -125,7 +125,7 @@ public class AbstractEventsourcedProcessorSpec extends BaseSpec {
 
     private void processWriteSuccess(final long progress, final DurableEvent... events) {
         targetProbe.expectMsg(new ReplicationWrite(toSeq(events), progress, EMITTER_ID, vectorTimeZero(), false, null));
-        processResult(new ReplicationWriteSuccess(events.length, progress, EMITTER_ID, vectorTimeZero(), false));
+        processResult(new ReplicationWriteSuccess(toSeq(events), progress, EMITTER_ID, vectorTimeZero(), false));
     }
 
     private void processWriteFailure(final long progress, final DurableEvent... events) {
@@ -157,20 +157,26 @@ public class AbstractEventsourcedProcessorSpec extends BaseSpec {
     }
 
     @Test
-    public void shouldReportFailureOnFailedRead() {
-        unrecoveredStatelessEventProcessor();
+    public void shouldResumeOnFailedRead() {
+        final ActorRef actor = unrecoveredStatelessEventProcessor();
         processReadFailure();
 
         appProbe.expectMsg(FAILURE);
+
+        processReadSuccess(0);
+        processReplay(actor, 1, instanceId + 1, srcProbe, REPLAY_BATCH_SIZE);
     }
 
     @Test
-    public void shouldReportFailureOnFailedWrite() {
+    public void shouldResumeOnFailedWrite() {
         final ActorRef actor = recoveredStatelessEventProcessor();
 
         actor.tell(new Written(eventA), getRef());
         processWriteFailure(1, eventA1, eventA2);
 
         appProbe.expectMsg(FAILURE);
+
+        processReadSuccess(0);
+        processReplay(actor, 1, instanceId + 1, srcProbe, REPLAY_BATCH_SIZE);
     }
 }

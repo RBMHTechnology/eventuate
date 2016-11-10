@@ -38,8 +38,8 @@ class CRDTServiceSpecLeveldb extends TestKit(ActorSystem("test")) with WordSpecL
       val service2 = new MVRegisterService[Int]("b", log)
       val service3 = new LWWRegisterService[Int]("c", log)
       service1.update("a", 1).await should be(1)
-      service2.set("a", 1).await should be(Set(1))
-      service3.set("a", 1).await should be(Some(1))
+      service2.assign("a", 1).await should be(Set(1))
+      service3.assign("a", 1).await should be(Some(1))
     }
   }
 
@@ -69,7 +69,7 @@ class CRDTServiceSpecLeveldb extends TestKit(ActorSystem("test")) with WordSpecL
     }
     "return the written value of an MVRegister" in {
       val service = new MVRegisterService[Int]("a", log)
-      service.set("a", 1).await should be(Set(1))
+      service.assign("a", 1).await should be(Set(1))
       service.value("a").await should be(Set(1))
     }
   }
@@ -81,7 +81,7 @@ class CRDTServiceSpecLeveldb extends TestKit(ActorSystem("test")) with WordSpecL
     }
     "return the written value of an LWWRegister" in {
       val service = new LWWRegisterService[Int]("a", log)
-      service.set("a", 1).await should be(Some(1))
+      service.assign("a", 1).await should be(Some(1))
       service.value("a").await should be(Some(1))
     }
   }

@@ -35,7 +35,11 @@ object EventsourcingProtocol {
    * Instructs an event log to write the given `events`.
    */
   case class Write(events: Seq[DurableEvent], initiator: ActorRef, replyTo: ActorRef, correlationId: Int, instanceId: Int) extends UpdateableEventBatch[Write] {
-    override def update(events: Seq[DurableEvent]): Write = copy(events = events)
+    override def update(events: Seq[DurableEvent]): Write =
+      copy(events = events)
+
+    def withReplyToDefault(replyTo: ActorRef): Write =
+      if (this.replyTo eq null) copy(replyTo = replyTo) else this
   }
 
   /**
@@ -80,7 +84,12 @@ object EventsourcingProtocol {
   /**
    * Failure reply after a [[Replay]].
    */
-  case class ReplayFailure(cause: Throwable, instanceId: Int)
+  case class ReplayFailure(cause: Throwable, replayProgress: Long, instanceId: Int)
+
+  /**
+   * Internal message to trigger a new [[Replay]] attempt
+   */
+  private[eventuate] case class ReplayRetry(replayProgress: Long)
 
   /**
    * Instructs an event log to delete events with a sequence nr less or equal a given one.

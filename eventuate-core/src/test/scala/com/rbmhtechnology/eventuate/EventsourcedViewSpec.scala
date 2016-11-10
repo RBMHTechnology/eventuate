@@ -18,9 +18,9 @@ package com.rbmhtechnology.eventuate
 
 import akka.actor._
 import akka.testkit._
+import com.typesafe.config.ConfigFactory
 import org.scalatest._
 
-import scala.concurrent.Future
 import scala.util._
 
 object EventsourcedViewSpec {
@@ -475,7 +475,7 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
       logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
       logProbe.sender() ! LoadSnapshotSuccess(None, instanceId)
       logProbe.expectMsg(Replay(1L, Some(actor), instanceId))
-      actor ! ReplayFailure(TestException, instanceId)
+      actor ! ReplayFailure(TestException, 1L, instanceId)
       msgProbe.expectMsg(TestException)
     }
     "support command handler behavior changes" in {
@@ -533,6 +533,70 @@ class EventsourcedViewSpec extends TestKit(ActorSystem("test")) with WordSpecLik
 
       actor ! "last"
       msgProbe.expectMsgType[DurableEvent].payload should be("e1")
+    }
+  }
+}
+
+object EventsourcedViewReplaySpec {
+  val MaxRetries = 5
+  val config = ConfigFactory.parseString(
+    s"""
+      |eventuate.log.replay-retry-max = $MaxRetries
+      |eventuate.log.replay-retry-delay = 5ms
+    """.stripMargin)
+}
+
+class EventsourcedViewReplayRetrySpec extends TestKit(ActorSystem("test", EventsourcedViewReplaySpec.config)) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
+  import EventsourcedViewReplaySpec._
+  import EventsourcedViewSpec._
+  import EventsourcingProtocol._
+
+  var instanceId: Int = _
+  var logProbe: TestProbe = _
+  var msgProbe: TestProbe = _
+
+  override def beforeEach(): Unit = {
+    instanceId = EventsourcedView.instanceIdCounter.get
+    logProbe = TestProbe()
+    msgProbe = TestProbe()
+  }
+
+  override def afterAll(): Unit =
+    TestKit.shutdownActorSystem(system)
+
+  def unrecoveredCompletionView(): ActorRef =
+    system.actorOf(Props(new TestCompletionView(logProbe.ref, msgProbe.ref)))
+
+  "An EventsourcedView" must {
+    "retry replay on failure" in {
+      val actor = unrecoveredCompletionView()
+
+      logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
+      logProbe.sender() ! LoadSnapshotSuccess(None, instanceId)
+
+      logProbe.expectMsg(Replay(1L, Some(actor), instanceId))
+      actor ! ReplayFailure(TestException, 1L, instanceId)
+
+      1 to MaxRetries foreach { _ =>
+        logProbe.expectMsg(Replay(1L, None, instanceId))
+        actor ! ReplayFailure(TestException, 1L, instanceId)
+      }
+
+      msgProbe.expectMsg(TestException)
+    }
+    "successfully finish recovery after replay retry" in {
+      val actor = unrecoveredCompletionView()
+
+      logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))
+      logProbe.sender() ! LoadSnapshotSuccess(None, instanceId)
+
+      logProbe.expectMsg(Replay(1L, Some(actor), instanceId))
+      actor ! ReplayFailure(TestException, 1L, instanceId)
+
+      logProbe.expectMsg(Replay(1L, None, instanceId))
+      actor ! ReplaySuccess(Nil, 0L, instanceId)
+
+      msgProbe.expectMsg("success")
     }
   }
 }

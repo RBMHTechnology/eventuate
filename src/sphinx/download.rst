@@ -17,12 +17,12 @@ Eventuate is a multi-module project with the following modules:
      - Provides the :ref:`cassandra-storage-backend`.
    * - ``eventuate-log-leveldb``
      - Provides the :ref:`leveldb-storage-backend`.
+   * - ``eventuate-adapter-stream``
+     - Provides the :ref:`akka-streams-adapter`.
    * - ``eventuate-adapter-spark``
      - Provides the :ref:`spark-adapter`.
-   * - ``eventuate-examples``
-     - Provides :ref:`example-application` among others.
-   * - ``eventuate-example-spark``
-     - Provides Spark adapter example applications.
+   * - ``eventuate-adapter-vertx``
+     - Provides the :ref:`vertx-adapter`.
 
 |
 
@@ -48,25 +48,43 @@ Latest release dependencies::
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-core_2.11</artifactId>
-        <version>0.7.1</version>
+        <version>0.8</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-crdt_2.11</artifactId>
-        <version>0.7.1</version>
+        <version>0.8</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-log-leveldb_2.11</artifactId>
-        <version>0.7.1</version>
+        <version>0.8</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-log-cassandra_2.11</artifactId>
-        <version>0.7.1</version>
+        <version>0.8</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-adapter-stream_2.11</artifactId>
+        <version>0.8</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-adapter-spark_2.11</artifactId>
+        <version>0.8</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-adapter-vertx_2.11</artifactId>
+        <version>0.8</version>
     </dependency>
 
 Development snapshot dependencies::
@@ -80,31 +98,43 @@ Development snapshot dependencies::
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-core_2.11</artifactId>
-        <version>0.8-SNAPSHOT</version>
+        <version>0.9-SNAPSHOT</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-crdt_2.11</artifactId>
-        <version>0.8-SNAPSHOT</version>
+        <version>0.9-SNAPSHOT</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-log-leveldb_2.11</artifactId>
-        <version>0.8-SNAPSHOT</version>
+        <version>0.9-SNAPSHOT</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-log-cassandra_2.11</artifactId>
-        <version>0.8-SNAPSHOT</version>
+        <version>0.9-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-adapter-stream_2.11</artifactId>
+        <version>0.9-SNAPSHOT</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-adapter-spark_2.11</artifactId>
-        <version>0.8-SNAPSHOT</version>
+        <version>0.9-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+        <groupId>com.rbmhtechnology</groupId>
+        <artifactId>eventuate-adapter-vertx_2.11</artifactId>
+        <version>0.9-SNAPSHOT</version>
     </dependency>
 
 SBT
@@ -114,27 +144,37 @@ Latest release dependencies::
 
     resolvers += "Eventuate Releases" at "https://dl.bintray.com/rbmhtechnology/maven"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-core" % "0.7.1"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-core" % "0.8"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.7.1"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.8"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-leveldb" % "0.7.1"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-leveldb" % "0.8"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-cassandra" % "0.7.1"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-cassandra" % "0.8"
+
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-stream" % "0.8"
+
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-spark" % "0.8"
+
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-vertx" % "0.8"
 
 Development snapshot dependencies::
 
     resolvers += "OJO Snapshots" at "https://oss.jfrog.org/oss-snapshot-local"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-core" % "0.8-SNAPSHOT"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-core" % "0.9-SNAPSHOT"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.8-SNAPSHOT"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.9-SNAPSHOT"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-leveldb" % "0.8-SNAPSHOT"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-leveldb" % "0.9-SNAPSHOT"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-cassandra" % "0.8-SNAPSHOT"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-cassandra" % "0.9-SNAPSHOT"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-spark" % "0.8-SNAPSHOT"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-stream" % "0.9-SNAPSHOT"
+
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-spark" % "0.9-SNAPSHOT"
+
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-vertx" % "0.9-SNAPSHOT"
 
 Sources
 -------

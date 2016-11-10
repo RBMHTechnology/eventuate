@@ -53,7 +53,7 @@ object Counter {
     override def precondition: Boolean =
       false
 
-    override def update(crdt: Counter[A], operation: Any, event: DurableEvent): Counter[A] = operation match {
+    override def effect(crdt: Counter[A], operation: Any, event: DurableEvent): Counter[A] = operation match {
       case UpdateOp(delta) => crdt.update(delta.asInstanceOf[A])
     }
   }
@@ -78,4 +78,7 @@ class CounterService[A](val serviceId: String, val log: ActorRef)(implicit val s
   start()
 }
 
-private case class UpdateOp(delta: Any) extends CRDTFormat
+/**
+ * Persistent update operation used for [[Counter]].
+ */
+case class UpdateOp(delta: Any) extends CRDTFormat

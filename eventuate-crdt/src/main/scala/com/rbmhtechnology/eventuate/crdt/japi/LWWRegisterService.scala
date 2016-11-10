@@ -38,13 +38,15 @@ class LWWRegisterService[A](val serviceId: String, val log: ActorRef, implicit v
   import CRDTConverter._
   import system._
 
-  override protected val delegate = new com.rbmhtechnology.eventuate.crdt.LWWRegisterService[A](serviceId, log)
+  override protected val delegate =
+    new com.rbmhtechnology.eventuate.crdt.LWWRegisterService[A](serviceId, log)
 
-  implicit protected def c: CRDTConverter[Option[A], JOption[A]] = CRDTConverter(_.asJava)
+  implicit protected def c: CRDTConverter[Option[A], JOption[A]] =
+    CRDTConverter(_.asJava)
 
   /**
    * Assigns a `value` to the LWW-Register identified by `id` and returns the updated LWW-Register value.
    */
-  def set(id: String, value: A): CompletionStage[JOption[A]] =
-    delegate.set(id, value).asJava
+  def assign(id: String, value: A): CompletionStage[JOption[A]] =
+    delegate.assign(id, value).asJava
 }

@@ -67,13 +67,13 @@ package object utilities {
       from.log.ask(ReplicationRead(reply.storedReplicationProgress + 1, num, Int.MaxValue, NoFilter, to.logId, to.endpoint.system.deadLetters, reply.currentTargetVersionVector)).mapTo[ReplicationReadSuccess]
 
     def writeEvents(reply: ReplicationReadSuccess): Future[ReplicationWriteSuccess] =
-      to.log.ask(ReplicationWrite(reply.events, reply.replicationProgress, from.logId, VectorTime())).mapTo[ReplicationWriteSuccess]
+      to.log.ask(ReplicationWrite(reply.events, Map(from.logId -> ReplicationMetadata(reply.replicationProgress, VectorTime.Zero)))).mapTo[ReplicationWriteSuccess]
 
     val replication = for {
       rps <- readProgress
       res <- readEvents(rps)
       wes <- writeEvents(res)
-    } yield wes.num
+    } yield wes.events.size
 
     replication.await
   }
