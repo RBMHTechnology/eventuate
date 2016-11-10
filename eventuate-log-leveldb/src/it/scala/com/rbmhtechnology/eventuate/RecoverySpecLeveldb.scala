@@ -71,7 +71,7 @@ object RecoverySpecLeveldb {
 
     override def receive: Receive = {
       case GetReplicationProgress(_) => sender() ! GetReplicationProgressesFailure(exception)
-      case m => logActor.forward(m)
+      case m                         => logActor.forward(m)
     }
   }
 
@@ -96,7 +96,7 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpecL
   override val logFactory: String => Props =
     id => SingleLocationSpecLeveldb.TestEventLog.props(id, batching = true)
 
-  def assertConvergence(expected: Set[String], endpoints: ReplicationEndpoint *): Unit = {
+  def assertConvergence(expected: Set[String], endpoints: ReplicationEndpoint*): Unit = {
     val probes = endpoints.map { endpoint =>
       val probe = new TestProbe(endpoint.system)
       endpoint.system.actorOf(Props(new ConvergenceView(s"p-${endpoint.id}", endpoint.logs("L1"), expected.size, probe.ref)))
@@ -115,9 +115,9 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpecL
 
       val recovery = endpointA.recover()
 
-      an [IllegalStateException] shouldBe thrownBy(endpointA.activate())
+      an[IllegalStateException] shouldBe thrownBy(endpointA.activate())
       recovery.await
-      an [IllegalStateException] shouldBe thrownBy(endpointA.activate())
+      an[IllegalStateException] shouldBe thrownBy(endpointA.activate())
     }
     "fail when connected endpoint is unavailable" in {
       val locationA = location("A", customConfig = ConfigFactory.parseString("eventuate.log.recovery.remote-operation-retry-max = 0").withFallback(RecoverySpecLeveldb.config))
@@ -143,7 +143,7 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpecL
       val endpointD = locationD.endpoint(Set("L1"), Set(replicationConnection(locationA.port), replicationConnection(locationB.port), replicationConnection(locationC.port)), activate = false)
 
       val expected = the[RecoveryException] thrownBy endpointD.recover().await
-      expected.getMessage should include (GetProgressException.getMessage)
+      expected.getMessage should include(GetProgressException.getMessage)
     }
     "succeed normally if the endpoint was healthy (but not convergent yet)" in {
       val locationB = location("B", customConfig = RecoverySpecLeveldb.config)

@@ -16,7 +16,7 @@
 
 package com.rbmhtechnology.eventuate
 
-import akka.actor.{Props, ActorSystem}
+import akka.actor.{ Props, ActorSystem }
 import akka.testkit.TestKit
 
 // --------------------------------------------------------------------------

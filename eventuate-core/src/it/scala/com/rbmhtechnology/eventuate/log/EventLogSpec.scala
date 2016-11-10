@@ -103,11 +103,11 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with SingleLocation
     super.afterEach()
   }
 
-  def timestamp(a: Long = 0L, b: Long= 0L) = (a, b) match {
+  def timestamp(a: Long = 0L, b: Long = 0L) = (a, b) match {
     case (0L, 0L) => VectorTime()
-    case (a,  0L) => VectorTime(logId -> a)
-    case (0L,  b) => VectorTime(remoteLogId -> b)
-    case (a,   b) => VectorTime(logId -> a, remoteLogId -> b)
+    case (a, 0L)  => VectorTime(logId -> a)
+    case (0L, b)  => VectorTime(remoteLogId -> b)
+    case (a, b)   => VectorTime(logId -> a, remoteLogId -> b)
   }
 
   def currentSequenceNr: Long = {
@@ -154,7 +154,7 @@ trait EventLogSpecSupport extends WordSpecLike with Matchers with SingleLocation
 
   def generateEmittedEvents(emitterAggregateId: Option[String] = None, customDestinationAggregateIds: Set[String] = Set(), num: Int = 3): Unit = {
     _generatedEmittedEvents ++= writeEmittedEvents((1 to num).map { i =>
-        DurableEvent(s"a-$i", emitterIdA, emitterAggregateId, customDestinationAggregateIds)
+      DurableEvent(s"a-$i", emitterIdA, emitterAggregateId, customDestinationAggregateIds)
     })
   }
 

@@ -53,24 +53,24 @@ class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", Even
   "A Cassandra event log" must {
     "fill a partition with a single batch" in {
       writeEmittedEvents(List(event("a"), event("b"), event("c"), event("d"), event("e")))
-      replay(1L) should be (List(("a", 1L), ("b", 2L), ("c", 3L), ("d", 4L), ("e", 5L)))
-      replay(4L) should be (List(("d", 4L), ("e", 5L)))
-      replay(5L) should be (List(("e", 5L)))
-      replay(6L) should be (List())
+      replay(1L) should be(List(("a", 1L), ("b", 2L), ("c", 3L), ("d", 4L), ("e", 5L)))
+      replay(4L) should be(List(("d", 4L), ("e", 5L)))
+      replay(5L) should be(List(("e", 5L)))
+      replay(6L) should be(List())
     }
     "fill a partition with more than one batch" in {
       writeEmittedEvents(List(event("a"), event("b"), event("c")))
       writeEmittedEvents(List(event("d"), event("e")))
-      replay(1L) should be (List(("a", 1L), ("b", 2L), ("c", 3L), ("d", 4L), ("e", 5L)))
-      replay(5L) should be (List(("e", 5L)))
-      replay(6L) should be (List())
+      replay(1L) should be(List(("a", 1L), ("b", 2L), ("c", 3L), ("d", 4L), ("e", 5L)))
+      replay(5L) should be(List(("e", 5L)))
+      replay(6L) should be(List())
     }
     "switch to the next partition if the current partition is full" in {
       writeEmittedEvents(List(event("a"), event("b"), event("c"), event("d"), event("e")))
       writeEmittedEvents(List(event("f"), event("g")))
-      replay(1L) should be (List(("a", 1L), ("b", 2L), ("c", 3L), ("d", 4L), ("e", 5L), ("f", 6L), ("g", 7L)))
-      replay(5L) should be (List(("e", 5L), ("f", 6L), ("g", 7L)))
-      replay(6L) should be (List(("f", 6L), ("g", 7L)))
+      replay(1L) should be(List(("a", 1L), ("b", 2L), ("c", 3L), ("d", 4L), ("e", 5L), ("f", 6L), ("g", 7L)))
+      replay(5L) should be(List(("e", 5L), ("f", 6L), ("g", 7L)))
+      replay(6L) should be(List(("f", 6L), ("g", 7L)))
     }
     "switch to the next partition if the current partition isn't full but doesn't provide enough remaining space for a batch" in {
       val eventsA = List(event("a"), event("b"), event("c"), event("d"))
@@ -90,9 +90,9 @@ class EventLogPartitioningSpecCassandra extends TestKit(ActorSystem("test", Even
       replyToProbe.expectMsg(WriteSuccess(expectedA, 0, 0))
       replyToProbe.expectMsg(WriteSuccess(expectedB, 0, 0))
 
-      replay(1L) should be (List(("a", 1L), ("b", 2L), ("c", 3L), ("d", 4L), ("f", 6L), ("g", 7L)))
-      replay(5L) should be (List(("f", 6L), ("g", 7L)))
-      replay(6L) should be (List(("f", 6L), ("g", 7L)))
+      replay(1L) should be(List(("a", 1L), ("b", 2L), ("c", 3L), ("d", 4L), ("f", 6L), ("g", 7L)))
+      replay(5L) should be(List(("f", 6L), ("g", 7L)))
+      replay(6L) should be(List(("f", 6L), ("g", 7L)))
     }
     "reject batches larger than the maximum partition size" in {
       val events = Vector(event("a"), event("b"), event("c"), event("d"), event("e"), event("f"))

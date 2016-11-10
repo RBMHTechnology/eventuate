@@ -52,9 +52,9 @@ trait ReplicationCycleSpec extends WordSpec with Matchers with MultiLocationSpec
     val eventsC = locationC.probe.expectMsgAllOf(expected: _*)
 
     val num = 100
-    val expectedA = 2 to num map { i => s"a$i"}
-    val expectedB = 2 to num map { i => s"b$i"}
-    val expectedC = 2 to num map { i => s"c$i"}
+    val expectedA = 2 to num map { i => s"a$i" }
+    val expectedB = 2 to num map { i => s"b$i" }
+    val expectedC = 2 to num map { i => s"c$i" }
     val all = expectedA ++ expectedB ++ expectedC
 
     import endpointA.system.dispatcher

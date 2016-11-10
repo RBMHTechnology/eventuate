@@ -181,7 +181,7 @@ trait ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocati
         sourceFilters(Map("L1" -> new PayloadEqualityFilter("a2"))))
       val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port)),
         targetOverwritesSourceFilters(
-          Map(logId(locationA.id, "L1")-> new PayloadInequalityFilter("b2")),
+          Map(logId(locationA.id, "L1") -> new PayloadInequalityFilter("b2")),
           Map("L1" -> new PayloadEqualityFilter("b2"))
         ))
 
@@ -221,20 +221,24 @@ trait ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocati
       val eventsB = locationB.probe.expectMsgAllOf("b1", "b2", "b3", "a3")
     }
     "replicate events according to BinaryPayload based local filters" in {
-      val locationA = location("A", 
+      val locationA = location(
+        "A",
         customConfig = javaSerializerWithManifestFor(classOf[String], classOf[Integer]))
-      val locationB = location("B",
+      val locationB = location(
+        "B",
         customConfig = ConfigFactory.parseString(
           s"akka.actor.serializers.eventuate-durable-event = ${classOf[DurableEventSerializerWithBinaryPayload].getName}"))
-      val locationC = location("C", 
+      val locationC = location(
+        "C",
         customConfig = javaSerializerWithManifestFor(classOf[String], classOf[Integer]))
 
-      val endpointA = 
+      val endpointA =
         locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port)))
-      locationB.endpoint(Set("L1"),
+      locationB.endpoint(
+        Set("L1"),
         Set(replicationConnection(locationA.port), replicationConnection(locationC.port)),
         sourceFilters(Map("L1" -> BinaryPayloadManifestFilter(".*String".r))))
-      val endpointC = 
+      val endpointC =
         locationC.endpoint(Set("L1"), Set(replicationConnection(locationB.port)))
 
       val actorA = locationA.system.actorOf(Props(new ReplicatedActor("pa", endpointA.logs("L1"), locationA.probe.ref)))
@@ -295,7 +299,7 @@ trait ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocati
       probeAvailable1.expectMsg(Available(endpointB1.id, "L1"))
       Await.result(locationB1.terminate(), 10.seconds)
       probeUnavailable.expectMsgPF() {
-        case Unavailable(endpointB1.id, "L1", causes) if causes.nonEmpty => causes.head shouldBe a [ReplicationReadTimeoutException]
+        case Unavailable(endpointB1.id, "L1", causes) if causes.nonEmpty => causes.head shouldBe a[ReplicationReadTimeoutException]
       }
 
       val locationB2 = location("B", customPort = customPort)

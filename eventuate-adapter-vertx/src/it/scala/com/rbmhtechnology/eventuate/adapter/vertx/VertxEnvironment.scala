@@ -20,7 +20,7 @@ import java.util.UUID
 
 import akka.testkit.TestKit
 import io.vertx.core.Vertx
-import org.scalatest.{BeforeAndAfterEach, Suite}
+import org.scalatest.{ BeforeAndAfterEach, Suite }
 
 trait VertxEnvironment extends BeforeAndAfterEach {
   this: TestKit with Suite =>

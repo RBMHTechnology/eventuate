@@ -16,14 +16,14 @@
 
 package com.rbmhtechnology.eventuate.adapter.vertx
 
-import akka.actor.{ActorSystem, Status}
+import akka.actor.{ ActorSystem, Status }
 import akka.pattern.ask
 import akka.testkit.TestProbe
 import akka.util.Timeout
 import com.rbmhtechnology.eventuate.adapter.vertx.api.StorageProvider
 
 import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 class ActorStorageProvider(defaultId: String)(implicit system: ActorSystem) extends StorageProvider {
   implicit val timeout = Timeout(20.seconds)

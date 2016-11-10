@@ -16,40 +16,40 @@
 
 import sbt._
 import sbt.Keys._
-
 import java.nio.file._
 import java.nio.file.StandardOpenOption._
 
 import com.typesafe.sbt.SbtGhPages.ghpages
 import com.typesafe.sbt.SbtGit.git
 import com.typesafe.sbt.SbtMultiJvm
-import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.{ connectInput => multiJvmConnectInput, _ }
+import com.typesafe.sbt.SbtMultiJvm.MultiJvmKeys.{connectInput => multiJvmConnectInput, _}
 import com.typesafe.sbt.SbtScalariform
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import com.typesafe.sbt.SbtSite.site
-
-import de.heikoseeberger.sbtheader.{ HeaderPlugin, AutomateHeaderPlugin }
+import de.heikoseeberger.sbtheader.{AutomateHeaderPlugin, HeaderPlugin}
 import de.heikoseeberger.sbtheader.HeaderKey._
 import de.heikoseeberger.sbtheader.license.Apache2_0
-
 import sbtprotobuf.ProtobufPlugin
-import sbtunidoc.Plugin.{ unidocSettings, ScalaUnidoc }
+import sbtunidoc.Plugin.{ScalaUnidoc, unidocSettings}
 
 object ProjectSettings {
   import ProjectDependencyVersions._
   import ProjectDependencies._
 
-  lazy val commonSettings: Seq[Setting[_]] =
-    formatterSettings ++
+  lazy val rootSettings: Seq[Setting[_]] =
     compilerSettings ++
     headerSettings ++
     testSettings ++
     publishSettings
 
+  lazy val commonSettings: Seq[Setting[_]] =
+    rootSettings ++ formatterSettings
+
   lazy val integrationTestSettings: Seq[Setting[_]] =
     integrationTestHeaderSettings ++
     integrationTestSingleNodeSettings ++
-    integrationTestMultiNodeSettings
+    integrationTestMultiNodeSettings ++
+    integrationTestFormatterSettings
 
   // ----------------------------------------------------------------------
   //  Common settings
@@ -124,13 +124,18 @@ object ProjectSettings {
   lazy val formatterSettings: Seq[Setting[_]] = {
     import scalariform.formatter.preferences._
 
-    val formattingPreferences = FormattingPreferences().setPreference(AlignSingleLineCaseStatements, true)
-
     SbtScalariform.scalariformSettings ++ Seq(
-      ScalariformKeys.preferences in Compile := formattingPreferences,
-      ScalariformKeys.preferences in Test := formattingPreferences,
-      ScalariformKeys.preferences in MultiJvm := formattingPreferences
+      ScalariformKeys.preferences := ScalariformKeys.preferences.value
+        .setPreference(AlignSingleLineCaseStatements, true)
+        .setPreference(DanglingCloseParenthesis, Preserve)
+        .setPreference(DoubleIndentClassDeclaration, false)
     )
+  }
+
+  lazy val integrationTestFormatterSettings: Seq[Setting[_]] = {
+    SbtScalariform.scalariformSettingsWithIt ++ Seq(
+      compileInputs in (MultiJvm, compile) <<= (compileInputs in (MultiJvm, compile)) dependsOn (ScalariformKeys.format in MultiJvm)
+    ) ++ inConfig(MultiJvm)(SbtScalariform.configScalariformSettings)
   }
 
   // ----------------------------------------------------------------------

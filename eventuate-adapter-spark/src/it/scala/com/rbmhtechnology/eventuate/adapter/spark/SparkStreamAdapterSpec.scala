@@ -86,9 +86,9 @@ class SparkStreamAdapterSpec extends WordSpec with Matchers with MultiLocationSp
     val writer = new EventLogWriter("writer", log)
     implicit val dispatcher = system.dispatcher
     def go(i: Int): Future[List[DurableEvent]] = for {
-      _   <- pattern.after(interval, system.scheduler)(Future.successful(Nil))
+      _ <- pattern.after(interval, system.scheduler)(Future.successful(Nil))
       es1 <- writer.write(Seq(s"$prefix-$i"))
-      es2 <- if (i < num) go(i+1) else Future.successful(Nil)
+      es2 <- if (i < num) go(i + 1) else Future.successful(Nil)
     } yield es1.head :: es2
     go(0)
   }

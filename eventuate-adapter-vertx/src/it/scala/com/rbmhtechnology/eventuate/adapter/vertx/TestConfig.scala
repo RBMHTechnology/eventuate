@@ -16,7 +16,7 @@
 
 package com.rbmhtechnology.eventuate.adapter.vertx
 
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.{ Config, ConfigFactory }
 
 object TestConfig {
 

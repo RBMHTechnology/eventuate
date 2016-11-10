@@ -18,11 +18,11 @@ package com.rbmhtechnology.eventuate.adapter.vertx
 
 import com.rbmhtechnology.eventuate.adapter.vertx.api.EventMetadata
 import io.vertx.core.MultiMap
-import org.scalatest.{MustMatchers, WordSpecLike}
+import org.scalatest.{ MustMatchers, WordSpecLike }
 
 import scala.collection.JavaConverters._
 
-class EventMetadataSpec extends WordSpecLike with MustMatchers  {
+class EventMetadataSpec extends WordSpecLike with MustMatchers {
 
   import EventMetadata._
   import EventMetadata.Headers._
@@ -64,7 +64,7 @@ class EventMetadataSpec extends WordSpecLike with MustMatchers  {
         metadata mustBe None
       }
       "fail to instantiate if the values have the wrong type" in {
-        a [NumberFormatException] must be thrownBy EventMetadata.fromHeaders(headers(
+        a[NumberFormatException] must be thrownBy EventMetadata.fromHeaders(headers(
           MessageProducer -> VertxProducer,
           LocalLogId -> "logA",
           LocalSequenceNr -> "i_am_not_a_long_value",
@@ -72,7 +72,7 @@ class EventMetadataSpec extends WordSpecLike with MustMatchers  {
         )
       }
       "fail to instantiate if the a value is missing" in {
-        an [IllegalArgumentException] must be thrownBy EventMetadata.fromHeaders(headers(
+        an[IllegalArgumentException] must be thrownBy EventMetadata.fromHeaders(headers(
           MessageProducer -> VertxProducer,
           LocalSequenceNr -> 1L,
           EmitterId -> "emitter1")

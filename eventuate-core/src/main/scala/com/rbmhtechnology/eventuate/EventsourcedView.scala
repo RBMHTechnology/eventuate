@@ -434,7 +434,8 @@ trait EventsourcedView extends Actor with Stash {
       } else {
         // retry replay request while decreasing the remaining attempts
         val attemptsRemaining = replayAttempts - 1
-        logger.warning("replay failed [{}] ({} replay attempts remaining), scheduling retry in {}ms",
+        logger.warning(
+          "replay failed [{}] ({} replay attempts remaining), scheduling retry in {}ms",
           cause.getMessage, attemptsRemaining, settings.replayRetryDelay.toMillis)
         context.become(initiating(attemptsRemaining))
         context.system.scheduler.scheduleOnce(settings.replayRetryDelay, self, ReplayRetry(progress))

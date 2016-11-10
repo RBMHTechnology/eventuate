@@ -17,10 +17,10 @@
 package com.rbmhtechnology.eventuate.adapter.vertx
 
 import akka.actor.ActorSystem
-import akka.testkit.{TestKit, TestProbe}
+import akka.testkit.{ TestKit, TestProbe }
 import com.rbmhtechnology.eventuate.adapter.vertx.utilities.EventBusMessage
 import io.vertx.core.eventbus.Message
-import org.scalatest.{BeforeAndAfterEach, Suite}
+import org.scalatest.{ BeforeAndAfterEach, Suite }
 
 trait VertxEventBusProbes extends BeforeAndAfterEach {
   this: TestKit with Suite with VertxEnvironment =>

@@ -62,7 +62,7 @@ object EventsourcedActorIntegrationSpec {
       case evt: String => if (recovering) probe ! evt
     }
   }
-  
+
   class AccActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor {
     var acc: Vector[String] = Vector.empty
 
@@ -83,10 +83,10 @@ object EventsourcedActorIntegrationSpec {
 
   class ConfirmedDeliveryActor(val id: String, val eventLog: ActorRef, probe: ActorRef) extends EventsourcedActor with ConfirmedDelivery {
     override def onCommand = {
-      case "boom" => throw IntegrationTestException
-      case "end" => probe ! "end"
-      case "cmd-1" => persist("evt-1")(_ => probe ! "out-1")
-      case "cmd-2" => persist("evt-2")(r => ())
+      case "boom"          => throw IntegrationTestException
+      case "end"           => probe ! "end"
+      case "cmd-1"         => persist("evt-1")(_ => probe ! "out-1")
+      case "cmd-2"         => persist("evt-2")(r => ())
       case "cmd-2-confirm" => persistConfirmation("evt-2-confirm", "2")(r => ())
     }
 
@@ -137,10 +137,11 @@ object EventsourcedActorIntegrationSpec {
 
   case class Route(s: String, destinations: Set[String])
 
-  class RouteeActor(override val id: String,
-                    override val aggregateId: Option[String],
-                    override val eventLog: ActorRef,
-                    probe: ActorRef) extends EventsourcedActor {
+  class RouteeActor(
+    override val id: String,
+    override val aggregateId: Option[String],
+    override val eventLog: ActorRef,
+    probe: ActorRef) extends EventsourcedActor {
 
     override def onCommand = {
       case Route(s, destinations) => persist(s, destinations) {
@@ -248,7 +249,7 @@ trait EventsourcedActorIntegrationSpec extends TestKitBase with WordSpecLike wit
     super.beforeEach()
     probe = TestProbe()
   }
-  
+
   "An EventsourcedActor" can {
     "preserve the command sender when invoking the persist handler on success" in {
       val actor = system.actorOf(Props(new ReplyActor("1", log)))

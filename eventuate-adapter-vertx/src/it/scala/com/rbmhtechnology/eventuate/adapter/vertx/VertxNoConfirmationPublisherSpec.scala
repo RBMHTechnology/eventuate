@@ -16,10 +16,10 @@
 
 package com.rbmhtechnology.eventuate.adapter.vertx
 
-import akka.actor.{ActorRef, ActorSystem}
+import akka.actor.{ ActorRef, ActorSystem }
 import akka.testkit._
 import com.rbmhtechnology.eventuate.SingleLocationSpecLeveldb
-import com.rbmhtechnology.eventuate.adapter.vertx.api.{EndpointRouter, EventMetadata}
+import com.rbmhtechnology.eventuate.adapter.vertx.api.{ EndpointRouter, EventMetadata }
 import org.scalatest._
 
 import scala.concurrent.duration._
@@ -111,7 +111,7 @@ class VertxNoConfirmationPublisherSpec extends TestKit(ActorSystem("test", TestC
       writeEvents("e", 10)
       vertxPublisher(EndpointRouter.route {
         case ev: String if isEvenEvent(ev, "e") => endpoint1.address
-        case ev: String if isOddEvent(ev, "e") => endpoint2.address
+        case ev: String if isOddEvent(ev, "e")  => endpoint2.address
       })
 
       storage.expectRead(replySequenceNr = 0)

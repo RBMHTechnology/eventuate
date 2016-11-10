@@ -78,9 +78,9 @@ trait EventsourcedActorCausalitySpec extends WordSpec with Matchers with MultiLo
 
         def vectorTime(a: Long, b: Long) = (a, b) match {
           case (0L, 0L) => VectorTime()
-          case (a,  0L) => VectorTime(logIdA -> a)
-          case (0L,  b) => VectorTime(logIdB -> b)
-          case (a,   b) => VectorTime(logIdA -> a, logIdB -> b)
+          case (a, 0L)  => VectorTime(logIdA -> a)
+          case (0L, b)  => VectorTime(logIdB -> b)
+          case (a, b)   => VectorTime(logIdA -> a, logIdB -> b)
         }
 
         actorB ! "e1"

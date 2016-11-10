@@ -26,7 +26,7 @@ object DurableEventSourceExample extends DurableEventLogs {
   val source1 = Source.fromGraph(DurableEventSource(logA))
   //#
   //# durable-event-source-2
-  val source2 = Source.fromGraph(DurableEventSource(logA,
-    fromSequenceNr = 12414, aggregateId = Some("user-17")))
+  val source2 = Source.fromGraph(DurableEventSource(
+    logA, fromSequenceNr = 12414, aggregateId = Some("user-17")))
   //#
 }

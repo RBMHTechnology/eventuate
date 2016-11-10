@@ -50,7 +50,8 @@ object VertxAdapter {
    * @param system ActorSystem used for executing `event producers`.
    * @define vertx http://vertx.io/docs/apidocs/io/vertx/core/Vertx.html
    */
-  def create(config: JVertxAdapterConfig,
+  def create(
+    config: JVertxAdapterConfig,
     vertx: Vertx,
     storageProvider: JStorageProvider,
     system: ActorSystem): VertxAdapter =
@@ -65,7 +66,8 @@ object VertxAdapter {
    * @param storageProvider Storage provider used to persist replication progress of individual `event producers`.
    * @param system ActorSystem used for executing `event producers`.
    */
-  def create(config: JVertxAdapterConfig,
+  def create(
+    config: JVertxAdapterConfig,
     vertx: RxVertx,
     storageProvider: RxStorageProvider,
     system: ActorSystem): VertxAdapter =

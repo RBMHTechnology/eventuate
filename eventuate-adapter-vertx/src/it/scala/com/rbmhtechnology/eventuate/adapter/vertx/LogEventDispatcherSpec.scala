@@ -18,17 +18,17 @@ package com.rbmhtechnology.eventuate.adapter.vertx
 
 import java.util.UUID
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-import akka.testkit.{TestKit, TestProbe}
+import akka.actor.{ Actor, ActorRef, ActorSystem, Props }
+import akka.testkit.{ TestKit, TestProbe }
 import com.rbmhtechnology.eventuate.EventsourcingProtocol._
-import com.rbmhtechnology.eventuate.adapter.vertx.LogEventDispatcher.{EndpointRoute, EventProducerRef}
+import com.rbmhtechnology.eventuate.adapter.vertx.LogEventDispatcher.{ EndpointRoute, EventProducerRef }
 import com.rbmhtechnology.eventuate.utilities._
-import com.rbmhtechnology.eventuate.{EventsourcedView, SingleLocationSpecLeveldb}
-import io.vertx.core.eventbus.{Message, ReplyException}
-import org.scalatest.{MustMatchers, WordSpecLike}
+import com.rbmhtechnology.eventuate.{ EventsourcedView, SingleLocationSpecLeveldb }
+import io.vertx.core.eventbus.{ Message, ReplyException }
+import org.scalatest.{ MustMatchers, WordSpecLike }
 
 import scala.collection.immutable.Seq
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.{ Future, Promise }
 
 object LogEventDispatcherSpec {
 

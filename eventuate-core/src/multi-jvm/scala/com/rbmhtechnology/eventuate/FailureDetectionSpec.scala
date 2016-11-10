@@ -65,7 +65,7 @@ abstract class FailureDetectionSpec(config: FailureDetectionConfig) extends Mult
         enterBarrier("connected")
         testConductor.blackhole(nodeA, nodeB, Direction.Both).await
         probeUnavailable.expectMsgPF() {
-          case Unavailable(nodeB.name, logName, causes) if causes.nonEmpty => causes.head shouldBe a [ReplicationReadTimeoutException]
+          case Unavailable(nodeB.name, logName, causes) if causes.nonEmpty => causes.head shouldBe a[ReplicationReadTimeoutException]
         }
         system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
 
@@ -80,7 +80,7 @@ abstract class FailureDetectionSpec(config: FailureDetectionConfig) extends Mult
 
         enterBarrier("connected")
         probeUnavailable.expectMsgPF() {
-          case Unavailable(nodeA.name, logName, causes) if causes.nonEmpty => causes.head shouldBe a [ReplicationReadTimeoutException]
+          case Unavailable(nodeA.name, logName, causes) if causes.nonEmpty => causes.head shouldBe a[ReplicationReadTimeoutException]
         }
         system.eventStream.subscribe(probeAvailable2.ref, classOf[Available])
 
@@ -88,7 +88,7 @@ abstract class FailureDetectionSpec(config: FailureDetectionConfig) extends Mult
         probeAvailable2.expectMsg(Available(nodeA.name, logName))
       }
 
-     enterBarrier("finish")
+      enterBarrier("finish")
     }
   }
 }

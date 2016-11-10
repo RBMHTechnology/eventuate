@@ -16,11 +16,11 @@
 
 package com.rbmhtechnology.eventuate.adapter.vertx
 
-import akka.actor.{ActorRef, ActorSystem}
+import akka.actor.{ ActorRef, ActorSystem }
 import akka.testkit.TestKit
 import com.rbmhtechnology.eventuate.SingleLocationSpecLeveldb
 import com.rbmhtechnology.eventuate.adapter.vertx.api.EndpointRouter
-import org.scalatest.{MustMatchers, WordSpecLike}
+import org.scalatest.{ MustMatchers, WordSpecLike }
 
 import scala.concurrent.duration._
 
@@ -192,7 +192,7 @@ class VertxBatchConfirmationSenderSpec extends TestKit(ActorSystem("test", TestC
         writeEvents("e", 10)
         vertxBatchConfirmationSender(EndpointRouter.route {
           case ev: String if isEvenEvent(ev, "e") => endpoint1.address
-          case ev: String if isOddEvent(ev, "e") => endpoint2.address
+          case ev: String if isOddEvent(ev, "e")  => endpoint2.address
         })
 
         storage.expectRead(replySequenceNr = 0)
