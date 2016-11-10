@@ -19,7 +19,7 @@ script:
   - .travis/test-leveldb.sh ++$TRAVIS_SCALA_VERSION
   - .travis/test-crdt.sh ++$TRAVIS_SCALA_VERSION
   - .travis/test-stream.sh ++$TRAVIS_SCALA_VERSION
-  - .travis/test-spark.sh ++$TRAVIS_SCALA_VERSION
+  #- .travis/test-spark.sh ++$TRAVIS_SCALA_VERSION
   - .travis/test-vertx.sh ++$TRAVIS_SCALA_VERSION
   - find $HOME/.sbt -name "*.lock" | xargs rm
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
