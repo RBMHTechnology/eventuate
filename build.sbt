@@ -11,15 +11,19 @@ version in ThisBuild := "0.9-SNAPSHOT"
 
 organization in ThisBuild := "com.rbmhtechnology"
 
-scalaVersion in ThisBuild := "2.11.8"
+crossScalaVersions := Seq("2.11.8", "2.12.0")
+
+scalaVersion in ThisBuild := "2.12.0"
 
 lazy val root = (project in file("."))
-  .aggregate(core, crdt, logCassandra, logLeveldb, adapterSpark, adapterStream, adapterVertx, examples, exampleStream, exampleSpark, exampleVertx)
+  //.aggregate(core, crdt, logCassandra, logLeveldb, adapterSpark, adapterStream, adapterVertx, examples, exampleStream, exampleSpark, exampleVertx)
+  .aggregate(core, crdt, logCassandra, logLeveldb, adapterStream, adapterVertx, examples, exampleStream, exampleVertx)
   .dependsOn(core, logCassandra, logLeveldb)
   .settings(name := "eventuate")
   .settings(rootSettings: _*)
   .settings(documentationSettings: _*)
-  .settings(unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(examples, exampleStream, exampleSpark, exampleVertx))
+  //.settings(unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(examples, exampleStream, exampleSpark, exampleVertx))
+  .settings(unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(examples, exampleStream, exampleVertx))
   .settings(libraryDependencies ++= Seq(AkkaRemote))
   .enablePlugins(HeaderPlugin, AutomateHeaderPlugin)
   .disablePlugins(SbtScalariform)
@@ -58,6 +62,7 @@ lazy val logLeveldb = (project in file("eventuate-log-leveldb"))
   .configs(IntegrationTest, MultiJvm)
   .enablePlugins(HeaderPlugin, AutomateHeaderPlugin)
 
+/*
 lazy val adapterSpark  = (project in file("eventuate-adapter-spark"))
   .dependsOn(logCassandra % "compile->compile;it->it;multi-jvm->multi-jvm")
   .dependsOn(logLeveldb % "compile->compile;it->it;multi-jvm->multi-jvm")
@@ -73,6 +78,7 @@ lazy val adapterSpark  = (project in file("eventuate-adapter-spark"))
   .settings(jvmOptions in MultiJvm += "-Dmultinode.server-port=4714")
   .configs(IntegrationTest, MultiJvm)
   .enablePlugins(HeaderPlugin, AutomateHeaderPlugin)
+*/
 
 lazy val adapterStream  = (project in file("eventuate-adapter-stream"))
   .dependsOn(core % "compile->compile;it->it")
@@ -126,6 +132,7 @@ lazy val exampleStream = (project in file("eventuate-example-stream"))
   .settings(libraryDependencies ++= Seq(AkkaRemote, Log4jApi, Log4jCore, Log4jSlf4j))
   .enablePlugins(HeaderPlugin, AutomateHeaderPlugin)
 
+/*
 lazy val exampleSpark = (project in file("eventuate-example-spark"))
   .dependsOn(core, logCassandra, adapterSpark)
   .settings(name := "eventuate-example-spark")
@@ -135,7 +142,7 @@ lazy val exampleSpark = (project in file("eventuate-example-spark"))
     SparkSql exclude("org.slf4j", "slf4j-log4j12"),
     SparkStreaming exclude("org.slf4j", "slf4j-log4j12")))
   .enablePlugins(HeaderPlugin, AutomateHeaderPlugin)
-
+*/
 lazy val exampleVertx = (project in file("eventuate-example-vertx"))
   .dependsOn(core, logLeveldb, adapterVertx)
   .settings(name := "eventuate-example-vertx")

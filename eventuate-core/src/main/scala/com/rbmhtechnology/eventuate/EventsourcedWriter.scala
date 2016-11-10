@@ -81,7 +81,7 @@ object EventsourcedWriter {
  * @tparam R Result type of the asynchronous read operation.
  * @tparam W Result type of the asynchronous write operations.
  */
-trait EventsourcedWriter[R, W] extends EventsourcedView {
+trait EventsourcedWriter[R, W] extends EventsourcedView with EventsourcedWriterSuccessHandlers[R, W] {
   import EventsourcedWriter._
   import EventsourcingProtocol._
   import context.dispatcher

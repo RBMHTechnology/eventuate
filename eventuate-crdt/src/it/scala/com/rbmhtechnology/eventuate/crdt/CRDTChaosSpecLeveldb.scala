@@ -122,8 +122,6 @@ class CRDTChaosSpecLeveldb extends WordSpec with Matchers with MultiLocationSpec
       probeC.expectMsg("started")
       probeD.expectMsg("started")
 
-      import scala.concurrent.ExecutionContext.Implicits.global
-
       def singleUpdate(service: ORSetService[String])(implicit executionContext: ExecutionContext): Future[Unit] = {
         Future.sequence(List(
           service.add(crdtId, randomNr()).recover { case _ => () },
@@ -132,6 +130,7 @@ class CRDTChaosSpecLeveldb extends WordSpec with Matchers with MultiLocationSpec
       }
 
       def batchUpdate(service: ORSetService[String]): Future[Unit] = {
+        import scala.concurrent.ExecutionContext.Implicits.global
         1.to(numUpdates).foldLeft(Future.successful(())) {
           case (acc, _) => acc.flatMap(_ => singleUpdate(service))
         }.flatMap(_ => service.add(crdtId, s"stop-${service.serviceId}").map(_ => ()))
