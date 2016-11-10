@@ -26,6 +26,6 @@ script:
 after_success:
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then sbt ++$TRAVIS_SCALA_VERSION publish ghpagesPushSite; fi
 scala:
-  - 2.11.7
+  - 2.12.0
 jdk:
   - oraclejdk8
