@@ -11,11 +11,13 @@ version in ThisBuild := "0.8-SNAPSHOT"
 
 organization in ThisBuild := "com.rbmhtechnology"
 
+crossScalaVersions := Seq("2.11.8", "2.12.0")
+
 scalaVersion in ThisBuild := "2.12.0"
 
 lazy val root = (project in file("."))
   //.aggregate(core, crdt, logCassandra, logLeveldb, adapterSpark, adapterStream, adapterVertx, examples, exampleStream, exampleSpark, exampleVertx)
-        .aggregate(core, crdt, logCassandra, logLeveldb, adapterStream, adapterVertx, examples, exampleStream, exampleVertx)
+  .aggregate(core, crdt, logCassandra, logLeveldb, adapterStream, adapterVertx, examples, exampleStream, exampleVertx)
   .dependsOn(core, logCassandra, logLeveldb)
   .settings(name := "eventuate")
   .settings(commonSettings: _*)

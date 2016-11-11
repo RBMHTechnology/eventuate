@@ -50,7 +50,7 @@ object ProjectDependencies {
   val CassandraUnit =        "org.cassandraunit"          % "cassandra-unit"            % "3.0.0.1"
   val Leveldb =              "org.fusesource.leveldbjni"  % "leveldbjni-all"            % "1.8"
   val Sigar =                "org.fusesource"             % "sigar"                     % "1.6.4"
-  val Java8Compat =          "org.scala-lang.modules"     % "scala-java8-compat_2.12"   % "0.8.0"
+  val Java8Compat =          "org.scala-lang.modules"    %% "scala-java8-compat"   % "0.8.0"
   val Scalatest =            "org.scalatest"             %% "scalatest"                 % "3.0.0"
   val Scalaz =               "org.scalaz"                %% "scalaz-core"               % "7.2.7"
   val VertxCore =            "io.vertx"                   % "vertx-core"                % VertxVersion
