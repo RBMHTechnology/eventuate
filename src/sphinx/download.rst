@@ -53,13 +53,13 @@ Latest release dependencies (for ``SCALA_VERSION``\ s ``2.11`` and ``2.12``)::
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-core_{SCALA_VERSION}</artifactId>
-        <version>0.8</version>
+        <version>0.8.1</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-crdt_{SCALA_VERSION}</artifactId>
-        <version>0.8</version>
+        <version>0.8.1</version>
     </dependency>
 
     <dependency>
@@ -71,25 +71,25 @@ Latest release dependencies (for ``SCALA_VERSION``\ s ``2.11`` and ``2.12``)::
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-log-cassandra_{SCALA_VERSION}</artifactId>
-        <version>0.8</version>
+        <version>0.8.1</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-adapter-stream_{SCALA_VERSION}</artifactId>
-        <version>0.8</version>
+        <version>0.8.1</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-adapter-vertx_{SCALA_VERSION}</artifactId>
-        <version>0.8</version>
+        <version>0.8.1</version>
     </dependency>
 
     <dependency>
         <groupId>com.rbmhtechnology</groupId>
         <artifactId>eventuate-adapter-spark_2.11</artifactId>
-        <version>0.8</version>
+        <version>0.8.1</version>
     </dependency>
 
 Development snapshot dependencies (for ``SCALA_VERSION``\ s ``2.11`` and ``2.12``)::
@@ -149,19 +149,19 @@ Latest release dependencies::
 
     resolvers += "Eventuate Releases" at "https://dl.bintray.com/rbmhtechnology/maven"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-core" % "0.8"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-core" % "0.8.1"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.8"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-crdt" % "0.8.1"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-leveldb" % "0.8"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-leveldb" % "0.8.1"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-cassandra" % "0.8"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-log-cassandra" % "0.8.1"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-stream" % "0.8"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-stream" % "0.8.1"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-spark" % "0.8"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-vertx" % "0.8.1"
 
-    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-vertx" % "0.8"
+    libraryDependencies += "com.rbmhtechnology" %% "eventuate-adapter-spark" % "0.8.1"
 
 Development snapshot dependencies::
 
