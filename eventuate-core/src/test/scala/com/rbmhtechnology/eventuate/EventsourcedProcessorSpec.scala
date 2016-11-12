@@ -216,7 +216,7 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test", Eventsourced
       processLoad(actor)
       processReplay(actor, 1, 3, instanceId)
       actor ! Written(eventA)
-      appProbe.expectMsg(3)
+      appProbe.expectMsg(3L)
     }
     "include events to write with sequenceNr > storedSequenceNr" in {
       val actor = unrecoveredStatefulProcessor()

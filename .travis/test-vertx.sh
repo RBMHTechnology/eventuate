@@ -1,3 +1,3 @@
 #!/bin/sh
 
-sbt $1 "adapterVertx/it:test"
+sbt ++$1 "adapterVertx/it:test"

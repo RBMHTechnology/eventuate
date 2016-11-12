@@ -14,12 +14,12 @@ organization in ThisBuild := "com.rbmhtechnology"
 scalaVersion in ThisBuild := "2.11.8"
 
 lazy val root = (project in file("."))
-  .aggregate(core, crdt, logCassandra, logLeveldb, adapterSpark, adapterStream, adapterVertx, examples, exampleStream, exampleSpark, exampleVertx)
+  .aggregate(core, crdt, logCassandra, logLeveldb, adapterStream, adapterVertx, examples, exampleStream, exampleVertx)
   .dependsOn(core, logCassandra, logLeveldb)
   .settings(name := "eventuate")
   .settings(rootSettings: _*)
   .settings(documentationSettings: _*)
-  .settings(unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(examples, exampleStream, exampleSpark, exampleVertx))
+  .settings(unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(examples, exampleSpark, exampleStream, exampleVertx))
   .settings(libraryDependencies ++= Seq(AkkaRemote))
   .enablePlugins(HeaderPlugin, AutomateHeaderPlugin)
   .disablePlugins(SbtScalariform)
