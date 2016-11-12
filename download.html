@@ -205,10 +205,10 @@
           <div role="main" class="document">
             
   <div class="section" id="download">
-<h1>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h1>
 <p>Eventuate is a multi-module project with the following modules:</p>
-<table border="1" class="docutils" id="id2">
-<caption><span class="caption-text">Table 1: Eventuate modules</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<table border="1" class="docutils" id="id3">
+<caption><span class="caption-text">Table 1: Eventuate modules</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="50%" />
 <col width="50%" />
@@ -234,11 +234,11 @@
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">eventuate-adapter-stream</span></code></td>
 <td>Provides the <a class="reference internal" href="adapters/stream.html#akka-streams-adapter"><span class="std std-ref">Akka Streams adapter</span></a>.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">eventuate-adapter-spark</span></code></td>
-<td>Provides the <a class="reference internal" href="adapters/spark.html#spark-adapter"><span class="std std-ref">Spark adapter</span></a>.</td>
-</tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">eventuate-adapter-vertx</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">eventuate-adapter-vertx</span></code></td>
 <td>Provides the <a class="reference internal" href="adapters/vertx.html#vertx-adapter"><span class="std std-ref">Vert.x adapter</span></a>.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">eventuate-adapter-spark</span></code></td>
+<td>Provides the <a class="reference internal" href="adapters/spark.html#spark-adapter"><span class="std std-ref">Spark adapter</span></a>.</td>
 </tr>
 </tbody>
 </table>
@@ -251,10 +251,14 @@
 </div>
 <div class="section" id="binaries">
 <h2>Binaries<a class="headerlink" href="#binaries" title="Permalink to this headline">¶</a></h2>
-<p>Release binaries are published to <a class="reference external" href="https://bintray.com/rbmhtechnology/maven/eventuate">Bintray</a>, snapshot binaries to <a class="reference external" href="http://oss.jfrog.org/artifactory/simple/oss-snapshot-local/">OJO</a> (oss.jfrog.org)</p>
+<p>Release binaries for Scala 2.11 and 2.12 are published to <a class="reference external" href="https://bintray.com/rbmhtechnology/maven/eventuate">Bintray</a>, snapshot binaries to <a class="reference external" href="http://oss.jfrog.org/artifactory/simple/oss-snapshot-local/">OJO</a> (oss.jfrog.org).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><code class="docutils literal"><span class="pre">eventuate-adapter-spark</span></code> is only available for Scala 2.11 at the moment.</p>
+</div>
 <div class="section" id="maven">
 <h3>Maven<a class="headerlink" href="#maven" title="Permalink to this headline">¶</a></h3>
-<p>Latest release dependencies:</p>
+<p>Latest release dependencies (for <code class="docutils literal"><span class="pre">SCALA_VERSION</span></code>s <code class="docutils literal"><span class="pre">2.11</span></code> and <code class="docutils literal"><span class="pre">2.12</span></code>):</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">repository</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">id</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">releases</span><span class="o">&lt;/</span><span class="n">id</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="nc">Eventuate</span> <span class="nc">Releases</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
@@ -263,31 +267,37 @@
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">core_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">core_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">crdt_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">crdt_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">leveldb_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">leveldb_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">cassandra_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">cassandra_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">stream_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">stream_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
+
+<span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">vertx_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
@@ -296,15 +306,9 @@
     <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">spark_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
-
-<span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">vertx_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
-<span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>Development snapshot dependencies:</p>
+<p>Development snapshot dependencies (for <code class="docutils literal"><span class="pre">SCALA_VERSION</span></code>s <code class="docutils literal"><span class="pre">2.11</span></code> and <code class="docutils literal"><span class="pre">2.12</span></code>):</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">repository</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">id</span><span class="o">&gt;</span><span class="n">ojo</span><span class="o">-</span><span class="n">snapshots</span><span class="o">&lt;/</span><span class="n">id</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="nc">OJO</span> <span class="nc">Snapshots</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
@@ -313,43 +317,43 @@
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">core_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">core_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.9</span><span class="o">-</span><span class="nc">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">crdt_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">crdt_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.9</span><span class="o">-</span><span class="nc">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">leveldb_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">leveldb_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.9</span><span class="o">-</span><span class="nc">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">cassandra_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">cassandra_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.9</span><span class="o">-</span><span class="nc">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">stream_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">stream_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.9</span><span class="o">-</span><span class="nc">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
+
+<span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">vertx_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.9</span><span class="o">-</span><span class="nc">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">spark_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.9</span><span class="o">-</span><span class="nc">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
-<span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
-
-<span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">vertx_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.9</span><span class="o">-</span><span class="nc">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 </pre></div>
@@ -388,9 +392,9 @@
 
 <span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-adapter-stream&quot;</span> <span class="o">%</span> <span class="s">&quot;0.9-SNAPSHOT&quot;</span>
 
-<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-adapter-spark&quot;</span> <span class="o">%</span> <span class="s">&quot;0.9-SNAPSHOT&quot;</span>
-
 <span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-adapter-vertx&quot;</span> <span class="o">%</span> <span class="s">&quot;0.9-SNAPSHOT&quot;</span>
+
+<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-adapter-spark&quot;</span> <span class="o">%</span> <span class="s">&quot;0.9-SNAPSHOT&quot;</span>
 </pre></div>
 </div>
 </div>

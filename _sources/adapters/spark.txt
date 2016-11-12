@@ -5,8 +5,11 @@ Spark adapter
 
 The Eventuate Spark adapter allows applications to consume events from event logs and to process them in `Apache Spark`_. Writing processed events back to event logs is not possible yet but will be supported in future versions.
 
+.. note::
+   The Spark adapter is only available for Scala 2.11 at the moment (see :ref:`download`).
+
 .. warning::
-   The Spark adapter is experimental. Its feature set and API is likely to change based on user feedback.
+   The Spark adapter is experimental. Expect major API changes.
 
 Batch processing
 ~~~~~~~~~~~~~~~~
