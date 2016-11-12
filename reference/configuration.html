@@ -33,6 +33,9 @@
   
 
   
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="Eventuate" href="../index.html"/>
         <link rel="up" title="Reference" href="../reference.html"/>
         <link rel="next" title="Adapters" href="../adapters.html"/>
@@ -125,7 +128,7 @@
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#custom-serialization">Custom serialization</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">Configuration</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../adapters.html">Adapters</a><ul>
@@ -209,7 +212,7 @@
 <p>This is the reference configuration of Eventuate. It is processed by Typesafe&#8217;s <a class="reference external" href="https://github.com/typesafehub/config">config</a> library and can be overridden by applications:</p>
 <div class="section" id="eventuate-core">
 <h2>eventuate-core<a class="headerlink" href="#eventuate-core" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span> <span class="o">{</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">akka</span> <span class="o">{</span>
   <span class="n">actor</span> <span class="o">{</span>
     <span class="n">serializers</span> <span class="o">{</span>
       <span class="n">eventuate</span><span class="o">-</span><span class="n">durable</span><span class="o">-</span><span class="n">event</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer&quot;</span>
@@ -365,7 +368,7 @@
 </div>
 <div class="section" id="eventuate-crdt">
 <h2>eventuate-crdt<a class="headerlink" href="#eventuate-crdt" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">akka</span> <span class="o">{</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">akka</span> <span class="o">{</span>
   <span class="n">actor</span> <span class="o">{</span>
     <span class="n">serializers</span> <span class="o">{</span>
       <span class="n">eventuate</span><span class="o">-</span><span class="n">crdt</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.crdt.CRDTSerializer&quot;</span>
@@ -384,7 +387,7 @@
 </div>
 <div class="section" id="eventuate-log-cassandra">
 <h2>eventuate-log-cassandra<a class="headerlink" href="#eventuate-log-cassandra" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-scala"><div class="highlight"><pre>eventuate {
+<div class="highlight-scala"><div class="highlight"><pre><span></span>eventuate {
   log.cassandra {
     # Comma-separated list of contact points in the cluster (comma-separated
     # hostname or hostname:port list).
@@ -469,7 +472,7 @@
 </div>
 <div class="section" id="eventuate-log-leveldb">
 <h2>eventuate-log-leveldb<a class="headerlink" href="#eventuate-log-leveldb" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span> <span class="o">{</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span> <span class="o">{</span>
   <span class="n">log</span><span class="o">.</span><span class="n">leveldb</span> <span class="o">{</span>
     <span class="k">#</span> <span class="nc">Root</span> <span class="n">directory</span> <span class="k">for</span> <span class="n">storing</span> <span class="n">the</span> <span class="n">log</span> <span class="n">directories</span> <span class="n">of</span> <span class="n">individual</span> <span class="n">event</span> <span class="n">logs</span><span class="o">.</span>
     <span class="n">dir</span> <span class="k">=</span> <span class="n">target</span>
@@ -478,7 +481,7 @@
     <span class="n">fsync</span> <span class="k">=</span> <span class="n">on</span>
 
     <span class="k">#</span> <span class="nc">Minimum</span> <span class="n">number</span> <span class="n">of</span> <span class="k">new</span> <span class="n">events</span> <span class="n">that</span> <span class="n">must</span> <span class="n">have</span> <span class="n">been</span> <span class="n">written</span> <span class="n">before</span> <span class="n">another</span>
-    <span class="k">#</span> <span class="n">snapshot</span> <span class="n">of</span> <span class="n">the</span> <span class="n">log</span><span class="-Symbol">&#39;s</span> <span class="n">internal</span> <span class="n">state</span> <span class="o">(</span><span class="n">sequence</span> <span class="n">number</span> <span class="n">and</span> <span class="n">merged</span> <span class="n">vector</span>
+    <span class="k">#</span> <span class="n">snapshot</span> <span class="n">of</span> <span class="n">the</span> <span class="n">log</span><span class=" -Symbol">&#39;s</span> <span class="n">internal</span> <span class="n">state</span> <span class="o">(</span><span class="n">sequence</span> <span class="n">number</span> <span class="n">and</span> <span class="n">merged</span> <span class="n">vector</span>
     <span class="k">#</span> <span class="n">time</span><span class="o">)</span> <span class="n">is</span> <span class="n">written</span><span class="o">.</span>
     <span class="n">state</span><span class="o">-</span><span class="n">snapshot</span><span class="o">-</span><span class="n">limit</span> <span class="k">=</span> <span class="mi">128</span>
 
