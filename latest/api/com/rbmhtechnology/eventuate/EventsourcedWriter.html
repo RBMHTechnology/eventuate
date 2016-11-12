@@ -47,7 +47,7 @@
         <span class="kind">trait</span>
       </span>
       <span class="symbol">
-        <span class="name">EventsourcedWriter</span><span class="tparams">[<span name="R">R</span>, <span name="W">W</span>]</span><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></span>
+        <span class="name">EventsourcedWriter</span><span class="tparams">[<span name="R">R</span>, <span name="W">W</span>]</span><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> with <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriterSuccessHandlers">EventsourcedWriterSuccessHandlers</span>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter.R">R</span>, <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter.W">W</span>] with <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlers">EventsourcedWriterFailureHandlers</span></span>
       </span>
       </h4>
       
@@ -72,7 +72,7 @@ recovery, it may define a custom starting position in the event log by returning
    again. There's no backpressure mechanism for live event processing yet (but will come in future releases).
 </li></ul></div><dl class="paramcmts block"><dt class="tparam">R</dt><dd class="cmt"><p>Result type of the asynchronous read operation.</p></dd><dt class="tparam">W</dt><dd class="cmt"><p>Result type of the asynchronous write operations.</p></dd></dl><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a></p></span><span class="cmt"><p><a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a></p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlers">EventsourcedWriterFailureHandlers</span>, <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriterSuccessHandlers">EventsourcedWriterSuccessHandlers</span>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter.R">R</span>, <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter.W">W</span>], <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
             <span class="toggle">Known Subclasses</span>
             <div class="subClasses hiddenContent"><a href="AbstractEventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor">AbstractEventsourcedProcessor</a>, <a href="AbstractEventsourcedStatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedStatefulProcessor">AbstractEventsourcedStatefulProcessor</a>, <a href="AbstractEventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedWriter">AbstractEventsourcedWriter</a>, <a href="EventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedProcessor">EventsourcedProcessor</a>, <a href="StatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.StatefulProcessor">StatefulProcessor</a>, <a href="adapter/vertx/VertxEventDispatcher.html" class="extype" name="com.rbmhtechnology.eventuate.adapter.vertx.VertxEventDispatcher">VertxEventDispatcher</a></div>
@@ -86,20 +86,20 @@ recovery, it may define a custom starting position in the event log by returning
               <ol>
                 
                 <li class="alpha in"><span>Alphabetic</span></li>
-                <li class="inherit out"><span>By inheritance</span></li>
+                <li class="inherit out"><span>By Inheritance</span></li>
               </ol>
             </div>
         <div id="ancestors">
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.EventsourcedWriter"><span>EventsourcedWriter</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.EventsourcedWriter"><span>EventsourcedWriter</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlers"><span>EventsourcedWriterFailureHandlers</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedWriterSuccessHandlers"><span>EventsourcedWriterSuccessHandlers</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
             <ol>
               <li class="hideall out"><span>Hide All</span></li>
-              <li class="showall in"><span>Show all</span></li>
+              <li class="showall in"><span>Show All</span></li>
             </ol>
           </div>
         <div id="visbl">
@@ -942,7 +942,7 @@ implementation does nothing and can be overridden by implementations.
     </span>
       <p class="shortcomment cmt">Called with failure details after a <code>read</code> operation failed.</p><div class="fullcomment"><div class="comment cmt"><p>Called with failure details after a <code>read</code> operation failed. Throws <a href="EventsourcedWriter$$ReadException.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter.ReadException">EventsourcedWriter#ReadException</a>
 by default (causing the writer to restart) and can be overridden.
-</p></div></div>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> → EventsourcedWriterFailureHandlers</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriter#readSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="readSuccess(result:R):Option[Long]"></a>
       <a id="readSuccess(R):Option[Long]"></a>
@@ -964,7 +964,7 @@ internal actor state. If <code>None</code> is returned, the writer continues wit
 events, optionally starting from a snapshot. If the return value is defined, replay starts from the
 returned sequence number without ever loading a snapshot. Does nothing and returns <code>None</code> by default
 and can be overridden.
-</p></div></div>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> → EventsourcedWriterSuccessHandlers</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="receive:EventsourcedView.this.Receive"></a>
       <a id="receive:Receive"></a>
@@ -1310,7 +1310,7 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
     </span>
       <p class="shortcomment cmt">Called with failure details after a <code>write</code> operation failed.</p><div class="fullcomment"><div class="comment cmt"><p>Called with failure details after a <code>write</code> operation failed. Throws <a href="EventsourcedWriter$$WriteException.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter.WriteException">EventsourcedWriter#WriteException</a>
 by default (causing the writer to restart) and can be overridden.
-</p></div></div>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> → EventsourcedWriterFailureHandlers</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedWriter#writeSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="writeSuccess(result:W):Unit"></a>
       <a id="writeSuccess(W):Unit"></a>
@@ -1329,7 +1329,7 @@ by default (causing the writer to restart) and can be overridden.
     </span>
       <p class="shortcomment cmt">Called with a write result after a <code>write</code> operation successfully completes.</p><div class="fullcomment"><div class="comment cmt"><p>Called with a write result after a <code>write</code> operation successfully completes. This method may update
 internal actor state. Does nothing by default and can be overridden.
-</p></div></div>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter">EventsourcedWriter</a> → EventsourcedWriterSuccessHandlers</dd></dl></div>
     </li></ol>
             </div>
 
@@ -1339,7 +1339,11 @@ internal actor state. Does nothing by default and can be overridden.
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedView">
+        <div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlers">
+              <h3>Inherited from <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriterFailureHandlers">EventsourcedWriterFailureHandlers</span></h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedWriterSuccessHandlers">
+              <h3>Inherited from <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriterSuccessHandlers">EventsourcedWriterSuccessHandlers</span>[<span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter.R">R</span>, <span class="extype" name="com.rbmhtechnology.eventuate.EventsourcedWriter.W">W</span>]</h3>
+            </div><div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedView">
               <h3>Inherited from <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></h3>
             </div><div class="parent" name="akka.actor.Stash">
               <h3>Inherited from <span class="extype" name="akka.actor.Stash">Stash</span></h3>
