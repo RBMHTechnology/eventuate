@@ -33,9 +33,6 @@
   
 
   
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Eventuate" href="index.html"/>
         <link rel="next" title="Developers" href="developers.html"/>
         <link rel="prev" title="Resources" href="resources.html"/> 
@@ -142,7 +139,7 @@
 <li class="toctree-l2"><a class="reference internal" href="resources.html#presentations">Presentations</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Download</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Download</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#binaries">Binaries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sources">Sources</a></li>
 </ul>
@@ -223,22 +220,22 @@
 <td>Core module, required for all applications.</td>
 </tr>
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">eventuate-crdt</span></code></td>
-<td>Provides <a class="reference internal" href="user-guide.html#commutative-replicated-data-types"><span class="std std-ref">Operation-based CRDTs</span></a>.</td>
+<td>Provides <a class="reference internal" href="user-guide.html#commutative-replicated-data-types"><em>Operation-based CRDTs</em></a>.</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">eventuate-log-cassandra</span></code></td>
-<td>Provides the <a class="reference internal" href="reference/event-log.html#cassandra-storage-backend"><span class="std std-ref">Cassandra storage backend</span></a>.</td>
+<td>Provides the <a class="reference internal" href="reference/event-log.html#cassandra-storage-backend"><em>Cassandra storage backend</em></a>.</td>
 </tr>
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">eventuate-log-leveldb</span></code></td>
-<td>Provides the <a class="reference internal" href="reference/event-log.html#leveldb-storage-backend"><span class="std std-ref">LevelDB storage backend</span></a>.</td>
+<td>Provides the <a class="reference internal" href="reference/event-log.html#leveldb-storage-backend"><em>LevelDB storage backend</em></a>.</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">eventuate-adapter-stream</span></code></td>
-<td>Provides the <a class="reference internal" href="adapters/stream.html#akka-streams-adapter"><span class="std std-ref">Akka Streams adapter</span></a>.</td>
+<td>Provides the <a class="reference internal" href="adapters/stream.html#akka-streams-adapter"><em>Akka Streams adapter</em></a>.</td>
 </tr>
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">eventuate-adapter-vertx</span></code></td>
-<td>Provides the <a class="reference internal" href="adapters/vertx.html#vertx-adapter"><span class="std std-ref">Vert.x adapter</span></a>.</td>
+<td>Provides the <a class="reference internal" href="adapters/vertx.html#vertx-adapter"><em>Vert.x adapter</em></a>.</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">eventuate-adapter-spark</span></code></td>
-<td>Provides the <a class="reference internal" href="adapters/spark.html#spark-adapter"><span class="std std-ref">Spark adapter</span></a>.</td>
+<td>Provides the <a class="reference internal" href="adapters/spark.html#spark-adapter"><em>Spark adapter</em></a>.</td>
 </tr>
 </tbody>
 </table>
@@ -259,7 +256,7 @@
 <div class="section" id="maven">
 <h3>Maven<a class="headerlink" href="#maven" title="Permalink to this headline">¶</a></h3>
 <p>Latest release dependencies (for <code class="docutils literal"><span class="pre">SCALA_VERSION</span></code>s <code class="docutils literal"><span class="pre">2.11</span></code> and <code class="docutils literal"><span class="pre">2.12</span></code>):</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">repository</span><span class="o">&gt;</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">&lt;</span><span class="n">repository</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">id</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">releases</span><span class="o">&lt;/</span><span class="n">id</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="nc">Eventuate</span> <span class="nc">Releases</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">url</span><span class="o">&gt;</span><span class="n">https</span><span class="o">://</span><span class="n">dl</span><span class="o">.</span><span class="n">bintray</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">rbmhtechnology</span><span class="o">/</span><span class="n">maven</span><span class="o">&lt;/</span><span class="n">url</span><span class="o">&gt;</span>
@@ -268,13 +265,13 @@
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">core_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">.</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">crdt_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">.</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
@@ -286,30 +283,30 @@
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">log</span><span class="o">-</span><span class="n">cassandra_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">.</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">stream_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">.</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">vertx_</span><span class="o">{</span><span class="nc">SCALA_VERSION</span><span class="o">}&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">.</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 
 <span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">rbmhtechnology</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">eventuate</span><span class="o">-</span><span class="n">adapter</span><span class="o">-</span><span class="n">spark_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.8</span><span class="o">.</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>Development snapshot dependencies (for <code class="docutils literal"><span class="pre">SCALA_VERSION</span></code>s <code class="docutils literal"><span class="pre">2.11</span></code> and <code class="docutils literal"><span class="pre">2.12</span></code>):</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">repository</span><span class="o">&gt;</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">&lt;</span><span class="n">repository</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">id</span><span class="o">&gt;</span><span class="n">ojo</span><span class="o">-</span><span class="n">snapshots</span><span class="o">&lt;/</span><span class="n">id</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="nc">OJO</span> <span class="nc">Snapshots</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">url</span><span class="o">&gt;</span><span class="n">https</span><span class="o">://</span><span class="n">oss</span><span class="o">.</span><span class="n">jfrog</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">oss</span><span class="o">-</span><span class="n">snapshot</span><span class="o">-</span><span class="n">local</span><span class="o">&lt;/</span><span class="n">url</span><span class="o">&gt;</span>
@@ -362,25 +359,25 @@
 <div class="section" id="sbt">
 <h3>SBT<a class="headerlink" href="#sbt" title="Permalink to this headline">¶</a></h3>
 <p>Latest release dependencies:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;Eventuate Releases&quot;</span> <span class="n">at</span> <span class="s">&quot;https://dl.bintray.com/rbmhtechnology/maven&quot;</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;Eventuate Releases&quot;</span> <span class="n">at</span> <span class="s">&quot;https://dl.bintray.com/rbmhtechnology/maven&quot;</span>
 
-<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-core&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8&quot;</span>
+<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-core&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8.1&quot;</span>
 
-<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-crdt&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8&quot;</span>
+<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-crdt&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8.1&quot;</span>
 
-<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-log-leveldb&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8&quot;</span>
+<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-log-leveldb&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8.1&quot;</span>
 
-<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-log-cassandra&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8&quot;</span>
+<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-log-cassandra&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8.1&quot;</span>
 
-<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-adapter-stream&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8&quot;</span>
+<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-adapter-stream&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8.1&quot;</span>
 
-<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-adapter-spark&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8&quot;</span>
+<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-adapter-vertx&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8.1&quot;</span>
 
-<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-adapter-vertx&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8&quot;</span>
+<span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-adapter-spark&quot;</span> <span class="o">%</span> <span class="s">&quot;0.8.1&quot;</span>
 </pre></div>
 </div>
 <p>Development snapshot dependencies:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;OJO Snapshots&quot;</span> <span class="n">at</span> <span class="s">&quot;https://oss.jfrog.org/oss-snapshot-local&quot;</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;OJO Snapshots&quot;</span> <span class="n">at</span> <span class="s">&quot;https://oss.jfrog.org/oss-snapshot-local&quot;</span>
 
 <span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.rbmhtechnology&quot;</span> <span class="o">%%</span> <span class="s">&quot;eventuate-core&quot;</span> <span class="o">%</span> <span class="s">&quot;0.9-SNAPSHOT&quot;</span>
 

@@ -33,9 +33,6 @@
   
 
   
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Eventuate" href="index.html"/>
         <link rel="prev" title="FAQ" href="faq.html"/> 
 
@@ -161,7 +158,7 @@
 <li class="toctree-l2"><a class="reference internal" href="faq.html#how-can-apache-kafka-be-integrated-with-eventuate">How can Apache Kafka be integrated with Eventuate?</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Example application</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Example application</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#domain">Domain</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#replication">Replication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#interface">Interface</a></li>
@@ -221,7 +218,7 @@
 <div class="section" id="domain">
 <h2>Domain<a class="headerlink" href="#domain" title="Permalink to this headline">¶</a></h2>
 <p>The <code class="docutils literal"><span class="pre">Order</span></code> domain object is defined as follows:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="k">class</span> <span class="nc">Order</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">items</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Nil</span><span class="o">,</span> <span class="n">cancelled</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span> <span class="o">{</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="k">case</span> <span class="k">class</span> <span class="nc">Order</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">items</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Nil</span><span class="o">,</span> <span class="n">cancelled</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span> <span class="o">{</span>
   <span class="k">def</span> <span class="n">addItem</span><span class="o">(</span><span class="n">item</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Order</span> <span class="o">=</span>
     <span class="n">copy</span><span class="o">(</span><span class="n">items</span> <span class="k">=</span> <span class="n">item</span> <span class="o">::</span> <span class="n">items</span><span class="o">)</span>
 
@@ -240,8 +237,8 @@
 </div>
 <div class="section" id="replication">
 <h2>Replication<a class="headerlink" href="#replication" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">OrderActor</span></code>s are replicated across locations A - F, each running as separate process on <code class="docutils literal"><span class="pre">localhost</span></code> (see section <a class="reference internal" href="#running"><span class="std std-ref">Running</span></a>):</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">------</span> <span class="n">E</span>
+<p><code class="docutils literal"><span class="pre">OrderActor</span></code>s are replicated across locations A - F, each running as separate process on <code class="docutils literal"><span class="pre">localhost</span></code> (see section <a class="reference internal" href="#running"><em>Running</em></a>):</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">A</span> <span class="o">------</span> <span class="n">E</span>
  <span class="o">\</span>      <span class="o">/</span>
   <span class="n">C</span> <span class="o">--</span> <span class="n">D</span>
  <span class="o">/</span>      <span class="o">\</span>
@@ -276,47 +273,47 @@
 <div class="section" id="running">
 <span id="id4"></span><h2>Running<a class="headerlink" href="#running" title="Permalink to this headline">¶</a></h2>
 <p>Before you can run the example application, install <a class="reference external" href="http://www.scala-sbt.org/">sbt</a> and run:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">compile</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">sbt</span> <span class="n">compile</span>
 </pre></div>
 </div>
 <p>from the project&#8217;s root directory (needs to be done only once). Then, run:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span>
 </pre></div>
 </div>
 <p>This should open six terminal windows, representing locations A - F. For running the Java version of the example application use the <code class="docutils literal"><span class="pre">-j</span></code> or <code class="docutils literal"><span class="pre">--java</span></code> option:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span> <span class="o">--</span><span class="n">java</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span> <span class="o">--</span><span class="n">java</span>
 </pre></div>
 </div>
 <p>Create and update some orders and see how changes are propagated to other locations. To make concurrent updates to an order, for example, enter <code class="docutils literal"><span class="pre">exit</span></code> at location <code class="docutils literal"><span class="pre">C</span></code>, and add different items to that order at locations <code class="docutils literal"><span class="pre">B</span></code> and <code class="docutils literal"><span class="pre">F</span></code>. When starting location <code class="docutils literal"><span class="pre">C</span></code> again with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="n">A</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="n">A</span>
 </pre></div>
 </div>
 <p>or the Java version with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">java</span> <span class="n">A</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">java</span> <span class="n">A</span>
 </pre></div>
 </div>
 <p>both updates propagate to all other locations which are then displayed as conflict. Resolve the conflict with the <code class="docutils literal"><span class="pre">resolve</span></code> command. Conflict resolution writes a conflict resolution event to the replicated event log so that the conflict is automatically resolved at all locations.</p>
 </div>
 <div class="section" id="disaster-recovery">
 <span id="example-disaster-recovery"></span><h2>Disaster recovery<a class="headerlink" href="#disaster-recovery" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="reference/event-log.html#disaster-recovery"><span class="std std-ref">Disaster recovery</span></a> in the example application can be tested by removing the event log of a location and starting the location again with disaster recovery enabled. For example, to remove the event log at location <code class="docutils literal"><span class="pre">C</span></code>, stop the location with <code class="docutils literal"><span class="pre">exit</span></code> and delete its LevelDB directory:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">rm</span> <span class="o">-</span><span class="n">r</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">example</span><span class="o">-</span><span class="n">logs</span><span class="o">/</span><span class="n">s</span><span class="o">-</span><span class="nc">C_default</span><span class="o">/</span>
+<p><a class="reference internal" href="reference/event-log.html#disaster-recovery"><em>Disaster recovery</em></a> in the example application can be tested by removing the event log of a location and starting the location again with disaster recovery enabled. For example, to remove the event log at location <code class="docutils literal"><span class="pre">C</span></code>, stop the location with <code class="docutils literal"><span class="pre">exit</span></code> and delete its LevelDB directory:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">rm</span> <span class="o">-</span><span class="n">r</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">example</span><span class="o">-</span><span class="n">logs</span><span class="o">/</span><span class="n">s</span><span class="o">-</span><span class="nc">C_default</span><span class="o">/</span>
 </pre></div>
 </div>
 <p>To delete the event log written by the Java version of the example application run:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">rm</span> <span class="o">-</span><span class="n">r</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">example</span><span class="o">-</span><span class="n">logs</span><span class="o">/</span><span class="n">j</span><span class="o">-</span><span class="nc">C_default</span><span class="o">/</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">rm</span> <span class="o">-</span><span class="n">r</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">example</span><span class="o">-</span><span class="n">logs</span><span class="o">/</span><span class="n">j</span><span class="o">-</span><span class="nc">C_default</span><span class="o">/</span>
 </pre></div>
 </div>
 <p>To start location <code class="docutils literal"><span class="pre">C</span></code> again with disaster recovery enabled, use the <code class="docutils literal"><span class="pre">-r</span></code> or <code class="docutils literal"><span class="pre">--recover</span></code> option:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">example</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">recover</span> <span class="n">C</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">example</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">recover</span> <span class="n">C</span>
 </pre></div>
 </div>
 <p>or the Java version with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">recover</span> <span class="o">--</span><span class="n">java</span> <span class="n">C</span>
+<div class="highlight-scala"><div class="highlight"><pre><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">recover</span> <span class="o">--</span><span class="n">java</span> <span class="n">C</span>
 </pre></div>
 </div>
-<p>Recovery may take up to 20 seconds when using the default <a class="reference internal" href="reference/configuration.html#configuration"><span class="std std-ref">Configuration</span></a> settings for event replication and disaster recovery. To speed up the process you may want to the use following configuration settings:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">1</span><span class="n">s</span>
+<p>Recovery may take up to 20 seconds when using the default <a class="reference internal" href="reference/configuration.html#configuration"><em>Configuration</em></a> settings for event replication and disaster recovery. To speed up the process you may want to the use following configuration settings:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">1</span><span class="n">s</span>
 <span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">remote</span><span class="o">-</span><span class="n">read</span><span class="o">-</span><span class="n">timeout</span> <span class="k">=</span> <span class="mi">2</span><span class="n">s</span>
 <span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">recovery</span><span class="o">.</span><span class="n">remote</span><span class="o">-</span><span class="n">operation</span><span class="o">-</span><span class="n">retry</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">10</span>
 <span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">recovery</span><span class="o">.</span><span class="n">remote</span><span class="o">-</span><span class="n">operation</span><span class="o">-</span><span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">1</span><span class="n">s</span>
