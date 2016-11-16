@@ -77,12 +77,7 @@ The read load on local event logs and network bandwidth usage increases with the
 Replication filters
 ~~~~~~~~~~~~~~~~~~~
 
-By default all events are replicated in a replicated event log. In many cases, however, a location only wants to replicate a subset of events to and from other locations. Restricting event replication to a subset of events can be done with *local replication filters* and/or *remote replication filters*:
-
-- :ref:`local-replication-filters` can be defined per replication endpoint. They determine which events can be replicated **to** other locations and are often used to separate location-private events from public events.
-- :ref:`remote-replication-filters` can be defined per replication connection. They determine which events shall be replicated **from** other locations.
-
-Replication filters can be used to make event collaboration, especially event-driven communication, more directed\ [#]_. Without replication filters all events are replicated to all locations in a replication network.
+By default all events are replicated in a replicated event log. In many cases, however, a location only wants to replicate a subset of events to and from other locations. Restricting event replication to a subset of events can be done with *replication filters*. :ref:`replication-filters` can be defined per replication endpoint. They determine which events can be replicated **to** other locations. Replication filters can be used to make event collaboration, especially event-driven communication, more directed\ [#]_. Without replication filters all events are replicated to all locations in a replication network.
 
 Storage backends
 ~~~~~~~~~~~~~~~~

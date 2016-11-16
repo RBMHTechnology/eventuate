@@ -96,8 +96,8 @@ object ReplicationIntegrationSpec {
     }
   }
 
-  def replicationConnection(port: Int, filters: Map[String, ReplicationFilter] = Map.empty): ReplicationConnection =
-    ReplicationConnection("127.0.0.1", port, filters)
+  def replicationConnection(port: Int): ReplicationConnection =
+    ReplicationConnection("127.0.0.1", port)
 }
 
 trait ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocationSpec {
@@ -152,27 +152,6 @@ trait ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocati
       assertPartialOrderOnAllReplicas("b1", "b2", "b3")
       assertPartialOrderOnAllReplicas("c1", "c2", "c3")
     }
-    "replicate events based on remote filter criteria" in {
-      val locationA = location("A")
-      val locationB = location("B")
-
-      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port, filters = Map("L1" -> new PayloadEqualityFilter("b2")))))
-      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port, filters = Map("L1" -> new PayloadEqualityFilter("a2")))))
-
-      val actorA = locationA.system.actorOf(Props(new ReplicatedActor("pa", endpointA.logs("L1"), locationA.probe.ref)))
-      val actorB = locationB.system.actorOf(Props(new ReplicatedActor("pb", endpointB.logs("L1"), locationB.probe.ref)))
-
-      actorA ! "a1"
-      actorA ! "a2"
-      actorA ! "a3"
-
-      actorB ! "b1"
-      actorB ! "b2"
-      actorB ! "b3"
-
-      val eventsA = locationA.probe.expectMsgAllOf("a1", "a2", "a3", "b2")
-      val eventsB = locationB.probe.expectMsgAllOf("b1", "b2", "b3", "a2")
-    }
     "replicate events based on local filter criteria" in {
       val locationA = location("A")
       val locationB = location("B")
@@ -198,27 +177,6 @@ trait ReplicationIntegrationSpec extends WordSpec with Matchers with MultiLocati
 
       val eventsA = locationA.probe.expectMsgAllOf("a1", "a2", "a3", "b1", "b3")
       val eventsB = locationB.probe.expectMsgAllOf("b1", "b2", "b3", "a2")
-    }
-    "replicate events based on local and remote filter criteria" in {
-      val locationA = location("A")
-      val locationB = location("B")
-
-      val endpointA = locationA.endpoint(Set("L1"), Set(replicationConnection(locationB.port, filters = Map("L1" -> new PayloadInequalityFilter("b1")))), sourceFilters(Map("L1" -> new PayloadInequalityFilter("a2"))))
-      val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA.port, filters = Map("L1" -> new PayloadInequalityFilter("a1")))), sourceFilters(Map("L1" -> new PayloadInequalityFilter("b2"))))
-
-      val actorA = locationA.system.actorOf(Props(new ReplicatedActor("pa", endpointA.logs("L1"), locationA.probe.ref)))
-      val actorB = locationB.system.actorOf(Props(new ReplicatedActor("pb", endpointB.logs("L1"), locationB.probe.ref)))
-
-      actorA ! "a1"
-      actorA ! "a2"
-      actorA ! "a3"
-
-      actorB ! "b1"
-      actorB ! "b2"
-      actorB ! "b3"
-
-      val eventsA = locationA.probe.expectMsgAllOf("a1", "a2", "a3", "b3")
-      val eventsB = locationB.probe.expectMsgAllOf("b1", "b2", "b3", "a3")
     }
     "replicate events according to BinaryPayload based local filters" in {
       val locationA = location(
