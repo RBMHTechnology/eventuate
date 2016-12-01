@@ -134,10 +134,6 @@ trait ReplicationFilterDoc {
   )
   //#
 
-  //#remote-filters
-  ReplicationConnection("127.0.0.1", 2552, Map("L" -> filter1))
-  //#
-
   //#replication-filter-composition
   val filter1 = AggregateIdFilter("order-17")
   val filter2 = AggregateIdFilter("order-19")

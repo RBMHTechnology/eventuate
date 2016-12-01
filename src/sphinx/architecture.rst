@@ -77,12 +77,10 @@ The read load on local event logs and network bandwidth usage increases with the
 Replication filters
 ~~~~~~~~~~~~~~~~~~~
 
-By default all events are replicated in a replicated event log. In many cases, however, a location only wants to replicate a subset of events to and from other locations. Restricting event replication to a subset of events can be done with *local replication filters* and/or *remote replication filters*:
+By default all events are replicated in a replicated event log. In many cases, however, a location only wants to replicate a subset of events to and from other locations. Restricting event replication to a subset of events can be done with *replication filters*. :ref:`replication-filters` can be defined per replication endpoint. They determine which events can be replicated **to** other locations. Replication filters can be used to make event collaboration, especially event-driven communication, more directed\ [#]_. Without replication filters all events are replicated to all locations in a replication network.
 
-- :ref:`local-replication-filters` can be defined per replication endpoint. They determine which events can be replicated **to** other locations and are often used to separate location-private events from public events.
-- :ref:`remote-replication-filters` can be defined per replication connection. They determine which events shall be replicated **from** other locations.
-
-Replication filters can be used to make event collaboration, especially event-driven communication, more directed\ [#]_. Without replication filters all events are replicated to all locations in a replication network.
+.. warning::
+   If a replication network contains a cycle the involved replication connections must not be filtered, otherwise more events than expected can get excluded from replication. As Eventuate does not detect these kind of cycles in a replication network, it is under the responsibility of the application to setup a correct replication network. Future Eventuate releases will remove this limitation.
 
 Storage backends
 ~~~~~~~~~~~~~~~~
@@ -376,7 +374,7 @@ Eventuate internally uses batching to optimize read and write throughput. It is 
 .. _aggregate: http://martinfowler.com/bliki/DDD_Aggregate.html
 
 .. _ticket 68: https://github.com/RBMHTechnology/eventuate/issues/68
-.. _ticket 103: https://github.com/RBMHTechnology/eventuate/issues/103
+.. _ticket 314: https://github.com/RBMHTechnology/eventuate/issues/314
 .. _let us know: https://gitter.im/RBMHTechnology/eventuate
 
 .. _A comprehensive study of Convergent and Commutative Replicated Data Types: http://hal.upmc.fr/file/index/docid/555588/filename/techreport.pdf
