@@ -39,6 +39,13 @@ object EventLogSpecCassandra {
     """.stripMargin).withFallback(EventLogSpec.config)
 }
 
+class EventLogSpecCassandraNoIndexing extends TestKit(ActorSystem("test", EventLogSpecCassandra.config)) with EventLogSpec with SingleLocationSpecCassandra {
+  import SingleLocationSpecCassandra._
+
+  override def logProps(logId: String, failureSpec: TestFailureSpec, indexProbe: ActorRef): Props =
+    TestEventLog.props(logId, failureSpec, indexProbe, batching, aggregateIndexing = false)
+}
+
 class EventLogSpecCassandra extends TestKit(ActorSystem("test", EventLogSpecCassandra.config)) with EventLogSpec with SingleLocationSpecCassandra {
   import EventLogSpec._
   import CassandraIndex._
