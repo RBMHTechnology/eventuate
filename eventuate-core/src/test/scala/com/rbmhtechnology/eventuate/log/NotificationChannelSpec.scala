@@ -18,12 +18,12 @@ package com.rbmhtechnology.eventuate.log
 
 import akka.actor._
 import akka.testkit._
-
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.ReplicationFilter._
 import com.rbmhtechnology.eventuate.ReplicationProtocol._
 import com.rbmhtechnology.eventuate.log.NotificationChannel._
-
+import com.rbmhtechnology.eventuate.log.NotificationChannelSpec.config
+import com.typesafe.config.ConfigFactory
 import org.scalatest._
 
 import scala.collection.immutable.Seq
@@ -46,13 +46,17 @@ object NotificationChannelSpec {
 
   def vectorTime(s: Long, t1: Long, t2: Long) =
     VectorTime(sourceLogId -> s, targetLogId1 -> t1, targetLogId2 -> t2)
+
+  val config = ConfigFactory.parseString("eventuate.log.replication.retry-delay = 400ms")
 }
 
-class NotificationChannelSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
+class NotificationChannelSpec extends TestKit(ActorSystem("test", config)) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
   import NotificationChannelSpec._
 
   private var channel: ActorRef = _
   private var probe: TestProbe = _
+
+  private val expirationDuration = system.settings.config.getDuration("eventuate.log.replication.retry-delay")
 
   override def afterAll(): Unit =
     TestKit.shutdownActorSystem(system)
@@ -138,6 +142,19 @@ class NotificationChannelSpec extends TestKit(ActorSystem("test")) with WordSpec
       probe.expectMsg(ReplicationDue)
       probe.expectMsg(ReplicationDue)
       probe.expectNoMsg(timeout)
+    }
+    "not send a notification if the registration is expired" in {
+      sourceRead(targetLogId1, VectorTime.Zero)
+      Thread.sleep(expirationDuration.toMillis)
+      sourceUpdate(Seq(event("a", vectorTime(1, 0, 0))))
+      probe.expectNoMsg(timeout)
+    }
+    "send a notification after the registration expired but a new replication request is received" in {
+      sourceRead(targetLogId1, VectorTime.Zero)
+      Thread.sleep(expirationDuration.toMillis)
+      sourceRead(targetLogId1, VectorTime.Zero)
+      sourceUpdate(Seq(event("a", vectorTime(1, 0, 0))))
+      probe.expectMsg(ReplicationDue)
     }
   }
 }
