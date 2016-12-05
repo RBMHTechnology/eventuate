@@ -253,12 +253,11 @@ A dense replication network of major locations A, B and C with attached minor lo
 </div>
 <div class="section" id="replication-filters">
 <h3>Replication filters<a class="headerlink" href="#replication-filters" title="Permalink to this headline">¶</a></h3>
-<p>By default all events are replicated in a replicated event log. In many cases, however, a location only wants to replicate a subset of events to and from other locations. Restricting event replication to a subset of events can be done with <em>local replication filters</em> and/or <em>remote replication filters</em>:</p>
-<ul class="simple">
-<li><a class="reference internal" href="reference/event-log.html#local-replication-filters"><span class="std std-ref">Local replication filters</span></a> can be defined per replication endpoint. They determine which events can be replicated <strong>to</strong> other locations and are often used to separate location-private events from public events.</li>
-<li><a class="reference internal" href="reference/event-log.html#remote-replication-filters"><span class="std std-ref">Remote replication filters</span></a> can be defined per replication connection. They determine which events shall be replicated <strong>from</strong> other locations.</li>
-</ul>
-<p>Replication filters can be used to make event collaboration, especially event-driven communication, more directed<a class="footnote-reference" href="#id18" id="id4">[2]</a>. Without replication filters all events are replicated to all locations in a replication network.</p>
+<p>By default all events are replicated in a replicated event log. In many cases, however, a location only wants to replicate a subset of events to and from other locations. Restricting event replication to a subset of events can be done with <em>replication filters</em>. <a class="reference internal" href="reference/event-log.html#replication-filters"><span class="std std-ref">Replication filters</span></a> can be defined per replication endpoint. They determine which events can be replicated <strong>to</strong> other locations. Replication filters can be used to make event collaboration, especially event-driven communication, more directed<a class="footnote-reference" href="#id18" id="id4">[2]</a>. Without replication filters all events are replicated to all locations in a replication network.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If a replication network contains a cycle the involved replication connections must not be filtered, otherwise more events than expected can get excluded from replication. As Eventuate does not detect these kind of cycles in a replication network, it is under the responsibility of the application to setup a correct replication network. Future Eventuate releases will remove this limitation.</p>
+</div>
 </div>
 <div class="section" id="storage-backends">
 <h3>Storage backends<a class="headerlink" href="#storage-backends" title="Permalink to this headline">¶</a></h3>

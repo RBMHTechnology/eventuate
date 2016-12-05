@@ -47,13 +47,12 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationConnection</span><span class="params">(<span name="host">host: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="port">port: <span class="extype" name="scala.Int">Int</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span> = <span class="defval" name='<span class="name"><a href="ReplicationConnection$.html">ReplicationConnection.DefaultRemoteSystemName</a></span>'>...</span></span>, <span name="filters">filters: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a>] = <span class="symbol">Map.empty</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">ReplicationConnection</span><span class="params">(<span name="host">host: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="port">port: <span class="extype" name="scala.Int">Int</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span> = <span class="defval" name='<span class="name"><a href="ReplicationConnection$.html">ReplicationConnection.DefaultRemoteSystemName</a></span>'>...</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A replication connection descriptor.
-</p></div><dl class="paramcmts block"><dt class="param">host</dt><dd class="cmt"><p>Host of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">port</dt><dd class="cmt"><p>Port of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">name</dt><dd class="cmt"><p>Name of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">filters</dt><dd class="cmt"><p>Replication filters applied remotely. Filters are applied to individual
-               event logs where filter keys are the corresponding event log names.</p></dd></dl><div class="toggleContainer block">
+</p></div><dl class="paramcmts block"><dt class="param">host</dt><dd class="cmt"><p>Host of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">port</dt><dd class="cmt"><p>Port of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">name</dt><dd class="cmt"><p>Name of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -93,7 +92,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.ReplicationConnection#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(host:String,port:Int,name:String,filters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]):com.rbmhtechnology.eventuate.ReplicationConnection"></a>
+      <a id="&lt;init&gt;(host:String,port:Int,name:String):com.rbmhtechnology.eventuate.ReplicationConnection"></a>
       <a id="&lt;init&gt;:ReplicationConnection"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -101,15 +100,14 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">ReplicationConnection</span><span class="params">(<span name="host">host: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="port">port: <span class="extype" name="scala.Int">Int</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span> = <span class="defval" name='<span class="name"><a href="ReplicationConnection$.html">ReplicationConnection.DefaultRemoteSystemName</a></span>'>...</span></span>, <span name="filters">filters: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a>] = <span class="symbol">Map.empty</span></span>)</span>
+        <span class="name">ReplicationConnection</span><span class="params">(<span name="host">host: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="port">port: <span class="extype" name="scala.Int">Int</span></span>, <span name="name">name: <span class="extype" name="scala.Predef.String">String</span> = <span class="defval" name='<span class="name"><a href="ReplicationConnection$.html">ReplicationConnection.DefaultRemoteSystemName</a></span>'>...</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationConnection@&lt;init&gt;(host:String,port:Int,name:String,filters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]):com.rbmhtechnology.eventuate.ReplicationConnection" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationConnection@&lt;init&gt;(host:String,port:Int,name:String):com.rbmhtechnology.eventuate.ReplicationConnection" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">host</dt><dd class="cmt"><p>Host of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">port</dt><dd class="cmt"><p>Port of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">name</dt><dd class="cmt"><p>Name of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">filters</dt><dd class="cmt"><p>Replication filters applied remotely. Filters are applied to individual
-               event logs where filter keys are the corresponding event log names.</p></dd></dl></div>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">host</dt><dd class="cmt"><p>Host of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">port</dt><dd class="cmt"><p>Port of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd><dt class="param">name</dt><dd class="cmt"><p>Name of the remote actor system that runs a <a href="ReplicationEndpoint.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationEndpoint">ReplicationEndpoint</a>.</p></dd></dl></div>
     </li></ol>
             </div>
 
@@ -227,24 +225,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.ReplicationConnection#filters" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="filters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]"></a>
-      <a id="filters:Map[String,ReplicationFilter]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">filters</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <a href="ReplicationFilter.html" class="extype" name="com.rbmhtechnology.eventuate.ReplicationFilter">ReplicationFilter</a>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.ReplicationConnection@filters:Map[String,com.rbmhtechnology.eventuate.ReplicationFilter]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Replication filters applied remotely.</p><div class="fullcomment"><div class="comment cmt"><p>Replication filters applied remotely. Filters are applied to individual
-               event logs where filter keys are the corresponding event log names.</p></div></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
