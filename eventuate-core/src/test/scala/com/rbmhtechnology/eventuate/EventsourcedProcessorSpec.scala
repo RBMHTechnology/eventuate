@@ -334,5 +334,29 @@ class EventsourcedProcessorSpec extends TestKit(ActorSystem("test", Eventsourced
       actor ! Written(evt1)
       processWrite(1, Seq.fill(11)(update(evt1)))
     }
+    "allow to set customDestinationAggregateIds using postProcessDurableEvent" in {
+      val customDestinationAggregateIds = Set("aggregateId1", "aggregateId2")
+
+      // create and recover processor
+      val actor = system.actorOf(Props(new StatelessTestProcessor(srcProbe.ref, trgProbe.ref, appProbe.ref) {
+        override def postProcessDurableEvent(e: DurableEvent): DurableEvent = {
+          e.copy(customDestinationAggregateIds = customDestinationAggregateIds)
+        }
+        override val processEvent: Process = {
+          case "x" => Seq("x")
+        }
+      }))
+      processRead(0)
+      processReplay(actor, 1)
+
+      val evt1 = event("x", 1)
+      val expectedEvents = Seq(evt1)
+        .map(update)
+        .map(_.copy(customDestinationAggregateIds = customDestinationAggregateIds))
+
+      actor ! Written(evt1)
+
+      processWrite(1, expectedEvents)
+    }
   }
 }
