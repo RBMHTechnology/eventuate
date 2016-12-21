@@ -365,23 +365,24 @@ table, column and/or keyspace name usage.</p>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#props" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="props(logId:String,batching:Boolean):akka.actor.Props"></a>
-      <a id="props(String,Boolean):Props"></a>
+      <a id="props(logId:String,batching:Boolean,aggregateIndexing:Boolean):akka.actor.Props"></a>
+      <a id="props(String,Boolean,Boolean):Props"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">props</span><span class="params">(<span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="batching">batching: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="result">: <span class="extype" name="akka.actor.Props">Props</span></span>
+        <span class="name">props</span><span class="params">(<span name="logId">logId: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="batching">batching: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>, <span name="aggregateIndexing">aggregateIndexing: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="result">: <span class="extype" name="akka.actor.Props">Props</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog$@props(logId:String,batching:Boolean):akka.actor.Props" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog$@props(logId:String,batching:Boolean,aggregateIndexing:Boolean):akka.actor.Props" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Creates a <a href="CassandraEventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> configuration object.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a <a href="CassandraEventLog.html" class="extype" name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog">CassandraEventLog</a> configuration object.
-</p></div><dl class="paramcmts block"><dt class="param">logId</dt><dd class="cmt"><p>unique log id.</p></dd><dt class="param">batching</dt><dd class="cmt"><p><code>true</code> if write-batching shall be enabled (recommended).</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="param">logId</dt><dd class="cmt"><p>unique log id.</p></dd><dt class="param">batching</dt><dd class="cmt"><p><code>true</code> if write-batching shall be enabled (recommended).</p></dd><dt class="param">aggregateIndexing</dt><dd class="cmt"><p><code>true</code> if aggregates should be indexed (recommended)
+                         Turn this off only if you don't use aggregate IDs on this event log!</p></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

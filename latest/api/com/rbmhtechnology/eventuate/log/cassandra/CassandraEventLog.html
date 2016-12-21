@@ -101,7 +101,7 @@ the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span 
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(id:String):com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog"></a>
+      <a id="&lt;init&gt;(id:String,aggregateIndexing:Boolean):com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog"></a>
       <a id="&lt;init&gt;:CassandraEventLog"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -109,14 +109,15 @@ the following table prefix</p><pre>eventuate.log.cassandra.table-prefix = <span 
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">CassandraEventLog</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>)</span>
+        <span class="name">CassandraEventLog</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="aggregateIndexing">aggregateIndexing: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@&lt;init&gt;(id:String):com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog@&lt;init&gt;(id:String,aggregateIndexing:Boolean):com.rbmhtechnology.eventuate.log.cassandra.CassandraEventLog" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">id</dt><dd class="cmt"><p>unique log id.</p></dd></dl></div>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">id</dt><dd class="cmt"><p>unique log id.</p></dd><dt class="param">aggregateIndexing</dt><dd class="cmt"><p><code>true</code> if the event log shall process aggregate indexing (recommended).
+                         Turn this off only if you don't use aggregate IDs on this event log!</p></dd></dl></div>
     </li></ol>
             </div>
 
