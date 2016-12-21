@@ -17,11 +17,11 @@
 package com.rbmhtechnology.eventuate.crdt
 
 import akka.actor._
-
 import com.rbmhtechnology.eventuate._
 
 import scala.collection.immutable.Set
 import scala.concurrent.Future
+import scala.util.{ Success, Try }
 
 /**
  * [[ORCart]] entry.
@@ -86,12 +86,14 @@ object ORCart {
     override def value(crdt: ORCart[A]): Map[A, Int] =
       crdt.value
 
-    override def prepare(crdt: ORCart[A], operation: Any): Option[Any] = operation match {
-      case op @ RemoveOp(key, _) => crdt.prepareRemove(key.asInstanceOf[A]) match {
-        case timestamps if timestamps.nonEmpty =>
-          Some(op.copy(timestamps = timestamps))
-        case _ =>
-          None
+    override def prepare(crdt: ORCart[A], operation: Any): Try[Option[Any]] = operation match {
+      case op @ RemoveOp(key, _) => Success {
+        crdt.prepareRemove(key.asInstanceOf[A]) match {
+          case timestamps if timestamps.nonEmpty =>
+            Some(op.copy(timestamps = timestamps))
+          case _ =>
+            None
+        }
       }
       case op =>
         super.prepare(crdt, op)
