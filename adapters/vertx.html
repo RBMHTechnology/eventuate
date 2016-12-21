@@ -226,7 +226,7 @@
 <li>a unique id.</li>
 </ul>
 <p><em>Vert.x producers</em> are created by using the <code class="docutils literal"><span class="pre">EventProducer.fromLog</span></code> method. Applications define the source log, the delivery method and an arbitrary amount of event bus endpoints, the events will be delivered to.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
   <span class="o">.</span><span class="n">publishTo</span> <span class="o">{</span> <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="s">&quot;address-1&quot;</span> <span class="o">}</span>
   <span class="o">.</span><span class="n">as</span><span class="o">(</span><span class="s">&quot;vertx-producer&quot;</span><span class="o">)</span>
@@ -239,7 +239,7 @@
 </div>
 </div>
 <p><em>Log producers</em> are created by using the <code class="docutils literal"><span class="pre">EventProducer.fromEndpoints</span></code> method. Multiple event bus endpoints can be defined, which are used to consume events from the event bus and persist the same events to the given event log.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromEndpoints</span><span class="o">(</span><span class="s">&quot;address-2&quot;</span><span class="o">)</span>
   <span class="o">.</span><span class="n">writeTo</span><span class="o">(</span><span class="n">destinationLog</span><span class="o">)</span>
   <span class="o">.</span><span class="n">as</span><span class="o">(</span><span class="s">&quot;log-producer&quot;</span><span class="o">)</span>
@@ -264,7 +264,7 @@
 <div class="section" id="event-processing">
 <h2>Event processing<a class="headerlink" href="#event-processing" title="Permalink to this headline">¶</a></h2>
 <p>Applications process events sent from Vert.x producers by registering event bus handlers at the configured endpoints on the event bus. An event bus endpoint is a simple address represented as a <code class="docutils literal"><span class="pre">String</span></code>, which can follow any addressing scheme. Vert.x producers deliver events on the event bus as instances of an event bus <a class="reference external" href="http://vertx.io/docs/apidocs/io/vertx/core/eventbus/Message.html">message</a>. Event bus handlers access the underlying event by obtaining the body of a message.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">consumer</span><span class="o">[</span><span class="kt">Event</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="n">handler</span><span class="o">(</span><span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">]]</span> <span class="o">{</span>
   <span class="k">override</span> <span class="k">def</span> <span class="n">handle</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
     <span class="k">val</span> <span class="n">event</span> <span class="k">=</span> <span class="n">message</span><span class="o">.</span><span class="n">body</span>
@@ -279,7 +279,7 @@
 </div>
 </div>
 <p>For events to be written to an event log, applications send events to the specified endpoints configured for a log producer. The log producer consumes all events from these endpoints and persists the events to the configured event log.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">send</span><span class="o">(</span><span class="s">&quot;address-2&quot;</span><span class="o">,</span> <span class="nc">Event</span><span class="o">(</span><span class="s">&quot;event-1&quot;</span><span class="o">))</span>
 </pre></div>
 </div>
@@ -297,7 +297,7 @@
 <p>Event producers are managed by a <code class="docutils literal"><span class="pre">VertxAdapter</span></code>. Applications can connect to multiple event logs by instantiating event producers and supplying them to the <code class="docutils literal"><span class="pre">VertxAdapterConfig</span></code>.</p>
 <p>The <code class="docutils literal"><span class="pre">VertxAdatperConfig</span></code> is passed to the <code class="docutils literal"><span class="pre">VertxAdapter</span></code> together with an <code class="docutils literal"><span class="pre">ActorSystem</span></code> and the <code class="docutils literal"><span class="pre">Vert.x</span></code> instance the adapter will connect to. The adapter is also supplied with a <code class="docutils literal"><span class="pre">StorageProvider</span></code> which is used to persist the read progress of the individual event producers.</p>
 <p>Applications invoke the <code class="docutils literal"><span class="pre">start</span></code> method of the system to initialize the registered event producers and start event exchange with the <code class="docutils literal"><span class="pre">Vert.x</span></code> instance.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">akka.actor.ActorSystem</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.ReplicationEndpoint</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.adapter.vertx.VertxAdapter</span>
@@ -401,7 +401,7 @@
 <div class="section" id="vert-x-publish-event-producer">
 <h2>Vert.x publish event producer<a class="headerlink" href="#vert-x-publish-event-producer" title="Permalink to this headline">¶</a></h2>
 <p>A <em>Publish Event Producer</em> publishes events from an event log to <em>multiple</em> subscribers on the event bus. Events are delivered to specific endpoints defined in the configuration of the producer. A producer can route events to different event bus endpoints based on the content of the event. Event routing is enabled by supplying a partial function which maps events to event bus endpoints. If the partial function is not defined at the event, the event will not be processed.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
   <span class="o">.</span><span class="n">publishTo</span> <span class="o">{</span>
     <span class="k">case</span> <span class="n">e</span><span class="k">:</span> <span class="kt">Event</span>  <span class="o">=&gt;</span> <span class="s">&quot;address-1&quot;</span>
@@ -426,7 +426,7 @@
 </div>
 <p>Event publishing is performed with <em>At-Most-Once</em> delivery semantics, so no guarantees about the successful delivery of events can be made.</p>
 <p>Applications consume events by registering an event handler at the configured endpoints on the event bus.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">consumer</span><span class="o">[</span><span class="kt">Event</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="n">handler</span><span class="o">(</span><span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">]]</span> <span class="o">{</span>
   <span class="k">override</span> <span class="k">def</span> <span class="n">handle</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
     <span class="k">val</span> <span class="n">event</span> <span class="k">=</span> <span class="n">message</span><span class="o">.</span><span class="n">body</span>
@@ -445,7 +445,7 @@
 <div class="section" id="vert-x-point-to-point-event-producer">
 <h2>Vert.x point-to-point event producer<a class="headerlink" href="#vert-x-point-to-point-event-producer" title="Permalink to this headline">¶</a></h2>
 <p>A <em>Point-to-Point Event Producer</em> sends an event to a <em>single</em> subscriber on the event bus. If a single subscriber is registered for an endpoint all events are delivered to this subscriber. If multiple subscribers are registered for the same endpoint, events are delivered alternately to only one of those subscribers using a non-strict round-robin algorithm. Event routing can be enabled by supplying a partial function.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
   <span class="o">.</span><span class="n">sendTo</span> <span class="o">{</span>
     <span class="k">case</span> <span class="n">e</span><span class="k">:</span> <span class="kt">Event</span>  <span class="o">=&gt;</span> <span class="s">&quot;address-1&quot;</span>
@@ -470,7 +470,7 @@
 </div>
 </div>
 <p>Point-to-point event producers support both <em>At-Most-Once</em> and <em>At-Least-Once</em> delivery semantics. If not specified otherwise <em>At-Most-Once</em> delivery is chosen. <em>At-Least-Once</em> delivery is enabled by configuring the adapter accordingly.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromLog</span><span class="o">(</span><span class="n">sourceLog</span><span class="o">)</span>
   <span class="o">.</span><span class="n">sendTo</span> <span class="o">{</span> <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="s">&quot;address-1&quot;</span> <span class="o">}</span>
   <span class="o">.</span><span class="n">atLeastOnce</span><span class="o">(</span><span class="n">confirmationType</span> <span class="k">=</span> <span class="nc">Batch</span><span class="o">(</span><span class="n">size</span> <span class="k">=</span> <span class="mi">5</span><span class="o">),</span> <span class="n">confirmationTimeout</span> <span class="k">=</span> <span class="mf">5.</span><span class="n">seconds</span><span class="o">)</span>
@@ -486,7 +486,7 @@
 </div>
 <p>Events sent by a point-to-point event producer are received by registering an event handler on the event bus.</p>
 <p>Using <em>At-Least-Once</em> delivery semantics, every event must be confirmed by the receiver. Unconfirmed events are redelivered until a confirmation was received by the adapter. Event handlers confirm event delivery by replying to the event bus message with a <code class="docutils literal"><span class="pre">Confirmation</span></code>.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">consumer</span><span class="o">[</span><span class="kt">Event</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="n">handler</span><span class="o">(</span><span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">]]</span> <span class="o">{</span>
   <span class="k">override</span> <span class="k">def</span> <span class="n">handle</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
     <span class="k">val</span> <span class="n">event</span> <span class="k">=</span> <span class="n">message</span><span class="o">.</span><span class="n">body</span>
@@ -516,7 +516,7 @@ Using batch confirmations, events are delivered in batches where the next batch 
 <h2>Log event producer<a class="headerlink" href="#log-event-producer" title="Permalink to this headline">¶</a></h2>
 <p>A <em>Log Event Producer</em> consumes events from multiple event bus endpoints and persists these events to a single event log. Every persisted event creates a write confirmation which is returned to the sender of the event, containing the result of the write operation.</p>
 <p>Log event producers can be configured with an optional event filter. This filter is applied to events sent to the producer.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EventProducer</span><span class="o">.</span><span class="n">fromEndpoints</span><span class="o">(</span><span class="s">&quot;address-1&quot;</span><span class="o">,</span> <span class="s">&quot;address-2&quot;</span><span class="o">)</span>
   <span class="o">.</span><span class="n">writeTo</span><span class="o">(</span><span class="n">destinationLog</span><span class="o">,</span> <span class="o">{</span>
     <span class="k">case</span> <span class="k">_:</span> <span class="kt">Event</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:</span> <span class="kt">Event2</span> <span class="o">=&gt;</span> <span class="kc">true</span>
@@ -542,7 +542,7 @@ Using batch confirmations, events are delivered in batches where the next batch 
 </div>
 <p>Events accepted by the filter are written to the configured destination log. Events rejected by the filter are dropped and a corresponding write result is returned to the sender.</p>
 <p>Applications persist events by sending them to the endpoint configured for the producer. The result of the write operation is returned as a response message.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">send</span><span class="o">[</span><span class="kt">ProcessingResult</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">,</span> <span class="nc">Event</span><span class="o">(</span><span class="s">&quot;event-1&quot;</span><span class="o">),</span> <span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">AsyncResult</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">ProcessingResult</span><span class="o">]]]</span> <span class="o">{</span>
   <span class="k">override</span> <span class="k">def</span> <span class="n">handle</span><span class="o">(</span><span class="n">ar</span><span class="k">:</span> <span class="kt">AsyncResult</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">ProcessingResult</span><span class="o">]])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">ar</span><span class="o">.</span><span class="n">succeeded</span><span class="o">())</span> <span class="o">{</span>
@@ -576,7 +576,7 @@ Using batch confirmations, events are delivered in batches where the next batch 
 <p>All messages transmitted over the event bus must provide a Vert.x <a class="reference external" href="http://vertx.io/docs/apidocs/io/vertx/core/eventbus/MessageCodec.html">message codec</a>. The event bus uses this message codec to serialize and deserialize the body of an event bus message.</p>
 <p>Events sent or received by the Vert.x adapter may not have an instance of a <code class="docutils literal"><span class="pre">MessageCodec</span></code> defined, since they usually originate from an external system. To ease the integration of external events into a Vert.x application, the adapter offers a generic message codec for types serializable by the <code class="docutils literal"><span class="pre">ActorSystem</span></code> provided to the <code class="docutils literal"><span class="pre">VertxAdapter</span></code>. All events persisted to an event log are serializable by the <code class="docutils literal"><span class="pre">ActorSystem</span></code>, hence the generic message codec can be used for those objects.</p>
 <p>The generic <code class="docutils literal"><span class="pre">MessageCodec</span></code> is applied for an object type by registering the type with the <code class="docutils literal"><span class="pre">VertxAdapterConfig</span></code>.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">VertxAdapterConfig</span><span class="o">()</span>
   <span class="o">.</span><span class="n">registerDefaultCodecFor</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">Event</span><span class="o">],</span> <span class="n">classOf</span><span class="o">[</span><span class="kt">Event2</span><span class="o">])</span>
 </pre></div>
@@ -600,7 +600,7 @@ Using batch confirmations, events are delivered in batches where the next batch 
 <li>the <em>local sequence number</em> of the event and</li>
 <li>the <em>id of the emitter</em> that persisted the event.</li>
 </ul>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">consumer</span><span class="o">[</span><span class="kt">Event</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="n">handler</span><span class="o">(</span><span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">]]</span> <span class="o">{</span>
   <span class="k">override</span> <span class="k">def</span> <span class="n">handle</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
     <span class="k">val</span> <span class="n">headers</span> <span class="k">=</span> <span class="n">message</span><span class="o">.</span><span class="n">headers</span>
@@ -624,7 +624,7 @@ Using batch confirmations, events are delivered in batches where the next batch 
 </div>
 <p>The Vert.x adapter also offers the <code class="docutils literal"><span class="pre">EventMetadata</span></code> helper, which is instantiated from the message headers and provides the metadata of an event.
 An <code class="docutils literal"><span class="pre">EventMetadata</span></code> instance is only created if the message originated from a Vert.x producer.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">vertx</span><span class="o">.</span><span class="n">eventBus</span><span class="o">().</span><span class="n">consumer</span><span class="o">[</span><span class="kt">Event</span><span class="o">](</span><span class="s">&quot;address-1&quot;</span><span class="o">).</span><span class="n">handler</span><span class="o">(</span><span class="k">new</span> <span class="nc">Handler</span><span class="o">[</span><span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">]]</span> <span class="o">{</span>
   <span class="k">override</span> <span class="k">def</span> <span class="n">handle</span><span class="o">(</span><span class="n">message</span><span class="k">:</span> <span class="kt">Message</span><span class="o">[</span><span class="kt">Event</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
     <span class="k">val</span> <span class="n">metadata</span> <span class="k">=</span> <span class="nc">EventMetadata</span><span class="o">.</span><span class="n">fromHeaders</span><span class="o">(</span><span class="n">message</span><span class="o">.</span><span class="n">headers</span><span class="o">).</span><span class="n">get</span>

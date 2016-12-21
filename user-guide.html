@@ -228,7 +228,7 @@
 <p class="last">Event-sourced actors can also write new events during event processing. This is covered in section <a class="reference internal" href="#guide-event-driven-communication"><span class="std std-ref">Event-driven communication</span></a>.</p>
 </div>
 <p>Concrete event-sourced actors must implement the <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> trait. The following <code class="docutils literal"><span class="pre">ExampleActor</span></code> maintains state of type <code class="docutils literal"><span class="pre">Vector[String]</span></code> to which entries can be appended:</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
@@ -372,7 +372,7 @@
 <div class="section" id="creating-a-single-instance">
 <h3>Creating a single instance<a class="headerlink" href="#creating-a-single-instance" title="Permalink to this headline">¶</a></h3>
 <p>In the following, a single instance of <code class="docutils literal"><span class="pre">ExampleActor</span></code> is created and two <code class="docutils literal"><span class="pre">Append</span></code> commands are sent to it:</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">system</span><span class="k">:</span> <span class="kt">ActorSystem</span> <span class="o">=</span> <span class="c1">// ...</span>
 <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span> <span class="o">=</span> <span class="c1">// ...</span>
 
@@ -393,7 +393,7 @@
 </div>
 </div>
 <p>Sending a <code class="docutils literal"><span class="pre">Print</span></code> command</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">ea1</span> <span class="o">!</span> <span class="nc">Print</span>
 </pre></div>
 </div>
@@ -418,7 +418,7 @@
 <div class="section" id="creating-two-isolated-instances">
 <h3>Creating two isolated instances<a class="headerlink" href="#creating-two-isolated-instances" title="Permalink to this headline">¶</a></h3>
 <p>When creating two instances of <code class="docutils literal"><span class="pre">ExampleActor</span></code> with different <code class="docutils literal"><span class="pre">aggregateId</span></code>s, they are isolated from each other, by default, and do not consume each other’s events:</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">b2</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;2&quot;</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;b&quot;</span><span class="o">),</span> <span class="n">eventLog</span><span class="o">)))</span>
 <span class="k">val</span> <span class="n">c3</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;3&quot;</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;c&quot;</span><span class="o">),</span> <span class="n">eventLog</span><span class="o">)))</span>
 
@@ -441,7 +441,7 @@
 </div>
 </div>
 <p>Sending two <code class="docutils literal"><span class="pre">Print</span></code> commands</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">b2</span> <span class="o">!</span> <span class="nc">Print</span>
 <span class="n">c3</span> <span class="o">!</span> <span class="nc">Print</span>
 </pre></div>
@@ -460,7 +460,7 @@
 <div class="section" id="creating-two-replica-instances">
 <h3>Creating two replica instances<a class="headerlink" href="#creating-two-replica-instances" title="Permalink to this headline">¶</a></h3>
 <p>When creating two <code class="docutils literal"><span class="pre">ExampleActor</span></code> instances with the same <code class="docutils literal"><span class="pre">aggregateId</span></code>, they consume each other’s events <a class="footnote-reference" href="#id9" id="id2">[1]</a>.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="c1">// created at location 1</span>
 <span class="k">val</span> <span class="n">d4</span> <span class="k">=</span> <span class="n">system</span><span class="o">.</span><span class="n">actorOf</span><span class="o">(</span><span class="nc">Props</span><span class="o">(</span><span class="k">new</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="s">&quot;4&quot;</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="s">&quot;d&quot;</span><span class="o">),</span> <span class="n">eventLog</span><span class="o">)))</span>
 
@@ -486,7 +486,7 @@
 </pre></div>
 </div>
 <p>After both replicas have converged, another <code class="docutils literal"><span class="pre">Append</span></code> is sent to <code class="docutils literal"><span class="pre">d5</span></code>.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">d5</span> <span class="o">!</span> <span class="nc">Append</span><span class="o">(</span><span class="s">&quot;b&quot;</span><span class="o">)</span>
 </pre></div>
 </div>
@@ -512,7 +512,7 @@
 <p>Eventuate tracks <em>happened-before</em> relationships (= potential causality) of events with <a class="reference internal" href="architecture.html#vector-clocks"><span class="std std-ref">Vector clocks</span></a>. Why is that needed at all? Let’s assume that an event-sourced actor emits an event <code class="docutils literal"><span class="pre">e1</span></code> for changing internal state and later receives an event <code class="docutils literal"><span class="pre">e2</span></code> from a replica instance. If the replica instance emits <code class="docutils literal"><span class="pre">e2</span></code> after having processed <code class="docutils literal"><span class="pre">e1</span></code>, the actor can apply <code class="docutils literal"><span class="pre">e2</span></code> as regular update. If the replica instance emits <code class="docutils literal"><span class="pre">e2</span></code> before having received <code class="docutils literal"><span class="pre">e1</span></code>, the actor receives a concurrent, potentially conflicting event.</p>
 <p>How can the actor determine if <code class="docutils literal"><span class="pre">e2</span></code> is a regular i.e. causally related or concurrent update? It can do so by comparing the vector timestamps of <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code>, where <code class="docutils literal"><span class="pre">t1</span></code> is the vector timestamp of <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">t2</span></code> the vector timestamp of <code class="docutils literal"><span class="pre">e2</span></code>. If events <code class="docutils literal"><span class="pre">e1</span></code> and <code class="docutils literal"><span class="pre">e2</span></code> are concurrent then <code class="docutils literal"><span class="pre">t1</span> <span class="pre">conc</span> <span class="pre">t2</span></code> evaluates to <code class="docutils literal"><span class="pre">true</span></code>. Otherwise, they are causally related and <code class="docutils literal"><span class="pre">t1</span> <span class="pre">&lt;</span> <span class="pre">t2</span></code> evaluates to <code class="docutils literal"><span class="pre">true</span></code> (because <code class="docutils literal"><span class="pre">e1</span></code> <em>happened-before</em> <code class="docutils literal"><span class="pre">e2</span></code>).</p>
 <p>The vector timestamp of an event can be obtained with <code class="docutils literal"><span class="pre">lastVectorTimestamp</span></code> during event processing. Vector timestamps can be attached as <em>update timestamp</em> to current state and compared with the vector timestamp of a new event in order to determine whether the new event is causally related to the previous state update or not<a class="footnote-reference" href="#id10" id="id3">[2]</a>:</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.VectorTime</span>
 
@@ -579,7 +579,7 @@
 <div class="section" id="tracking-conflicting-versions">
 <span id="id4"></span><h2>Tracking conflicting versions<a class="headerlink" href="#tracking-conflicting-versions" title="Permalink to this headline">¶</a></h2>
 <p>If state update operations from concurrent events do not commute, conflicting versions of actor state arise that must be tracked and resolved. This can be done with Eventuate’s <code class="docutils literal"><span class="pre">ConcurrentVersions[S,</span> <span class="pre">A]</span></code> abstraction and an application-defined <em>update function</em> of type <code class="docutils literal"><span class="pre">(S,</span> <span class="pre">A)</span> <span class="pre">=&gt;</span> <span class="pre">S</span></code> where <code class="docutils literal"><span class="pre">S</span></code> is the type of actor state and <code class="docutils literal"><span class="pre">A</span></code> the update type. In our example, the <code class="docutils literal"><span class="pre">ConcurrentVersions</span></code> type is <code class="docutils literal"><span class="pre">ConcurrentVersions[Vector[String],</span> <span class="pre">String]</span></code> and the update function <code class="docutils literal"><span class="pre">(s,</span> <span class="pre">a)</span> <span class="pre">=&gt;</span> <span class="pre">s</span> <span class="pre">:+</span> <span class="pre">a</span></code>:</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">scala.collection.immutable.Seq</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.</span><span class="o">{</span><span class="nc">ConcurrentVersions</span><span class="o">,</span> <span class="nc">Versioned</span><span class="o">}</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
@@ -657,7 +657,7 @@
 <div class="section" id="automated-conflict-resolution">
 <span id="id5"></span><h3>Automated conflict resolution<a class="headerlink" href="#automated-conflict-resolution" title="Permalink to this headline">¶</a></h3>
 <p>The following is a simple example of automated conflict resolution: if a conflict has been detected, the version with the higher wall clock timestamp is selected to be the winner. In case of equal wall clock timestamps, the version with the lower emitter id is selected. The wall clock timestamp can be obtained with <code class="docutils literal"><span class="pre">lastSystemTimestamp</span></code> during event handling, the emitter id with <code class="docutils literal"><span class="pre">lastEmitterId</span></code>. The emitter id is the <code class="docutils literal"><span class="pre">id</span></code> of the <code class="docutils literal"><span class="pre">EventsourcedActor</span></code> that emitted the event.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ExampleActor</span><span class="o">(</span><span class="k">override</span> <span class="k">val</span> <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
                    <span class="k">override</span> <span class="k">val</span> <span class="n">aggregateId</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">],</span>
                    <span class="k">override</span> <span class="k">val</span> <span class="n">eventLog</span><span class="k">:</span> <span class="kt">ActorRef</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">EventsourcedActor</span> <span class="o">{</span>
@@ -737,7 +737,7 @@
 <div class="section" id="interactive-conflict-resolution">
 <h3>Interactive conflict resolution<a class="headerlink" href="#interactive-conflict-resolution" title="Permalink to this headline">¶</a></h3>
 <p>Interactive conflict resolution does not resolve conflicts immediately but requests the user to inspect and resolve a conflict. The following is a very simple example of interactive conflict resolution: a user selects a winner version if conflicting versions of application state exist.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="k">class</span> <span class="nc">Append</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
 <span class="k">case</span> <span class="k">class</span> <span class="nc">AppendRejected</span><span class="o">(</span><span class="n">entry</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">conflictingVersions</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">Versioned</span><span class="o">[</span><span class="kt">Vector</span><span class="o">[</span><span class="kt">String</span><span class="o">]]])</span>
 
@@ -862,7 +862,7 @@
 <li>All <em>downstream</em> preconditions mentioned in the paper are satisfied in case of causal delivery of update operations which is guaranteed for actors consuming from a replicated event log.</li>
 </ul>
 <p>Eventuate currently implements 5 out of 12 operation-based CRDTs specified in the paper. These are <em>Counter</em>, <em>MV-Register</em>, <em>LWW-Register</em>, <em>OR-Set</em> and <em>OR-Cart</em> (a shopping cart CRDT). They can be instantiated and used via their corresponding <em>CRDT services</em>. CRDT operations are asynchronous methods on the service interfaces. CRDT services free applications from dealing with low-level details like event-sourced actors or command messages directly. The following is the definition of <a class="reference external" href="latest/api/index.html#com.rbmhtechnology.eventuate.crdt.ORSetService">ORSetService</a>:</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="cm">/**</span>
 <span class="cm"> * Replicated [[ORSet]] CRDT service.</span>
 <span class="cm"> *</span>
@@ -937,7 +937,7 @@
 <div class="section" id="event-sourced-views">
 <span id="guide-event-sourced-views"></span><h2>Event-sourced views<a class="headerlink" href="#event-sourced-views" title="Permalink to this headline">¶</a></h2>
 <p>Event-sourced views are a functional subset of event-sourced actors. They can only consume events from an event log but cannot produce new events. Concrete event-sourced views must implement the <code class="docutils literal"><span class="pre">EventsourcedView</span></code> trait. In the following example, the view counts all <code class="docutils literal"><span class="pre">Appended</span></code> and <code class="docutils literal"><span class="pre">Resolved</span></code> events emitted by all event-sourced actors to the same <code class="docutils literal"><span class="pre">eventLog</span></code>:</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">akka.actor.ActorRef</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedView</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.VectorTime</span>
@@ -1047,7 +1047,7 @@
 <p>Causal read consistency is the default when reading state from a single event-sourced actor or view. The event stream received by that actor is always causally ordered, hence, it will never see an <em>effect</em> before having seen its <em>cause</em>.</p>
 <p>The situation is different when a client reads from multiple actors. Imagine two event-sourced actor replicas where a client updates one replica and observes the updated state with the reply. A subsequent from the other replica, made by the same client, may return the old state which violates causal consistency.</p>
 <p>Similar considerations can be made for reading from an event-sourced view after having made an update to an event-sourced actor. For example, an application that successfully appended an entry to <code class="docutils literal"><span class="pre">ExampleActor</span></code> may not immediately see that update in the <code class="docutils literal"><span class="pre">appendCount</span></code> of <code class="docutils literal"><span class="pre">ExampleView</span></code>. To achieve causal read consistency, the view should delay command processing until the emitted event has been consumed by the view. This can be achieved with a <code class="docutils literal"><span class="pre">ConditionalRequest</span></code>.</p>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">scala.concurrent.duration._</span>
 <span class="k">import</span> <span class="nn">scala.util._</span>
 <span class="k">import</span> <span class="nn">akka.actor._</span>
@@ -1206,7 +1206,7 @@
 <li>a <code class="docutils literal"><span class="pre">PingActor</span></code> emits a <code class="docutils literal"><span class="pre">Ping</span></code> event on receiving a <code class="docutils literal"><span class="pre">Pong</span></code> event and</li>
 <li>a <code class="docutils literal"><span class="pre">PongActor</span></code> emits a <code class="docutils literal"><span class="pre">Pong</span></code> event on receiving a <code class="docutils literal"><span class="pre">Ping</span></code> event</li>
 </ul>
-<div class="tabbed-code container">
+<div class="tabbed-code docutils container">
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="c1">// some imports omitted ...</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedView.Handler</span>
 <span class="k">import</span> <span class="nn">com.rbmhtechnology.eventuate.EventsourcedActor</span>
