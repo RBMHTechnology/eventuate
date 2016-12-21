@@ -21,12 +21,11 @@ import akka.testkit._
 import com.rbmhtechnology.eventuate.{ DurableEvent, SingleLocationSpecLeveldb }
 import com.rbmhtechnology.eventuate.utilities._
 import org.scalatest._
-import org.scalatest.concurrent.ScalaFutures
 
 import scala.concurrent.Future
 import scala.util.{ Failure, Try }
 
-class CRDTServiceSpecLeveldb extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with ScalaFutures with SingleLocationSpecLeveldb {
+class CRDTServiceSpecLeveldb extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with SingleLocationSpecLeveldb {
   "A CRDTService" must {
     "manage multiple CRDTs identified by name" in {
       val service = new CounterService[Int]("a", log)
@@ -58,7 +57,7 @@ class CRDTServiceSpecLeveldb extends TestKit(ActorSystem("test")) with WordSpecL
       }
 
       val service = new FailingAtPrepareCRDTService("a", log)
-      whenReady(service.operation("a").failed)(_ shouldBe a[PrepareException])
+      intercept[PrepareException](service.operation("a").await)
     }
   }
 
