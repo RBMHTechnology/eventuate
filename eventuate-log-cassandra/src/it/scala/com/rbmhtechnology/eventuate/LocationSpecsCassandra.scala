@@ -42,7 +42,7 @@ class EventsourcedActorThroughputSpecCassandra extends TestKit(ActorSystem("test
 // --------------------------------------------------------------------------
 
 class EventsourcedActorCausalitySpecCassandra extends EventsourcedActorCausalitySpec with MultiLocationSpecCassandra {
-  override val logFactory: String => Props = id => SingleLocationSpecCassandra.TestEventLog.props(id, batching = true)
+  override val logFactory: String => Props = id => SingleLocationSpecCassandra.TestEventLog.props(id, batching = true, aggregateIndexing = true)
 }
 
 class ReplicationIntegrationSpecCassandra extends ReplicationIntegrationSpec with MultiLocationSpecCassandra {

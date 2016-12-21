@@ -58,7 +58,7 @@ object CircuitBreakerIntregrationSpecCassandra {
     appLatch: CountDownLatch,
     logLatch: CountDownLatch)
 
-  class TestEventLog(id: String, failureSpec: TestFailureSpec) extends CassandraEventLog(id) {
+  class TestEventLog(id: String, failureSpec: TestFailureSpec) extends CassandraEventLog(id, aggregateIndexing = true) {
     override private[eventuate] def createEventLogStore(cassandra: Cassandra, logId: String) =
       new TestEventLogStore(cassandra, logId, failureSpec)
   }
