@@ -543,10 +543,6 @@ trait EventLogSpec extends TestKitBase with EventLogSpecSupport {
       log.tell(GetReplicationProgresses, replyToProbe.ref)
       replyToProbe.expectMsg(GetReplicationProgressesSuccess(Map(EventLogSpec.remoteLogId -> 19L)))
     }
-    "update an event's system timestamp" in {
-      log ! Write(List(event("a").copy(systemTimestamp = 3L)), system.deadLetters, replyToProbe.ref, 0, 0)
-      replyToProbe.expectMsgType[WriteSuccess].events.head.systemTimestamp should be(0L)
-    }
     "update an emitted event's process id and vector timestamp during if the process id is not defined" in {
       val evt = DurableEvent("a", emitterIdA, processId = UndefinedLogId)
       val exp = DurableEvent("a", emitterIdA, processId = logId, vectorTimestamp = VectorTime(logId -> 1L), localLogId = logId, localSequenceNr = 1)

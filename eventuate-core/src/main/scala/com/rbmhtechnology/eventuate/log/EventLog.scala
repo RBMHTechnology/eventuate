@@ -525,7 +525,7 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
 
   private def processReplicationWrites(writes: Seq[ReplicationWrite]): Unit = {
     for { w <- writes; (id, m) <- w.metadata } replicaVersionVectors = replicaVersionVectors.updated(id, m.currentVersionVector)
-    writeBatches(writes, prepareReplicatedEvents) match {
+    writeBatches(writes, prepareReplicatedEvents(_, _, currentSystemTime)) match {
       case Success((updatedWrites, updatedEvents, clock2)) =>
         clock = clock2
         updatedWrites.foreach { w =>
@@ -582,7 +582,7 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
     (updated, clock.copy(sequenceNr = snr, versionVector = lvv))
   }
 
-  private def prepareReplicatedEvents(events: Seq[DurableEvent], clock: EventLogClock): (Seq[DurableEvent], EventLogClock) = {
+  private def prepareReplicatedEvents(events: Seq[DurableEvent], clock: EventLogClock, systemTimestamp: Long): (Seq[DurableEvent], EventLogClock) = {
     var snr = clock.sequenceNr
     var lvv = clock.versionVector
 
@@ -596,7 +596,8 @@ abstract class EventLog[A <: EventLogState](id: String) extends Actor with Event
       case (acc, e) =>
         snr += 1
 
-        val e2 = e.prepare(id, snr, e.systemTimestamp)
+        val eventSystemTimestamp = if (e.systemTimestamp != 0L) e.systemTimestamp else systemTimestamp
+        val e2 = e.prepare(id, snr, eventSystemTimestamp)
         lvv = lvv.merge(e2.vectorTimestamp)
         acc :+ e2
     }

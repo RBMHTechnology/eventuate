@@ -32,13 +32,14 @@ trait LocationCleanupLeveldb extends LocationCleanup {
 
 object SingleLocationSpecLeveldb {
   object TestEventLog {
-    def props(logId: String, batching: Boolean): Props = {
-      val logProps = Props(new TestEventLog(logId)).withDispatcher("eventuate.log.dispatchers.write-dispatcher")
+    def props(logId: String, batching: Boolean, currentSystemTime: Long = 0): Props = {
+      val logProps = Props(new TestEventLog(logId, currentSystemTime))
+        .withDispatcher("eventuate.log.dispatchers.write-dispatcher")
       if (batching) Props(new BatchingLayer(logProps)) else logProps
     }
   }
 
-  class TestEventLog(id: String) extends LeveldbEventLog(id, "log-test") with SingleLocationSpec.TestEventLog[LeveldbEventLogState] {
+  class TestEventLog(id: String, override val currentSystemTime: Long = 0) extends LeveldbEventLog(id, "log-test") with SingleLocationSpec.TestEventLog[LeveldbEventLogState] {
     override def unhandled(message: Any): Unit = message match {
       case "boom" => throw IntegrationTestException
       case "dir"  => sender() ! logDir
@@ -61,7 +62,7 @@ trait SingleLocationSpecLeveldb extends SingleLocationSpec with LocationCleanupL
     _log
 
   def logProps(logId: String): Props =
-    RestarterActor.props(TestEventLog.props(logId, batching))
+    RestarterActor.props(TestEventLog.props(logId, batching, currentSystemTime))
 }
 
 trait MultiLocationSpecLeveldb extends MultiLocationSpec with LocationCleanupLeveldb {
