@@ -301,7 +301,7 @@ trait EventsourcedView extends Actor with Stash {
     lastHandledEvent.emitterId
 
   /**
-   * Process id of the local event log that initially wrote the event.
+   * Id of the local event log that initially wrote the event.
    */
   final def lastProcessId: String =
     lastHandledEvent.processId
