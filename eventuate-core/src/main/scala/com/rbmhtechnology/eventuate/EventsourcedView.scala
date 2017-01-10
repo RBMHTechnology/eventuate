@@ -301,6 +301,12 @@ trait EventsourcedView extends Actor with Stash {
     lastHandledEvent.emitterId
 
   /**
+   * Process id of the local event log that initially wrote the event.
+   */
+  final def lastProcessId: String =
+    lastHandledEvent.processId
+
+  /**
    * Asynchronously saves the given `snapshot` and calls `handler` with the generated
    * snapshot metadata. The `handler` can obtain a reference to the initial message
    * sender with `sender()`.
