@@ -120,6 +120,8 @@ Each location has a ``ReplicationEndpoint`` that manages the local event logs. R
 .. includecode:: ../conf/location-1.conf
    :snippet: remoting-conf
 
+Next to TCP Akka Remoting also support TLS as transport protocol. See :ref:`transport-security` for details on how to set this up.
+
 The network address of the replication endpoint at location ``1`` is:
 
 .. includecode:: ../conf/location-1.conf
