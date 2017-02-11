@@ -128,7 +128,8 @@
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#custom-serialization">Custom serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html">Transport Security</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#configuration">Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../adapters.html">Adapters</a><ul>
@@ -311,6 +312,7 @@
 akka.remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
 </pre></div>
 </div>
+<p>Next to TCP Akka Remoting also support TLS as transport protocol. See <a class="reference internal" href="configuration.html#transport-security"><span class="std std-ref">Transport Security</span></a> for details on how to set this up.</p>
 <p>The network address of the replication endpoint at location <code class="docutils literal"><span class="pre">1</span></code> is:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">akka</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">netty</span><span class="o">.</span><span class="n">tcp</span><span class="o">.</span><span class="n">hostname</span> <span class="k">=</span> <span class="s">&quot;127.0.0.1&quot;</span>
 <span class="n">akka</span><span class="o">.</span><span class="n">remote</span><span class="o">.</span><span class="n">netty</span><span class="o">.</span><span class="n">tcp</span><span class="o">.</span><span class="n">port</span><span class="k">=</span><span class="mi">2552</span>

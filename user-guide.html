@@ -127,7 +127,8 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Transport Security</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/configuration.html#configuration">Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a><ul>
@@ -278,11 +279,11 @@
 <span class="kn">import</span> <span class="nn">java.util.Collections</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.util.Optional</span><span class="o">;</span>
 
-<span class="kn">import</span> <span class="nn">static</span> <span class="n">akka</span><span class="o">.</span><span class="na">actor</span><span class="o">.</span><span class="na">ActorRef</span><span class="o">.</span><span class="na">noSender</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">System</span><span class="o">.</span><span class="na">out</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">stream</span><span class="o">.</span><span class="na">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">stream</span><span class="o">.</span><span class="na">Stream</span><span class="o">.</span><span class="na">concat</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">stream</span><span class="o">.</span><span class="na">Stream</span><span class="o">.</span><span class="na">of</span><span class="o">;</span>
+<span class="kn">import static</span> <span class="nn">akka.actor.ActorRef.noSender</span><span class="o">;</span>
+<span class="kn">import static</span> <span class="nn">java.lang.System.out</span><span class="o">;</span>
+<span class="kn">import static</span> <span class="nn">java.util.stream.Collectors.toList</span><span class="o">;</span>
+<span class="kn">import static</span> <span class="nn">java.util.stream.Stream.concat</span><span class="o">;</span>
+<span class="kn">import static</span> <span class="nn">java.util.stream.Stream.of</span><span class="o">;</span>
 
 <span class="kd">class</span> <span class="nc">ExampleActor</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedActor</span> <span class="o">{</span>
 
@@ -693,7 +694,7 @@
 <span class="kn">import</span> <span class="nn">java.util.Collections</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.util.stream.Stream</span><span class="o">;</span>
 
-<span class="kn">import</span> <span class="nn">static</span> <span class="n">userguide</span><span class="o">.</span><span class="na">japi</span><span class="o">.</span><span class="na">DocUtils</span><span class="o">.</span><span class="na">append</span><span class="o">;</span>
+<span class="kn">import static</span> <span class="nn">userguide.japi.DocUtils.append</span><span class="o">;</span>
 
 
 <span class="kd">class</span> <span class="nc">ExampleActor</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedActor</span> <span class="o">{</span>
@@ -1112,8 +1113,8 @@
 <span class="kn">import</span> <span class="nn">java.util.Optional</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">java.util.concurrent.TimeUnit</span><span class="o">;</span>
 
-<span class="kn">import</span> <span class="nn">static</span> <span class="n">scala</span><span class="o">.</span><span class="na">compat</span><span class="o">.</span><span class="na">java8</span><span class="o">.</span><span class="na">JFunction</span><span class="o">.</span><span class="na">func</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">static</span> <span class="n">scala</span><span class="o">.</span><span class="na">compat</span><span class="o">.</span><span class="na">java8</span><span class="o">.</span><span class="na">JFunction</span><span class="o">.</span><span class="na">proc</span><span class="o">;</span>
+<span class="kn">import static</span> <span class="nn">scala.compat.java8.JFunction.func</span><span class="o">;</span>
+<span class="kn">import static</span> <span class="nn">scala.compat.java8.JFunction.proc</span><span class="o">;</span>
 
 <span class="kd">class</span> <span class="nc">ExampleActor</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedActor</span> <span class="o">{</span>
 
@@ -1251,7 +1252,7 @@
 <span class="kn">import</span> <span class="nn">akka.japi.pf.ReceiveBuilder</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.AbstractEventsourcedActor</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">com.rbmhtechnology.eventuate.ResultHandler</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">static</span> <span class="n">akka</span><span class="o">.</span><span class="na">actor</span><span class="o">.</span><span class="na">ActorRef</span><span class="o">.</span><span class="na">noSender</span><span class="o">;</span>
+<span class="kn">import static</span> <span class="nn">akka.actor.ActorRef.noSender</span><span class="o">;</span>
 
 <span class="kd">class</span> <span class="nc">PingActor</span> <span class="kd">extends</span> <span class="n">AbstractEventsourcedActor</span> <span class="o">{</span>
 

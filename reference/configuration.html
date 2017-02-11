@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configuration &mdash; Eventuate</title>
+  <title>Transport Security &mdash; Eventuate</title>
   
 
   
@@ -128,7 +128,8 @@
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#failure-handling">Failure handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#custom-serialization">Custom serialization</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Configuration</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Transport Security</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../adapters.html">Adapters</a><ul>
@@ -198,7 +199,7 @@
     
     <li><a href="../reference.html">Reference</a> &raquo;</li>
     
-    <li>Configuration</li>
+    <li>Transport Security</li>
       <li class="wy-breadcrumbs-aside">
         
       </li>
@@ -207,8 +208,132 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="configuration">
-<span id="id1"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="transport-security">
+<span id="id1"></span><h1>Transport Security<a class="headerlink" href="#transport-security" title="Permalink to this headline">¶</a></h1>
+<p>In a setup with several locations Eventuate uses <a class="reference external" href="http://doc.akka.io/docs/akka/2.4/scala/remoting.html">Akka Remoting</a> for communication between locations. Akka Remoting supports using TLS as transport protocol. In combination with mutual authentication (client and server) this allows to prevent that untrusted nodes can connect to a replication network. The configuration snippet listed here acts as an example for how to set this up. For more details see <a class="reference external" href="http://doc.akka.io/docs/akka/2.4/scala/remoting.html#Configuring_SSL_TLS_for_Akka_Remoting">Configuring SSL/TLS for Akka Remoting</a>.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span>akka {
+  remote {
+    enabled-transports = [akka.remote.netty.ssl]
+    netty.ssl.security {
+      key-store = &quot;/path/to/keystore.jks&quot;
+      trust-store = &quot;/path/to/keystore.jks&quot;
+
+      key-store-password = ...
+      key-password = ...
+      trust-store-password = ...
+
+      protocol = &quot;TLSv1.2&quot;
+
+      enabled-algorithms = [&quot;TLS_DHE_RSA_WITH_AES_256_GCM_SHA384&quot;]
+
+      random-number-generator = &quot;AES256CounterSecureRNG&quot;
+      require-mutual-authentication = on
+    }
+  }
+}
+</pre></div>
+</div>
+<p>This example uses a single file for key- and trust-store. Having a single self-signed certificate in this store suffices to establish mutually authenticated connections via TLS between locations. However a self-signed key makes replacing the certificate in a rolling upgrade tedious. The following script (derived from the scripts of the documentation of <a class="reference external" href="http://typesafehub.github.io/ssl-config/CertificateGeneration.html#using-keytool">Lightbend&#8217;s SSL-Config library</a>) creates a root certificate that is used to sign the certificate for client and server authentication. The root certificate is kept in the private keystore <code class="docutils literal"><span class="pre">rootca.jks</span></code>, which does not have to be deployed with the application. It is imported as <code class="docutils literal"><span class="pre">trustedCertEntry</span></code> into the keystore <code class="docutils literal"><span class="pre">keystore.jks</span></code>, which is the one referenced by the akka configuration.</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span>#!/bin/bash -eu
+
+export PW=&lt;...&gt;
+
+CaAlias=rootca
+CaKeystore=rootca.jks
+CaExport=root.crt
+
+CertAlias=serverandclient
+CertKeystore=keystore.jks
+CertSigningRequest=serverandclient.csr
+CertSigned=serverandclient.crt
+
+logStep() {
+    echo
+    echo &#39;=========&#39; &quot;$@&quot;
+    echo
+}
+
+rm -f &quot;$CaKeystore&quot; &quot;$CertKeystore&quot; &quot;$CaExport&quot; &quot;$CertSigningRequest&quot; &quot;$CertSigned&quot;
+
+logStep Create root CA in $CaKeystore
+keytool -genkeypair \
+  -alias &quot;$CaAlias&quot; \
+  -dname &quot;CN=CA&quot; \
+  -keystore &quot;$CaKeystore&quot; \
+  -keypass:env PW \
+  -storepass:env PW \
+  -keyalg RSA \
+  -keysize 4096 \
+  -ext KeyUsage:critical=&quot;keyCertSign&quot; \
+  -ext BasicConstraints:critical=&quot;ca:true&quot; \
+  -validity 3700
+
+logStep Export root CA to $CaExport for import into truststore
+keytool -export \
+  -alias &quot;$CaAlias&quot; \
+  -file &quot;$CaExport&quot; \
+  -keypass:env PW \
+  -storepass:env PW \
+  -keystore &quot;$CaKeystore&quot; \
+  -rfc
+
+logStep Make $CertKeystore trust CA as signer
+keytool -import \
+  -alias &quot;$CaAlias&quot; \
+  -file &quot;$CaExport&quot; \
+  -keystore &quot;$CertKeystore&quot; \
+  -storepass:env PW &lt;&lt; EOF
+yes
+EOF
+
+logStep Create certificate for client and server auth in $CertKeystore
+keytool -genkeypair \
+  -alias &quot;$CertAlias&quot; \
+  -dname &quot;CN=Unknown&quot; \
+  -keystore &quot;$CertKeystore&quot; \
+  -keypass:env PW \
+  -storepass:env PW \
+  -keyalg RSA \
+  -keysize 2048 \
+  -validity 385
+
+logStep Create a certificate signing request: $CertSigningRequest
+keytool -certreq \
+  -alias &quot;$CertAlias&quot; \
+  -keypass:env PW \
+  -storepass:env PW \
+  -keystore &quot;$CertKeystore&quot; \
+  -file &quot;$CertSigningRequest&quot;
+
+logStep Sign certificate with CA: $CertSigned
+keytool -gencert \
+  -alias &quot;$CaAlias&quot; \
+  -keypass:env PW \
+  -storepass:env PW \
+  -keystore &quot;$CaKeystore&quot; \
+  -infile &quot;$CertSigningRequest&quot; \
+  -outfile &quot;$CertSigned&quot; \
+  -ext KeyUsage:critical=&quot;digitalSignature,keyEncipherment&quot; \
+  -rfc
+
+logStep Import signed certificate back into $CertKeystore
+keytool -import \
+  -alias &quot;$CertAlias&quot; \
+  -file &quot;$CertSigned&quot; \
+  -keystore &quot;$CertKeystore&quot; \
+  -storepass:env PW
+
+logStep List $CertKeystore
+keytool -list \
+  -keystore &quot;$CertKeystore&quot; \
+  -storepass:env PW
+</pre></div>
+</div>
+<p>If the certificate for client and server authentication shall be replaced, corresponding key-stores can be deployed location by location without the need to stop the entire replication network at once.</p>
+<p>For debugging TLS connections please read <a class="reference external" href="http://docs.oracle.com/javase/8/docs/technotes/guides/security/jsse/ReadDebug.html">Debugging SSL/TLS Connections</a> from the java documentation.</p>
+</div>
+<div class="section" id="configuration">
+<span id="id2"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <p>This is the reference configuration of Eventuate. It is processed by Typesafe&#8217;s <a class="reference external" href="https://github.com/typesafehub/config">config</a> library and can be overridden by applications:</p>
 <div class="section" id="eventuate-core">
 <h2>eventuate-core<a class="headerlink" href="#eventuate-core" title="Permalink to this headline">¶</a></h2>
