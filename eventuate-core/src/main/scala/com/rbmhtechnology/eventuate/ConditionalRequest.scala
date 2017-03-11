@@ -24,18 +24,28 @@ import akka.actor._
  * the request's `condition` is in the causal past of that actor (i.e. if the
  * `condition` is `<=` the actor's current version).
  */
-case class ConditionalRequest(condition: VectorTime, req: Any)
+trait ConditionalRequestable {
+
+  def condition: VectorTime
+
+  def req: Any
+}
+
+/**
+  * Default "ready to use" implementation of a [[ConditionalRequestable]]
+  */
+case class ConditionalRequest(condition: VectorTime, req: Any) extends ConditionalRequestable
 
 /**
  * Thrown by an actor in the [[EventsourcedView]] hierarchy if it receives
- * a [[ConditionalRequest]] but does not extends the [[ConditionalRequests]]
+ * a [[ConditionalRequestable]] but does not extends the [[ConditionalRequests]]
  * trait.
  */
 class ConditionalRequestException(msg: String) extends RuntimeException(msg)
 
 /**
  * Must be extended by actors in the [[EventsourcedView]] hierarchy if they
- * want to support [[ConditionalRequest]] processing.
+ * want to support [[ConditionalRequestable]] processing.
  */
 trait ConditionalRequests extends EventsourcedView with EventsourcedVersion {
   import ConditionalRequests._
