@@ -1,7 +1,7 @@
 ul.tabbed-code-selector {
     margin-bottom: 0 !important;
     position: relative;
-    bottom: -22px;
+    bottom: -12px;
     list-style-type: none;
     display: inline-flex;
 }
@@ -16,12 +16,19 @@ ul.tabbed-code-selector li {
     float: left;
     border: 1px solid #e1e4e5;
     background-color: #f5f5f5;
+    border-bottom: none;
     color: #646567;
 }
 ul.tabbed-code-selector li:hover {
     background-color: #ebebeb;
 }
 ul.tabbed-code-selector li.selected {
-    background-color: #f8f8f8;
-    border-bottom: 1px solid #f8f8f8;
+    background-color: #fbf97a;
+    border-bottom: none;
+    color: black;
+}
+
+ul.tabbed-code-selector li[class^='highlight'] {
+  border-top-right-radius: 8px;
+  border-top-left-radius: 8px;
 }
