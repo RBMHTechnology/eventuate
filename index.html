@@ -60,7 +60,7 @@
           
           <a href="#"><img src="_static/RedBullMediaHouse-dark.png" class="logo" /></a>
         
-        
+
 		
 <div role="search" class="searchbox">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -69,7 +69,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-	
+
         
       </div>
 
@@ -91,19 +91,44 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-logs">Event logs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourcing">Event sourcing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-collaboration">Event collaboration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-logs">Event logs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#replication-networks">Replication networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#replication-filters">Replication filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#storage-backends">Storage backends</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-sourcing">Event sourcing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#event-sourced-actors">Event-sourced actors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#event-sourced-views">Event-sourced views</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#event-sourced-writers">Event-sourced writers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#event-sourced-processors">Event-sourced processors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#event-collaboration">Event collaboration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#event-driven-communication">Event-driven communication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#actor-state-replication">Actor state replication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="architecture.html#event-aggregation">Event aggregation</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#vector-clocks">Vector clocks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#batching">Batching</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="user-guide.html">User guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-sourced-actors">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-sourced-actors">Event-sourced actors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user-guide.html#creating-a-single-instance">Creating a single instance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user-guide.html#creating-two-isolated-instances">Creating two isolated instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user-guide.html#creating-two-replica-instances">Creating two replica instances</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#detecting-concurrent-updates">Detecting concurrent updates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#tracking-conflicting-versions">Tracking conflicting versions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="user-guide.html#resolving-conflicting-versions">Resolving conflicting versions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user-guide.html#resolving-conflicting-versions">Resolving conflicting versions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="user-guide.html#automated-conflict-resolution">Automated conflict resolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="user-guide.html#interactive-conflict-resolution">Interactive conflict resolution</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#operation-based-crdts">Operation-based CRDTs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#event-sourced-views">Event-sourced views</a></li>
 <li class="toctree-l2"><a class="reference internal" href="user-guide.html#conditional-requests">Conditional requests</a></li>
@@ -111,29 +136,105 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-log.html">Event log</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-log.html#local-event-log">Local event log</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference/event-log.html#leveldb-storage-backend">LevelDB storage backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/event-log.html#cassandra-storage-backend">Cassandra storage backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/event-log.html#custom-storage-backends">Custom storage backends</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-log.html#replicated-event-log">Replicated event log</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference/event-log.html#replication-endpoints">Replication endpoints</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/event-log.html#replication-filters">Replication filters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/event-log.html#update-notifications">Update notifications</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/event-log.html#failure-detection">Failure detection</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/event-log.html#disaster-recovery">Disaster recovery</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-log.html#deleting-events">Deleting events</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html">Event-sourced actors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#command-handler">Command handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#state-synchronization">State synchronization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#event-handler">Event handler</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-views">Event-sourced views</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-writers">Event-sourced writers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-writers">Event-sourced writers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#stateful-writers">Stateful writers</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-sourced-processors">Event-sourced processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#state-recovery">State recovery</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#state-recovery">State recovery</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#backpressure">Backpressure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#recovery-using-an-application-defined-log-sequence-number">Recovery using an application-defined log sequence number</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#snapshots">Snapshots</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#storage-locations">Storage locations</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-routing">Event routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#event-driven-communication">Event-driven communication</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#reliable-delivery">Reliable delivery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#conditional-requests">Conditional requests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#command-stashing">Command stashing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#failure-handling">Failure handling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#failure-handling">Failure handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#circuit-breaker">Circuit breaker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#persist-failure-handling"><code class="docutils literal"><span class="pre">persist</span></code> failure handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#persistonevent-failure-handling"><code class="docutils literal"><span class="pre">persistOnEvent</span></code> failure handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#recovery-failure-handling">Recovery failure handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#batch-write-failure-handling">Batch write failure handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#batch-replication-failure-handling">Batch replication failure handling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#custom-serialization">Custom serialization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#custom-event-serialization">Custom event serialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#custom-snapshot-serialization">Custom snapshot serialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#custom-crdt-serialization">Custom CRDT serialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#resolution-of-serializers-when-deserializing">Resolution of serializers when deserializing</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="reference/configuration.html">Transport Security</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/configuration.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/configuration.html#configuration">Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/configuration.html#eventuate-core">eventuate-core</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/configuration.html#eventuate-crdt">eventuate-crdt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/configuration.html#eventuate-log-cassandra">eventuate-log-cassandra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/configuration.html#eventuate-log-leveldb">eventuate-log-leveldb</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="adapters.html">Adapters</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="adapters/stream.html">Akka Streams adapter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adapters/spark.html">Spark adapter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html">Vert.x adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/stream.html">Akka Streams adapter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="adapters/stream.html#event-source">Event source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="adapters/stream.html#event-writer">Event writer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="adapters/stream.html#event-processor">Event processor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="adapters/stream.html#consuming-from-a-shared-source">Consuming from a shared source</a></li>
+<li class="toctree-l4"><a class="reference internal" href="adapters/stream.html#consuming-from-multiple-sources">Consuming from multiple sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="adapters/stream.html#event-processing-progress-tracking">Event processing progress tracking</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/spark.html">Spark adapter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="adapters/spark.html#batch-processing">Batch processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="adapters/spark.html#stream-processing">Stream processing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="adapters/vertx.html">Vert.x adapter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="adapters/vertx.html#event-producers">Event producers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="adapters/vertx.html#event-processing">Event processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="adapters/vertx.html#adapter-usage">Adapter usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="adapters/vertx.html#vert-x-publish-event-producer">Vert.x publish event producer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="adapters/vertx.html#vert-x-point-to-point-event-producer">Vert.x point-to-point event producer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="adapters/vertx.html#log-event-producer">Log event producer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="adapters/vertx.html#message-codecs">Message codecs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="adapters/vertx.html#event-metadata">Event metadata</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api-docs.html">API docs</a></li>
@@ -143,13 +244,21 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="download.html">Download</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="download.html#binaries">Binaries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="download.html#binaries">Binaries</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="download.html#maven">Maven</a></li>
+<li class="toctree-l3"><a class="reference internal" href="download.html#sbt">SBT</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="download.html#sources">Sources</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="developers.html#contributing-to-eventuate">Contributing to Eventuate</a></li>
-<li class="toctree-l2"><a class="reference internal" href="developers.html#building-eventuate">Building Eventuate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developers.html#building-eventuate">Building Eventuate</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="developers.html#binaries">Binaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="developers.html#documentation">Documentation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="project.html">Project</a><ul>
@@ -185,7 +294,7 @@
         <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
         <a href="#"><img src="_static/RedBullMediaHouse-light.png" class="logo" /></a>
       </nav>
- 
+
       
       <div class="wy-nav-content">
         <div class="rst-content">
@@ -261,7 +370,7 @@
 
 </footer>
 </div>
-      
+
     </section>
 
   </div>
