@@ -31,4 +31,10 @@ message DurableEventFormat {
   optional int64 localSequenceNr = 9;
   optional int64 persistOnEventSequenceNr = 10;
   optional string deliveryId = 11;
+  optional EventIdFormat persistOnEventId = 12;
+}
+
+message EventIdFormat {
+  optional string processId = 1;
+  optional int64 sequenceNr = 2;
 }

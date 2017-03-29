@@ -82,8 +82,8 @@ object PersistOnEventSpec {
     }
   }
 
-  def event(payload: Any, sequenceNr: Long, persistOnEventSequenceNr: Option[Long] = None): DurableEvent =
-    DurableEvent(payload, emitterIdA, None, Set(), 0L, timestamp(sequenceNr), logIdA, logIdA, sequenceNr, None, persistOnEventSequenceNr)
+  def event(payload: Any, sequenceNr: Long, persistOnEventEvent: Option[DurableEvent] = None): DurableEvent =
+    DurableEvent(payload, emitterIdA, None, Set(), 0L, timestamp(sequenceNr), logIdA, logIdA, sequenceNr, None, persistOnEventEvent.map(_.localSequenceNr), persistOnEventEvent.map(_.id))
 }
 
 class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike with Matchers with BeforeAndAfterAll with BeforeAndAfterEach {
@@ -131,16 +131,17 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
   "An EventsourcedActor with PersistOnEvent" must {
     "support persistence in event handler" in {
       val actor = recoveredTestActor(stateSync = true)
-      actor ! Written(event("a", 1L))
+      val eventA = event("a", 1L)
+      actor ! Written(eventA)
 
       deliverProbe.expectMsg(Set(1L))
 
       val write = logProbe.expectMsgClass(classOf[Write])
-      write.events(0).persistOnEventSequenceNr should be(Some(1L))
-      write.events(1).persistOnEventSequenceNr should be(Some(1L))
+      write.events(0).persistOnEventId should be(Some(eventA.id))
+      write.events(1).persistOnEventId should be(Some(eventA.id))
       logProbe.sender() ! WriteSuccess(Seq(
-        event(write.events(0).payload, 2L, Some(1L)),
-        event(write.events(1).payload, 3L, Some(1L))), write.correlationId, instanceId)
+        event(write.events(0).payload, 2L, Some(eventA)),
+        event(write.events(1).payload, 3L, Some(eventA))), write.correlationId, instanceId)
 
       deliverProbe.expectMsg(Set())
       deliverProbe.expectMsg(Set())
@@ -150,47 +151,49 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
     }
     "support cascading persistence" in {
       val actor = recoveredTestActor(stateSync = true)
-      actor ! Written(event("b", 1L))
+      val eventB = event("b", 1L)
+      actor ! Written(eventB)
 
       deliverProbe.expectMsg(Set(1L))
 
       val write1 = logProbe.expectMsgClass(classOf[Write])
 
-      write1.events(0).persistOnEventSequenceNr should be(Some(1L))
-      write1.events(1).persistOnEventSequenceNr should be(Some(1L))
+      write1.events(0).persistOnEventId should be(Some(eventB.id))
+      write1.events(1).persistOnEventId should be(Some(eventB.id))
 
-      logProbe.sender() ! WriteSuccess(Seq(
-        event(write1.events(0).payload, 2L, Some(1L)),
-        event(write1.events(1).payload, 3L, Some(1L))), write1.correlationId, instanceId)
+      val eventC = event(write1.events(0).payload, 2L, Some(eventB))
+      val eventC2 = event(write1.events(1).payload, 3L, Some(eventB))
+      logProbe.sender() ! WriteSuccess(Seq(eventC, eventC2), write1.correlationId, instanceId)
 
       deliverProbe.expectMsg(Set(2L))
       deliverProbe.expectMsg(Set(2L))
       persistProbe.expectMsg("c-1")
 
       val write2 = logProbe.expectMsgClass(classOf[Write])
-      write2.events(0).persistOnEventSequenceNr should be(Some(2L))
-      logProbe.sender() ! WriteSuccess(Seq(event(write2.events(0).payload, 4L, Some(2L))), write2.correlationId, instanceId)
+      write2.events(0).persistOnEventId should be(Some(eventC.id))
+      logProbe.sender() ! WriteSuccess(Seq(event(write2.events(0).payload, 4L, Some(eventC))), write2.correlationId, instanceId)
 
       deliverProbe.expectMsg(Set())
       persistProbe.expectMsg("c-2")
     }
     "confirm persistence with self-emitted events only" in {
       val actor = recoveredTestActor(stateSync = true)
-      actor ! Written(event("a", 1L))
+      val eventA = event("a", 1L)
+      actor ! Written(eventA)
 
       deliverProbe.expectMsg(Set(1L))
 
       val write = logProbe.expectMsgClass(classOf[Write])
 
-      actor ! Written(event("x-1", 2L, Some(1L)).copy(emitterId = emitterIdB))
-      actor ! Written(event("x-2", 3L, Some(1L)).copy(emitterId = emitterIdB))
+      actor ! Written(event("x-1", 2L, Some(eventA)).copy(emitterId = emitterIdB))
+      actor ! Written(event("x-2", 3L, Some(eventA)).copy(emitterId = emitterIdB))
 
       deliverProbe.expectMsg(Set(1L))
       deliverProbe.expectMsg(Set(1L))
 
       logProbe.sender() ! WriteSuccess(Seq(
-        event(write.events(0).payload, 4L, Some(1L)),
-        event(write.events(1).payload, 5L, Some(1L))), write.correlationId, instanceId)
+        event(write.events(0).payload, 4L, Some(eventA)),
+        event(write.events(1).payload, 5L, Some(eventA))), write.correlationId, instanceId)
 
       deliverProbe.expectMsg(Set())
       deliverProbe.expectMsg(Set())
@@ -200,31 +203,32 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
     }
     "re-attempt persistence on failed write after restart" in {
       val actor = recoveredTestActor(stateSync = true)
-      actor ! Written(event("a", 1L))
+      val eventA = event("a", 1L)
+      actor ! Written(eventA)
 
       deliverProbe.expectMsg(Set(1L))
 
       val write1 = logProbe.expectMsgClass(classOf[Write])
 
-      write1.events(0).persistOnEventSequenceNr should be(Some(1L))
-      write1.events(1).persistOnEventSequenceNr should be(Some(1L))
+      write1.events(0).persistOnEventId should be(Some(eventA.id))
+      write1.events(1).persistOnEventId should be(Some(eventA.id))
 
       // application crash and restart
       logProbe.sender() ! WriteFailure(Seq(
-        event(write1.events(0).payload, 0L, Some(1L)),
-        event(write1.events(1).payload, 0L, Some(1L))), TestException, write1.correlationId, instanceId)
+        event(write1.events(0).payload, 0L, Some(eventA)),
+        event(write1.events(1).payload, 0L, Some(eventA))), TestException, write1.correlationId, instanceId)
       processRecover(actor, instanceId + 1, Seq(event("a", 1L)))
 
       deliverProbe.expectMsg(Set(1L))
 
       val write2 = logProbe.expectMsgClass(classOf[Write])
 
-      write2.events(0).persistOnEventSequenceNr should be(Some(1L))
-      write2.events(1).persistOnEventSequenceNr should be(Some(1L))
+      write2.events(0).persistOnEventId should be(Some(eventA.id))
+      write2.events(1).persistOnEventId should be(Some(eventA.id))
 
       logProbe.sender() ! WriteSuccess(Seq(
-        event(write2.events(0).payload, 2L, Some(1L)),
-        event(write2.events(1).payload, 3L, Some(1L))), write2.correlationId, instanceId + 1)
+        event(write2.events(0).payload, 2L, Some(eventA)),
+        event(write2.events(1).payload, 3L, Some(eventA))), write2.correlationId, instanceId + 1)
 
       deliverProbe.expectMsg(Set())
       deliverProbe.expectMsg(Set())
@@ -234,18 +238,19 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
     }
     "not re-attempt persistence on successful write after restart" in {
       val actor = recoveredTestActor(stateSync = true)
-      actor ! Written(event("a", 1L))
+      val eventA = event("a", 1L)
+      actor ! Written(eventA)
 
       deliverProbe.expectMsg(Set(1L))
 
       val write = logProbe.expectMsgClass(classOf[Write])
 
-      write.events(0).persistOnEventSequenceNr should be(Some(1L))
-      write.events(1).persistOnEventSequenceNr should be(Some(1L))
+      write.events(0).persistOnEventId should be(Some(eventA.id))
+      write.events(1).persistOnEventId should be(Some(eventA.id))
 
       logProbe.sender() ! WriteSuccess(Seq(
-        event(write.events(0).payload, 2L, Some(1L)),
-        event(write.events(1).payload, 3L, Some(1L))), write.correlationId, instanceId)
+        event(write.events(0).payload, 2L, Some(eventA)),
+        event(write.events(1).payload, 3L, Some(eventA))), write.correlationId, instanceId)
 
       deliverProbe.expectMsg(Set())
       deliverProbe.expectMsg(Set())
@@ -256,8 +261,41 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
       actor ! "boom"
       processRecover(actor, instanceId + 1, Seq(
         event("a", 1L),
-        event(write.events(0).payload, 2L, Some(1L)),
-        event(write.events(1).payload, 3L, Some(1L))))
+        event(write.events(0).payload, 2L, Some(eventA)),
+        event(write.events(1).payload, 3L, Some(eventA))))
+
+      deliverProbe.expectMsg(Set(1L))
+      deliverProbe.expectMsg(Set())
+      deliverProbe.expectMsg(Set())
+
+      persistProbe.expectNoMsg(timeout)
+      persistProbe.expectNoMsg(timeout)
+    }
+    "not re-attempt persistence on successful write of events without persistOnEventReference after restart" in {
+      val actor = recoveredTestActor(stateSync = true)
+      val eventA = event("a", 1L)
+      actor ! Written(eventA)
+
+      deliverProbe.expectMsg(Set(1L))
+
+      val write = logProbe.expectMsgClass(classOf[Write])
+
+      write.events(0).persistOnEventId should be(Some(eventA.id))
+      write.events(1).persistOnEventId should be(Some(eventA.id))
+
+      val persistedOnA = Seq(
+        event(write.events(0).payload, 2L, Some(eventA)).copy(persistOnEventId = None),
+        event(write.events(1).payload, 3L, Some(eventA)))
+      logProbe.sender() ! WriteSuccess(persistedOnA, write.correlationId, instanceId)
+
+      deliverProbe.expectMsg(Set())
+      deliverProbe.expectMsg(Set())
+
+      persistProbe.expectMsg("a-1")
+      persistProbe.expectMsg("a-2")
+
+      actor ! "boom"
+      processRecover(actor, instanceId + 1, eventA +: persistedOnA)
 
       deliverProbe.expectMsg(Set(1L))
       deliverProbe.expectMsg(Set())
@@ -270,12 +308,13 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
       val actor = recoveredTestActor(stateSync = true)
       actor ! Written(event("boom", 1L))
 
-      processRecover(actor, instanceId + 1, Seq(event("a", 1L)))
+      val eventA = event("a", 1L)
+      processRecover(actor, instanceId + 1, Seq(eventA))
 
       val write = logProbe.expectMsgClass(classOf[Write])
       logProbe.sender() ! WriteSuccess(Seq(
-        event(write.events(0).payload, 2L, Some(1L)),
-        event(write.events(1).payload, 3L, Some(1L))), write.correlationId, instanceId + 1)
+        event(write.events(0).payload, 2L, Some(eventA)),
+        event(write.events(1).payload, 3L, Some(eventA))), write.correlationId, instanceId + 1)
       logProbe.expectNoMsg(timeout)
     }
     "save a snapshot with persistOnEvent requests" in {
@@ -287,7 +326,7 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
       actor ! "snap"
 
       val save = logProbe.expectMsgClass(classOf[SaveSnapshot])
-      val expected = PersistOnEventRequest(1L, Vector(
+      val expected = PersistOnEventRequest(1L, Some(EventId("logA", 1L)), Vector(
         PersistOnEventInvocation("x-1", Set("14")),
         PersistOnEventInvocation("x-2", Set("15"))), instanceId)
 
@@ -317,12 +356,13 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
     "recover from a snapshot with persistOnEvent requests whose execution succeeded" in {
       val actor = recoveredTestActor(stateSync = false)
 
-      actor ! Written(event("x", 1L))
+      val eventX = event("x", 1L)
+      actor ! Written(eventX)
 
       val write1 = logProbe.expectMsgClass(classOf[Write])
       val written = List(
-        event(write1.events(0).payload, 2L, Some(1L)),
-        event(write1.events(1).payload, 3L, Some(1L)))
+        event(write1.events(0).payload, 2L, Some(eventX)),
+        event(write1.events(1).payload, 3L, Some(eventX)))
 
       actor ! "snap"
 
@@ -338,12 +378,38 @@ class PersistOnEventSpec extends TestKit(ActorSystem("test")) with WordSpecLike 
       logProbe.sender() ! ReplaySuccess(Nil, 3L, instanceId + 1)
       logProbe.expectNoMsg(timeout)
     }
+    "recover from a snapshot with persistOnEvent requests without persistOnEventReferences whose execution succeeded" in {
+      val actor = recoveredTestActor(stateSync = false)
+
+      val eventX = event("x", 1L)
+      actor ! Written(eventX)
+
+      val write1 = logProbe.expectMsgClass(classOf[Write])
+      val written = List(
+        event(write1.events(0).payload, 2L, Some(eventX)),
+        event(write1.events(1).payload, 3L, Some(eventX)))
+
+      actor ! "snap"
+
+      val save = logProbe.expectMsgClass(classOf[SaveSnapshot])
+      val snapshotWithoutReferences = save.snapshot.copy(persistOnEventRequests = save.snapshot.persistOnEventRequests.map(_.copy(persistOnEventId = None)))
+
+      actor ! "boom"
+
+      logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId + 1))
+      logProbe.sender() ! LoadSnapshotSuccess(Some(snapshotWithoutReferences), instanceId + 1)
+      logProbe.expectMsg(Replay(2L, Some(actor), instanceId + 1))
+      logProbe.sender() ! ReplaySuccess(written, 3L, instanceId + 1)
+      logProbe.expectMsg(Replay(4L, None, instanceId + 1))
+      logProbe.sender() ! ReplaySuccess(Nil, 3L, instanceId + 1)
+      logProbe.expectNoMsg(timeout)
+    }
     "be tolerant to changing actor paths across incarnations" in {
       val actor = unrecoveredTestActor(stateSync = false)
       val path = ActorPath.fromString("akka://test/user/invalid")
       val requests = Vector(
-        PersistOnEventRequest(3L, Vector(PersistOnEventInvocation("y", Set())), instanceId),
-        PersistOnEventRequest(4L, Vector(PersistOnEventInvocation("z", Set())), instanceId))
+        PersistOnEventRequest(3L, Some(EventId("p-2", 2L)), Vector(PersistOnEventInvocation("y", Set())), instanceId),
+        PersistOnEventRequest(4L, None, Vector(PersistOnEventInvocation("z", Set())), instanceId))
       val snapshot = Snapshot("foo", emitterIdA, event("x", 2), timestamp(2), 2, persistOnEventRequests = requests)
 
       logProbe.expectMsg(LoadSnapshot(emitterIdA, instanceId))

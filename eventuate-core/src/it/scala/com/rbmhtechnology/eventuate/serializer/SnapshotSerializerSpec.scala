@@ -46,8 +46,8 @@ object SnapshotSerializerSpec {
     DeliveryAttempt("4", payload, destination))
 
   def persistOnEventRequests(payload: Any) = Vector(
-    PersistOnEventRequest(7L, Vector(PersistOnEventInvocation(payload, Set("a"))), 17),
-    PersistOnEventRequest(8L, Vector(PersistOnEventInvocation(payload, Set("b"))), 17))
+    PersistOnEventRequest(7L, None, Vector(PersistOnEventInvocation(payload, Set("a"))), 17),
+    PersistOnEventRequest(8L, Some(EventId("p-a", 3L)), Vector(PersistOnEventInvocation(payload, Set("b"))), 17))
 
   def snapshot(payload: Any, destination: ActorPath) =
     Snapshot(payload, "x", last(payload), vectorTime(17, 18), event.localSequenceNr,

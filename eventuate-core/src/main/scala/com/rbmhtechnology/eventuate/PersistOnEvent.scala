@@ -17,12 +17,11 @@
 package com.rbmhtechnology.eventuate
 
 import scala.collection.immutable.SortedMap
-
 import com.rbmhtechnology.eventuate.EventsourcedView.Handler
 
 import scala.util._
 
-object PersistOnEvent {
+private[eventuate] object PersistOnEvent {
   /**
    * Records a `persistOnEvent` invocation.
    */
@@ -30,13 +29,17 @@ object PersistOnEvent {
 
   /**
    * A request sent by [[PersistOnEvent]] instances to `self` in order to persist events recorded by `invocations`.
+   * @param persistOnEventSequenceNr the sequence number of the event that caused this request.
+   * @param persistOnEventId [[EventId]] of the event that caused this request. This is optional for backwards
+   *                         compatibility, as old snapshots might contain `PersistOnEventRequest`s
+   *                         without this field being defined.
    */
-  case class PersistOnEventRequest(persistOnEventSequenceNr: Long, invocations: Vector[PersistOnEventInvocation], instanceId: Int)
+  case class PersistOnEventRequest(persistOnEventSequenceNr: Long, persistOnEventId: Option[EventId], invocations: Vector[PersistOnEventInvocation], instanceId: Int)
 
   /**
    * Default `persist` handler to use when processing [[PersistOnEventRequest]]s in [[EventsourcedActor]].
    */
-  private[eventuate] val DefaultHandler: Handler[Any] = {
+  val DefaultHandler: Handler[Any] = {
     case Success(_) =>
     case Failure(e) => throw new PersistOnEventException(e)
   }
@@ -61,7 +64,22 @@ trait PersistOnEvent extends EventsourcedActor {
   import PersistOnEvent._
 
   private var invocations: Vector[PersistOnEventInvocation] = Vector.empty
-  private var requests: SortedMap[Long, PersistOnEventRequest] = SortedMap.empty
+  /**
+   * [[PersistOnEventRequest]] by sequence number of the event that caused the persist on event request.
+   *
+   * This map keeps the requests in the order they were submitted.
+   */
+  private var requestsBySequenceNr: SortedMap[Long, PersistOnEventRequest] = SortedMap.empty
+
+  /**
+   * [[PersistOnEventRequest]] by [[EventId]] of the event that caused the persist on event request.
+   *
+   * This map ensures that requests can be confirmed properly even if the sequence number of the event
+   * that caused the request changed its local sequence number due to a disaster recovery.
+   *
+   * @see https://github.com/RBMHTechnology/eventuate/issues/385
+   */
+  private var requestsByEventId: Map[EventId, PersistOnEventRequest] = Map.empty
 
   /**
    * Asynchronously persists the given `event`. Applications that want to handle the persisted event should define
@@ -77,13 +95,10 @@ trait PersistOnEvent extends EventsourcedActor {
    */
   override private[eventuate] def receiveEvent(event: DurableEvent): Unit = {
     super.receiveEvent(event)
-
-    event.persistOnEventSequenceNr.foreach { persistOnEventSequenceNr =>
-      if (event.emitterId == id) confirmRequest(persistOnEventSequenceNr)
-    }
+    if (event.emitterId == id) findPersistOnEventRequest(event).foreach(confirmRequest)
 
     if (invocations.nonEmpty) {
-      deliverRequest(PersistOnEventRequest(lastSequenceNr, invocations, instanceId))
+      deliverRequest(PersistOnEventRequest(lastSequenceNr, Some(lastHandledEvent.id), invocations, instanceId))
       invocations = Vector.empty
     }
   }
@@ -92,7 +107,7 @@ trait PersistOnEvent extends EventsourcedActor {
    * Internal API.
    */
   override private[eventuate] def snapshotCaptured(snapshot: Snapshot): Snapshot = {
-    requests.values.foldLeft(super.snapshotCaptured(snapshot)) {
+    requestsBySequenceNr.values.foldLeft(super.snapshotCaptured(snapshot)) {
       case (s, pr) => s.addPersistOnEventRequest(pr)
     }
   }
@@ -103,7 +118,9 @@ trait PersistOnEvent extends EventsourcedActor {
   override private[eventuate] def snapshotLoaded(snapshot: Snapshot): Unit = {
     super.snapshotLoaded(snapshot)
     snapshot.persistOnEventRequests.foreach { pr =>
-      requests = requests + (pr.persistOnEventSequenceNr -> pr.copy(instanceId = instanceId))
+      val requestWithUpdatedInstanceId = pr.copy(instanceId = instanceId)
+      requestsBySequenceNr += (pr.persistOnEventSequenceNr -> requestWithUpdatedInstanceId)
+      pr.persistOnEventId.foreach(requestsByEventId += _ -> requestWithUpdatedInstanceId)
     }
   }
 
@@ -119,18 +136,26 @@ trait PersistOnEvent extends EventsourcedActor {
    * Internal API.
    */
   private[eventuate] def unconfirmedRequests: Set[Long] =
-    requests.keySet
+    requestsBySequenceNr.keySet
 
   private def deliverRequest(request: PersistOnEventRequest): Unit = {
-    requests = requests + (request.persistOnEventSequenceNr -> request)
+    requestsBySequenceNr += request.persistOnEventSequenceNr -> request
+    request.persistOnEventId.foreach(requestsByEventId += _ -> request)
     if (!recovering) self ! request
   }
 
-  private def confirmRequest(persistOnEventSequenceNr: Long): Unit = {
-    requests = requests - persistOnEventSequenceNr
+  private def confirmRequest(request: PersistOnEventRequest): Unit = {
+    request.persistOnEventId.foreach(requestsByEventId -= _)
+    requestsBySequenceNr -= request.persistOnEventSequenceNr
   }
 
-  private def redeliverUnconfirmedRequests(): Unit = requests.foreach {
+  private def findPersistOnEventRequest(event: DurableEvent) =
+    event
+      .persistOnEventId.flatMap(requestsByEventId.get)
+      // Fallback for old events that have no persistOnEventId
+      .orElse(event.persistOnEventSequenceNr.flatMap(requestsBySequenceNr.get))
+
+  private def redeliverUnconfirmedRequests(): Unit = requestsBySequenceNr.foreach {
     case (_, request) => self ! request
   }
 }

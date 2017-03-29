@@ -106,7 +106,8 @@ object DurableEventSerializerSpec {
     localLogId = "p3",
     localSequenceNr = 17L,
     deliveryId = Some("x"),
-    persistOnEventSequenceNr = Some(12L))
+    persistOnEventSequenceNr = Some(12L),
+    persistOnEventId = Some(EventId("p4", 0L)))
 }
 
 class DurableEventSerializerSpec extends WordSpec with Matchers with Inside with BeforeAndAfterAll {

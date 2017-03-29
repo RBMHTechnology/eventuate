@@ -105,7 +105,7 @@ public abstract class BaseSpec extends JUnitSuite {
     @SuppressWarnings("unchecked")
     protected DurableEvent createEvent(final Object payload, final long sequenceNr, final String emitterId, final String logId, final VectorTime timestamp) {
         return new DurableEvent(payload, emitterId, Option.empty(), Set$.MODULE$.<String>empty(), 0L,
-                timestamp, logId, logId, sequenceNr, Option.empty(), Option.empty());
+                timestamp, logId, logId, sequenceNr, Option.empty(), Option.empty(), Option.empty());
     }
 
     protected VectorTime timestamp(final long a, final long b) {
