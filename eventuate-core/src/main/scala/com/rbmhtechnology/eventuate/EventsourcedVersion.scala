@@ -39,7 +39,7 @@ trait EventsourcedVersion extends EventsourcedView {
    * Internal API.
    */
   private[eventuate] def durableEvent(payload: Any, customDestinationAggregateIds: Set[String],
-    deliveryId: Option[String] = None, persistOnEventSequenceNr: Option[Long] = None): DurableEvent =
+    deliveryId: Option[String] = None, persistOnEventSequenceNr: Option[Long] = None, persistOnEventId: Option[EventId] = None): DurableEvent =
     DurableEvent(
       payload = payload,
       emitterId = id,
@@ -47,7 +47,8 @@ trait EventsourcedVersion extends EventsourcedView {
       customDestinationAggregateIds = customDestinationAggregateIds,
       vectorTimestamp = currentVersion,
       deliveryId = deliveryId,
-      persistOnEventSequenceNr = persistOnEventSequenceNr)
+      persistOnEventSequenceNr = persistOnEventSequenceNr,
+      persistOnEventId = persistOnEventId)
 
   /**
    * Internal API.

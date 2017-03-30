@@ -98,7 +98,10 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
 
   private def persistOnEventRequestFormatBuilder(persistOnEventRequest: PersistOnEventRequest): PersistOnEventRequestFormat.Builder = {
     val builder = PersistOnEventRequestFormat.newBuilder
-    builder.setPersistOnEventSequenceNr(persistOnEventRequest.persistOnEventSequenceNr)
+    builder.setSequenceNr(persistOnEventRequest.persistOnEventSequenceNr)
+    persistOnEventRequest.persistOnEventId.foreach { eventId =>
+      builder.setEventId(eventSerializer.eventIdFormatBuilder(eventId))
+    }
     builder.setInstanceId(persistOnEventRequest.instanceId)
 
     persistOnEventRequest.invocations.foreach { invocation =>
@@ -191,8 +194,11 @@ class SnapshotSerializer(system: ExtendedActorSystem) extends Serializer {
       invocationsBuilder += persistOnEventInvocation(pif)
     }
 
+    val persistOnEventReference = if (persistOnEventRequestFormat.hasEventId) Some(eventSerializer.eventId(persistOnEventRequestFormat.getEventId)) else None
+
     PersistOnEventRequest(
-      persistOnEventRequestFormat.getPersistOnEventSequenceNr,
+      persistOnEventRequestFormat.getSequenceNr,
+      persistOnEventReference,
       invocationsBuilder.result(),
       persistOnEventRequestFormat.getInstanceId)
   }

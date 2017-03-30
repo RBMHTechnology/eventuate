@@ -145,12 +145,12 @@ trait EventsourcedActor extends EventsourcedView with EventsourcedVersion {
         messageStash.unstash()
       }
     }
-    case PersistOnEventRequest(persistOnEventSequenceNr: Long, invocations, iid) => if (iid == instanceId) {
+    case PersistOnEventRequest(persistOnEventSequenceNr, persistOnEventId, invocations, iid) => if (iid == instanceId) {
       writeOrDelay {
         writeHandlers = Vector.fill(invocations.length)(PersistOnEvent.DefaultHandler)
         writeRequests = invocations.map {
           case PersistOnEventInvocation(event, customDestinationAggregateIds) =>
-            durableEvent(event, customDestinationAggregateIds, None, Some(persistOnEventSequenceNr))
+            durableEvent(event, customDestinationAggregateIds, None, Some(persistOnEventSequenceNr), persistOnEventId)
         }
       }
     }

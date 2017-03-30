@@ -19,6 +19,16 @@ package com.rbmhtechnology.eventuate
 import scala.collection.immutable.Seq
 
 /**
+ * Unique id of a [[DurableEvent]].
+ *
+ * This is a stable id of an event across all replicated logs.
+ *
+ * @param processId the id of the event log the initially wrote the event.
+ * @param sequenceNr the initial sequence number in this log.
+ */
+case class EventId(processId: String, sequenceNr: Long)
+
+/**
  * Provider API.
  *
  * Event storage format. Fields `localLogId` and `localSequenceNr` differ among replicas, all other fields are not changed
@@ -43,7 +53,14 @@ import scala.collection.immutable.Seq
  * @param deliveryId Delivery id chosen by an application that persisted this event with [[ConfirmedDelivery.persistConfirmation]].
  * @param persistOnEventSequenceNr Sequence number of the event that caused the emission of this event in an event handler.
  *                                 Defined if an [[EventsourcedActor]] with a [[PersistOnEvent]] mixin emitted this event
- *                                 with `persistOnEvent`.
+ *                                 with `persistOnEvent`. Actually superseded by `persistOnEventId`, but still
+ *                                 has to be maintained for backwards compatibility. It is required for confirmation
+ *                                 of old [[com.rbmhtechnology.eventuate.PersistOnEvent.PersistOnEventRequest]]s from
+ *                                 a snapshot that do not have [[com.rbmhtechnology.eventuate.PersistOnEvent.PersistOnEventRequest.persistOnEventId]]
+ *                                 set.
+ * @param persistOnEventId event id of the event that caused the emission of this event in an event handler.
+ *                         Defined if an [[EventsourcedActor]] with a [[PersistOnEvent]] mixin emitted this event
+ *                         with `persistOnEvent`.
  */
 case class DurableEvent(
   payload: Any,
@@ -56,15 +73,16 @@ case class DurableEvent(
   localLogId: String = DurableEvent.UndefinedLogId,
   localSequenceNr: Long = DurableEvent.UndefinedSequenceNr,
   deliveryId: Option[String] = None,
-  persistOnEventSequenceNr: Option[Long] = None) {
+  persistOnEventSequenceNr: Option[Long] = None,
+  persistOnEventId: Option[EventId] = None) {
 
   import DurableEvent._
 
   /**
    * Unique event identifier.
    */
-  def id: VectorTime =
-    vectorTimestamp
+  val id: EventId =
+    EventId(processId, vectorTimestamp.localTime(processId))
 
   /**
    * Returns `true` if this event did not happen before or at the given `vectorTime`

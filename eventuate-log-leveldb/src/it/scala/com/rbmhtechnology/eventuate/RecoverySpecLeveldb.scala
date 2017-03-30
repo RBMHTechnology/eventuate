@@ -49,6 +49,15 @@ object RecoverySpecLeveldb {
     }
   }
 
+  def assertConvergence(expected: Set[String], endpoints: ReplicationEndpoint*): Unit = {
+    val probes = endpoints.map { endpoint =>
+      val probe = new TestProbe(endpoint.system)
+      endpoint.system.actorOf(Props(new ConvergenceView(s"p-${endpoint.id}", endpoint.logs("L1"), expected.size, probe.ref)))
+      probe
+    }
+    probes.foreach(_.expectMsg(expected))
+  }
+
   val config = ConfigFactory.parseString(
     """
       |eventuate.log.replication.retry-delay = 1s
@@ -95,15 +104,6 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpecL
 
   override val logFactory: String => Props =
     id => SingleLocationSpecLeveldb.TestEventLog.props(id, batching = true)
-
-  def assertConvergence(expected: Set[String], endpoints: ReplicationEndpoint*): Unit = {
-    val probes = endpoints.map { endpoint =>
-      val probe = new TestProbe(endpoint.system)
-      endpoint.system.actorOf(Props(new ConvergenceView(s"p-${endpoint.id}", endpoint.logs("L1"), expected.size, probe.ref)))
-      probe
-    }
-    probes.foreach(_.expectMsg(expected))
-  }
 
   "Replication endpoint recovery" must {
     "disallow activation of endpoint during and after recovery" in {
@@ -350,7 +350,8 @@ class RecoverySpecLeveldb extends WordSpec with Matchers with MultiLocationSpecL
       val locationA1 = newLocationA
 
       val endpointB = locationB.endpoint(Set("L1"), Set(replicationConnection(locationA1.port)), applicationVersion = oldVersion)
-      def newEndpointA(l: Location, version: ApplicationVersion, activate: Boolean) = l.endpoint(Set("L1"), Set(replicationConnection(locationB.port)), activate = activate)
+      def newEndpointA(l: Location, version: ApplicationVersion, activate: Boolean) =
+        l.endpoint(Set("L1"), Set(replicationConnection(locationB.port)), applicationVersion = version, activate = activate)
       val endpointA1 = newEndpointA(locationA1, oldVersion, activate = true)
 
       val targetA = endpointA1.target("L1")

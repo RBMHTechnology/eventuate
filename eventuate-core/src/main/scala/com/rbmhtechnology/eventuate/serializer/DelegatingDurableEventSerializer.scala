@@ -102,6 +102,9 @@ abstract class DurableEventSerializer(
     durableEvent.persistOnEventSequenceNr.foreach { persistOnEventSequenceNr =>
       builder.setPersistOnEventSequenceNr(persistOnEventSequenceNr)
     }
+    durableEvent.persistOnEventId.foreach { persistOnEventId =>
+      builder.setPersistOnEventId(eventIdFormatBuilder(persistOnEventId))
+    }
 
     durableEvent.emitterAggregateId.foreach { id =>
       builder.setEmitterAggregateId(id)
@@ -111,6 +114,13 @@ abstract class DurableEventSerializer(
       builder.addCustomDestinationAggregateIds(dest)
     }
 
+    builder
+  }
+
+  def eventIdFormatBuilder(eventId: EventId) = {
+    val builder = EventIdFormat.newBuilder()
+    builder.setProcessId(eventId.processId)
+    builder.setSequenceNr(eventId.sequenceNr)
     builder
   }
 
@@ -128,6 +138,7 @@ abstract class DurableEventSerializer(
 
     val deliveryId = if (durableEventFormat.hasDeliveryId) Some(durableEventFormat.getDeliveryId) else None
     val persistOnEventSequenceNr = if (durableEventFormat.hasPersistOnEventSequenceNr) Some(durableEventFormat.getPersistOnEventSequenceNr) else None
+    val persistOnEventId = if (durableEventFormat.hasPersistOnEventId) Some(eventId(durableEventFormat.getPersistOnEventId)) else None
 
     DurableEvent(
       payload = payloadSerializer.payload(durableEventFormat.getPayload),
@@ -140,6 +151,10 @@ abstract class DurableEventSerializer(
       localLogId = durableEventFormat.getLocalLogId,
       localSequenceNr = durableEventFormat.getLocalSequenceNr,
       deliveryId = deliveryId,
-      persistOnEventSequenceNr = persistOnEventSequenceNr)
+      persistOnEventSequenceNr = persistOnEventSequenceNr,
+      persistOnEventId = persistOnEventId)
   }
+
+  def eventId(eventId: EventIdFormat) =
+    EventId(eventId.getProcessId, eventId.getSequenceNr)
 }

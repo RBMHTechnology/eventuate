@@ -37,9 +37,10 @@ message DeliveryAttemptFormat {
 }
 
 message PersistOnEventRequestFormat {
-  optional int64 persistOnEventSequenceNr = 1;
+  optional int64 sequenceNr = 1;
   repeated PersistOnEventInvocationFormat invocation = 2;
   optional int32 instanceId = 3;
+  optional EventIdFormat eventId = 4;
 }
 
 message PersistOnEventInvocationFormat {
