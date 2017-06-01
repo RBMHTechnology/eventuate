@@ -17,10 +17,10 @@
 package userguide.japi;
 
 //#event-driven-communication
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import akka.japi.pf.ReceiveBuilder;
 import com.rbmhtechnology.eventuate.AbstractEventsourcedActor;
 import com.rbmhtechnology.eventuate.ResultHandler;
 import static akka.actor.ActorRef.noSender;
@@ -32,17 +32,26 @@ public class CommunicationExample {
 
   class PingActor extends AbstractEventsourcedActor {
 
+    private final ActorRef completion;
+
     public PingActor(String id, ActorRef eventLog, ActorRef completion) {
       super(id, eventLog);
+      this.completion = completion;
+    }
 
-      setOnCommand(ReceiveBuilder
-        .matchEquals("serve", cmd -> persist(new Ping(1), ResultHandler.none()))
-        .build());
+    @Override
+    public AbstractActor.Receive createOnCommand() {
+      return receiveBuilder()
+          .matchEquals("serve", cmd -> persist(new Ping(1), ResultHandler.none()))
+          .build();
+    }
 
-      setOnEvent(ReceiveBuilder
-        .match(Pong.class, evt -> evt.num == 10 && !recovering(), evt -> completion.tell("done", self()))
-        .match(Pong.class, evt -> persistOnEvent(new Ping(evt.num + 1)))
-        .build());
+    @Override
+    public AbstractActor.Receive createOnEvent() {
+      return receiveBuilder()
+          .match(Pong.class, evt -> evt.num == 10 && !isRecovering(), evt -> completion.tell("done", getSelf()))
+          .match(Pong.class, evt -> persistOnEvent(new Ping(evt.num + 1)))
+          .build();
     }
   }
 
@@ -50,10 +59,13 @@ public class CommunicationExample {
 
     public PongActor(String id, ActorRef eventLog) {
       super(id, eventLog);
+    }
 
-      setOnEvent(ReceiveBuilder
-        .match(Ping.class, evt -> persistOnEvent(new Pong(evt.num)))
-        .build());
+    @Override
+    public AbstractActor.Receive createOnEvent() {
+      return receiveBuilder()
+          .match(Ping.class, evt -> persistOnEvent(new Pong(evt.num)))
+          .build();
     }
   }
 

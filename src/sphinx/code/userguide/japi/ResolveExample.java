@@ -18,8 +18,8 @@ package userguide.japi;
 
 //#automated-conflict-resolution
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
-import akka.japi.pf.ReceiveBuilder;
 import com.rbmhtechnology.eventuate.*;
 
 import java.util.Collection;
@@ -43,25 +43,28 @@ public class ResolveExample {
 
       public ExampleActor(String id, ActorRef eventLog) {
         super(id, eventLog);
+      }
 
-        setOnEvent(ReceiveBuilder
-          .match(Appended.class, evt -> {
-            versionedState = versionedState.update(evt.entry, lastVectorTimestamp(), lastSystemTimestamp(), lastEmitterId());
+      @Override
+      public AbstractActor.Receive createOnEvent() {
+        return receiveBuilder()
+            .match(Appended.class, evt -> {
+              versionedState = versionedState.update(evt.entry, getLastVectorTimestamp(), getLastSystemTimestamp(), getLastEmitterId());
 
-            if (versionedState.conflict()) {
-              final Stream<Versioned<Collection<String>>> conflictingVersions = versionedState.getAll().stream()
-                .sorted((v1, v2) -> {
-                  if (v1.systemTimestamp() == v2.systemTimestamp()) {
-                    return v1.creator().compareTo(v2.creator());
-                  }
-                  return v1.systemTimestamp() > v2.systemTimestamp() ? -1 : 1;
-                });
+              if (versionedState.conflict()) {
+                final Stream<Versioned<Collection<String>>> conflictingVersions = versionedState.getAll().stream()
+                    .sorted((v1, v2) -> {
+                      if (v1.systemTimestamp() == v2.systemTimestamp()) {
+                        return v1.creator().compareTo(v2.creator());
+                      }
+                      return v1.systemTimestamp() > v2.systemTimestamp() ? -1 : 1;
+                    });
 
-              final VectorTime winnerTimestamp = conflictingVersions.findFirst().get().vectorTimestamp();
-              versionedState = versionedState.resolve(winnerTimestamp);
-            }
-          })
-          .build());
+                final VectorTime winnerTimestamp = conflictingVersions.findFirst().get().vectorTimestamp();
+                versionedState = versionedState.resolve(winnerTimestamp);
+              }
+            })
+            .build();
       }
     }
     //#
@@ -78,28 +81,34 @@ public class ResolveExample {
 
       public ExampleActor(String id, ActorRef eventLog) {
         super(id, eventLog);
+      }
 
-        setOnCommand(ReceiveBuilder
-          .match(Append.class, cmd -> versionedState.conflict(),
-            cmd -> sender().tell(new AppendRejected(cmd.entry, versionedState.getAll()), self())
-          )
-          .match(Append.class, cmd -> {
-            // ....
-          })
-          .match(Resolve.class, cmd -> persist(new Resolved(cmd.selectedTimestamp), ResultHandler.on(
-            evt -> { /* reply to sender omitted ... */ },
-            err -> { /* reply to sender omitted ... */ }
-          )))
-          .build());
+      @Override
+      public AbstractActor.Receive createOnCommand() {
+        return receiveBuilder()
+            .match(Append.class, cmd -> versionedState.conflict(),
+                cmd -> getSender().tell(new AppendRejected(cmd.entry, versionedState.getAll()), getSelf())
+            )
+            .match(Append.class, cmd -> {
+              // ....
+            })
+            .match(Resolve.class, cmd -> persist(new Resolved(cmd.selectedTimestamp), ResultHandler.on(
+                evt -> { /* reply to sender omitted ... */ },
+                err -> { /* reply to sender omitted ... */ }
+            )))
+            .build();
+      }
 
-        setOnEvent(ReceiveBuilder
-          .match(Appended.class, evt ->
-            versionedState = versionedState.update(evt.entry, lastVectorTimestamp(), lastSystemTimestamp(), lastEmitterId())
-          )
-          .match(Resolved.class, evt ->
-            versionedState = versionedState.resolve(evt.selectedTimestamp, lastVectorTimestamp(), lastSystemTimestamp())
-          )
-          .build());
+      @Override
+      public AbstractActor.Receive createOnEvent() {
+        return receiveBuilder()
+            .match(Appended.class, evt ->
+                versionedState = versionedState.update(evt.entry, getLastVectorTimestamp(), getLastSystemTimestamp(), getLastEmitterId())
+            )
+            .match(Resolved.class, evt ->
+                versionedState = versionedState.resolve(evt.selectedTimestamp, getLastVectorTimestamp(), getLastSystemTimestamp())
+            )
+            .build();
       }
     }
 

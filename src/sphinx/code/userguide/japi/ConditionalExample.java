@@ -17,13 +17,14 @@
 package userguide.japi;
 
 import static userguide.japi.DocUtils.append;
+
 import userguide.japi.ViewExample.GetAppendCountReply;
 
 //#conditional-requests
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import akka.japi.pf.ReceiveBuilder;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import com.rbmhtechnology.eventuate.*;
@@ -53,22 +54,28 @@ public class ConditionalExample {
     public ExampleActor(String id, ActorRef eventLog) {
       super(id, eventLog);
       this.id = id;
-
-      setOnCommand(ReceiveBuilder
-        .match(Append.class, cmd -> persist(new Appended(cmd.entry), ResultHandler.onSuccess(
-          evt -> sender().tell(new AppendSuccess(evt.entry, lastVectorTimestamp()), self())
-        )))
-        // ...
-        .build());
-
-      setOnEvent(ReceiveBuilder
-        .match(Appended.class, evt -> currentState = append(currentState, evt.entry))
-        .build());
     }
 
     @Override
     public Optional<String> getAggregateId() {
       return Optional.of(id);
+    }
+
+    @Override
+    public AbstractActor.Receive createOnCommand() {
+      return receiveBuilder()
+          .match(Append.class, cmd -> persist(new Appended(cmd.entry), ResultHandler.onSuccess(
+              evt -> getSender().tell(new AppendSuccess(evt.entry, getLastVectorTimestamp()), getSelf())
+          )))
+          // ...
+          .build();
+    }
+
+    @Override
+    public AbstractActor.Receive createOnEvent() {
+      return receiveBuilder()
+          .match(Appended.class, evt -> currentState = append(currentState, evt.entry))
+          .build();
     }
   }
 

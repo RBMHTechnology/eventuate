@@ -16,10 +16,10 @@
 
 package com.rbmhtechnology.example.japi.ordermgnt;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.dispatch.Futures;
-import akka.japi.pf.ReceiveBuilder;
 import akka.pattern.Patterns;
 import com.rbmhtechnology.eventuate.AbstractEventsourcedView;
 import javaslang.collection.HashMap;
@@ -49,18 +49,17 @@ public class OrderManager extends AbstractEventsourcedView {
         super(String.format("j-om-%s", replicaId), eventLog);
         this.replicaId = replicaId;
         this.orderActors = HashMap.empty();
+    }
 
-        setOnCommand(ReceiveBuilder
-                .match(OrderCommand.class, c -> orderActor(c.orderId).tell(c, sender()))
-                .match(SaveSnapshot.class, c -> orderActor(c.orderId).tell(c, sender()))
-                .match(Resolve.class, c -> orderActor(c.id()).tell(c, sender()))
-                .match(GetState.class, c -> orderActors.isEmpty(), c -> replyStateZero(sender()))
-                .match(GetState.class, c -> !orderActors.isEmpty(), c -> replyState(sender()))
-                .build());
-
-        setOnEvent(ReceiveBuilder
-                .match(OrderCreated.class, e -> !orderActors.containsKey(e.orderId), e -> orderActor(e.orderId))
-                .build());
+    @Override
+    public AbstractActor.Receive createOnCommand() {
+        return receiveBuilder()
+            .match(OrderCommand.class, c -> orderActor(c.orderId).tell(c, getSender()))
+            .match(SaveSnapshot.class, c -> orderActor(c.orderId).tell(c, getSender()))
+            .match(Resolve.class, c -> orderActor(c.id()).tell(c, getSender()))
+            .match(GetState.class, c -> orderActors.isEmpty(), c -> replyStateZero(getSender()))
+            .match(GetState.class, c -> !orderActors.isEmpty(), c -> replyState(getSender()))
+            .build();
     }
 
     private ActorRef orderActor(final String orderId) {
@@ -73,7 +72,7 @@ public class OrderManager extends AbstractEventsourcedView {
     }
 
     private void replyStateZero(ActorRef target) {
-        target.tell(GetStateSuccess.empty(), self());
+        target.tell(GetStateSuccess.empty(), getSelf());
     }
 
     private void replyState(ActorRef target) {
@@ -83,9 +82,9 @@ public class OrderManager extends AbstractEventsourcedView {
                 .map(func(this::toStateSuccess), dispatcher)
                 .onComplete(proc(result -> {
                     if (result.isSuccess()) {
-                        target.tell(result.get(), self());
+                        target.tell(result.get(), getSelf());
                     } else {
-                        target.tell(new GetStateFailure(result.failed().get()), self());
+                        target.tell(new GetStateFailure(result.failed().get()), getSelf());
                     }
                 }), dispatcher);
     }
@@ -100,5 +99,12 @@ public class OrderManager extends AbstractEventsourcedView {
 
     private GetStateSuccess toStateSuccess(final Iterable<GetStateSuccess> states) {
         return StreamSupport.stream(states.spliterator(), false).reduce(GetStateSuccess::merge).get();
+    }
+
+    @Override
+    public AbstractActor.Receive createOnEvent() {
+        return receiveBuilder()
+            .match(OrderCreated.class, e -> !orderActors.containsKey(e.orderId), e -> orderActor(e.orderId))
+            .build();
     }
 }

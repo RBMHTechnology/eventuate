@@ -16,10 +16,10 @@
 
 package com.rbmhtechnology.eventuate;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.japi.Creator;
-import akka.japi.pf.ReceiveBuilder;
 import akka.testkit.TestProbe;
 import com.rbmhtechnology.eventuate.EventsourcedActorSpec.Cmd;
 import com.rbmhtechnology.eventuate.EventsourcingProtocol.Write;
@@ -33,25 +33,30 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class AbstractEventsourcedActorSpec extends BaseSpec {
 
     public static class TestEventsourcedActor extends AbstractEventsourcedActor {
 
+        private final ActorRef mgsProbe;
+
         public TestEventsourcedActor(final String id, final ActorRef logProbe, final ActorRef mgsProbe) {
             super(id, logProbe);
+            this.mgsProbe = mgsProbe;
+        }
 
-            setOnCommand(ReceiveBuilder
-                    .match(Cmd.class, cmd -> cmd.num() == 1, cmd -> persist(cmd.payload(), ResultHandler.on(
-                            success -> mgsProbe.tell(cmd.payload(), self()),
-                            failure -> mgsProbe.tell(failure, self())
-                    )))
-                    .match(Cmd.class, cmd -> persistN(createN(cmd.payload(), cmd.num()), ResultHandler.on(
-                            success -> mgsProbe.tell(cmd.payload(), self()),
-                            failure -> mgsProbe.tell(failure, self())
-                    )))
-                    .build());
+        @Override
+        public AbstractActor.Receive createOnCommand() {
+            return receiveBuilder()
+                .match(Cmd.class, cmd -> cmd.num() == 1, cmd -> persist(cmd.payload(), ResultHandler.on(
+                    success -> mgsProbe.tell(cmd.payload(), getSelf()),
+                    failure -> mgsProbe.tell(failure, getSelf())
+                )))
+                .match(Cmd.class, cmd -> persistN(createN(cmd.payload(), cmd.num()), ResultHandler.on(
+                    success -> mgsProbe.tell(cmd.payload(), getSelf()),
+                    failure -> mgsProbe.tell(failure, getSelf())
+                )))
+                .build();
         }
 
         private Collection<String> createN(final Object payload, final int cnt) {

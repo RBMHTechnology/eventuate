@@ -17,66 +17,115 @@
 package com.rbmhtechnology.eventuate;
 
 import akka.japi.pf.FI;
-import akka.japi.pf.Match;
 import akka.japi.pf.PFBuilder;
 
 /**
- * Java API for building a PartialFunction that matches arbitrary [[Object]]s to {@link Iterable}s.
+ * Java API for building a {@link AbstractEventsourcedProcessor.Process} behavior that matches arbitrary [[Object]]s to {@link Iterable}s.
  *
- * Can be used to define processing behaviour in {@link AbstractEventsourcedProcessor#setOnProcessEvent}
- * or {@link AbstractEventsourcedProcessor#onProcessEvent}.
+ * Used to define processing behaviour in {@link AbstractEventsourcedProcessor#createOnProcessEvent}.
  */
 public final class ProcessBuilder {
-    private ProcessBuilder() {
+
+    private final PFBuilder<Object, Iterable<Object>> underlying;
+
+    private ProcessBuilder(PFBuilder<Object, Iterable<Object>> underlying) {
+        this.underlying = underlying;
     }
 
     /**
-     * Returns a new {@link PFBuilder} of {@link java.lang.Iterable} with a case statement added.
+     * Returns a new {@link ProcessBuilder} instance.
+     *
+     * @return a {@link ProcessBuilder}
+     */
+    public static ProcessBuilder create() {
+        return new ProcessBuilder(new PFBuilder<>());
+    }
+
+    /**
+     * Add a new case statement to this builder.
      *
      * @param type the type to match the argument against
-     * @param apply the function to apply for the given argument - must return {@link java.lang.Iterable}
+     * @param apply the function to apply for the given argument - must return {@link Iterable}
      * @param <P> the type of the argument
-     * @return a builder with the case statement added
+     * @return the {@link ProcessBuilder} with the case statement added
      */
-    public static <P> PFBuilder<Object, Iterable<Object>> match(final Class<? extends P> type, final IterableApply<? extends P> apply) {
-        return Match.match(type, apply);
+    public <P> ProcessBuilder match(final Class<P> type, IterableApply<P> apply) {
+        underlying.match(type, apply);
+        return this;
     }
 
     /**
-     * Returns a new {@link PFBuilder} of {@link java.lang.Iterable} with a case statement added.
+     * Add a new case statement to this builder.
      *
      * @param type the type to match the argument against
      * @param predicate the predicate to match the argument against
-     * @param apply the function to apply for the given argument - must return {@link java.lang.Iterable}
+     * @param apply the function to apply for the given argument - must return {@link Iterable}
      * @param <P> the type of the argument
-     * @return a builder with the case statement added
+     * @return the {@link ProcessBuilder} with the case statement added
      */
-    public static <P> PFBuilder<Object, Iterable<Object>> match(final Class<? extends P> type,
-                                                                final FI.TypedPredicate<? extends P> predicate,
-                                                                final IterableApply<? extends P> apply) {
-        return Match.match(type, predicate, apply);
+    public <P> ProcessBuilder match(final Class<P> type, final FI.TypedPredicate<P> predicate, final IterableApply<P> apply) {
+        underlying.match(type, predicate, apply);
+        return this;
     }
 
     /**
-     * Returns a new {@link PFBuilder} of {@link java.lang.Iterable} with a case statement added.
+     * Add a new case statement to this builder without compile time type check of the parameters.
+     * Should normally not be used, but when matching on class with generic type.
+     *
+     * @param type the type to match the argument against
+     * @param apply the function to apply for the given argument - must return {@link Iterable}
+     * @return the {@link ProcessBuilder} with the case statement added
+     */
+    public ProcessBuilder matchUnchecked(final Class<?> type, IterableApply<?> apply) {
+        underlying.matchUnchecked(type, apply);
+        return this;
+    }
+
+    /**
+     * Add a new case statement to this builder without compile time type check of the parameters.
+     * Should normally not be used, but when matching on class with generic type.
+     *
+     * @param type the type to match the argument against
+     * @param predicate a predicate that will be evaluated on the argument if the type matches
+     * @param apply the function to apply for the given argument - must return {@link Iterable}
+     * @return the {@link ProcessBuilder} with the case statement added
+     */
+    public ProcessBuilder matchUnchecked(final Class<?> type, final FI.TypedPredicate<?> predicate, final IterableApply<?> apply) {
+        underlying.matchUnchecked(type, predicate, apply);
+        return this;
+    }
+
+    /**
+     * Add a new case statement to this builder.
      *
      * @param object the object to match the argument against
-     * @param apply the function to apply for the given argument - must return an {@link java.lang.Iterable}
+     * @param apply the function to apply for the given argument - must return an {@link Iterable}
      * @param <P> the type of the argument
-     * @return a builder with the case statement added
+     * @return the {@link ProcessBuilder} with the case statement added
      */
-    public static <P> PFBuilder<Object, Iterable<Object>> matchEquals(final P object, final IterableApply<P> apply) {
-        return Match.matchEquals(object, apply);
+    public <P> ProcessBuilder matchEquals(final P object, final IterableApply<P> apply) {
+        underlying.matchEquals(object, apply);
+        return this;
     }
 
     /**
-     * Returns a new {@link PFBuilder} of {@link java.lang.Iterable} with a default case statement added.
+     * Add a new case statement to this builder, that matches any argument.
      *
-     * @param apply the function to apply for the given argument - must return an {@link java.lang.Iterable}
-     * @return a builder with the case statement added
+     * @param apply the function to apply for the given argument - must return an {@link Iterable}
+     * @return the {@link ProcessBuilder} with the case statement added
      */
-    public static PFBuilder<Object, Iterable<Object>> matchAny(final IterableApply<Object> apply) {
-        return Match.matchAny(apply);
+    public ProcessBuilder matchAny(final IterableApply<Object> apply) {
+        underlying.matchAny(apply);
+        return this;
+    }
+
+    /**
+     * Builds the resulting processing behavior as an instance of {@link AbstractEventsourcedProcessor.Process}.
+     *
+     * @return the configured {@link AbstractEventsourcedProcessor.Process}
+     */
+    public AbstractEventsourcedProcessor.Process build() {
+        return new AbstractEventsourcedProcessor.Process(underlying.build());
     }
 
     public interface IterableApply<T> extends FI.Apply<T, Iterable<Object>> {

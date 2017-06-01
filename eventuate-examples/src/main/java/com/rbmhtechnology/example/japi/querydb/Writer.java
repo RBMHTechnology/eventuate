@@ -16,8 +16,8 @@
 
 package com.rbmhtechnology.example.japi.querydb;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
-import akka.japi.pf.ReceiveBuilder;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
@@ -49,11 +49,14 @@ public class Writer extends AbstractEventsourcedWriter<Long, Void> {
         insertCustomerStmt = session.prepare("INSERT INTO CUSTOMER (id, first, last, address) VALUES (?, ?, ?, ?)");
         updateCustomerStmt = session.prepare("UPDATE CUSTOMER SET address = ? WHERE id = ?");
         updateProgressStmt = session.prepare("UPDATE PROGRESS SET sequence_nr = ? WHERE id = 0");
+    }
 
-        setOnEvent(ReceiveBuilder
-                .match(CustomerCreated.class, c -> batch = batch.append(insertCustomerStmt.bind(c.cid, c.first, c.last, c.address)))
-                .match(AddressUpdated.class, u -> batch = batch.append(updateCustomerStmt.bind(u.address, u.cid)))
-                .build());
+    @Override
+    public AbstractActor.Receive createOnEvent() {
+        return receiveBuilder()
+            .match(CustomerCreated.class, c -> batch = batch.append(insertCustomerStmt.bind(c.cid, c.first, c.last, c.address)))
+            .match(AddressUpdated.class, u -> batch = batch.append(updateCustomerStmt.bind(u.address, u.cid)))
+            .build();
     }
 
     @Override
@@ -63,7 +66,7 @@ public class Writer extends AbstractEventsourcedWriter<Long, Void> {
 
     @Override
     public CompletionStage<Void> onWrite() {
-        final Long snr = lastSequenceNr();
+        final Long snr = getLastSequenceNr();
         final CompletableFuture<Void> res = sequence(batch.map(session::executeAsync).map(this::toFuture))
                 .thenCompose(rs -> toFuture(session.executeAsync(updateProgressStmt.bind(snr))))
                 .thenApply(rs -> null);
