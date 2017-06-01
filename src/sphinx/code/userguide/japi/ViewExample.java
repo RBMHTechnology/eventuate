@@ -18,8 +18,8 @@ package userguide.japi;
 
 //#event-sourced-view
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
-import akka.japi.pf.ReceiveBuilder;
 import com.rbmhtechnology.eventuate.AbstractEventsourcedView;
 import com.rbmhtechnology.eventuate.VectorTime;
 //#
@@ -35,16 +35,22 @@ public class ViewExample {
 
     public ExampleView(String id, ActorRef eventLog) {
       super(id, eventLog);
+    }
 
-      setOnCommand(ReceiveBuilder
-        .match(GetAppendCount.class, cmd -> sender().tell(new GetAppendCountReply(appendCount), self()))
-        .match(GetResolveCount.class, cmd -> sender().tell(new GetResolveCountReply(resolveCount), self()))
-        .build());
+    @Override
+    public AbstractActor.Receive createOnCommand() {
+      return receiveBuilder()
+          .match(GetAppendCount.class, cmd -> sender().tell(new GetAppendCountReply(appendCount), getSelf()))
+          .match(GetResolveCount.class, cmd -> sender().tell(new GetResolveCountReply(resolveCount), getSelf()))
+          .build();
+    }
 
-      setOnEvent(ReceiveBuilder
-        .match(Appended.class, evt -> appendCount += 1)
-        .match(Resolved.class, evt -> resolveCount += 1)
-        .build());
+    @Override
+    public AbstractActor.Receive createOnEvent() {
+      return receiveBuilder()
+          .match(Appended.class, evt -> appendCount += 1)
+          .match(Resolved.class, evt -> resolveCount += 1)
+          .build();
     }
   }
 

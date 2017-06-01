@@ -21,6 +21,7 @@ import java.util.{ Optional => JOption }
 
 import akka.actor.ActorRef
 
+import scala.collection.immutable._
 import scala.collection.JavaConverters._
 import scala.compat.java8.OptionConverters._
 
@@ -32,47 +33,25 @@ private[eventuate] trait EventsourcedProcessorHandlers {
 private[eventuate] trait EventSourcedProcessorAdapter extends EventsourcedProcessorHandlers with EventsourcedWriterFailureHandlerAdapter {
   this: EventsourcedProcessor =>
 
-  type JProcess = PartialFunction[Any, JIterable[Any]]
-
-  object JProcess {
-    object emptyBehavior extends JProcess {
-      def isDefinedAt(x: Any) = false
-      def apply(x: Any) = throw new UnsupportedOperationException("Empty process behavior apply()")
-    }
-  }
-
-  private var processBehaviour: Option[JProcess] = None
-
-  abstract override final def processEvent: Process =
-    onProcessEvent.andThen(seq => seq.asScala.to[collection.immutable.Seq])
-
   /**
    * Java API of [[EventsourcedProcessor.processEvent event-processing]] handler.
    *
-   * Returns a partial function that defines the actor's event processing behaviour.
+   * Returns a [[AbstractEventsourcedProcessor.Process]] that defines the actor's event processing behaviour.
    * Use [[ProcessBuilder]] to define the behaviour.
-   *
-   * Takes precedence over [[setOnProcessEvent]].
    *
    * @see [[EventsourcedProcessor]]
    */
-  def onProcessEvent: JProcess = processBehaviour.getOrElse(JProcess.emptyBehavior)
+  def createOnProcessEvent(): AbstractEventsourcedProcessor.Process =
+    AbstractEventsourcedProcessor.emptyProcessBehavior
+
+  abstract override final def processEvent: Process =
+    createOnProcessEvent().asScala
 
   /**
-   * Java API that sets this actor's [[EventsourcedProcessor.processEvent event-processing]] handler.
-   *
-   * Supplied with a partial function that defines the actor's event processing behaviour.
-   * Use [[ProcessBuilder]] to define the behaviour.
-   *
-   * If [[onProcessEvent]] is implemented, the supplied behaviour is ignored.
-   *
-   * @param handler This actor's event processing handler.
-   * @see [[EventsourcedProcessor]]
+   * creates a new empty [[ProcessBuilder]]
    */
-  def setOnProcessEvent(handler: JProcess): Unit =
-    if (processBehaviour.isEmpty) processBehaviour = Some(handler)
-    else throw new IllegalStateException("Actor process behaviour has already been set with setOnProcessEvent(...).  " +
-      "The behaviour can only be set once.")
+  final def processBuilder(): ProcessBuilder =
+    ProcessBuilder.create()
 }
 
 private[eventuate] trait EventsourcedProcessorWriteSuccessHandlerAdapter extends EventsourcedWriterSuccessHandlers[Long, Long] {
@@ -91,12 +70,27 @@ private[eventuate] trait EventsourcedProcessorWriteSuccessHandlerAdapter extends
 }
 
 /**
+ * Java API
+ */
+object AbstractEventsourcedProcessor {
+
+  final class Process(val behaviour: PartialFunction[Any, JIterable[Any]])
+
+  final val emptyProcessBehavior: Process = new Process(PartialFunction.empty)
+
+  implicit class ProcessConverter(p: Process) {
+    def asScala: EventsourcedProcessor.Process =
+      p.behaviour.andThen(seq => seq.asScala.to[Seq])
+  }
+}
+
+/**
  * Java API for actors that implement [[EventsourcedProcessor]].
  *
  * @see [[AbstractEventsourcedView]] for a detailed usage of the Java API
  * @see [[EventsourcedProcessor]]
  */
-class AbstractEventsourcedProcessor(id: String, eventLog: ActorRef, val targetEventLog: ActorRef) extends AbstractEventsourcedView(id, eventLog)
+class AbstractEventsourcedProcessor(val id: String, val eventLog: ActorRef, val targetEventLog: ActorRef) extends AbstractEventsourcedComponent
   with EventsourcedProcessor with EventSourcedProcessorAdapter with EventsourcedProcessorWriteSuccessHandlerAdapter {
 
   override final def readSuccess(result: Long): Option[Long] =

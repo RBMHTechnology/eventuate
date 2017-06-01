@@ -20,8 +20,8 @@ import static userguide.japi.DocUtils.append;
 
 //#tracking-conflicting-versions
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
-import akka.japi.pf.ReceiveBuilder;
 import com.rbmhtechnology.eventuate.*;
 
 import java.util.Collection;
@@ -39,21 +39,24 @@ public class TrackingExample {
 
     public ExampleActor(String id, ActorRef eventLog) {
       super(id, eventLog);
-
-      setOnEvent(ReceiveBuilder
-        .match(Appended.class, evt -> {
-          versionedState = versionedState.update(evt.entry, lastVectorTimestamp(), lastSystemTimestamp(), lastEmitterId());
-
-          if (versionedState.conflict()) {
-            final Collection<Versioned<Collection<String>>> all = versionedState.getAll();
-            // TODO: resolve conflicting versions
-          } else {
-            final Collection<String> currentState = versionedState.getAll().get(0).value();
-            // ...
-          }
-        })
-        .build());
     }
+
+    @Override
+    public AbstractActor.Receive createOnEvent() {
+        return receiveBuilder()
+            .match(Appended.class, evt -> {
+                versionedState = versionedState.update(evt.entry, getLastVectorTimestamp(), getLastSystemTimestamp(), getLastEmitterId());
+
+                if (versionedState.conflict()) {
+                    final Collection<Versioned<Collection<String>>> all = versionedState.getAll();
+                    // TODO: resolve conflicting versions
+                } else {
+                    final Collection<String> currentState = versionedState.getAll().get(0).value();
+                    // ...
+                }
+            })
+            .build();
+      }
   }
   //#
 }

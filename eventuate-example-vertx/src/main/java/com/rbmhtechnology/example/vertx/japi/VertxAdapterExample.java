@@ -16,11 +16,11 @@
 
 package com.rbmhtechnology.example.vertx.japi;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.japi.Util;
-import akka.japi.pf.ReceiveBuilder;
 import com.rbmhtechnology.eventuate.AbstractEventsourcedView;
 import com.rbmhtechnology.eventuate.ApplicationVersion;
 import com.rbmhtechnology.eventuate.EndpointFilters$;
@@ -171,29 +171,37 @@ public class VertxAdapterExample {
 
     private List<ActorRef> subscribers = List.empty();
     private int eventsRead = 0;
+    private final int eventCount;
 
     public EventLogReader(String id, ActorRef eventLog, int eventCount) {
       super(id, eventLog);
+      this.eventCount = eventCount;
+    }
 
-      setOnCommand(ReceiveBuilder
-        .matchEquals("notifyOnComplete", s -> subscribers = subscribers.prepend(sender()))
+    @Override
+    public AbstractActor.Receive createOnCommand() {
+      return receiveBuilder()
+        .matchEquals("notifyOnComplete", s -> subscribers = subscribers.prepend(getSender()))
         .matchEquals("eventRead", e -> {
           eventsRead = eventsRead + 1;
           if (eventsRead == eventCount) {
-            subscribers.forEach(s -> s.tell("finished", self()));
+            subscribers.forEach(s -> s.tell("finished", getSelf()));
           }
         })
-        .build());
+        .build();
+    }
 
-      setOnEvent(ReceiveBuilder
+    @Override
+    public AbstractActor.Receive createOnEvent() {
+      return receiveBuilder()
         .matchAny(ev -> {
           out.println(String.format("[e_reader]    received  [%s]", ev));
 
-          if (!recovering()) {
-            self().tell("eventRead", self());
+          if (!isRecovering()) {
+            getSelf().tell("eventRead", getSelf());
           }
         })
-        .build());
+        .build();
     }
   }
 

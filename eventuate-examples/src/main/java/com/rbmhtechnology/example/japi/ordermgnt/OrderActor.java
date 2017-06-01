@@ -16,8 +16,8 @@
 
 package com.rbmhtechnology.example.japi.ordermgnt;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
-import akka.japi.pf.ReceiveBuilder;
 import com.rbmhtechnology.eventuate.AbstractEventsourcedActor;
 import com.rbmhtechnology.eventuate.ConcurrentVersions;
 import com.rbmhtechnology.eventuate.ConcurrentVersionsTree;
@@ -25,6 +25,7 @@ import com.rbmhtechnology.eventuate.ResultHandler;
 import com.rbmhtechnology.eventuate.SnapshotMetadata;
 import com.rbmhtechnology.eventuate.Versioned;
 import com.rbmhtechnology.eventuate.VersionedAggregate;
+import scala.runtime.BoxedUnit;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -71,48 +72,22 @@ public class OrderActor extends AbstractEventsourcedActor {
         this.orderId = orderId;
         this.replicaId = replicaId;
         this.order = VersionedAggregate.create(orderId, commandValidation, eventProjection, OrderDomainCmd.instance, OrderDomainEvt.instance);
-
-        setOnCommand(ReceiveBuilder
-                .match(CreateOrder.class, c -> order.validateCreate(c, processCommand(orderId, sender(), self())))
-                .match(OrderCommand.class, c -> order.validateUpdate(c, processCommand(orderId, sender(), self())))
-                .match(Resolve.class, c -> order.validateResolve(c.selected(), replicaId, processCommand(orderId, sender(), self())))
-                .match(GetState.class, c -> sender().tell(createStateFromAggregate(orderId, order), self()))
-                .match(SaveSnapshot.class, c -> saveState(sender(), self()))
-                .build());
-
-        setOnEvent(ReceiveBuilder
-                .match(OrderCreated.class, e -> {
-                    order = order.handleCreated(e, lastVectorTimestamp(), lastSequenceNr());
-                    if (!recovering()) printOrder(order.getVersions());
-                })
-                .match(OrderEvent.class, e -> {
-                    order = order.handleUpdated(e, lastVectorTimestamp(), lastSequenceNr());
-                    if (!recovering()) printOrder(order.getVersions());
-                })
-                .match(Resolved.class, e -> {
-                    order = order.handleResolved(e, lastVectorTimestamp(), lastSequenceNr());
-                    if (!recovering()) printOrder(order.getVersions());
-                })
-                .build());
-
-        setOnSnapshot(ReceiveBuilder
-                .match(ConcurrentVersionsTree.class, s -> {
-                    order = order.withAggregate(((ConcurrentVersionsTree<Order, OrderEvent>) s).withProjection(eventProjection));
-                    System.out.println(String.format("[%s] Snapshot loaded:", orderId));
-                    printOrder(order.getVersions());
-                })
-                .build());
-
-        setOnRecover(ResultHandler
-                .onSuccess(v -> {
-                    System.out.println(String.format("[%s] Recovery complete:", orderId));
-                    printOrder(order.getVersions());
-                }));
     }
 
     @Override
     public Optional<String> getAggregateId() {
         return Optional.of(orderId);
+    }
+
+    @Override
+    public AbstractActor.Receive createOnCommand() {
+        return receiveBuilder()
+            .match(CreateOrder.class, c -> order.validateCreate(c, processCommand(orderId, getSender(), getSelf())))
+            .match(OrderCommand.class, c -> order.validateUpdate(c, processCommand(orderId, getSender(), getSelf())))
+            .match(Resolve.class, c -> order.validateResolve(c.selected(), replicaId, processCommand(orderId, getSender(), getSelf())))
+            .match(GetState.class, c -> getSender().tell(createStateFromAggregate(orderId, order), getSelf()))
+            .match(SaveSnapshot.class, c -> saveState(getSender(), getSelf()))
+            .build();
     }
 
     private <E> ResultHandler<E> processCommand(final String orderId, final ActorRef sender, final ActorRef self) {
@@ -122,18 +97,11 @@ public class OrderActor extends AbstractEventsourcedActor {
         );
     }
 
-    private <E> void processEvent(final E event, final ActorRef sender, final ActorRef self) {
-        persist(event, ResultHandler.on(
-                evt -> sender.tell(new CommandSuccess(orderId), self),
-                err -> sender.tell(new CommandFailure(orderId, err), self)
-        ));
-    }
-
     private void saveState(final ActorRef sender, final ActorRef self) {
         if (order.getAggregate().isPresent()) {
             save(order.getAggregate().get(), ResultHandler.on(
-                    metadata -> sender.tell(new SaveSnapshotSuccess(orderId, metadata), self),
-                    err -> sender.tell(new SaveSnapshotFailure(orderId, err), self)
+                metadata -> sender.tell(new SaveSnapshotSuccess(orderId, metadata), self),
+                err -> sender.tell(new SaveSnapshotFailure(orderId, err), self)
             ));
         } else {
             sender.tell(new SaveSnapshotFailure(orderId, new AggregateDoesNotExistException(orderId)), self);
@@ -150,6 +118,51 @@ public class OrderActor extends AbstractEventsourcedActor {
             map.put(id, versions);
             return map;
         };
+    }
+
+    @Override
+    public AbstractActor.Receive createOnEvent() {
+        return receiveBuilder()
+            .match(OrderCreated.class, e -> {
+                order = order.handleCreated(e, getLastVectorTimestamp(), getLastSequenceNr());
+                if (!isRecovering()) printOrder(order.getVersions());
+            })
+            .match(OrderEvent.class, e -> {
+                order = order.handleUpdated(e, getLastVectorTimestamp(), getLastSequenceNr());
+                if (!isRecovering()) printOrder(order.getVersions());
+            })
+            .match(Resolved.class, e -> {
+                order = order.handleResolved(e, getLastVectorTimestamp(), getLastSequenceNr());
+                if (!isRecovering()) printOrder(order.getVersions());
+            })
+            .build();
+    }
+
+    private <E> void processEvent(final E event, final ActorRef sender, final ActorRef self) {
+        persist(event, ResultHandler.on(
+                evt -> sender.tell(new CommandSuccess(orderId), self),
+                err -> sender.tell(new CommandFailure(orderId, err), self)
+        ));
+    }
+
+    @Override
+    public AbstractActor.Receive createOnSnapshot() {
+        return receiveBuilder()
+            .match(ConcurrentVersionsTree.class, s -> {
+                order = order.withAggregate(((ConcurrentVersionsTree<Order, OrderEvent>) s).withProjection(eventProjection));
+                System.out.println(String.format("[%s] Snapshot loaded:", orderId));
+                printOrder(order.getVersions());
+            })
+            .build();
+    }
+
+    @Override
+    public ResultHandler<BoxedUnit> createOnRecovery() {
+        return ResultHandler
+            .onSuccess(v -> {
+                System.out.println(String.format("[%s] Recovery complete:", orderId));
+                printOrder(order.getVersions());
+            });
     }
 
     static void printOrder(List<Versioned<Order>> versions) {

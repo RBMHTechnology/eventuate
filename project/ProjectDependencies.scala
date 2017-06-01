@@ -17,7 +17,7 @@
 import sbt._
 
 object ProjectDependencyVersions {
-  val AkkaVersion = "2.4.12"
+  val AkkaVersion = "2.5.2"
   val CassandraVersion = "3.4"
   val Log4jVersion = "2.5"
   val ProtobufVersion = "2.5.0"
