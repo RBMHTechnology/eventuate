@@ -18,7 +18,7 @@ package com.rbmhtechnology.eventuate
 
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper
 
-object EmbeddedCassandra {
+object MultiNodeEmbeddedCassandra {
   val DefaultCassandraDir =
     "target/embedded-cassandra"
 
