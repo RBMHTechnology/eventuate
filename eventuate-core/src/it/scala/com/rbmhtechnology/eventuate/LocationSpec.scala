@@ -176,8 +176,8 @@ class Location(val id: String, logFactory: String => Props, customPort: Int, cus
   val probe: TestProbe =
     new TestProbe(system)
 
-  def listener(eventLog: ActorRef): EventListener =
-    new EventListener(id, eventLog)(system)
+  def listener(eventLog: ActorRef, aggregateId: Option[String] = None): EventListener =
+    new EventListener(id, eventLog, aggregateId)(system)
 
   def endpoint(
     logNames: Set[String],
@@ -197,10 +197,13 @@ class Location(val id: String, logFactory: String => Props, customPort: Int, cus
 }
 
 object Location {
-  class EventListener(locationId: String, eventLog: ActorRef)(implicit system: ActorSystem) extends TestProbe(system, s"EventListener-$locationId") { listener =>
+  class EventListener(locationId: String, eventLog: ActorRef, aggregateId: Option[String])(implicit system: ActorSystem) extends TestProbe(system, s"EventListener-$locationId") { listener =>
     private class EventListenerView extends EventsourcedView {
       override val id =
         testActorName
+
+      override def aggregateId =
+        listener.aggregateId
 
       override val eventLog =
         listener.eventLog
