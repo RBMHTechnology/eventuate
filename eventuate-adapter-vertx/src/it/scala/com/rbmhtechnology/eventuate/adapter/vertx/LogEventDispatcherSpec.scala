@@ -24,10 +24,13 @@ import com.rbmhtechnology.eventuate.EventsourcingProtocol._
 import com.rbmhtechnology.eventuate.adapter.vertx.LogEventDispatcher.{ EndpointRoute, EventProducerRef }
 import com.rbmhtechnology.eventuate.utilities._
 import com.rbmhtechnology.eventuate.{ EventsourcedView, SingleLocationSpecLeveldb }
-import io.vertx.core.eventbus.{ Message, ReplyException }
+import io.vertx.core.eventbus.{ Message, ReplyException, ReplyFailure }
 import org.scalatest.{ MustMatchers, WordSpecLike }
 
+import akka.pattern
+
 import scala.collection.immutable.Seq
+import scala.concurrent.duration._
 import scala.concurrent.{ Future, Promise }
 
 object LogEventDispatcherSpec {
@@ -92,27 +95,28 @@ class LogEventDispatcherSpec extends TestKit(ActorSystem("test", TestConfig.defa
   def logId(id: String): String =
     s"$id-${UUID.randomUUID().toString}"
 
-  def waitForStartup(): Unit = {
-    Thread.sleep(500)
-  }
-
   def logReader(id: String, log: ActorRef, receiver: ActorRef): ActorRef =
     system.actorOf(Props(new LogReader(id, log, receiver)))
 
   def logEventDispatcher(routes: EndpointRoute*): ActorRef = {
-    val actor = system.actorOf(LogEventDispatcher.props(routes.toVector, vertx))
-    waitForStartup()
-    actor
+    system.actorOf(LogEventDispatcher.props(routes.toVector, vertx))
   }
 
   def failingWriteLog(log: ActorRef, failureEvents: Seq[Any] = Seq()): ActorRef = {
     system.actorOf(Props(new FailingWriteLog(log, failureEvents)))
   }
 
-  def persist(endpoint: String, event: Any): Future[Any] = {
+  def persist(endpoint: String, event: Any, retryOnMissingHandler: Boolean = true): Future[Any] = {
     val promise = Promise[Message[Any]]()
     vertx.eventBus().send[Any](endpoint, event, promise.asVertxHandler)
-    promise.future.map(_.body)
+    promise.future
+      .map(_.body)
+      .recoverWith {
+        case e: ReplyException if e.failureType() == ReplyFailure.NO_HANDLERS && retryOnMissingHandler =>
+          pattern.after(100.millis, system.scheduler) {
+            persist(endpoint1, event, retryOnMissingHandler)
+          }
+      }
   }
 
   "A LogEventDispatcher" when {
@@ -122,8 +126,8 @@ class LogEventDispatcherSpec extends TestKit(ActorSystem("test", TestConfig.defa
           EndpointRoute(endpoint1, EventProducerRef("id1", logA))
         )
 
-        persist(endpoint1, "ev-1")
-        persist(endpoint1, "ev-2")
+        persist(endpoint1, "ev-1").await must be(PERSISTED)
+        persist(endpoint1, "ev-2").await must be(PERSISTED)
 
         logAProbe.expectMsgAllOf(
           ReadEvent(emitterId = "id1", event = "ev-1"),
@@ -135,8 +139,8 @@ class LogEventDispatcherSpec extends TestKit(ActorSystem("test", TestConfig.defa
           EndpointRoute(endpoint2, EventProducerRef("id1", logA))
         )
 
-        persist(endpoint1, "ev-1")
-        persist(endpoint2, "ev-2")
+        persist(endpoint1, "ev-1").await must be(PERSISTED)
+        persist(endpoint2, "ev-2").await must be(PERSISTED)
 
         logAProbe.expectMsgAllOf(
           ReadEvent(emitterId = "id1", event = "ev-1"),
@@ -148,11 +152,11 @@ class LogEventDispatcherSpec extends TestKit(ActorSystem("test", TestConfig.defa
           EndpointRoute(endpoint2, EventProducerRef("id-b", logB))
         )
 
-        persist(endpoint1, "ev-a1")
-        persist(endpoint1, "ev-a2")
+        persist(endpoint1, "ev-a1").await must be(PERSISTED)
+        persist(endpoint1, "ev-a2").await must be(PERSISTED)
 
-        persist(endpoint2, "ev-b1")
-        persist(endpoint2, "ev-b2")
+        persist(endpoint2, "ev-b1").await must be(PERSISTED)
+        persist(endpoint2, "ev-b2").await must be(PERSISTED)
 
         logAProbe.expectMsgAllOf(
           ReadEvent(emitterId = "id-a", event = "ev-a1"),
@@ -167,10 +171,10 @@ class LogEventDispatcherSpec extends TestKit(ActorSystem("test", TestConfig.defa
           EndpointRoute(endpoint1, EventProducerRef("id-a1", logA), { case s: String if !s.contains("filter") => true })
         )
 
-        persist(endpoint1, "ev-1")
-        persist(endpoint1, "ev-2-filter")
-        persist(endpoint1, "ev-3")
-        persist(endpoint1, "ev-4-filter")
+        persist(endpoint1, "ev-1").await must be(PERSISTED)
+        persist(endpoint1, "ev-2-filter").await must be(FILTERED)
+        persist(endpoint1, "ev-3").await must be(PERSISTED)
+        persist(endpoint1, "ev-4-filter").await must be(FILTERED)
 
         logAProbe.expectMsgAllOf(
           ReadEvent(emitterId = "id-a1", event = "ev-1"),
@@ -199,7 +203,7 @@ class LogEventDispatcherSpec extends TestKit(ActorSystem("test", TestConfig.defa
           EndpointRoute(endpoint1, EventProducerRef("id1", logA))
         )
 
-        persist("invalid-endpoint", "ev-1").failed.await mustBe a[ReplyException]
+        persist("invalid-endpoint", "ev-1", retryOnMissingHandler = false).failed.await mustBe a[ReplyException]
       }
     }
     "encountering an error while persisting events" must {
