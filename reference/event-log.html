@@ -358,7 +358,7 @@
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">cassandra</span><span class="o">.</span><span class="n">default</span><span class="o">-</span><span class="n">port</span> <span class="k">=</span> <span class="mi">9042</span>
 </pre></div>
 </div>
-<p>If Cassandra requires authentication, the default username used by Eventuate is <code class="docutils literal"><span class="pre">cassandra</span></code>, the default password is <code class="docutils literal"><span class="pre">cassandra</span></code> (which corresponds to Cassandra&#8217;s default superuser). This can be changed with</p>
+<p>If Cassandra requires authentication, the default username used by Eventuate is <code class="docutils literal"><span class="pre">cassandra</span></code>, the default password is <code class="docutils literal"><span class="pre">cassandra</span></code> (which corresponds to Cassandra’s default superuser). This can be changed with</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">cassandra</span><span class="o">.</span><span class="n">username</span> <span class="k">=</span> <span class="s">&quot;my-username&quot;</span>
 <span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">cassandra</span><span class="o">.</span><span class="n">password</span> <span class="k">=</span> <span class="s">&quot;my-password&quot;</span>
 </pre></div>
@@ -588,7 +588,7 @@ akka.remote.enabled-transports = [&quot;akka.remote.netty.tcp&quot;]
 <li>Physical deletion of events: Depending on the storage backend logically deleted events are eventually physically deleted. Physical deleted events are of course not available any more for local replay or replication. Physical deletion is currently only supported by the LevelDB backend.</li>
 </ul>
 <p>While a location can very well decide if it needs certain events from a local event log to recover its state, it may be much less clear if these events might be needed in the future for replication to other locations.
-Eventuate can defer physical deletion of events until they are replicated to known <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code>s. In case a newly added location wants to catch up with the application&#8217;s full event history, it has to connect to a location that actually has the full event history.</p>
+Eventuate can defer physical deletion of events until they are replicated to known <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code>s. In case a newly added location wants to catch up with the application’s full event history, it has to connect to a location that actually has the full event history.</p>
 <p>Considering this, deletion is invoked through the <code class="docutils literal"><span class="pre">delete</span></code> method of a <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="c1">// logically delete all events from log L1 with a sequence number &lt;= 100</span>
 <span class="c1">// defer physical deletion until they are replicated to the given endpoints</span>
@@ -603,7 +603,7 @@ Eventuate can defer physical deletion of events until they are replicated to kno
 </div>
 <p>This method returns the sequence number up to which events are logically deleted. The returned sequence number can differ from the requested one (here <code class="docutils literal"><span class="pre">100L</span></code>), if</p>
 <ul class="simple">
-<li>the log&#8217;s current sequence number is smaller than the requested number. In this case the current sequence number is returned.</li>
+<li>the log’s current sequence number is smaller than the requested number. In this case the current sequence number is returned.</li>
 <li>there was a previous successful deletion request with a higher sequence number. In this case that sequence number is returned.</li>
 </ul>
 <p>Depending on the storage backend, this call also triggers physical deletion of events in a reliable background process that survives event log restarts. To defer physical deletion of not yet replicated events, the third parameter takes a set of <code class="docutils literal"><span class="pre">ReplicationEndpoint</span></code> ids. Events are not physically deleted until they are replicated to these endpoints. If the set is empty, asynchronous deletion is triggered immediately.</p>

@@ -342,7 +342,7 @@
 }
 </pre></div>
 </div>
-<p>This example uses a single file for key- and trust-store. Having a single self-signed certificate in this store suffices to establish mutually authenticated connections via TLS between locations. However a self-signed key makes replacing the certificate in a rolling upgrade tedious. The following script (derived from the scripts of the documentation of <a class="reference external" href="http://typesafehub.github.io/ssl-config/CertificateGeneration.html#using-keytool">Lightbend&#8217;s SSL-Config library</a>) creates a root certificate that is used to sign the certificate for client and server authentication. The root certificate is kept in the private keystore <code class="docutils literal"><span class="pre">rootca.jks</span></code>, which does not have to be deployed with the application. It is imported as <code class="docutils literal"><span class="pre">trustedCertEntry</span></code> into the keystore <code class="docutils literal"><span class="pre">keystore.jks</span></code>, which is the one referenced by the akka configuration.</p>
+<p>This example uses a single file for key- and trust-store. Having a single self-signed certificate in this store suffices to establish mutually authenticated connections via TLS between locations. However a self-signed key makes replacing the certificate in a rolling upgrade tedious. The following script (derived from the scripts of the documentation of <a class="reference external" href="http://typesafehub.github.io/ssl-config/CertificateGeneration.html#using-keytool">Lightbend’s SSL-Config library</a>) creates a root certificate that is used to sign the certificate for client and server authentication. The root certificate is kept in the private keystore <code class="docutils literal"><span class="pre">rootca.jks</span></code>, which does not have to be deployed with the application. It is imported as <code class="docutils literal"><span class="pre">trustedCertEntry</span></code> into the keystore <code class="docutils literal"><span class="pre">keystore.jks</span></code>, which is the one referenced by the akka configuration.</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span>#!/bin/bash -eu
 
 export PW=&lt;...&gt;
@@ -443,7 +443,7 @@ keytool -list \
 </div>
 <div class="section" id="configuration">
 <span id="id2"></span><h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
-<p>This is the reference configuration of Eventuate. It is processed by Typesafe&#8217;s <a class="reference external" href="https://github.com/typesafehub/config">config</a> library and can be overridden by applications:</p>
+<p>This is the reference configuration of Eventuate. It is processed by Typesafe’s <a class="reference external" href="https://github.com/typesafehub/config">config</a> library and can be overridden by applications:</p>
 <div class="section" id="eventuate-core">
 <h2>eventuate-core<a class="headerlink" href="#eventuate-core" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">akka</span> <span class="o">{</span>

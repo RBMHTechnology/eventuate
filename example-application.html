@@ -317,7 +317,7 @@
 <span id="id1"></span><h1>Example application<a class="headerlink" href="#example-application" title="Permalink to this headline">¶</a></h1>
 <div class="admonition hint">
 <p class="first admonition-title">Hint</p>
-<p class="last">The example application is rather outdated and we plan to design and implement a better one to demonstrate the latest Eventuate features and best practices. If you have any preferences what you&#8217;d like to see in a new example application, please add a comment to ticket <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/337">#337</a> or contact us in the <a class="reference external" href="https://gitter.im/RBMHTechnology/eventuate">forum</a>.</p>
+<p class="last">The example application is rather outdated and we plan to design and implement a better one to demonstrate the latest Eventuate features and best practices. If you have any preferences what you’d like to see in a new example application, please add a comment to ticket <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/issues/337">#337</a> or contact us in the <a class="reference external" href="https://gitter.im/RBMHTechnology/eventuate">forum</a>.</p>
 </div>
 <p>The example application is an over-simplified order management application that allows users to add and remove items from orders via a command-line interface. Order instances are replicated across locations and can be updated at any location. Orders remain writeable during partitions and conflicting updates can be resolved interactively when the partition heals. The example application source code is available as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/scala/com/rbmhtechnology/example/ordermgnt">Scala version</a> and as <a class="reference external" href="https://github.com/RBMHTechnology/eventuate/tree/master/src/test/java/com/rbmhtechnology/example/japi/ordermgnt">Java 8 version</a>.</p>
 <div class="admonition note">
@@ -366,8 +366,8 @@
 <p>Each location of the example application has a simple command-line interface to create and update orders:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">create</span> <span class="pre">&lt;order-id&gt;</span></code> creates an order with given <code class="docutils literal"><span class="pre">order-id</span></code>.</li>
-<li><code class="docutils literal"><span class="pre">add</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;item&gt;</span></code> adds <code class="docutils literal"><span class="pre">item</span></code> to an order&#8217;s items list.</li>
-<li><code class="docutils literal"><span class="pre">remove</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;item&gt;</span></code> removes <code class="docutils literal"><span class="pre">item</span></code> from an order&#8217;s items list.</li>
+<li><code class="docutils literal"><span class="pre">add</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;item&gt;</span></code> adds <code class="docutils literal"><span class="pre">item</span></code> to an order’s items list.</li>
+<li><code class="docutils literal"><span class="pre">remove</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;item&gt;</span></code> removes <code class="docutils literal"><span class="pre">item</span></code> from an order’s items list.</li>
 <li><code class="docutils literal"><span class="pre">cancel</span> <span class="pre">&lt;order-id&gt;</span></code> cancels an order.</li>
 <li><code class="docutils literal"><span class="pre">save</span> <span class="pre">&lt;order-id&gt;</span></code> saves a snapshot of an order.</li>
 </ul>
@@ -389,7 +389,7 @@
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">compile</span>
 </pre></div>
 </div>
-<p>from the project&#8217;s root directory (needs to be done only once). Then, run:</p>
+<p>from the project’s root directory (needs to be done only once). Then, run:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span>
 </pre></div>
 </div>
