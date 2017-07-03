@@ -1,0 +1,37 @@
+jdk:
+  - oraclejdk8
+
+branches:
+  only:
+  - newSerializeDocs
+
+sudo:
+  false
+language:
+  - scala
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot/
+before_install:
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then ./deploy.prep; fi
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then eval `ssh-agent`; fi
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then ssh-add deploy; fi
+before_script:
+  - pip install --user sphinx
+  - pip install --user sphinx_rtd_theme
+script:
+  - .travis/compile-all.sh $TRAVIS_SCALA_VERSION
+  - .travis/test-core.sh $TRAVIS_SCALA_VERSION
+  - .travis/test-leveldb.sh $TRAVIS_SCALA_VERSION
+  - .travis/test-crdt.sh $TRAVIS_SCALA_VERSION
+  - .travis/test-stream.sh $TRAVIS_SCALA_VERSION
+  - .travis/test-spark.sh $TRAVIS_SCALA_VERSION
+  - .travis/test-vertx.sh $TRAVIS_SCALA_VERSION
+  - find $HOME/.sbt -name "*.lock" | xargs rm
+  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+after_success:
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then .travis/publish-all.sh $TRAVIS_SCALA_VERSION; fi
+scala:
+  - 2.11.8
+  - 2.12.0

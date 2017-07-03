@@ -177,6 +177,9 @@ object ProjectSettings {
       git.remoteRepo := "git@github.com:RBMHTechnology/eventuate.git",
       site.addMappingsToSiteDir(mappings in (ScalaUnidoc, packageDoc), "latest/api"),
       unmanagedSourceDirectories in Test += baseDirectory.value / "src" / "sphinx"/ "code",
+      unmanagedSourceDirectories in Test += baseDirectory.value / "examples" / "user-guide"/ "src" / "main" / "java",
+      unmanagedSourceDirectories in Test += baseDirectory.value / "examples" / "user-guide"/ "src" / "main" / "scala",
+      unmanagedSourceDirectories in Test += baseDirectory.value / "examples" / "user-guide"/ "src" / "main" / "resources",
       scalacOptions in (Compile, doc) := List("-skip-packages", "akka")
     )
 

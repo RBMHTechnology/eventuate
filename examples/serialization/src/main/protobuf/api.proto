@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+// From scalapb-runtime
+import "scalapb/scalapb.proto";
+import "google/protobuf/wrappers.proto";
+//import "CommonFormats.proto";
+import "com.rbmhtechnology.eventuate.serializer.CommonFormats";
+
+package api;
+
+// VectorTimeFormat is defined in eventuate-core/src/main/protobuf/CommonFormats.proto
+message ResolvedEvent {
+    option (scalapb.message).extends = "api.Event";
+    optional VectorTimeFormat selectedTimestamp = 6;
+}
+
+// note that api comes from the name of this proto file
+// creates api.Event
+// Generated code is placed in target/

@@ -46,7 +46,8 @@ To publish the binaries to the local Maven repository, run::
 Documentation
 ~~~~~~~~~~~~~
 
-Our documentation is written in reStructuredText_ and located in ``src/sphinx``. Building the documentation requires an installation of Python_ and Sphinx_. 
+Our documentation is written in reStructuredText_ and located in ``src/sphinx``, except for the User Guide, which is located in `examples/user-guide`.
+Building the documentation requires an installation of Python_ and Sphinx_.
 
 The following installation instructions are for Mac OS X. If Python isn’t already installed, install Homebrew_ first and then Python with::
 
