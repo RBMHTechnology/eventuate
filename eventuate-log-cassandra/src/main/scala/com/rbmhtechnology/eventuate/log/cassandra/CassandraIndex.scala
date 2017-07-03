@@ -17,6 +17,7 @@
 package com.rbmhtechnology.eventuate.log.cassandra
 
 import akka.actor._
+import akka.pattern.pipe
 
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.log.EventLogClock
@@ -25,11 +26,9 @@ import scala.collection.immutable.Seq
 import scala.concurrent._
 import scala.util._
 
-private[eventuate] class CassandraIndex(cassandra: Cassandra, eventLogClock: EventLogClock, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore, logId: String) extends Actor with Stash with ActorLogging {
+private[eventuate] class CassandraIndex(cassandra: Cassandra, eventLogClock: EventLogClock, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore, logId: String) extends Actor {
   import CassandraIndex._
-
-  private val scheduler = context.system.scheduler
-  private val eventLog = context.parent
+  import context.dispatcher
 
   private val indexUpdater = context.actorOf(Props(new CassandraIndexUpdater(cassandra, eventLogStore, indexStore)))
 
@@ -39,20 +38,17 @@ private[eventuate] class CassandraIndex(cassandra: Cassandra, eventLogClock: Eve
    */
   private var clock: EventLogClock = eventLogClock
 
-  def receive = {
-    case UpdateIndex(_, toSequenceNr) =>
-      indexUpdater ! UpdateIndex(clock, toSequenceNr)
-    case u @ UpdateIndexSuccess(t, _) =>
+  override def receive = {
+    case UpdateIndex(_, toSequenceNr, promise) =>
+      indexUpdater ! UpdateIndex(clock, toSequenceNr, promise)
+      promise.future.pipeTo(self)
+    case UpdateIndexSuccess(t, _) =>
       clock = t
-      eventLog ! u
-    case u @ UpdateIndexFailure(cause) =>
-      log.error(cause, "UpdateIndex failure")
-      eventLog ! u
   }
 }
 
 private[eventuate] object CassandraIndex {
-  case class UpdateIndex(clock: EventLogClock, toSequenceNr: Long)
+  case class UpdateIndex(clock: EventLogClock, toSequenceNr: Long, promise: Promise[UpdateIndexSuccess])
   case class UpdateIndexProgress(increment: IndexIncrement)
   case class UpdateIndexSuccess(clock: EventLogClock, steps: Int = 0)
   case class UpdateIndexFailure(cause: Throwable)
@@ -83,28 +79,27 @@ private[eventuate] object CassandraIndex {
     Props(new CassandraIndex(cassandra, eventLogClock, eventLogStore, indexStore, logId))
 }
 
-private class CassandraIndexUpdater(cassandra: Cassandra, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore) extends Actor {
+private class CassandraIndexUpdater(cassandra: Cassandra, eventLogStore: CassandraEventLogStore, indexStore: CassandraIndexStore) extends Actor with ActorLogging {
   import CassandraIndex._
   import context.dispatcher
 
-  val index = context.parent
-
   val idle: Receive = {
-    case UpdateIndex(clock, toSequenceNr) =>
+    case UpdateIndex(clock, toSequenceNr, promise) =>
       update(clock.sequenceNr + 1L, toSequenceNr, IndexIncrement(AggregateEvents(), clock))
-      context.become(updating(0, toSequenceNr))
+      context.become(updating(0, toSequenceNr, promise))
   }
 
-  def updating(steps: Int, toSequenceNr: Long): Receive = {
+  def updating(steps: Int, toSequenceNr: Long, promise: Promise[UpdateIndexSuccess]): Receive = {
     case UpdateIndexFailure(err) =>
-      index ! UpdateIndexFailure(err)
+      promise.failure(err)
+      log.error(err, "UpdateIndex failure")
       context.become(idle)
     case UpdateIndexSuccess(t, _) =>
-      index ! UpdateIndexSuccess(t, steps)
+      promise.success(UpdateIndexSuccess(t, steps))
       context.become(idle)
     case UpdateIndexProgress(inc) =>
       update(inc.clock.sequenceNr + 1L, toSequenceNr, inc.clearAggregateEvents)
-      context.become(updating(steps + 1, toSequenceNr))
+      context.become(updating(steps + 1, toSequenceNr, promise))
   }
 
   def receive = idle

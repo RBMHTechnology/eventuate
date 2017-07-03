@@ -35,10 +35,10 @@ package object utilities {
     def await: T = Await.result(awaitable, timeoutDuration)
   }
 
-  def write(target: ReplicationTarget, events: Seq[String]): Unit = {
+  def write(target: ReplicationTarget, events: Seq[String], aggregateId: Option[String] = None): Unit = {
     val system = target.endpoint.system
     val probe = TestProbe()(system)
-    target.log ! Write(events.map(DurableEvent(_, target.logId)), system.deadLetters, probe.ref, 0, 0)
+    target.log ! Write(events.map(DurableEvent(_, target.logId, emitterAggregateId = aggregateId)), system.deadLetters, probe.ref, 0, 0)
     probe.expectMsgClass(classOf[WriteSuccess])
   }
 

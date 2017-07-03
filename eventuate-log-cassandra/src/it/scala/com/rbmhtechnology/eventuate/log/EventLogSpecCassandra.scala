@@ -159,6 +159,12 @@ class EventLogSpecCassandra extends TestKit(ActorSystem("test", EventLogSpecCass
       expectReplay(Some("a2"), "b", "d")
       expectReplay(Some("a3"), "f")
     }
+    "updates the index on AdjustEventLogClock request" in {
+      writeEmittedEvents(List(event("a"), event("b")))
+      (log ? AdjustEventLogClock).await
+
+      indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 2L, versionVector = timestamp(2L)), 1))
+    }
     "replay aggregate events from log" in {
       writeEmittedEvents(List(
         event("a", Some("a1")),

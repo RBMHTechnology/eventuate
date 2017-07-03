@@ -31,14 +31,14 @@ trait MultiNodeSupportCassandra extends BeforeAndAfterAll { this: MultiNodeSpec 
   val coordinator = RoleName("nodeA")
 
   def cassandraDir: String =
-    EmbeddedCassandra.DefaultCassandraDir
+    MultiNodeEmbeddedCassandra.DefaultCassandraDir
 
   def logProps(logId: String): Props =
     CassandraEventLog.props(logId)
 
   override def atStartup(): Unit = {
     if (isNode(coordinator)) {
-      EmbeddedCassandra.start(cassandraDir)
+      MultiNodeEmbeddedCassandra.start(cassandraDir)
       Cassandra(system)
     }
     enterBarrier("startup")
@@ -54,7 +54,7 @@ trait MultiNodeSupportCassandra extends BeforeAndAfterAll { this: MultiNodeSpec 
     // clean database and delete snapshot files
     if (isNode(coordinator)) {
       FileUtils.deleteDirectory(snapshotRootDir)
-      EmbeddedCassandra.clean()
+      MultiNodeEmbeddedCassandra.clean()
     }
   }
 }

@@ -19,6 +19,7 @@ package com.rbmhtechnology.eventuate.log.cassandra
 import java.io.Closeable
 
 import akka.actor._
+import akka.pattern.pipe
 
 import com.datastax.driver.core.QueryOptions
 import com.datastax.driver.core.exceptions._
@@ -136,7 +137,7 @@ class CassandraEventLog(id: String, aggregateIndexing: Boolean) extends EventLog
 
   override def writeEventLogClockSnapshot(clock: EventLogClock): Future[Unit] = {
     import context.dispatcher
-    indexStore.writeEventLogClockSnapshotAsync(clock).map(_ => ())
+    updateIndex(clock).flatMap(_ => indexStore.writeEventLogClockSnapshotAsync(clock)).map(_ => ())
   }
 
   override def write(events: Seq[DurableEvent], partition: Long, clock: EventLogClock): Unit =
@@ -183,24 +184,27 @@ class CassandraEventLog(id: String, aggregateIndexing: Boolean) extends EventLog
     eventLogStore.write(events, partition)
     updateCount += events.size
     if (updateCount >= cassandra.settings.indexUpdateLimit) {
-      if (aggregateIndexing) {
-        // asynchronously update the index
-        index ! UpdateIndex(null, clock.sequenceNr)
-      } else {
-        // otherwise update the event log clock snapshot only
-        import context.dispatcher
-        indexStore.writeEventLogClockSnapshotAsync(clock)
-      }
-
+      updateIndex(clock)
       updateCount = 0L
     }
+  }
+
+  private def updateIndex(clock: EventLogClock): Future[EventLogClock] = {
+    import context.dispatcher
+    if (aggregateIndexing) {
+      // asynchronously update the index
+      val promise = Promise[UpdateIndexSuccess]
+      index ! UpdateIndex(null, clock.sequenceNr, promise)
+      promise.future.pipeTo(self)
+      promise.future.map(_.clock)
+    } else
+      // otherwise update the event log clock snapshot only
+      indexStore.writeEventLogClockSnapshotAsync(clock)
   }
 
   override def unhandled(message: Any): Unit = message match {
     case u @ UpdateIndexSuccess(clock, _) =>
       indexSequenceNr = clock.sequenceNr
-      onIndexEvent(u)
-    case u @ UpdateIndexFailure(_) =>
       onIndexEvent(u)
     case other =>
       super.unhandled(other)
