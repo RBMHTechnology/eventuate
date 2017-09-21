@@ -60,3 +60,18 @@ message RemoveOpFormat {
   optional PayloadFormat entry = 1;
   repeated VectorTimeFormat timestamps = 2;
 }
+
+message Position {
+  optional int32 order = 1;
+  optional string emitterId = 2;
+}
+
+message InsertOpFormat {
+  optional PayloadFormat entry = 1;
+  optional Position pos = 2;
+  optional Position after = 3;
+}
+
+message DeleteOpFormat {
+  optional Position after 1;
+}

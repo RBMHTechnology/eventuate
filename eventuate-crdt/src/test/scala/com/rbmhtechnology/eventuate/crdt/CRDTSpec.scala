@@ -25,6 +25,9 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
   val lwwReg = LWWRegister[Int]()
   val orSet = ORSet[Int]()
   val orShoppingCart = ORCart[String]()
+  val rgArray = RGArray[Char]
+
+  def pos(pos: Int, emitterId: String) = Position(pos, emitterId)
 
   def vectorTime(t1: Long, t2: Long): VectorTime =
     VectorTime("p1" -> t1, "p2" -> t2)
@@ -195,6 +198,42 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
         .add("b", 1, vectorTime(4, 0))
         .remove(Set(vectorTime(1, 0), vectorTime(2, 0), vectorTime(3, 0)))
         .value should be(Map("b" -> 1))
+    }
+  }
+
+  "A RGArray" must {
+    "insert multiple elements in order" in {
+      rgArray
+        .insert('a', pos(0, "a"))
+        .insert('b', pos(1, "a"))
+        .insert('c', pos(2, "a"))
+        .value should be(List('a', 'b', 'c'))
+    }
+    "inser concurrently elements with preserve order" in {
+      rgArray
+        .insert('a', pos(0, "a"))
+        .insert('b', pos(1, "a"))
+        .insert('c', pos(2, "a"))
+        .insert(pos(1, "a"), 'x', pos(3, "a"))
+        .insert(pos(0, "a"), 'y', pos(3, "b"))
+        .value should be(List('a', 'y', 'b', 'x', 'c'))
+    }
+    "insert concurrently elements in the same position preserving order" in {
+      rgArray
+        .insert('a', pos(0, "a"))
+        .insert('b', pos(1, "a"))
+        .insert('c', pos(2, "a"))
+        .insert(pos(1, "a"), 'x', pos(3, "a"))
+        .insert(pos(1, "a"), 'y', pos(3, "b"))
+        .value should be(List('a', 'b', 'x', 'y', 'c'))
+    }
+    "delete elements" in {
+      rgArray
+        .insert('a', pos(0, "a"))
+        .insert('b', pos(1, "a"))
+        .insert('c', pos(2, "a"))
+        .delete(pos(2, "a"))
+        .value should be(List('a', 'b'))
     }
   }
 }
