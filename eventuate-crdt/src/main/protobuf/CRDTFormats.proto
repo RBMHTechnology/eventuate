@@ -73,5 +73,5 @@ message InsertOpFormat {
 }
 
 message DeleteOpFormat {
-  optional Position after 1;
+  optional Position after = 1;
 }
