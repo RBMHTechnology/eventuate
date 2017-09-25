@@ -521,4 +521,3 @@ trait EventsourcedView extends Actor with Stash {
     super.postStop()
   }
 }
-

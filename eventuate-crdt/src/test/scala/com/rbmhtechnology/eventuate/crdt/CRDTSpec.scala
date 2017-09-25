@@ -204,9 +204,9 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
   "A RGArray" must {
     "insert multiple elements in order" in {
       rgArray
-        .insert('a', pos(0, "a"))
-        .insert('b', pos(1, "a"))
-        .insert('c', pos(2, "a"))
+        .insertRight('a', pos(0, "a"))
+        .insertRight('b', pos(1, "a"))
+        .insertRight('c', pos(2, "a"))
         .value should be(List('a', 'b', 'c'))
     }
     "inser concurrently elements with preserve order" in {
