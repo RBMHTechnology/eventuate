@@ -202,38 +202,48 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
   }
 
   "A RGArray" must {
-    "insert multiple elements in order" in {
+    "insert value in the middle" in {
+      val first = pos(1, "a")
       rgArray
-        .insertRight('a', pos(0, "a"))
-        .insertRight('b', pos(1, "a"))
-        .insertRight('c', pos(2, "a"))
-        .value should be(List('a', 'b', 'c'))
+        .insert('a', first)
+        .insert(first, 'c', pos(2, "a"))
+        .insert(first, 'b', pos(3, "a"))
+        .value should be(Vector('a', 'b', 'c'))
     }
-    "inser concurrently elements with preserve order" in {
+    "insert values concurrently with preserved order" in {
+      val first = pos(1, "a")
+      val second = pos(2, "a")
+      val third = pos(3, "a")
       rgArray
-        .insert('a', pos(0, "a"))
-        .insert('b', pos(1, "a"))
-        .insert('c', pos(2, "a"))
-        .insert(pos(1, "a"), 'x', pos(3, "a"))
-        .insert(pos(0, "a"), 'y', pos(3, "b"))
-        .value should be(List('a', 'y', 'b', 'x', 'c'))
+        .insert('a', first)
+        .insert(first, 'b', second)
+        .insert(second, 'c', third)
+        .insert(second, 'x', pos(4, "a"))
+        .insert(first, 'y', pos(4, "b"))
+        .value should be(Vector('a', 'y', 'b', 'x', 'c'))
     }
     "insert concurrently elements in the same position preserving order" in {
+      val first = pos(1, "a")
+      val second = pos(2, "a")
+      val third = pos(3, "a")
       rgArray
-        .insert('a', pos(0, "a"))
-        .insert('b', pos(1, "a"))
-        .insert('c', pos(2, "a"))
-        .insert(pos(1, "a"), 'x', pos(3, "a"))
-        .insert(pos(1, "a"), 'y', pos(3, "b"))
-        .value should be(List('a', 'b', 'x', 'y', 'c'))
+        .insert('a', first)
+        .insert(first, 'b', second)
+        .insert(second, 'c', third)
+        .insert(second, 'x', pos(4, "a"))
+        .insert(second, 'y', pos(4, "b"))
+        .value should be(Vector('a', 'b', 'x', 'y', 'c'))
     }
     "delete elements" in {
+      val first = pos(1, "a")
+      val second = pos(2, "a")
+      val third = pos(3, "a")
       rgArray
-        .insert('a', pos(0, "a"))
-        .insert('b', pos(1, "a"))
-        .insert('c', pos(2, "a"))
-        .delete(pos(2, "a"))
-        .value should be(List('a', 'b'))
+        .insert('a', first)
+        .insert(first, 'b', second)
+        .insert(second, 'c', third)
+        .delete(second)
+        .value should be(Vector('a', 'c'))
     }
   }
 }

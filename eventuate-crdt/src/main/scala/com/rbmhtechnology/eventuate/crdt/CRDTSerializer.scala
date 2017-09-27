@@ -249,9 +249,9 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     ORCartEntry(payloadSerializer.payload(orCartEntryFormat.getKey), orCartEntryFormat.getQuantity)
 
   private def rgArray(format: CRDTFormats.RGArrayFormat): RGArray[Any] = {
-    val vertexes = format.getVertexesList.iterator.asScala.foldLeft(List.empty[Vertex[Any]]) {
-      case (acc, vertex) => rgArrayVertex(vertex) :: acc
-    }.reverse
+    val vertexes = format.getVertexesList.iterator.asScala.foldLeft(Vector.empty[Vertex[Any]]) {
+      case (acc, vertex) => acc :+ rgArrayVertex(vertex)
+    }
     RGArray(vertexes, format.getLastPos)
   }
 

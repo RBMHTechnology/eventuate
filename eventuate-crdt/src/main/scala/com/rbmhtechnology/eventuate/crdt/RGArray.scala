@@ -30,20 +30,23 @@ import scala.util.{ Success, Failure, Try }
  *
  * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]], specification 15
  */
-case class RGArray[A](val vertexes: List[Vertex[A]] = Nil, val lastPos: Int = 0) extends CRDTFormat {
-  def value: List[A] = vertexes.filterNot(_.isTombstoned).map(_.value)
+case class RGArray[A](vertexes: Vector[Vertex[A]] = Vector.empty[Vertex[A]], lastPos: Int = 0) extends CRDTFormat {
+  def value: Vector[A] = vertexes.filterNot(_.isTombstoned).map(_.value)
 
-  def insert(after: Position, value: A, pos: Position) = {
-    val idx: Int = vertexes.lastIndexWhere((v: Vertex[A]) => (v.pos >= after && v.pos <= pos))
-    val nextPos = math.max(lastPos, pos.order)
-    if (after == Position.head)
-      RGArray(Vertex(value, pos) :: vertexes, nextPos)
-    else
-      RGArray(vertexes.take(idx) ::: (Vertex(value, pos) :: vertexes.drop(idx)), nextPos)
+  def insert(value: A, newPos: Position): RGArray[A] = insert(Position.head, value, newPos)
+
+  def insert(index: Position, value: A, newPos: Position): RGArray[A] = {
+    val nextPos = math.max(lastPos, newPos.order)
+    if (index == Position.head || vertexes.isEmpty)
+      RGArray(Vertex(value, newPos) +: vertexes, nextPos)
+    else {
+      val idx: Int = vertexes.lastIndexWhere((v: Vertex[A]) => v.pos >= index && v.pos <= newPos)
+      RGArray((vertexes.take(idx) :+ Vertex(value, newPos)) ++: vertexes.drop(idx), nextPos)
+    }
   }
 
-  def delete(pos: Position) = {
-    this.copy(vertexes = vertexes.map((v: Vertex[A]) => if (v.pos == pos) v.copy(isTombstoned = true) else v))
+  def delete(index: Position) = {
+    this.copy(vertexes = vertexes.map((v: Vertex[A]) => if (v.pos == index) v.copy(isTombstoned = true) else v))
   }
 
   def removeTombstones() = this.copy(vertexes = vertexes.filterNot(_.isTombstoned))
@@ -54,10 +57,10 @@ object RGArray {
   def apply[A]: RGArray[A] =
     new RGArray[A]()
 
-  implicit def RGArrayServiceOps[A] = new CRDTServiceOps[RGArray[A], List[A]] {
+  implicit def RGArrayServiceOps[A] = new CRDTServiceOps[RGArray[A], Vector[A]] {
     override def zero: RGArray[A] = RGArray.apply[A]
 
-    override def value(crdt: RGArray[A]): List[A] = crdt.value
+    override def value(crdt: RGArray[A]): Vector[A] = crdt.value
 
     override def prepare(crdt: RGArray[A], operation: Any): Try[Option[Any]] = operation match {
       case InsertOp(pos, value, None) => Success {
@@ -78,16 +81,11 @@ class RGArrayService[A](val serviceId: String, val log: ActorRef)(implicit val s
   extends CRDTService[RGArray[A], Vector[A]] {
 
   /**
-   * Adds `entry` to the RGA identified by `id` at the head of a [[RGArray]] and returns an updated entry set.
-   */
-  def insertRight(id: String, value: A): Future[Vector[A]] = insertRight(id, Position.head, value)
-
-  /**
    * Adds `entry` to the RGA identified by `id` on the right side of the provided
    * position and returns an updated entry set.
    */
-  def insertRight(id: String, after: Position, value: A): Future[Vector[A]] = {
-    op(id, InsertOp(after, value))
+  def insertRight(id: String, index: Position, value: A): Future[Vector[A]] = {
+    op(id, InsertOp(index, value))
   }
 
   /**
