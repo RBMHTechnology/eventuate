@@ -19,9 +19,10 @@ package com.rbmhtechnology.eventuate.crdt
 import akka.actor._
 import com.rbmhtechnology.eventuate._
 
+import scala.annotation.tailrec
 import scala.concurrent.Future
 import scala.collection.immutable.Vector
-import scala.util.{ Success, Failure, Try }
+import scala.util.{ Failure, Success, Try }
 
 /**
  * Operation-based Replicated Growable Array CRDT.
@@ -30,18 +31,19 @@ import scala.util.{ Success, Failure, Try }
  *
  * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]], specification 15
  */
-case class RGArray[A](vertexes: Vector[Vertex[A]] = Vector.empty[Vertex[A]], lastPos: Int = 0) extends CRDTFormat {
+case class RGArray[A](vertexes: Vector[Vertex[A]] = Vector.empty[Vertex[A]]) extends CRDTFormat {
   def value: Vector[A] = vertexes.filterNot(_.isTombstoned).map(_.value)
 
-  def insert(value: A, newPos: Position): RGArray[A] = insert(Position.head, value, newPos)
+  def insertRight(value: A, newPos: Position): RGArray[A] = insertRight(Position.head, value, newPos)
 
-  def insert(index: Position, value: A, newPos: Position): RGArray[A] = {
-    val nextPos = math.max(lastPos, newPos.order)
-    if (index == Position.head || vertexes.isEmpty)
-      RGArray(Vertex(value, newPos) +: vertexes, nextPos)
-    else {
-      val idx: Int = vertexes.lastIndexWhere((v: Vertex[A]) => v.pos >= index && v.pos <= newPos)
-      RGArray((vertexes.take(idx) :+ Vertex(value, newPos)) ++: vertexes.drop(idx), nextPos)
+  def insertRight(index: Position, value: A, newPos: Position): RGArray[A] = {
+    val newVertex = Vertex(value, newPos)
+    if (vertexes.isEmpty) {
+      RGArray(vertexes :+ newVertex)
+    } else {
+      val found = if (index == Position.head) 0 else vertexes.indexWhere((v: Vertex[A]) => v.pos == index) + 1
+      val idx: Int = skipOver(newPos, found)
+      RGArray((vertexes.take(idx) :+ newVertex) ++: vertexes.drop(idx))
     }
   }
 
@@ -50,6 +52,11 @@ case class RGArray[A](vertexes: Vector[Vertex[A]] = Vector.empty[Vertex[A]], las
   }
 
   def removeTombstones() = this.copy(vertexes = vertexes.filterNot(_.isTombstoned))
+
+  @tailrec
+  private def skipOver(pos: Position, idx: Int): Int = {
+    if (idx < vertexes.length && vertexes(idx).pos > pos) skipOver(pos, idx + 1) else idx
+  }
 }
 
 object RGArray {
@@ -64,14 +71,14 @@ object RGArray {
 
     override def prepare(crdt: RGArray[A], operation: Any): Try[Option[Any]] = operation match {
       case InsertOp(pos, value, None) => Success {
-        Some(InsertOp(pos, value, Some(crdt.lastPos + 1)))
+        Some(InsertOp(pos, value, Some(crdt.vertexes.length + 1)))
       }
       case op =>
         super.prepare(crdt, op)
     }
 
     override def effect(crdt: RGArray[A], operation: Any, event: DurableEvent): RGArray[A] = operation match {
-      case InsertOp(after, value, Some(pos)) => crdt.insert(after, value.asInstanceOf[A], Position(pos, event.emitterId))
+      case InsertOp(after, value, Some(pos)) => crdt.insertRight(after, value.asInstanceOf[A], Position(pos, event.emitterId))
       case DeleteOp(pos)                     => crdt.delete(pos)
     }
   }

@@ -165,7 +165,6 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private def rgArrayFormatBuilder(rgArray: RGArray[_]): RGArrayFormat.Builder = {
     val builder = RGArrayFormat.newBuilder
 
-    builder.setLastPos(rgArray.lastPos)
     rgArray.vertexes.foreach { vertex =>
       builder.addVertexes(rgArrayVertexFormatBuilder(vertex))
     }
@@ -252,7 +251,7 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     val vertexes = format.getVertexesList.iterator.asScala.foldLeft(Vector.empty[Vertex[Any]]) {
       case (acc, vertex) => acc :+ rgArrayVertex(vertex)
     }
-    RGArray(vertexes, format.getLastPos)
+    RGArray(vertexes)
   }
 
   private def rgArrayVertex(format: CRDTFormats.RGArrayVertexFormat): Vertex[Any] =

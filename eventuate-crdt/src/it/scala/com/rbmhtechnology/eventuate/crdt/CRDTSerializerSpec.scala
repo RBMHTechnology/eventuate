@@ -34,7 +34,7 @@ object CRDTSerializerSpec {
     ORCartEntry(key, 4)
 
   def rgArray(value: ExamplePayload) =
-    RGArray[ExamplePayload].insert(value, Position(1, "s"))
+    RGArray[ExamplePayload].insertRight(value, Position(1, "s"))
 
   def rgArrayVertex(value: ExamplePayload) =
     Vertex[ExamplePayload](value, Position(20, "s"), isTombstoned = false)

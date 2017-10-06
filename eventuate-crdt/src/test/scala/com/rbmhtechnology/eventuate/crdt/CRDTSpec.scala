@@ -205,43 +205,60 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
     "insert value in the middle" in {
       val first = pos(1, "a")
       rgArray
-        .insert('a', first)
-        .insert(first, 'c', pos(2, "a"))
-        .insert(first, 'b', pos(3, "a"))
-        .value should be(Vector('a', 'b', 'c'))
+        .insertRight('a', first)
+        .insertRight(first, 'b', pos(2, "a"))
+        .insertRight(first, 'c', pos(3, "a"))
+        .value should be(Vector('a', 'c', 'b'))
     }
     "insert values concurrently with preserved order" in {
       val first = pos(1, "a")
       val second = pos(2, "a")
       val third = pos(3, "a")
       rgArray
-        .insert('a', first)
-        .insert(first, 'b', second)
-        .insert(second, 'c', third)
-        .insert(second, 'x', pos(4, "a"))
-        .insert(first, 'y', pos(4, "b"))
+        .insertRight('a', first)
+        .insertRight(first, 'b', second)
+        .insertRight(second, 'c', third)
+        .insertRight(second, 'x', pos(4, "a"))
+        .insertRight(first, 'y', pos(4, "b"))
         .value should be(Vector('a', 'y', 'b', 'x', 'c'))
     }
     "insert concurrently elements in the same position preserving order" in {
       val first = pos(1, "a")
       val second = pos(2, "a")
       val third = pos(3, "a")
-      rgArray
-        .insert('a', first)
-        .insert(first, 'b', second)
-        .insert(second, 'c', third)
-        .insert(second, 'x', pos(4, "a"))
-        .insert(second, 'y', pos(4, "b"))
-        .value should be(Vector('a', 'b', 'x', 'y', 'c'))
+      val shared = rgArray
+        .insertRight('a', first)
+        .insertRight(first, 'b', second)
+        .insertRight(second, 'c', third)
+      val rga1 = shared
+        .insertRight(second, 'x', pos(4, "a"))
+        .insertRight(pos(4, "a"), 'y', pos(5, "a"))
+      rga1.value should be(Vector('a', 'b', 'x', 'y', 'c'))
+      val rga2 = shared
+        .insertRight(second, 'p', pos(4, "b"))
+        .insertRight(pos(4, "b"), 'q', pos(5, "b"))
+      rga2.value should be(Vector('a', 'b', 'p', 'q', 'c'))
+      // insert distinct operations from rga2 to rga1
+      var rga12 = rga1
+        .insertRight(second, 'p', pos(4, "b"))
+        .insertRight(pos(4, "b"), 'q', pos(5, "b"))
+      // insert distinct operations from rga1 to rga2
+      var rga21 = rga2
+        .insertRight(second, 'x', pos(4, "a"))
+        .insertRight(pos(4, "a"), 'y', pos(5, "a"))
+
+      rga12.value should be(Vector('a', 'b', 'p', 'q', 'x', 'y', 'c'))
+      rga21.value should be(Vector('a', 'b', 'p', 'q', 'x', 'y', 'c'))
+      rga21 should be(rga12)
     }
     "delete elements" in {
       val first = pos(1, "a")
       val second = pos(2, "a")
       val third = pos(3, "a")
       rgArray
-        .insert('a', first)
-        .insert(first, 'b', second)
-        .insert(second, 'c', third)
+        .insertRight('a', first)
+        .insertRight(first, 'b', second)
+        .insertRight(second, 'c', third)
         .delete(second)
         .value should be(Vector('a', 'c'))
     }

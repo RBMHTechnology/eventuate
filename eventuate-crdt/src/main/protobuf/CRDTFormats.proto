@@ -44,7 +44,6 @@ message RGArrayVertexFormat {
 }
 
 message RGArrayFormat {
-  optional int32 lastPos = 1;
   repeated RGArrayVertexFormat vertexes = 2;
 }
 
