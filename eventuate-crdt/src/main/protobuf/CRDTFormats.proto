@@ -44,7 +44,7 @@ message RGArrayVertexFormat {
 }
 
 message RGArrayFormat {
-  repeated RGArrayVertexFormat vertexes = 2;
+  repeated RGArrayVertexFormat vertices = 2;
 }
 
 message LWWRegisterFormat {

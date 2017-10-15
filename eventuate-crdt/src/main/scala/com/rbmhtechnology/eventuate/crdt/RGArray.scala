@@ -31,31 +31,33 @@ import scala.util.{ Failure, Success, Try }
  *
  * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]], specification 15
  */
-case class RGArray[A](vertexes: Vector[Vertex[A]] = Vector.empty[Vertex[A]]) extends CRDTFormat {
-  def value: Vector[A] = vertexes.filterNot(_.isTombstoned).map(_.value)
+case class RGArray[A](vertices: Vector[Vertex[A]] = Vector.empty[Vertex[A]]) extends CRDTFormat {
+  def value: Vector[A] = vertices.filterNot(_.isTombstoned).map(_.value)
+
+  def getVertex(index: Int): Vertex[A] = vertices.iterator.filterNot(_.isTombstoned).drop(index).next
 
   def insertRight(value: A, newPos: Position): RGArray[A] = insertRight(Position.head, value, newPos)
 
   def insertRight(index: Position, value: A, newPos: Position): RGArray[A] = {
     val newVertex = Vertex(value, newPos)
-    if (vertexes.isEmpty) {
-      RGArray(vertexes :+ newVertex)
+    if (vertices.isEmpty) {
+      RGArray(vertices :+ newVertex)
     } else {
-      val found = if (index == Position.head) 0 else vertexes.indexWhere((v: Vertex[A]) => v.pos == index) + 1
+      val found = if (index == Position.head) 0 else vertices.indexWhere((v: Vertex[A]) => v.pos == index) + 1
       val idx: Int = skipOver(newPos, found)
-      RGArray((vertexes.take(idx) :+ newVertex) ++: vertexes.drop(idx))
+      RGArray((vertices.take(idx) :+ newVertex) ++: vertices.drop(idx))
     }
   }
 
   def delete(index: Position) = {
-    this.copy(vertexes = vertexes.map((v: Vertex[A]) => if (v.pos == index) v.copy(isTombstoned = true) else v))
+    this.copy(vertices = vertices.map((v: Vertex[A]) => if (v.pos == index) v.copy(isTombstoned = true) else v))
   }
 
-  def removeTombstones() = this.copy(vertexes = vertexes.filterNot(_.isTombstoned))
+  def removeTombstones() = this.copy(vertices = vertices.filterNot(_.isTombstoned))
 
   @tailrec
   private def skipOver(pos: Position, idx: Int): Int = {
-    if (idx < vertexes.length && vertexes(idx).pos > pos) skipOver(pos, idx + 1) else idx
+    if (idx < vertices.length && vertices(idx).pos > pos) skipOver(pos, idx + 1) else idx
   }
 }
 
@@ -71,7 +73,7 @@ object RGArray {
 
     override def prepare(crdt: RGArray[A], operation: Any): Try[Option[Any]] = operation match {
       case InsertOp(pos, value, None) => Success {
-        Some(InsertOp(pos, value, Some(crdt.vertexes.length + 1)))
+        Some(InsertOp(pos, value, Some(crdt.vertices.length + 1)))
       }
       case op =>
         super.prepare(crdt, op)
@@ -102,6 +104,9 @@ class RGArrayService[A](val serviceId: String, val log: ActorRef)(implicit val s
 
   start()
 }
+
+case class PrepareInsert(after: Int, value: Any)
+case class PrepareDelete(at: Int)
 
 /**
  * Persistent insert operation used for [[RGArray]].
