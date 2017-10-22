@@ -172,11 +172,18 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     builder
   }
 
-  private def rgArrayVertexFormatBuilder(vertex: Vertex[_]): RGArrayVertexFormat.Builder =
-    RGArrayVertexFormat.newBuilder
-      .setIsDeleted(vertex.isTombstoned)
+  private def rgArrayVertexFormatBuilder(vertex: Vertex[_]): RGArrayVertexFormat.Builder = {
+    val builder = RGArrayVertexFormat.newBuilder
       .setPosition(rgArrayPositionFormatBuilder(vertex.pos))
       .setValue(payloadSerializer.payloadFormatBuilder(vertex.value.asInstanceOf[AnyRef]))
+
+    vertex.tombstone match {
+      case Some(timestamp) => builder.setTombstone(commonSerializer.vectorTimeFormatBuilder(timestamp))
+      case None            => ()
+    }
+
+    builder
+  }
 
   private def rgArrayPositionFormatBuilder(position: Position): PositionFormat.Builder =
     PositionFormat.newBuilder
@@ -254,8 +261,10 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     RGArray(vertexes)
   }
 
-  private def rgArrayVertex(format: CRDTFormats.RGArrayVertexFormat): Vertex[Any] =
-    Vertex(payloadSerializer.payload(format.getValue), rgArrayPosition(format.getPosition), format.getIsDeleted)
+  private def rgArrayVertex(format: CRDTFormats.RGArrayVertexFormat): Vertex[Any] = {
+    val timestamp = if (format.hasTombstone) Some(commonSerializer.vectorTime(format.getTombstone)) else None
+    Vertex(payloadSerializer.payload(format.getValue), rgArrayPosition(format.getPosition), timestamp)
+  }
 
   private def rgArrayPosition(format: CRDTFormats.PositionFormat): Position =
     Position(format.getOrder, format.getEmitterId)

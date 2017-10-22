@@ -40,10 +40,11 @@ message PositionFormat {
 message RGArrayVertexFormat {
   optional PayloadFormat value = 1;
   optional PositionFormat position = 2;
-  optional bool isDeleted = 3;
+  optional VectorTimeFormat tombstone = 3;
 }
 
 message RGArrayFormat {
+  optional int32 lastPos = 1;
   repeated RGArrayVertexFormat vertices = 2;
 }
 

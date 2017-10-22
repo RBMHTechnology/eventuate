@@ -31,29 +31,50 @@ import scala.util.{ Failure, Success, Try }
  *
  * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]], specification 15
  */
-case class RGArray[A](vertices: Vector[Vertex[A]] = Vector.empty[Vertex[A]]) extends CRDTFormat {
-  def value: Vector[A] = vertices.filterNot(_.isTombstoned).map(_.value)
+case class RGArray[A](vertices: Vector[Vertex[A]] = Vector.empty[Vertex[A]], lastPos: Int = 0) extends CRDTFormat {
+  def value: Vector[A] = vertices.filter(_.tombstone.isEmpty).map(_.value)
 
-  def getVertex(index: Int): Vertex[A] = vertices.iterator.filterNot(_.isTombstoned).drop(index).next
+  def getVertex(index: Int): Vertex[A] = vertices.iterator.filter(_.tombstone.isEmpty).drop(index).next
 
   def insertRight(value: A, newPos: Position): RGArray[A] = insertRight(Position.head, value, newPos)
 
-  def insertRight(index: Position, value: A, newPos: Position): RGArray[A] = {
-    val newVertex = Vertex(value, newPos)
+  def insertRight(index: Position, value: A, id: Position): RGArray[A] = {
+    val newVertex = Vertex(value, id)
+    val nextPos = math.max(id.order, lastPos)
     if (vertices.isEmpty) {
-      RGArray(vertices :+ newVertex)
+      RGArray(vertices :+ newVertex, nextPos)
     } else {
       val found = if (index == Position.head) 0 else vertices.indexWhere((v: Vertex[A]) => v.pos == index) + 1
-      val idx: Int = skipOver(newPos, found)
-      RGArray((vertices.take(idx) :+ newVertex) ++: vertices.drop(idx))
+      val idx: Int = skipOver(id, found)
+      RGArray((vertices.take(idx) :+ newVertex) ++: vertices.drop(idx), nextPos)
     }
   }
 
-  def delete(index: Position) = {
-    this.copy(vertices = vertices.map((v: Vertex[A]) => if (v.pos == index) v.copy(isTombstoned = true) else v))
+  /**
+   * Returns a new RGArray with vertex identified by provided `index` marked as tombstoned at provided `time`.
+   *
+   * @param index An absolute position of an element to remove.
+   * @param time A timestamp at which removal has happened.
+   */
+  def delete(index: Position, time: VectorTime) = {
+    this.copy(vertices = vertices.map((v: Vertex[A]) => if (v.pos == index) v.copy(tombstone = Some(time)) else v))
   }
 
-  def removeTombstones() = this.copy(vertices = vertices.filterNot(_.isTombstoned))
+  /**
+   * Prunes all removed values, that have been tombstoned in `timestamp`s casual past.
+   *
+   * @param timestamp Last stable timestamp, reached by all corresponding replicas.
+   * @return A new RGArray without tombstoned values, that had happened before `timestamp`.
+   */
+  def prune(timestamp: VectorTime) = {
+    val pruned = this.vertices.filterNot(x => {
+      x.tombstone match {
+        case Some(time) if time < timestamp => true
+        case _                              => false
+      }
+    })
+    this.copy(vertices = pruned)
+  }
 
   @tailrec
   private def skipOver(pos: Position, idx: Int): Int = {
@@ -73,7 +94,7 @@ object RGArray {
 
     override def prepare(crdt: RGArray[A], operation: Any): Try[Option[Any]] = operation match {
       case InsertOp(pos, value, None) => Success {
-        Some(InsertOp(pos, value, Some(crdt.vertices.length + 1)))
+        Some(InsertOp(pos, value, Some(crdt.lastPos + 1)))
       }
       case op =>
         super.prepare(crdt, op)
@@ -81,7 +102,7 @@ object RGArray {
 
     override def effect(crdt: RGArray[A], operation: Any, event: DurableEvent): RGArray[A] = operation match {
       case InsertOp(after, value, Some(pos)) => crdt.insertRight(after, value.asInstanceOf[A], Position(pos, event.emitterId))
-      case DeleteOp(pos)                     => crdt.delete(pos)
+      case DeleteOp(pos)                     => crdt.delete(pos, event.vectorTimestamp).prune(event.vectorTimestamp)
     }
   }
 }
@@ -138,7 +159,7 @@ object Position {
  * Bucket for values stored inside an [[RGArray]].
  * @param value Assigned value.
  * @param pos Position of that value in relation to others within [[RGArray]].
- * @param isTombstoned Has a value been removed.
+ * @param tombstone Determines a local casual time, at which current value has been removed.
  * @tparam A Type of a stored value.
  */
-case class Vertex[A](value: A, pos: Position, isTombstoned: Boolean = false)
+case class Vertex[A](value: A, pos: Position, tombstone: Option[VectorTime] = None)
