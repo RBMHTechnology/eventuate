@@ -67,10 +67,10 @@ case class RGArray[A](vertices: Vector[Vertex[A]] = Vector.empty[Vertex[A]], las
    * @return A new RGArray without tombstoned values, that had happened before `timestamp`.
    */
   def prune(timestamp: VectorTime) = {
-    val pruned = this.vertices.filterNot(x => {
+    val pruned = vertices.filter(x => {
       x.tombstone match {
-        case Some(time) if time < timestamp => true
-        case _                              => false
+        case Some(time) if time < timestamp => false
+        case _                              => true
       }
     })
     this.copy(vertices = pruned)

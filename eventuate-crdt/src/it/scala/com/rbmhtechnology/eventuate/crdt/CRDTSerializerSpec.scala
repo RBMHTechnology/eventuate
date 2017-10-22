@@ -37,7 +37,7 @@ object CRDTSerializerSpec {
     RGArray[ExamplePayload].insertRight(value, Position(1, "s"))
 
   def rgArrayVertex(value: ExamplePayload) =
-    Vertex[ExamplePayload](value, Position(20, "s"), isTombstoned = false)
+    Vertex[ExamplePayload](value, Position(20, "s"), None)
 
   def mvRegister(payload: ExamplePayload) =
     MVRegister[ExamplePayload].assign(payload, VectorTime("s" -> 18L), 18, "e1")

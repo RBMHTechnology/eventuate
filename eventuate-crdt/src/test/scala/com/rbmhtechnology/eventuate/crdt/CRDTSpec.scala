@@ -259,8 +259,42 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
         .insertRight('a', first)
         .insertRight(first, 'b', second)
         .insertRight(second, 'c', third)
-        .delete(second)
+        .delete(second, VectorTime())
         .value should be(Vector('a', 'c'))
+    }
+    "prune deleted elements from casual past" in {
+      val first = pos(1, "a")
+      val second = pos(2, "a")
+      val third = pos(3, "b")
+      val rga1 = rgArray
+        .insertRight('a', first)
+        .insertRight(first, 'b', second)
+        .insertRight(second, 'c', third)
+
+      // make 2 casually concurrent deletes - values are tombstoned, but not pruned
+      val t12 = VectorTime(("a", 1), ("b", 2))
+      val t21 = VectorTime(("a", 2), ("b", 1))
+
+      val rga2 = rga1
+        .delete(first, t12).prune(t12)
+        .delete(third, t21).prune(t21)
+
+      rga2.value should be(Vector('b'))
+      rga2.vertices.filter(_.tombstone.isDefined) should be(Vector(
+        Vertex[Char]('a', first, Some(t12)),
+        Vertex[Char]('c', third, Some(t21))
+      ))
+
+      // make 3 delete, in casual future of t12
+      val t13 = VectorTime(("a", 1), ("b", 3))
+
+      val rga3 = rga2.delete(second, t13).prune(t13)
+
+      rga3.value should be(Vector.empty[Char])
+      rga3.vertices.filter(_.tombstone.isDefined) should be(Vector(
+        Vertex[Char]('b', second, Some(t13)),
+        Vertex[Char]('c', third, Some(t21))
+      ))
     }
   }
 }
