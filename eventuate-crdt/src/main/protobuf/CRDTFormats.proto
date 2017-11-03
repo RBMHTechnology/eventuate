@@ -33,18 +33,17 @@ message ORCartEntryFormat {
 }
 
 message PositionFormat {
-  optional int32 order = 1;
+  optional int64 seqNr = 1;
   optional string emitterId = 2;
 }
 
 message RGArrayVertexFormat {
   optional PayloadFormat value = 1;
   optional PositionFormat position = 2;
-  optional VectorTimeFormat tombstone = 3;
+  optional VectorTimeFormat deletionTime = 3;
 }
 
 message RGArrayFormat {
-  optional int32 lastPos = 1;
   repeated RGArrayVertexFormat vertices = 2;
 }
 
@@ -79,8 +78,7 @@ message RemoveOpFormat {
 
 message InsertOpFormat {
   optional PayloadFormat value = 1;
-  optional int32 pos = 2;
-  optional PositionFormat after = 3;
+  optional PositionFormat after = 2;
 }
 
 message DeleteOpFormat {

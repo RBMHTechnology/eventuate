@@ -29,46 +29,45 @@ import scala.util.{ Failure, Success, Try }
  *
  * @tparam A Entry value type.
  *
- * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]], specification 15
+ * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]], specification 19
  */
-case class RGArray[A](vertices: Vector[Vertex[A]] = Vector.empty[Vertex[A]], lastPos: Int = 0) extends CRDTFormat {
-  def value: Vector[A] = vertices.filter(_.tombstone.isEmpty).map(_.value)
+case class RGArray[A](vertices: Vector[Vertex[A]] = Vector.empty[Vertex[A]]) extends CRDTFormat {
+  def value: Vector[A] = vertices.filter(_.deletionTime.isEmpty).map(_.value)
 
-  def getVertex(index: Int): Vertex[A] = vertices.iterator.filter(_.tombstone.isEmpty).drop(index).next
+  def vertexAt(index: Int): Vertex[A] = vertices.iterator.filter(_.deletionTime.isEmpty).drop(index).next
 
   def insertRight(value: A, newPos: Position): RGArray[A] = insertRight(Position.head, value, newPos)
 
-  def insertRight(index: Position, value: A, id: Position): RGArray[A] = {
-    val newVertex = Vertex(value, id)
-    val nextPos = math.max(id.order, lastPos)
+  def insertRight(after: Position, value: A, pos: Position): RGArray[A] = {
+    val newVertex = Vertex(value, pos)
     if (vertices.isEmpty) {
-      RGArray(vertices :+ newVertex, nextPos)
+      RGArray(vertices :+ newVertex)
     } else {
-      val found = if (index == Position.head) 0 else vertices.indexWhere((v: Vertex[A]) => v.pos == index) + 1
-      val idx: Int = skipOver(id, found)
-      RGArray((vertices.take(idx) :+ newVertex) ++: vertices.drop(idx), nextPos)
+      val found = if (after == Position.head) 0 else vertices.indexWhere((v: Vertex[A]) => v.pos == after) + 1
+      val index: Int = skipOver(pos, found)
+      RGArray((vertices.take(index) :+ newVertex) ++: vertices.drop(index))
     }
   }
 
   /**
    * Returns a new RGArray with vertex identified by provided `index` marked as tombstoned at provided `time`.
    *
-   * @param index An absolute position of an element to remove.
+   * @param pos An absolute position of an element to remove.
    * @param time A timestamp at which removal has happened.
    */
-  def delete(index: Position, time: VectorTime) = {
-    this.copy(vertices = vertices.map((v: Vertex[A]) => if (v.pos == index) v.copy(tombstone = Some(time)) else v))
+  def delete(pos: Position, time: VectorTime) = {
+    this.copy(vertices = vertices.map((v: Vertex[A]) => if (v.pos == pos) v.copy(deletionTime = Some(time)) else v))
   }
 
   /**
-   * Prunes all removed values, that have been tombstoned in `timestamp`s casual past.
+   * Prunes all removed values, that have been tombstoned in `timestamp`s causual past.
    *
    * @param timestamp Last stable timestamp, reached by all corresponding replicas.
    * @return A new RGArray without tombstoned values, that had happened before `timestamp`.
    */
   def prune(timestamp: VectorTime) = {
     val pruned = vertices.filter(x => {
-      x.tombstone match {
+      x.deletionTime match {
         case Some(time) if time < timestamp => false
         case _                              => true
       }
@@ -77,8 +76,8 @@ case class RGArray[A](vertices: Vector[Vertex[A]] = Vector.empty[Vertex[A]], las
   }
 
   @tailrec
-  private def skipOver(pos: Position, idx: Int): Int = {
-    if (idx < vertices.length && vertices(idx).pos > pos) skipOver(pos, idx + 1) else idx
+  private def skipOver(pos: Position, index: Int): Int = {
+    if (index < vertices.length && vertices(index).pos > pos) skipOver(pos, index + 1) else index
   }
 }
 
@@ -93,16 +92,16 @@ object RGArray {
     override def value(crdt: RGArray[A]): Vector[A] = crdt.value
 
     override def prepare(crdt: RGArray[A], operation: Any): Try[Option[Any]] = operation match {
-      case InsertOp(pos, value, None) => Success {
-        Some(InsertOp(pos, value, Some(crdt.lastPos + 1)))
+      case InsertOp(pos, value) => Success {
+        Some(InsertOp(pos, value))
       }
       case op =>
         super.prepare(crdt, op)
     }
 
     override def effect(crdt: RGArray[A], operation: Any, event: DurableEvent): RGArray[A] = operation match {
-      case InsertOp(after, value, Some(pos)) => crdt.insertRight(after, value.asInstanceOf[A], Position(pos, event.emitterId))
-      case DeleteOp(pos)                     => crdt.delete(pos, event.vectorTimestamp).prune(event.vectorTimestamp)
+      case InsertOp(after, value) => crdt.insertRight(after, value.asInstanceOf[A], Position(event.localSequenceNr, event.emitterId))
+      case DeleteOp(pos)          => crdt.delete(pos, event.vectorTimestamp)
     }
   }
 }
@@ -111,28 +110,28 @@ class RGArrayService[A](val serviceId: String, val log: ActorRef)(implicit val s
   extends CRDTService[RGArray[A], Vector[A]] {
 
   /**
-   * Adds `entry` to the RGA identified by `id` on the right side of the provided
-   * position and returns an updated entry set.
+   * Adds `value` to the RGA on the right side of the provided position and returns an
+   * updated entry set.
    */
-  def insertRight(id: String, index: Position, value: A): Future[Vector[A]] = {
-    op(id, InsertOp(index, value))
+  def insertRight(id: String, after: Position, value: A): Future[Vector[A]] = {
+    op(id, InsertOp(after, value))
   }
 
   /**
-   * Removes `entry` from the RGA identified by `id` and returns the updated entry set.
+   * Removes `entry` from the RGA identified by `pos` and returns the updated entry set.
    */
   def delete(id: String, pos: Position): Future[Vector[A]] = op(id, DeleteOp(pos))
 
   start()
 }
 
-case class PrepareInsert(after: Int, value: Any)
-case class PrepareDelete(at: Int)
+case class PrepareInsert(afterIndex: Int, value: Any)
+case class PrepareDelete(atIndex: Int)
 
 /**
  * Persistent insert operation used for [[RGArray]].
  */
-case class InsertOp(after: Position, value: Any, pos: Option[Int] = None) extends CRDTFormat
+case class InsertOp(after: Position, value: Any) extends CRDTFormat
 
 /**
  * Persistent delete operation used for [[RGArray]].
@@ -141,11 +140,11 @@ case class DeleteOp(pos: Position) extends CRDTFormat
 
 /**
  * Position of a particular element in relation to others within provided [[RGArray]].
- * @param order Monotonically increasing order incremented with each insert.
+ * @param seqNr Monotonically increasing order incremented with each insert.
  * @param emitterId Identifier of a particular replica making an update.
  */
-case class Position(order: Int, emitterId: String) extends Ordered[Position] {
-  override def compare(that: Position): Int = order compareTo that.order match {
+case class Position(seqNr: Long, emitterId: String) extends Ordered[Position] {
+  override def compare(that: Position): Int = seqNr compareTo that.seqNr match {
     case 0 => emitterId compareTo that.emitterId
     case n => n
   }
@@ -159,7 +158,7 @@ object Position {
  * Bucket for values stored inside an [[RGArray]].
  * @param value Assigned value.
  * @param pos Position of that value in relation to others within [[RGArray]].
- * @param tombstone Determines a local casual time, at which current value has been removed.
+ * @param deletionTime Determines a local causual time, at which current value has been removed.
  * @tparam A Type of a stored value.
  */
-case class Vertex[A](value: A, pos: Position, tombstone: Option[VectorTime] = None)
+case class Vertex[A](value: A, pos: Position, deletionTime: Option[VectorTime] = None)

@@ -177,17 +177,14 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
       .setPosition(rgArrayPositionFormatBuilder(vertex.pos))
       .setValue(payloadSerializer.payloadFormatBuilder(vertex.value.asInstanceOf[AnyRef]))
 
-    vertex.tombstone match {
-      case Some(timestamp) => builder.setTombstone(commonSerializer.vectorTimeFormatBuilder(timestamp))
-      case None            => ()
-    }
+    vertex.deletionTime.foreach { timestamp => builder.setDeletionTime(commonSerializer.vectorTimeFormatBuilder(timestamp)) }
 
     builder
   }
 
   private def rgArrayPositionFormatBuilder(position: Position): PositionFormat.Builder =
     PositionFormat.newBuilder
-      .setOrder(position.order)
+      .setSeqNr(position.seqNr)
       .setEmitterId(position.emitterId)
 
   private def valueUpdatedFormat(valueUpdated: ValueUpdated): ValueUpdatedFormat.Builder =
@@ -216,7 +213,6 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
 
   private def insertOpFormatBuilder(op: InsertOp): InsertOpFormat.Builder =
     InsertOpFormat.newBuilder
-      .setPos(op.pos.get)
       .setAfter(rgArrayPositionFormatBuilder(op.after))
       .setValue(payloadSerializer.payloadFormatBuilder(op.value.asInstanceOf[AnyRef]))
 
@@ -262,12 +258,12 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   }
 
   private def rgArrayVertex(format: CRDTFormats.RGArrayVertexFormat): Vertex[Any] = {
-    val timestamp = if (format.hasTombstone) Some(commonSerializer.vectorTime(format.getTombstone)) else None
+    val timestamp = if (format.hasDeletionTime) Some(commonSerializer.vectorTime(format.getDeletionTime)) else None
     Vertex(payloadSerializer.payload(format.getValue), rgArrayPosition(format.getPosition), timestamp)
   }
 
   private def rgArrayPosition(format: CRDTFormats.PositionFormat): Position =
-    Position(format.getOrder, format.getEmitterId)
+    Position(format.getSeqNr, format.getEmitterId)
 
   private def valueUpdated(valueUpdatedFormat: ValueUpdatedFormat): ValueUpdated =
     ValueUpdated(payloadSerializer.payload(valueUpdatedFormat.getOperation))
@@ -290,7 +286,7 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   }
 
   private def insertOp(format: CRDTFormats.InsertOpFormat): InsertOp =
-    InsertOp(rgArrayPosition(format.getAfter), payloadSerializer.payload(format.getValue), Some(format.getPos))
+    InsertOp(rgArrayPosition(format.getAfter), payloadSerializer.payload(format.getValue))
 
   private def deleteOp(format: CRDTFormats.DeleteOpFormat): DeleteOp =
     DeleteOp(rgArrayPosition(format.getPos))
