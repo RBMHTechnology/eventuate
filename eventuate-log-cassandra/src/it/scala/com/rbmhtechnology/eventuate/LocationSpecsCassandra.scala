@@ -50,3 +50,5 @@ class ReplicationIntegrationSpecCassandra extends ReplicationIntegrationSpec wit
 }
 
 class ReplicationCycleSpecCassandra extends ReplicationCycleSpec with MultiLocationSpecCassandra
+
+class EventsourcedProcessorWithReplicationIntegrationSpecCassandra extends EventsourcedProcessorWithReplicationIntegrationSpec with MultiLocationSpecCassandra

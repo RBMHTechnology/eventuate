@@ -50,3 +50,5 @@ class ReplicationIntegrationSpecLeveldb extends ReplicationIntegrationSpec with 
 }
 
 class ReplicationCycleSpecLeveldb extends ReplicationCycleSpec with MultiLocationSpecLeveldb
+
+class EventsourcedProcessorWithReplicationIntegrationSpecLeveldb extends EventsourcedProcessorWithReplicationIntegrationSpec with MultiLocationSpecLeveldb

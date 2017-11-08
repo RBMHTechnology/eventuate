@@ -42,7 +42,7 @@ object NotificationChannelSpec {
   val targetLogId2 = "tlid2"
 
   def event(payload: Any, vectorTimestamp: VectorTime): DurableEvent =
-    DurableEvent(payload, "emitter", vectorTimestamp = vectorTimestamp)
+    DurableEvent(payload, "emitter", vectorTimestamp = vectorTimestamp, processId = "processid")
 
   def vectorTime(s: Long, t1: Long, t2: Long) =
     VectorTime(sourceLogId -> s, targetLogId1 -> t1, targetLogId2 -> t2)
