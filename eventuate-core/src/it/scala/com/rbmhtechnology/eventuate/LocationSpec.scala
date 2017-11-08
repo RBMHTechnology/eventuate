@@ -177,7 +177,10 @@ class Location(val id: String, logFactory: String => Props, customPort: Int, cus
     new TestProbe(system)
 
   def listener(eventLog: ActorRef, aggregateId: Option[String] = None): EventListener =
-    new EventListener(id, eventLog, aggregateId)(system)
+    new EventListener(s"${id}_${eventLog.path.name}_Listener", eventLog, aggregateId)(system)
+
+  def writer(eventLog: ActorRef, aggregateId: Option[String] = None): EventLogWriter =
+    new EventLogWriter(s"${id}_${eventLog.path.name}_Writer", eventLog, aggregateId)(system)
 
   def endpoint(
     logNames: Set[String],

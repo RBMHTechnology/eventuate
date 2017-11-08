@@ -93,9 +93,12 @@ case class DurableEvent(
 
   /**
    * Returns `true` if this event happened before or at the given `vectorTime`.
+   *
+   * An event with undefined [[processId]] has an incomplete initialized [[vectorTimestamp]] and is
+   * therefore considered to be never before a given [[VectorTime]].
    */
   def before(vectorTime: VectorTime): Boolean =
-    vectorTimestamp <= vectorTime
+    processId != UndefinedLogId && vectorTimestamp <= vectorTime
 
   /**
    * The default routing destination of this event is its `emitterAggregateId`. If defined, the event is
