@@ -45,7 +45,7 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">AbstractEventsourcedView</span><span class="result"> extends <span class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent">AbstractEventsourcedComponent</span></span>
+        <span class="name">AbstractEventsourcedView</span><span class="result"> extends <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> with <a href="ConditionalRequests.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalRequests">ConditionalRequests</a></span>
       </span>
       </h4>
       
@@ -68,10 +68,10 @@ If a handler is overridden, the behaviour of it's respective set-method will be 
    }
 }</pre></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent">AbstractEventsourcedComponent</span>, <a href="ConditionalRequests.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalRequests">ConditionalRequests</a>, <a href="EventsourcedVersion.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedVersion">EventsourcedVersion</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="ConditionalRequests.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalRequests">ConditionalRequests</a>, <a href="EventsourcedVersion.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedVersion">EventsourcedVersion</a>, <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a>, <span class="extype" name="akka.actor.Stash">Stash</span>, <span class="extype" name="akka.dispatch.RequiresMessageQueue">RequiresMessageQueue</span>[<span class="extype" name="akka.dispatch.DequeBasedMessageQueueSemantics">DequeBasedMessageQueueSemantics</span>], <span class="extype" name="akka.actor.UnrestrictedStash">UnrestrictedStash</span>, <span class="extype" name="akka.actor.StashSupport">StashSupport</span>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
             <span class="toggle">Known Subclasses</span>
-            <div class="subClasses hiddenContent"><a href="AbstractEventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor">AbstractEventsourcedActor</a>, <a href="AbstractEventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedWriter">AbstractEventsourcedWriter</a></div>
+            <div class="subClasses hiddenContent"><a href="AbstractEventsourcedActor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedActor">AbstractEventsourcedActor</a>, <a href="AbstractEventsourcedProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedProcessor">AbstractEventsourcedProcessor</a>, <a href="AbstractEventsourcedStatefulProcessor.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedStatefulProcessor">AbstractEventsourcedStatefulProcessor</a>, <a href="AbstractEventsourcedWriter.html" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedWriter">AbstractEventsourcedWriter</a></div>
           </div></div>
         
 
@@ -89,7 +89,7 @@ If a handler is overridden, the behaviour of it's respective set-method will be 
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView"><span>AbstractEventsourcedView</span></li><li class="in" name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent"><span>AbstractEventsourcedComponent</span></li><li class="in" name="com.rbmhtechnology.eventuate.ConditionalRequests"><span>ConditionalRequests</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedVersion"><span>EventsourcedVersion</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView"><span>AbstractEventsourcedView</span></li><li class="in" name="com.rbmhtechnology.eventuate.ConditionalRequests"><span>ConditionalRequests</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedVersion"><span>EventsourcedVersion</span></li><li class="in" name="com.rbmhtechnology.eventuate.EventsourcedView"><span>EventsourcedView</span></li><li class="in" name="akka.actor.Stash"><span>Stash</span></li><li class="in" name="akka.dispatch.RequiresMessageQueue"><span>RequiresMessageQueue</span></li><li class="in" name="akka.actor.UnrestrictedStash"><span>UnrestrictedStash</span></li><li class="in" name="akka.actor.StashSupport"><span>StashSupport</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -222,7 +222,7 @@ If a handler is overridden, the behaviour of it's respective set-method will be 
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#aggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#aggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="aggregateId:Option[String]"></a>
       <a id="aggregateId:Option[String]"></a>
       <h4 class="signature">
@@ -243,7 +243,7 @@ which can be <a href="EventsourcedView.html" class="extype" name="com.rbmhtechno
 to an event-sourced destination with an undefined <code>aggregateId</code>. If a destination's <code>aggregateId</code>
 is defined it will only receive events with a matching aggregate id in
 <a href="DurableEvent.html#destinationAggregateIds:Set[String]" class="extmbr" name="com.rbmhtechnology.eventuate.DurableEvent#destinationAggregateIds">DurableEvent#destinationAggregateIds</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
     </li><li name="akka.actor.Actor#aroundPostRestart" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="aroundPostRestart(reason:Throwable):Unit"></a>
       <a id="aroundPostRestart(Throwable):Unit"></a>
@@ -260,10 +260,7 @@ is defined it will only receive events with a matching aggregate id in
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd><dt>Annotations</dt><dd>
-                <span class="name">@InternalApi</span><span class="args">()</span>
-              
-        </dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
     </li><li name="akka.actor.Actor#aroundPostStop" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="aroundPostStop():Unit"></a>
       <a id="aroundPostStop():Unit"></a>
@@ -280,10 +277,7 @@ is defined it will only receive events with a matching aggregate id in
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd><dt>Annotations</dt><dd>
-                <span class="name">@InternalApi</span><span class="args">()</span>
-              
-        </dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
     </li><li name="akka.actor.Actor#aroundPreRestart" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="aroundPreRestart(reason:Throwable,message:Option[Any]):Unit"></a>
       <a id="aroundPreRestart(Throwable,Option[Any]):Unit"></a>
@@ -300,10 +294,7 @@ is defined it will only receive events with a matching aggregate id in
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd><dt>Annotations</dt><dd>
-                <span class="name">@InternalApi</span><span class="args">()</span>
-              
-        </dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
     </li><li name="akka.actor.Actor#aroundPreStart" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="aroundPreStart():Unit"></a>
       <a id="aroundPreStart():Unit"></a>
@@ -320,10 +311,7 @@ is defined it will only receive events with a matching aggregate id in
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd><dt>Annotations</dt><dd>
-                <span class="name">@InternalApi</span><span class="args">()</span>
-              
-        </dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
     </li><li name="akka.actor.Actor#aroundReceive" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="aroundReceive(receive:akka.actor.Actor.Receive,msg:Any):Unit"></a>
       <a id="aroundReceive(akka.actor.Actor.Receive,Any):Unit"></a>
@@ -340,10 +328,7 @@ is defined it will only receive events with a matching aggregate id in
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd><dt>Annotations</dt><dd>
-                <span class="name">@InternalApi</span><span class="args">()</span>
-              
-        </dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -419,82 +404,6 @@ is defined it will only receive events with a matching aggregate id in
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#createOnCommand" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="createOnCommand():akka.actor.AbstractActor.Receive"></a>
-      <a id="createOnCommand():akka.actor.AbstractActor.Receive"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">createOnCommand</span><span class="params">()</span><span class="result">: <span class="extype" name="akka.actor.AbstractActor.Receive">akka.actor.AbstractActor.Receive</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@createOnCommand():akka.actor.AbstractActor.Receive" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API of the <a href="EventsourcedView.html#onCommand:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onCommand">command</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of the <a href="EventsourcedView.html#onCommand:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onCommand">command</a> handler.</p><p>Returns a receive object that defines the actor's command handling behaviour.
-Use <a href="http://doc.akka.io/japi/akka/2.5.2/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#createOnEvent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="createOnEvent():akka.actor.AbstractActor.Receive"></a>
-      <a id="createOnEvent():akka.actor.AbstractActor.Receive"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">createOnEvent</span><span class="params">()</span><span class="result">: <span class="extype" name="akka.actor.AbstractActor.Receive">akka.actor.AbstractActor.Receive</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@createOnEvent():akka.actor.AbstractActor.Receive" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API of the <a href="EventsourcedView.html#onEvent:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onEvent">event</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of the <a href="EventsourcedView.html#onEvent:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onEvent">event</a> handler.</p><p>Returns a receive object that defines the actor's event handling behaviour.
-Use <a href="http://doc.akka.io/japi/akka/2.5.2/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.
-</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#createOnRecovery" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="createOnRecovery():com.rbmhtechnology.eventuate.ResultHandler[Unit]"></a>
-      <a id="createOnRecovery():ResultHandler[Unit]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">createOnRecovery</span><span class="params">()</span><span class="result">: <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a>[<span class="extype" name="scala.Unit">Unit</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@createOnRecovery():com.rbmhtechnology.eventuate.ResultHandler[Unit]" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API of the <a href="EventsourcedView.html#onRecovery:EventsourcedView.this.Handler[Unit]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onRecovery">recovery</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of the <a href="EventsourcedView.html#onRecovery:EventsourcedView.this.Handler[Unit]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onRecovery">recovery</a> handler.</p><p>Returns a result handler that defines the actor's recover handling behaviour.
-Use <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a> to define the behaviour.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#createOnSnapshot" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="createOnSnapshot():akka.actor.AbstractActor.Receive"></a>
-      <a id="createOnSnapshot():akka.actor.AbstractActor.Receive"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">createOnSnapshot</span><span class="params">()</span><span class="result">: <span class="extype" name="akka.actor.AbstractActor.Receive">akka.actor.AbstractActor.Receive</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@createOnSnapshot():akka.actor.AbstractActor.Receive" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API of the <a href="EventsourcedView.html#onSnapshot:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onSnapshot">snapshot</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of the <a href="EventsourcedView.html#onSnapshot:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onSnapshot">snapshot</a> handler.</p><p>Returns a receive object that defines the actor's snapshot handling behaviour.
-Use <a href="http://doc.akka.io/japi/akka/2.5.2/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -588,7 +497,7 @@ Use <a href="http://doc.akka.io/japi/akka/2.5.2/akka/japi/pf/ReceiveBuilder.html
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#getAggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#getAggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getAggregateId:java.util.Optional[String]"></a>
       <a id="getAggregateId:Optional[String]"></a>
       <h4 class="signature">
@@ -605,7 +514,7 @@ Use <a href="http://doc.akka.io/japi/akka/2.5.2/akka/japi/pf/ReceiveBuilder.html
       </a>
     </span>
       <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#aggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#aggregateId">aggregateId</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#aggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#aggregateId">aggregateId</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -623,61 +532,7 @@ Use <a href="http://doc.akka.io/japi/akka/2.5.2/akka/japi/pf/ReceiveBuilder.html
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#getCommandContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getCommandContext:com.rbmhtechnology.eventuate.AbstractEventsourcedComponent.BehaviorContext"></a>
-      <a id="getCommandContext:AbstractEventsourcedComponent.BehaviorContext"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getCommandContext</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent.BehaviorContext">AbstractEventsourcedComponent.BehaviorContext</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@getCommandContext:com.rbmhtechnology.eventuate.AbstractEventsourcedComponent.BehaviorContext" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#commandContext:com.rbmhtechnology.eventuate.BehaviorContext" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#commandContext">commandContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#commandContext:com.rbmhtechnology.eventuate.BehaviorContext" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#commandContext">commandContext</a>.</p><p>Returns the command <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#getContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getContext:akka.actor.AbstractActor.ActorContext"></a>
-      <a id="getContext:ActorContext"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getContext</span><span class="result">: <span class="extype" name="akka.actor.AbstractActor.ActorContext">ActorContext</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@getContext:akka.actor.AbstractActor.ActorContext" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Returns this AbstractActor's ActorContext.</p><div class="fullcomment"><div class="comment cmt"><p>Returns this AbstractActor's ActorContext. Mimics <span class="extype" name="AbstractActor.getContext">AbstractActor.getContext</span>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#getEventContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getEventContext:com.rbmhtechnology.eventuate.AbstractEventsourcedComponent.BehaviorContext"></a>
-      <a id="getEventContext:AbstractEventsourcedComponent.BehaviorContext"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getEventContext</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent.BehaviorContext">AbstractEventsourcedComponent.BehaviorContext</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@getEventContext:com.rbmhtechnology.eventuate.AbstractEventsourcedComponent.BehaviorContext" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#eventContext:com.rbmhtechnology.eventuate.BehaviorContext" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#eventContext">eventContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#eventContext:com.rbmhtechnology.eventuate.BehaviorContext" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#eventContext">eventContext</a>.</p><p>Returns the event <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#getLastEmitterAggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#getLastEmitterAggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getLastEmitterAggregateId:java.util.Optional[String]"></a>
       <a id="getLastEmitterAggregateId:Optional[String]"></a>
       <h4 class="signature">
@@ -694,133 +549,7 @@ Use <a href="http://doc.akka.io/japi/akka/2.5.2/akka/japi/pf/ReceiveBuilder.html
       </a>
     </span>
       <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#lastEmitterAggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastEmitterAggregateId">lastEmitterAggregateId</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#lastEmitterAggregateId:Option[String]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastEmitterAggregateId">lastEmitterAggregateId</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#getLastEmitterId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getLastEmitterId:String"></a>
-      <a id="getLastEmitterId:String"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getLastEmitterId</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@getLastEmitterId:String" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#lastEmitterId:String" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastEmitterId">lastEmitterId</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#lastEmitterId:String" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastEmitterId">lastEmitterId</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#getLastSequenceNr" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getLastSequenceNr:Long"></a>
-      <a id="getLastSequenceNr:Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getLastSequenceNr</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@getLastSequenceNr:Long" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#lastSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastSequenceNr">lastSequenceNr</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#lastSequenceNr:Long" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastSequenceNr">lastSequenceNr</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#getLastSystemTimestamp" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getLastSystemTimestamp:Long"></a>
-      <a id="getLastSystemTimestamp:Long"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getLastSystemTimestamp</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@getLastSystemTimestamp:Long" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#lastSystemTimestamp:Long" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastSystemTimestamp">lastSystemTimestamp</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#lastSystemTimestamp:Long" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastSystemTimestamp">lastSystemTimestamp</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#getLastVectorTimestamp" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getLastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime"></a>
-      <a id="getLastVectorTimestamp:VectorTime"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getLastVectorTimestamp</span><span class="result">: <a href="VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@getLastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastVectorTimestamp">lastVectorTimestamp</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#lastVectorTimestamp:com.rbmhtechnology.eventuate.VectorTime" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#lastVectorTimestamp">lastVectorTimestamp</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#getSelf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getSelf:akka.actor.ActorRef"></a>
-      <a id="getSelf:ActorRef"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getSelf</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@getSelf:akka.actor.ActorRef" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Returns the ActorRef for this actor.</p><div class="fullcomment"><div class="comment cmt"><p>Returns the ActorRef for this actor. Mimics <span class="extype" name="AbstractActor.getSelf">AbstractActor.getSelf</span>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#getSender" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getSender:akka.actor.ActorRef"></a>
-      <a id="getSender:ActorRef"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getSender</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@getSender:akka.actor.ActorRef" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">The reference sender Actor of the currently processed message.</p><div class="fullcomment"><div class="comment cmt"><p>The reference sender Actor of the currently processed message. Mimics <span class="extype" name="AbstractActor.getSender">AbstractActor.getSender</span>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#getSnapshotContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="getSnapshotContext:com.rbmhtechnology.eventuate.AbstractEventsourcedComponent.BehaviorContext"></a>
-      <a id="getSnapshotContext:AbstractEventsourcedComponent.BehaviorContext"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getSnapshotContext</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent.BehaviorContext">AbstractEventsourcedComponent.BehaviorContext</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@getSnapshotContext:com.rbmhtechnology.eventuate.AbstractEventsourcedComponent.BehaviorContext" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#snapshotContext">snapshotContext</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#snapshotContext">snapshotContext</a>.</p><p>Returns the snapshot <a href="BehaviorContext.html" class="extype" name="com.rbmhtechnology.eventuate.BehaviorContext">BehaviorContext</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>
@@ -890,24 +619,6 @@ Use <a href="http://doc.akka.io/japi/akka/2.5.2/akka/japi/pf/ReceiveBuilder.html
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#isRecovering" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="isRecovering:Boolean"></a>
-      <a id="isRecovering:Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">isRecovering</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@isRecovering:Boolean" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#recovering:Boolean" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#recovering">lastEmirecoveringterId</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#recovering:Boolean" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#recovering">lastEmirecoveringterId</a>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#lastEmitterAggregateId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="lastEmitterAggregateId:Option[String]"></a>
       <a id="lastEmitterAggregateId:Option[String]"></a>
@@ -1085,30 +796,31 @@ Use <a href="http://doc.akka.io/japi/akka/2.5.2/akka/japi/pf/ReceiveBuilder.html
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#onCommand" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onCommand:AbstractEventsourcedComponent.this.Receive"></a>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onCommand" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onCommand:AbstractEventsourcedView.this.Receive"></a>
       <a id="onCommand:Receive"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
+        <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">onCommand</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Receive">Receive</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onCommand:AbstractEventsourcedComponent.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onCommand:AbstractEventsourcedView.this.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Command handler.</p><div class="fullcomment"><div class="comment cmt"><p>Command handler.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+      <p class="shortcomment cmt">Java API of the <a href="EventsourcedView.html#onCommand:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onCommand">command</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of the <a href="EventsourcedView.html#onCommand:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onCommand">command</a> handler.</p><p>Returns a partial function that defines the actor's command handling behaviour.
+Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>Takes precedence over <a href="#setOnCommand(handler:AbstractEventsourcedView.this.Receive):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnCommand">setOnCommand</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onEvent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="onEvent:AbstractEventsourcedView.this.Receive"></a>
       <a id="onEvent:Receive"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
+        <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
@@ -1119,10 +831,30 @@ Use <a href="http://doc.akka.io/japi/akka/2.5.2/akka/japi/pf/ReceiveBuilder.html
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Event handler.</p><div class="fullcomment"><div class="comment cmt"><p>Event handler.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#onRecovery" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onRecovery:AbstractEventsourcedComponent.this.Handler[Unit]"></a>
+      <p class="shortcomment cmt">Java API of the <a href="EventsourcedView.html#onEvent:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onEvent">event</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of the <a href="EventsourcedView.html#onEvent:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onEvent">event</a> handler.</p><p>Returns a partial function that defines the actor's event handling behaviour.
+Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>Takes precedence over <a href="#setOnEvent(handler:AbstractEventsourcedView.this.Receive):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnEvent">setOnEvent</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onRecover" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onRecover:com.rbmhtechnology.eventuate.ResultHandler[Unit]"></a>
+      <a id="onRecover:ResultHandler[Unit]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">onRecover</span><span class="result">: <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onRecover:com.rbmhtechnology.eventuate.ResultHandler[Unit]" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API of the <a href="EventsourcedView.html#onRecovery:EventsourcedView.this.Handler[Unit]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onRecovery">recovery</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of the <a href="EventsourcedView.html#onRecovery:EventsourcedView.this.Handler[Unit]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onRecovery">recovery</a> handler.</p><p>Returns a result handler that defines the actor's recover handling behaviour.
+Use <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a> to define the behaviour.</p><p>Takes precedence over <a href="#setOnRecover(handler:com.rbmhtechnology.eventuate.ResultHandler[Unit]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnRecover">setOnRecover</a>.
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onRecovery" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onRecovery:AbstractEventsourcedView.this.Handler[Unit]"></a>
       <a id="onRecovery:Handler[Unit]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -1133,32 +865,33 @@ Use <a href="http://doc.akka.io/japi/akka/2.5.2/akka/japi/pf/ReceiveBuilder.html
         <span class="name">onRecovery</span><span class="result">: <a href="#Handler[A]=com.rbmhtechnology.eventuate.EventsourcedView.Handler[A]" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Handler">Handler</a>[<span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onRecovery:AbstractEventsourcedComponent.this.Handler[Unit]" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onRecovery:AbstractEventsourcedView.this.Handler[Unit]" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <p class="shortcomment cmt">Recovery completion handler.</p><div class="fullcomment"><div class="comment cmt"><p>Recovery completion handler. If called with a <code>Failure</code>, the actor will be stopped in
 any case, regardless of the action taken by the returned handler. The default handler
 implementation does nothing and can be overridden by implementations.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#onSnapshot" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="onSnapshot:AbstractEventsourcedComponent.this.Receive"></a>
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onSnapshot" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onSnapshot:AbstractEventsourcedView.this.Receive"></a>
       <a id="onSnapshot:Receive"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
+        <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">onSnapshot</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Receive">Receive</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onSnapshot:AbstractEventsourcedComponent.this.Receive" title="Permalink" target="_top">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@onSnapshot:AbstractEventsourcedView.this.Receive" title="Permalink" target="_top">
         <img src="../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Snapshot handler.</p><div class="fullcomment"><div class="comment cmt"><p>Snapshot handler.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
+      <p class="shortcomment cmt">Java API of the <a href="EventsourcedView.html#onSnapshot:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onSnapshot">snapshot</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of the <a href="EventsourcedView.html#onSnapshot:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onSnapshot">snapshot</a> handler.</p><p>Returns a partial function that defines the actor's snapshot handling behaviour.
+Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>Takes precedence over <a href="#setOnSnapshot(handler:AbstractEventsourcedView.this.Receive):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnSnapshot">setOnSnapshot</a>.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView">AbstractEventsourcedView</a> → <a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
     </li><li name="akka.actor.Actor#postRestart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="postRestart(reason:Throwable):Unit"></a>
       <a id="postRestart(Throwable):Unit"></a>
@@ -1254,24 +987,6 @@ implementation does nothing and can be overridden by implementations.
     </span>
       <p class="shortcomment cmt">Initialization behavior.</p><div class="fullcomment"><div class="comment cmt"><p>Initialization behavior.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a> → Actor</dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#receiveBuilder" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="receiveBuilder():akka.japi.pf.ReceiveBuilder"></a>
-      <a id="receiveBuilder():ReceiveBuilder"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">receiveBuilder</span><span class="params">()</span><span class="result">: <span class="extype" name="akka.japi.pf.ReceiveBuilder">ReceiveBuilder</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@receiveBuilder():akka.japi.pf.ReceiveBuilder" title="Permalink" target="_top">
-        <img src="../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Creates a new empty <code>ReceiveBuilder</code>.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a new empty <code>ReceiveBuilder</code>. Mimics <span class="extype" name="AbstractActor.receiveBuilder">AbstractActor.receiveBuilder</span>.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#recovering" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="recovering:Boolean"></a>
       <a id="recovering:Boolean"></a>
@@ -1333,7 +1048,7 @@ is resumed automatically after all replayed events haven been handled by this ac
       <p class="shortcomment cmt">Override to provide an application-defined log sequence number from which event replay will start.</p><div class="fullcomment"><div class="comment cmt"><p>Override to provide an application-defined log sequence number from which event replay will start.</p><p>If <code>Some(snr)</code> is returned snapshot loading will be skipped and replay will start from
 the given sequence number <code>snr</code>.</p><p>If <code>None</code> is returned the actor proceeds with the regular snapshot loading procedure.
 </p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></dd></dl></div>
-    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent#save" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#save" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="save(snapshot:Any,handler:com.rbmhtechnology.eventuate.ResultHandler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit"></a>
       <a id="save(Any,ResultHandler[SnapshotMetadata]):Unit"></a>
       <h4 class="signature">
@@ -1350,7 +1065,7 @@ the given sequence number <code>snr</code>.</p><p>If <code>None</code> is return
       </a>
     </span>
       <p class="shortcomment cmt">Java API of <a href="EventsourcedView.html#save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#save">save</a>.</p><div class="fullcomment"><div class="comment cmt"><p>Java API of <a href="EventsourcedView.html#save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#save">save</a>.</p><p>Must be supplied with a <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a> to process successful or failed results.
-</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractEventsourcedComponent</dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
+</p></div><dl class="attributes block"> <dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#save" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="save(snapshot:Any)(handler:EventsourcedView.this.Handler[com.rbmhtechnology.eventuate.SnapshotMetadata]):Unit"></a>
       <a id="save(Any)(Handler[SnapshotMetadata]):Unit"></a>
@@ -1406,6 +1121,82 @@ sender with <code>sender()</code>.
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnCommand" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="setOnCommand(handler:AbstractEventsourcedView.this.Receive):Unit"></a>
+      <a id="setOnCommand(Receive):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setOnCommand</span><span class="params">(<span name="handler">handler: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Receive">Receive</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@setOnCommand(handler:AbstractEventsourcedView.this.Receive):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API that sets this actor's <a href="EventsourcedView.html#onCommand:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onCommand">command</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API that sets this actor's <a href="EventsourcedView.html#onCommand:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onCommand">command</a> handler.</p><p>Supplied with a partial function that defines the actor's command handling behaviour.
+Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>If <a href="#onCommand:AbstractEventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onCommand">onCommand</a> is implemented, the supplied behaviour is ignored.
+</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>a function that defines this actor's command handling behaviour.</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnEvent" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="setOnEvent(handler:AbstractEventsourcedView.this.Receive):Unit"></a>
+      <a id="setOnEvent(Receive):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setOnEvent</span><span class="params">(<span name="handler">handler: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Receive">Receive</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@setOnEvent(handler:AbstractEventsourcedView.this.Receive):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API that sets this actor's <a href="EventsourcedView.html#onEvent:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onEvent">event</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API that sets this actor's <a href="EventsourcedView.html#onEvent:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onEvent">event</a> handler.</p><p>Supplied with a partial function that defines the actor's event handling behaviour.
+Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>If <a href="#onEvent:AbstractEventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onEvent">onEvent</a> is implemented, the supplied behaviour is ignored.
+</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>a function that defines this actor's event handling behaviour.</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnRecover" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="setOnRecover(handler:com.rbmhtechnology.eventuate.ResultHandler[Unit]):Unit"></a>
+      <a id="setOnRecover(ResultHandler[Unit]):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setOnRecover</span><span class="params">(<span name="handler">handler: <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a>[<span class="extype" name="scala.Unit">Unit</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@setOnRecover(handler:com.rbmhtechnology.eventuate.ResultHandler[Unit]):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API that sets this actor's <a href="EventsourcedView.html#onRecovery:EventsourcedView.this.Handler[Unit]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onRecovery">recovery</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API that sets this actor's <a href="EventsourcedView.html#onRecovery:EventsourcedView.this.Handler[Unit]" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onRecovery">recovery</a> handler.</p><p>Supplied with a result handler that defines the actor's recover handling behaviour.
+Use <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a> to define the behaviour.</p><p>If <a href="#onRecover:com.rbmhtechnology.eventuate.ResultHandler[Unit]" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onRecover">onRecover</a> is implemented, the supplied behaviour is ignored.
+</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>a <a href="ResultHandler.html" class="extype" name="com.rbmhtechnology.eventuate.ResultHandler">ResultHandler</a> that defines this actor's recover handling behaviour.</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#setOnSnapshot" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="setOnSnapshot(handler:AbstractEventsourcedView.this.Receive):Unit"></a>
+      <a id="setOnSnapshot(Receive):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setOnSnapshot</span><span class="params">(<span name="handler">handler: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView.Receive">Receive</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#com.rbmhtechnology.eventuate.AbstractEventsourcedView@setOnSnapshot(handler:AbstractEventsourcedView.this.Receive):Unit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Java API that sets this actor's <a href="EventsourcedView.html#onSnapshot:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onSnapshot">snapshot</a> handler.</p><div class="fullcomment"><div class="comment cmt"><p>Java API that sets this actor's <a href="EventsourcedView.html#onSnapshot:EventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.EventsourcedView#onSnapshot">snapshot</a> handler.</p><p>Supplied with a partial function that defines the actor's snapshot handling behaviour.
+Use <a href="http://doc.akka.io/japi/akka/2.3.9/akka/japi/pf/ReceiveBuilder.html" target="_blank">ReceiveBuilder</a> to define the behaviour.</p><p>If <a href="#onSnapshot:AbstractEventsourcedView.this.Receive" class="extmbr" name="com.rbmhtechnology.eventuate.AbstractEventsourcedView#onSnapshot">onSnapshot</a> is implemented, the supplied behaviour is ignored.
+</p></div><dl class="paramcmts block"><dt class="param">handler</dt><dd class="cmt"><p>a function that defines this actor's snapshot handling behaviour.</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>See also</dt><dd><span class="cmt"><p><a href="EventsourcedView.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedView">EventsourcedView</a></p></span></dd></dl></div>
     </li><li name="com.rbmhtechnology.eventuate.EventsourcedView#snapshotContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="snapshotContext:com.rbmhtechnology.eventuate.BehaviorContext"></a>
       <a id="snapshotContext:BehaviorContext"></a>
@@ -1607,9 +1398,7 @@ Has no effect if the actor is recovering i.e. if <code>recovering</code> returns
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent">
-              <h3>Inherited from <span class="extype" name="com.rbmhtechnology.eventuate.AbstractEventsourcedComponent">AbstractEventsourcedComponent</span></h3>
-            </div><div class="parent" name="com.rbmhtechnology.eventuate.ConditionalRequests">
+        <div class="parent" name="com.rbmhtechnology.eventuate.ConditionalRequests">
               <h3>Inherited from <a href="ConditionalRequests.html" class="extype" name="com.rbmhtechnology.eventuate.ConditionalRequests">ConditionalRequests</a></h3>
             </div><div class="parent" name="com.rbmhtechnology.eventuate.EventsourcedVersion">
               <h3>Inherited from <a href="EventsourcedVersion.html" class="extype" name="com.rbmhtechnology.eventuate.EventsourcedVersion">EventsourcedVersion</a></h3>
