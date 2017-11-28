@@ -16,10 +16,10 @@
 
 package com.rbmhtechnology.eventuate;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.japi.Creator;
-import akka.japi.pf.ReceiveBuilder;
 import akka.testkit.TestProbe;
 import com.rbmhtechnology.eventuate.EventsourcedViewSpec.Ping;
 import com.rbmhtechnology.eventuate.EventsourcedViewSpec.Pong;
@@ -32,56 +32,82 @@ import javaslang.Tuple;
 import org.junit.Before;
 import org.junit.Test;
 import scala.Option;
-import scala.PartialFunction;
 import scala.runtime.BoxedUnit;
 
 public class AbstractEventsourcedViewSpec extends BaseSpec {
 
     public static class TestEventsourcedView extends AbstractEventsourcedView {
+
+        private final ActorRef msgProbe;
+
         public TestEventsourcedView(final String id, final ActorRef eventProbe, final ActorRef msgProbe) {
             super(id, eventProbe);
+            this.msgProbe = msgProbe;
+        }
 
-            setOnCommand(ReceiveBuilder
-                    .match(Ping.class, p -> msgProbe.tell(new Pong(p.i()), self()))
-                    .build());
+        @Override
+        public AbstractActor.Receive createOnCommand() {
+            return receiveBuilder()
+                .match(Ping.class, p -> msgProbe.tell(new Pong(p.i()), getSelf()))
+                .build();
+        }
 
-            setOnEvent(ReceiveBuilder
-                    .matchAny(ev -> msgProbe.tell(Tuple.of(ev, lastVectorTimestamp(), lastSequenceNr()), self()))
-                    .build());
+        @Override
+        public AbstractActor.Receive createOnEvent() {
+            return receiveBuilder()
+                .matchAny(ev -> msgProbe.tell(Tuple.of(ev, getLastVectorTimestamp(), getLastSequenceNr()), getSelf()))
+                .build();
+        }
 
-            setOnSnapshot(ReceiveBuilder
-                    .matchAny(s -> msgProbe.tell("snapshot received", self()))
-                    .build());
+        @Override
+        public AbstractActor.Receive createOnSnapshot() {
+            return receiveBuilder()
+                .matchAny(s -> msgProbe.tell("snapshot received", getSelf()))
+                .build();
         }
     }
 
     public static class TestCompletionView extends AbstractEventsourcedView {
+
+        private final ActorRef msgProbe;
+
         public TestCompletionView(final String id, final ActorRef eventProbe, final ActorRef msgProbe) {
             super(id, eventProbe);
+            this.msgProbe = msgProbe;
+        }
 
-            setOnRecover(ResultHandler.on(
-                    success -> msgProbe.tell("success", self()),
-                    failure -> msgProbe.tell(failure, self())
-            ));
+        @Override
+        public ResultHandler<BoxedUnit> createOnRecovery() {
+            return ResultHandler.on(
+                success -> msgProbe.tell("success", getSelf()),
+                failure -> msgProbe.tell(failure, getSelf())
+            );
         }
     }
 
     public static class TestBehaviourView extends AbstractEventsourcedView {
+
+        private final ActorRef msgProbe;
+
         public TestBehaviourView(final String id, final ActorRef eventProbe, final ActorRef msgProbe) {
             super(id, eventProbe);
-
-            setOnCommand(ReceiveBuilder
-                    .match(Ping.class, p -> msgProbe.tell(new Pong(p.i()), self()))
-                    .matchEquals("become-ping", c -> commandContext().become(ping(msgProbe), false))
-                    .matchEquals("unbecome", c -> commandContext().unbecome())
-                    .build());
+            this.msgProbe = msgProbe;
         }
 
-        private PartialFunction<Object, BoxedUnit> ping(final ActorRef msgProbe) {
-            return ReceiveBuilder
-                    .match(Pong.class, p -> msgProbe.tell(new Ping(p.i()), self()))
-                    .matchEquals("unbecome", c -> commandContext().unbecome())
-                    .build();
+        @Override
+        public AbstractActor.Receive createOnCommand() {
+            return receiveBuilder()
+                .match(Ping.class, p -> msgProbe.tell(new Pong(p.i()), getSelf()))
+                .matchEquals("become-ping", c -> getCommandContext().become(ping(msgProbe), false))
+                .matchEquals("unbecome", c -> getCommandContext().unbecome())
+                .build();
+        }
+
+        private AbstractActor.Receive ping(final ActorRef msgProbe) {
+            return receiveBuilder()
+                .match(Pong.class, p -> msgProbe.tell(new Ping(p.i()), getSelf()))
+                .matchEquals("unbecome", c -> getCommandContext().unbecome())
+                .build();
         }
     }
 

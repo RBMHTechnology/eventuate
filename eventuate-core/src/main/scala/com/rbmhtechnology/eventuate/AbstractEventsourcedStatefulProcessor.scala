@@ -24,6 +24,6 @@ import akka.actor.ActorRef
  * @see [[AbstractEventsourcedView]] for a detailed usage of the Java API
  * @see [[StatefulProcessor]]
  */
-class AbstractEventsourcedStatefulProcessor(id: String, eventLog: ActorRef, val targetEventLog: ActorRef) extends AbstractEventsourcedView(id, eventLog)
+class AbstractEventsourcedStatefulProcessor(val id: String, val eventLog: ActorRef, val targetEventLog: ActorRef) extends AbstractEventsourcedComponent
   with StatefulProcessor with EventSourcedProcessorAdapter with EventsourcedProcessorWriteSuccessHandlerAdapter {
 }

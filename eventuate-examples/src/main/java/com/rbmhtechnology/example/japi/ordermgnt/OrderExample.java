@@ -57,8 +57,11 @@ public class OrderExample extends AbstractActor {
         this.view = view;
 
         this.reader = new BufferedReader(new InputStreamReader(System.in));
+    }
 
-        receive(ReceiveBuilder
+    @Override
+    public Receive createReceive() {
+        return receiveBuilder()
                 .match(GetStateSuccess.class, r -> {
                     r.state.values().stream().forEach(OrderActor::printOrder);
                     prompt();
@@ -90,7 +93,7 @@ public class OrderExample extends AbstractActor {
                     prompt();
                 })
                 .match(CommandSuccess.class, r -> prompt())
-                .match(String.class, this::process).build());
+                .match(String.class, this::process).build();
     }
 
     private void prompt() throws IOException {
