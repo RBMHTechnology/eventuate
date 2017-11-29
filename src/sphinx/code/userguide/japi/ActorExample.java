@@ -17,10 +17,10 @@
 package userguide.japi;
 
 //#event-sourced-actor
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import akka.japi.pf.ReceiveBuilder;
 import com.rbmhtechnology.eventuate.AbstractEventsourcedActor;
 import com.rbmhtechnology.eventuate.ReplicationConnection;
 import com.rbmhtechnology.eventuate.ResultHandler;
@@ -45,23 +45,29 @@ class ExampleActor extends AbstractEventsourcedActor {
   public ExampleActor(String id, Optional<String> aggregateId, ActorRef eventLog) {
     super(id, eventLog);
     this.aggregateId = aggregateId;
-
-    setOnCommand(ReceiveBuilder
-      .match(Print.class, cmd -> printState(id, currentState))
-      .match(Append.class, cmd -> persist(new Appended(cmd.entry), ResultHandler.on(
-        evt -> sender().tell(new AppendSuccess(evt.entry), self()),
-        err -> sender().tell(new AppendFailure(err), self())
-      )))
-      .build());
-
-    setOnEvent(ReceiveBuilder
-      .match(Appended.class, evt -> currentState = append(currentState, evt.entry))
-      .build());
   }
 
   @Override
   public Optional<String> getAggregateId() {
     return aggregateId;
+  }
+
+  @Override
+  public AbstractActor.Receive createOnCommand() {
+    return receiveBuilder()
+        .match(Print.class, cmd -> printState(id(), currentState))
+        .match(Append.class, cmd -> persist(new Appended(cmd.entry), ResultHandler.on(
+            evt -> getSender().tell(new AppendSuccess(evt.entry), getSelf()),
+            err -> getSender().tell(new AppendFailure(err), getSelf())
+        )))
+        .build();
+  }
+
+  @Override
+  public AbstractActor.Receive createOnEvent() {
+    return receiveBuilder()
+        .match(Appended.class, evt -> currentState = append(currentState, evt.entry))
+        .build();
   }
 
   private void printState(String id, Collection<String> currentState) {

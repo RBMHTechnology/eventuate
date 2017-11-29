@@ -19,8 +19,8 @@ package userguide.japi;
 import static userguide.japi.DocUtils.append;
 
 //#detecting-concurrent-update
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
-import akka.japi.pf.ReceiveBuilder;
 import com.rbmhtechnology.eventuate.AbstractEventsourcedActor;
 import com.rbmhtechnology.eventuate.VectorTime;
 
@@ -30,29 +30,32 @@ import java.util.Collections;
 
 public class ConcurrentExample {
 
-  //#detecting-concurrent-update
+    //#detecting-concurrent-update
 
-  class ExampleActor extends AbstractEventsourcedActor {
+    class ExampleActor extends AbstractEventsourcedActor {
 
-    private Collection<String> currentState = Collections.emptyList();
-    private VectorTime updateTimestamp = VectorTime.Zero();
+        private Collection<String> currentState = Collections.emptyList();
+        private VectorTime updateTimestamp = VectorTime.Zero();
 
-    public ExampleActor(String id, ActorRef eventLog) {
-      super(id, eventLog);
+        public ExampleActor(String id, ActorRef eventLog) {
+            super(id, eventLog);
+        }
 
-      setOnEvent(ReceiveBuilder
-        .match(Appended.class, evt -> {
-          if (updateTimestamp.lt(lastVectorTimestamp())) {
-            // regular update
-            currentState = append(currentState, evt.entry);
-            updateTimestamp = lastVectorTimestamp();
-          } else if (updateTimestamp.conc(lastVectorTimestamp())) {
-            // concurrent update
-            // TODO: track conflicting versions
-          }
-        })
-        .build());
+        @Override
+        public AbstractActor.Receive createOnEvent() {
+            return receiveBuilder()
+                .match(Appended.class, evt -> {
+                    if (updateTimestamp.lt(getLastVectorTimestamp())) {
+                        // regular update
+                        currentState = append(currentState, evt.entry);
+                        updateTimestamp = getLastVectorTimestamp();
+                    } else if (updateTimestamp.conc(getLastVectorTimestamp())) {
+                        // concurrent update
+                        // TODO: track conflicting versions
+                    }
+                })
+                .build();
+        }
     }
-  }
-  //#
+    //#
 }

@@ -16,6 +16,7 @@
 
 package com.rbmhtechnology.eventuate;
 
+import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.Status;
@@ -48,8 +49,13 @@ public class AbstractEventsourcedWriterSpec extends BaseSpec {
             super(id, logProbe);
             this.appProbe = appProbe;
             this.rwProbe = rwProbe;
+        }
 
-            setOnEvent(ReceiveBuilder.match(String.class, ev -> {}).build());
+        @Override
+        public AbstractActor.Receive createOnEvent() {
+            return receiveBuilder()
+                .match(String.class, ev -> {})
+                .build();
         }
 
         @Override
@@ -69,25 +75,25 @@ public class AbstractEventsourcedWriterSpec extends BaseSpec {
 
         @Override
         public Optional<Long> onReadSuccess(final String result) {
-            appProbe.tell(result, self());
+            appProbe.tell(result, getSelf());
             return super.onReadSuccess(result);
         }
 
         @Override
         public void onWriteSuccess(final String result) {
-            appProbe.tell(result, self());
+            appProbe.tell(result, getSelf());
             super.onWriteSuccess(result);
         }
 
         @Override
         public void onReadFailure(final Throwable cause) {
-            appProbe.tell(cause, self());
+            appProbe.tell(cause, getSelf());
             super.onReadFailure(cause);
         }
 
         @Override
         public void onWriteFailure(final Throwable cause) {
-            appProbe.tell(cause, self());
+            appProbe.tell(cause, getSelf());
             super.onWriteFailure(cause);
         }
 

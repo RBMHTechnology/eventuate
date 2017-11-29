@@ -45,10 +45,13 @@ public class AbstractEventsourcedProcessorSpec extends BaseSpec {
         public TestEventsourcedProcessor(final String id, final ActorRef srcProbe, final ActorRef targetProbe, final ActorRef appProbe) {
             super(id, srcProbe, targetProbe);
             this.appProbe = appProbe;
+        }
 
-            setOnProcessEvent(ProcessBuilder
-                    .match(String.class, s -> Arrays.asList(s + "-1", s + "-2"))
-                    .build());
+        @Override
+        public Process createOnProcessEvent() {
+          return processBuilder()
+            .match(String.class, s -> Arrays.asList(s + "-1", s + "-2"))
+            .build();
         }
 
         @Override
