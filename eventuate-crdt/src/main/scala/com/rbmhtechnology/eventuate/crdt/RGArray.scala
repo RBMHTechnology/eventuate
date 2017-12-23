@@ -21,7 +21,7 @@ import com.rbmhtechnology.eventuate._
 
 import scala.annotation.tailrec
 import scala.concurrent.Future
-import scala.collection.immutable.Vector
+import scala.collection.immutable.TreeMap
 import scala.util.{ Failure, Success, Try }
 
 /**
@@ -31,21 +31,66 @@ import scala.util.{ Failure, Success, Try }
  *
  * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]], specification 19
  */
-case class RGArray[A](vertices: Vector[Vertex[A]] = Vector.empty[Vertex[A]]) extends CRDTFormat {
-  def value: Vector[A] = vertices.filter(_.deletionTime.isEmpty).map(_.value)
+case class RGArray[A](vertexTree: TreeMap[Position, Vertex[A]] = TreeMap[Position, Vertex[A]](Position.head, Vertex.head[A])) extends CRDTFormat {
 
-  def vertexAt(index: Int): Vertex[A] = vertices.iterator.filter(_.deletionTime.isEmpty).drop(index).next
+  /**
+    * Returns raw iterator of all inserted vertices.
+    *
+    * @return
+    */
+  def vertices: Iterator[Vertex[A]] = vertexTree(Position.head).next.iterator
 
-  def insertRight(value: A, newPos: Position): RGArray[A] = insertRight(Position.head, value, newPos)
+  /**
+    * A materialized linear indexed sequence of elements represented by the current RGArray.
+    *
+    * @return
+    */
+  def value: Vector[A] = vertices.filter(_.deletionTime.nonEmpty).map(_.value).toVector
 
-  def insertRight(after: Position, value: A, pos: Position): RGArray[A] = {
-    val newVertex = Vertex(value, pos)
-    if (vertices.isEmpty) {
-      RGArray(vertices :+ newVertex)
-    } else {
-      val found = if (after == Position.head) 0 else vertices.indexWhere((v: Vertex[A]) => v.pos == after) + 1
-      val index: Int = skipOver(pos, found)
-      RGArray((vertices.take(index) :+ newVertex) ++: vertices.drop(index))
+  /**
+    * Return a non-deleted Vertex at the given index number. Index of the vertex
+    * is related to a [[RGArray[A].value]] collection generated from the current RGArray.
+    *
+    * @param index
+    * @return
+    */
+  def vertexAt(index: Int): Vertex[A] = vertices.filter(_.deletionTime.nonEmpty).drop(index).next()
+
+  /**
+    * Returns a new RGArray with an element inserted at the beginning of an existing RGArray.
+    *
+    * @param element value to insert into RGArray.
+    * @param pos a new unique position identifier given to a provided `element`.
+    * @return A new updated instance of RGArray.
+    */
+  def insertRight(element: A, pos: Position): RGArray[A] = insertRight(Position.head, element, pos)
+
+  /**
+    * Returns a new RGArray with an element inserted on the right of the provided position.
+    *
+    * @param after position after which an `element` will be inserted.
+    * @param element value to insert into RGArray.
+    * @param pos a new unique position identifier given to a provided `element`.
+    * @return A new updated instance of RGArray.
+    */
+  def insertRight(after: Position, element: A, pos: Position): RGArray[A] = {
+    val prev = vertexTree(after)
+    updateTree(element, pos, prev)
+  }
+
+  @tailrec
+  private def updateTree(elem: A, pos: Position, prev: Vertex[A]): RGArray[A] ={
+    prev.next match {
+      case Some(vertex) if vertex.pos > pos =>
+        updateTree(elem, pos, vertex)
+      case Some(vertex) =>
+        val curr = Vertex(elem, pos, next = Some(vertex))
+        val updated = prev.copy(next = Some(curr))
+        RGArray[A](vertexTree = vertexTree.insert(updated.pos, updated).insert(pos, curr))
+      case None =>
+        val curr = Vertex(elem, pos)
+        val updated = prev.copy(next = Some(curr))
+        RGArray[A](vertexTree = vertexTree.insert(updated.pos, updated).insert(pos, curr))
     }
   }
 
@@ -56,28 +101,26 @@ case class RGArray[A](vertices: Vector[Vertex[A]] = Vector.empty[Vertex[A]]) ext
    * @param time A timestamp at which removal has happened.
    */
   def delete(pos: Position, time: VectorTime) = {
-    this.copy(vertices = vertices.map((v: Vertex[A]) => if (v.pos == pos) v.copy(deletionTime = Some(time)) else v))
+    val vertex = this.vertexTree(pos).copy(deletionTime = Some(time))
+    this.copy(vertexTree = this.vertexTree.insert(pos, vertex))
   }
 
   /**
-   * Prunes all removed values, that have been tombstoned in `timestamp`s causual past.
+   * Prunes all removed values, that have been tombstoned in `timestamp`s causal past.
    *
    * @param timestamp Last stable timestamp, reached by all corresponding replicas.
    * @return A new RGArray without tombstoned values, that had happened before `timestamp`.
    */
   def prune(timestamp: VectorTime) = {
-    val pruned = vertices.filter(x => {
-      x.deletionTime match {
-        case Some(time) if time < timestamp => false
-        case _                              => true
+    val pruned = vertexTree.filter({
+      case (pos, vertex) => {
+        vertex.deletionTime match {
+          case Some(time) if time < timestamp => false
+          case _                              => true
+        }
       }
     })
-    this.copy(vertices = pruned)
-  }
-
-  @tailrec
-  private def skipOver(pos: Position, index: Int): Int = {
-    if (index < vertices.length && vertices(index).pos > pos) skipOver(pos, index + 1) else index
+    this.copy(vertexTree = pruned)
   }
 }
 
@@ -151,14 +194,32 @@ case class Position(seqNr: Long, emitterId: String) extends Ordered[Position] {
 }
 
 object Position {
-  val head: Position = Position(0, "")
+  val head: Position = Position(-1, "")
 }
 
 /**
  * Bucket for values stored inside an [[RGArray]].
  * @param value Assigned value.
  * @param pos Position of that value in relation to others within [[RGArray]].
- * @param deletionTime Determines a local causual time, at which current value has been removed.
+ * @param next Next vertex in a linear sequence.
+ * @param deletionTime Determines a local causal time, at which current value has been removed.
  * @tparam A Type of a stored value.
  */
-case class Vertex[A](value: A, pos: Position, deletionTime: Option[VectorTime] = None)
+case class Vertex[A](value: A, pos: Position, next: Option[Vertex[A]] = None, deletionTime: Option[VectorTime] = None) extends Iterable[A] {
+
+  case class VertexIterator(var current: Option[Vertex[A]]) extends Iterator[A] {
+    override def hasNext: Boolean = current.nonEmpty
+    override def next(): A = current match {
+      case Some(vertex) =>
+        current = vertex.next
+        vertex.value
+      case None => throw new NoSuchElementException("Next on empty iterator")
+    }
+  }
+
+  override def iterator = VertexIterator(Some(this))
+}
+
+object Vertex {
+  def head[A]: Vertex[A] = Vertex[A](null.asInstanceOf[A], Position.head)
+}

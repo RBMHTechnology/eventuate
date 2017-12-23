@@ -165,7 +165,7 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private def rgArrayFormatBuilder(rgArray: RGArray[_]): RGArrayFormat.Builder = {
     val builder = RGArrayFormat.newBuilder
 
-    rgArray.vertices.foreach { vertex =>
+    rgArray.vertexTree.foreach { vertex =>
       builder.addVertices(rgArrayVertexFormatBuilder(vertex))
     }
 
