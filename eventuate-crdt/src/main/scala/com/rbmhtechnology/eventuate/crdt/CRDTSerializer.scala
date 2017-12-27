@@ -18,13 +18,14 @@ package com.rbmhtechnology.eventuate.crdt
 
 import akka.actor._
 import akka.serialization.Serializer
-
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.crdt.CRDTFormats._
 import com.rbmhtechnology.eventuate.crdt.CRDTService._
 import com.rbmhtechnology.eventuate.serializer.CommonSerializer
 
+import scala.annotation.tailrec
 import scala.collection.JavaConverters._
+import scala.collection.immutable.TreeMap
 
 class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   val commonSerializer = new CommonSerializer(system)
@@ -165,7 +166,7 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private def rgArrayFormatBuilder(rgArray: RGArray[_]): RGArrayFormat.Builder = {
     val builder = RGArrayFormat.newBuilder
 
-    rgArray.vertexTree.foreach { vertex =>
+    rgArray.vertices.foreach { vertex =>
       builder.addVertices(rgArrayVertexFormatBuilder(vertex))
     }
 
@@ -251,15 +252,24 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     ORCartEntry(payloadSerializer.payload(orCartEntryFormat.getKey), orCartEntryFormat.getQuantity)
 
   private def rgArray(format: CRDTFormats.RGArrayFormat): RGArray[Any] = {
-    val vertexes = format.getVerticesList.iterator.asScala.foldLeft(Vector.empty[Vertex[Any]]) {
-      case (acc, vertex) => acc :+ rgArrayVertex(vertex)
+    @tailrec
+    def buildTree(acc: TreeMap[Position, Vertex[Any]], vertexOption: Option[Vertex[Any]]): TreeMap[Position, Vertex[Any]] = {
+      vertexOption match {
+        case None         => acc
+        case Some(vertex) => buildTree(acc.insert(vertex.pos, vertex), vertex.next)
+      }
     }
-    RGArray(vertexes)
+    val firstOption = format.getVerticesList.asScala.foldRight(Option.empty[Vertex[Any]]) {
+      case (format, next) => Some(rgArrayVertex(format, next))
+    }
+    val head = Vertex.head[Any].copy(next = firstOption)
+    val vertices = buildTree(TreeMap.empty[Position, Vertex[Any]], Some(head))
+    RGArray(vertices)
   }
 
-  private def rgArrayVertex(format: CRDTFormats.RGArrayVertexFormat): Vertex[Any] = {
+  private def rgArrayVertex(format: CRDTFormats.RGArrayVertexFormat, next: Option[Vertex[Any]] = None): Vertex[Any] = {
     val timestamp = if (format.hasDeletionTime) Some(commonSerializer.vectorTime(format.getDeletionTime)) else None
-    Vertex(payloadSerializer.payload(format.getValue), rgArrayPosition(format.getPosition), timestamp)
+    Vertex(payloadSerializer.payload(format.getValue), rgArrayPosition(format.getPosition), next, timestamp)
   }
 
   private def rgArrayPosition(format: CRDTFormats.PositionFormat): Position =

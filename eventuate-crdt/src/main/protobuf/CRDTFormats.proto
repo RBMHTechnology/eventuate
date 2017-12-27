@@ -40,7 +40,7 @@ message PositionFormat {
 message RGArrayVertexFormat {
   optional PayloadFormat value = 1;
   optional PositionFormat position = 2;
-  optional VectorTimeFormat deletionTime = 3;
+  optional VectorTimeFormat deletionTime = 4;
 }
 
 message RGArrayFormat {

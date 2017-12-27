@@ -31,55 +31,55 @@ import scala.util.{ Failure, Success, Try }
  *
  * @see [[http://hal.upmc.fr/docs/00/55/55/88/PDF/techreport.pdf A comprehensive study of Convergent and Commutative Replicated Data Types]], specification 19
  */
-case class RGArray[A](vertexTree: TreeMap[Position, Vertex[A]] = TreeMap[Position, Vertex[A]](Position.head, Vertex.head[A])) extends CRDTFormat {
+case class RGArray[A](vertexTree: TreeMap[Position, Vertex[A]] = TreeMap[Position, Vertex[A]]((Position.head, Vertex.head[A]))) extends CRDTFormat {
 
   /**
-    * Returns raw iterator of all inserted vertices.
-    *
-    * @return
-    */
+   * Returns raw iterator of all inserted vertices.
+   *
+   * @return
+   */
   def vertices: Iterator[Vertex[A]] = vertexTree(Position.head).next.iterator
 
   /**
-    * A materialized linear indexed sequence of elements represented by the current RGArray.
-    *
-    * @return
-    */
+   * A materialized linear indexed sequence of elements represented by the current RGArray.
+   *
+   * @return
+   */
   def value: Vector[A] = vertices.filter(_.deletionTime.nonEmpty).map(_.value).toVector
 
   /**
-    * Return a non-deleted Vertex at the given index number. Index of the vertex
-    * is related to a [[RGArray[A].value]] collection generated from the current RGArray.
-    *
-    * @param index
-    * @return
-    */
+   * Return a non-deleted Vertex at the given index number. Index of the vertex
+   * is related to a [[RGArray[A].value]] collection generated from the current RGArray.
+   *
+   * @param index
+   * @return
+   */
   def vertexAt(index: Int): Vertex[A] = vertices.filter(_.deletionTime.nonEmpty).drop(index).next()
 
   /**
-    * Returns a new RGArray with an element inserted at the beginning of an existing RGArray.
-    *
-    * @param element value to insert into RGArray.
-    * @param pos a new unique position identifier given to a provided `element`.
-    * @return A new updated instance of RGArray.
-    */
+   * Returns a new RGArray with an element inserted at the beginning of an existing RGArray.
+   *
+   * @param element value to insert into RGArray.
+   * @param pos a new unique position identifier given to a provided `element`.
+   * @return A new updated instance of RGArray.
+   */
   def insertRight(element: A, pos: Position): RGArray[A] = insertRight(Position.head, element, pos)
 
   /**
-    * Returns a new RGArray with an element inserted on the right of the provided position.
-    *
-    * @param after position after which an `element` will be inserted.
-    * @param element value to insert into RGArray.
-    * @param pos a new unique position identifier given to a provided `element`.
-    * @return A new updated instance of RGArray.
-    */
+   * Returns a new RGArray with an element inserted on the right of the provided position.
+   *
+   * @param after position after which an `element` will be inserted.
+   * @param element value to insert into RGArray.
+   * @param pos a new unique position identifier given to a provided `element`.
+   * @return A new updated instance of RGArray.
+   */
   def insertRight(after: Position, element: A, pos: Position): RGArray[A] = {
     val prev = vertexTree(after)
     updateTree(element, pos, prev)
   }
 
   @tailrec
-  private def updateTree(elem: A, pos: Position, prev: Vertex[A]): RGArray[A] ={
+  private def updateTree(elem: A, pos: Position, prev: Vertex[A]): RGArray[A] = {
     prev.next match {
       case Some(vertex) if vertex.pos > pos =>
         updateTree(elem, pos, vertex)
@@ -217,7 +217,7 @@ case class Vertex[A](value: A, pos: Position, next: Option[Vertex[A]] = None, de
     }
   }
 
-  override def iterator = VertexIterator(Some(this))
+  override def iterator: Iterator[A] = VertexIterator(Some(this))
 }
 
 object Vertex {
