@@ -252,18 +252,13 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     ORCartEntry(payloadSerializer.payload(orCartEntryFormat.getKey), orCartEntryFormat.getQuantity)
 
   private def rgArray(format: CRDTFormats.RGArrayFormat): RGArray[Any] = {
-    @tailrec
-    def buildTree(acc: TreeMap[Position, Vertex[Any]], vertexOption: Option[Vertex[Any]]): TreeMap[Position, Vertex[Any]] = {
-      vertexOption match {
-        case None         => acc
-        case Some(vertex) => buildTree(acc.insert(vertex.pos, vertex), vertex.next)
-      }
-    }
     val firstOption = format.getVerticesList.asScala.foldRight(Option.empty[Vertex[Any]]) {
       case (format, next) => Some(rgArrayVertex(format, next))
     }
     val head = Vertex.head[Any].copy(next = firstOption)
-    val vertices = buildTree(TreeMap.empty[Position, Vertex[Any]], Some(head))
+    val vertices = head.iterator.foldLeft(TreeMap.empty[Position, Vertex[Any]]) {
+      case (acc, vertex) => acc.insert(vertex.pos, vertex)
+    }
     RGArray(vertices)
   }
 

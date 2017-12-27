@@ -205,19 +205,19 @@ object Position {
  * @param deletionTime Determines a local causal time, at which current value has been removed.
  * @tparam A Type of a stored value.
  */
-case class Vertex[A](value: A, pos: Position, next: Option[Vertex[A]] = None, deletionTime: Option[VectorTime] = None) extends Iterable[A] {
+case class Vertex[A](value: A, pos: Position, next: Option[Vertex[A]] = None, deletionTime: Option[VectorTime] = None) extends Iterable[Vertex[A]] {
 
-  case class VertexIterator(var current: Option[Vertex[A]]) extends Iterator[A] {
+  case class VertexIterator(var current: Option[Vertex[A]]) extends Iterator[Vertex[A]] {
     override def hasNext: Boolean = current.nonEmpty
-    override def next(): A = current match {
+    override def next(): Vertex[A] = current match {
       case Some(vertex) =>
         current = vertex.next
-        vertex.value
+        vertex
       case None => throw new NoSuchElementException("Next on empty iterator")
     }
   }
 
-  override def iterator: Iterator[A] = VertexIterator(Some(this))
+  override def iterator: Iterator[Vertex[A]] = VertexIterator(Some(this))
 }
 
 object Vertex {

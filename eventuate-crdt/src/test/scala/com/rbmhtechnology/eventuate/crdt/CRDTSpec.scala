@@ -280,9 +280,9 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
         .delete(third, t21).prune(t21)
 
       rga2.value should be(Vector('b'))
-      rga2.vertexTree.filter(_.deletionTime.isDefined) should be(Vector(
-        Vertex[Char]('a', first, Some(t12)),
-        Vertex[Char]('c', third, Some(t21))
+      rga2.vertices.filter(_.deletionTime.isDefined).map(v => (v.value, v.pos, v.deletionTime)) should be(Vector(
+        ('a', first, Some(t12)),
+        ('c', third, Some(t21))
       ))
 
       // make 3 delete, in causal future of t12
@@ -291,9 +291,9 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
       val rga3 = rga2.delete(second, t13).prune(t13)
 
       rga3.value should be(Vector.empty[Char])
-      rga3.vertexTree.filter(_.deletionTime.isDefined) should be(Vector(
-        Vertex[Char]('b', second, Some(t13)),
-        Vertex[Char]('c', third, Some(t21))
+      rga3.vertices.filter(_.deletionTime.isDefined).map(v => (v.value, v.pos, v.deletionTime)) should be(Vector(
+        ('b', second, Some(t13)),
+        ('c', third, Some(t21))
       ))
     }
   }
