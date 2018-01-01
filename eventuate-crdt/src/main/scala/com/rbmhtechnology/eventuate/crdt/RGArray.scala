@@ -45,7 +45,7 @@ case class RGArray[A](vertexTree: TreeMap[Position, Vertex[A]] = TreeMap[Positio
    *
    * @return
    */
-  def value: Vector[A] = vertices.filter(_.deletionTime.nonEmpty).map(_.value).toVector
+  def value: Vector[A] = vertices.filter(_.deletionTime.isEmpty).map(_.value).toVector
 
   /**
    * Return a non-deleted Vertex at the given index number. Index of the vertex
@@ -86,11 +86,11 @@ case class RGArray[A](vertexTree: TreeMap[Position, Vertex[A]] = TreeMap[Positio
       case Some(vertex) =>
         val curr = Vertex(elem, pos, next = Some(vertex))
         val updated = prev.copy(next = Some(curr))
-        RGArray[A](vertexTree = vertexTree.insert(updated.pos, updated).insert(pos, curr))
+        RGArray[A](vertexTree = vertexTree.updated(updated.pos, updated).updated(pos, curr))
       case None =>
         val curr = Vertex(elem, pos)
         val updated = prev.copy(next = Some(curr))
-        RGArray[A](vertexTree = vertexTree.insert(updated.pos, updated).insert(pos, curr))
+        RGArray[A](vertexTree = vertexTree.updated(updated.pos, updated).updated(pos, curr))
     }
   }
 
@@ -102,7 +102,7 @@ case class RGArray[A](vertexTree: TreeMap[Position, Vertex[A]] = TreeMap[Positio
    */
   def delete(pos: Position, time: VectorTime) = {
     val vertex = this.vertexTree(pos).copy(deletionTime = Some(time))
-    this.copy(vertexTree = this.vertexTree.insert(pos, vertex))
+    this.copy(vertexTree = this.vertexTree.updated(pos, vertex))
   }
 
   /**
