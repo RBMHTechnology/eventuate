@@ -235,4 +235,3 @@ private class DurableEventReceiver(id: String, connection: ReplicationConnection
       readSchedule.foreach(_.cancel())
   }
 }
-

@@ -25,6 +25,9 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
   val lwwReg = LWWRegister[Int]()
   val orSet = ORSet[Int]()
   val orShoppingCart = ORCart[String]()
+  val rgArray = RGArray[Char]
+
+  def pos(pos: Int, emitterId: String) = Position(pos, emitterId)
 
   def vectorTime(t1: Long, t2: Long): VectorTime =
     VectorTime("p1" -> t1, "p2" -> t2)
@@ -195,6 +198,103 @@ class CRDTSpec extends WordSpec with Matchers with BeforeAndAfterEach {
         .add("b", 1, vectorTime(4, 0))
         .remove(Set(vectorTime(1, 0), vectorTime(2, 0), vectorTime(3, 0)))
         .value should be(Map("b" -> 1))
+    }
+  }
+
+  "A RGArray" must {
+    "insert value in the middle" in {
+      val first = pos(1, "a")
+      rgArray
+        .insertRight('a', first)
+        .insertRight(first, 'b', pos(2, "a"))
+        .insertRight(first, 'c', pos(3, "a"))
+        .value should be(Vector('a', 'c', 'b'))
+    }
+    "insert values concurrently with preserved order" in {
+      val first = pos(1, "a")
+      val second = pos(2, "a")
+      val third = pos(3, "a")
+      rgArray
+        .insertRight('a', first)
+        .insertRight(first, 'b', second)
+        .insertRight(second, 'c', third)
+        .insertRight(second, 'x', pos(4, "a"))
+        .insertRight(first, 'y', pos(4, "b"))
+        .value should be(Vector('a', 'y', 'b', 'x', 'c'))
+    }
+    "insert concurrently elements in the same position preserving order" in {
+      val first = pos(1, "a")
+      val second = pos(2, "a")
+      val third = pos(3, "a")
+      val shared = rgArray
+        .insertRight('a', first)
+        .insertRight(first, 'b', second)
+        .insertRight(second, 'c', third)
+      val rga1 = shared
+        .insertRight(second, 'x', pos(4, "a"))
+        .insertRight(pos(4, "a"), 'y', pos(5, "a"))
+      rga1.value should be(Vector('a', 'b', 'x', 'y', 'c'))
+      val rga2 = shared
+        .insertRight(second, 'p', pos(4, "b"))
+        .insertRight(pos(4, "b"), 'q', pos(5, "b"))
+      rga2.value should be(Vector('a', 'b', 'p', 'q', 'c'))
+      // insert distinct operations from rga2 to rga1
+      var rga12 = rga1
+        .insertRight(second, 'p', pos(4, "b"))
+        .insertRight(pos(4, "b"), 'q', pos(5, "b"))
+      // insert distinct operations from rga1 to rga2
+      var rga21 = rga2
+        .insertRight(second, 'x', pos(4, "a"))
+        .insertRight(pos(4, "a"), 'y', pos(5, "a"))
+
+      rga12.value should be(Vector('a', 'b', 'p', 'q', 'x', 'y', 'c'))
+      rga21.value should be(Vector('a', 'b', 'p', 'q', 'x', 'y', 'c'))
+      rga21 should be(rga12)
+    }
+    "delete elements" in {
+      val first = pos(1, "a")
+      val second = pos(2, "a")
+      val third = pos(3, "a")
+      rgArray
+        .insertRight('a', first)
+        .insertRight(first, 'b', second)
+        .insertRight(second, 'c', third)
+        .delete(second, VectorTime())
+        .value should be(Vector('a', 'c'))
+    }
+    "prune deleted elements from causal past" in {
+      val first = pos(1, "a")
+      val second = pos(2, "a")
+      val third = pos(3, "b")
+      val rga1 = rgArray
+        .insertRight('a', first)
+        .insertRight(first, 'b', second)
+        .insertRight(second, 'c', third)
+
+      // make 2 causally concurrent deletes - values are tombstoned, but not pruned
+      val t12 = VectorTime(("a", 1), ("b", 2))
+      val t21 = VectorTime(("a", 2), ("b", 1))
+
+      val rga2 = rga1
+        .delete(first, t12).prune(t12)
+        .delete(third, t21).prune(t21)
+
+      rga2.value should be(Vector('b'))
+      rga2.vertices.filter(_.deletionTime.isDefined).map(v => (v.value, v.pos, v.deletionTime)) should be(Vector(
+        ('a', first, Some(t12)),
+        ('c', third, Some(t21))
+      ))
+
+      // make 3 delete, in causal future of t12
+      val t13 = VectorTime(("a", 1), ("b", 3))
+
+      val rga3 = rga2.delete(second, t13).prune(t13)
+
+      rga3.value should be(Vector.empty[Char])
+      rga3.vertices.filter(_.deletionTime.isDefined).map(v => (v.value, v.pos, v.deletionTime)) should be(Vector(
+        ('b', second, Some(t13)),
+        ('c', third, Some(t21))
+      ))
     }
   }
 }

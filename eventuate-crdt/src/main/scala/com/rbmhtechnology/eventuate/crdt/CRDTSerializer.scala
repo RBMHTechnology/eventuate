@@ -18,13 +18,14 @@ package com.rbmhtechnology.eventuate.crdt
 
 import akka.actor._
 import akka.serialization.Serializer
-
 import com.rbmhtechnology.eventuate._
 import com.rbmhtechnology.eventuate.crdt.CRDTFormats._
 import com.rbmhtechnology.eventuate.crdt.CRDTService._
 import com.rbmhtechnology.eventuate.serializer.CommonSerializer
 
+import scala.annotation.tailrec
 import scala.collection.JavaConverters._
+import scala.collection.immutable.TreeMap
 
 class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   val commonSerializer = new CommonSerializer(system)
@@ -35,11 +36,16 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private val ORSetClass = classOf[ORSet[_]]
   private val ORCartClass = classOf[ORCart[_]]
   private val ORCartEntryClass = classOf[ORCartEntry[_]]
+  private val RGArrayClass = classOf[RGArray[_]]
+  private val RGArrayVertexClass = classOf[Vertex[_]]
+  private val RGArrayPosition = classOf[Position]
   private val ValueUpdatedClass = classOf[ValueUpdated]
   private val UpdatedOpClass = classOf[UpdateOp]
   private val AssignOpClass = classOf[AssignOp]
   private val AddOpClass = classOf[AddOp]
   private val RemoveOpClass = classOf[RemoveOp]
+  private val InsertOpClass = classOf[InsertOp]
+  private val DeleteOpClass = classOf[DeleteOp]
 
   override def identifier: Int = 22567
   override def includeManifest: Boolean = true
@@ -53,6 +59,12 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
       orSetFormatBuilder(s).build().toByteArray
     case s: ORCart[_] =>
       orCartFormatBuilder(s).build().toByteArray
+    case a: RGArray[_] =>
+      rgArrayFormatBuilder(a).build().toByteArray
+    case v: Vertex[_] =>
+      rgArrayVertexFormatBuilder(v).build().toByteArray
+    case p: Position =>
+      rgArrayPositionFormatBuilder(p).build().toByteArray
     case s: ORCartEntry[_] =>
       orCartEntryFormatBuilder(s).build().toByteArray
     case v: ValueUpdated =>
@@ -65,6 +77,10 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
       addOpFormatBuilder(o).build().toByteArray
     case o: RemoveOp =>
       removeOpFormatBuilder(o).build().toByteArray
+    case i: InsertOp =>
+      insertOpFormatBuilder(i).build().toByteArray
+    case d: DeleteOp =>
+      deleteOpFormatBuilder(d).build().toByteArray
     case _ =>
       throw new IllegalArgumentException(s"can't serialize object of type ${o.getClass}")
   }
@@ -80,6 +96,12 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
         orSet(ORSetFormat.parseFrom(bytes))
       case ORCartClass =>
         orCart(ORCartFormat.parseFrom(bytes))
+      case RGArrayVertexClass =>
+        rgArrayVertex(RGArrayVertexFormat.parseFrom(bytes))
+      case RGArrayPosition =>
+        rgArrayPosition(PositionFormat.parseFrom(bytes))
+      case RGArrayClass =>
+        rgArray(RGArrayFormat.parseFrom(bytes))
       case ORCartEntryClass =>
         orCartEntry(ORCartEntryFormat.parseFrom(bytes))
       case ValueUpdatedClass =>
@@ -92,6 +114,10 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
         addOp(AddOpFormat.parseFrom(bytes))
       case RemoveOpClass =>
         removeOp(RemoveOpFormat.parseFrom(bytes))
+      case InsertOpClass =>
+        insertOp(InsertOpFormat.parseFrom(bytes))
+      case DeleteOpClass =>
+        deleteOp(DeleteOpFormat.parseFrom(bytes))
       case _ =>
         throw new IllegalArgumentException(s"can't deserialize object of type ${clazz}")
     }
@@ -137,6 +163,31 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
     builder
   }
 
+  private def rgArrayFormatBuilder(rgArray: RGArray[_]): RGArrayFormat.Builder = {
+    val builder = RGArrayFormat.newBuilder
+
+    rgArray.vertices.foreach { vertex =>
+      builder.addVertices(rgArrayVertexFormatBuilder(vertex))
+    }
+
+    builder
+  }
+
+  private def rgArrayVertexFormatBuilder(vertex: Vertex[_]): RGArrayVertexFormat.Builder = {
+    val builder = RGArrayVertexFormat.newBuilder
+      .setPosition(rgArrayPositionFormatBuilder(vertex.pos))
+      .setValue(payloadSerializer.payloadFormatBuilder(vertex.value.asInstanceOf[AnyRef]))
+
+    vertex.deletionTime.foreach { timestamp => builder.setDeletionTime(commonSerializer.vectorTimeFormatBuilder(timestamp)) }
+
+    builder
+  }
+
+  private def rgArrayPositionFormatBuilder(position: Position): PositionFormat.Builder =
+    PositionFormat.newBuilder
+      .setSeqNr(position.seqNr)
+      .setEmitterId(position.emitterId)
+
   private def valueUpdatedFormat(valueUpdated: ValueUpdated): ValueUpdatedFormat.Builder =
     ValueUpdatedFormat.newBuilder.setOperation(payloadSerializer.payloadFormatBuilder(valueUpdated.operation.asInstanceOf[AnyRef]))
 
@@ -160,6 +211,15 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
 
     builder
   }
+
+  private def insertOpFormatBuilder(op: InsertOp): InsertOpFormat.Builder =
+    InsertOpFormat.newBuilder
+      .setAfter(rgArrayPositionFormatBuilder(op.after))
+      .setValue(payloadSerializer.payloadFormatBuilder(op.value.asInstanceOf[AnyRef]))
+
+  private def deleteOpFormatBuilder(op: DeleteOp): DeleteOpFormat.Builder =
+    DeleteOpFormat.newBuilder
+      .setPos(rgArrayPositionFormatBuilder(op.pos))
 
   // --------------------------------------------------------------------------------
   //  fromBinary helpers
@@ -191,6 +251,25 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
   private def orCartEntry(orCartEntryFormat: ORCartEntryFormat): ORCartEntry[Any] =
     ORCartEntry(payloadSerializer.payload(orCartEntryFormat.getKey), orCartEntryFormat.getQuantity)
 
+  private def rgArray(format: CRDTFormats.RGArrayFormat): RGArray[Any] = {
+    val firstOption = format.getVerticesList.asScala.foldRight(Option.empty[Vertex[Any]]) {
+      case (format, next) => Some(rgArrayVertex(format, next))
+    }
+    val head = Vertex.head[Any].copy(next = firstOption)
+    val vertices = head.iterator.foldLeft(TreeMap.empty[Position, Vertex[Any]]) {
+      case (acc, vertex) => acc.insert(vertex.pos, vertex)
+    }
+    RGArray(vertices)
+  }
+
+  private def rgArrayVertex(format: CRDTFormats.RGArrayVertexFormat, next: Option[Vertex[Any]] = None): Vertex[Any] = {
+    val timestamp = if (format.hasDeletionTime) Some(commonSerializer.vectorTime(format.getDeletionTime)) else None
+    Vertex(payloadSerializer.payload(format.getValue), rgArrayPosition(format.getPosition), next, timestamp)
+  }
+
+  private def rgArrayPosition(format: CRDTFormats.PositionFormat): Position =
+    Position(format.getSeqNr, format.getEmitterId)
+
   private def valueUpdated(valueUpdatedFormat: ValueUpdatedFormat): ValueUpdated =
     ValueUpdated(payloadSerializer.payload(valueUpdatedFormat.getOperation))
 
@@ -210,4 +289,10 @@ class CRDTSerializer(system: ExtendedActorSystem) extends Serializer {
 
     RemoveOp(payloadSerializer.payload(opFormat.getEntry), timestamps)
   }
+
+  private def insertOp(format: CRDTFormats.InsertOpFormat): InsertOp =
+    InsertOp(rgArrayPosition(format.getAfter), payloadSerializer.payload(format.getValue))
+
+  private def deleteOp(format: CRDTFormats.DeleteOpFormat): DeleteOp =
+    DeleteOp(rgArrayPosition(format.getPos))
 }
