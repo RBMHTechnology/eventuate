@@ -18,6 +18,7 @@ script:
   - .travis/test-core.sh $TRAVIS_SCALA_VERSION
   - .travis/test-leveldb.sh $TRAVIS_SCALA_VERSION
   - .travis/test-crdt.sh $TRAVIS_SCALA_VERSION
+  - .travis/test-crdt-pure.sh $TRAVIS_SCALA_VERSION
   - .travis/test-stream.sh $TRAVIS_SCALA_VERSION
   - .travis/test-spark.sh $TRAVIS_SCALA_VERSION
   - .travis/test-vertx.sh $TRAVIS_SCALA_VERSION
