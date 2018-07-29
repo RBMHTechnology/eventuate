@@ -30,9 +30,9 @@ trait MultiNodeReplicationEndpoint extends BeforeAndAfterAll { this: MultiNodeSp
   def createEndpoint(endpointId: String, connections: Set[ReplicationConnection]): ReplicationEndpoint =
     createEndpoint(endpointId, Set(logName), connections)
 
-  def createEndpoint(endpointId: String, logNames: Set[String], connections: Set[ReplicationConnection]): ReplicationEndpoint = {
+  def createEndpoint(endpointId: String, logNames: Set[String], connections: Set[ReplicationConnection], activate: Boolean = true): ReplicationEndpoint = {
     val endpoint = new ReplicationEndpoint(endpointId, logNames, id => logProps(id), connections)
-    endpoint.activate()
+    if (activate) endpoint.activate()
     endpoint
   }
 
