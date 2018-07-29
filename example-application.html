@@ -183,8 +183,8 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#failure-handling">Failure handling</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#circuit-breaker">Circuit breaker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#persist-failure-handling"><code class="docutils literal"><span class="pre">persist</span></code> failure handling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#persistonevent-failure-handling"><code class="docutils literal"><span class="pre">persistOnEvent</span></code> failure handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#persist-failure-handling"><code class="docutils literal notranslate"><span class="pre">persist</span></code> failure handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#persistonevent-failure-handling"><code class="docutils literal notranslate"><span class="pre">persistOnEvent</span></code> failure handling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#recovery-failure-handling">Recovery failure handling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#batch-write-failure-handling">Batch write failure handling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#batch-replication-failure-handling">Batch replication failure handling</a></li>
@@ -330,8 +330,8 @@
 </div>
 <div class="section" id="domain">
 <h2>Domain<a class="headerlink" href="#domain" title="Permalink to this headline">¶</a></h2>
-<p>The <code class="docutils literal"><span class="pre">Order</span></code> domain object is defined as follows:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="k">class</span> <span class="nc">Order</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">items</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Nil</span><span class="o">,</span> <span class="n">cancelled</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span> <span class="o">{</span>
+<p>The <code class="docutils literal notranslate"><span class="pre">Order</span></code> domain object is defined as follows:</p>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="k">class</span> <span class="nc">Order</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">items</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Nil</span><span class="o">,</span> <span class="n">cancelled</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span> <span class="o">{</span>
   <span class="k">def</span> <span class="n">addItem</span><span class="o">(</span><span class="n">item</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Order</span> <span class="o">=</span>
     <span class="n">copy</span><span class="o">(</span><span class="n">items</span> <span class="k">=</span> <span class="n">item</span> <span class="o">::</span> <span class="n">items</span><span class="o">)</span>
 
@@ -346,87 +346,87 @@
 <span class="o">}</span>
 </pre></div>
 </div>
-<p>Order creation and updates are tracked as events in a replicated event log. At each location, there is one event-sourced <code class="docutils literal"><span class="pre">OrderActor</span></code> instance per created <code class="docutils literal"><span class="pre">Order</span></code> instance and one event-sourced <code class="docutils literal"><span class="pre">OrderView</span></code> instance that counts the updates made to all orders.</p>
+<p>Order creation and updates are tracked as events in a replicated event log. At each location, there is one event-sourced <code class="docutils literal notranslate"><span class="pre">OrderActor</span></code> instance per created <code class="docutils literal notranslate"><span class="pre">Order</span></code> instance and one event-sourced <code class="docutils literal notranslate"><span class="pre">OrderView</span></code> instance that counts the updates made to all orders.</p>
 </div>
 <div class="section" id="replication">
 <h2>Replication<a class="headerlink" href="#replication" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">OrderActor</span></code>s are replicated across locations A - F, each running as separate process on <code class="docutils literal"><span class="pre">localhost</span></code> (see section <a class="reference internal" href="#running"><span class="std std-ref">Running</span></a>):</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">------</span> <span class="n">E</span>
+<p><code class="docutils literal notranslate"><span class="pre">OrderActor</span></code>s are replicated across locations A - F, each running as separate process on <code class="docutils literal notranslate"><span class="pre">localhost</span></code> (see section <a class="reference internal" href="#running"><span class="std std-ref">Running</span></a>):</p>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="o">------</span> <span class="n">E</span>
  <span class="o">\</span>      <span class="o">/</span>
   <span class="n">C</span> <span class="o">--</span> <span class="n">D</span>
  <span class="o">/</span>      <span class="o">\</span>
 <span class="n">B</span>        <span class="n">F</span>
 </pre></div>
 </div>
-<p>Each location can create and update orders, even under presence of partitions. In the example application, partitions can be created by shutting down locations. For example, when shutting down location <code class="docutils literal"><span class="pre">C</span></code>, partitions <code class="docutils literal"><span class="pre">B</span></code> and <code class="docutils literal"><span class="pre">A-E-D-F</span></code> are created.</p>
+<p>Each location can create and update orders, even under presence of partitions. In the example application, partitions can be created by shutting down locations. For example, when shutting down location <code class="docutils literal notranslate"><span class="pre">C</span></code>, partitions <code class="docutils literal notranslate"><span class="pre">B</span></code> and <code class="docutils literal notranslate"><span class="pre">A-E-D-F</span></code> are created.</p>
 <p>Concurrent updates to orders with different order id do not conflict. Concurrent updates to replicas of the same order are considered as conflict and must be resolved by the user, otherwise, further updates to that order are rejected. Updates are only rejected if a conflict is already <em>visible</em> to a location.</p>
 </div>
 <div class="section" id="interface">
 <h2>Interface<a class="headerlink" href="#interface" title="Permalink to this headline">¶</a></h2>
 <p>Each location of the example application has a simple command-line interface to create and update orders:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">create</span> <span class="pre">&lt;order-id&gt;</span></code> creates an order with given <code class="docutils literal"><span class="pre">order-id</span></code>.</li>
-<li><code class="docutils literal"><span class="pre">add</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;item&gt;</span></code> adds <code class="docutils literal"><span class="pre">item</span></code> to an order’s items list.</li>
-<li><code class="docutils literal"><span class="pre">remove</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;item&gt;</span></code> removes <code class="docutils literal"><span class="pre">item</span></code> from an order’s items list.</li>
-<li><code class="docutils literal"><span class="pre">cancel</span> <span class="pre">&lt;order-id&gt;</span></code> cancels an order.</li>
-<li><code class="docutils literal"><span class="pre">save</span> <span class="pre">&lt;order-id&gt;</span></code> saves a snapshot of an order.</li>
+<li><code class="docutils literal notranslate"><span class="pre">create</span> <span class="pre">&lt;order-id&gt;</span></code> creates an order with given <code class="docutils literal notranslate"><span class="pre">order-id</span></code>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">add</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;item&gt;</span></code> adds <code class="docutils literal notranslate"><span class="pre">item</span></code> to an order’s items list.</li>
+<li><code class="docutils literal notranslate"><span class="pre">remove</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;item&gt;</span></code> removes <code class="docutils literal notranslate"><span class="pre">item</span></code> from an order’s items list.</li>
+<li><code class="docutils literal notranslate"><span class="pre">cancel</span> <span class="pre">&lt;order-id&gt;</span></code> cancels an order.</li>
+<li><code class="docutils literal notranslate"><span class="pre">save</span> <span class="pre">&lt;order-id&gt;</span></code> saves a snapshot of an order.</li>
 </ul>
 <p>If there’s a conflict from a concurrent update, the conflict must be resolved by selecting one of the conflicting versions<a class="footnote-reference" href="#id5" id="id2">[1]</a>:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">resolve</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;index&gt;</span></code> resolves a conflict by selecting a version <code class="docutils literal"><span class="pre">index</span></code>. Only the location that initially created the order can resolve the conflict<a class="footnote-reference" href="#id6" id="id3">[2]</a>.</li>
+<li><code class="docutils literal notranslate"><span class="pre">resolve</span> <span class="pre">&lt;order-id&gt;</span> <span class="pre">&lt;index&gt;</span></code> resolves a conflict by selecting a version <code class="docutils literal notranslate"><span class="pre">index</span></code>. Only the location that initially created the order can resolve the conflict<a class="footnote-reference" href="#id6" id="id3">[2]</a>.</li>
 </ul>
 <p>Other commands are:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">count</span> <span class="pre">&lt;order-id&gt;</span></code> prints the number of updates to an order, including creation. Update counts are maintained by a separate view that consumes order events from all <code class="docutils literal"><span class="pre">OrderActor</span></code>s on the replicated event log.</li>
-<li><code class="docutils literal"><span class="pre">state</span></code> prints the current state i.e. all orders at a location. Location state may differ during partitions.</li>
-<li><code class="docutils literal"><span class="pre">exit</span></code> stops a location and the replication connections to and from that location.</li>
+<li><code class="docutils literal notranslate"><span class="pre">count</span> <span class="pre">&lt;order-id&gt;</span></code> prints the number of updates to an order, including creation. Update counts are maintained by a separate view that consumes order events from all <code class="docutils literal notranslate"><span class="pre">OrderActor</span></code>s on the replicated event log.</li>
+<li><code class="docutils literal notranslate"><span class="pre">state</span></code> prints the current state i.e. all orders at a location. Location state may differ during partitions.</li>
+<li><code class="docutils literal notranslate"><span class="pre">exit</span></code> stops a location and the replication connections to and from that location.</li>
 </ul>
 <p>Update results from user commands and replicated events are written to <cite>stdout</cite>. A location’s current state is also printed after successful recovery.</p>
 </div>
 <div class="section" id="running">
 <span id="id4"></span><h2>Running<a class="headerlink" href="#running" title="Permalink to this headline">¶</a></h2>
 <p>Before you can run the example application, install <a class="reference external" href="http://www.scala-sbt.org/">sbt</a> and run:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">compile</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">compile</span>
 </pre></div>
 </div>
 <p>from the project’s root directory (needs to be done only once). Then, run:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span>
 </pre></div>
 </div>
-<p>This should open six terminal windows, representing locations A - F. For running the Java version of the example application use the <code class="docutils literal"><span class="pre">-j</span></code> or <code class="docutils literal"><span class="pre">--java</span></code> option:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span> <span class="o">--</span><span class="n">java</span>
+<p>This should open six terminal windows, representing locations A - F. For running the Java version of the example application use the <code class="docutils literal notranslate"><span class="pre">-j</span></code> or <code class="docutils literal notranslate"><span class="pre">--java</span></code> option:</p>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span> <span class="o">--</span><span class="n">java</span>
 </pre></div>
 </div>
-<p>Create and update some orders and see how changes are propagated to other locations. To make concurrent updates to an order, for example, enter <code class="docutils literal"><span class="pre">exit</span></code> at location <code class="docutils literal"><span class="pre">C</span></code>, and add different items to that order at locations <code class="docutils literal"><span class="pre">B</span></code> and <code class="docutils literal"><span class="pre">F</span></code>. When starting location <code class="docutils literal"><span class="pre">C</span></code> again with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="n">A</span>
+<p>Create and update some orders and see how changes are propagated to other locations. To make concurrent updates to an order, for example, enter <code class="docutils literal notranslate"><span class="pre">exit</span></code> at location <code class="docutils literal notranslate"><span class="pre">C</span></code>, and add different items to that order at locations <code class="docutils literal notranslate"><span class="pre">B</span></code> and <code class="docutils literal notranslate"><span class="pre">F</span></code>. When starting location <code class="docutils literal notranslate"><span class="pre">C</span></code> again with:</p>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="n">A</span>
 </pre></div>
 </div>
 <p>or the Java version with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">java</span> <span class="n">A</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">java</span> <span class="n">A</span>
 </pre></div>
 </div>
-<p>both updates propagate to all other locations which are then displayed as conflict. Resolve the conflict with the <code class="docutils literal"><span class="pre">resolve</span></code> command. Conflict resolution writes a conflict resolution event to the replicated event log so that the conflict is automatically resolved at all locations.</p>
+<p>both updates propagate to all other locations which are then displayed as conflict. Resolve the conflict with the <code class="docutils literal notranslate"><span class="pre">resolve</span></code> command. Conflict resolution writes a conflict resolution event to the replicated event log so that the conflict is automatically resolved at all locations.</p>
 </div>
 <div class="section" id="disaster-recovery">
 <span id="example-disaster-recovery"></span><h2>Disaster recovery<a class="headerlink" href="#disaster-recovery" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="reference/event-log.html#disaster-recovery"><span class="std std-ref">Disaster recovery</span></a> in the example application can be tested by removing the event log of a location and starting the location again with disaster recovery enabled. For example, to remove the event log at location <code class="docutils literal"><span class="pre">C</span></code>, stop the location with <code class="docutils literal"><span class="pre">exit</span></code> and delete its LevelDB directory:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">rm</span> <span class="o">-</span><span class="n">r</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">example</span><span class="o">-</span><span class="n">logs</span><span class="o">/</span><span class="n">s</span><span class="o">-</span><span class="nc">C_default</span><span class="o">/</span>
+<p><a class="reference internal" href="reference/event-log.html#disaster-recovery"><span class="std std-ref">Disaster recovery</span></a> in the example application can be tested by removing the event log of a location and starting the location again with disaster recovery enabled. For example, to remove the event log at location <code class="docutils literal notranslate"><span class="pre">C</span></code>, stop the location with <code class="docutils literal notranslate"><span class="pre">exit</span></code> and delete its LevelDB directory:</p>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">rm</span> <span class="o">-</span><span class="n">r</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">example</span><span class="o">-</span><span class="n">logs</span><span class="o">/</span><span class="n">s</span><span class="o">-</span><span class="nc">C_default</span><span class="o">/</span>
 </pre></div>
 </div>
 <p>To delete the event log written by the Java version of the example application run:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">rm</span> <span class="o">-</span><span class="n">r</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">example</span><span class="o">-</span><span class="n">logs</span><span class="o">/</span><span class="n">j</span><span class="o">-</span><span class="nc">C_default</span><span class="o">/</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">rm</span> <span class="o">-</span><span class="n">r</span> <span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">target</span><span class="o">/</span><span class="n">example</span><span class="o">-</span><span class="n">logs</span><span class="o">/</span><span class="n">j</span><span class="o">-</span><span class="nc">C_default</span><span class="o">/</span>
 </pre></div>
 </div>
-<p>To start location <code class="docutils literal"><span class="pre">C</span></code> again with disaster recovery enabled, use the <code class="docutils literal"><span class="pre">-r</span></code> or <code class="docutils literal"><span class="pre">--recover</span></code> option:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">example</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">recover</span> <span class="n">C</span>
+<p>To start location <code class="docutils literal notranslate"><span class="pre">C</span></code> again with disaster recovery enabled, use the <code class="docutils literal notranslate"><span class="pre">-r</span></code> or <code class="docutils literal notranslate"><span class="pre">--recover</span></code> option:</p>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">example</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">recover</span> <span class="n">C</span>
 </pre></div>
 </div>
 <p>or the Java version with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">recover</span> <span class="o">--</span><span class="n">java</span> <span class="n">C</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">eventuate</span><span class="o">-</span><span class="n">example</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">ordermgnt</span><span class="o">-</span><span class="n">location</span> <span class="o">--</span><span class="n">recover</span> <span class="o">--</span><span class="n">java</span> <span class="n">C</span>
 </pre></div>
 </div>
 <p>Recovery may take up to 20 seconds when using the default <a class="reference internal" href="reference/configuration.html#configuration"><span class="std std-ref">Configuration</span></a> settings for event replication and disaster recovery. To speed up the process you may want to the use following configuration settings:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">1</span><span class="n">s</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">1</span><span class="n">s</span>
 <span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">replication</span><span class="o">.</span><span class="n">remote</span><span class="o">-</span><span class="n">read</span><span class="o">-</span><span class="n">timeout</span> <span class="k">=</span> <span class="mi">2</span><span class="n">s</span>
 <span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">recovery</span><span class="o">.</span><span class="n">remote</span><span class="o">-</span><span class="n">operation</span><span class="o">-</span><span class="n">retry</span><span class="o">-</span><span class="n">max</span> <span class="k">=</span> <span class="mi">10</span>
 <span class="n">eventuate</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">recovery</span><span class="o">.</span><span class="n">remote</span><span class="o">-</span><span class="n">operation</span><span class="o">-</span><span class="n">retry</span><span class="o">-</span><span class="n">delay</span> <span class="k">=</span> <span class="mi">1</span><span class="n">s</span>

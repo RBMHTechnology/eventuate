@@ -1,0 +1,668 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>pure - com.rbmhtechnology.eventuate.crdt.pure</title>
+          <meta name="description" content="pure - com.rbmhtechnology.eventuate.crdt.pure" />
+          <meta name="keywords" content="pure com.rbmhtechnology.eventuate.crdt.pure" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../index.html';
+            var hash = 'com.rbmhtechnology.eventuate.crdt.pure.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../../package.html" class="extype" name="com">com</a>.<a href="../../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt">crdt</a></p>
+        <h1>pure</h1><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">pure</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="com.rbmhtechnology.eventuate.crdt.pure.AWCartEntry" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="AWCartEntry[A]extendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="AWCartEntry[A]:AWCartEntry[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="AWCartEntry.html"><span class="name">AWCartEntry</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="key">key: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.AWCartEntry.A">A</span></span>, <span name="quantity">quantity: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@AWCartEntry[A]extendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">AWCart entry.</p><div class="fullcomment"><div class="comment cmt"><p>AWCart entry.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Key type.</p></dd><dt class="param">key</dt><dd class="cmt"><p>Entry key. Used to identify a product in the shopping cart.</p></dd><dt class="param">quantity</dt><dd class="cmt"><p>Entry quantity.</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.AWCartService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="AWCartService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.SimpleCRDT,Map[A,Int]]"></a>
+      <a id="AWCartService[A]:AWCartService[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="AWCartService.html"><span class="name">AWCartService</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTService">CRDTService</a>[<a href="CRDTTypes$.html#SimpleCRDT=com.rbmhtechnology.eventuate.crdt.pure.CRDT[Seq[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation]]" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.SimpleCRDT">SimpleCRDT</a>, <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.AWCartService.A">A</span>, <span class="extype" name="scala.Int">Int</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@AWCartService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.SimpleCRDT,Map[A,Int]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Replicated AWCart CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated AWCart CRDT service.</p><ul><li>For adding a new <code>key</code> of given <code>quantity</code> a client should call <code>add</code>.</li><li>For incrementing the <code>quantity</code> of an existing <code>key</code> a client should call <code>add</code>.</li><li>For decrementing the <code>quantity</code> of an existing <code>key</code> a client should call <code>remove</code>, followed by <code>add</code>
+(after <code>remove</code> successfully completed).</li><li>For removing a <code>key</code> a client should call <code>remove</code>.
+</li></ul></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>AWCart key type.</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.AWSetService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="AWSetService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.pure.AWSetService.AWSet[A],scala.collection.immutable.Set[A]]"></a>
+      <a id="AWSetService[A]:AWSetService[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="AWSetService.html"><span class="name">AWSetService</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTService">CRDTService</a>[<a href="AWSetService$.html#AWSet[A]=com.rbmhtechnology.eventuate.crdt.pure.CRDT[scala.collection.immutable.Set[A]]" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.AWSetService.AWSet">AWSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.AWSetService.A">A</span>], <span class="extype" name="scala.collection.immutable.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.AWSetService.A">A</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@AWSetService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.pure.AWSetService.AWSet[A],scala.collection.immutable.Set[A]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Replicated <span class="extype" name="AWSet">AWSet</span> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <span class="extype" name="AWSet">AWSet</span> CRDT service.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><span class="extype" name="AWSet">AWSet</span> entry type.</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.AddOp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AddOpextendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="AddOp:AddOp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="AddOp.html"><span class="name">AddOp</span></a><span class="params">(<span name="entry">entry: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@AddOpextendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Persistent add operation used for <span class="extype" name="AWSet">AWSet</span> and AWCart.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.AssignOp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AssignOpextendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="AssignOp:AssignOp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="AssignOp.html"><span class="name">AssignOp</span></a><span class="params">(<span name="value">value: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@AssignOpextendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Persistent assign operation used for MVRegister and LWWRegister.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CRDT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="CRDT[B]extendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="CRDT[B]:CRDT[B]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="CRDT.html"><span class="name">CRDT</span></a><span class="tparams">[<span name="B">B</span>]</span><span class="params">(<span name="polog">polog: <a href="POLog.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.POLog">POLog</a></span>, <span name="state">state: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT.B">B</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@CRDT[B]extendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A pure op-based CRDT wich state is splitted in two componentes.</p><div class="fullcomment"><div class="comment cmt"><p>A pure op-based CRDT wich state is splitted in two componentes. A map of timestamps to operations (the POLog) and
+a plain set of stable operations or a specialized implementation (the state)
+P(O) × (T ֒→ O)
+</p></div><dl class="paramcmts block"><dt class="tparam">B</dt><dd class="cmt"><p>state type</p></dd><dt class="param">polog</dt><dd class="cmt"><p>The POLog contains only the set of timestamped operations</p></dd><dt class="param">state</dt><dd class="cmt"><p>The state of the CRDT that contains stable operations (non-timestamped) or a &quot;specialized
+             implementation according to the domain&quot; e.g., a bitmap for dense sets of integers in an AWSet</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CRDTFormat" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="CRDTFormatextendsSerializable"></a>
+      <a id="CRDTFormat:CRDTFormat"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="CRDTFormat.html"><span class="name">CRDTFormat</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@CRDTFormatextendsSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Marker trait for protobuf-serializable CRDTs and operations.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CRDTFormats" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CRDTFormatsextendsObject"></a>
+      <a id="CRDTFormats:CRDTFormats"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="CRDTFormats.html"><span class="name">CRDTFormats</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@CRDTFormatsextendsObject" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CRDTSerializer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CRDTSerializerextendsSerializer"></a>
+      <a id="CRDTSerializer:CRDTSerializer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="CRDTSerializer.html"><span class="name">CRDTSerializer</span></a><span class="result"> extends <span class="extype" name="akka.serialization.Serializer">Serializer</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@CRDTSerializerextendsSerializer" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CRDTService" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="CRDTService[A,B]extendsAnyRef"></a>
+      <a id="CRDTService[A,B]:CRDTService[A,B]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="CRDTService.html"><span class="name">CRDTService</span></a><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@CRDTService[A,B]extendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A generic, replicated CRDT service that manages a map of CRDTs identified by name.</p><div class="fullcomment"><div class="comment cmt"><p>A generic, replicated CRDT service that manages a map of CRDTs identified by name.
+Replication is based on the replicated event <code>log</code> that preserves causal ordering
+of events.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>CRDT type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>CRDT value type</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="CRDTServiceOps[A,B]extendsAnyRef"></a>
+      <a id="CRDTServiceOps[A,B]:CRDTServiceOps[A,B]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="CRDTServiceOps.html"><span class="name">CRDTServiceOps</span></a><span class="tparams">[<span name="A">A</span>, <span name="B">B</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@CRDTServiceOps[A,B]extendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Typeclass to be implemented by CRDTs if they shall be managed by <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTService">CRDTService</a>
+</p><div class="fullcomment"><div class="comment cmt"><p>Typeclass to be implemented by CRDTs if they shall be managed by <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTService">CRDTService</a>
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>CRDT type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>CRDT value type</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CounterService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="CounterService[A]extendsCRDTService[A,A]"></a>
+      <a id="CounterService[A]:CounterService[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="CounterService.html"><span class="name">CounterService</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTService">CRDTService</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CounterService.A">A</span>, <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CounterService.A">A</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@CounterService[A]extendsCRDTService[A,A]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Replicated Counter CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated Counter CRDT service.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>Counter value type.</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="CvRDTPureOp[C,B]extendsCRDTServiceOps[com.rbmhtechnology.eventuate.crdt.pure.CRDT[C],B]"></a>
+      <a id="CvRDTPureOp[C,B]:CvRDTPureOp[C,B]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="CvRDTPureOp.html"><span class="name">CvRDTPureOp</span></a><span class="tparams">[<span name="C">C</span>, <span name="B">B</span>]</span><span class="result"> extends <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps">CRDTServiceOps</a>[<a href="CRDT.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT">CRDT</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span>], <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.B">B</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@CvRDTPureOp[C,B]extendsCRDTServiceOps[com.rbmhtechnology.eventuate.crdt.pure.CRDT[C],B]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Type-class for pure-op based CRDT.</p><div class="fullcomment"><div class="comment cmt"><p>Type-class for pure-op based CRDT.
+</p></div><dl class="paramcmts block"><dt class="tparam">C</dt><dd class="cmt"><p>CRDT state type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>CRDT value type</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOpSimple" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="CvRDTPureOpSimple[B]extendsCvRDTPureOp[Seq[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation],B]"></a>
+      <a id="CvRDTPureOpSimple[B]:CvRDTPureOpSimple[B]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="CvRDTPureOpSimple.html"><span class="name">CvRDTPureOpSimple</span></a><span class="tparams">[<span name="B">B</span>]</span><span class="result"> extends <a href="CvRDTPureOp.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp">CvRDTPureOp</a>[<span class="extype" name="scala.Seq">Seq</span>[<a href="CRDTTypes$.html#Operation=Any" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation">Operation</a>], <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOpSimple.B">B</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@CvRDTPureOpSimple[B]extendsCvRDTPureOp[Seq[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation],B]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A base trait for pure-op based CRDTs wich state is a sequence of stable operations
+</p><div class="fullcomment"><div class="comment cmt"><p>A base trait for pure-op based CRDTs wich state is a sequence of stable operations
+</p></div><dl class="paramcmts block"><dt class="tparam">B</dt><dd class="cmt"><p>CRDT value type</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.LWWRegisterService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="LWWRegisterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.SimpleCRDT,Option[A]]"></a>
+      <a id="LWWRegisterService[A]:LWWRegisterService[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="LWWRegisterService.html"><span class="name">LWWRegisterService</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTService">CRDTService</a>[<a href="CRDTTypes$.html#SimpleCRDT=com.rbmhtechnology.eventuate.crdt.pure.CRDT[Seq[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation]]" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.SimpleCRDT">SimpleCRDT</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.LWWRegisterService.A">A</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@LWWRegisterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.SimpleCRDT,Option[A]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Replicated LWWRegister CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated LWWRegister CRDT service.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p>LWWRegister value type.</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.MVRegisterService" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="MVRegisterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.SimpleCRDT,Set[A]]"></a>
+      <a id="MVRegisterService[A]:MVRegisterService[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="MVRegisterService.html"><span class="name">MVRegisterService</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTService">CRDTService</a>[<a href="CRDTTypes$.html#SimpleCRDT=com.rbmhtechnology.eventuate.crdt.pure.CRDT[Seq[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation]]" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.SimpleCRDT">SimpleCRDT</a>, <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.MVRegisterService.A">A</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@MVRegisterService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.SimpleCRDT,Set[A]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Replicated <a href="MVRegisterService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.MVRegisterService">MVRegisterService</a> CRDT service.</p><div class="fullcomment"><div class="comment cmt"><p>Replicated <a href="MVRegisterService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.MVRegisterService">MVRegisterService</a> CRDT service.
+</p></div><dl class="paramcmts block"><dt class="tparam">A</dt><dd class="cmt"><p><a href="MVRegisterService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.MVRegisterService">MVRegisterService</a> value type.</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.POLog" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="POLogextendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="POLog:POLog"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="POLog.html"><span class="name">POLog</span></a><span class="params">(<span name="log">log: <span class="extype" name="scala.Predef.Set">Set</span>[<a href="../../Versioned.html" class="extype" name="com.rbmhtechnology.eventuate.Versioned">Versioned</a>[<a href="CRDTTypes$.html#Operation=Any" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation">Operation</a>]] = <span class="symbol">Set.empty</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@POLogextendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A Partial Ordered Log which retains all invoked operations together with their timestamps.</p><div class="fullcomment"><div class="comment cmt"><p>A Partial Ordered Log which retains all invoked operations together with their timestamps.
+</p></div><dl class="paramcmts block"><dt class="param">log</dt><dd class="cmt"><p>the set of operations with its timestamp and optional metadata (i.e. systemTimestamp, creator)</p></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.RemoveOp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="RemoveOpextendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="RemoveOp:RemoveOp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="RemoveOp.html"><span class="name">RemoveOp</span></a><span class="params">(<span name="entry">entry: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@RemoveOpextendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Persistent remove operation used for <span class="extype" name="AWSet">AWSet</span> and AWCart.</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.TPSetService" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TPSetService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.pure.TPSetService.TPSet[A],scala.collection.immutable.Set[A]]"></a>
+      <a id="TPSetService[A]:TPSetService[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="TPSetService.html"><span class="name">TPSetService</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="CRDTService.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTService">CRDTService</a>[<a href="TPSetService$.html#TPSet[A]=(scala.collection.immutable.Set[A],scala.collection.immutable.Set[A])" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.TPSetService.TPSet">TPSet</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.TPSetService.A">A</span>], <span class="extype" name="scala.collection.immutable.Set">Set</span>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.TPSetService.A">A</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@TPSetService[A]extendsCRDTService[com.rbmhtechnology.eventuate.crdt.pure.TPSetService.TPSet[A],scala.collection.immutable.Set[A]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.UpdateOp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="UpdateOpextendsCRDTFormatwithProductwithSerializable"></a>
+      <a id="UpdateOp:UpdateOp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="UpdateOp.html"><span class="name">UpdateOp</span></a><span class="params">(<span name="delta">delta: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@UpdateOpextendsCRDTFormatwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Persistent update operation used for Counter.</p>
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="com.rbmhtechnology.eventuate.crdt.pure.AWCartService" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AWCartService"></a>
+      <a id="AWCartService:AWCartService"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="AWCartService$.html"><span class="name">AWCartService</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@AWCartService" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.AWSetService" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AWSetService"></a>
+      <a id="AWSetService:AWSetService"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="AWSetService$.html"><span class="name">AWSetService</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@AWSetService" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CRDT" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CRDT"></a>
+      <a id="CRDT:CRDT"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="CRDT$.html"><span class="name">CRDT</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@CRDT" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CRDTService" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CRDTService"></a>
+      <a id="CRDTService:CRDTService"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="CRDTService$.html"><span class="name">CRDTService</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@CRDTService" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CRDTTypes"></a>
+      <a id="CRDTTypes:CRDTTypes"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="CRDTTypes$.html"><span class="name">CRDTTypes</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@CRDTTypes" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.ClearOp" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ClearOp"></a>
+      <a id="ClearOp:ClearOp"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ClearOp$.html"><span class="name">ClearOp</span></a><span class="result"> extends <a href="CRDTFormat.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTFormat">CRDTFormat</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@ClearOp" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CounterService" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CounterService"></a>
+      <a id="CounterService:CounterService"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="CounterService$.html"><span class="name">CounterService</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@CounterService" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.LWWRegisterService" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LWWRegisterService"></a>
+      <a id="LWWRegisterService:LWWRegisterService"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="LWWRegisterService$.html"><span class="name">LWWRegisterService</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@LWWRegisterService" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.MVRegisterService" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MVRegisterService"></a>
+      <a id="MVRegisterService:MVRegisterService"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="MVRegisterService$.html"><span class="name">MVRegisterService</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@MVRegisterService" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.StabilityProtocol" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="StabilityProtocol"></a>
+      <a id="StabilityProtocol:StabilityProtocol"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="StabilityProtocol$.html"><span class="name">StabilityProtocol</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@StabilityProtocol" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.TPSetService" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TPSetService"></a>
+      <a id="TPSetService:TPSetService"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="TPSetService$.html"><span class="name">TPSetService</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@TPSetService" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.japi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="japi"></a>
+      <a id="japi:japi"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="japi/package.html"><span class="name">japi</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.package@japi" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

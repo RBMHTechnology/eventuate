@@ -1,0 +1,717 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>CvRDTPureOp - com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp</title>
+          <meta name="description" content="CvRDTPureOp - com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp" />
+          <meta name="keywords" content="CvRDTPureOp com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../index.html';
+            var hash = 'com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="type">
+      <div id="definition">
+        <img alt="Trait" src="../../../../../lib/trait_big.png" />
+        <p id="owner"><a href="../../../../package.html" class="extype" name="com">com</a>.<a href="../../../package.html" class="extype" name="com.rbmhtechnology">rbmhtechnology</a>.<a href="../../package.html" class="extype" name="com.rbmhtechnology.eventuate">eventuate</a>.<a href="../package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt">crdt</a>.<a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure">pure</a></p>
+        <h1>CvRDTPureOp</h1><h3><span class="morelinks"><div>Related Doc:
+            <a href="package.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure">package pure</a>
+          </div></span></h3><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <span class="name">CvRDTPureOp</span><span class="tparams">[<span name="C">C</span>, <span name="B">B</span>]</span><span class="result"> extends <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps">CRDTServiceOps</a>[<a href="CRDT.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT">CRDT</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span>], <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.B">B</span>]</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Type-class for pure-op based CRDT.
+</p></div><dl class="paramcmts block"><dt class="tparam">C</dt><dd class="cmt"><p>CRDT state type</p></dd><dt class="tparam">B</dt><dd class="cmt"><p>CRDT value type</p></dd></dl><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps">CRDTServiceOps</a>[<a href="CRDT.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT">CRDT</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span>], <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.B">B</span>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div><div class="toggleContainer block">
+            <span class="toggle">Known Subclasses</span>
+            <div class="subClasses hiddenContent"><a href="CvRDTPureOpSimple.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOpSimple">CvRDTPureOpSimple</a></div>
+          </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By Inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp"><span>CvRDTPureOp</span></li><li class="in" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps"><span>CRDTServiceOps</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show All</span></li>
+            </ol>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        
+
+        <div id="values" class="values members">
+              <h3>Abstract Value Members</h3>
+              <ol><li name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp#causalRedundancy" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="causalRedundancy:com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.CausalRedundancy"></a>
+      <a id="causalRedundancy:CausalRedundancy"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">causalRedundancy</span><span class="result">: <a href="CRDTTypes$$CausalRedundancy.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.CausalRedundancy">CausalRedundancy</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@causalRedundancy:com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.CausalRedundancy" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The data-type specific relations r,r0 and r1 used for reducing the POLog size via causal redundancy
+</p>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps#eval" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="eval(crdt:A):B"></a>
+      <a id="eval(CRDT[C]):B"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eval</span><span class="params">(<span name="crdt">crdt: <a href="CRDT.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT">CRDT</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span>]</span>)</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.B">B</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@eval(crdt:A):B" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps">CRDTServiceOps</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp#stabilizeState" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="stabilizeState(state:C,stableOps:Seq[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation]):C"></a>
+      <a id="stabilizeState(C,Seq[Operation]):C"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">stabilizeState</span><span class="params">(<span name="state">state: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span></span>, <span name="stableOps">stableOps: <span class="extype" name="scala.Seq">Seq</span>[<a href="CRDTTypes$.html#Operation=Any" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation">Operation</a>]</span>)</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@stabilizeState(state:C,stableOps:Seq[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation]):C" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Updates the current <a href="CRDT.html#state:B" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT#state">CRDT.state</a> with the sequence of stable operations that were removed
+from the POLog on <a href="POLog.html#stable(stable:com.rbmhtechnology.eventuate.crdt.pure.StabilityProtocol.TCStable):(com.rbmhtechnology.eventuate.crdt.pure.POLog,Seq[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation])" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.POLog#stable">POLog.stable</a>
+The implementation will vary depending on the CRDT's state type.</p><div class="fullcomment"><div class="comment cmt"><p>Updates the current <a href="CRDT.html#state:B" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT#state">CRDT.state</a> with the sequence of stable operations that were removed
+from the POLog on <a href="POLog.html#stable(stable:com.rbmhtechnology.eventuate.crdt.pure.StabilityProtocol.TCStable):(com.rbmhtechnology.eventuate.crdt.pure.POLog,Seq[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation])" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.POLog#stable">POLog.stable</a>
+The implementation will vary depending on the CRDT's state type.
+</p></div><dl class="paramcmts block"><dt class="param">state</dt><dd class="cmt"><p>the current CRDT state</p></dd><dt class="param">stableOps</dt><dd class="cmt"><p>the sequence of stable operations that were removed from the POLog</p></dd><dt>returns</dt><dd class="cmt"><p>the updated state</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp#updateState" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="updateState(op:com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation,redundant:Boolean,state:C):C"></a>
+      <a id="updateState(Operation,Boolean,C):C"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">updateState</span><span class="params">(<span name="op">op: <a href="CRDTTypes$.html#Operation=Any" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation">Operation</a></span>, <span name="redundant">redundant: <span class="extype" name="scala.Boolean">Boolean</span></span>, <span name="state">state: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span></span>)</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@updateState(op:com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation,redundant:Boolean,state:C):C" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Data-type specific method that updates the stable state with the newly delivered operation, that
+is always on the causal future of all the (non-timestamped) operations currently in the state.</p><div class="fullcomment"><div class="comment cmt"><p>Data-type specific method that updates the stable state with the newly delivered operation, that
+is always on the causal future of all the (non-timestamped) operations currently in the state.
+This method is needed because operations in the causal future could make stable operations redundant (e.g. in a AWSet a <a href="ClearOp$.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.ClearOp">ClearOp</a> makes all the stable <a href="AddOp.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.AddOp">AddOp</a> redundant and hence must be removed)
+The returned state could potentially contain less operations if they were discarded, but it would never contain more operations, in other words the newly delivered operation must not be added to the state.
+</p></div><dl class="paramcmts block"><dt class="param">op</dt><dd class="cmt"><p>the newly delivered operation</p></dd><dt class="param">redundant</dt><dd class="cmt"><p>a flag indicating if the newly delivered operation was redundant or it was added to the POLog.</p></dd><dt class="param">state</dt><dd class="cmt"><p>the current CRDT state</p></dd><dt>returns</dt><dd class="cmt"><p>the updated state</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>See also</dt><dd><span class="cmt"><p><a href="POLog.html#add(op:com.rbmhtechnology.eventuate.Versioned[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation])(implicitred:com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.CausalRedundancy):(com.rbmhtechnology.eventuate.crdt.pure.POLog,Boolean)" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.POLog#add">POLog.add</a></p></span></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps#zero" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="zero:A"></a>
+      <a id="zero:CRDT[C]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">zero</span><span class="result">: <a href="CRDT.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT">CRDT</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@zero:A" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Default CRDT instance.</p><div class="fullcomment"><div class="comment cmt"><p>Default CRDT instance.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps">CRDTServiceOps</a></dd></dl></div>
+    </li></ol>
+            </div>
+
+        <div id="values" class="values members">
+              <h3>Concrete Value Members</h3>
+              <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="!=(x$1:Any):Boolean"></a>
+      <a id="!=(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="##():Int"></a>
+      <a id="##():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@##():Int" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="==(x$1:Any):Boolean"></a>
+      <a id="==(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="asInstanceOf[T0]:T0"></a>
+      <a id="asInstanceOf[T0]:T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="clone():Object"></a>
+      <a id="clone():AnyRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@clone():Object" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp#effect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="effect(crdt:com.rbmhtechnology.eventuate.crdt.pure.CRDT[C],op:com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation,vt:com.rbmhtechnology.eventuate.VectorTime,systemTimestamp:Long,creator:String):com.rbmhtechnology.eventuate.crdt.pure.CRDT[C]"></a>
+      <a id="effect(CRDT[C],Operation,VectorTime,Long,String):CRDT[C]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">effect</span><span class="params">(<span name="crdt">crdt: <a href="CRDT.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT">CRDT</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span>]</span>, <span name="op">op: <a href="CRDTTypes$.html#Operation=Any" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation">Operation</a></span>, <span name="vt">vt: <a href="../../VectorTime.html" class="extype" name="com.rbmhtechnology.eventuate.VectorTime">VectorTime</a></span>, <span name="systemTimestamp">systemTimestamp: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">0L</span></span>, <span name="creator">creator: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result">: <a href="CRDT.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT">CRDT</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@effect(crdt:com.rbmhtechnology.eventuate.crdt.pure.CRDT[C],op:com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation,vt:com.rbmhtechnology.eventuate.VectorTime,systemTimestamp:Long,creator:String):com.rbmhtechnology.eventuate.crdt.pure.CRDT[C]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Adds the operation to the POLog using the causal redundancy relations and also updates the state
+with the newly delivered operation.</p><div class="fullcomment"><div class="comment cmt"><p>Adds the operation to the POLog using the causal redundancy relations and also updates the state
+with the newly delivered operation.
+</p></div><dl class="paramcmts block"><dt class="param">op</dt><dd class="cmt"><p>newly delivered operation</p></dd><dt class="param">vt</dt><dd class="cmt"><p>operation's timestamp</p></dd><dt class="param">systemTimestamp</dt><dd class="cmt"><p>operation's metadata</p></dd><dt class="param">creator</dt><dd class="cmt"><p>operation's metadata</p></dd><dt>returns</dt><dd class="cmt"><p>a copy of the CRDT with its POLog and state updated</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp">CvRDTPureOp</a> → <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps">CRDTServiceOps</a></dd></dl></div>
+    </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eq(x$1:AnyRef):Boolean"></a>
+      <a id="eq(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="equals(x$1:Any):Boolean"></a>
+      <a id="equals(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="finalize():Unit"></a>
+      <a id="finalize():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@finalize():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getClass():Class[_]"></a>
+      <a id="getClass():Class[_]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="hashCode():Int"></a>
+      <a id="hashCode():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@hashCode():Int" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ne(x$1:AnyRef):Boolean"></a>
+      <a id="ne(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notify():Unit"></a>
+      <a id="notify():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@notify():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notifyAll():Unit"></a>
+      <a id="notifyAll():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp#precondition" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="precondition:Boolean"></a>
+      <a id="precondition:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">precondition</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@precondition:Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A pure-op based doesn't need to check preconditions because the framework just
+returns the unmodified operation on prepare
+</p><div class="fullcomment"><div class="comment cmt"><p>A pure-op based doesn't need to check preconditions because the framework just
+returns the unmodified operation on prepare
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp">CvRDTPureOp</a> → <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps">CRDTServiceOps</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps#prepare" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="prepare(crdt:A,operation:com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation):scala.util.Try[Option[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation]]"></a>
+      <a id="prepare(CRDT[C],Operation):Try[Option[Operation]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">prepare</span><span class="params">(<span name="crdt">crdt: <a href="CRDT.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT">CRDT</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span>]</span>, <span name="operation">operation: <a href="CRDTTypes$.html#Operation=Any" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation">Operation</a></span>)</span><span class="result">: <span class="extype" name="scala.util.Try">Try</span>[<span class="extype" name="scala.Option">Option</span>[<a href="CRDTTypes$.html#Operation=Any" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation">Operation</a>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@prepare(crdt:A,operation:com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation):scala.util.Try[Option[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation]]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Update phase 1 (&quot;atSource&quot;).</p><div class="fullcomment"><div class="comment cmt"><p>Update phase 1 (&quot;atSource&quot;). Prepares an operation for phase 2.
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps">CRDTServiceOps</a></dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp#stabilize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="stabilize(polog:com.rbmhtechnology.eventuate.crdt.pure.POLog,stable:com.rbmhtechnology.eventuate.crdt.pure.StabilityProtocol.TCStable):com.rbmhtechnology.eventuate.crdt.pure.POLog"></a>
+      <a id="stabilize(POLog,TCStable):POLog"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">stabilize</span><span class="params">(<span name="polog">polog: <a href="POLog.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.POLog">POLog</a></span>, <span name="stable">stable: <a href="StabilityProtocol$$TCStable.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.StabilityProtocol.TCStable">TCStable</a></span>)</span><span class="result">: <a href="POLog.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.POLog">POLog</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@stabilize(polog:com.rbmhtechnology.eventuate.crdt.pure.POLog,stable:com.rbmhtechnology.eventuate.crdt.pure.StabilityProtocol.TCStable):com.rbmhtechnology.eventuate.crdt.pure.POLog" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">&quot;This function takes a stable
+timestamp t (fed by the TCSB middleware) and the full PO-Log s as input, and returns
+a new PO-Log (i.e., a map), possibly discarding a set of operations at once.&quot;
+</p><div class="fullcomment"><div class="comment cmt"><p>&quot;This function takes a stable
+timestamp t (fed by the TCSB middleware) and the full PO-Log s as input, and returns
+a new PO-Log (i.e., a map), possibly discarding a set of operations at once.&quot;
+</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp#stable" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="stable(crdt:com.rbmhtechnology.eventuate.crdt.pure.CRDT[C],tcstable:com.rbmhtechnology.eventuate.crdt.pure.StabilityProtocol.TCStable):com.rbmhtechnology.eventuate.crdt.pure.CRDT[C]"></a>
+      <a id="stable(CRDT[C],TCStable):CRDT[C]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">stable</span><span class="params">(<span name="crdt">crdt: <a href="CRDT.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT">CRDT</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span>]</span>, <span name="tcstable">tcstable: <a href="StabilityProtocol$$TCStable.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.StabilityProtocol.TCStable">TCStable</a></span>)</span><span class="result">: <a href="CRDT.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT">CRDT</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@stable(crdt:com.rbmhtechnology.eventuate.crdt.pure.CRDT[C],tcstable:com.rbmhtechnology.eventuate.crdt.pure.StabilityProtocol.TCStable):com.rbmhtechnology.eventuate.crdt.pure.CRDT[C]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">&quot;The stable
+handler, on the other hand, invokes stabilize and then strips the timestamp (if the operation
+has not been discarded by stabilize), by replacing a (t', o') pair that is present in the returned
+PO-Log by (⊥, o')&quot;
+The actual implementation doesn't replace the timestamp with ⊥, instead it calls <a href="#stabilizeState(state:C,stableOps:Seq[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation]):C" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp#stabilizeState">stabilizeState</a> with
+the current <a href="CRDT.html#state:B" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT#state">CRDT.state</a> and the sequence of stable operations discarded from the <a href="POLog.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.POLog">POLog</a>.</p><div class="fullcomment"><div class="comment cmt"><p>&quot;The stable
+handler, on the other hand, invokes stabilize and then strips the timestamp (if the operation
+has not been discarded by stabilize), by replacing a (t', o') pair that is present in the returned
+PO-Log by (⊥, o')&quot;
+The actual implementation doesn't replace the timestamp with ⊥, instead it calls <a href="#stabilizeState(state:C,stableOps:Seq[com.rbmhtechnology.eventuate.crdt.pure.CRDTTypes.Operation]):C" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp#stabilizeState">stabilizeState</a> with
+the current <a href="CRDT.html#state:B" class="extmbr" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT#state">CRDT.state</a> and the sequence of stable operations discarded from the <a href="POLog.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.POLog">POLog</a>.
+</p></div><dl class="paramcmts block"><dt class="param">crdt</dt><dd class="cmt"><p>a crdt</p></dd><dt class="param">tcstable</dt><dd class="cmt"><p>a stable VectorTime fed by the middleware</p></dd><dt>returns</dt><dd class="cmt"><p>a possible optimized crdt after discarding operations and removing timestamps</p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp">CvRDTPureOp</a> → <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps">CRDTServiceOps</a></dd></dl></div>
+    </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
+      <a id="synchronized[T0](⇒T0):T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="toString():String"></a>
+      <a id="toString():String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@toString():String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps#value" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="value(crdt:A):B"></a>
+      <a id="value(CRDT[C]):B"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">value</span><span class="params">(<span name="crdt">crdt: <a href="CRDT.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT">CRDT</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span>]</span>)</span><span class="result">: <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.B">B</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@value(crdt:A):B" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Returns the CRDT value (for example, the entries of an OR-Set)
+</p><div class="fullcomment"><div class="comment cmt"><p>Returns the CRDT value (for example, the entries of an OR-Set)
+</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps">CRDTServiceOps</a></dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait():Unit"></a>
+      <a id="wait():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@wait():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long,x$2:Int):Unit"></a>
+      <a id="wait(Long,Int):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long):Unit"></a>
+      <a id="wait(Long):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps">
+              <h3>Inherited from <a href="CRDTServiceOps.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDTServiceOps">CRDTServiceOps</a>[<a href="CRDT.html" class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CRDT">CRDT</a>[<span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.C">C</span>], <span class="extype" name="com.rbmhtechnology.eventuate.crdt.pure.CvRDTPureOp.B">B</span>]</h3>
+            </div><div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

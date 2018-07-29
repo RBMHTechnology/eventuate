@@ -185,8 +185,8 @@
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event-sourcing.html#failure-handling">Failure handling</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="event-sourcing.html#circuit-breaker">Circuit breaker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="event-sourcing.html#persist-failure-handling"><code class="docutils literal"><span class="pre">persist</span></code> failure handling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="event-sourcing.html#persistonevent-failure-handling"><code class="docutils literal"><span class="pre">persistOnEvent</span></code> failure handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="event-sourcing.html#persist-failure-handling"><code class="docutils literal notranslate"><span class="pre">persist</span></code> failure handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="event-sourcing.html#persistonevent-failure-handling"><code class="docutils literal notranslate"><span class="pre">persistOnEvent</span></code> failure handling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="event-sourcing.html#recovery-failure-handling">Recovery failure handling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="event-sourcing.html#batch-write-failure-handling">Batch write failure handling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="event-sourcing.html#batch-replication-failure-handling">Batch replication failure handling</a></li>
@@ -320,7 +320,7 @@
   <div class="section" id="transport-security">
 <span id="id1"></span><h1>Transport Security<a class="headerlink" href="#transport-security" title="Permalink to this headline">¶</a></h1>
 <p>In a setup with several locations Eventuate uses <a class="reference external" href="http://doc.akka.io/docs/akka/2.4/scala/remoting.html">Akka Remoting</a> for communication between locations. Akka Remoting supports using TLS as transport protocol. In combination with mutual authentication (client and server) this allows to prevent that untrusted nodes can connect to a replication network. The configuration snippet listed here acts as an example for how to set this up. For more details see <a class="reference external" href="http://doc.akka.io/docs/akka/2.4/scala/remoting.html#Configuring_SSL_TLS_for_Akka_Remoting">Configuring SSL/TLS for Akka Remoting</a>.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span>akka {
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span>akka {
   remote {
     enabled-transports = [akka.remote.netty.ssl]
     netty.ssl.security {
@@ -342,8 +342,8 @@
 }
 </pre></div>
 </div>
-<p>This example uses a single file for key- and trust-store. Having a single self-signed certificate in this store suffices to establish mutually authenticated connections via TLS between locations. However a self-signed key makes replacing the certificate in a rolling upgrade tedious. The following script (derived from the scripts of the documentation of <a class="reference external" href="http://typesafehub.github.io/ssl-config/CertificateGeneration.html#using-keytool">Lightbend’s SSL-Config library</a>) creates a root certificate that is used to sign the certificate for client and server authentication. The root certificate is kept in the private keystore <code class="docutils literal"><span class="pre">rootca.jks</span></code>, which does not have to be deployed with the application. It is imported as <code class="docutils literal"><span class="pre">trustedCertEntry</span></code> into the keystore <code class="docutils literal"><span class="pre">keystore.jks</span></code>, which is the one referenced by the akka configuration.</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span>#!/bin/bash -eu
+<p>This example uses a single file for key- and trust-store. Having a single self-signed certificate in this store suffices to establish mutually authenticated connections via TLS between locations. However a self-signed key makes replacing the certificate in a rolling upgrade tedious. The following script (derived from the scripts of the documentation of <a class="reference external" href="http://typesafehub.github.io/ssl-config/CertificateGeneration.html#using-keytool">Lightbend’s SSL-Config library</a>) creates a root certificate that is used to sign the certificate for client and server authentication. The root certificate is kept in the private keystore <code class="docutils literal notranslate"><span class="pre">rootca.jks</span></code>, which does not have to be deployed with the application. It is imported as <code class="docutils literal notranslate"><span class="pre">trustedCertEntry</span></code> into the keystore <code class="docutils literal notranslate"><span class="pre">keystore.jks</span></code>, which is the one referenced by the akka configuration.</p>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span>#!/bin/bash -eu
 
 export PW=&lt;...&gt;
 
@@ -446,7 +446,7 @@ keytool -list \
 <p>This is the reference configuration of Eventuate. It is processed by Typesafe’s <a class="reference external" href="https://github.com/typesafehub/config">config</a> library and can be overridden by applications:</p>
 <div class="section" id="eventuate-core">
 <h2>eventuate-core<a class="headerlink" href="#eventuate-core" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">akka</span> <span class="o">{</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">akka</span> <span class="o">{</span>
   <span class="n">actor</span> <span class="o">{</span>
     <span class="n">serializers</span> <span class="o">{</span>
       <span class="n">eventuate</span><span class="o">-</span><span class="n">durable</span><span class="o">-</span><span class="n">event</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.serializer.DelegatingDurableEventSerializer&quot;</span>
@@ -602,7 +602,7 @@ keytool -list \
 </div>
 <div class="section" id="eventuate-crdt">
 <h2>eventuate-crdt<a class="headerlink" href="#eventuate-crdt" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">akka</span> <span class="o">{</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">akka</span> <span class="o">{</span>
   <span class="n">actor</span> <span class="o">{</span>
     <span class="n">serializers</span> <span class="o">{</span>
       <span class="n">eventuate</span><span class="o">-</span><span class="n">crdt</span> <span class="k">=</span> <span class="s">&quot;com.rbmhtechnology.eventuate.crdt.CRDTSerializer&quot;</span>
@@ -621,7 +621,7 @@ keytool -list \
 </div>
 <div class="section" id="eventuate-log-cassandra">
 <h2>eventuate-log-cassandra<a class="headerlink" href="#eventuate-log-cassandra" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-scala"><div class="highlight"><pre><span></span>eventuate {
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span>eventuate {
   log.cassandra {
     # Comma-separated list of contact points in the cluster (comma-separated
     # hostname or hostname:port list).
@@ -706,7 +706,7 @@ keytool -list \
 </div>
 <div class="section" id="eventuate-log-leveldb">
 <h2>eventuate-log-leveldb<a class="headerlink" href="#eventuate-log-leveldb" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">eventuate</span> <span class="o">{</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">eventuate</span> <span class="o">{</span>
   <span class="n">log</span><span class="o">.</span><span class="n">leveldb</span> <span class="o">{</span>
     <span class="k">#</span> <span class="nc">Root</span> <span class="n">directory</span> <span class="k">for</span> <span class="n">storing</span> <span class="n">the</span> <span class="n">log</span> <span class="n">directories</span> <span class="n">of</span> <span class="n">individual</span> <span class="n">event</span> <span class="n">logs</span><span class="o">.</span>
     <span class="n">dir</span> <span class="k">=</span> <span class="n">target</span>

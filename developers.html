@@ -184,8 +184,8 @@
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#behavior-changes">Behavior changes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/event-sourcing.html#failure-handling">Failure handling</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#circuit-breaker">Circuit breaker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#persist-failure-handling"><code class="docutils literal"><span class="pre">persist</span></code> failure handling</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#persistonevent-failure-handling"><code class="docutils literal"><span class="pre">persistOnEvent</span></code> failure handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#persist-failure-handling"><code class="docutils literal notranslate"><span class="pre">persist</span></code> failure handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#persistonevent-failure-handling"><code class="docutils literal notranslate"><span class="pre">persistOnEvent</span></code> failure handling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#recovery-failure-handling">Recovery failure handling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#batch-write-failure-handling">Batch write failure handling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/event-sourcing.html#batch-replication-failure-handling">Batch replication failure handling</a></li>
@@ -327,53 +327,53 @@
 <p>Eventuate builds require an installation of the <a class="reference external" href="http://www.scala-sbt.org/">sbt</a> build tool and a local clone of the <a class="reference external" href="https://github.com/RBMHTechnology/eventuate">Eventuate Github repository</a> or your personal fork.</p>
 <div class="section" id="binaries">
 <h3>Binaries<a class="headerlink" href="#binaries" title="Permalink to this headline">¶</a></h3>
-<p>After having cloned the repository, change to the <code class="docutils literal"><span class="pre">eventuate</span></code> directory:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">eventuate</span>
+<p>After having cloned the repository, change to the <code class="docutils literal notranslate"><span class="pre">eventuate</span></code> directory:</p>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">eventuate</span>
 </pre></div>
 </div>
 <p>and run the tests with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">test</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">test</span>
 </pre></div>
 </div>
 <p>which runs unit, integration and multi-jvm tests. You can run them separately with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">test</span><span class="k">:</span><span class="kt">testOnly</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">test</span><span class="k">:</span><span class="kt">testOnly</span>
 <span class="n">sbt</span> <span class="n">it</span><span class="k">:</span><span class="kt">testOnly</span>
 <span class="n">sbt</span> <span class="n">multi</span><span class="o">-</span><span class="n">jvm</span><span class="k">:</span><span class="kt">test</span>
 </pre></div>
 </div>
 <p>To publish the binaries to the local Ivy repository, run:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">publishLocal</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">publishLocal</span>
 </pre></div>
 </div>
 <p>To publish the binaries to the local Maven repository, run:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">publishM2</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">publishM2</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="documentation">
 <h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
-<p>Our documentation is written in <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> and located in <code class="docutils literal"><span class="pre">src/sphinx</span></code>. Building the documentation requires an installation of <a class="reference external" href="https://www.python.org/">Python</a> and <a class="reference external" href="http://sphinx-doc.org/">Sphinx</a>.</p>
+<p>Our documentation is written in <a class="reference external" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> and located in <code class="docutils literal notranslate"><span class="pre">src/sphinx</span></code>. Building the documentation requires an installation of <a class="reference external" href="https://www.python.org/">Python</a> and <a class="reference external" href="http://sphinx-doc.org/">Sphinx</a>.</p>
 <p>The following installation instructions are for Mac OS X. If Python isn’t already installed, install <a class="reference external" href="http://brew.sh/">Homebrew</a> first and then Python with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">brew</span> <span class="n">install</span> <span class="n">python</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">brew</span> <span class="n">install</span> <span class="n">python</span>
 </pre></div>
 </div>
 <p>Next, install pip:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">easy_install</span> <span class="n">pip</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">easy_install</span> <span class="n">pip</span>
 </pre></div>
 </div>
 <p>and then Sphinx with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx</span>
 </pre></div>
 </div>
 <p>Additionally, the Sphinx <a class="reference external" href="https://readthedocs.org/">Read the Docs</a> scheme is required:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx_rtd_scheme</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">sphinx_rtd_scheme</span>
 </pre></div>
 </div>
 <p>Now build the documentation with:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">makeSite</span>
+<div class="highlight-scala notranslate"><div class="highlight"><pre><span></span><span class="n">sbt</span> <span class="n">makeSite</span>
 </pre></div>
 </div>
-<p>and open <code class="docutils literal"><span class="pre">target/site/index.html</span></code> in your browser.</p>
+<p>and open <code class="docutils literal notranslate"><span class="pre">target/site/index.html</span></code> in your browser.</p>
 </div>
 </div>
 </div>
