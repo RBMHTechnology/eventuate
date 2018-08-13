@@ -27,7 +27,7 @@ script:
 after_success:
   - if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then .travis/publish-all.sh $TRAVIS_SCALA_VERSION; fi
 scala:
-  - 2.11.8
-  - 2.12.0
+  - 2.11.12
+  - 2.12.6
 jdk:
   - oraclejdk8

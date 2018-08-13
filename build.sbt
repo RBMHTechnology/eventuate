@@ -11,7 +11,7 @@ version in ThisBuild := "0.10-SNAPSHOT"
 
 organization in ThisBuild := "com.rbmhtechnology"
 
-scalaVersion in ThisBuild := "2.11.8"
+scalaVersion in ThisBuild := "2.11.12"
 
 lazy val root = (project in file("."))
   .aggregate(core, crdt, crdtPure, logCassandra, logLeveldb, adapterStream, adapterVertx, examples, exampleStream, exampleVertx)
@@ -92,6 +92,7 @@ lazy val adapterVertx  = (project in file("eventuate-adapter-vertx"))
   .dependsOn(logLeveldb % "it->it")
   .settings(name := "eventuate-adapter-vertx")
   .settings(commonSettings: _*)
+  .settings(scalacOptions += "-target:jvm-1.8")
   .settings(integrationTestSettings: _*)
   .settings(libraryDependencies ++= Seq(AkkaRemote,
       VertxCore % "provided",
@@ -155,5 +156,6 @@ lazy val exampleVertx = (project in file("eventuate-example-vertx"))
   .dependsOn(core, logLeveldb, adapterVertx)
   .settings(name := "eventuate-example-vertx")
   .settings(commonSettings: _*)
+  .settings(scalacOptions += "-target:jvm-1.8")
   .settings(libraryDependencies ++= Seq(AkkaRemote, Leveldb, Javaslang, Log4jApi, Log4jCore, Log4jSlf4j, ExampleVertxCore, ExampleVertxRxJava))
   .enablePlugins(HeaderPlugin, AutomateHeaderPlugin)
