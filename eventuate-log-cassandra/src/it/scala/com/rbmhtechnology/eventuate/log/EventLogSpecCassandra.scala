@@ -165,6 +165,14 @@ class EventLogSpecCassandra extends TestKit(ActorSystem("test", EventLogSpecCass
 
       indexProbe.expectMsg(UpdateIndexSuccess(EventLogClock(sequenceNr = 2L, versionVector = timestamp(2L)), 1))
     }
+    "replay events in case of large sequence number gaps (with empty partitions)" in {
+      val evt = DurableEvent("a", emitterIdA, processId = logId, vectorTimestamp = VectorTime(logId -> 131072L * 5), localLogId = logId, localSequenceNr = 1)
+      writeReplicatedEvents(List(evt), 0L, remoteLogId)
+      (log ? AdjustEventLogClock).await
+
+      writeEmittedEvents(List(event("b")))
+      expectReplay(None, "a", "b")
+    }
     "replay aggregate events from log" in {
       writeEmittedEvents(List(
         event("a", Some("a1")),
