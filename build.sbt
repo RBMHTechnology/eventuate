@@ -7,7 +7,7 @@ import MultiJvmKeys._
 import ProjectSettings._
 import ProjectDependencies._
 
-version in ThisBuild := "0.10-SNAPSHOT"
+version in ThisBuild := "0.11-SNAPSHOT"
 
 organization in ThisBuild := "com.rbmhtechnology"
 
