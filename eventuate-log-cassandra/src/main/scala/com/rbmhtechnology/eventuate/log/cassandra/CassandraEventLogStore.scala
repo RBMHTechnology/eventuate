@@ -74,12 +74,11 @@ private[eventuate] class CassandraEventLogStore(cassandra: Cassandra, logId: Str
     import cassandra.settings._
     import EventLog._
 
-    private val scanEmptyPartitions = toSequenceNr < Long.MaxValue
-    private var currentSequenceNr = math.max(fromSequenceNr, 1L)
-    private var currentPartition = partitionOf(currentSequenceNr, partitionSize)
-    private var currentIter = newIter()
-    private var continueWithNextPartition =
-      currentSequenceNr != firstSequenceNr(currentPartition, partitionSize) || scanEmptyPartitions
+    var currentSequenceNr = math.max(fromSequenceNr, 1L)
+    var currentPartition = partitionOf(currentSequenceNr, partitionSize)
+
+    var currentIter = newIter()
+    var read = currentSequenceNr != firstSequenceNr(currentPartition, partitionSize)
 
     def newIter(): Iterator[Row] =
       if (currentSequenceNr > toSequenceNr) Iterator.empty else read(lastSequenceNr(currentPartition, partitionSize) min toSequenceNr).iterator.asScala
@@ -91,13 +90,13 @@ private[eventuate] class CassandraEventLogStore(cassandra: Cassandra, logId: Str
     final def hasNext: Boolean = {
       if (currentIter.hasNext) {
         true
-      } else if (continueWithNextPartition) {
+      } else if (read) {
         // some events read from current partition, try next partition
         currentPartition += 1
         currentSequenceNr = firstSequenceNr(currentPartition, partitionSize)
         currentIter = newIter()
-        continueWithNextPartition = scanEmptyPartitions
-        currentSequenceNr <= toSequenceNr && hasNext
+        read = false
+        hasNext
       } else /* rowCount == 0 */ {
         // no events read from current partition, we're done
         false
@@ -107,7 +106,7 @@ private[eventuate] class CassandraEventLogStore(cassandra: Cassandra, logId: Str
     def next(): DurableEvent = {
       val row = currentIter.next()
       currentSequenceNr = row.getLong("sequence_nr")
-      continueWithNextPartition = true
+      read = true
       cassandra.eventFromByteBuffer(row.getBytes("event"))
     }
 
