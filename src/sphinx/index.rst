@@ -1,3 +1,6 @@
+.. note::
+   This project is in maintenance mode. Only critical bugs will be fixed, but there is no more feature development.
+
 =========
 Eventuate
 =========
