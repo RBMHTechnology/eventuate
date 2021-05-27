@@ -5,7 +5,7 @@
 Eventuate
 =========
 
-Please note: This project is in **maintenance mode**. Only critical bugs will be fixed, but there is no more feature development!
+Please note: This project is stopped, no bugfixes, features, etc. are done.
 
 Eventuate is a toolkit for building applications composed of event-driven and event-sourced services that communicate via causally ordered event streams. Services can either be co-located on a single node or distributed up to global scale. Services can also be replicated with causal consistency and remain available for writes during network partitions. Eventuate has a [Java](http://www.oracle.com/technetwork/java/javase/overview/index.html) and [Scala](http://www.scala-lang.org/) API, is written in Scala and built on top of [Akka](http://akka.io), a toolkit for building highly concurrent, distributed, and resilient message-driven applications on the JVM. Eventuate
 
